@@ -9,7 +9,7 @@
 namespace
 {
 
-void add_description_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
+void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
 {
 	std::string resName;
 	std::string name;
@@ -48,7 +48,7 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::read_lines_to_container(radii_file_stream, "#", add_description_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			auxiliaries::read_lines_to_container(radii_file_stream, "#", add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 
