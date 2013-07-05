@@ -1,5 +1,5 @@
-#ifndef PDB_FILE_PARSING_H_
-#define PDB_FILE_PARSING_H_
+#ifndef AUXILIARIES_PDB_FILE_PARSING_H_
+#define AUXILIARIES_PDB_FILE_PARSING_H_
 
 #include <iostream>
 #include <string>
@@ -70,7 +70,10 @@ public:
 				try
 				{
 					const AtomRecord record(line);
-					records.push_back(record);
+					if(record.resName!="HOH" && record.name.find("H")!=0 && record.name.find("1H")!=0 && record.name.find("2H")!=0 && record.name.find("3H")!=0 && record.name.find("4H")!=0)
+					{
+						records.push_back(record);
+					}
 				}
 				catch(const std::exception& e)
 				{
@@ -110,4 +113,4 @@ private:
 
 }
 
-#endif /* PDB_FILE_PARSING_H_ */
+#endif /* AUXILIARIES_PDB_FILE_PARSING_H_ */
