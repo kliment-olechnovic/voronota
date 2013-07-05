@@ -37,17 +37,7 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 
 void compare_triangulations(const auxiliaries::CommandLineOptions& clo)
 {
-	clo.check_allowed_options("--epsilon: --bounding-spheres-hierarchy-first-radius: --first-triangulation-file: --second-triangulation-file:");
-
-	if(clo.isopt("--epsilon"))
-	{
-		const double epsilon=clo.arg<double>("--epsilon");
-		if(epsilon<=0.0)
-		{
-			throw std::runtime_error("Epsilon is not greater than 0.");
-		}
-		apollota::comparison_epsilon_reference()=epsilon;
-	}
+	clo.check_allowed_options("--bounding-spheres-hierarchy-first-radius: --first-triangulation-file: --second-triangulation-file:");
 
 	const double bounding_spheres_hierarchy_first_radius=clo.isopt("--bounding-spheres-hierarchy-first-radius") ? clo.arg<double>("--bounding-spheres-hierarchy-first-radius") : 3.5;
 	if(bounding_spheres_hierarchy_first_radius<=1.0)

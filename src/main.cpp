@@ -3,6 +3,8 @@
 #include <exception>
 #include <limits>
 
+#include "apollota/safe_comparison_of_numbers.h"
+
 #include "auxiliaries/command_line_options.h"
 #include "auxiliaries/clog_redirector.h"
 
@@ -22,10 +24,10 @@ int main(const int argc, const char** argv)
 	{
 		auxiliaries::CommandLineOptions clo(argc, argv);
 
-		mode=clo.isarg("--mode") ? clo.arg<std::string>("--mode") : std::string("");
+		mode=clo.isopt("--mode") ? clo.arg<std::string>("--mode") : std::string("");
 		clo.remove_option("--mode");
 
-		const std::string clog_filename=clo.isarg("--clog-file") ? clo.arg<std::string>("--clog-file") : std::string("");
+		const std::string clog_filename=clo.isopt("--clog-file") ? clo.arg<std::string>("--clog-file") : std::string("");
 		clo.remove_option("--clog-file");
 
 		auxiliaries::CLogRedirector clog_redirector;
@@ -34,6 +36,17 @@ int main(const int argc, const char** argv)
 			std::cerr << "Failed to redirect clog to file: " << clog_filename << "." << std::endl;
 			return 1;
 		}
+
+		if(clo.isopt("--epsilon"))
+		{
+			const double epsilon=clo.arg<double>("--epsilon");
+			if(epsilon<=0.0)
+			{
+				throw std::runtime_error("Epsilon is not greater than 0.0");
+			}
+			apollota::comparison_epsilon_reference()=epsilon;
+		}
+		clo.remove_option("--epsilon");
 
 		typedef std::pointer_to_unary_function<const auxiliaries::CommandLineOptions&, void> ModeFunctionPointer;
 		std::map< std::string, ModeFunctionPointer > modes_map;
