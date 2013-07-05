@@ -3,31 +3,20 @@
 
 #include "apollota/triangulation.h"
 
+#include "auxiliaries/io_utilities.h"
 #include "auxiliaries/command_line_options.h"
 
 namespace
 {
 
-std::vector<apollota::SimpleSphere> read_spheres(std::istream& input)
+void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota::SimpleSphere>& spheres)
 {
-	std::vector<apollota::SimpleSphere> result;
-	while(input.good())
+	apollota::SimpleSphere sphere;
+	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
+	if(!input.fail())
 	{
-		std::string line;
-		std::getline(input, line);
-		line.substr(0, line.find("#", 0));
-		if(!line.empty())
-		{
-			std::istringstream line_input(line);
-			apollota::SimpleSphere sphere;
-			line_input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
-			if(!line_input.fail())
-			{
-				result.push_back(sphere);
-			}
-		}
+		spheres.push_back(sphere);
 	}
-	return result;
 }
 
 }
@@ -57,7 +46,8 @@ void calculate_triangulation(const auxiliaries::CommandLineOptions& clo)
 	const bool print_log=clo.isopt("--print-log");
 	const bool check=clo.isopt("--check");
 
-	const std::vector<apollota::SimpleSphere> spheres=read_spheres(std::cin);
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided.");

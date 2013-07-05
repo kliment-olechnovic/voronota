@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "auxiliaries/io_utilities.h"
 #include "auxiliaries/pdb_file_parsing.h"
 #include "auxiliaries/atom_radius_assigner.h"
 #include "auxiliaries/command_line_options.h"
@@ -9,33 +10,15 @@
 namespace
 {
 
-void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
+void add_description_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
 {
-	atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
-	atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
-	atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
-	atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
-}
-
-void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner, std::istream& input)
-{
-	while(input.good())
+	std::string resName;
+	std::string name;
+	double radius=0.0;
+	input >> resName >> name >> radius;
+	if(!input.fail())
 	{
-		std::string line;
-		std::getline(input, line);
-		line.substr(0, line.find("#", 0));
-		if(!line.empty())
-		{
-			std::istringstream line_input(line);
-			std::string resName;
-			std::string name;
-			double radius=0.0;
-			line_input >> resName >> name >> radius;
-			if(!line_input.fail())
-			{
-				atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
-			}
-		}
+		atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
 	}
 }
 
@@ -58,12 +41,15 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 	{
 		if(radii_file.empty())
 		{
-			init_atom_radius_assigner(atom_radius_assigner);
+			atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
+			atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
+			atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
+			atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
 		}
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			init_atom_radius_assigner(atom_radius_assigner, radii_file_stream);
+			auxiliaries::read_lines_to_container(radii_file_stream, "#", add_description_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 
