@@ -43,13 +43,13 @@ void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assi
 
 void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 {
-	clo.check_allowed_options("--include-heteroatoms --default-radius: --only-default-radius --radii-file: --output-serial-numbers");
+	clo.check_allowed_options("--include-heteroatoms --default-radius: --only-default-radius --radii-file: --output-comments");
 
 	const bool include_heteroatoms=clo.isopt("--include-heteroatoms");
 	const double default_radius=clo.isarg("--default-radius") ? clo.arg<double>("--default-radius") : 1.70;
 	const bool only_default_radius=clo.isopt("--only-default-radius");
 	const std::string radii_file=clo.isarg("--radii-file") ? clo.arg<std::string>("--radii-file") : std::string();
-	const bool output_serial_numbers=clo.isopt("--output-serial-numbers");
+	const bool output_comments=clo.isopt("--output-comments");
 
 	const std::vector<auxiliaries::PDBFileParsing::AtomRecord> atoms=auxiliaries::PDBFileParsing::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
 
@@ -71,9 +71,9 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 	{
 		const auxiliaries::PDBFileParsing::AtomRecord& atom=atoms[i];
 		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-		if(output_serial_numbers)
+		if(output_comments)
 		{
-			std::cout << " " << atom.serial;
+			std::cout << " # " << atom.serial << " " << atom.resName << " " << atom.name;
 		}
 		std::cout << "\n";
 	}
