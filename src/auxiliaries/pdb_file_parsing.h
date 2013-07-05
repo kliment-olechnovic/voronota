@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <vector>
 
 namespace auxiliaries
 {
@@ -41,7 +42,7 @@ public:
 			x(convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38))),
 			y(convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46))),
 			z(convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54))),
-			tempFactor(safe_convert_string<double>(substring_of_columned_line(pdb_file_line, 61, 66), 0)),
+			tempFactor(convert_string<double>(substring_of_columned_line(pdb_file_line, 61, 66))),
 			element(substring_of_columned_line(pdb_file_line, 77, 78)),
 			charge(substring_of_columned_line(pdb_file_line, 79, 80))
 		{
@@ -56,7 +57,7 @@ public:
 		}
 	};
 
-	std::vector<AtomRecord> read_atom_records_from_pdb_file_stream(std::istream& pdb_file_stream)
+	static std::vector<AtomRecord> read_atom_records_from_pdb_file_stream(std::istream& pdb_file_stream, const bool include_heteroatoms)
 	{
 		std::vector<AtomRecord> records;
 		while(pdb_file_stream.good())
@@ -64,7 +65,7 @@ public:
 			std::string line;
 			std::getline(pdb_file_stream, line);
 			const std::string record_name=substring_of_columned_line(line, 1, 6);
-			if(record_name=="ATOM" || record_name=="HETATM")
+			if(record_name=="ATOM" || (include_heteroatoms && record_name=="HETATM"))
 			{
 				try
 				{
@@ -85,7 +86,7 @@ public:
 	}
 
 private:
-	inline std::string substring_of_columned_line(const std::string& line, const int start, const int end)
+	static std::string substring_of_columned_line(const std::string& line, const int start, const int end)
 	{
 		std::string extraction;
 		int line_length=static_cast<int>(line.size());
@@ -97,7 +98,7 @@ private:
 	}
 
 	template<typename T>
-	inline T convert_string(const std::string& str)
+	static T convert_string(const std::string& str)
 	{
 		std::istringstream input(str);
 		input.exceptions(std::istringstream::failbit | std::istringstream::badbit);
