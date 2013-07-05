@@ -7,6 +7,7 @@
 #include "auxiliaries/clog_redirector.h"
 
 void calculate_triangulation(const auxiliaries::CommandLineOptions& clo);
+void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo);
 
 int main(const int argc, const char** argv)
 {
@@ -37,6 +38,7 @@ int main(const int argc, const char** argv)
 		std::map< std::string, ModeFunctionPointer > modes_map;
 
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
+		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
 
 		if(modes_map.count(mode)==1)
 		{
