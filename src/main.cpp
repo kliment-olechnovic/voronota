@@ -42,7 +42,8 @@ int main(const int argc, const char** argv)
 			const double epsilon=clo.arg<double>("--epsilon");
 			if(epsilon<=0.0)
 			{
-				throw std::runtime_error("Epsilon is not greater than 0.0");
+				std::cerr << "Provided epsilon is invalid, it needs to be greater than 0.\n";
+				return 1;
 			}
 			apollota::comparison_epsilon_reference()=epsilon;
 		}
