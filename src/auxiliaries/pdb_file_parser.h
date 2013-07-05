@@ -1,5 +1,5 @@
-#ifndef AUXILIARIES_PDB_FILE_PARSING_H_
-#define AUXILIARIES_PDB_FILE_PARSING_H_
+#ifndef AUXILIARIES_PDB_FILE_PARSER_H_
+#define AUXILIARIES_PDB_FILE_PARSER_H_
 
 #include <iostream>
 #include <string>
@@ -10,7 +10,7 @@
 namespace auxiliaries
 {
 
-class PDBFileParsing
+class PDBFileParser
 {
 public:
 	struct AtomRecord
@@ -113,4 +113,4 @@ private:
 
 }
 
-#endif /* AUXILIARIES_PDB_FILE_PARSING_H_ */
+#endif /* AUXILIARIES_PDB_FILE_PARSER_H_ */

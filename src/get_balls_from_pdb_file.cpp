@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "auxiliaries/io_utilities.h"
-#include "auxiliaries/pdb_file_parsing.h"
+#include "auxiliaries/pdb_file_parser.h"
 #include "auxiliaries/atom_radius_assigner.h"
 #include "auxiliaries/command_line_options.h"
 
@@ -34,7 +34,7 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 	const std::string radii_file=clo.isopt("--radii-file") ? clo.arg<std::string>("--radii-file") : std::string();
 	const bool output_comments=clo.isopt("--output-comments");
 
-	const std::vector<auxiliaries::PDBFileParsing::AtomRecord> atoms=auxiliaries::PDBFileParsing::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
+	const std::vector<auxiliaries::PDBFileParser::AtomRecord> atoms=auxiliaries::PDBFileParser::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
 
 	auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
 	if(!only_default_radius)
@@ -55,7 +55,7 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
-		const auxiliaries::PDBFileParsing::AtomRecord& atom=atoms[i];
+		const auxiliaries::PDBFileParser::AtomRecord& atom=atoms[i];
 		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(output_comments)
 		{
