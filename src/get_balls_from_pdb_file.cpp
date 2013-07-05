@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <sstream>
 
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/pdb_file_parser.h"
