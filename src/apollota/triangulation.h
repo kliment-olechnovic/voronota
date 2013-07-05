@@ -1,5 +1,5 @@
-#ifndef APOLLOTA_APOLLONIUS_TRIANGULATION_H_
-#define APOLLOTA_APOLLONIUS_TRIANGULATION_H_
+#ifndef APOLLOTA_TRIANGULATION_H_
+#define APOLLOTA_TRIANGULATION_H_
 
 #include <iostream>
 #include <sstream>
@@ -20,7 +20,7 @@
 namespace apollota
 {
 
-class ApolloniusTriangulation
+class Triangulation
 {
 public:
 	typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
@@ -1023,4 +1023,4 @@ private:
 
 }
 
-#endif /* APOLLOTA_APOLLONIUS_TRIANGULATION_H_ */
+#endif /* APOLLOTA_TRIANGULATION_H_ */

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "apollota/apollonius_triangulation.h"
+#include "apollota/triangulation.h"
 
 #include "auxiliaries/command_line_options.h"
 
