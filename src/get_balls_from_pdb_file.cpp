@@ -17,13 +17,13 @@ void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assi
 	atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
 }
 
-void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner, const std::string& radii_file)
+void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner, std::istream& input)
 {
-	std::ifstream input(radii_file.c_str(), std::ios::in);
 	while(input.good())
 	{
 		std::string line;
 		std::getline(input, line);
+		line.substr(0, line.find("#", 0));
 		if(!line.empty())
 		{
 			std::istringstream line_input(line);
@@ -62,7 +62,8 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 		}
 		else
 		{
-			init_atom_radius_assigner(atom_radius_assigner, radii_file);
+			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
+			init_atom_radius_assigner(atom_radius_assigner, radii_file_stream);
 		}
 	}
 
