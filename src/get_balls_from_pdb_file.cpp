@@ -6,6 +6,41 @@
 #include "auxiliaries/atom_radius_assigner.h"
 #include "auxiliaries/command_line_options.h"
 
+namespace
+{
+
+void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
+{
+	atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
+	atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
+	atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
+	atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
+}
+
+void init_atom_radius_assigner(auxiliaries::AtomRadiusAssigner& atom_radius_assigner, const std::string& radii_file)
+{
+	std::ifstream input(radii_file.c_str(), std::ios::in);
+	while(input.good())
+	{
+		std::string line;
+		std::getline(input, line);
+		if(!line.empty())
+		{
+			std::istringstream line_input(line);
+			std::string resName;
+			std::string name;
+			double radius=0.0;
+			line_input >> resName >> name >> radius;
+			if(!line_input.fail())
+			{
+				atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
+			}
+		}
+	}
+}
+
+}
+
 void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 {
 	clo.check_allowed_options("--include-heteroatoms --default-radius: --only-default-radius --radii-file: --output-serial-numbers");
@@ -23,31 +58,11 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
 	{
 		if(radii_file.empty())
 		{
-			atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
-			atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
-			atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
-			atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
+			init_atom_radius_assigner(atom_radius_assigner);
 		}
 		else
 		{
-			std::ifstream input(radii_file.c_str(), std::ios::in);
-			while(input.good())
-			{
-				std::string line;
-				std::getline(input, line);
-				if(!line.empty())
-				{
-					std::istringstream line_input(line);
-					std::string resName;
-					std::string name;
-					double radius=default_radius;
-					line_input >> resName >> name >> radius;
-					if(!line_input.fail())
-					{
-						atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
-					}
-				}
-			}
+			init_atom_radius_assigner(atom_radius_assigner, radii_file);
 		}
 	}
 
