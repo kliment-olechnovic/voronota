@@ -35,7 +35,7 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 
 }
 
-void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help)
+void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo)
 {
 	{
 		typedef auxiliaries::CommandLineOptionsHandler Clo;
@@ -43,7 +43,7 @@ void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo, c
 		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
 		map_of_option_descriptions["--first-triangulation-file"]=Clo::OptionDescription(true, "path to the first triangulation file");
 		map_of_option_descriptions["--second-triangulation-file"]=Clo::OptionDescription(true, "path to the second triangulation file");
-		if(print_help)
+		if(clo.contains_option("--help"))
 		{
 			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
 			return;
