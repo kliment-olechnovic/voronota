@@ -25,27 +25,32 @@ int main(const int argc, const char** argv)
 		typedef auxiliaries::ProgramOptionsHandler POH;
 		typedef std::pointer_to_unary_function<const POH&, void> ModeFunctionPointer;
 		typedef std::map<std::string, ModeFunctionPointer> ModesMap;
+
 		ModesMap modes_map;
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
 		modes_map["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
 		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
 
 		POH poh(argc, argv);
+
 		if(poh.contains_option("--help"))
 		{
 			POH::MapOfOptionDescriptions map_of_option_descriptions;
-			map_of_option_descriptions["--mode"]=POH::OptionDescription(true, "running mode (required)");
-			map_of_option_descriptions["--clog-file"]=POH::OptionDescription(true, "path to file for log stream redirection");
-			map_of_option_descriptions["--epsilon"]=POH::OptionDescription(true, "threshold for floating-point numbers comparison");
-			std::cerr << "Common options\n";
+			map_of_option_descriptions["--mode"]=POH::OptionDescription("string", "running mode");
+			map_of_option_descriptions["--clog-file"]=POH::OptionDescription("string", "path to file for log stream redirection");
+			map_of_option_descriptions["--epsilon"]=POH::OptionDescription("number", "threshold for floating-point numbers comparison");
+
+			std::cerr << "\nCommon options\n";
 			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
-				std::cerr << "Options for --mode " << it->first << "\n";
+				std::cerr << "--mode " << it->first << "\n";
 				it->second(poh);
 				std::cerr << "\n";
 			}
+
+			return 1;
 		}
 		else
 		{
