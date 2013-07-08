@@ -4,7 +4,7 @@
 #include "apollota/comparison_of_triangulations.h"
 
 #include "auxiliaries/io_utilities.h"
-#include "auxiliaries/command_line_options.h"
+#include "auxiliaries/command_line_options_handler.h"
 
 namespace
 {
@@ -35,18 +35,22 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 
 }
 
-void compare_triangulations(const auxiliaries::CommandLineOptions& clo)
+void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo)
 {
-	clo.check_allowed_options("--bounding-spheres-hierarchy-first-radius: --first-triangulation-file: --second-triangulation-file:");
+	auxiliaries::CommandLineOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
+	map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "initial radius for bounding sphere hierarchy");
+	map_of_option_descriptions["--first-triangulation-file"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "path to the first triangulation file");
+	map_of_option_descriptions["--second-triangulation-file"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "path to the second triangulation file");
+	clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
 
-	const double bounding_spheres_hierarchy_first_radius=clo.isopt("--bounding-spheres-hierarchy-first-radius") ? clo.arg<double>("--bounding-spheres-hierarchy-first-radius") : 3.5;
+	const double bounding_spheres_hierarchy_first_radius=clo.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
 	if(bounding_spheres_hierarchy_first_radius<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy first radius is not greater than 1.");
 	}
 
-	const std::string first_triangulation_file=clo.arg<std::string>("--first-triangulation-file");
-	const std::string second_triangulation_file=clo.arg<std::string>("--second-triangulation-file");
+	const std::string first_triangulation_file=clo.argument<std::string>("--first-triangulation-file");
+	const std::string second_triangulation_file=clo.argument<std::string>("--second-triangulation-file");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);

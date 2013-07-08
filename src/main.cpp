@@ -5,12 +5,12 @@
 
 #include "apollota/safe_comparison_of_numbers.h"
 
-#include "auxiliaries/command_line_options.h"
+#include "auxiliaries/command_line_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
 
-void calculate_triangulation(const auxiliaries::CommandLineOptions& clo);
-void compare_triangulations(const auxiliaries::CommandLineOptions& clo);
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo);
+void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo);
+void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo);
+void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo);
 
 int main(const int argc, const char** argv)
 {
@@ -22,14 +22,13 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		auxiliaries::CommandLineOptions clo(argc, argv);
+		auxiliaries::CommandLineOptionsHandler clo(argc, argv);
 
-		mode=clo.isopt("--mode") ? clo.arg<std::string>("--mode") : std::string("");
+		mode=clo.argument<std::string>("--mode", "");
 		clo.remove_option("--mode");
 
-		const std::string clog_filename=clo.isopt("--clog-file") ? clo.arg<std::string>("--clog-file") : std::string("");
+		const std::string clog_filename=clo.argument<std::string>("--clog-file", "");
 		clo.remove_option("--clog-file");
-
 		auxiliaries::CLogRedirector clog_redirector;
 		if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
 		{
@@ -37,19 +36,14 @@ int main(const int argc, const char** argv)
 			return 1;
 		}
 
-		if(clo.isopt("--epsilon"))
+		const double epsilon=clo.argument<double>("--epsilon", -1.0);
+		if(epsilon>0.0)
 		{
-			const double epsilon=clo.arg<double>("--epsilon");
-			if(epsilon<=0.0)
-			{
-				std::cerr << "Provided epsilon is invalid, it needs to be greater than 0.\n";
-				return 1;
-			}
 			apollota::comparison_epsilon_reference()=epsilon;
 		}
 		clo.remove_option("--epsilon");
 
-		typedef std::pointer_to_unary_function<const auxiliaries::CommandLineOptions&, void> ModeFunctionPointer;
+		typedef std::pointer_to_unary_function<const auxiliaries::CommandLineOptionsHandler&, void> ModeFunctionPointer;
 		std::map< std::string, ModeFunctionPointer > modes_map;
 
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);

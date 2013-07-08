@@ -4,7 +4,7 @@
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/pdb_file_parser.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/command_line_options.h"
+#include "auxiliaries/command_line_options_handler.h"
 
 namespace
 {
@@ -23,15 +23,21 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 
 }
 
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptions& clo)
+void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo)
 {
-	clo.check_allowed_options("--include-heteroatoms --default-radius: --only-default-radius --radii-file: --output-comments");
+	auxiliaries::CommandLineOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
+	map_of_option_descriptions["--include-heteroatoms"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to include heteroatoms");
+	map_of_option_descriptions["--default-radius"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "default atomic radius");
+	map_of_option_descriptions["--only-default-radius"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to make all radii equal to the default radius");
+	map_of_option_descriptions["--radii-file"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "path to radii configuration file");
+	map_of_option_descriptions["--output-comments"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to output additional information about atoms");
+	clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
 
-	const bool include_heteroatoms=clo.isopt("--include-heteroatoms");
-	const double default_radius=clo.isopt("--default-radius") ? clo.arg<double>("--default-radius") : 1.70;
-	const bool only_default_radius=clo.isopt("--only-default-radius");
-	const std::string radii_file=clo.isopt("--radii-file") ? clo.arg<std::string>("--radii-file") : std::string();
-	const bool output_comments=clo.isopt("--output-comments");
+	const bool include_heteroatoms=clo.contains_option("--include-heteroatoms");
+	const double default_radius=clo.argument<double>("--default-radius", 1.70);
+	const bool only_default_radius=clo.contains_option("--only-default-radius");
+	const std::string radii_file=clo.argument<std::string>("--radii-file", "");
+	const bool output_comments=clo.contains_option("--output-comments");
 
 	const std::vector<auxiliaries::PDBFileParser::AtomRecord> atoms=auxiliaries::PDBFileParser::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
 
