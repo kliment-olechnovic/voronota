@@ -25,12 +25,13 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 
 void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo)
 {
-	auxiliaries::CommandLineOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-	map_of_option_descriptions["--include-heteroatoms"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to include heteroatoms");
-	map_of_option_descriptions["--default-radius"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "default atomic radius");
-	map_of_option_descriptions["--only-default-radius"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to make all radii equal to the default radius");
-	map_of_option_descriptions["--radii-file"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(true, "path to radii configuration file");
-	map_of_option_descriptions["--output-comments"]=auxiliaries::CommandLineOptionsHandler::OptionDescription(false, "flag to output additional information about atoms");
+	typedef auxiliaries::CommandLineOptionsHandler Clo;
+	Clo::MapOfOptionDescriptions map_of_option_descriptions;
+	map_of_option_descriptions["--include-heteroatoms"]=Clo::OptionDescription(false, "flag to include heteroatoms");
+	map_of_option_descriptions["--default-radius"]=Clo::OptionDescription(true, "default atomic radius");
+	map_of_option_descriptions["--only-default-radius"]=Clo::OptionDescription(false, "flag to make all radii equal to the default radius");
+	map_of_option_descriptions["--radii-file"]=Clo::OptionDescription(true, "path to radii configuration file");
+	map_of_option_descriptions["--output-comments"]=Clo::OptionDescription(false, "flag to output additional information about atoms");
 	clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
 
 	const bool include_heteroatoms=clo.contains_option("--include-heteroatoms");
