@@ -5,12 +5,12 @@
 
 #include "apollota/safe_comparison_of_numbers.h"
 
-#include "auxiliaries/command_line_options_handler.h"
+#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
 
-void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo);
-void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo);
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo);
+void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
+void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh);
+void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh);
 
 int main(const int argc, const char** argv)
 {
@@ -22,31 +22,40 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		typedef std::pointer_to_unary_function<const auxiliaries::CommandLineOptionsHandler&, void> ModeFunctionPointer;
+		typedef auxiliaries::ProgramOptionsHandler POH;
+		typedef std::pointer_to_unary_function<const POH&, void> ModeFunctionPointer;
 		typedef std::map<std::string, ModeFunctionPointer> ModesMap;
 		ModesMap modes_map;
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
 		modes_map["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
 		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
 
-		auxiliaries::CommandLineOptionsHandler clo(argc, argv);
-		if(clo.contains_option("--help"))
+		POH poh(argc, argv);
+		if(poh.contains_option("--help"))
 		{
+			POH::MapOfOptionDescriptions map_of_option_descriptions;
+			map_of_option_descriptions["--mode"]=POH::OptionDescription(true, "running mode (required)");
+			map_of_option_descriptions["--clog-file"]=POH::OptionDescription(true, "path to file for log stream redirection");
+			map_of_option_descriptions["--epsilon"]=POH::OptionDescription(true, "threshold for floating-point numbers comparison");
+			std::cerr << "Common options\n";
+			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			std::cerr << "\n";
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
-				std::cerr << "  --mode " << it->first << "\n";
-				it->second(clo);
+				std::cerr << "Options for --mode " << it->first << "\n";
+				it->second(poh);
+				std::cerr << "\n";
 			}
 		}
 		else
 		{
-			mode=clo.argument<std::string>("--mode", "");
-			clo.remove_option("--mode");
+			mode=poh.argument<std::string>("--mode", "");
+			poh.remove_option("--mode");
 
 			if(modes_map.count(mode)==1)
 			{
-				const std::string clog_filename=clo.argument<std::string>("--clog-file", "");
-				clo.remove_option("--clog-file");
+				const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
+				poh.remove_option("--clog-file");
 				auxiliaries::CLogRedirector clog_redirector;
 				if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
 				{
@@ -54,14 +63,14 @@ int main(const int argc, const char** argv)
 					return 1;
 				}
 
-				const double epsilon=clo.argument<double>("--epsilon", -1.0);
-				clo.remove_option("--epsilon");
+				const double epsilon=poh.argument<double>("--epsilon", -1.0);
+				poh.remove_option("--epsilon");
 				if(epsilon>0.0)
 				{
 					apollota::comparison_epsilon_reference()=epsilon;
 				}
 
-				modes_map.find(mode)->second(clo);
+				modes_map.find(mode)->second(poh);
 			}
 			else
 			{

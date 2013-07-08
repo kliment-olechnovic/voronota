@@ -1,5 +1,5 @@
-#ifndef AUXILIARIES_COMMAND_LINE_OPTIONS_HANDLER_H_
-#define AUXILIARIES_COMMAND_LINE_OPTIONS_HANDLER_H_
+#ifndef AUXILIARIES_PROGRAM_OPTIONS_HANDLER_H_
+#define AUXILIARIES_PROGRAM_OPTIONS_HANDLER_H_
 
 #include <string>
 #include <map>
@@ -10,7 +10,7 @@
 namespace auxiliaries
 {
 
-class CommandLineOptionsHandler
+class ProgramOptionsHandler
 {
 public:
 	struct OptionDescription
@@ -29,7 +29,7 @@ public:
 
 	typedef std::map<std::string, OptionDescription> MapOfOptionDescriptions;
 
-	CommandLineOptionsHandler(const int argc, const char** argv)
+	ProgramOptionsHandler(const int argc, const char** argv)
 	{
 		for(int i=1;i<argc;i++)
 		{
@@ -120,16 +120,16 @@ public:
 		}
 	}
 
-	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const std::string& prefix, const std::size_t min_max_option_name_length, std::ostream& output)
+	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
 	{
-		std::size_t max_option_name_length=min_max_option_name_length;
+		std::size_t max_option_name_length=50;
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
 			max_option_name_length=std::max(max_option_name_length, it->first.size());
 		}
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
-			output << prefix << it->first << std::string(max_option_name_length+3-it->first.size(), ' ');
+			output << "  " << it->first << std::string(max_option_name_length+3-it->first.size(), ' ');
 			output << (it->second.with_argument ? "ARG" : "   ") << "   ";
 			output << it->second.description_text << "\n";
 		}
@@ -141,4 +141,4 @@ private:
 
 }
 
-#endif /* AUXILIARIES_COMMAND_LINE_OPTIONS_HANDLER_H_ */
+#endif /* AUXILIARIES_PROGRAM_OPTIONS_HANDLER_H_ */
