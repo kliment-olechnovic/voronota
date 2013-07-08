@@ -35,14 +35,24 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 
 }
 
-void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo)
+void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help)
 {
-	typedef auxiliaries::CommandLineOptionsHandler Clo;
-	Clo::MapOfOptionDescriptions map_of_option_descriptions;
-	map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
-	map_of_option_descriptions["--first-triangulation-file"]=Clo::OptionDescription(true, "path to the first triangulation file");
-	map_of_option_descriptions["--second-triangulation-file"]=Clo::OptionDescription(true, "path to the second triangulation file");
-	clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+	{
+		typedef auxiliaries::CommandLineOptionsHandler Clo;
+		Clo::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
+		map_of_option_descriptions["--first-triangulation-file"]=Clo::OptionDescription(true, "path to the first triangulation file");
+		map_of_option_descriptions["--second-triangulation-file"]=Clo::OptionDescription(true, "path to the second triangulation file");
+		if(print_help)
+		{
+			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
+			return;
+		}
+		else
+		{
+			clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+		}
+	}
 
 	const double bounding_spheres_hierarchy_first_radius=clo.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
 	if(bounding_spheres_hierarchy_first_radius<=1.0)

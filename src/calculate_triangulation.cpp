@@ -20,16 +20,26 @@ void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota:
 
 }
 
-void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo)
+void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help)
 {
-	typedef auxiliaries::CommandLineOptionsHandler Clo;
-	Clo::MapOfOptionDescriptions map_of_option_descriptions;
-	map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
-	map_of_option_descriptions["--allow-redundant-quadruples"]=Clo::OptionDescription(false, "flag to include redundant quadruples");
-	map_of_option_descriptions["--skip-output"]=Clo::OptionDescription(false, "flag to disable output of the resulting triangulation");
-	map_of_option_descriptions["--print-log"]=Clo::OptionDescription(false, "flag to print log of calculations");
-	map_of_option_descriptions["--check"]=Clo::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
-	clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+	{
+		typedef auxiliaries::CommandLineOptionsHandler Clo;
+		Clo::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
+		map_of_option_descriptions["--allow-redundant-quadruples"]=Clo::OptionDescription(false, "flag to include redundant quadruples");
+		map_of_option_descriptions["--skip-output"]=Clo::OptionDescription(false, "flag to disable output of the resulting triangulation");
+		map_of_option_descriptions["--print-log"]=Clo::OptionDescription(false, "flag to print log of calculations");
+		map_of_option_descriptions["--check"]=Clo::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
+		if(print_help)
+		{
+			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
+			return;
+		}
+		else
+		{
+			clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+		}
+	}
 
 	const double bounding_spheres_hierarchy_first_radius=clo.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
 	if(bounding_spheres_hierarchy_first_radius<=1.0)
