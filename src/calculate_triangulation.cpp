@@ -32,7 +32,7 @@ void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo)
 		map_of_option_descriptions["--check"]=Clo::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
 		if(clo.contains_option("--help"))
 		{
-			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
+			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", 50, std::cerr);
 			return;
 		}
 		else
