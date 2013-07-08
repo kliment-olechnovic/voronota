@@ -15,14 +15,14 @@ class ProgramOptionsHandler
 public:
 	struct OptionDescription
 	{
-		bool with_argument;
+		std::string argument_type;
 		std::string description_text;
 
-		OptionDescription() : with_argument(false)
+		OptionDescription()
 		{
 		}
 
-		OptionDescription(const bool with_argument, const std::string& description_text) : with_argument(with_argument), description_text(description_text)
+		OptionDescription(const std::string& argument_type, const std::string& description_text) : argument_type(argument_type), description_text(description_text)
 		{
 		}
 	};
@@ -109,11 +109,11 @@ public:
 			{
 				throw std::runtime_error(std::string("Unrecognized command line option '")+option+"'.");
 			}
-			else if(it->second.empty() && jt->second.with_argument)
+			else if(it->second.empty() && !jt->second.argument_type.empty())
 			{
 				throw std::runtime_error(std::string("Command line option '")+option+"' should have arguments.");
 			}
-			else if(!it->second.empty() && !jt->second.with_argument)
+			else if(!it->second.empty() && jt->second.argument_type.empty())
 			{
 				throw std::runtime_error(std::string("Command line option '")+option+"' cannot have arguments.");
 			}
@@ -122,15 +122,17 @@ public:
 
 	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
 	{
-		std::size_t max_option_name_length=50;
+		std::size_t max_option_name_length=45;
+		std::size_t max_argument_type_length=10;
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
 			max_option_name_length=std::max(max_option_name_length, it->first.size());
+			max_argument_type_length=std::max(max_argument_type_length, it->second.argument_type.size());
 		}
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
-			output << "  " << it->first << std::string(max_option_name_length+3-it->first.size(), ' ');
-			output << (it->second.with_argument ? "ARG" : "   ") << "   ";
+			output << "  " << it->first << std::string(max_option_name_length+2-it->first.size(), ' ');
+			output << it->second.argument_type << std::string(max_argument_type_length+2-it->second.argument_type.size(), ' ');
 			output << it->second.description_text << "\n";
 		}
 	}
