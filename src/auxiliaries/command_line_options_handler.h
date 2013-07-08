@@ -120,9 +120,9 @@ public:
 		}
 	}
 
-	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const std::string& prefix, std::ostream& output)
+	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const std::string& prefix, const std::size_t min_max_option_name_length, std::ostream& output)
 	{
-		std::size_t max_option_name_length=0;
+		std::size_t max_option_name_length=min_max_option_name_length;
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
 			max_option_name_length=std::max(max_option_name_length, it->first.size());

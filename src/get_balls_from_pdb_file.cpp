@@ -35,7 +35,7 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo)
 		map_of_option_descriptions["--output-comments"]=Clo::OptionDescription(false, "flag to output additional information about atoms");
 		if(clo.contains_option("--help"))
 		{
-			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
+			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", 50, std::cerr);
 			return;
 		}
 		else
