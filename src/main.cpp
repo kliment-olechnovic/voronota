@@ -30,8 +30,33 @@ int main(const int argc, const char** argv)
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
-		if(poh.contains_option("--help"))
+		const std::string mode=poh.argument<std::string>("--mode", "");
+		poh.remove_option("--mode");
+
+		if(!poh.contains_option("--help") && modes_map.count(mode)==1)
 		{
+			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
+			poh.remove_option("--clog-file");
+			auxiliaries::CLogRedirector clog_redirector;
+			if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
+			{
+				std::cerr << "Failed to redirect clog to file: " << clog_filename << "." << std::endl;
+				return 1;
+			}
+
+			const double epsilon=poh.argument<double>("--epsilon", -1.0);
+			poh.remove_option("--epsilon");
+			if(epsilon>0.0)
+			{
+				apollota::comparison_epsilon_reference()=epsilon;
+			}
+
+			modes_map.find(mode)->second(poh);
+		}
+		else
+		{
+			poh.set_option("--help");
+
 			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
 			map_of_option_descriptions["--mode"].init("string", "running mode");
 			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
@@ -48,42 +73,6 @@ int main(const int argc, const char** argv)
 			}
 
 			return 1;
-		}
-		else
-		{
-			const std::string mode=poh.argument<std::string>("--mode", "");
-			poh.remove_option("--mode");
-
-			if(modes_map.count(mode)==1)
-			{
-				const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
-				poh.remove_option("--clog-file");
-				auxiliaries::CLogRedirector clog_redirector;
-				if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
-				{
-					std::cerr << "Failed to redirect clog to file: " << clog_filename << "." << std::endl;
-					return 1;
-				}
-
-				const double epsilon=poh.argument<double>("--epsilon", -1.0);
-				poh.remove_option("--epsilon");
-				if(epsilon>0.0)
-				{
-					apollota::comparison_epsilon_reference()=epsilon;
-				}
-
-				modes_map.find(mode)->second(poh);
-			}
-			else
-			{
-				std::cerr << "\nUnspecified running mode. Available modes are:" << std::endl;
-				for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
-				{
-					std::cerr << "  --mode " << it->first << std::endl;
-				}
-				std::cerr << std::endl;
-				return 1;
-			}
 		}
 	}
 	catch(const std::exception& e)

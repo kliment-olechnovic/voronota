@@ -51,6 +51,25 @@ public:
 		}
 	}
 
+	void set_option(const std::string& name)
+	{
+		if(name.find("--")==0)
+		{
+			options_[name]="";
+		}
+	}
+
+	template<typename T>
+	void set_option_with_argument(const std::string& name, const T value)
+	{
+		if(name.find("--")==0)
+		{
+			std::ostringstream output;
+			output << value;
+			options_[name]=output.str();
+		}
+	}
+
 	bool contains_option(const std::string& name) const
 	{
 		return (options_.count(name)>0);
