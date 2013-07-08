@@ -52,6 +52,7 @@ int main(const int argc, const char** argv)
 			}
 
 			modes_map.find(mode)->second(poh);
+			return 0;
 		}
 		else
 		{
@@ -86,7 +87,5 @@ int main(const int argc, const char** argv)
 		return 1;
 	}
 
-	std::cin.ignore(std::numeric_limits<std::streamsize>::max());
-
-	return 0;
+	return 2;
 }
