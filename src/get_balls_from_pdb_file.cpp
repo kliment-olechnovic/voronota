@@ -4,7 +4,7 @@
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/pdb_file_parser.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/command_line_options_handler.h"
+#include "auxiliaries/program_options_handler.h"
 
 namespace
 {
@@ -23,32 +23,32 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 
 }
 
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo)
+void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		typedef auxiliaries::CommandLineOptionsHandler Clo;
-		Clo::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--include-heteroatoms"]=Clo::OptionDescription(false, "flag to include heteroatoms");
-		map_of_option_descriptions["--default-radius"]=Clo::OptionDescription(true, "default atomic radius");
-		map_of_option_descriptions["--only-default-radius"]=Clo::OptionDescription(false, "flag to make all radii equal to the default radius");
-		map_of_option_descriptions["--radii-file"]=Clo::OptionDescription(true, "path to radii configuration file");
-		map_of_option_descriptions["--output-comments"]=Clo::OptionDescription(false, "flag to output additional information about atoms");
-		if(clo.contains_option("--help"))
+		typedef auxiliaries::ProgramOptionsHandler POH;
+		POH::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--include-heteroatoms"]=POH::OptionDescription(false, "flag to include heteroatoms");
+		map_of_option_descriptions["--default-radius"]=POH::OptionDescription(true, "default atomic radius");
+		map_of_option_descriptions["--only-default-radius"]=POH::OptionDescription(false, "flag to make all radii equal to the default radius");
+		map_of_option_descriptions["--radii-file"]=POH::OptionDescription(true, "path to radii configuration file");
+		map_of_option_descriptions["--output-comments"]=POH::OptionDescription(false, "flag to output additional information about atoms");
+		if(poh.contains_option("--help"))
 		{
-			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", 50, std::cerr);
+			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
 			return;
 		}
 		else
 		{
-			clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+			poh.compare_with_map_of_option_descriptions(map_of_option_descriptions);
 		}
 	}
 
-	const bool include_heteroatoms=clo.contains_option("--include-heteroatoms");
-	const double default_radius=clo.argument<double>("--default-radius", 1.70);
-	const bool only_default_radius=clo.contains_option("--only-default-radius");
-	const std::string radii_file=clo.argument<std::string>("--radii-file", "");
-	const bool output_comments=clo.contains_option("--output-comments");
+	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
+	const double default_radius=poh.argument<double>("--default-radius", 1.70);
+	const bool only_default_radius=poh.contains_option("--only-default-radius");
+	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
+	const bool output_comments=poh.contains_option("--output-comments");
 
 	const std::vector<auxiliaries::PDBFileParser::AtomRecord> atoms=auxiliaries::PDBFileParser::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
 

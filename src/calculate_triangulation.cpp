@@ -3,7 +3,7 @@
 #include "apollota/triangulation.h"
 
 #include "auxiliaries/io_utilities.h"
-#include "auxiliaries/command_line_options_handler.h"
+#include "auxiliaries/program_options_handler.h"
 
 namespace
 {
@@ -20,37 +20,37 @@ void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota:
 
 }
 
-void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo)
+void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		typedef auxiliaries::CommandLineOptionsHandler Clo;
-		Clo::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=Clo::OptionDescription(true, "initial radius for bounding sphere hierarchy");
-		map_of_option_descriptions["--allow-redundant-quadruples"]=Clo::OptionDescription(false, "flag to include redundant quadruples");
-		map_of_option_descriptions["--skip-output"]=Clo::OptionDescription(false, "flag to disable output of the resulting triangulation");
-		map_of_option_descriptions["--print-log"]=Clo::OptionDescription(false, "flag to print log of calculations");
-		map_of_option_descriptions["--check"]=Clo::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
-		if(clo.contains_option("--help"))
+		typedef auxiliaries::ProgramOptionsHandler POH;
+		POH::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=POH::OptionDescription(true, "initial radius for bounding sphere hierarchy");
+		map_of_option_descriptions["--allow-redundant-quadruples"]=POH::OptionDescription(false, "flag to include redundant quadruples");
+		map_of_option_descriptions["--skip-output"]=POH::OptionDescription(false, "flag to disable output of the resulting triangulation");
+		map_of_option_descriptions["--print-log"]=POH::OptionDescription(false, "flag to print log of calculations");
+		map_of_option_descriptions["--check"]=POH::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
+		if(poh.contains_option("--help"))
 		{
-			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", 50, std::cerr);
+			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
 			return;
 		}
 		else
 		{
-			clo.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+			poh.compare_with_map_of_option_descriptions(map_of_option_descriptions);
 		}
 	}
 
-	const double bounding_spheres_hierarchy_first_radius=clo.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
+	const double bounding_spheres_hierarchy_first_radius=poh.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
 	if(bounding_spheres_hierarchy_first_radius<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy first radius is not greater than 1.");
 	}
 
-	const bool allow_redundant_quadruples=clo.contains_option("--allow-redundant-quadruples");
-	const bool skip_output=clo.contains_option("--skip-output");
-	const bool print_log=clo.contains_option("--print-log");
-	const bool check=clo.contains_option("--check");
+	const bool allow_redundant_quadruples=poh.contains_option("--allow-redundant-quadruples");
+	const bool skip_output=poh.contains_option("--skip-output");
+	const bool print_log=poh.contains_option("--print-log");
+	const bool check=poh.contains_option("--check");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
