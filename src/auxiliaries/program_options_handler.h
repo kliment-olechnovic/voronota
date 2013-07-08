@@ -22,8 +22,10 @@ public:
 		{
 		}
 
-		OptionDescription(const std::string& argument_type, const std::string& description_text) : argument_type(argument_type), description_text(description_text)
+		void init(const std::string& new_argument_type, const std::string& new_description_text)
 		{
+			argument_type=new_argument_type;
+			description_text=new_description_text;
 		}
 	};
 

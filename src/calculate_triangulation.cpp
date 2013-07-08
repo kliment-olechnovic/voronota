@@ -23,16 +23,15 @@ void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota:
 void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		typedef auxiliaries::ProgramOptionsHandler POH;
-		POH::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"]=POH::OptionDescription("number", "initial radius for bounding sphere hierarchy");
-		map_of_option_descriptions["--allow-redundant-quadruples"]=POH::OptionDescription("", "flag to include redundant quadruples");
-		map_of_option_descriptions["--skip-output"]=POH::OptionDescription("", "flag to disable output of the resulting triangulation");
-		map_of_option_descriptions["--print-log"]=POH::OptionDescription("", "flag to print log of calculations");
-		map_of_option_descriptions["--check"]=POH::OptionDescription("", "flag to explicitly check the resulting triangulation (takes time, used only for testing)");
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"].init("number", "initial radius for bounding sphere hierarchy");
+		map_of_option_descriptions["--allow-redundant-quadruples"].init("", "flag to include redundant quadruples");
+		map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
+		map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
+		map_of_option_descriptions["--check"].init("", "flag to explicitly check the resulting triangulation (takes time, used only for testing)");
 		if(poh.contains_option("--help"))
 		{
-			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
 			return;
 		}
 		else

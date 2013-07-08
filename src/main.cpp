@@ -14,6 +14,9 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh);
 
 int main(const int argc, const char** argv)
 {
+	typedef std::pointer_to_unary_function<const auxiliaries::ProgramOptionsHandler&, void> ModeFunctionPointer;
+	typedef std::map<std::string, ModeFunctionPointer> ModesMap;
+
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
 	std::ios_base::sync_with_stdio(false);
@@ -22,26 +25,22 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		typedef auxiliaries::ProgramOptionsHandler POH;
-		typedef std::pointer_to_unary_function<const POH&, void> ModeFunctionPointer;
-		typedef std::map<std::string, ModeFunctionPointer> ModesMap;
-
 		ModesMap modes_map;
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
 		modes_map["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
 		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
 
-		POH poh(argc, argv);
+		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
 		if(poh.contains_option("--help"))
 		{
-			POH::MapOfOptionDescriptions map_of_option_descriptions;
-			map_of_option_descriptions["--mode"]=POH::OptionDescription("string", "running mode");
-			map_of_option_descriptions["--clog-file"]=POH::OptionDescription("string", "path to file for log stream redirection");
-			map_of_option_descriptions["--epsilon"]=POH::OptionDescription("number", "threshold for floating-point numbers comparison");
+			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
+			map_of_option_descriptions["--mode"].init("string", "running mode");
+			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
+			map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
 
 			std::cerr << "\nCommon options\n";
-			POH::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
