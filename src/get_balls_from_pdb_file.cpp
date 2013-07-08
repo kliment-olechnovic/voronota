@@ -23,7 +23,7 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 
 }
 
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help)
+void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo)
 {
 	{
 		typedef auxiliaries::CommandLineOptionsHandler Clo;
@@ -33,7 +33,7 @@ void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo, 
 		map_of_option_descriptions["--only-default-radius"]=Clo::OptionDescription(false, "flag to make all radii equal to the default radius");
 		map_of_option_descriptions["--radii-file"]=Clo::OptionDescription(true, "path to radii configuration file");
 		map_of_option_descriptions["--output-comments"]=Clo::OptionDescription(false, "flag to output additional information about atoms");
-		if(print_help)
+		if(clo.contains_option("--help"))
 		{
 			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
 			return;

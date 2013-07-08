@@ -8,9 +8,9 @@
 #include "auxiliaries/command_line_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
 
-void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help);
-void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help);
-void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help);
+void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo);
+void compare_triangulations(const auxiliaries::CommandLineOptionsHandler& clo);
+void get_balls_from_pdb_file(const auxiliaries::CommandLineOptionsHandler& clo);
 
 int main(const int argc, const char** argv)
 {
@@ -22,7 +22,7 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		typedef std::pointer_to_binary_function<const auxiliaries::CommandLineOptionsHandler&, const bool, void> ModeFunctionPointer;
+		typedef std::pointer_to_unary_function<const auxiliaries::CommandLineOptionsHandler&, void> ModeFunctionPointer;
 		typedef std::map<std::string, ModeFunctionPointer> ModesMap;
 		ModesMap modes_map;
 		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
@@ -30,16 +30,12 @@ int main(const int argc, const char** argv)
 		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
 
 		auxiliaries::CommandLineOptionsHandler clo(argc, argv);
-
-		const bool help=clo.contains_option("--help");
-		clo.remove_option("--help");
-
-		if(help)
+		if(clo.contains_option("--help"))
 		{
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
 				std::cerr << "  --mode " << it->first << "\n";
-				it->second(clo, true);
+				it->second(clo);
 			}
 		}
 		else
@@ -65,7 +61,7 @@ int main(const int argc, const char** argv)
 					apollota::comparison_epsilon_reference()=epsilon;
 				}
 
-				modes_map.find(mode)->second(clo, false);
+				modes_map.find(mode)->second(clo);
 			}
 			else
 			{

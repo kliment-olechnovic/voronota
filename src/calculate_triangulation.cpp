@@ -20,7 +20,7 @@ void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota:
 
 }
 
-void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo, const bool print_help)
+void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo)
 {
 	{
 		typedef auxiliaries::CommandLineOptionsHandler Clo;
@@ -30,7 +30,7 @@ void calculate_triangulation(const auxiliaries::CommandLineOptionsHandler& clo, 
 		map_of_option_descriptions["--skip-output"]=Clo::OptionDescription(false, "flag to disable output of the resulting triangulation");
 		map_of_option_descriptions["--print-log"]=Clo::OptionDescription(false, "flag to print log of calculations");
 		map_of_option_descriptions["--check"]=Clo::OptionDescription(false, "flag to explicitely check the resulting triangulation (takes time, used only for testing)");
-		if(print_help)
+		if(clo.contains_option("--help"))
 		{
 			Clo::print_map_of_option_descriptions(map_of_option_descriptions, "    ", std::cerr);
 			return;
