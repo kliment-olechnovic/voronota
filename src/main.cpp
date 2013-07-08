@@ -21,8 +21,6 @@ int main(const int argc, const char** argv)
 	std::cout.exceptions(std::ostream::badbit);
 	std::ios_base::sync_with_stdio(false);
 
-	std::string mode;
-
 	try
 	{
 		ModesMap modes_map;
@@ -41,19 +39,19 @@ int main(const int argc, const char** argv)
 
 			std::cerr << "\nCommon options\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
+			std::cerr << std::endl;
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
 				std::cerr << "--mode " << it->first << "\n";
 				it->second(poh);
-				std::cerr << "\n";
+				std::cerr << std::endl;
 			}
 
 			return 1;
 		}
 		else
 		{
-			mode=poh.argument<std::string>("--mode", "");
+			const std::string mode=poh.argument<std::string>("--mode", "");
 			poh.remove_option("--mode");
 
 			if(modes_map.count(mode)==1)
@@ -78,26 +76,19 @@ int main(const int argc, const char** argv)
 			}
 			else
 			{
-				std::cerr << "Unspecified running mode. Available modes are:" << std::endl;
+				std::cerr << "\nUnspecified running mode. Available modes are:" << std::endl;
 				for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 				{
 					std::cerr << "  --mode " << it->first << std::endl;
 				}
+				std::cerr << std::endl;
 				return 1;
 			}
 		}
 	}
 	catch(const std::exception& e)
 	{
-		if(mode.empty())
-		{
-			std::cerr << "Exception was caught: ";
-		}
-		else
-		{
-			std::cerr << "Operation '" << mode << "' was not successful because exception was caught: ";
-		}
-		std::cerr << "[" << (e.what()) << "]." << std::endl;
+		std::cerr << "Exception was caught: " << (e.what()) << std::endl;
 		return 1;
 	}
 	catch(...)
