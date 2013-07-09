@@ -33,9 +33,9 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
 		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
-		if(poh.contains_option("--help"))
+		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(basic_map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  file in PDB format\n";
 			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r')\n";
