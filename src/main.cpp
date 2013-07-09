@@ -33,7 +33,7 @@ int main(const int argc, const char** argv)
 		const std::string mode=poh.argument<std::string>("--mode", "");
 		poh.remove_option("--mode");
 
-		if(!poh.contains_option("--help") && modes_map.count(mode)==1)
+		if(!(poh.contains_option("--help") || poh.contains_option("--help-full")) && modes_map.count(mode)==1)
 		{
 			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
 			poh.remove_option("--clog-file");
@@ -64,9 +64,10 @@ int main(const int argc, const char** argv)
 			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 			full_map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 			full_map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
+			full_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help");
 
 			std::cerr << "\nCommon options\n\n";
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(basic_map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n\n";
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
