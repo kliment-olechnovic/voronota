@@ -39,7 +39,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"].init("string", "initial radius for bounding sphere hierarchy");
+		map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
 		map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file", true);
 		map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file", true);
 		if(poh.contains_option("--help"))
@@ -56,10 +56,10 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const double bounding_spheres_hierarchy_first_radius=poh.argument<double>("--bounding-spheres-hierarchy-first-radius", 3.5);
-	if(bounding_spheres_hierarchy_first_radius<=1.0)
+	const double init_radius_fo_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
+	if(init_radius_fo_BSH<=1.0)
 	{
-		throw std::runtime_error("Bounding spheres hierarchy first radius is not greater than 1.");
+		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
 	const std::string first_triangulation_file=poh.argument<std::string>("--first-triangulation-file");
@@ -80,7 +80,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<apollota::Quadruple> second_triangulation_quadruples;
 	auxiliaries::read_lines_to_container(std::cin, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
 
-	const apollota::ComparisonOfTriangulations::Result differences=apollota::ComparisonOfTriangulations::calculate_directional_difference_between_two_sets_of_quadruples(spheres, bounding_spheres_hierarchy_first_radius, first_triangulation_quadruples, second_triangulation_quadruples);
+	const apollota::ComparisonOfTriangulations::Result differences=apollota::ComparisonOfTriangulations::calculate_directional_difference_between_two_sets_of_quadruples(spheres, init_radius_fo_BSH, first_triangulation_quadruples, second_triangulation_quadruples);
 
 	std::cout << "all_differences " << differences.all_differences.size() << "\n";
 	std::cout << "confirmed_differences " << differences.confirmed_differences.size() << "\n";

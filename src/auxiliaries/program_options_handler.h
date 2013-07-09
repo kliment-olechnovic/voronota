@@ -145,7 +145,7 @@ public:
 
 	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
 	{
-		std::size_t max_option_name_length=45;
+		std::size_t max_option_name_length=30;
 		std::size_t max_argument_type_length=10;
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
