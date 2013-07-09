@@ -17,15 +17,17 @@ public:
 	{
 		std::string argument_type;
 		std::string description_text;
+		bool required;
 
-		OptionDescription()
+		OptionDescription() : required(false)
 		{
 		}
 
-		void init(const std::string& new_argument_type, const std::string& new_description_text)
+		void init(const std::string& new_argument_type, const std::string& new_description_text, const bool new_required=false)
 		{
 			argument_type=new_argument_type;
 			description_text=new_description_text;
+			required=new_required;
 		}
 	};
 
@@ -152,9 +154,12 @@ public:
 		}
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
-			output << "  " << it->first << std::string(max_option_name_length+2-it->first.size(), ' ');
-			output << it->second.argument_type << std::string(max_argument_type_length+2-it->second.argument_type.size(), ' ');
-			output << it->second.description_text << "\n";
+			const std::string& name=it->first;
+			const OptionDescription& od=it->second;
+			output << "  " << name << std::string(max_option_name_length+2-name.size(), ' ');
+			output << (od.required ? "*" : " ") << "  ";
+			output << od.argument_type << std::string(max_argument_type_length+2-od.argument_type.size(), ' ');
+			output << od.description_text << "\n";
 		}
 	}
 

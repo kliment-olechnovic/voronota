@@ -40,8 +40,8 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
 		map_of_option_descriptions["--bounding-spheres-hierarchy-first-radius"].init("string", "initial radius for bounding sphere hierarchy");
-		map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file");
-		map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file");
+		map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file", true);
+		map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file", true);
 		if(poh.contains_option("--help"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
