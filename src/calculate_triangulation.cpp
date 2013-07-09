@@ -59,7 +59,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
 	if(spheres.size()<4)
 	{
-		throw std::runtime_error("Less than 4 balls provided.");
+		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_fo_BSH, include_surplus_quadruples);

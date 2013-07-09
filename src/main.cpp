@@ -96,6 +96,12 @@ int main(const int argc, const char** argv)
 			return 0;
 		}
 	}
+	catch(const auxiliaries::ProgramOptionsHandler::Exception& e)
+	{
+		std::cerr << "\nInvalid parameters: " << (e.what()) << "\n";
+		std::cerr << std::endl;
+		return 1;
+	}
 	catch(const std::exception& e)
 	{
 		std::cerr << "\nException caught: " << (e.what()) << "\n";
