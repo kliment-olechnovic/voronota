@@ -74,12 +74,30 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::ifstream first_triangulation_stream(first_triangulation_file.c_str(), std::ifstream::in);
+	if(!first_triangulation_stream.good())
+	{
+		throw std::runtime_error("Cannot open the first triangulation file.");
+	}
+
 	std::ifstream second_triangulation_stream(second_triangulation_file.c_str(), std::ifstream::in);
+	if(!second_triangulation_stream.good())
+	{
+		throw std::runtime_error("Cannot open the second triangulation file.");
+	}
 
 	std::vector<apollota::Quadruple> first_triangulation_quadruples;
-	auxiliaries::read_lines_to_container(std::cin, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
+	auxiliaries::read_lines_to_container(first_triangulation_stream, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
+	if(first_triangulation_quadruples.empty())
+	{
+		throw std::runtime_error("No quadruples in the first triangulation file.");
+	}
+
 	std::vector<apollota::Quadruple> second_triangulation_quadruples;
-	auxiliaries::read_lines_to_container(std::cin, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
+	auxiliaries::read_lines_to_container(second_triangulation_stream, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
+	if(second_triangulation_quadruples.empty())
+	{
+		throw std::runtime_error("No quadruples in thesecond triangulation file.");
+	}
 
 	const apollota::ComparisonOfTriangulations::Result differences=apollota::ComparisonOfTriangulations::calculate_directional_difference_between_two_sets_of_quadruples(spheres, init_radius_fo_BSH, first_triangulation_quadruples, second_triangulation_quadruples);
 
