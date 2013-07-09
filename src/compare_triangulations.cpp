@@ -38,13 +38,14 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
-		map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file", true);
-		map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file", true);
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file", true);
+		basic_map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file", true);
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
 		if(poh.contains_option("--help"))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r')\n";
 			std::cerr << "  stdout  ->  summary of differences\n";
@@ -52,7 +53,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		else
 		{
-			poh.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 
