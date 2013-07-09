@@ -53,6 +53,11 @@ public:
 		}
 	}
 
+	bool empty() const
+	{
+		return options_.empty();
+	}
+
 	void set_option(const std::string& name)
 	{
 		if(name.find("--")==0)
@@ -122,7 +127,7 @@ public:
 		options_.erase(name);
 	}
 
-	void compare_with_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions) const
+	void compare_with_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const bool allow_unrecognized=false) const
 	{
 		for(std::map<std::string, std::string>::const_iterator it=options_.begin();it!=options_.end();++it)
 		{
@@ -130,7 +135,10 @@ public:
 			MapOfOptionDescriptions::const_iterator jt=map_of_option_descriptions.find(option);
 			if(jt==map_of_option_descriptions.end())
 			{
-				throw std::runtime_error(std::string("Unrecognized command line option '")+option+"'.");
+				if(!allow_unrecognized)
+				{
+					throw std::runtime_error(std::string("Unrecognized command line option '")+option+"'.");
+				}
 			}
 			else if(it->second.empty() && !jt->second.argument_type.empty())
 			{
