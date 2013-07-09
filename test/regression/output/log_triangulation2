@@ -9,3 +9,4 @@ surplus_tangent_spheres 0
 hidden_spheres 0
 ignored_spheres 0
 using_epsilon 1e-06
+check 1
