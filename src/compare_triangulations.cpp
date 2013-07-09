@@ -45,6 +45,9 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		if(poh.contains_option("--help"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			std::cerr << "\n";
+			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r')\n";
+			std::cerr << "  stdout  ->  summary of differences\n";
 			return;
 		}
 		else

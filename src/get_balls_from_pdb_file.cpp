@@ -35,6 +35,9 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 		if(poh.contains_option("--help"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			std::cerr << "\n";
+			std::cerr << "  stdin   <-  file in PDB format\n";
+			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r')\n";
 			return;
 		}
 		else
