@@ -62,16 +62,18 @@ int main(const int argc, const char** argv)
 			map_of_option_descriptions["--mode"].init("string", "running mode", true);
 			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 			map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
+			map_of_option_descriptions["--help"].init("", "flag to print usage help");
 
-			std::cerr << "\nCommon options\n";
+			std::cerr << "\nCommon options\n\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
-			std::cerr << std::endl;
+			std::cerr << "\n\n";
 			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
 			{
-				std::cerr << "--mode " << it->first << "\n";
+				std::cerr << "--mode " << it->first << "\n\n";
 				it->second(poh);
-				std::cerr << std::endl;
+				std::cerr << "\n\n";
 			}
+			std::cerr << std::endl;
 
 			return 1;
 		}

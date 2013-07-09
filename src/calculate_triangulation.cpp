@@ -32,6 +32,9 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		if(poh.contains_option("--help"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			std::cerr << "\n";
+			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r')\n";
+			std::cerr << "  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
 			return;
 		}
 		else
