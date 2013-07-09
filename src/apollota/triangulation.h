@@ -56,6 +56,10 @@ public:
 		std::set<std::size_t> hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
 
+		Result() : quadruples_log(), surplus_quadruples_log()
+		{
+		}
+
 		void print_status(std::ostream& output) const
 		{
 			output << "quadruples " << quadruples_log.quadruples << "\n";
@@ -72,7 +76,7 @@ public:
 	};
 
 	template<typename SphereType>
-	static Result construct_result(const std::vector<SphereType>& spheres, const double initial_radius_for_spheres_bucketing, const bool perform_augmentation)
+	static Result construct_result(const std::vector<SphereType>& spheres, const double initial_radius_for_spheres_bucketing, const bool include_surplus_valid_quadruples)
 	{
 		Result result;
 		BoundingSpheresHierarchy<SphereType> bsh(spheres, initial_radius_for_spheres_bucketing, 1);
@@ -82,7 +86,7 @@ public:
 			bsh.ignore_leaf_sphere(*it);
 		}
 		result.quadruples_map=find_valid_quadruples(bsh, result.quadruples_log);
-		if(perform_augmentation)
+		if(include_surplus_valid_quadruples)
 		{
 			result.quadruples_map=find_surplus_valid_quadruples(bsh, result.quadruples_map, result.surplus_quadruples_log);
 		}
