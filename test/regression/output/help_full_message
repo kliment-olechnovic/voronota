@@ -1,0 +1,45 @@
+
+Common options
+
+  --clog-file                     string      path to file for log stream redirection
+  --epsilon                       number      threshold for floating-point numbers comparison
+  --help                                      flag to print usage help
+  --help-full                                 flag to print full usage help
+  --mode                          string   *  running mode
+
+
+--mode calculate-triangulation
+
+  --check                                     flag to explicitly check the resulting triangulation (takes time, used only for testing)
+  --include-surplus-quadruples                flag to include surplus quadruples
+  --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --print-log                                 flag to print log of calculations
+  --skip-output                               flag to disable output of the resulting triangulation
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+
+--mode compare-triangulations
+
+  --first-triangulation-file      string   *  path to the first triangulation file
+  --init-radius-for-BSH           string      initial radius for bounding sphere hierarchy
+  --second-triangulation-file     string   *  path to the second triangulation file
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  summary of differences
+
+
+--mode get-balls-from-pdb-file
+
+  --default-radius                number      default atomic radius
+  --include-heteroatoms                       flag to include heteroatoms
+  --only-default-radius                       flag to make all radii equal to the default radius
+  --output-comments                           flag to output additional information about atoms
+  --radii-file                    string      path to radii configuration file
+
+  stdin   <-  file in PDB format
+  stdout  ->  list of balls (line format: 'x y z r')
+
+
+

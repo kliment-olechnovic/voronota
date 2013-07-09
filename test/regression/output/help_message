@@ -1,0 +1,37 @@
+
+Common options
+
+  --help                                      flag to print usage help
+  --mode                          string   *  running mode
+
+
+--mode calculate-triangulation
+
+  --include-surplus-quadruples                flag to include surplus quadruples
+  --print-log                                 flag to print log of calculations
+  --skip-output                               flag to disable output of the resulting triangulation
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+
+--mode compare-triangulations
+
+  --first-triangulation-file      string   *  path to the first triangulation file
+  --second-triangulation-file     string   *  path to the second triangulation file
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  summary of differences
+
+
+--mode get-balls-from-pdb-file
+
+  --include-heteroatoms                       flag to include heteroatoms
+  --output-comments                           flag to output additional information about atoms
+  --radii-file                    string      path to radii configuration file
+
+  stdin   <-  file in PDB format
+  stdout  ->  list of balls (line format: 'x y z r')
+
+
+
