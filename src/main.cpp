@@ -59,7 +59,7 @@ int main(const int argc, const char** argv)
 			poh.set_option("--help");
 
 			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-			map_of_option_descriptions["--mode"].init("string", "running mode");
+			map_of_option_descriptions["--mode"].init("string", "running mode", true);
 			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 			map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
 
