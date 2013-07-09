@@ -26,15 +26,16 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
-		map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
-		map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
-		map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
-		map_of_option_descriptions["--output-comments"].init("", "flag to output additional information about atoms");
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
+		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
+		basic_map_of_option_descriptions["--output-comments"].init("", "flag to output additional information about atoms");
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
+		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
 		if(poh.contains_option("--help"))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  file in PDB format\n";
 			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r')\n";
@@ -42,7 +43,7 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		else
 		{
-			poh.compare_with_map_of_option_descriptions(map_of_option_descriptions);
+			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 
