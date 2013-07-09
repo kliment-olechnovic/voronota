@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 cd $(dirname "$0")
 
 APOLLOTA=../../Release/apollota
@@ -11,6 +9,11 @@ OUTPUT_DIR=./output/
 
 rm -r -f $OUTPUT_DIR
 mkdir $OUTPUT_DIR
+
+$APOLLOTA --help 2> $OUTPUT_DIR/help_message
+$APOLLOTA --help-full 2> $OUTPUT_DIR/help_full_message
+
+set -e
 
 $APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls1
 $APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
