@@ -44,16 +44,19 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
+
+	const bool skip_output=poh.contains_option("--skip-output");
+
+	const bool print_log=poh.contains_option("--print-log");
+
+	const bool check=poh.contains_option("--check");
+
 	const double init_radius_fo_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_fo_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
-
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-	const bool skip_output=poh.contains_option("--skip-output");
-	const bool print_log=poh.contains_option("--print-log");
-	const bool check=poh.contains_option("--check");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);

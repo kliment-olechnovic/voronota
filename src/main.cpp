@@ -61,6 +61,13 @@ int main(const int argc, const char** argv)
 
 			const std::string mode=poh.argument<std::string>("--mode");
 			poh.remove_option("--mode");
+
+			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
+			poh.remove_option("--clog-file");
+
+			const double epsilon=poh.argument<double>("--epsilon", -1.0);
+			poh.remove_option("--epsilon");
+
 			if(modes_map.count(mode)==0)
 			{
 				std::ostringstream msg;
@@ -72,8 +79,6 @@ int main(const int argc, const char** argv)
 				throw std::runtime_error(msg.str());
 			}
 
-			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
-			poh.remove_option("--clog-file");
 			auxiliaries::CLogRedirector clog_redirector;
 			if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
 			{
@@ -82,8 +87,6 @@ int main(const int argc, const char** argv)
 				throw std::runtime_error(msg.str());
 			}
 
-			const double epsilon=poh.argument<double>("--epsilon", -1.0);
-			poh.remove_option("--epsilon");
 			if(epsilon>0.0)
 			{
 				apollota::comparison_epsilon_reference()=epsilon;
