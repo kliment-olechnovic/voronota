@@ -24,7 +24,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--include-redundant-quadruples"].init("", "flag to include redundant quadruples");
+		basic_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
@@ -50,7 +50,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	const bool include_redundant_quadruples=poh.contains_option("--include-redundant-quadruples");
+	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
 	const bool skip_output=poh.contains_option("--skip-output");
 	const bool print_log=poh.contains_option("--print-log");
 	const bool check=poh.contains_option("--check");
@@ -62,7 +62,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided.");
 	}
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_fo_BSH, include_redundant_quadruples);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_fo_BSH, include_surplus_quadruples);
 
 	if(!skip_output)
 	{
