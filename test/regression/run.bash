@@ -12,9 +12,9 @@ OUTPUT_DIR=./output/
 rm -r -f $OUTPUT_DIR
 mkdir $OUTPUT_DIR
 
-$APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE < $INPUT_FILE > $OUTPUT_DIR/balls1
-$APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
-$APOLLOTA --mode get-balls-from-pdb-file < $INPUT_FILE > $OUTPUT_DIR/balls3
+$APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls1
+$APOLLOTA --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
+$APOLLOTA --mode get-balls-from-pdb-file --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls3
 
 $APOLLOTA --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation1 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/triangulation1
 $APOLLOTA --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation2 < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/triangulation2
