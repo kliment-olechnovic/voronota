@@ -1,0 +1,11 @@
+balls 1717
+quadruples 11306
+tangent_spheres 11307
+processed_faces 22671
+difficult_faces 1
+first_faces_iterations 3
+surplus_quadruples 0
+surplus_tangent_spheres 0
+hidden_spheres 0
+ignored_spheres 0
+using_epsilon 1e-06
