@@ -70,7 +70,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
 	if(spheres.size()<4)
 	{
-		throw std::runtime_error("Less than 4 balls provided.");
+		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
 	std::ifstream first_triangulation_stream(first_triangulation_file.c_str(), std::ifstream::in);

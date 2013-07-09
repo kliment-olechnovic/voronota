@@ -13,6 +13,14 @@ namespace auxiliaries
 class ProgramOptionsHandler
 {
 public:
+	class Exception : public std::runtime_error
+	{
+	public:
+		Exception(const std::string& msg) : std::runtime_error(msg)
+		{
+		}
+	};
+
 	struct OptionDescription
 	{
 		std::string argument_type;
@@ -91,7 +99,7 @@ public:
 	{
 		if(!contains_option_with_argument(name))
 		{
-			throw std::runtime_error(std::string("Missing command line argument for option '")+name+"'.");
+			throw Exception(std::string("Missing command line argument for option '")+name+"'.");
 		}
 		return options_.find(name)->second;
 	}
@@ -104,7 +112,7 @@ public:
 		input >> value;
 		if(input.fail())
 		{
-			throw std::runtime_error(std::string("Invalid command line argument for option '")+name+"'.");
+			throw Exception(std::string("Invalid command line argument for option '")+name+"'.");
 		}
 		return value;
 	}
@@ -137,16 +145,16 @@ public:
 			{
 				if(!allow_unrecognized)
 				{
-					throw std::runtime_error(std::string("Unrecognized command line option '")+option+"'.");
+					throw Exception(std::string("Unrecognized command line option '")+option+"'.");
 				}
 			}
 			else if(it->second.empty() && !jt->second.argument_type.empty())
 			{
-				throw std::runtime_error(std::string("Command line option '")+option+"' should have arguments.");
+				throw Exception(std::string("Command line option '")+option+"' should have arguments.");
 			}
 			else if(!it->second.empty() && jt->second.argument_type.empty())
 			{
-				throw std::runtime_error(std::string("Command line option '")+option+"' cannot have arguments.");
+				throw Exception(std::string("Command line option '")+option+"' cannot have arguments.");
 			}
 		}
 	}
