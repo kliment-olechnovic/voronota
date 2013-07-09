@@ -48,12 +48,20 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
-	const double default_radius=poh.argument<double>("--default-radius", 1.70);
-	const bool only_default_radius=poh.contains_option("--only-default-radius");
+
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
+
 	const bool output_comments=poh.contains_option("--output-comments");
 
+	const double default_radius=poh.argument<double>("--default-radius", 1.70);
+
+	const bool only_default_radius=poh.contains_option("--only-default-radius");
+
 	const std::vector<auxiliaries::PDBFileParser::AtomRecord> atoms=auxiliaries::PDBFileParser::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
+	if(atoms.empty())
+	{
+		throw std::runtime_error("No atoms provided to stdin.");
+	}
 
 	auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
 	if(!only_default_radius)

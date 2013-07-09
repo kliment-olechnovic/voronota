@@ -57,14 +57,15 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	const std::string first_triangulation_file=poh.argument<std::string>("--first-triangulation-file");
+
+	const std::string second_triangulation_file=poh.argument<std::string>("--second-triangulation-file");
+
 	const double init_radius_fo_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_fo_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
-
-	const std::string first_triangulation_file=poh.argument<std::string>("--first-triangulation-file");
-	const std::string second_triangulation_file=poh.argument<std::string>("--second-triangulation-file");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
