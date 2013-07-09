@@ -146,7 +146,7 @@ public:
 	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
 	{
 		std::size_t max_option_name_length=30;
-		std::size_t max_argument_type_length=10;
+		std::size_t max_argument_type_length=7;
 		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
 		{
 			max_option_name_length=std::max(max_option_name_length, it->first.size());
@@ -157,8 +157,8 @@ public:
 			const std::string& name=it->first;
 			const OptionDescription& od=it->second;
 			output << "  " << name << std::string(max_option_name_length+2-name.size(), ' ');
-			output << (od.required ? "*" : " ") << "  ";
 			output << od.argument_type << std::string(max_argument_type_length+2-od.argument_type.size(), ' ');
+			output << (od.required ? "*" : " ") << "  ";
 			output << od.description_text << "\n";
 		}
 	}
