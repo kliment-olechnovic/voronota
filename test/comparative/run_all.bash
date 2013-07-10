@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(dirname $0)
+
 FIRST_GAUGE=$1
 SECOND_GAUGE=$2
 TEST_SUBJECT=$3
@@ -8,7 +10,9 @@ EPSILON=$5
 WORKING_DIR=$6
 PDB_FILE=$7
 
-SCRIPT_DIR=$(dirname $0)
+PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
+PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
+WORKING_DIR="$WORKING_DIR/$PDB_FILE_DOMAIN"
 
 mkdir -p $WORKING_DIR
 
