@@ -10,6 +10,10 @@ then
 fi
 
 PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
+PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
+WORKING_DIR="$WORKING_DIR/$PDB_FILE_DOMAIN"
+
+mkdir -p $WORKING_DIR
 
 TMP_DIR=$(mktemp -d)
 
@@ -44,3 +48,5 @@ cat $RAW_OUTPUT_FILE | egrep '^MODEL' | awk '{print "vertices " $4}' >> $LOG_FIL
 cat $RAW_TIME_FILE | sed 's/^/time_/' >> $LOG_FILE
 
 rm -r "$TMP_DIR"
+
+gzip -f $BALLS_FILE $QUADRUPLES_FILE &> /dev/null

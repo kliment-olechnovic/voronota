@@ -5,6 +5,8 @@ WORKING_DIR=$2
 PDB_FILE=$3
 
 PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
+PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
+WORKING_DIR="$WORKING_DIR/$PDB_FILE_DOMAIN"
 
 TMP_DIR=$(mktemp -d)
 
@@ -13,6 +15,8 @@ RAW_OUTPUT_FILE="$TMP_DIR/awvoronoi_result.xml"
 RAW_TIME_FILE="$TMP_DIR/raw_time"
 QUADRUPLES_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.second_gauge.quadruples"
 LOG_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.second_gauge.log"
+
+gunzip -f $INPUT_FILE.gz &> /dev/null
 
 if [ ! -s "$INPUT_FILE" ]
 then
@@ -34,3 +38,5 @@ cat $RAW_OUTPUT_FILE | grep '<cell id' | grep -v 'INF' | wc -l | sed 's/^/vertic
 cat $RAW_TIME_FILE | sed 's/^/time_/' >> $LOG_FILE
 
 rm -r "$TMP_DIR"
+
+gzip -f $INPUT_FILE $QUADRUPLES_FILE &> /dev/null
