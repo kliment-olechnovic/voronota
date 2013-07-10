@@ -22,7 +22,7 @@ if [ ! -s "$SECOND_COMPARISON_FILE" ] ; then exit 1 ; fi
 SUMMARY_LIST_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.summary.list"
 SUMMARY_TABLE_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.summary.table"
 
-true > $SUMMARY_LIST_FILE
+echo "input $PDB_FILE_BASENAME" > $SUMMARY_LIST_FILE
 cat $FIRST_GAUGE_LOG_FILE | sed 's/^/first_gauge_/' >> $SUMMARY_LIST_FILE
 cat $SECOND_GAUGE_LOG_FILE | sed 's/^/second_gauge_/' >> $SUMMARY_LIST_FILE
 cat $TEST_SUBJECT_LOG_FILE | sed 's/^/test_subject_/' >> $SUMMARY_LIST_FILE
