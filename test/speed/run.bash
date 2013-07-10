@@ -23,7 +23,7 @@ RAW_TIME_FILE="$TMP_DIR/raw_time"
 LOG_LIST_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.list"
 LOG_TABLE_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.table"
 
-zcat "$PDB_FILE" | awk '/^END/{exit}1' | egrep '^ATOM' | egrep -v '.{76} H' | $TEST_SUBJECT --mode get-balls-from-pdb-file > $INPUT_FILE
+zcat "$PDB_FILE" | awk '/^END/{exit}1' | egrep '^ATOM|^HETATM' | egrep -v '.{76} H' | $TEST_SUBJECT --mode get-balls-from-pdb-file > $INPUT_FILE
 
 if [ ! -s "$INPUT_FILE" ]
 then
