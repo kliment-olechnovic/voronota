@@ -186,7 +186,7 @@ private:
 	};
 
 	template<typename SphereType>
-	static const std::pair<double, double> calc_input_radii_range(const std::vector<SphereType>& spheres)
+	static std::pair<double, double> calc_input_radii_range(const std::vector<SphereType>& spheres)
 	{
 		std::pair<double, double> range(0, 0);
 		if(!spheres.empty())
