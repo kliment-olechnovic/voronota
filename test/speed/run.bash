@@ -35,8 +35,11 @@ fi
 
 ( time -p ($TEST_SUBJECT --mode calculate-triangulation --clog-file $RAW_LOG_FILE --print-log --skip-output < $INPUT_FILE > /dev/null 2> $LOG_ERRORS_FILE) ) 2> $RAW_TIME_FILE
 
-if [ ! -s "$LOG_ERRORS_FILE" ]
+if [ -s "$LOG_ERRORS_FILE" ]
 then
+	echo "$PDB_FILE_BASENAME did not get a triangulation"
+	exit 1
+else
 	rm -f $LOG_ERRORS_FILE
 fi
 
