@@ -30,5 +30,3 @@ cat $FIRST_COMPARISON_FILE | sed 's/^/first_/' >> $SUMMARY_LIST_FILE
 cat $SECOND_COMPARISON_FILE | sed 's/^/second_/' >> $SUMMARY_LIST_FILE
 
 ( cat $SUMMARY_LIST_FILE | cut --delimiter " " --fields 1 | paste -s ; cat $SUMMARY_LIST_FILE | cut --delimiter " " --fields 2 | paste -s ) | column -t > $SUMMARY_TABLE_FILE
-
-cat $SUMMARY_LIST_FILE
