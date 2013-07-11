@@ -70,7 +70,16 @@ public:
 				try
 				{
 					const AtomRecord record(line);
-					if(record.resName!="HOH" && record.element!="H" && record.name.find("H")!=0 && record.name.find("1H")!=0 && record.name.find("2H")!=0 && record.name.find("3H")!=0 && record.name.find("4H")!=0)
+					if(
+							(record.altLoc.empty() || record.altLoc=="A") &&
+							record.resName!="HOH" &&
+							record.element!="H" &&
+							record.name.find("H")!=0 &&
+							record.name.find("1H")!=0 &&
+							record.name.find("2H")!=0 &&
+							record.name.find("3H")!=0 &&
+							record.name.find("4H")!=0
+						)
 					{
 						records.push_back(record);
 					}
