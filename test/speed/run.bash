@@ -50,5 +50,3 @@ cat $RAW_TIME_FILE | sed 's/^/time_/' >> $LOG_LIST_FILE
 ( cat $LOG_LIST_FILE | cut --delimiter " " --fields 1 | paste -s ; cat $LOG_LIST_FILE | cut --delimiter " " --fields 2 | paste -s ) | column -t > $LOG_TABLE_FILE
 
 rm -r "$TMP_DIR"
-
-cat $LOG_LIST_FILE
