@@ -1,8 +1,9 @@
 #!/bin/bash
 
 TEST_SUBJECT=$1
-WORKING_DIR=$2
-PDB_FILE=$3
+RADII_FILE=$2
+WORKING_DIR=$3
+PDB_FILE=$4
 
 if [ ! -s "$PDB_FILE" ]
 then
@@ -23,7 +24,7 @@ RAW_TIME_FILE="$TMP_DIR/raw_time"
 LOG_LIST_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.list"
 LOG_TABLE_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.table"
 
-zcat "$PDB_FILE" | awk '/^END/{exit}1' | egrep '^ATOM|^HETATM' | egrep -v '.{76} H' | $TEST_SUBJECT --mode get-balls-from-pdb-file > $INPUT_FILE
+zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-pdb-file --include-heteroatoms --radii-file $RADII_FILE > $INPUT_FILE
 
 if [ ! -s "$INPUT_FILE" ]
 then
