@@ -23,15 +23,22 @@ RAW_LOG_FILE="$TMP_DIR/raw_log"
 RAW_TIME_FILE="$TMP_DIR/raw_time"
 LOG_LIST_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.list"
 LOG_TABLE_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.table"
+LOG_ERRORS_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.errors"
 
-zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-pdb-file --include-heteroatoms --radii-file $RADII_FILE > $INPUT_FILE
+zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-pdb-file --include-heteroatoms --radii-file $RADII_FILE > $INPUT_FILE 2> /dev/null
 
 if [ ! -s "$INPUT_FILE" ]
 then
+	echo "$PDB_FILE_BASENAME has no acceptable atoms"
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-triangulation --clog-file $RAW_LOG_FILE --print-log --skip-output < $INPUT_FILE > /dev/null) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-triangulation --clog-file $RAW_LOG_FILE --print-log --skip-output < $INPUT_FILE > /dev/null 2> $LOG_ERRORS_FILE) ) 2> $RAW_TIME_FILE
+
+if [ ! -s "$LOG_ERRORS_FILE" ]
+then
+	rm -f $LOG_ERRORS_FILE
+fi
 
 echo "input $PDB_FILE_BASENAME" > $LOG_LIST_FILE
 cat $RAW_LOG_FILE >> $LOG_LIST_FILE
