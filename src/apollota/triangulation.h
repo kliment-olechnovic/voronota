@@ -549,11 +549,18 @@ private:
 				const std::vector<SimpleSphere> minimal_tangent_spheres=TangentSphereOfThreeSpheres::calculate((*a_sphere_), (*b_sphere_), (*c_sphere_));
 				if(minimal_tangent_spheres.size()==2)
 				{
-					const double min_r=std::min(a_sphere_->r, std::min(b_sphere_->r, c_sphere_->r));
-					const Sphere* central_sphere_=( (min_r==a_sphere_->r) ? a_sphere_ : (min_r==b_sphere_->r ? b_sphere_ : c_sphere_) );
+					const Sphere* central_sphere=a_sphere_;
+					if((b_sphere_->r)<(central_sphere->r))
+					{
+						central_sphere=b_sphere_;
+					}
+					if((c_sphere_->r)<(central_sphere->r))
+					{
+						central_sphere=c_sphere_;
+					}
 					finite_cyclide_approximation_sphere_.first=true;
-					finite_cyclide_approximation_sphere_.second=SimpleSphere(*central_sphere_);
-					finite_cyclide_approximation_sphere_.second.r=min_r+std::max(minimal_tangent_spheres[0].r, minimal_tangent_spheres[1].r)*2.0;
+					finite_cyclide_approximation_sphere_.second=SimpleSphere(*central_sphere);
+					finite_cyclide_approximation_sphere_.second.r=(central_sphere->r)+std::max(minimal_tangent_spheres[0].r, minimal_tangent_spheres[1].r)*2.0;
 				}
 			}
 		}
