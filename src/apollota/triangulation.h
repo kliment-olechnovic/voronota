@@ -553,7 +553,7 @@ private:
 					const Sphere* central_sphere_=( (min_r==a_sphere_->r) ? a_sphere_ : (min_r==b_sphere_->r ? b_sphere_ : c_sphere_) );
 					finite_cyclide_approximation_sphere_.first=true;
 					finite_cyclide_approximation_sphere_.second=SimpleSphere(*central_sphere_);
-					finite_cyclide_approximation_sphere_.second.r=min_r+std::max(minimal_tangent_spheres[0].r, minimal_tangent_spheres[1].r);
+					finite_cyclide_approximation_sphere_.second.r=min_r+std::max(minimal_tangent_spheres[0].r, minimal_tangent_spheres[1].r)*2.0;
 				}
 			}
 		}
