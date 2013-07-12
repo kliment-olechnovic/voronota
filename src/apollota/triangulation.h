@@ -299,7 +299,7 @@ private:
 			{
 				d_ids_and_tangent_spheres_.resize(2, std::pair<std::size_t, SimpleSphere>(npos, SimpleSphere()));
 				init_central_planes();
-				init_middle_region_appriximation_sphere_();
+				init_middle_region_approximation_sphere_();
 			}
 			else
 			{
@@ -431,7 +431,7 @@ private:
 		{
 			return (
 					can_have_e_
-					&& (!can_have_d_ || !middle_region_appriximation_sphere_.first || sphere_intersects_sphere(middle_region_appriximation_sphere_.second, input_sphere))
+					&& (!can_have_d_ || !middle_region_approximation_sphere_.first || sphere_intersects_sphere(middle_region_approximation_sphere_.second, input_sphere))
 					&& (!can_have_d_ || d_ids_and_tangent_spheres_[0].first==npos || d_ids_and_tangent_spheres_[1].first==npos || sphere_intersects_sphere_with_expansion(input_sphere, d_ids_and_tangent_spheres_[0].second, threshold_distance_for_e_checking) || sphere_intersects_sphere_with_expansion(input_sphere, d_ids_and_tangent_spheres_[1].second, threshold_distance_for_e_checking))
 					&& (!can_have_d_ || (halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, input_sphere)<=0 && halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, input_sphere)<=0))
 					);
@@ -444,7 +444,7 @@ private:
 					&& (e_id!=npos)
 					&& (!abc_ids_.contains(e_id))
 					&& (!can_have_d_ || (e_id!=d_ids_and_tangent_spheres_[0].first && e_id!=d_ids_and_tangent_spheres_[1].first))
-					&& (!can_have_d_ || !middle_region_appriximation_sphere_.first || sphere_intersects_sphere(middle_region_appriximation_sphere_.second, spheres_->at(e_id)))
+					&& (!can_have_d_ || !middle_region_approximation_sphere_.first || sphere_intersects_sphere(middle_region_approximation_sphere_.second, spheres_->at(e_id)))
 					&& (!can_have_d_ || d_ids_and_tangent_spheres_[0].first==npos || d_ids_and_tangent_spheres_[1].first==npos || sphere_intersects_sphere_with_expansion(spheres_->at(e_id), d_ids_and_tangent_spheres_[0].second, threshold_distance_for_e_checking) || sphere_intersects_sphere_with_expansion(spheres_->at(e_id), d_ids_and_tangent_spheres_[1].second, threshold_distance_for_e_checking))
 					&& (!can_have_d_ || (halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, spheres_->at(e_id))==-1 && halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, spheres_->at(e_id))==-1))
 				)
@@ -516,9 +516,9 @@ private:
 			}
 		}
 
-		void init_middle_region_appriximation_sphere_()
+		void init_middle_region_approximation_sphere_()
 		{
-			middle_region_appriximation_sphere_.first=false;
+			middle_region_approximation_sphere_.first=false;
 			if(can_have_d_)
 			{
 				const std::vector<SimpleSphere> minimal_tangent_sphere=TangentSphereOfThreeSpheres::calculate((*a_sphere_), (*b_sphere_), (*c_sphere_));
@@ -530,9 +530,9 @@ private:
 							SimpleSphere(SimplePoint(*c_sphere_)+(tangent_planes_[0].second*(c_sphere_->r)), 0));
 					if(disk.size()==1)
 					{
-						middle_region_appriximation_sphere_.first=true;
-						middle_region_appriximation_sphere_.second=minimal_tangent_sphere.front();
-						middle_region_appriximation_sphere_.second.r=distance_from_point_to_point(minimal_tangent_sphere.front(), disk.front())+disk.front().r;
+						middle_region_approximation_sphere_.first=true;
+						middle_region_approximation_sphere_.second=minimal_tangent_sphere.front();
+						middle_region_approximation_sphere_.second.r=distance_from_point_to_point(minimal_tangent_sphere.front(), disk.front())+disk.front().r;
 					}
 				}
 			}
@@ -582,7 +582,7 @@ private:
 		bool can_have_d_;
 		bool can_have_e_;
 		double threshold_distance_for_e_checking;
-		std::pair<bool, SimpleSphere> middle_region_appriximation_sphere_;
+		std::pair<bool, SimpleSphere> middle_region_approximation_sphere_;
 	};
 
 	class SearchForAnyDOfFace
