@@ -830,16 +830,15 @@ private:
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			const std::size_t starting_sphere_id,
 			std::size_t& iterations_count,
-			const bool fix_starting_sphere_id=false,
-			const bool allow_quadruples_with_two_tangent_spheres=false,
-			const std::size_t max_size_of_traversal=std::numeric_limits<std::size_t>::max(),
-			const double max_distance=std::numeric_limits<double>::max())
+			const bool fix_starting_sphere_id,
+			const bool allow_quadruples_with_two_tangent_spheres,
+			const std::size_t max_size_of_traversal=std::numeric_limits<std::size_t>::max())
 	{
 		const std::vector<SphereType>& spheres=bsh.leaves_spheres();
 		std::vector< Face<SphereType> > result;
 		if(spheres.size()>=4 && starting_sphere_id<spheres.size())
 		{
-			const std::vector<std::size_t> traversal=BoundingSpheresHierarchy<SphereType>::sort_objects_by_distance_to_one_of_them(spheres, starting_sphere_id, minimal_distance_from_sphere_to_sphere<SphereType, SphereType>, max_distance);
+			const std::vector<std::size_t> traversal=BoundingSpheresHierarchy<SphereType>::sort_objects_by_distance_to_one_of_them(spheres, starting_sphere_id, minimal_distance_from_sphere_to_sphere<SphereType, SphereType>);
 			for(std::size_t d=3;d<std::min(traversal.size(), max_size_of_traversal);d++)
 			{
 				for(std::size_t a=0;a<(fix_starting_sphere_id ? 1 : d);a++)
@@ -880,7 +879,7 @@ private:
 		TriplesSet processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
-		std::vector< Face<Sphere> > stack=find_first_faces(bsh, 0, log.finding_first_faces_iterations);
+		std::vector< Face<Sphere> > stack=find_first_faces(bsh, 0, log.finding_first_faces_iterations, false, false);
 		if(stack.empty())
 		{
 			stack=find_first_faces(bsh, 0, log.finding_first_faces_iterations, false, true);
