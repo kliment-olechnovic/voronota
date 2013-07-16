@@ -11,11 +11,12 @@
 void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
 void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh);
+void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
 int main(const int argc, const char** argv)
 {
 	typedef std::pointer_to_unary_function<const auxiliaries::ProgramOptionsHandler&, void> ModeFunctionPointer;
-	typedef std::map<std::string, ModeFunctionPointer> ModesMap;
+	typedef std::map<std::string, ModeFunctionPointer> MapOfModes;
 
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
@@ -23,10 +24,12 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		ModesMap modes_map;
-		modes_map["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
-		modes_map["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
-		modes_map["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
+		MapOfModes basic_map_of_modes;
+		basic_map_of_modes["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
+		basic_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
+		basic_map_of_modes["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
+		MapOfModes full_map_of_modes=basic_map_of_modes;
+		full_map_of_modes["print-demo"]=ModeFunctionPointer(print_demo);
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
@@ -45,7 +48,7 @@ int main(const int argc, const char** argv)
 			std::cerr << "\nCommon options\n\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n\n";
-			for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
+			for(MapOfModes::const_iterator it=basic_map_of_modes.begin();it!=basic_map_of_modes.end();++it)
 			{
 				std::cerr << "--mode " << it->first << "\n\n";
 				it->second(poh);
@@ -68,11 +71,11 @@ int main(const int argc, const char** argv)
 			const double epsilon=poh.argument<double>("--epsilon", -1.0);
 			poh.remove_option("--epsilon");
 
-			if(modes_map.count(mode)==0)
+			if(full_map_of_modes.count(mode)==0)
 			{
 				std::ostringstream msg;
 				msg << "Invalid mode. Available modes are:\n";
-				for(ModesMap::const_iterator it=modes_map.begin();it!=modes_map.end();++it)
+				for(MapOfModes::const_iterator it=basic_map_of_modes.begin();it!=basic_map_of_modes.end();++it)
 				{
 					msg << "  --mode " << it->first << "\n";
 				}
@@ -92,7 +95,7 @@ int main(const int argc, const char** argv)
 				apollota::comparison_epsilon_reference()=epsilon;
 			}
 
-			modes_map.find(mode)->second(poh);
+			full_map_of_modes.find(mode)->second(poh);
 
 			return 0;
 		}
