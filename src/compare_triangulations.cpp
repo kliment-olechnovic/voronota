@@ -61,8 +61,8 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::string second_triangulation_file=poh.argument<std::string>("--second-triangulation-file");
 
-	const double init_radius_fo_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
-	if(init_radius_fo_BSH<=1.0)
+	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
+	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
@@ -102,7 +102,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const apollota::ComparisonOfTriangulations::Result differences=apollota::ComparisonOfTriangulations::calculate_directional_difference_between_two_sets_of_quadruples(spheres, init_radius_fo_BSH, first_triangulation_quadruples, second_triangulation_quadruples);
+	const apollota::ComparisonOfTriangulations::Result differences=apollota::ComparisonOfTriangulations::calculate_directional_difference_between_two_sets_of_quadruples(spheres, init_radius_for_BSH, first_triangulation_quadruples, second_triangulation_quadruples);
 
 	std::cout << "all_differences " << differences.all_differences.size() << "\n";
 	std::cout << "confirmed_differences " << differences.confirmed_differences.size() << "\n";

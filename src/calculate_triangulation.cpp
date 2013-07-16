@@ -52,8 +52,8 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool check=poh.contains_option("--check");
 
-	const double init_radius_fo_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
-	if(init_radius_fo_BSH<=1.0)
+	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
+	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
@@ -65,7 +65,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_fo_BSH, include_surplus_quadruples);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, include_surplus_quadruples);
 
 	if(!skip_output)
 	{
