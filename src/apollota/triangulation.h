@@ -339,7 +339,7 @@ private:
 					&& (halfspace_of_sphere(tangent_planes_[d_number].first, tangent_planes_[d_number].second, spheres_->at(d_id))>=0)
 				)
 			{
-				const std::vector<SimpleSphere> tangent_spheres=TangentSphereOfFourSpheres::calculate<SimpleSphere>((*a_sphere_), (*b_sphere_), (*c_sphere_), spheres_->at(d_id));
+				const std::vector<SimpleSphere> tangent_spheres=TangentSphereOfFourSpheres::calculate((*a_sphere_), (*b_sphere_), (*c_sphere_), spheres_->at(d_id));
 				if(!tangent_spheres.empty())
 				{
 					std::size_t i=0;
@@ -452,7 +452,7 @@ private:
 					&& (can_have_d_ || !finite_cyclide_approximation_sphere_.first || sphere_intersects_sphere(finite_cyclide_approximation_sphere_.second, spheres_->at(e_id)))
 				)
 			{
-				const std::vector<SimpleSphere> tangent_spheres=TangentSphereOfFourSpheres::calculate<SimpleSphere>((*a_sphere_), (*b_sphere_), (*c_sphere_), spheres_->at(e_id));
+				const std::vector<SimpleSphere> tangent_spheres=TangentSphereOfFourSpheres::calculate((*a_sphere_), (*b_sphere_), (*c_sphere_), spheres_->at(e_id));
 				std::vector<SimpleSphere> valid_tangent_spheres;
 				for(std::size_t i=0;i<tangent_spheres.size();i++)
 				{
@@ -850,7 +850,7 @@ private:
 							iterations_count++;
 							const Triple triple(traversal[a], traversal[b], traversal[c]);
 							const Quadruple quadruple(triple, traversal[d]);
-							const std::vector<SimpleSphere> tangents=TangentSphereOfFourSpheres::calculate<SimpleSphere>(spheres[quadruple.get(0)], spheres[quadruple.get(1)], spheres[quadruple.get(2)], spheres[quadruple.get(3)]);
+							const std::vector<SimpleSphere> tangents=TangentSphereOfFourSpheres::calculate(spheres[quadruple.get(0)], spheres[quadruple.get(1)], spheres[quadruple.get(2)], spheres[quadruple.get(3)]);
 							if(
 									(tangents.size()==1 && SearchForSphericalCollisions::find_any_collision(bsh, tangents.front()).empty())
 									|| (allow_quadruples_with_two_tangent_spheres && tangents.size()==2 && (SearchForSphericalCollisions::find_any_collision(bsh, tangents.front()).empty() || SearchForSphericalCollisions::find_any_collision(bsh, tangents.back()).empty()))

@@ -11,16 +11,16 @@ namespace apollota
 class TangentSphereOfFourSpheres
 {
 public:
-	template<typename OutputSphereType, typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD>
-	static inline std::vector<OutputSphereType> calculate(const InputSphereTypeA& sm, const InputSphereTypeB& s1, const InputSphereTypeC& s2, const InputSphereTypeD& s3)
+	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD>
+	static inline std::vector<SimpleSphere> calculate(const InputSphereTypeA& sm, const InputSphereTypeB& s1, const InputSphereTypeC& s2, const InputSphereTypeD& s3)
 	{
 		{
 			const double min_r=std::min(sm.r, std::min(s1.r, std::min(s2.r, s3.r)));
 			if(sm.r!=min_r)
 			{
-				if(s1.r==min_r) return calculate<OutputSphereType>(s1, sm, s2, s3);
-				if(s2.r==min_r) return calculate<OutputSphereType>(s2, sm, s1, s3);
-				if(s3.r==min_r) return calculate<OutputSphereType>(s3, sm, s1, s2);
+				if(s1.r==min_r) return calculate(s1, sm, s2, s3);
+				if(s2.r==min_r) return calculate(s2, sm, s1, s3);
+				if(s3.r==min_r) return calculate(s3, sm, s1, s2);
 			}
 		}
 
@@ -88,14 +88,14 @@ public:
 			}
 		}
 
-		std::vector<OutputSphereType> results;
+		std::vector<SimpleSphere> results;
 		results.reserve(radiuses.size());
 		for(std::size_t i=0;i<radiuses.size();i++)
 		{
 			const double r=radiuses[i];
 			if(r>0)
 			{
-				const OutputSphereType candidate=custom_sphere<OutputSphereType>((u1*r+v1+sm.x), (u2*r+v2+sm.y), (u3*r+v3+sm.z), (r-sm.r));
+				const SimpleSphere candidate((u1*r+v1+sm.x), (u2*r+v2+sm.y), (u3*r+v3+sm.z), (r-sm.r));
 				if(check_tangent_sphere(sm, s1, s2, s3, candidate))
 				{
 					results.push_back(candidate);
