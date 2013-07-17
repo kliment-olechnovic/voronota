@@ -214,11 +214,8 @@ public:
 		{
 			std::string line;
 			std::getline(input, line);
-			if(line.empty())
-			{
-				valid=false;
-			}
-			else
+			line=line.substr(0, line.find("#", 0));
+			if(!line.empty())
 			{
 				std::istringstream line_stream(line);
 				std::size_t q[4]={0, 0, 0, 0};

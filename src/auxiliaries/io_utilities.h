@@ -17,7 +17,7 @@ inline void read_lines_to_container(std::istream& input, const std::string& comm
 		std::getline(input, line);
 		if(!comments_marker.empty())
 		{
-			line.substr(0, line.find(comments_marker, 0));
+			line=line.substr(0, line.find(comments_marker, 0));
 		}
 		if(!line.empty())
 		{
