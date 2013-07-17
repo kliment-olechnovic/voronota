@@ -4,6 +4,7 @@
 #include "apollota/bounding_spheres_hierarchy.h"
 #include "apollota/tangent_plane_of_three_spheres.h"
 #include "apollota/tangent_sphere_of_three_spheres.h"
+#include "apollota/tangent_sphere_of_four_spheres.h"
 #include "apollota/rotation.h"
 #include "apollota/opengl_printer.h"
 
@@ -88,7 +89,7 @@ void print_demo_face()
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
-	apollota::OpenGLPrinter opengl_printer1(std::cout, "objradii1", "cgo1");
+	apollota::OpenGLPrinter opengl_printer1(std::cout, "obj1", "cgo1");
 	apollota::OpenGLPrinter opengl_printer2(std::cout, "obj2", "cgo2");
 	apollota::OpenGLPrinter opengl_printer3(std::cout, "obj3", "cgo3");
 	apollota::OpenGLPrinter opengl_printer4(std::cout, "obj4", "cgo4");
@@ -243,6 +244,61 @@ void print_demo_face()
 	std::cout << "cmd.set('ambient', 0.3)\n\n";
 }
 
+void print_demo_tangents()
+{
+	std::vector< std::vector<apollota::SimpleSphere> > generators_sets;
+
+	{
+		std::vector<apollota::SimpleSphere> generators;
+		generators.push_back(apollota::SimpleSphere(2.0, 1.0, 0.1, 0.9));
+		generators.push_back(apollota::SimpleSphere(-1.0, 2.0, -0.1, 1.2));
+		generators.push_back(apollota::SimpleSphere(-1.0, -1.0, 0.1, 1.5));
+		generators.push_back(apollota::SimpleSphere(1.0, 1.0, 4.5, 1.0));
+		generators_sets.push_back(generators);
+	}
+
+	{
+		std::vector<apollota::SimpleSphere> generators;
+		generators.push_back(apollota::SimpleSphere(2.0, 1.0, 0.1, 0.9));
+		generators.push_back(apollota::SimpleSphere(-1.0, 2.0, -0.1, 1.2));
+		generators.push_back(apollota::SimpleSphere(-1.0, -1.0, 0.1, 1.5));
+		generators.push_back(apollota::SimpleSphere(0.4, 0.4, 0.0, 0.5));
+		generators_sets.push_back(generators);
+	}
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+
+	for(std::size_t j=0;j<generators_sets.size();j++)
+	{
+		const std::vector<apollota::SimpleSphere>& generators=generators_sets[j];
+
+		std::ostringstream obj_name;
+		obj_name << "obj" << j;
+		std::ostringstream cgo_name;
+		cgo_name << "cgo" << j;
+		apollota::OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
+
+		opengl_printer.print_color(0x36BBCE);
+		opengl_printer.print_alpha(1.0);
+		for(std::size_t i=0;i<generators.size();i++)
+		{
+			opengl_printer.print_sphere(generators[i]);
+		}
+
+		const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfFourSpheres::calculate<apollota::SimpleSphere>(generators[0], generators[1], generators[2], generators[3]);
+
+		opengl_printer.print_color(0xFF5A40);
+		opengl_printer.print_alpha(0.7);
+		for(std::size_t i=0;i<tangents.size();i++)
+		{
+			opengl_printer.print_sphere(tangents[i]);
+		}
+	}
+
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
+	std::cout << "cmd.set('ambient', 0.3)\n\n";
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -258,9 +314,13 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_demo_bsh(poh);
 	}
-	if(scene=="face")
+	else if(scene=="face")
 	{
 		print_demo_face();
+	}
+	else if(scene=="tangents")
+	{
+		print_demo_tangents();
 	}
 	else
 	{
