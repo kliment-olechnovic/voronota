@@ -285,7 +285,7 @@ void print_demo_tangents()
 			opengl_printer.print_sphere(generators[i]);
 		}
 
-		const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfFourSpheres::calculate<apollota::SimpleSphere>(generators[0], generators[1], generators[2], generators[3]);
+		const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfFourSpheres::calculate(generators[0], generators[1], generators[2], generators[3]);
 
 		opengl_printer.print_color(0xFF5A40);
 		opengl_printer.print_alpha(0.7);
