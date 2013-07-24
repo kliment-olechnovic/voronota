@@ -55,8 +55,9 @@ public:
 		SurplusQuadruplesLog surplus_quadruples_log;
 		std::set<std::size_t> hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
+		unsigned long bounding_spheres_hierarchy_iterations;
 
-		Result() : quadruples_log(), surplus_quadruples_log()
+		Result() : quadruples_log(), surplus_quadruples_log(), bounding_spheres_hierarchy_iterations(0)
 		{
 		}
 
@@ -72,6 +73,7 @@ public:
 			output << "hidden_spheres " << hidden_spheres_ids.size() << "\n";
 			output << "ignored_spheres " << ignored_spheres_ids.size() << "\n";
 			output << "using_epsilon " << comparison_epsilon() << "\n";
+			output << "complexity " << bounding_spheres_hierarchy_iterations << "\n";
 		}
 	};
 
@@ -106,6 +108,7 @@ public:
 				result.ignored_spheres_ids.insert(i);
 			}
 		}
+		result.bounding_spheres_hierarchy_iterations=bsh.iterations_count();
 		return result;
 	}
 
