@@ -20,6 +20,8 @@
 namespace apollota
 {
 
+static const std::size_t npos=static_cast<std::size_t>(-1);
+
 class Triangulation
 {
 public:
@@ -281,8 +283,6 @@ private:
 	{
 	public:
 		typedef SphereType Sphere;
-
-		static const std::size_t npos=static_cast<std::size_t>(-1);
 
 		Face(const std::vector<Sphere>& spheres, const Triple& abc_ids, const double min_sphere_radius) :
 			spheres_(&spheres),
