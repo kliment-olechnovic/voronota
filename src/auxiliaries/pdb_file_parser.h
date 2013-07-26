@@ -42,7 +42,7 @@ public:
 			x(convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38))),
 			y(convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46))),
 			z(convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54))),
-			tempFactor(convert_string<double>(substring_of_columned_line(pdb_file_line, 61, 66))),
+			tempFactor(convert_string_or_return_default_value<double>(substring_of_columned_line(pdb_file_line, 61, 66), 0.0)),
 			element(substring_of_columned_line(pdb_file_line, 77, 78)),
 			charge(substring_of_columned_line(pdb_file_line, 79, 80))
 		{
@@ -117,6 +117,22 @@ private:
 		T value;
 		input >> value;
 		return value;
+	}
+
+	template<typename T>
+	static T convert_string_or_return_default_value(const std::string& str, const T default_value)
+	{
+		std::istringstream input(str);
+		T value;
+		input >> value;
+		if(!input.fail())
+		{
+			return value;
+		}
+		else
+		{
+			return default_value;
+		}
 	}
 };
 
