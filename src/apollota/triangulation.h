@@ -826,6 +826,34 @@ private:
 	};
 
 	template<typename SphereType>
+	static std::size_t select_starting_sphere_for_finding_first_faces(const BoundingSpheresHierarchy<SphereType>& bsh)
+	{
+		const std::vector<SphereType>& spheres=bsh.leaves_spheres();
+		if(spheres.empty())
+		{
+			return 0;
+		}
+		SimplePoint center(0.0, 0.0, 0.0);
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			center=center+SimplePoint(spheres[i]);
+		}
+		center=center*(1/static_cast<double>(spheres.size()));
+		std::size_t result=0;
+		double result_distance=distance_from_point_to_point(center, spheres[result]);
+		for(std::size_t i=1;i<spheres.size();i++)
+		{
+			const double i_distance=distance_from_point_to_point(center, spheres[i]);
+			if(i_distance<result_distance)
+			{
+				result=i;
+				result_distance=i_distance;
+			}
+		}
+		return result;
+	}
+
+	template<typename SphereType>
 	static std::vector< Face<SphereType> > find_first_faces(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			const std::size_t starting_sphere_id,
@@ -879,10 +907,11 @@ private:
 		TriplesSet processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
-		std::vector< Face<Sphere> > stack=find_first_faces(bsh, 0, log.finding_first_faces_iterations, false, false);
+		const std::size_t starting_sphere_for_finding_first_faces=select_starting_sphere_for_finding_first_faces(bsh);
+		std::vector< Face<Sphere> > stack=find_first_faces(bsh, starting_sphere_for_finding_first_faces, log.finding_first_faces_iterations, false, false);
 		if(stack.empty())
 		{
-			stack=find_first_faces(bsh, 0, log.finding_first_faces_iterations, false, true);
+			stack=find_first_faces(bsh, starting_sphere_for_finding_first_faces, log.finding_first_faces_iterations, false, true);
 		}
 		while(!stack.empty())
 		{
