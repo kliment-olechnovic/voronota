@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "basic_operations_on_spheres.h"
+#include "rotation.h"
 
 namespace apollota
 {
@@ -106,65 +107,99 @@ public:
 
 		const double r=custom_tangent_sphere_radius+sm.r;
 
-		const double x1=s1.x-sm.x;
-		const double y1=s1.y-sm.y;
-		const double z1=s1.z-sm.z;
-		const double r1=s1.r-sm.r;
+		const unsigned int rotation_steps=2;
+		const SimplePoint rotation_axis(1.0, 1.0, 1.0);
+		const double rotation_step_angle=30.0;
 
-		const double x2=s2.x-sm.x;
-		const double y2=s2.y-sm.y;
-		const double z2=s2.z-sm.z;
-		const double r2=s2.r-sm.r;
-
-		const double a1=2*x1;
-		const double b1=2*y1;
-		const double c1=2*z1;
-		const double o1=(r+r1)*(r+r1)-(r*r)-(x1*x1+y1*y1+z1*z1);
-
-		const double a2=2*x2;
-		const double b2=2*y2;
-		const double c2=2*z2;
-		const double o2=(r+r2)*(r+r2)-(r*r)-(x2*x2+y2*y2+z2*z2);
-
-		const double ux=(c2*b1-c1*b2)/(a1*b2-a2*b1);
-		const double vx=(o2*b1-o1*b2)/(a1*b2-a2*b1);
-
-		const double uy=(c2*a1-c1*a2)/(b1*a2-b2*a1);
-		const double vy=(o2*a1-o1*a2)/(b1*a2-b2*a1);
-
-		const double a=(ux*ux+uy*uy+1);
-		const double b=2*(ux*vx+uy*vy);
-		const double c=(vx*vx+vy*vy-r*r);
-
-		const double D = b*b-4*a*c;
-
-		std::vector<double> zs;
-		if(D>=0.0)
+		for(unsigned int rotation_step=0;rotation_step<=rotation_steps;rotation_step++)
 		{
-			if(D==0.0)
+			SimpleSphere ts1(s1.x-sm.x, s1.y-sm.y, s1.z-sm.z, s1.r-sm.r);
+			SimpleSphere ts2(s2.x-sm.x, s2.y-sm.y, s2.z-sm.z, s2.r-sm.r);
+
+			if(rotation_step>0)
 			{
-				zs.push_back((-b)/(2*a));
+				const Rotation rotation(rotation_axis, rotation_step_angle*static_cast<double>(rotation_step));
+				ts1=SimpleSphere(rotation.rotate<SimplePoint>(ts1), ts1.r);
+				ts2=SimpleSphere(rotation.rotate<SimplePoint>(ts2), ts2.r);
 			}
-			else
+
+			const double x1=ts1.x;
+			const double y1=ts1.y;
+			const double z1=ts1.z;
+			const double r1=ts1.r;
+
+			const double x2=ts2.x;
+			const double y2=ts2.y;
+			const double z2=ts2.z;
+			const double r2=ts2.r;
+
+			const double a1=2*x1;
+			const double b1=2*y1;
+			const double c1=2*z1;
+			const double o1=(r+r1)*(r+r1)-(r*r)-(x1*x1+y1*y1+z1*z1);
+
+			const double a2=2*x2;
+			const double b2=2*y2;
+			const double c2=2*z2;
+			const double o2=(r+r2)*(r+r2)-(r*r)-(x2*x2+y2*y2+z2*z2);
+
+			const double w1=(a1*b2-a2*b1);
+			const double w2=(b1*a2-b2*a1);
+
+			if((w1>0.0 || w1<0.0) && (w2>0.0 || w2<0.0))
 			{
-				zs.push_back((-b-sqrt(D))/(2*a));
-				zs.push_back((-b+sqrt(D))/(2*a));
+				const double ux=(c2*b1-c1*b2)/w1;
+				const double vx=(o2*b1-o1*b2)/w1;
+
+				const double uy=(c2*a1-c1*a2)/w2;
+				const double vy=(o2*a1-o1*a2)/w2;
+
+				const double a=(ux*ux+uy*uy+1);
+
+				if(a>0.0 || a<0.0)
+				{
+					const double b=2*(ux*vx+uy*vy);
+					const double c=(vx*vx+vy*vy-r*r);
+
+					const double D = b*b-4*a*c;
+
+					std::vector<double> zs;
+					if(D>=0.0)
+					{
+						if(D==0.0)
+						{
+							zs.push_back((-b)/(2*a));
+						}
+						else
+						{
+							zs.push_back((-b-sqrt(D))/(2*a));
+							zs.push_back((-b+sqrt(D))/(2*a));
+						}
+					}
+
+					std::vector<SimpleSphere> results;
+					results.reserve(zs.size());
+					for(std::size_t i=0;i<zs.size();i++)
+					{
+						const double z=zs[i];
+						SimpleSphere candidate((ux*z+vx+sm.x), (uy*z+vy+sm.y), (z+sm.z), (r-sm.r));
+						if(rotation_step>0)
+						{
+							const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
+							candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
+						}
+						if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
+						{
+							results.push_back(candidate);
+						}
+					}
+
+					return results;
+				}
 			}
 		}
 
-		std::vector<SimpleSphere> results;
-		results.reserve(zs.size());
-		for(std::size_t i=0;i<zs.size();i++)
-		{
-			const double z=zs[i];
-			const SimpleSphere candidate((ux*z+vx+sm.x), (uy*z+vy+sm.y), (z+sm.z), (r-sm.r));
-			if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
-			{
-				results.push_back(candidate);
-			}
-		}
-
-		return results;
+		return std::vector<SimpleSphere>();
 	}
 
 private:
