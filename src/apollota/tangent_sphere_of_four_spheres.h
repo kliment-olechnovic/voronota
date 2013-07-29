@@ -119,12 +119,16 @@ public:
 						const double r=radiuses[i];
 						if(r>0)
 						{
-							SimpleSphere candidate((u1*r+v1+sm.x), (u2*r+v2+sm.y), (u3*r+v3+sm.z), (r-sm.r));
+							SimpleSphere candidate((u1*r+v1), (u2*r+v2), (u3*r+v3), r);
 							if(rotation_step>0)
 							{
 								const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
 								candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
 							}
+							candidate.x+=sm.x;
+							candidate.y+=sm.y;
+							candidate.z+=sm.z;
+							candidate.r-=sm.r;
 							if(check_tangent_sphere(sm, s1, s2, s3, candidate))
 							{
 								results.push_back(candidate);

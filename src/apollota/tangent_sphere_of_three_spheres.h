@@ -182,12 +182,16 @@ public:
 					for(std::size_t i=0;i<zs.size();i++)
 					{
 						const double z=zs[i];
-						SimpleSphere candidate((ux*z+vx+sm.x), (uy*z+vy+sm.y), (z+sm.z), (r-sm.r));
+						SimpleSphere candidate((ux*z+vx), (uy*z+vy), z, r);
 						if(rotation_step>0)
 						{
 							const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
 							candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
 						}
+						candidate.x+=sm.x;
+						candidate.y+=sm.y;
+						candidate.z+=sm.z;
+						candidate.r-=sm.r;
 						if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
 						{
 							results.push_back(candidate);
