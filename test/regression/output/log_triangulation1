@@ -3,11 +3,11 @@ quadruples 11277
 tangent_spheres 11283
 processed_faces 22613
 difficult_faces 12
-first_faces_iterations 3
+first_faces_iterations 8
 surplus_quadruples 0
 surplus_tangent_spheres 0
 hidden_spheres 0
 ignored_spheres 0
 using_epsilon 1e-06
-complexity 10649544
+complexity 10666169
 check 1
