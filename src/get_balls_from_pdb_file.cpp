@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "auxiliaries/io_utilities.h"
 #include "auxiliaries/pdb_file_parser.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/program_options_handler.h"
+
+#include "modes_commons.h"
 
 namespace
 {
