@@ -1,11 +1,7 @@
 #include <iostream>
 #include <deque>
 
-#include "apollota/bounding_spheres_hierarchy.h"
-#include "apollota/tangent_plane_of_three_spheres.h"
-#include "apollota/tangent_sphere_of_three_spheres.h"
-#include "apollota/tangent_sphere_of_four_spheres.h"
-#include "apollota/rotation.h"
+#include "apollota/triangulation.h"
 #include "apollota/opengl_printer.h"
 
 #include "modes_commons.h"
@@ -288,6 +284,34 @@ void print_demo_tangents()
 	std::cout << "cmd.set('ambient', 0.3)\n\n";
 }
 
+void print_demo_edges(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double max_dist=poh.argument<double>("--max-dist", std::numeric_limits<double>::max());
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false);
+	apollota::Triangulation::NeighborsGraph graph=apollota::Triangulation::collect_neighbors_graph_from_neighbors_map(apollota::Triangulation::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+	apollota::OpenGLPrinter opengl_printer(std::cout, "obj_edges", "cgo_edges");
+	opengl_printer.print_color(0x36BBCE);
+	for(std::size_t i=0;i<graph.size();i++)
+	{
+		for(std::size_t j=0;j<graph[i].size();j++)
+		{
+			std::vector<apollota::SimpleSphere> neighbors(2);
+			neighbors[0]=(spheres[i]);
+			neighbors[1]=(spheres[graph[i][j]]);
+			const double dist=apollota::minimal_distance_from_sphere_to_sphere(neighbors[0], neighbors[1]);
+			if(dist<max_dist)
+			{
+				opengl_printer.print_line_strip(neighbors);
+			}
+		}
+	}
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -310,6 +334,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="tangents")
 	{
 		print_demo_tangents();
+	}
+	else if(scene=="edges")
+	{
+		print_demo_edges(poh);
 	}
 	else
 	{
