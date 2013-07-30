@@ -8,21 +8,10 @@
 #include "apollota/rotation.h"
 #include "apollota/opengl_printer.h"
 
-#include "auxiliaries/io_utilities.h"
-#include "auxiliaries/program_options_handler.h"
+#include "modes_commons.h"
 
 namespace
 {
-
-void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota::SimpleSphere>& spheres)
-{
-	apollota::SimpleSphere sphere;
-	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
-	if(!input.fail())
-	{
-		spheres.push_back(sphere);
-	}
-}
 
 void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -35,7 +24,7 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 	const unsigned int max_level=poh.argument<unsigned int>("--max-level", 0);
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

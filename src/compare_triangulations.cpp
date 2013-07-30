@@ -3,21 +3,10 @@
 
 #include "apollota/comparison_of_triangulations.h"
 
-#include "auxiliaries/io_utilities.h"
-#include "auxiliaries/program_options_handler.h"
+#include "modes_commons.h"
 
 namespace
 {
-
-void add_sphere_from_stream_to_vector(std::istream& input, std::vector<apollota::SimpleSphere>& spheres)
-{
-	apollota::SimpleSphere sphere;
-	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
-	if(!input.fail())
-	{
-		spheres.push_back(sphere);
-	}
-}
 
 void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollota::Quadruple>& quadruples)
 {
@@ -68,7 +57,7 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, "#", add_sphere_from_stream_to_vector, spheres);
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
