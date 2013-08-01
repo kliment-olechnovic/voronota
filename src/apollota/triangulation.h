@@ -906,7 +906,7 @@ private:
 
 		std::set<std::size_t> ignorable_spheres_ids;
 
-		while(!stack.empty())
+		do
 		{
 			TriplesMap stack_map;
 			for(std::size_t i=0;i<stack.size();i++)
@@ -986,6 +986,7 @@ private:
 				}
 			}
 		}
+		while(!stack.empty());
 	}
 
 	template<typename SphereType>
