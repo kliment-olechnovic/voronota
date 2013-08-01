@@ -877,15 +877,6 @@ private:
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			QuadruplesLog& log)
 	{
-		return find_valid_quadruples(bsh, QuadruplesMap(), log);
-	}
-
-	template<typename SphereType>
-	static QuadruplesMap find_valid_quadruples(
-			const BoundingSpheresHierarchy<SphereType>& bsh,
-			const QuadruplesMap& initial_quadruples_map,
-			QuadruplesLog& log)
-	{
 		typedef SphereType Sphere;
 		typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
 		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
@@ -897,86 +888,6 @@ private:
 		std::vector< Face<Sphere> > stack;
 		TriplesSet processed_triples_set;
 
-		if(!initial_quadruples_map.empty())
-		{
-			const TriplesNeighborsMap initial_triples_neighbors_map=collect_triples_neighbors_map_from_quadruples_map(initial_quadruples_map);
-			for(TriplesNeighborsMap::const_iterator it=initial_triples_neighbors_map.begin();it!=initial_triples_neighbors_map.end();++it)
-			{
-				const Triple& triple=it->first;
-				const std::tr1::unordered_set<std::size_t>& neighbors_set=it->second;
-				Face<Sphere> face(bsh.leaves_spheres(), triple, bsh.min_input_radius());
-				std::size_t rejected_neighbors_count=0;
-				for(std::tr1::unordered_set<std::size_t>::const_iterator jt=neighbors_set.begin();jt!=neighbors_set.end();++jt)
-				{
-					const std::size_t neighbor=(*jt);
-					bool rejected=true;
-					for(std::size_t d_number=0;d_number<2;d_number++)
-					{
-						std::pair<bool, SimpleSphere> d_status=face.check_candidate_for_d(neighbor, d_number);
-						if(d_status.first && SearchForSphericalCollisions::find_any_collision(bsh, d_status.second).empty())
-						{
-							face.set_d(neighbor, d_number, d_status.second);
-							rejected=false;
-						}
-					}
-					{
-						std::vector<SimpleSphere> e_status=face.check_candidate_for_e(neighbor);
-						for(std::size_t i=0;i<e_status.size();i++)
-						{
-							if(SearchForSphericalCollisions::find_any_collision(bsh, e_status[i]).empty())
-							{
-								face.add_e(neighbor, e_status[i]);
-								rejected=false;
-							}
-						}
-					}
-					if(rejected)
-					{
-						rejected_neighbors_count++;
-					}
-				}
-				if(face.has_d(0) || face.has_d(1) || face.has_e())
-				{
-					const std::vector< std::pair<Quadruple, SimpleSphere> > produced_quadruples=face.produce_quadruples(face.has_d(0), face.has_d(1), face.has_e());
-					for(std::size_t i=0;i<produced_quadruples.size();i++)
-					{
-						const Quadruple& quadruple=produced_quadruples[i].first;
-						const SimpleSphere& quadruple_tangent_sphere=produced_quadruples[i].second;
-						QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
-						if(qm_it==quadruples_map.end())
-						{
-							log.quadruples++;
-							log.tangent_spheres++;
-							quadruples_map[quadruple].push_back(quadruple_tangent_sphere);
-							for(int a=0;a<4;a++)
-							{
-								spheres_usage_mapping[quadruple.get(a)]++;
-							}
-						}
-						else
-						{
-							std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
-							if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
-							{
-								log.tangent_spheres++;
-								quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
-							}
-						}
-					}
-					if(rejected_neighbors_count==0 && face.has_d(0) && face.has_d(1))
-					{
-						processed_triples_set.insert(triple);
-					}
-					else
-					{
-						face.remove_all_e();
-						stack.push_back(face);
-					}
-				}
-			}
-		}
-
-		if(quadruples_map.empty())
 		{
 			const std::size_t starting_sphere_for_finding_first_faces=select_starting_sphere_for_finding_first_faces(bsh);
 			stack=find_first_faces(bsh, starting_sphere_for_finding_first_faces, log.finding_first_faces_iterations, false, false);
