@@ -472,7 +472,7 @@ private:
 			}
 		}
 
-		void remove_all_e()
+		void unset_e()
 		{
 			e_ids_and_tangent_spheres_.clear();
 		}
@@ -480,6 +480,11 @@ private:
 		bool has_e() const
 		{
 			return (!e_ids_and_tangent_spheres_.empty());
+		}
+
+		const std::vector< std::pair<std::size_t, SimpleSphere> >& get_e_ids_and_tangent_spheres() const
+		{
+			return e_ids_and_tangent_spheres_;
 		}
 
 		std::vector< std::pair<Quadruple, SimpleSphere> > produce_allowed_quadruples() const
