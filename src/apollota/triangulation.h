@@ -903,102 +903,6 @@ private:
 		return result;
 	}
 
-	template<typename SphereType>
-	static void find_valid_faces(
-			const BoundingSpheresHierarchy<SphereType>& bsh,
-			std::vector< Face<SphereType> >& valid_faces,
-			std::vector< Face<SphereType> >& stack,
-			QuadruplesLog& log)
-	{
-		typedef SphereType Sphere;
-		typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
-		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
-
-		TriplesSet processed_triples_set;
-		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
-
-		for(std::size_t i=0;i<valid_faces.size();i++)
-		{
-			const Face<Sphere>& face=valid_faces[i];
-			processed_triples_set.insert(face.abc_ids());
-			for(int j=0;j<3;j++)
-			{
-				spheres_usage_mapping[face.abc_ids().get(j)]=1;
-			}
-		}
-
-		std::set<std::size_t> ignorable_spheres_ids;
-
-		do
-		{
-			TriplesMap stack_map;
-			for(std::size_t i=0;i<stack.size();i++)
-			{
-				stack_map[stack[i].abc_ids()]=i;
-			}
-			while(!stack.empty())
-			{
-				Face<Sphere> face=stack.back();
-				stack.pop_back();
-				stack_map.erase(face.abc_ids());
-				processed_triples_set.insert(face.abc_ids());
-				log.processed_faces++;
-				if(!face.can_have_d())
-				{
-					log.difficult_faces++;
-				}
-				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 0);
-				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 1);
-				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<Sphere>(bsh, face);
-				if(found_d0 || found_d1 || found_e)
-				{
-					const std::vector< std::pair<Triple, std::pair<std::size_t, SimpleSphere> > > produced_prefaces=face.produce_prefaces(found_d0, found_d1, found_e);
-					for(std::size_t i=0;i<produced_prefaces.size();i++)
-					{
-						const std::pair<Triple, std::pair<std::size_t, SimpleSphere> >& produced_preface=produced_prefaces[i];
-						if(processed_triples_set.count(produced_preface.first)==0)
-						{
-							TriplesMap::const_iterator sm_it=stack_map.find(produced_preface.first);
-							if(sm_it==stack_map.end())
-							{
-								stack_map[produced_preface.first]=stack.size();
-								stack.push_back(Face<Sphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
-								stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
-								log.produced_faces++;
-							}
-							else
-							{
-								stack.at(sm_it->second).set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
-								log.updated_faces++;
-							}
-						}
-						else
-						{
-							log.triples_repetitions++;
-						}
-					}
-				}
-				if(face.has_d(0) || face.has_d(1) || face.has_e())
-				{
-					valid_faces.push_back(face);
-					for(int j=0;j<3;j++)
-					{
-						spheres_usage_mapping[face.abc_ids().get(j)]=1;
-					}
-				}
-			}
-			for(std::size_t i=0;i<spheres_usage_mapping.size() && stack.empty();i++)
-			{
-				if(spheres_usage_mapping[i]==0 && ignorable_spheres_ids.count(i)==0)
-				{
-					stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
-					ignorable_spheres_ids.insert(i);
-				}
-			}
-		}
-		while(!stack.empty());
-	}
-
 	static void augment_quadruples_map(
 			const std::vector< std::pair<Quadruple, SimpleSphere> >& additional_quadruples,
 			QuadruplesMap& quadruples_map,
@@ -1028,15 +932,101 @@ private:
 	}
 
 	template<typename SphereType>
-	static void collect_quadruples_from_faces(
-			const std::vector< Face<SphereType> >& faces,
+	static void find_valid_quadruples(
+			const BoundingSpheresHierarchy<SphereType>& bsh,
+			const std::vector< Face<SphereType> >& initial_valid_faces,
+			std::vector< Face<SphereType> >& stack,
 			QuadruplesMap& quadruples_map,
 			QuadruplesLog& log)
 	{
-		for(std::size_t i=0;i<faces.size();i++)
+		typedef SphereType Sphere;
+		typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
+		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
+
+		TriplesSet processed_triples_set;
+		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
+
+		for(std::size_t i=0;i<initial_valid_faces.size();i++)
 		{
-			augment_quadruples_map(faces[i].produce_quadruples(true, true, true), quadruples_map, log);
+			const Face<Sphere>& face=initial_valid_faces[i];
+			processed_triples_set.insert(face.abc_ids());
+			for(int j=0;j<3;j++)
+			{
+				spheres_usage_mapping[face.abc_ids().get(j)]=1;
+			}
+			augment_quadruples_map(face.produce_quadruples(true, true, true), quadruples_map, log);
 		}
+
+		std::set<std::size_t> ignorable_spheres_ids;
+
+		do
+		{
+			TriplesMap stack_map;
+			for(std::size_t i=0;i<stack.size();i++)
+			{
+				stack_map[stack[i].abc_ids()]=i;
+			}
+			while(!stack.empty())
+			{
+				Face<Sphere> face=stack.back();
+				stack.pop_back();
+				stack_map.erase(face.abc_ids());
+				processed_triples_set.insert(face.abc_ids());
+				log.processed_faces++;
+				if(!face.can_have_d())
+				{
+					log.difficult_faces++;
+				}
+				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 0);
+				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 1);
+				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<Sphere>(bsh, face);
+				if(found_d0 || found_d1 || found_e)
+				{
+					augment_quadruples_map(face.produce_quadruples(found_d0, found_d1, found_e), quadruples_map, log);
+					const std::vector< std::pair<Triple, std::pair<std::size_t, SimpleSphere> > > produced_prefaces=face.produce_prefaces(found_d0, found_d1, found_e);
+					for(std::size_t i=0;i<produced_prefaces.size();i++)
+					{
+						const std::pair<Triple, std::pair<std::size_t, SimpleSphere> >& produced_preface=produced_prefaces[i];
+						if(processed_triples_set.count(produced_preface.first)==0)
+						{
+							TriplesMap::const_iterator sm_it=stack_map.find(produced_preface.first);
+							if(sm_it==stack_map.end())
+							{
+								stack_map[produced_preface.first]=stack.size();
+								stack.push_back(Face<Sphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
+								stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
+								log.produced_faces++;
+							}
+							else
+							{
+								stack.at(sm_it->second).set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
+								log.updated_faces++;
+							}
+						}
+						else
+						{
+							log.triples_repetitions++;
+						}
+					}
+				}
+				if(face.has_d(0) || face.has_d(1) || face.has_e())
+				{
+					for(int j=0;j<3;j++)
+					{
+						spheres_usage_mapping[face.abc_ids().get(j)]=1;
+					}
+				}
+			}
+			for(std::size_t i=0;i<spheres_usage_mapping.size() && stack.empty();i++)
+			{
+				if(spheres_usage_mapping[i]==0 && ignorable_spheres_ids.count(i)==0)
+				{
+					stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
+					ignorable_spheres_ids.insert(i);
+				}
+			}
+		}
+		while(!stack.empty());
 	}
 
 	template<typename SphereType>
@@ -1050,13 +1040,12 @@ private:
 
 		log=QuadruplesLog();
 
-		QuadruplesMap quadruples_map;
-
 		std::vector< Face<Sphere> > valid_faces;
 		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
 
-		find_valid_faces(bsh, valid_faces, stack, log);
-		collect_quadruples_from_faces(valid_faces, quadruples_map, log);
+		QuadruplesMap quadruples_map;
+
+		find_valid_quadruples(bsh, valid_faces, stack, quadruples_map, log);
 
 		return quadruples_map;
 	}
