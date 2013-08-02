@@ -1000,6 +1000,36 @@ private:
 	}
 
 	template<typename SphereType>
+	static void collect_quadruples_from_face(
+			const Face<SphereType>& face,
+			QuadruplesMap& quadruples_map,
+			QuadruplesLog& log)
+	{
+		const std::vector< std::pair<Quadruple, SimpleSphere> > produced_quadruples=face.produce_quadruples(true, true, true);
+		for(std::size_t i=0;i<produced_quadruples.size();i++)
+		{
+			const Quadruple& quadruple=produced_quadruples[i].first;
+			const SimpleSphere& quadruple_tangent_sphere=produced_quadruples[i].second;
+			QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
+			if(qm_it==quadruples_map.end())
+			{
+				log.quadruples++;
+				log.tangent_spheres++;
+				quadruples_map[quadruple].push_back(quadruple_tangent_sphere);
+			}
+			else
+			{
+				std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
+				if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
+				{
+					log.tangent_spheres++;
+					quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
+				}
+			}
+		}
+	}
+
+	template<typename SphereType>
 	static void collect_quadruples_from_faces(
 			const std::vector< Face<SphereType> >& faces,
 			QuadruplesMap& quadruples_map,
@@ -1007,28 +1037,7 @@ private:
 	{
 		for(std::size_t i=0;i<faces.size();i++)
 		{
-			const std::vector< std::pair<Quadruple, SimpleSphere> > produced_quadruples=faces[i].produce_quadruples(true, true, true);
-			for(std::size_t i=0;i<produced_quadruples.size();i++)
-			{
-				const Quadruple& quadruple=produced_quadruples[i].first;
-				const SimpleSphere& quadruple_tangent_sphere=produced_quadruples[i].second;
-				QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
-				if(qm_it==quadruples_map.end())
-				{
-					log.quadruples++;
-					log.tangent_spheres++;
-					quadruples_map[quadruple].push_back(quadruple_tangent_sphere);
-				}
-				else
-				{
-					std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
-					if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
-					{
-						log.tangent_spheres++;
-						quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
-					}
-				}
-			}
+			collect_quadruples_from_face(faces[i], quadruples_map, log);
 		}
 	}
 
