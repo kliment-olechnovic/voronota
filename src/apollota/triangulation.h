@@ -6,6 +6,7 @@
 #include <limits>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
@@ -83,34 +84,59 @@ public:
 	static Result construct_result(const std::vector<SphereType>& spheres, const double initial_radius_for_spheres_bucketing, const bool include_surplus_valid_quadruples)
 	{
 		Result result;
-		BoundingSpheresHierarchy<SphereType> bsh(spheres, initial_radius_for_spheres_bucketing, 1);
-		result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
-		for(std::set<std::size_t>::const_iterator it=result.hidden_spheres_ids.begin();it!=result.hidden_spheres_ids.end();++it)
+
 		{
-			bsh.ignore_leaf_sphere(*it);
-		}
-		result.quadruples_map=find_valid_quadruples(bsh, result.quadruples_log);
-		if(include_surplus_valid_quadruples)
-		{
-			result.quadruples_map=find_surplus_valid_quadruples(bsh, result.quadruples_map, result.surplus_quadruples_log);
-		}
-		std::vector<int> spheres_inclusion_map(spheres.size(), 0);
-		for(QuadruplesMap::const_iterator it=result.quadruples_map.begin();it!=result.quadruples_map.end();++it)
-		{
-			const Quadruple& q=it->first;
-			for(int i=0;i<4;i++)
+			std::auto_ptr< BoundingSpheresHierarchy<SphereType> > bsh(new BoundingSpheresHierarchy<SphereType>(spheres, initial_radius_for_spheres_bucketing, 1));
+			result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(*bsh);
+			std::vector<SphereType> refined_spheres;
+			std::vector<std::size_t> refined_spheres_mapping;
+			if(!result.hidden_spheres_ids.empty())
 			{
-				spheres_inclusion_map[q.get(i)]=1;
+				const std::size_t refined_spheres_count=spheres.size()-result.hidden_spheres_ids.size();
+				refined_spheres.reserve(refined_spheres_count);
+				refined_spheres_mapping.reserve(refined_spheres_count);
+				for(std::size_t i=0;i<spheres.size();i++)
+				{
+					if(result.hidden_spheres_ids.count(i)==0)
+					{
+						refined_spheres.push_back(spheres[i]);
+						refined_spheres_mapping.push_back(i);
+					}
+				}
+				result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
+				bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
+			}
+			result.quadruples_map=find_valid_quadruples(*bsh, result.quadruples_log);
+			if(include_surplus_valid_quadruples)
+			{
+				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_log);
+			}
+			if(!refined_spheres_mapping.empty())
+			{
+				result.quadruples_map=renumber_quadruples_map(result.quadruples_map, refined_spheres_mapping);
+			}
+			result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
+		}
+
+		{
+			std::vector<int> spheres_inclusion_map(spheres.size(), 0);
+			for(QuadruplesMap::const_iterator it=result.quadruples_map.begin();it!=result.quadruples_map.end();++it)
+			{
+				const Quadruple& q=it->first;
+				for(int i=0;i<4;i++)
+				{
+					spheres_inclusion_map[q.get(i)]=1;
+				}
+			}
+			for(std::size_t i=0;i<spheres_inclusion_map.size();i++)
+			{
+				if(spheres_inclusion_map[i]==0 && result.hidden_spheres_ids.count(i)==0)
+				{
+					result.ignored_spheres_ids.insert(i);
+				}
 			}
 		}
-		for(std::size_t i=0;i<spheres_inclusion_map.size();i++)
-		{
-			if(spheres_inclusion_map[i]==0 && result.hidden_spheres_ids.count(i)==0)
-			{
-				result.ignored_spheres_ids.insert(i);
-			}
-		}
-		result.bounding_spheres_hierarchy_iterations=bsh.iterations_count();
+
 		return result;
 	}
 
@@ -965,20 +991,7 @@ private:
 			{
 				if(spheres_usage_mapping[i]==0 && ignorable_spheres_ids.count(i)==0)
 				{
-					const std::vector<Sphere>& all_spheres=bsh.leaves_spheres();
-					const std::vector<std::size_t> colliding_neighbours=SearchForSphericalCollisions::find_all_collisions(bsh, all_spheres[i]);
-					bool hidden=false;
-					for(std::size_t j=0;j<colliding_neighbours.size() && !hidden;j++)
-					{
-						if(colliding_neighbours[j]!=i && sphere_contains_sphere(all_spheres[colliding_neighbours[j]], all_spheres[i]))
-						{
-							hidden=true;
-						}
-					}
-					if(!hidden)
-					{
-						stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
-					}
+					stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
 					ignorable_spheres_ids.insert(i);
 				}
 			}
@@ -1111,6 +1124,20 @@ private:
 			}
 		}
 		return surplus_quadruples_map;
+	}
+
+	static QuadruplesMap renumber_quadruples_map(const QuadruplesMap& quadruples_map, const std::vector<std::size_t>& mapping)
+	{
+		QuadruplesMap renumbered_quadruples_map;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& q=it->first;
+			if(q.get(3)<mapping.size())
+			{
+				renumbered_quadruples_map[Quadruple(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)])]=it->second;
+			}
+		}
+		return renumbered_quadruples_map;
 	}
 };
 

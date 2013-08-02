@@ -63,23 +63,6 @@ public:
 		return result;
 	}
 
-	void ignore_leaf_sphere(const std::size_t leaf_sphere_id)
-	{
-		if(!clusters_layers_.empty())
-		{
-			for(std::size_t i=0;i<clusters_layers_[0].size();i++)
-			{
-				std::vector<std::size_t>& children=clusters_layers_[0][i].children;
-				std::vector<std::size_t>::iterator it=std::remove(children.begin(), children.end(), leaf_sphere_id);
-				if(it!=children.end())
-				{
-					children.erase(it, children.end());
-					return;
-				}
-			}
-		}
-	}
-
 	template<typename NodeChecker, typename LeafChecker>
 	std::vector<std::size_t> search(NodeChecker& node_checker, LeafChecker& leaf_checker) const
 	{
