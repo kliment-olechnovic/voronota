@@ -999,17 +999,15 @@ private:
 		while(!stack.empty());
 	}
 
-	template<typename SphereType>
-	static void collect_quadruples_from_face(
-			const Face<SphereType>& face,
+	static void augment_quadruples_map(
+			const std::vector< std::pair<Quadruple, SimpleSphere> >& additional_quadruples,
 			QuadruplesMap& quadruples_map,
 			QuadruplesLog& log)
 	{
-		const std::vector< std::pair<Quadruple, SimpleSphere> > produced_quadruples=face.produce_quadruples(true, true, true);
-		for(std::size_t i=0;i<produced_quadruples.size();i++)
+		for(std::size_t i=0;i<additional_quadruples.size();i++)
 		{
-			const Quadruple& quadruple=produced_quadruples[i].first;
-			const SimpleSphere& quadruple_tangent_sphere=produced_quadruples[i].second;
+			const Quadruple& quadruple=additional_quadruples[i].first;
+			const SimpleSphere& quadruple_tangent_sphere=additional_quadruples[i].second;
 			QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
 			if(qm_it==quadruples_map.end())
 			{
@@ -1037,7 +1035,7 @@ private:
 	{
 		for(std::size_t i=0;i<faces.size();i++)
 		{
-			collect_quadruples_from_face(faces[i], quadruples_map, log);
+			augment_quadruples_map(faces[i].produce_quadruples(true, true, true), quadruples_map, log);
 		}
 	}
 
