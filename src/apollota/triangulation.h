@@ -977,7 +977,7 @@ private:
 					}
 					if(!hidden)
 					{
-						stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 50);
+						stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
 					}
 					ignorable_spheres_ids.insert(i);
 				}
