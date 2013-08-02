@@ -934,7 +934,6 @@ private:
 	template<typename SphereType>
 	static void find_valid_quadruples(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
-			const std::vector< Face<SphereType> >& initial_valid_faces,
 			std::vector< Face<SphereType> >& stack,
 			QuadruplesMap& quadruples_map,
 			QuadruplesLog& log)
@@ -945,18 +944,6 @@ private:
 
 		TriplesSet processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
-
-		for(std::size_t i=0;i<initial_valid_faces.size();i++)
-		{
-			const Face<Sphere>& face=initial_valid_faces[i];
-			processed_triples_set.insert(face.abc_ids());
-			for(int j=0;j<3;j++)
-			{
-				spheres_usage_mapping[face.abc_ids().get(j)]=1;
-			}
-			augment_quadruples_map(face.produce_quadruples(true, true, true), quadruples_map, log);
-		}
-
 		std::set<std::size_t> ignorable_spheres_ids;
 
 		do
@@ -1039,13 +1026,9 @@ private:
 		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
 
 		log=QuadruplesLog();
-
-		std::vector< Face<Sphere> > valid_faces;
 		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
-
 		QuadruplesMap quadruples_map;
-
-		find_valid_quadruples(bsh, valid_faces, stack, quadruples_map, log);
+		find_valid_quadruples(bsh, stack, quadruples_map, log);
 
 		return quadruples_map;
 	}
