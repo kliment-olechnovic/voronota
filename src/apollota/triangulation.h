@@ -1046,13 +1046,7 @@ private:
 		QuadruplesMap quadruples_map;
 
 		std::vector< Face<Sphere> > valid_faces;
-
-		const std::size_t starting_sphere_for_finding_first_faces=select_starting_sphere_for_finding_first_valid_faces(bsh);
-		std::vector< Face<Sphere> >  stack=find_first_valid_faces(bsh, starting_sphere_for_finding_first_faces, log.finding_first_faces_iterations, false, false);
-		if(stack.empty())
-		{
-			stack=find_first_valid_faces(bsh, starting_sphere_for_finding_first_faces, log.finding_first_faces_iterations, false, true);
-		}
+		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
 
 		find_valid_faces(bsh, valid_faces, stack, log);
 		collect_quadruples_from_faces(valid_faces, quadruples_map, log);
