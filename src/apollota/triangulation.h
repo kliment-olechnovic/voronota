@@ -33,19 +33,19 @@ public:
 	typedef std::tr1::unordered_map<Pair, std::tr1::unordered_set<std::size_t>, Pair::HashFunctor> PairsNeighborsMap;
 	typedef std::tr1::unordered_map<Triple, std::tr1::unordered_set<std::size_t>, Triple::HashFunctor> TriplesNeighborsMap;
 
-	struct QuadruplesLog
+	struct QuadruplesSearchLog
 	{
-		std::size_t quadruples;
+		std::size_t added_quadruples;
+		std::size_t added_tangent_spheres;
 		std::size_t processed_faces;
-		std::size_t tangent_spheres;
-		std::size_t difficult_faces;
+		std::size_t encountered_difficult_faces;
 		std::size_t produced_faces;
 		std::size_t updated_faces;
-		std::size_t triples_repetitions;
-		std::size_t finding_first_faces_iterations;
+		std::size_t encountered_triples_repetitions;
+		std::size_t performed_iterations_for_finding_first_faces;
 	};
 
-	struct SurplusQuadruplesLog
+	struct SurplusQuadruplesSearchLog
 	{
 		std::size_t surplus_quadruples;
 		std::size_t surplus_tangent_spheres;
@@ -54,28 +54,27 @@ public:
 	struct Result
 	{
 		QuadruplesMap quadruples_map;
-		QuadruplesLog quadruples_log;
-		SurplusQuadruplesLog surplus_quadruples_log;
+		QuadruplesSearchLog quadruples_search_log;
+		SurplusQuadruplesSearchLog surplus_quadruples_search_log;
 		std::set<std::size_t> hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
 		unsigned long bounding_spheres_hierarchy_iterations;
 
-		Result() : quadruples_log(), surplus_quadruples_log(), bounding_spheres_hierarchy_iterations(0)
+		Result() : quadruples_search_log(), surplus_quadruples_search_log(), bounding_spheres_hierarchy_iterations(0)
 		{
 		}
 
 		void print_status(std::ostream& output) const
 		{
-			output << "quadruples " << quadruples_log.quadruples << "\n";
-			output << "tangent_spheres " << quadruples_log.tangent_spheres << "\n";
-			output << "processed_faces " << quadruples_log.processed_faces << "\n";
-			output << "difficult_faces " << quadruples_log.difficult_faces << "\n";
-			output << "first_faces_iterations " << quadruples_log.finding_first_faces_iterations << "\n";
-			output << "surplus_quadruples " << surplus_quadruples_log.surplus_quadruples << "\n";
-			output << "surplus_tangent_spheres " << surplus_quadruples_log.surplus_tangent_spheres << "\n";
-			output << "hidden_spheres " << hidden_spheres_ids.size() << "\n";
-			output << "ignored_spheres " << ignored_spheres_ids.size() << "\n";
-			output << "using_epsilon " << comparison_epsilon() << "\n";
+			output << "quadruples " << quadruples_map.size() << "\n";
+			output << "tangent_spheres " << count_tangent_spheres_in_quadruples_map(quadruples_map) << "\n";
+			output << "processed_faces " << quadruples_search_log.processed_faces << "\n";
+			output << "difficult_faces " << quadruples_search_log.encountered_difficult_faces << "\n";
+			output << "first_iterations " << quadruples_search_log.performed_iterations_for_finding_first_faces << "\n";
+			output << "surplus_tangent_spheres " << surplus_quadruples_search_log.surplus_tangent_spheres << "\n";
+			output << "hidden_balls " << hidden_spheres_ids.size() << "\n";
+			output << "ignored_balls " << ignored_spheres_ids.size() << "\n";
+			output << "epsilon " << comparison_epsilon() << "\n";
 			output << "complexity " << bounding_spheres_hierarchy_iterations << "\n";
 		}
 	};
@@ -106,10 +105,10 @@ public:
 				result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
 				bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
 			}
-			result.quadruples_map=find_valid_quadruples_from_scratch(*bsh, result.quadruples_log);
+			result.quadruples_map=find_valid_quadruples_from_scratch(*bsh, result.quadruples_search_log);
 			if(include_surplus_valid_quadruples)
 			{
-				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_log);
+				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_search_log);
 			}
 			if(!refined_spheres_mapping.empty())
 			{
@@ -217,6 +216,16 @@ public:
 			}
 		}
 		return triples_neighbors_map;
+	}
+
+	static std::size_t count_tangent_spheres_in_quadruples_map(const QuadruplesMap& quadruples_map)
+	{
+		std::size_t sum=0;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			sum+=it->second.size();
+		}
+		return sum;
 	}
 
 	static void print_quadruples_map(const QuadruplesMap& quadruples_map, std::ostream& output)
@@ -947,7 +956,7 @@ private:
 			std::tr1::unordered_set<Triple, Triple::HashFunctor>& processed_triples_set,
 			std::vector<int> spheres_usage_mapping,
 			QuadruplesMap& quadruples_map,
-			QuadruplesLog& log)
+			QuadruplesSearchLog& log)
 	{
 		typedef SphereType Sphere;
 		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
@@ -970,7 +979,7 @@ private:
 				log.processed_faces++;
 				if(!face.can_have_d())
 				{
-					log.difficult_faces++;
+					log.encountered_difficult_faces++;
 				}
 				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 0);
 				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 1);
@@ -982,8 +991,8 @@ private:
 						for(std::size_t i=0;i<additional_quadruples.size();i++)
 						{
 							const std::pair<bool, bool> augmention_status=augment_quadruples_map(additional_quadruples[i].first, additional_quadruples[i].second, quadruples_map);
-							log.quadruples+=(augmention_status.first ? 1 : 0);
-							log.tangent_spheres+=(augmention_status.second ? 1 : 0);
+							log.added_quadruples+=(augmention_status.first ? 1 : 0);
+							log.added_tangent_spheres+=(augmention_status.second ? 1 : 0);
 						}
 					}
 					{
@@ -1009,7 +1018,7 @@ private:
 							}
 							else
 							{
-								log.triples_repetitions++;
+								log.encountered_triples_repetitions++;
 							}
 						}
 					}
@@ -1029,7 +1038,7 @@ private:
 			{
 				if(spheres_usage_mapping[i]==0 && ignorable_spheres_ids.count(i)==0)
 				{
-					stack=find_first_valid_faces(bsh, i, log.finding_first_faces_iterations, true, true, 25);
+					stack=find_first_valid_faces(bsh, i, log.performed_iterations_for_finding_first_faces, true, true, 25);
 					ignorable_spheres_ids.insert(i);
 				}
 			}
@@ -1040,10 +1049,11 @@ private:
 	template<typename SphereType>
 	static QuadruplesMap find_valid_quadruples_from_scratch(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
-			QuadruplesLog& log)
+			QuadruplesSearchLog& log)
 	{
-		log=QuadruplesLog();
-		std::vector< Face<SphereType> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
+		log=QuadruplesSearchLog();
+
+		std::vector< Face<SphereType> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		QuadruplesMap quadruples_map;
@@ -1056,9 +1066,11 @@ private:
 	static void find_valid_quadruples_from_base_quadruples(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			QuadruplesMap& quadruples_map,
-			QuadruplesLog& log)
+			QuadruplesSearchLog& log)
 	{
 		typedef std::tr1::unordered_map<Triple, Face<SphereType>, Triple::HashFunctor> TriplesFacesMap;
+
+		log=QuadruplesSearchLog();
 
 		TriplesFacesMap triples_faces_map;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
@@ -1099,9 +1111,9 @@ private:
 	}
 
 	template<typename SphereType>
-	static QuadruplesMap find_surplus_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, const QuadruplesMap& quadruples_map, SurplusQuadruplesLog& log)
+	static QuadruplesMap find_surplus_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, const QuadruplesMap& quadruples_map, SurplusQuadruplesSearchLog& log)
 	{
-		log=SurplusQuadruplesLog();
+		log=SurplusQuadruplesSearchLog();
 		QuadruplesMap surplus_quadruples_map=quadruples_map;
 		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
 		{
