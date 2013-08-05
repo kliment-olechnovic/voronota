@@ -270,6 +270,20 @@ public:
 		return quadruples_map;
 	}
 
+	static QuadruplesMap renumber_quadruples_map(const QuadruplesMap& quadruples_map, const std::vector<std::size_t>& mapping)
+	{
+		QuadruplesMap renumbered_quadruples_map;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& q=it->first;
+			if(q.get(3)<mapping.size())
+			{
+				renumbered_quadruples_map[Quadruple(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)])]=it->second;
+			}
+		}
+		return renumbered_quadruples_map;
+	}
+
 	template<typename SphereType>
 	static bool check_quadruples_map(const std::vector<SphereType>& spheres, const QuadruplesMap& quadruples_map)
 	{
@@ -935,15 +949,14 @@ private:
 	static void find_valid_quadruples(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			std::vector< Face<SphereType> >& stack,
+			std::tr1::unordered_set<Triple, Triple::HashFunctor>& processed_triples_set,
+			std::vector<int> spheres_usage_mapping,
 			QuadruplesMap& quadruples_map,
 			QuadruplesLog& log)
 	{
 		typedef SphereType Sphere;
-		typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
 		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
 
-		TriplesSet processed_triples_set;
-		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
 
 		do
@@ -1000,7 +1013,10 @@ private:
 				{
 					for(int j=0;j<3;j++)
 					{
-						spheres_usage_mapping[face.abc_ids().get(j)]=1;
+						if(face.abc_ids().get(j)<spheres_usage_mapping.size())
+						{
+							spheres_usage_mapping[face.abc_ids().get(j)]=1;
+						}
 					}
 				}
 			}
@@ -1027,8 +1043,10 @@ private:
 
 		log=QuadruplesLog();
 		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
+		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
+		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		QuadruplesMap quadruples_map;
-		find_valid_quadruples(bsh, stack, quadruples_map, log);
+		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
 
 		return quadruples_map;
 	}
@@ -1097,20 +1115,6 @@ private:
 			}
 		}
 		return surplus_quadruples_map;
-	}
-
-	static QuadruplesMap renumber_quadruples_map(const QuadruplesMap& quadruples_map, const std::vector<std::size_t>& mapping)
-	{
-		QuadruplesMap renumbered_quadruples_map;
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& q=it->first;
-			if(q.get(3)<mapping.size())
-			{
-				renumbered_quadruples_map[Quadruple(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)])]=it->second;
-			}
-		}
-		return renumbered_quadruples_map;
 	}
 };
 
