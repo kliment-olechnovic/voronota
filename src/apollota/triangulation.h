@@ -427,11 +427,11 @@ private:
 			{
 				const int h0=halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, spheres_->at(d_id));
 				const int h1=halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, spheres_->at(d_id));
-				if(h0>=0 && h1==-1)
+				if(h0>=0 && h1==-1 && (halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, spheres_->at(d_id))>=0))
 				{
 					set_d(d_id, 0, tangent_sphere);
 				}
-				else if(h0==-1 && h1>=0)
+				else if(h0==-1 && h1>=0 && (halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, spheres_->at(d_id))>=0))
 				{
 					set_d(d_id, 1, tangent_sphere);
 				}
