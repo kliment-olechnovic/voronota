@@ -106,7 +106,7 @@ public:
 				result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
 				bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
 			}
-			result.quadruples_map=find_valid_quadruples(*bsh, result.quadruples_log);
+			result.quadruples_map=find_valid_quadruples_from_scratch(*bsh, result.quadruples_log);
 			if(include_surplus_valid_quadruples)
 			{
 				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_log);
@@ -1038,22 +1038,64 @@ private:
 	}
 
 	template<typename SphereType>
-	static QuadruplesMap find_valid_quadruples(
+	static QuadruplesMap find_valid_quadruples_from_scratch(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			QuadruplesLog& log)
 	{
-		typedef SphereType Sphere;
-		typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
-		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
-
 		log=QuadruplesLog();
-		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
+		std::vector< Face<SphereType> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.finding_first_faces_iterations, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		QuadruplesMap quadruples_map;
 		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
 
 		return quadruples_map;
+	}
+
+	template<typename SphereType>
+	static void find_valid_quadruples_from_base_quadruples(
+			const BoundingSpheresHierarchy<SphereType>& bsh,
+			QuadruplesMap& quadruples_map,
+			QuadruplesLog& log)
+	{
+		typedef std::tr1::unordered_map<Triple, Face<SphereType>, Triple::HashFunctor> TriplesFacesMap;
+
+		TriplesFacesMap triples_faces_map;
+		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& quadruple=it->first;
+			const std::vector<SimpleSphere>& tangent_spheres=it->second;
+			for(unsigned int j=0;j<4;j++)
+			{
+				const Triple triple=quadruple.exclude(j);
+				const std::size_t d_id_candidate=quadruple.get(j);
+				typename TriplesFacesMap::iterator jt=triples_faces_map.insert(std::make_pair(triple, Face<SphereType>(bsh.leaves_spheres(), triple, bsh.min_input_radius()))).first;
+				for(std::size_t i=0;i<tangent_spheres.size();i++)
+				{
+					jt->second.set_d_with_d_number_selection(d_id_candidate, tangent_spheres[i]);
+				}
+				spheres_usage_mapping.at(d_id_candidate)=1;
+			}
+		}
+
+		std::vector< Face<SphereType> > stack;
+		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
+		for(typename TriplesFacesMap::iterator jt=triples_faces_map.begin();jt!=triples_faces_map.end();++jt)
+		{
+			const Triple& triple=jt->first;
+			const Face<SphereType>& face=jt->second;
+			if(face.has_d(0) && face.has_d(1))
+			{
+				processed_triples_set.insert(triple);
+			}
+			else
+			{
+				stack.push_back(face);
+			}
+		}
+
+		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
 	}
 
 	template<typename SphereType>
