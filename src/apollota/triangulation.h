@@ -917,32 +917,27 @@ private:
 		return result;
 	}
 
-	static void augment_quadruples_map(
-			const std::vector< std::pair<Quadruple, SimpleSphere> >& additional_quadruples,
-			QuadruplesMap& quadruples_map,
-			QuadruplesLog& log)
+	static std::pair<bool, bool> augment_quadruples_map(const Quadruple& quadruple, const SimpleSphere& quadruple_tangent_sphere, QuadruplesMap& quadruples_map)
 	{
-		for(std::size_t i=0;i<additional_quadruples.size();i++)
+		bool quadruple_added=false;
+		bool quadruple_tangent_sphere_added=false;
+		QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
+		if(qm_it==quadruples_map.end())
 		{
-			const Quadruple& quadruple=additional_quadruples[i].first;
-			const SimpleSphere& quadruple_tangent_sphere=additional_quadruples[i].second;
-			QuadruplesMap::iterator qm_it=quadruples_map.find(quadruple);
-			if(qm_it==quadruples_map.end())
+			quadruples_map[quadruple].push_back(quadruple_tangent_sphere);
+			quadruple_added=true;
+			quadruple_tangent_sphere_added=true;
+		}
+		else
+		{
+			std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
+			if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
 			{
-				log.quadruples++;
-				log.tangent_spheres++;
-				quadruples_map[quadruple].push_back(quadruple_tangent_sphere);
-			}
-			else
-			{
-				std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
-				if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
-				{
-					log.tangent_spheres++;
-					quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
-				}
+				quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
+				quadruple_tangent_sphere_added=true;
 			}
 		}
+		return std::make_pair(quadruple_added, quadruple_tangent_sphere_added);
 	}
 
 	template<typename SphereType>
@@ -982,30 +977,40 @@ private:
 				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<Sphere>(bsh, face);
 				if(found_d0 || found_d1 || found_e)
 				{
-					augment_quadruples_map(face.produce_quadruples(found_d0, found_d1, found_e), quadruples_map, log);
-					const std::vector< std::pair<Triple, std::pair<std::size_t, SimpleSphere> > > produced_prefaces=face.produce_prefaces(found_d0, found_d1, found_e);
-					for(std::size_t i=0;i<produced_prefaces.size();i++)
 					{
-						const std::pair<Triple, std::pair<std::size_t, SimpleSphere> >& produced_preface=produced_prefaces[i];
-						if(processed_triples_set.count(produced_preface.first)==0)
+						const std::vector< std::pair<Quadruple, SimpleSphere> > additional_quadruples=face.produce_quadruples(found_d0, found_d1, found_e);
+						for(std::size_t i=0;i<additional_quadruples.size();i++)
 						{
-							TriplesMap::const_iterator sm_it=stack_map.find(produced_preface.first);
-							if(sm_it==stack_map.end())
+							const std::pair<bool, bool> augmention_status=augment_quadruples_map(additional_quadruples[i].first, additional_quadruples[i].second, quadruples_map);
+							log.quadruples+=(augmention_status.first ? 1 : 0);
+							log.tangent_spheres+=(augmention_status.second ? 1 : 0);
+						}
+					}
+					{
+						const std::vector< std::pair<Triple, std::pair<std::size_t, SimpleSphere> > > produced_prefaces=face.produce_prefaces(found_d0, found_d1, found_e);
+						for(std::size_t i=0;i<produced_prefaces.size();i++)
+						{
+							const std::pair<Triple, std::pair<std::size_t, SimpleSphere> >& produced_preface=produced_prefaces[i];
+							if(processed_triples_set.count(produced_preface.first)==0)
 							{
-								stack_map[produced_preface.first]=stack.size();
-								stack.push_back(Face<Sphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
-								stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
-								log.produced_faces++;
+								TriplesMap::const_iterator sm_it=stack_map.find(produced_preface.first);
+								if(sm_it==stack_map.end())
+								{
+									stack_map[produced_preface.first]=stack.size();
+									stack.push_back(Face<Sphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
+									stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
+									log.produced_faces++;
+								}
+								else
+								{
+									stack.at(sm_it->second).set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
+									log.updated_faces++;
+								}
 							}
 							else
 							{
-								stack.at(sm_it->second).set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
-								log.updated_faces++;
+								log.triples_repetitions++;
 							}
-						}
-						else
-						{
-							log.triples_repetitions++;
 						}
 					}
 				}
@@ -1082,31 +1087,9 @@ private:
 							{
 								for(std::size_t d=c+1;d<refined_collisions.size();d++)
 								{
-									const Quadruple quadruple(refined_collisions[a], refined_collisions[b], refined_collisions[c], refined_collisions[d]);
-									QuadruplesMap::iterator aqm_it=surplus_quadruples_map.find(quadruple);
-									if(aqm_it==surplus_quadruples_map.end())
-									{
-										log.surplus_quadruples++;
-										log.surplus_tangent_spheres++;
-										surplus_quadruples_map[quadruple].push_back(tangent_sphere);
-									}
-									else
-									{
-										std::vector<SimpleSphere>& quadruple_tangent_spheres_list=aqm_it->second;
-										bool found=false;
-										for(std::size_t e=0;e<quadruple_tangent_spheres_list.size() && !found;e++)
-										{
-											if(spheres_equal(quadruple_tangent_spheres_list[e], tangent_sphere))
-											{
-												found=true;
-											}
-										}
-										if(!found)
-										{
-											log.surplus_tangent_spheres++;
-											quadruple_tangent_spheres_list.push_back(tangent_sphere);
-										}
-									}
+									const std::pair<bool, bool> augmention_status=augment_quadruples_map(Quadruple(refined_collisions[a], refined_collisions[b], refined_collisions[c], refined_collisions[d]), tangent_sphere, surplus_quadruples_map);
+									log.surplus_quadruples+=(augmention_status.first ? 1 : 0);
+									log.surplus_tangent_spheres+=(augmention_status.second ? 1 : 0);
 								}
 							}
 						}
