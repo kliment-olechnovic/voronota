@@ -2,6 +2,7 @@
 #include <deque>
 
 #include "apollota/triangulation.h"
+#include "apollota/splitting_set_of_spheres.h"
 #include "apollota/opengl_printer.h"
 
 #include "modes_commons.h"
@@ -312,6 +313,28 @@ void print_demo_edges(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
+void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const int depth=poh.argument<double>("--depth", 1);
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+
+	std::vector< std::vector<std::size_t> > ids=apollota::SplittingSetOfSpheres::split(spheres, depth);
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+	apollota::OpenGLPrinter opengl_printer(std::cout, "obj_splitting", "cgo_splitting");
+
+	for(std::size_t i=0;i<ids.size();i++)
+	{
+		opengl_printer.print_color(((0x36BBCE)*static_cast<int>(i+1))%(0xFFFFFF));
+		for(std::size_t j=0;j<ids[i].size();j++)
+		{
+			opengl_printer.print_sphere(spheres[ids[i][j]]);
+		}
+	}
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -338,6 +361,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="edges")
 	{
 		print_demo_edges(poh);
+	}
+	else if(scene=="splitting")
+	{
+		print_demo_splitting(poh);
 	}
 	else
 	{
