@@ -294,7 +294,11 @@ public:
 			const Quadruple& q=it->first;
 			if(q.get(3)<mapping.size())
 			{
-				renumbered_quadruples_map[Quadruple(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)])]=it->second;
+				const Quadruple mq(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)]);
+				if(mq.get(3)!=npos)
+				{
+					renumbered_quadruples_map[mq]=it->second;
+				}
 			}
 		}
 		return renumbered_quadruples_map;
