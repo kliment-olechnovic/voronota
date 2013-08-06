@@ -290,7 +290,7 @@ void print_demo_edges(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false);
 	apollota::Triangulation::NeighborsGraph graph=apollota::Triangulation::collect_neighbors_graph_from_neighbors_map(apollota::Triangulation::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
