@@ -8,6 +8,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--keep-hidden-balls"].init("", "flag to not exclude hidden input balls");
 		basic_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
@@ -27,6 +28,8 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
+
+	const bool keep_hidden_balls=poh.contains_option("--keep-hidden-balls");
 
 	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
 
@@ -49,7 +52,7 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, include_surplus_quadruples);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, !keep_hidden_balls, include_surplus_quadruples);
 
 	if(!skip_output)
 	{
