@@ -105,7 +105,7 @@ public:
 				result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
 				bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
 			}
-			result.quadruples_map=find_valid_quadruples_from_scratch(*bsh, result.quadruples_search_log);
+			result.quadruples_search_log=find_valid_quadruples(*bsh, result.quadruples_map);
 			if(include_surplus_valid_quadruples)
 			{
 				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_search_log);
@@ -1047,30 +1047,22 @@ private:
 	}
 
 	template<typename SphereType>
-	static QuadruplesMap find_valid_quadruples_from_scratch(
-			const BoundingSpheresHierarchy<SphereType>& bsh,
-			QuadruplesSearchLog& log)
+	static QuadruplesSearchLog find_valid_quadruples_from_scratch(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
 	{
-		log=QuadruplesSearchLog();
-
+		QuadruplesSearchLog log=QuadruplesSearchLog();
 		std::vector< Face<SphereType> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
-		QuadruplesMap quadruples_map;
 		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
-
-		return quadruples_map;
+		return log;
 	}
 
 	template<typename SphereType>
-	static void find_valid_quadruples_from_base_quadruples(
-			const BoundingSpheresHierarchy<SphereType>& bsh,
-			QuadruplesMap& quadruples_map,
-			QuadruplesSearchLog& log)
+	static QuadruplesSearchLog find_valid_quadruples_from_base(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
 	{
 		typedef std::tr1::unordered_map<Triple, Face<SphereType>, Triple::HashFunctor> TriplesFacesMap;
 
-		log=QuadruplesSearchLog();
+		QuadruplesSearchLog log=QuadruplesSearchLog();
 
 		TriplesFacesMap triples_faces_map;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
@@ -1108,6 +1100,20 @@ private:
 		}
 
 		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
+		return log;
+	}
+
+	template<typename SphereType>
+	static QuadruplesSearchLog find_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
+	{
+		if(quadruples_map.empty())
+		{
+			return find_valid_quadruples_from_scratch(bsh, quadruples_map);
+		}
+		else
+		{
+			return find_valid_quadruples_from_base(bsh, quadruples_map);
+		}
 	}
 
 	template<typename SphereType>
