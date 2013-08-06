@@ -950,7 +950,7 @@ private:
 	}
 
 	template<typename SphereType>
-	static void find_valid_quadruples(
+	static void find_valid_quadruples_starting_from_stack_of_faces(
 			const BoundingSpheresHierarchy<SphereType>& bsh,
 			std::vector< Face<SphereType> >& stack,
 			std::tr1::unordered_set<Triple, Triple::HashFunctor>& processed_triples_set,
@@ -1047,18 +1047,18 @@ private:
 	}
 
 	template<typename SphereType>
-	static QuadruplesSearchLog find_valid_quadruples_from_scratch(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
+	static QuadruplesSearchLog find_valid_quadruples_starting_from_scratch(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
 	{
 		QuadruplesSearchLog log=QuadruplesSearchLog();
 		std::vector< Face<SphereType> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
-		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
+		find_valid_quadruples_starting_from_stack_of_faces(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
 		return log;
 	}
 
 	template<typename SphereType>
-	static QuadruplesSearchLog find_valid_quadruples_from_base(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
+	static QuadruplesSearchLog find_valid_quadruples_starting_from_available_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
 	{
 		typedef std::tr1::unordered_map<Triple, Face<SphereType>, Triple::HashFunctor> TriplesFacesMap;
 
@@ -1099,7 +1099,7 @@ private:
 			}
 		}
 
-		find_valid_quadruples(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
+		find_valid_quadruples_starting_from_stack_of_faces(bsh, stack, processed_triples_set, spheres_usage_mapping, quadruples_map, log);
 		return log;
 	}
 
@@ -1108,11 +1108,11 @@ private:
 	{
 		if(quadruples_map.empty())
 		{
-			return find_valid_quadruples_from_scratch(bsh, quadruples_map);
+			return find_valid_quadruples_starting_from_scratch(bsh, quadruples_map);
 		}
 		else
 		{
-			return find_valid_quadruples_from_base(bsh, quadruples_map);
+			return find_valid_quadruples_starting_from_available_quadruples(bsh, quadruples_map);
 		}
 	}
 
