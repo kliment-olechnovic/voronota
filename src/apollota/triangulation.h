@@ -113,7 +113,7 @@ public:
 			result.quadruples_search_log=find_valid_quadruples(*bsh, result.quadruples_map);
 			if(include_surplus_valid_quadruples)
 			{
-				result.quadruples_map=find_surplus_valid_quadruples(*bsh, result.quadruples_map, result.surplus_quadruples_search_log);
+				result.surplus_quadruples_search_log=find_surplus_valid_quadruples(*bsh, result.quadruples_map);
 			}
 
 			if(!refined_spheres_mapping.empty())
@@ -1124,10 +1124,10 @@ private:
 	}
 
 	template<typename SphereType>
-	static QuadruplesMap find_surplus_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, const QuadruplesMap& quadruples_map, SurplusQuadruplesSearchLog& log)
+	static SurplusQuadruplesSearchLog find_surplus_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
 	{
-		log=SurplusQuadruplesSearchLog();
-		QuadruplesMap surplus_quadruples_map=quadruples_map;
+		SurplusQuadruplesSearchLog log=SurplusQuadruplesSearchLog();
+		std::vector< std::pair<Quadruple, SimpleSphere> > surplus_candidates;
 		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
 		{
 			const std::vector<SimpleSphere>& tangent_spheres=it->second;
@@ -1154,9 +1154,7 @@ private:
 							{
 								for(std::size_t d=c+1;d<refined_collisions.size();d++)
 								{
-									const std::pair<bool, bool> augmention_status=augment_quadruples_map(Quadruple(refined_collisions[a], refined_collisions[b], refined_collisions[c], refined_collisions[d]), tangent_sphere, surplus_quadruples_map);
-									log.surplus_quadruples+=(augmention_status.first ? 1 : 0);
-									log.surplus_tangent_spheres+=(augmention_status.second ? 1 : 0);
+									surplus_candidates.push_back(std::make_pair(Quadruple(refined_collisions[a], refined_collisions[b], refined_collisions[c], refined_collisions[d]), tangent_sphere));
 								}
 							}
 						}
@@ -1164,7 +1162,13 @@ private:
 				}
 			}
 		}
-		return surplus_quadruples_map;
+		for(std::size_t i=0;i<surplus_candidates.size();i++)
+		{
+			const std::pair<bool, bool> augmention_status=augment_quadruples_map(surplus_candidates[i].first, surplus_candidates[i].second, quadruples_map);
+			log.surplus_quadruples+=(augmention_status.first ? 1 : 0);
+			log.surplus_tangent_spheres+=(augmention_status.second ? 1 : 0);
+		}
+		return log;
 	}
 };
 
