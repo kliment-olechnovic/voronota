@@ -2,6 +2,7 @@
 #define APOLLOTA_SPLITTING_SET_OF_SPHERES_H_
 
 #include <vector>
+#include <limits>
 
 #include "basic_operations_on_spheres.h"
 #include "subdivided_icosahedron.h"
@@ -52,41 +53,27 @@ private:
 
 		SimplePoint plane_normal(1, 0, 0);
 		{
-			SubdividedIcosahedron sih(2);
-			int best_vertex_value=static_cast<int>(ids.size()*2);
+			double plane_normal_value=std::numeric_limits<double>::max();
+			const SubdividedIcosahedron sih(2);
 			for(std::size_t i=0;i<sih.vertices().size();i++)
 			{
 				const SimplePoint& vertex=sih.vertices()[i];
-				int vertex_left_count=0;
-				for(std::size_t i=0;i<ids.size();i++)
+				const std::vector< std::vector<std::size_t> > temp_result=split(spheres, ids, plane_point, vertex);
+				if(temp_result.size()==2 && !temp_result[0].empty() && !temp_result[1].empty())
 				{
-					if(halfspace_of_sphere(plane_point, vertex, spheres[ids[i]])<0)
+					const double r0=calc_bounding_sphere_radius(spheres, temp_result[0]);
+					const double r1=calc_bounding_sphere_radius(spheres, temp_result[1]);
+					const double vertex_value=(r0*r0*r0)+(r1*r1*r1);
+					if(vertex_value<plane_normal_value)
 					{
-						vertex_left_count++;
+						plane_normal_value=vertex_value;
+						plane_normal=vertex;
 					}
-				}
-				const int vertex_value=abs(static_cast<int>(ids.size())-(2*vertex_left_count));
-				if(vertex_value<best_vertex_value)
-				{
-					plane_normal=vertex;
-					best_vertex_value=vertex_value;
 				}
 			}
 		}
 
 		return split(spheres, ids, plane_point, plane_normal);
-	}
-
-	template<typename SphereType>
-	static SimplePoint calc_mass_center(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
-	{
-		SimplePoint center(0.0, 0.0, 0.0);
-		for(std::size_t i=0;i<ids.size();i++)
-		{
-			center=center+SimplePoint(spheres[ids[i]]);
-		}
-		center=center*(1/static_cast<double>(ids.size()));
-		return center;
 	}
 
 	template<typename SphereType>
@@ -105,6 +92,30 @@ private:
 			}
 		}
 		return result;
+	}
+
+	template<typename SphereType>
+	static SimplePoint calc_mass_center(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
+	{
+		SimplePoint center(0.0, 0.0, 0.0);
+		for(std::size_t i=0;i<ids.size();i++)
+		{
+			center=center+SimplePoint(spheres[ids[i]]);
+		}
+		center=center*(1/static_cast<double>(ids.size()));
+		return center;
+	}
+
+	template<typename SphereType>
+	static double calc_bounding_sphere_radius(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
+	{
+		const SimplePoint center=calc_mass_center(spheres, ids);
+		double max_dist=0.0;
+		for(std::size_t i=0;i<ids.size();i++)
+		{
+			max_dist=std::max(max_dist, maximal_distance_from_point_to_sphere(center, spheres[ids[i]]));
+		}
+		return max_dist;
 	}
 };
 
