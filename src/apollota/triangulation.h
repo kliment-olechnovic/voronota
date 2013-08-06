@@ -120,7 +120,7 @@ public:
 
 			if(!available_quadruples.empty())
 			{
-				result.quadruples_map=(refined_spheres_forward_mapping.empty() ? available_quadruples : renumber_quadruples_map(available_quadruples, refined_spheres_forward_mapping));
+				result.quadruples_map=filter_valid_quadruples(*bsh, (refined_spheres_forward_mapping.empty() ? available_quadruples : renumber_quadruples_map(available_quadruples, refined_spheres_forward_mapping)));
 			}
 
 			result.quadruples_search_log=find_valid_quadruples(*bsh, result.quadruples_map);
@@ -1186,6 +1186,26 @@ private:
 			log.surplus_tangent_spheres+=(augmention_status.second ? 1 : 0);
 		}
 		return log;
+	}
+
+	template<typename SphereType>
+	static QuadruplesMap filter_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, const QuadruplesMap& quadruples_map)
+	{
+		QuadruplesMap filtered_valid_quadruples;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& quadruple=it->first;
+			const std::vector<SimpleSphere>& tangent_spheres=it->second;
+			for(std::size_t i=0;i<tangent_spheres.size();i++)
+			{
+				const SimpleSphere& tangent_sphere=tangent_spheres[i];
+				if(SearchForSphericalCollisions::find_any_collision(bsh, tangent_sphere).empty())
+				{
+					augment_quadruples_map(quadruple, tangent_sphere, filtered_valid_quadruples);
+				}
+			}
+		}
+		return filtered_valid_quadruples;
 	}
 };
 
