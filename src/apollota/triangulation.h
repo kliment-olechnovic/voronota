@@ -87,13 +87,13 @@ public:
 		{
 			std::auto_ptr< BoundingSpheresHierarchy<SphereType> > bsh(new BoundingSpheresHierarchy<SphereType>(spheres, initial_radius_for_spheres_bucketing, 1));
 
+			std::vector<SphereType> refined_spheres;
 			std::vector<std::size_t> refined_spheres_mapping;
 			if(exclude_hidden_spheres)
 			{
 				result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(*bsh);
 				if(!result.hidden_spheres_ids.empty())
 				{
-					std::vector<SphereType> refined_spheres;
 					const std::size_t refined_spheres_count=spheres.size()-result.hidden_spheres_ids.size();
 					refined_spheres.reserve(refined_spheres_count);
 					refined_spheres_mapping.reserve(refined_spheres_count);
