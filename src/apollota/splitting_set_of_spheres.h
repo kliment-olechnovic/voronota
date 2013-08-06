@@ -35,7 +35,7 @@ private:
 		else
 		{
 			std::vector< std::vector<std::size_t> > complex_result;
-			const std::vector< std::vector<std::size_t> > simple_result=simple_split(spheres, ids);
+			const std::vector< std::vector<std::size_t> > simple_result=split(spheres, ids);
 			for(std::size_t i=0;i<simple_result.size();i++)
 			{
 				const std::vector< std::vector<std::size_t> > smaller_result=split(spheres, simple_result[i], depth-1);
@@ -46,16 +46,9 @@ private:
 	}
 
 	template<typename SphereType>
-	static std::vector< std::vector<std::size_t> > simple_split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
+	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
 	{
-		SimplePoint center(0.0, 0.0, 0.0);
-		{
-			for(std::size_t i=0;i<ids.size();i++)
-			{
-				center=center+SimplePoint(spheres[ids[i]]);
-			}
-			center=center*(1/static_cast<double>(ids.size()));
-		}
+		const SimplePoint plane_point=calc_mass_center(spheres, ids);
 
 		SimplePoint plane_normal(1, 0, 0);
 		{
@@ -67,7 +60,7 @@ private:
 				int vertex_left_count=0;
 				for(std::size_t i=0;i<ids.size();i++)
 				{
-					if(halfspace_of_sphere(center, vertex, spheres[ids[i]])<0)
+					if(halfspace_of_sphere(plane_point, vertex, spheres[ids[i]])<0)
 					{
 						vertex_left_count++;
 					}
@@ -81,10 +74,28 @@ private:
 			}
 		}
 
+		return split(spheres, ids, plane_point, plane_normal);
+	}
+
+	template<typename SphereType>
+	static SimplePoint calc_mass_center(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
+	{
+		SimplePoint center(0.0, 0.0, 0.0);
+		for(std::size_t i=0;i<ids.size();i++)
+		{
+			center=center+SimplePoint(spheres[ids[i]]);
+		}
+		center=center*(1/static_cast<double>(ids.size()));
+		return center;
+	}
+
+	template<typename SphereType>
+	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids, const SimplePoint& plane_point, const SimplePoint& plane_normal)
+	{
 		std::vector< std::vector<std::size_t> > result(2);
 		for(std::size_t i=0;i<ids.size();i++)
 		{
-			if(halfspace_of_sphere(center, plane_normal, spheres[ids[i]])<0)
+			if(halfspace_of_sphere(plane_point, plane_normal, spheres[ids[i]])<0)
 			{
 				result[0].push_back(ids[i]);
 			}
@@ -93,7 +104,6 @@ private:
 				result[1].push_back(ids[i]);
 			}
 		}
-
 		return result;
 	}
 };
