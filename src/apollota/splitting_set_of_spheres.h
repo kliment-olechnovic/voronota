@@ -14,7 +14,7 @@ class SplittingSetOfSpheres
 {
 public:
 	template<typename SphereType>
-	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const int depth)
+	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const unsigned int depth)
 	{
 		std::vector<std::size_t> ids;
 		ids.reserve(spheres.size());
@@ -22,38 +22,35 @@ public:
 		{
 			ids.push_back(i);
 		}
-		return split(spheres, ids, std::min(depth, 8));
+		return split(spheres, ids, depth);
 	}
 
 private:
 	template<typename SphereType>
-	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids, const int depth)
+	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids, const unsigned int depth)
 	{
-		if(depth<=0)
+		std::vector< std::vector<std::size_t> > complex_result(1, ids);
+		for(unsigned int i=0;i<depth;i++)
 		{
-			return std::vector< std::vector<std::size_t> >(1, ids);
-		}
-		else
-		{
-			std::vector< std::vector<std::size_t> > complex_result;
-			const std::vector< std::vector<std::size_t> > simple_result=split(spheres, ids);
-			for(std::size_t i=0;i<simple_result.size();i++)
+			std::vector< std::vector<std::size_t> > new_complex_result;
+			for(std::size_t j=0;j<complex_result.size();j++)
 			{
-				const std::vector< std::vector<std::size_t> > smaller_result=split(spheres, simple_result[i], depth-1);
-				complex_result.insert(complex_result.end(), smaller_result.begin(), smaller_result.end());
+				const std::vector< std::vector<std::size_t> > simple_result=split(spheres, complex_result[j]);
+				new_complex_result.insert(new_complex_result.end(), simple_result.begin(), simple_result.end());
 			}
-			return complex_result;
+			complex_result=new_complex_result;
 		}
+		return complex_result;
 	}
 
 	template<typename SphereType>
 	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids)
 	{
-		const SimplePoint plane_point=calc_mass_center(spheres, ids);
-
-		SimplePoint plane_normal(1, 0, 0);
+		if(ids.size()>1)
 		{
+			const SimplePoint plane_point=calc_mass_center(spheres, ids);
 			double plane_normal_value=std::numeric_limits<double>::max();
+			SimplePoint plane_normal(1, 0, 0);
 			const SubdividedIcosahedron sih(2);
 			for(std::size_t i=0;i<sih.vertices().size();i++)
 			{
@@ -71,25 +68,38 @@ private:
 					}
 				}
 			}
+			if(plane_normal_value<std::numeric_limits<double>::max())
+			{
+				return split(spheres, ids, plane_point, plane_normal);
+			}
 		}
-
-		return split(spheres, ids, plane_point, plane_normal);
+		return std::vector< std::vector<std::size_t> >(1, ids);
 	}
 
 	template<typename SphereType>
 	static std::vector< std::vector<std::size_t> > split(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& ids, const SimplePoint& plane_point, const SimplePoint& plane_normal)
 	{
-		std::vector< std::vector<std::size_t> > result(2);
+		std::vector<std::size_t> left;
+		std::vector<std::size_t> right;
 		for(std::size_t i=0;i<ids.size();i++)
 		{
 			if(halfspace_of_sphere(plane_point, plane_normal, spheres[ids[i]])<0)
 			{
-				result[0].push_back(ids[i]);
+				left.push_back(ids[i]);
 			}
 			else
 			{
-				result[1].push_back(ids[i]);
+				right.push_back(ids[i]);
 			}
+		}
+		std::vector< std::vector<std::size_t> > result;
+		if(!left.empty())
+		{
+			result.push_back(left);
+		}
+		if(!right.empty())
+		{
+			result.push_back(right);
 		}
 		return result;
 	}
