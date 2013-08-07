@@ -36,7 +36,7 @@ public:
 
 			if(!result.all_differences.empty())
 			{
-				const BoundingSpheresHierarchy<SphereType> bsh(spheres, initial_radius_for_spheres_bucketing, 1);
+				const BoundingSpheresHierarchy bsh(spheres, initial_radius_for_spheres_bucketing, 1);
 				for(std::size_t i=0;i<result.all_differences.size();i++)
 				{
 					const Quadruple q=result.all_differences[i];

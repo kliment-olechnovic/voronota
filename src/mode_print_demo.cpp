@@ -27,7 +27,7 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	apollota::BoundingSpheresHierarchy<apollota::SimpleSphere> bsh(spheres, init_radius, 1);
+	apollota::BoundingSpheresHierarchy bsh(spheres, init_radius, 1);
 
 	if(bsh.levels()>0)
 	{
