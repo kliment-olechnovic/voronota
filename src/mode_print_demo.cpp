@@ -320,7 +320,7 @@ void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 
-	std::vector< std::vector<std::size_t> > ids=apollota::SplittingSetOfSpheres::split(spheres, depth);
+	const std::vector< std::vector<std::size_t> > ids=apollota::SplittingSetOfSpheres::split(spheres, depth);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 	apollota::OpenGLPrinter opengl_printer(std::cout, "obj_splitting", "cgo_splitting");
