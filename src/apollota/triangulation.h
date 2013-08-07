@@ -58,9 +58,8 @@ public:
 		SurplusQuadruplesSearchLog surplus_quadruples_search_log;
 		std::set<std::size_t> hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
-		unsigned long bounding_spheres_hierarchy_iterations;
 
-		Result() : quadruples_search_log(), surplus_quadruples_search_log(), bounding_spheres_hierarchy_iterations(0)
+		Result() : quadruples_search_log(), surplus_quadruples_search_log()
 		{
 		}
 
@@ -75,7 +74,6 @@ public:
 			output << "hidden_balls " << hidden_spheres_ids.size() << "\n";
 			output << "ignored_balls " << ignored_spheres_ids.size() << "\n";
 			output << "epsilon " << comparison_epsilon() << "\n";
-			output << "complexity " << bounding_spheres_hierarchy_iterations << "\n";
 		}
 	};
 
@@ -112,7 +110,6 @@ public:
 							refined_spheres_backward_mapping.push_back(i);
 						}
 					}
-					result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
 					bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
 				}
 			}
@@ -127,8 +124,6 @@ public:
 			{
 				result.quadruples_map=renumber_quadruples_map(result.quadruples_map, refined_spheres_backward_mapping);
 			}
-
-			result.bounding_spheres_hierarchy_iterations+=bsh->iterations_count();
 		}
 
 		{
