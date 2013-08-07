@@ -144,8 +144,6 @@ public:
 	}
 
 private:
-	BoundingSpheresHierarchy(const BoundingSpheresHierarchy&);
-	const BoundingSpheresHierarchy& operator=(const BoundingSpheresHierarchy&);
 
 	class Cluster : public SimpleSphere
 	{
@@ -308,8 +306,8 @@ private:
 		return clusters_layers;
 	}
 
-	const std::vector<SimpleSphere> leaves_spheres_;
-	const std::pair<double, double> input_radii_range_;
+	std::vector<SimpleSphere> leaves_spheres_;
+	std::pair<double, double> input_radii_range_;
 	std::vector< std::vector<Cluster> > clusters_layers_;
 };
 

@@ -87,14 +87,14 @@ public:
 		Result result;
 
 		{
-			std::auto_ptr< BoundingSpheresHierarchy > bsh(new BoundingSpheresHierarchy(spheres, initial_radius_for_spheres_bucketing, 1));
+			BoundingSpheresHierarchy bsh(spheres, initial_radius_for_spheres_bucketing, 1);
 
 			std::vector<std::size_t> refined_spheres_forward_mapping;
 			std::vector<SphereType> refined_spheres;
 			std::vector<std::size_t> refined_spheres_backward_mapping;
 			if(exclude_hidden_spheres)
 			{
-				result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(*bsh);
+				result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
 				if(!result.hidden_spheres_ids.empty())
 				{
 					refined_spheres_forward_mapping.resize(spheres.size(), npos);
@@ -110,14 +110,14 @@ public:
 							refined_spheres_backward_mapping.push_back(i);
 						}
 					}
-					bsh.reset(new BoundingSpheresHierarchy(refined_spheres, initial_radius_for_spheres_bucketing, 1));
+					bsh=BoundingSpheresHierarchy(refined_spheres, initial_radius_for_spheres_bucketing, 1);
 				}
 			}
 
-			result.quadruples_search_log=find_valid_quadruples(*bsh, result.quadruples_map);
+			result.quadruples_search_log=find_valid_quadruples(bsh, result.quadruples_map);
 			if(include_surplus_valid_quadruples)
 			{
-				result.surplus_quadruples_search_log=find_surplus_valid_quadruples(*bsh, result.quadruples_map);
+				result.surplus_quadruples_search_log=find_surplus_valid_quadruples(bsh, result.quadruples_map);
 			}
 
 			if(!refined_spheres_backward_mapping.empty())
