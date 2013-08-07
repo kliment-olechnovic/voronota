@@ -88,15 +88,13 @@ public:
 		{
 			BoundingSpheresHierarchy bsh(spheres, initial_radius_for_spheres_bucketing, 1);
 
-			std::vector<std::size_t> refined_spheres_forward_mapping;
-			std::vector<SphereType> refined_spheres;
 			std::vector<std::size_t> refined_spheres_backward_mapping;
 			if(exclude_hidden_spheres)
 			{
 				result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
 				if(!result.hidden_spheres_ids.empty())
 				{
-					refined_spheres_forward_mapping.resize(spheres.size(), npos);
+					std::vector<SphereType> refined_spheres;
 					const std::size_t refined_spheres_count=spheres.size()-result.hidden_spheres_ids.size();
 					refined_spheres.reserve(refined_spheres_count);
 					refined_spheres_backward_mapping.reserve(refined_spheres_count);
@@ -104,7 +102,6 @@ public:
 					{
 						if(result.hidden_spheres_ids.count(i)==0)
 						{
-							refined_spheres_forward_mapping[i]=refined_spheres.size();
 							refined_spheres.push_back(spheres[i]);
 							refined_spheres_backward_mapping.push_back(i);
 						}
