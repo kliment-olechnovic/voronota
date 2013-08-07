@@ -306,7 +306,7 @@ private:
 		return clusters_layers;
 	}
 
-	const std::vector<LeafSphere>& leaves_spheres_;
+	const std::vector<LeafSphere> leaves_spheres_;
 	const std::pair<double, double> input_radii_range_;
 	std::vector< std::vector<Cluster> > clusters_layers_;
 	mutable unsigned long iterations_count_;
