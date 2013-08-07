@@ -340,13 +340,10 @@ public:
 	}
 
 private:
-	template<typename SphereType>
 	class Face
 	{
 	public:
-		typedef SphereType Sphere;
-
-		Face(const std::vector<Sphere>& spheres, const Triple& abc_ids, const double min_sphere_radius) :
+		Face(const std::vector<SimpleSphere>& spheres, const Triple& abc_ids, const double min_sphere_radius) :
 			spheres_(&spheres),
 			abc_ids_(abc_ids),
 			a_sphere_(&(spheres_->at(abc_ids_.get(0)))),
@@ -642,11 +639,11 @@ private:
 			return false;
 		}
 
-		const std::vector<Sphere>* spheres_;
+		const std::vector<SimpleSphere>* spheres_;
 		Triple abc_ids_;
-		const Sphere* a_sphere_;
-		const Sphere* b_sphere_;
-		const Sphere* c_sphere_;
+		const SimpleSphere* a_sphere_;
+		const SimpleSphere* b_sphere_;
+		const SimpleSphere* c_sphere_;
 		std::vector< std::pair<SimplePoint, SimplePoint> > tangent_planes_;
 		std::vector< std::pair<SimplePoint, SimplePoint> > central_planes_;
 		std::vector< std::pair<std::size_t, SimpleSphere> > d_ids_and_tangent_spheres_;
@@ -660,13 +657,12 @@ private:
 	class SearchForAnyDOfFace
 	{
 	public:
-		template<typename SphereType>
-		static bool find_any_d(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face, const std::size_t d_number)
+		static bool find_any_d(const BoundingSpheresHierarchy& bsh, Face& face, const std::size_t d_number)
 		{
 			if(!face.has_d(d_number))
 			{
-				NodeCheckerForAnyD<SphereType> node_checker(face, d_number);
-				LeafCheckerForAnyD<SphereType> leaf_checker(face, d_number);
+				NodeCheckerForAnyD node_checker(face, d_number);
+				LeafCheckerForAnyD leaf_checker(face, d_number);
 				node_checker.constrain();
 				bsh.search(node_checker, leaf_checker);
 				if(node_checker.constrained && !face.has_d(d_number))
@@ -680,15 +676,14 @@ private:
 		}
 
 	private:
-		template<typename SphereType>
 		struct NodeCheckerForAnyD
 		{
-			const Face<SphereType>& face;
+			const Face& face;
 			const std::size_t d_number;
 			bool constrained;
 			SimpleSphere constraint_sphere;
 
-			NodeCheckerForAnyD(const Face<SphereType>& target, const std::size_t d_number) : face(target), d_number(d_number), constrained(false)
+			NodeCheckerForAnyD(const Face& target, const std::size_t d_number) : face(target), d_number(d_number), constrained(false)
 			{
 			}
 
@@ -717,17 +712,16 @@ private:
 			}
 		};
 
-		template<typename SphereType>
 		struct LeafCheckerForAnyD
 		{
-			Face<SphereType>& face;
+			Face& face;
 			const std::size_t d_number;
 
-			LeafCheckerForAnyD(Face<SphereType>& target, const std::size_t d_number) : face(target), d_number(d_number)
+			LeafCheckerForAnyD(Face& target, const std::size_t d_number) : face(target), d_number(d_number)
 			{
 			}
 
-			std::pair<bool, bool> operator()(const std::size_t id, const SphereType&)
+			std::pair<bool, bool> operator()(const std::size_t id, const SimpleSphere&)
 			{
 				const std::pair<bool, SimpleSphere> check_result=face.check_candidate_for_d(id, d_number);
 				if(check_result.first)
@@ -743,13 +737,12 @@ private:
 	class SearchForValidDOfFace
 	{
 	public:
-		template<typename SphereType>
-		static bool find_valid_d(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face, const std::size_t d_number)
+		static bool find_valid_d(const BoundingSpheresHierarchy& bsh, Face& face, const std::size_t d_number)
 		{
 			if(face.has_d(d_number))
 			{
-				NodeCheckerForValidD<SphereType> node_checker(face, d_number);
-				LeafCheckerForValidD<SphereType> leaf_checker(face, d_number);
+				NodeCheckerForValidD node_checker(face, d_number);
+				LeafCheckerForValidD leaf_checker(face, d_number);
 				while(face.has_d(d_number))
 				{
 					const std::vector<std::size_t> results=bsh.search(node_checker, leaf_checker);
@@ -767,13 +760,12 @@ private:
 		}
 
 	private:
-		template<typename SphereType>
 		struct NodeCheckerForValidD
 		{
-			const Face<SphereType>& face;
+			const Face& face;
 			const std::size_t d_number;
 
-			NodeCheckerForValidD(const Face<SphereType>& target, const std::size_t d_number) : face(target), d_number(d_number)
+			NodeCheckerForValidD(const Face& target, const std::size_t d_number) : face(target), d_number(d_number)
 			{
 			}
 
@@ -783,18 +775,17 @@ private:
 			}
 		};
 
-		template<typename SphereType>
 		struct LeafCheckerForValidD
 		{
-			Face<SphereType>& face;
+			Face& face;
 			const std::size_t d_number;
 			std::tr1::unordered_set<std::size_t> safety_monitor;
 
-			LeafCheckerForValidD(Face<SphereType>& target, const std::size_t d_number) : face(target), d_number(d_number)
+			LeafCheckerForValidD(Face& target, const std::size_t d_number) : face(target), d_number(d_number)
 			{
 			}
 
-			std::pair<bool, bool> operator()(const std::size_t id, const SphereType& sphere)
+			std::pair<bool, bool> operator()(const std::size_t id, const SimpleSphere& sphere)
 			{
 				if(face.has_d(d_number) && sphere_intersects_sphere(sphere, face.get_d_tangent_sphere(d_number)))
 				{
@@ -818,21 +809,19 @@ private:
 	class SearchForValidEOfFace
 	{
 	public:
-		template<typename SphereType>
-		static bool find_valid_e(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face)
+		static bool find_valid_e(const BoundingSpheresHierarchy& bsh, Face& face)
 		{
-			NodeCheckerForValidE<SphereType> node_checker(face);
-			LeafCheckerForValidE<SphereType> leaf_checker(face, bsh);
+			NodeCheckerForValidE node_checker(face);
+			LeafCheckerForValidE leaf_checker(face, bsh);
 			return !bsh.search(node_checker, leaf_checker).empty();
 		}
 
 	private:
-		template<typename SphereType>
 		struct NodeCheckerForValidE
 		{
-			const Face<SphereType>& face;
+			const Face& face;
 
-			NodeCheckerForValidE(const Face<SphereType>& target) : face(target)
+			NodeCheckerForValidE(const Face& target) : face(target)
 			{
 			}
 
@@ -842,17 +831,16 @@ private:
 			}
 		};
 
-		template<typename SphereType>
 		struct LeafCheckerForValidE
 		{
-			Face<SphereType>& face;
+			Face& face;
 			const BoundingSpheresHierarchy& bsh;
 
-			LeafCheckerForValidE(Face<SphereType>& target, const BoundingSpheresHierarchy& bsh) : face(target), bsh(bsh)
+			LeafCheckerForValidE(Face& target, const BoundingSpheresHierarchy& bsh) : face(target), bsh(bsh)
 			{
 			}
 
-			std::pair<bool, bool> operator()(const std::size_t id, const SphereType&)
+			std::pair<bool, bool> operator()(const std::size_t id, const SimpleSphere&)
 			{
 				const std::vector<SimpleSphere> check_result=face.check_candidate_for_e(id);
 				bool e_added=false;
@@ -896,7 +884,7 @@ private:
 		return result;
 	}
 
-	static std::vector< Face<SimpleSphere> > find_first_valid_faces(
+	static std::vector<Face> find_first_valid_faces(
 			const BoundingSpheresHierarchy& bsh,
 			const std::size_t starting_sphere_id,
 			std::size_t& iterations_count,
@@ -905,7 +893,7 @@ private:
 			const std::size_t max_size_of_traversal=std::numeric_limits<std::size_t>::max())
 	{
 		const std::vector<SimpleSphere>& spheres=bsh.leaves_spheres();
-		std::vector< Face<SimpleSphere> > result;
+		std::vector<Face> result;
 		if(spheres.size()>=4 && starting_sphere_id<spheres.size())
 		{
 			const std::vector<std::size_t> traversal=BoundingSpheresHierarchy::sort_objects_by_distance_to_one_of_them(spheres, starting_sphere_id, minimal_distance_from_sphere_to_sphere<SimpleSphere, SimpleSphere>);
@@ -926,7 +914,7 @@ private:
 									|| (allow_quadruples_with_two_tangent_spheres && tangents.size()==2 && (SearchForSphericalCollisions::find_any_collision(bsh, tangents.front()).empty() || SearchForSphericalCollisions::find_any_collision(bsh, tangents.back()).empty()))
 								)
 							{
-								result.push_back(Face<SimpleSphere>(bsh.leaves_spheres(), triple, bsh.min_input_radius()));
+								result.push_back(Face(bsh.leaves_spheres(), triple, bsh.min_input_radius()));
 								return result;
 							}
 						}
@@ -966,7 +954,7 @@ private:
 
 		QuadruplesSearchLog log=QuadruplesSearchLog();
 
-		std::vector< Face<SimpleSphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
+		std::vector<Face> stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
@@ -980,7 +968,7 @@ private:
 			}
 			while(!stack.empty())
 			{
-				Face<SimpleSphere> face=stack.back();
+				Face face=stack.back();
 				stack.pop_back();
 				stack_map.erase(face.abc_ids());
 				processed_triples_set.insert(face.abc_ids());
@@ -989,9 +977,9 @@ private:
 				{
 					log.encountered_difficult_faces++;
 				}
-				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<SimpleSphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<SimpleSphere>(bsh, face, 0);
-				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<SimpleSphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<SimpleSphere>(bsh, face, 1);
-				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<SimpleSphere>(bsh, face);
+				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d(bsh, face, 0) && SearchForValidDOfFace::find_valid_d(bsh, face, 0);
+				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d(bsh, face, 1) && SearchForValidDOfFace::find_valid_d(bsh, face, 1);
+				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e(bsh, face);
 				if(found_d0 || found_d1 || found_e)
 				{
 					{
@@ -1014,7 +1002,7 @@ private:
 								if(sm_it==stack_map.end())
 								{
 									stack_map[produced_preface.first]=stack.size();
-									stack.push_back(Face<SimpleSphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
+									stack.push_back(Face(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
 									stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
 									log.produced_faces++;
 								}
