@@ -94,15 +94,15 @@ public:
 				result.excluded_hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
 				if(!result.excluded_hidden_spheres_ids.empty())
 				{
-					std::vector<SphereType> refined_spheres;
-					const std::size_t refined_spheres_count=spheres.size()-result.excluded_hidden_spheres_ids.size();
+					std::vector<SimpleSphere> refined_spheres;
+					const std::size_t refined_spheres_count=bsh.leaves_spheres().size()-result.excluded_hidden_spheres_ids.size();
 					refined_spheres.reserve(refined_spheres_count);
 					refined_spheres_backward_mapping.reserve(refined_spheres_count);
-					for(std::size_t i=0;i<spheres.size();i++)
+					for(std::size_t i=0;i<bsh.leaves_spheres().size();i++)
 					{
 						if(result.excluded_hidden_spheres_ids.count(i)==0)
 						{
-							refined_spheres.push_back(spheres[i]);
+							refined_spheres.push_back(bsh.leaves_spheres()[i]);
 							refined_spheres_backward_mapping.push_back(i);
 						}
 					}
@@ -124,6 +124,18 @@ public:
 
 		result.ignored_spheres_ids=collect_ignored_spheres_ids(spheres.size(), result.quadruples_map);
 
+		return result;
+	}
+
+	static Result construct_result(const BoundingSpheresHierarchy& bsh, const bool include_surplus_valid_quadruples)
+	{
+		Result result;
+		result.quadruples_search_log=find_valid_quadruples(bsh, result.quadruples_map);
+		if(include_surplus_valid_quadruples)
+		{
+			result.surplus_quadruples_search_log=find_surplus_valid_quadruples(bsh, result.quadruples_map);
+		}
+		result.ignored_spheres_ids=collect_ignored_spheres_ids(bsh.leaves_spheres().size(), result.quadruples_map);
 		return result;
 	}
 
