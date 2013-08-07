@@ -6,7 +6,6 @@
 #include <limits>
 #include <vector>
 #include <map>
-#include <memory>
 
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
