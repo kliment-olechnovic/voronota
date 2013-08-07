@@ -10,20 +10,18 @@
 namespace apollota
 {
 
-template<typename LeafSphereType>
 class BoundingSpheresHierarchy
 {
 public:
-	typedef LeafSphereType LeafSphere;
-
-	BoundingSpheresHierarchy(const std::vector<LeafSphere>& input_spheres, const double initial_radius_for_spheres_bucketing, const std::size_t min_number_of_clusters) :
-		leaves_spheres_(input_spheres),
+	template<typename InputSphereType>
+	BoundingSpheresHierarchy(const std::vector<InputSphereType>& input_spheres, const double initial_radius_for_spheres_bucketing, const std::size_t min_number_of_clusters) :
+		leaves_spheres_(convert_input_spheres_to_simple_spheres(input_spheres)),
 		input_radii_range_(calc_input_radii_range(leaves_spheres_)),
 		clusters_layers_(cluster_spheres_in_layers(leaves_spheres_, initial_radius_for_spheres_bucketing, min_number_of_clusters))
 	{
 	}
 
-	const std::vector<LeafSphere>& leaves_spheres() const
+	const std::vector<SimpleSphere>& leaves_spheres() const
 	{
 		return leaves_spheres_;
 	}
@@ -168,6 +166,18 @@ private:
 		}
 	};
 
+	template<typename InputSphereType>
+	static std::vector<SimpleSphere> convert_input_spheres_to_simple_spheres(const std::vector<InputSphereType>& input_spheres)
+	{
+		std::vector<SimpleSphere> result;
+		result.reserve(input_spheres.size());
+		for(std::size_t i=0;i<input_spheres.size();i++)
+		{
+			result.push_back(SimpleSphere(input_spheres[i]));
+		}
+		return result;
+	}
+
 	template<typename SphereType>
 	static std::pair<double, double> calc_input_radii_range(const std::vector<SphereType>& spheres)
 	{
@@ -298,7 +308,7 @@ private:
 		return clusters_layers;
 	}
 
-	const std::vector<LeafSphere> leaves_spheres_;
+	const std::vector<SimpleSphere> leaves_spheres_;
 	const std::pair<double, double> input_radii_range_;
 	std::vector< std::vector<Cluster> > clusters_layers_;
 };

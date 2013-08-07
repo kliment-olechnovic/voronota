@@ -87,7 +87,7 @@ public:
 		Result result;
 
 		{
-			std::auto_ptr< BoundingSpheresHierarchy<SphereType> > bsh(new BoundingSpheresHierarchy<SphereType>(spheres, initial_radius_for_spheres_bucketing, 1));
+			std::auto_ptr< BoundingSpheresHierarchy > bsh(new BoundingSpheresHierarchy(spheres, initial_radius_for_spheres_bucketing, 1));
 
 			std::vector<std::size_t> refined_spheres_forward_mapping;
 			std::vector<SphereType> refined_spheres;
@@ -110,7 +110,7 @@ public:
 							refined_spheres_backward_mapping.push_back(i);
 						}
 					}
-					bsh.reset(new BoundingSpheresHierarchy<SphereType>(refined_spheres, initial_radius_for_spheres_bucketing, 1));
+					bsh.reset(new BoundingSpheresHierarchy(refined_spheres, initial_radius_for_spheres_bucketing, 1));
 				}
 			}
 
@@ -661,7 +661,7 @@ private:
 	{
 	public:
 		template<typename SphereType>
-		static bool find_any_d(const BoundingSpheresHierarchy<SphereType>& bsh, Face<SphereType>& face, const std::size_t d_number)
+		static bool find_any_d(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face, const std::size_t d_number)
 		{
 			if(!face.has_d(d_number))
 			{
@@ -744,7 +744,7 @@ private:
 	{
 	public:
 		template<typename SphereType>
-		static bool find_valid_d(const BoundingSpheresHierarchy<SphereType>& bsh, Face<SphereType>& face, const std::size_t d_number)
+		static bool find_valid_d(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face, const std::size_t d_number)
 		{
 			if(face.has_d(d_number))
 			{
@@ -819,7 +819,7 @@ private:
 	{
 	public:
 		template<typename SphereType>
-		static bool find_valid_e(const BoundingSpheresHierarchy<SphereType>& bsh, Face<SphereType>& face)
+		static bool find_valid_e(const BoundingSpheresHierarchy& bsh, Face<SphereType>& face)
 		{
 			NodeCheckerForValidE<SphereType> node_checker(face);
 			LeafCheckerForValidE<SphereType> leaf_checker(face, bsh);
@@ -846,9 +846,9 @@ private:
 		struct LeafCheckerForValidE
 		{
 			Face<SphereType>& face;
-			const BoundingSpheresHierarchy<SphereType>& bsh;
+			const BoundingSpheresHierarchy& bsh;
 
-			LeafCheckerForValidE(Face<SphereType>& target, const BoundingSpheresHierarchy<SphereType>& bsh) : face(target), bsh(bsh)
+			LeafCheckerForValidE(Face<SphereType>& target, const BoundingSpheresHierarchy& bsh) : face(target), bsh(bsh)
 			{
 			}
 
@@ -869,10 +869,9 @@ private:
 		};
 	};
 
-	template<typename SphereType>
-	static std::size_t select_starting_sphere_for_finding_first_valid_faces(const BoundingSpheresHierarchy<SphereType>& bsh)
+	static std::size_t select_starting_sphere_for_finding_first_valid_faces(const BoundingSpheresHierarchy& bsh)
 	{
-		const std::vector<SphereType>& spheres=bsh.leaves_spheres();
+		const std::vector<SimpleSphere>& spheres=bsh.leaves_spheres();
 		if(spheres.empty())
 		{
 			return 0;
@@ -897,20 +896,19 @@ private:
 		return result;
 	}
 
-	template<typename SphereType>
-	static std::vector< Face<SphereType> > find_first_valid_faces(
-			const BoundingSpheresHierarchy<SphereType>& bsh,
+	static std::vector< Face<SimpleSphere> > find_first_valid_faces(
+			const BoundingSpheresHierarchy& bsh,
 			const std::size_t starting_sphere_id,
 			std::size_t& iterations_count,
 			const bool fix_starting_sphere_id,
 			const bool allow_quadruples_with_two_tangent_spheres,
 			const std::size_t max_size_of_traversal=std::numeric_limits<std::size_t>::max())
 	{
-		const std::vector<SphereType>& spheres=bsh.leaves_spheres();
-		std::vector< Face<SphereType> > result;
+		const std::vector<SimpleSphere>& spheres=bsh.leaves_spheres();
+		std::vector< Face<SimpleSphere> > result;
 		if(spheres.size()>=4 && starting_sphere_id<spheres.size())
 		{
-			const std::vector<std::size_t> traversal=BoundingSpheresHierarchy<SphereType>::sort_objects_by_distance_to_one_of_them(spheres, starting_sphere_id, minimal_distance_from_sphere_to_sphere<SphereType, SphereType>);
+			const std::vector<std::size_t> traversal=BoundingSpheresHierarchy::sort_objects_by_distance_to_one_of_them(spheres, starting_sphere_id, minimal_distance_from_sphere_to_sphere<SimpleSphere, SimpleSphere>);
 			for(std::size_t d=3;d<std::min(traversal.size(), max_size_of_traversal);d++)
 			{
 				for(std::size_t a=0;a<(fix_starting_sphere_id ? 1 : d);a++)
@@ -928,7 +926,7 @@ private:
 									|| (allow_quadruples_with_two_tangent_spheres && tangents.size()==2 && (SearchForSphericalCollisions::find_any_collision(bsh, tangents.front()).empty() || SearchForSphericalCollisions::find_any_collision(bsh, tangents.back()).empty()))
 								)
 							{
-								result.push_back(Face<SphereType>(bsh.leaves_spheres(), triple, bsh.min_input_radius()));
+								result.push_back(Face<SimpleSphere>(bsh.leaves_spheres(), triple, bsh.min_input_radius()));
 								return result;
 							}
 						}
@@ -962,15 +960,13 @@ private:
 		return std::make_pair(quadruple_added, quadruple_tangent_sphere_added);
 	}
 
-	template<typename SphereType>
-	static QuadruplesSearchLog find_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
+	static QuadruplesSearchLog find_valid_quadruples(const BoundingSpheresHierarchy& bsh, QuadruplesMap& quadruples_map)
 	{
-		typedef SphereType Sphere;
 		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
 
 		QuadruplesSearchLog log=QuadruplesSearchLog();
 
-		std::vector< Face<Sphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
+		std::vector< Face<SimpleSphere> > stack=find_first_valid_faces(bsh, select_starting_sphere_for_finding_first_valid_faces(bsh), log.performed_iterations_for_finding_first_faces, false, true);
 		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
@@ -984,7 +980,7 @@ private:
 			}
 			while(!stack.empty())
 			{
-				Face<Sphere> face=stack.back();
+				Face<SimpleSphere> face=stack.back();
 				stack.pop_back();
 				stack_map.erase(face.abc_ids());
 				processed_triples_set.insert(face.abc_ids());
@@ -993,9 +989,9 @@ private:
 				{
 					log.encountered_difficult_faces++;
 				}
-				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 0);
-				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<Sphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<Sphere>(bsh, face, 1);
-				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<Sphere>(bsh, face);
+				const bool found_d0=face.can_have_d() && !face.has_d(0) && SearchForAnyDOfFace::find_any_d<SimpleSphere>(bsh, face, 0) && SearchForValidDOfFace::find_valid_d<SimpleSphere>(bsh, face, 0);
+				const bool found_d1=face.can_have_d() && !face.has_d(1) && SearchForAnyDOfFace::find_any_d<SimpleSphere>(bsh, face, 1) && SearchForValidDOfFace::find_valid_d<SimpleSphere>(bsh, face, 1);
+				const bool found_e=face.can_have_e() && SearchForValidEOfFace::find_valid_e<SimpleSphere>(bsh, face);
 				if(found_d0 || found_d1 || found_e)
 				{
 					{
@@ -1018,7 +1014,7 @@ private:
 								if(sm_it==stack_map.end())
 								{
 									stack_map[produced_preface.first]=stack.size();
-									stack.push_back(Face<Sphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
+									stack.push_back(Face<SimpleSphere>(bsh.leaves_spheres(), produced_preface.first, bsh.min_input_radius()));
 									stack.back().set_d_with_d_number_selection(produced_preface.second.first, produced_preface.second.second);
 									log.produced_faces++;
 								}
@@ -1060,8 +1056,7 @@ private:
 		return log;
 	}
 
-	template<typename SphereType>
-	static SurplusQuadruplesSearchLog find_surplus_valid_quadruples(const BoundingSpheresHierarchy<SphereType>& bsh, QuadruplesMap& quadruples_map)
+	static SurplusQuadruplesSearchLog find_surplus_valid_quadruples(const BoundingSpheresHierarchy& bsh, QuadruplesMap& quadruples_map)
 	{
 		SurplusQuadruplesSearchLog log=SurplusQuadruplesSearchLog();
 		std::vector< std::pair<Quadruple, SimpleSphere> > surplus_candidates;

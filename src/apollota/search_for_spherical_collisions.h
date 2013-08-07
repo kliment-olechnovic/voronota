@@ -11,28 +11,24 @@ namespace apollota
 class SearchForSphericalCollisions
 {
 public:
-	template<typename SphereType>
-	static std::vector<std::size_t> find_collisions(const BoundingSpheresHierarchy<SphereType>& bsh, const SimpleSphere& target, const bool one_hit_is_enough)
+	static std::vector<std::size_t> find_collisions(const BoundingSpheresHierarchy& bsh, const SimpleSphere& target, const bool one_hit_is_enough)
 	{
 		NodeCheckerForCollisions node_checker(target);
 		LeafCheckerForCollisions leaf_checker(target, one_hit_is_enough);
 		return bsh.search(node_checker, leaf_checker);
 	}
 
-	template<typename SphereType>
-	static std::vector<std::size_t> find_all_collisions(const BoundingSpheresHierarchy<SphereType>& bsh, const SimpleSphere& target)
+	static std::vector<std::size_t> find_all_collisions(const BoundingSpheresHierarchy& bsh, const SimpleSphere& target)
 	{
 		return find_collisions(bsh, target, false);
 	}
 
-	template<typename SphereType>
-	static std::vector<std::size_t> find_any_collision(const BoundingSpheresHierarchy<SphereType>& bsh, const SimpleSphere& target)
+	static std::vector<std::size_t> find_any_collision(const BoundingSpheresHierarchy& bsh, const SimpleSphere& target)
 	{
 		return find_collisions(bsh, target, true);
 	}
 
-	template<typename SphereType>
-	static std::set<std::size_t> find_all_hidden_spheres(const BoundingSpheresHierarchy<SphereType>& bsh)
+	static std::set<std::size_t> find_all_hidden_spheres(const BoundingSpheresHierarchy& bsh)
 	{
 		std::set<std::size_t> result;
 		for(std::size_t i=0;i<bsh.leaves_spheres().size();i++)
