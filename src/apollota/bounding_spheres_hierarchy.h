@@ -19,8 +19,7 @@ public:
 	BoundingSpheresHierarchy(const std::vector<LeafSphere>& input_spheres, const double initial_radius_for_spheres_bucketing, const std::size_t min_number_of_clusters) :
 		leaves_spheres_(input_spheres),
 		input_radii_range_(calc_input_radii_range(leaves_spheres_)),
-		clusters_layers_(cluster_spheres_in_layers(leaves_spheres_, initial_radius_for_spheres_bucketing, min_number_of_clusters)),
-		iterations_count_(0)
+		clusters_layers_(cluster_spheres_in_layers(leaves_spheres_, initial_radius_for_spheres_bucketing, min_number_of_clusters))
 	{
 	}
 
@@ -42,11 +41,6 @@ public:
 	std::size_t levels() const
 	{
 		return clusters_layers_.size();
-	}
-
-	unsigned long iterations_count() const
-	{
-		return iterations_count_;
 	}
 
 	std::vector<SimpleSphere> collect_bounding_spheres(const std::size_t level) const
@@ -93,7 +87,6 @@ public:
 					{
 						for(std::size_t i=0;i<children.size();i++)
 						{
-							iterations_count_++;
 							const std::size_t child=children[i];
 							const std::pair<bool, bool> status=leaf_checker(child, leaves_spheres_[child]);
 							if(status.first)
@@ -109,7 +102,6 @@ public:
 					}
 					else
 					{
-						iterations_count_++;
 						stack.back().child_id++;
 						stack.push_back(NodeCoordinates(ncs.level_id-1, children[ncs.child_id], 0));
 					}
@@ -309,7 +301,6 @@ private:
 	const std::vector<LeafSphere> leaves_spheres_;
 	const std::pair<double, double> input_radii_range_;
 	std::vector< std::vector<Cluster> > clusters_layers_;
-	mutable unsigned long iterations_count_;
 };
 
 }
