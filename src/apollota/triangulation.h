@@ -55,7 +55,7 @@ public:
 		QuadruplesMap quadruples_map;
 		QuadruplesSearchLog quadruples_search_log;
 		SurplusQuadruplesSearchLog surplus_quadruples_search_log;
-		std::set<std::size_t> hidden_spheres_ids;
+		std::set<std::size_t> excluded_hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
 
 		Result() : quadruples_search_log(), surplus_quadruples_search_log()
@@ -70,7 +70,7 @@ public:
 			output << "difficult_faces " << quadruples_search_log.encountered_difficult_faces << "\n";
 			output << "first_iterations " << quadruples_search_log.performed_iterations_for_finding_first_faces << "\n";
 			output << "surplus_tangent_spheres " << surplus_quadruples_search_log.surplus_tangent_spheres << "\n";
-			output << "hidden_balls " << hidden_spheres_ids.size() << "\n";
+			output << "excluded_hidden_balls " << excluded_hidden_spheres_ids.size() << "\n";
 			output << "ignored_balls " << ignored_spheres_ids.size() << "\n";
 			output << "epsilon " << comparison_epsilon() << "\n";
 		}
@@ -91,16 +91,16 @@ public:
 			std::vector<std::size_t> refined_spheres_backward_mapping;
 			if(exclude_hidden_spheres)
 			{
-				result.hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
-				if(!result.hidden_spheres_ids.empty())
+				result.excluded_hidden_spheres_ids=SearchForSphericalCollisions::find_all_hidden_spheres(bsh);
+				if(!result.excluded_hidden_spheres_ids.empty())
 				{
 					std::vector<SphereType> refined_spheres;
-					const std::size_t refined_spheres_count=spheres.size()-result.hidden_spheres_ids.size();
+					const std::size_t refined_spheres_count=spheres.size()-result.excluded_hidden_spheres_ids.size();
 					refined_spheres.reserve(refined_spheres_count);
 					refined_spheres_backward_mapping.reserve(refined_spheres_count);
 					for(std::size_t i=0;i<spheres.size();i++)
 					{
-						if(result.hidden_spheres_ids.count(i)==0)
+						if(result.excluded_hidden_spheres_ids.count(i)==0)
 						{
 							refined_spheres.push_back(spheres[i]);
 							refined_spheres_backward_mapping.push_back(i);
@@ -122,24 +122,7 @@ public:
 			}
 		}
 
-		{
-			std::vector<int> spheres_inclusion_map(spheres.size(), 0);
-			for(QuadruplesMap::const_iterator it=result.quadruples_map.begin();it!=result.quadruples_map.end();++it)
-			{
-				const Quadruple& q=it->first;
-				for(int i=0;i<4;i++)
-				{
-					spheres_inclusion_map[q.get(i)]=1;
-				}
-			}
-			for(std::size_t i=0;i<spheres_inclusion_map.size();i++)
-			{
-				if(spheres_inclusion_map[i]==0 && result.hidden_spheres_ids.count(i)==0)
-				{
-					result.ignored_spheres_ids.insert(i);
-				}
-			}
-		}
+		result.ignored_spheres_ids=collect_ignored_spheres_ids(spheres.size(), result.quadruples_map);
 
 		return result;
 	}
@@ -282,24 +265,6 @@ public:
 			}
 		}
 		return quadruples_map;
-	}
-
-	static QuadruplesMap renumber_quadruples_map(const QuadruplesMap& quadruples_map, const std::vector<std::size_t>& mapping)
-	{
-		QuadruplesMap renumbered_quadruples_map;
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& q=it->first;
-			if(q.get(3)<mapping.size())
-			{
-				const Quadruple mq(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)]);
-				if(mq.get(3)!=npos)
-				{
-					renumbered_quadruples_map[mq]=it->second;
-				}
-			}
-		}
-		return renumbered_quadruples_map;
 	}
 
 	template<typename SphereType>
@@ -1085,6 +1050,46 @@ private:
 			log.surplus_tangent_spheres+=(augmention_status.second ? 1 : 0);
 		}
 		return log;
+	}
+
+	static QuadruplesMap renumber_quadruples_map(const QuadruplesMap& quadruples_map, const std::vector<std::size_t>& mapping)
+	{
+		QuadruplesMap renumbered_quadruples_map;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& q=it->first;
+			if(q.get(3)<mapping.size())
+			{
+				const Quadruple mq(mapping[q.get(0)], mapping[q.get(1)], mapping[q.get(2)], mapping[q.get(3)]);
+				if(mq.get(3)!=npos)
+				{
+					renumbered_quadruples_map[mq]=it->second;
+				}
+			}
+		}
+		return renumbered_quadruples_map;
+	}
+
+	static std::set<std::size_t> collect_ignored_spheres_ids(const std::size_t input_spheres_count, const QuadruplesMap& quadruples_map)
+	{
+		std::set<std::size_t> ignored_spheres_ids;
+		std::vector<int> spheres_inclusion_map(input_spheres_count, 0);
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& q=it->first;
+			for(int i=0;i<4;i++)
+			{
+				spheres_inclusion_map[q.get(i)]=1;
+			}
+		}
+		for(std::size_t i=0;i<spheres_inclusion_map.size();i++)
+		{
+			if(spheres_inclusion_map[i]==0)
+			{
+				ignored_spheres_ids.insert(i);
+			}
+		}
+		return ignored_spheres_ids;
 	}
 };
 
