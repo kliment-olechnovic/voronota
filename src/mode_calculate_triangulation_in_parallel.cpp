@@ -32,6 +32,14 @@ inline std::vector< std::vector<T> > distribute_objects_to_threads(const std::ve
 	return result;
 }
 
+inline void run_thread_job(const apollota::BoundingSpheresHierarchy& bsh, const std::vector< std::vector<std::size_t> >& thread_ids, apollota::Triangulation::QuadruplesMap& thread_quadruples_map)
+{
+	for(std::size_t j=0;j<thread_ids.size();j++)
+	{
+		apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map, thread_quadruples_map);
+	}
+}
+
 }
 
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
@@ -86,16 +94,16 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
-	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	std::vector<apollota::Triangulation::QuadruplesMap> thread_quadruples_maps(distributed_ids.size());
 	for(std::size_t i=0;i<distributed_ids.size();i++)
 	{
-		const std::vector< std::vector<std::size_t> >& thread_ids=distributed_ids[i];
-		apollota::Triangulation::QuadruplesMap thread_quadruples_map;
-		for(std::size_t j=0;j<thread_ids.size();j++)
-		{
-			apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map, thread_quadruples_map);
-		}
-		apollota::Triangulation::merge_quadruples_maps(thread_quadruples_map, result_quadruples_map);
+		run_thread_job(bsh, distributed_ids[i], thread_quadruples_maps[i]);
+	}
+
+	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	for(std::size_t i=0;i<thread_quadruples_maps.size();i++)
+	{
+		apollota::Triangulation::merge_quadruples_maps(thread_quadruples_maps[i], result_quadruples_map);
 	}
 
 	if(!skip_output)
