@@ -210,7 +210,7 @@ private:
 					allowed[i]=false;
 					for(std::size_t j=0;j<spheres.size();j++)
 					{
-						if(sphere_intersects_sphere_with_expansion(spheres[i], spheres[j], expansion))
+						if(allowed[j] && sphere_intersects_sphere_with_expansion(spheres[i], spheres[j], expansion))
 						{
 							allowed[j]=false;
 						}
