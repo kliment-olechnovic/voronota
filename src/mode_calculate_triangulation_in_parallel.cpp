@@ -5,11 +5,40 @@
 
 #include "modes_commons.h"
 
+namespace
+{
+
+inline unsigned int estimate_splitting_depth(const unsigned int threads)
+{
+	unsigned int depth=0;
+	while((static_cast<unsigned int>(1 << depth)<threads) && (depth<16))
+	{
+		depth++;
+	}
+	return depth;
+}
+
+template<typename T>
+inline std::vector< std::vector<T> > distribute_objects_to_threads(const std::vector<T>& objects, const unsigned int threads)
+{
+	std::vector< std::vector<T> > result(threads);
+	if(threads>0)
+	{
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			result[static_cast<unsigned int>(i)%threads].push_back(objects[i]);
+		}
+	}
+	return result;
+}
+
+}
+
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--depth"].init("number", "depth of recursive input subdivision");
+		basic_map_of_option_descriptions["--threads"].init("number", "number of threads");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
@@ -28,7 +57,13 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		}
 	}
 
-	const unsigned int depth=poh.argument<double>("--depth", 2);
+	const unsigned int threads=poh.argument<double>("--threads");
+	if(threads<1 || threads>1024)
+	{
+		throw std::runtime_error("Number of threads should be between in interval [1,1024].");
+	}
+
+	const unsigned int depth=estimate_splitting_depth(threads);
 
 	const bool skip_output=poh.contains_option("--skip-output");
 
@@ -47,12 +82,20 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	const std::vector< std::vector< std::vector<std::size_t> > > distributed_ids=distribute_objects_to_threads(apollota::SplittingSetOfSpheres::split(spheres, depth), threads);
+
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
-	const std::vector< std::vector<std::size_t> > ids=apollota::SplittingSetOfSpheres::split(spheres, depth);
-	for(std::size_t i=0;i<ids.size();i++)
+
+	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	for(std::size_t i=0;i<distributed_ids.size();i++)
 	{
-		apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, ids[i]).quadruples_map, result_quadruples_map);
+		const std::vector< std::vector<std::size_t> >& thread_ids=distributed_ids[i];
+		apollota::Triangulation::QuadruplesMap thread_quadruples_map;
+		for(std::size_t j=0;j<thread_ids.size();j++)
+		{
+			apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map, thread_quadruples_map);
+		}
+		apollota::Triangulation::merge_quadruples_maps(thread_quadruples_map, result_quadruples_map);
 	}
 
 	if(!skip_output)
@@ -62,17 +105,23 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(print_log)
 	{
-		std::clog << "balls " <<  spheres.size() << "\n";
+		std::clog << "balls " << spheres.size() << "\n";
 
-		std::clog << "parts " <<  ids.size() << " :";
-		for(std::size_t i=0;i<ids.size();i++)
+		std::clog << "threads " << distributed_ids.size() << " :";
+		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			std::clog << " " << ids[i].size();
+			const std::vector< std::vector<std::size_t> >& thread_ids=distributed_ids[i];
+			std::clog << " (";
+			for(std::size_t j=0;j<thread_ids.size();j++)
+			{
+				std::clog << " " << thread_ids[j].size();
+			}
+			std::clog << " )";
 		}
 		std::clog << "\n";
 
-		std::clog << "quadruples " <<  result_quadruples_map.size() << "\n";
-		std::clog << "tangent_spheres " <<  apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
+		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
+		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
 	}
 }
 
