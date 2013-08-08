@@ -116,14 +116,16 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
 
 #ifdef USESTDTHREADS
-	std::vector<std::thread> thread_handles;
-	for(std::size_t i=0;i<distributed_ids.size();i++)
 	{
-		thread_handles.push_back(std::thread(run_thread_job, bsh, distributed_ids[i], std::ref(result_quadruples_map)));
-	}
-	for(std::size_t i=0;i<thread_handles.size();i++)
-	{
-		thread_handles[i].join();
+		std::vector<std::thread> thread_handles;
+		for(std::size_t i=0;i<distributed_ids.size();i++)
+		{
+			thread_handles.push_back(std::thread(run_thread_job, bsh, distributed_ids[i], std::ref(result_quadruples_map)));
+		}
+		for(std::size_t i=0;i<thread_handles.size();i++)
+		{
+			thread_handles[i].join();
+		}
 	}
 #else
 	for(std::size_t i=0;i<distributed_ids.size();i++)
@@ -140,6 +142,14 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	if(print_log)
 	{
 		std::clog << "balls " << spheres.size() << "\n";
+
+		std::clog << "parallelization_method ";
+#ifdef USESTDTHREADS
+		std::clog << "std::thread";
+#else
+		std::clog << "none";
+#endif
+		std::clog << "\n";
 
 		std::clog << "threads " << distributed_ids.size() << " :";
 		for(std::size_t i=0;i<distributed_ids.size();i++)
