@@ -16,6 +16,16 @@ Common options
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
+--mode calculate-triangulation-in-parallel
+
+  --print-log                                 flag to print log of calculations
+  --skip-output                               flag to disable output of the resulting triangulation
+  --threads                       number      number of threads
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+
 --mode compare-triangulations
 
   --first-triangulation-file      string   *  path to the first triangulation file
