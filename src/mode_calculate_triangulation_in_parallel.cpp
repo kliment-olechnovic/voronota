@@ -1,5 +1,10 @@
 #include <iostream>
 
+#ifdef USESTDTHREADS
+#include <thread>
+#include <mutex>
+#endif
+
 #include "apollota/triangulation.h"
 #include "apollota/splitting_set_of_spheres.h"
 
@@ -32,13 +37,27 @@ inline std::vector< std::vector<T> > distribute_objects_to_threads(const std::ve
 	return result;
 }
 
-inline void run_thread_job(const apollota::BoundingSpheresHierarchy& bsh, const std::vector< std::vector<std::size_t> >& thread_ids, apollota::Triangulation::QuadruplesMap& thread_quadruples_map)
+#ifdef USESTDTHREADS
+std::mutex mutex;
+inline void run_thread_job(const apollota::BoundingSpheresHierarchy bsh, const std::vector< std::vector<std::size_t> > thread_ids, apollota::Triangulation::QuadruplesMap& result_quadruples_map)
 {
 	for(std::size_t j=0;j<thread_ids.size();j++)
 	{
-		apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map, thread_quadruples_map);
+		const apollota::Triangulation::QuadruplesMap temp_quadruples_map=apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map;
+		mutex.lock();
+		apollota::Triangulation::merge_quadruples_maps(temp_quadruples_map, result_quadruples_map);
+		mutex.unlock();
 	}
 }
+#else
+inline void run_thread_job(const apollota::BoundingSpheresHierarchy& bsh, const std::vector< std::vector<std::size_t> >& thread_ids, apollota::Triangulation::QuadruplesMap& result_quadruples_map)
+{
+	for(std::size_t j=0;j<thread_ids.size();j++)
+	{
+		apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(bsh, thread_ids[j]).quadruples_map, result_quadruples_map);
+	}
+}
+#endif
 
 }
 
@@ -94,17 +113,24 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
-	std::vector<apollota::Triangulation::QuadruplesMap> thread_quadruples_maps(distributed_ids.size());
+	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+
+#ifdef USESTDTHREADS
+	std::vector<std::thread> thread_handles;
 	for(std::size_t i=0;i<distributed_ids.size();i++)
 	{
-		run_thread_job(bsh, distributed_ids[i], thread_quadruples_maps[i]);
+		thread_handles.push_back(std::thread(run_thread_job, bsh, distributed_ids[i], std::ref(result_quadruples_map)));
 	}
-
-	apollota::Triangulation::QuadruplesMap result_quadruples_map;
-	for(std::size_t i=0;i<thread_quadruples_maps.size();i++)
+	for(std::size_t i=0;i<thread_handles.size();i++)
 	{
-		apollota::Triangulation::merge_quadruples_maps(thread_quadruples_maps[i], result_quadruples_map);
+		thread_handles[i].join();
 	}
+#else
+	for(std::size_t i=0;i<distributed_ids.size();i++)
+	{
+		run_thread_job(bsh, distributed_ids[i], result_quadruples_map);
+	}
+#endif
 
 	if(!skip_output)
 	{
@@ -132,4 +158,3 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
 	}
 }
-
