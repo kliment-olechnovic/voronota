@@ -222,7 +222,7 @@ private:
 	}
 
 	template<typename SphereType>
-	static std::vector<Cluster> cluster_spheres_using_centers(const std::vector<SphereType>& spheres, const std::vector<SimpleSphere>& centers)
+	static std::vector<Cluster> cluster_spheres_using_centers(const std::vector<SphereType>& spheres, const std::vector<std::size_t>& selection, const std::vector<SimpleSphere>& centers)
 	{
 		std::vector<Cluster> clusters;
 		clusters.reserve(centers.size());
@@ -230,9 +230,9 @@ private:
 		{
 			clusters.push_back(custom_sphere_from_object<Cluster>(centers[i]));
 		}
-		for(std::size_t i=0;i<spheres.size();i++)
+		for(std::size_t i=0;i<selection.size();i++)
 		{
-			const SphereType& sphere=spheres[i];
+			const SphereType& sphere=spheres[selection[i]];
 			std::size_t min_dist_id=0;
 			double min_dist_value=maximal_distance_from_point_to_sphere(clusters[min_dist_id], sphere);
 			for(std::size_t j=1;j<clusters.size();j++)
@@ -246,7 +246,7 @@ private:
 			}
 			Cluster& cluster=clusters[min_dist_id];
 			cluster.r=std::max(cluster.r, min_dist_value);
-			cluster.children.push_back(i);
+			cluster.children.push_back(selection[i]);
 		}
 		std::vector<Cluster> nonempty_clusters;
 		nonempty_clusters.reserve(clusters.size());
@@ -263,7 +263,42 @@ private:
 	template<typename SphereType>
 	static std::vector<Cluster> cluster_spheres_using_radius_expansion(const std::vector<SphereType>& spheres, const double radius_expansion)
 	{
-		return cluster_spheres_using_centers(spheres, select_centers_for_clusters(spheres, radius_expansion));
+		const std::size_t max_part_size=30000;
+		if(spheres.size()<=max_part_size)
+		{
+			std::vector<std::size_t> selection(spheres.size(), 0);
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				selection[i]=i;
+			}
+			return cluster_spheres_using_centers(spheres, selection, select_centers_for_clusters(spheres, radius_expansion));
+		}
+		else
+		{
+			std::vector<Cluster> result;
+			const std::size_t part_size=( (spheres.size()%max_part_size==0) ? max_part_size : (spheres.size()/((spheres.size()/max_part_size)+1)) );
+			std::vector< std::vector<std::size_t> > selections;
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				if(i%part_size==0)
+				{
+					selections.push_back(std::vector<std::size_t>());
+				}
+				selections.back().push_back(i);
+			}
+			for(std::size_t i=0;i<selections.size();i++)
+			{
+				const std::vector<std::size_t>& selection=selections[i];
+				std::vector<SimpleSphere> selection_contents(selection.size());
+				for(std::size_t j=0;j<selection.size();j++)
+				{
+					selection_contents[j]=SimpleSphere(spheres[selection[j]]);
+				}
+				const std::vector<Cluster> partial_result=cluster_spheres_using_centers(spheres, selection, select_centers_for_clusters(selection_contents, radius_expansion));
+				result.insert(result.end(), partial_result.begin(), partial_result.end());
+			}
+			return result;
+		}
 	}
 
 	template<typename SphereType>
