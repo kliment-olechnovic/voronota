@@ -6,6 +6,7 @@
 #include <limits>
 
 #include "basic_operations_on_spheres.h"
+#include "splitting_of_points.h"
 
 namespace apollota
 {
@@ -263,7 +264,7 @@ private:
 	template<typename SphereType>
 	static std::vector<Cluster> cluster_spheres_using_radius_expansion(const std::vector<SphereType>& spheres, const double radius_expansion)
 	{
-		const std::size_t max_part_size=30000;
+		const std::size_t max_part_size=10000;
 		if(spheres.size()<=max_part_size)
 		{
 			std::vector<std::size_t> selection(spheres.size(), 0);
@@ -276,16 +277,7 @@ private:
 		else
 		{
 			std::vector<Cluster> result;
-			const std::size_t part_size=( (spheres.size()%max_part_size==0) ? max_part_size : (spheres.size()/((spheres.size()/max_part_size)+1)) );
-			std::vector< std::vector<std::size_t> > selections;
-			for(std::size_t i=0;i<spheres.size();i++)
-			{
-				if(i%part_size==0)
-				{
-					selections.push_back(std::vector<std::size_t>());
-				}
-				selections.back().push_back(i);
-			}
+			const std::vector< std::vector<std::size_t> > selections=SplittingOfPoints::split_for_size_of_part(spheres, max_part_size);
 			for(std::size_t i=0;i<selections.size();i++)
 			{
 				const std::vector<std::size_t>& selection=selections[i];
