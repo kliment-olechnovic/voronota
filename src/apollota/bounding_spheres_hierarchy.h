@@ -277,7 +277,7 @@ private:
 		else
 		{
 			std::vector<Cluster> result;
-			const std::vector< std::vector<std::size_t> > selections=SplittingOfPoints::split_for_size_of_part(spheres, max_part_size);
+			const std::vector< std::vector<std::size_t> > selections=SplittingOfSpheres::split_for_size_of_part(spheres, max_part_size);
 			for(std::size_t i=0;i<selections.size();i++)
 			{
 				const std::vector<std::size_t>& selection=selections[i];

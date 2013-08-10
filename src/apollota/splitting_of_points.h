@@ -7,7 +7,7 @@
 namespace apollota
 {
 
-class SplittingOfPoints
+class SplittingOfSpheres
 {
 public:
 	template<typename SphereType>
