@@ -1,5 +1,5 @@
-#ifndef APOLLOTA_SPLITTING_OF_POINTS_H_
-#define APOLLOTA_SPLITTING_OF_POINTS_H_
+#ifndef APOLLOTA_SPLITTING_OF_SPHERES_H_
+#define APOLLOTA_SPLITTING_OF_SPHERES_H_
 
 #include <vector>
 #include <algorithm>
@@ -205,4 +205,4 @@ private:
 
 }
 
-#endif /* APOLLOTA_SPLITTING_OF_POINTS_H_ */
+#endif /* APOLLOTA_SPLITTING_OF_SPHERES_H_ */
