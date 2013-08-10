@@ -2,7 +2,6 @@
 #include <deque>
 
 #include "apollota/triangulation.h"
-#include "apollota/splitting_of_points.h"
 #include "apollota/opengl_printer.h"
 
 #include "modes_commons.h"

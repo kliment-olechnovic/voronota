@@ -6,7 +6,7 @@
 #include <limits>
 
 #include "basic_operations_on_spheres.h"
-#include "splitting_of_points.h"
+#include "splitting_of_spheres.h"
 
 namespace apollota
 {
