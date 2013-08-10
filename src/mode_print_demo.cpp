@@ -2,7 +2,7 @@
 #include <deque>
 
 #include "apollota/triangulation.h"
-#include "apollota/splitting_set_of_spheres.h"
+#include "apollota/splitting_of_points.h"
 #include "apollota/opengl_printer.h"
 
 #include "modes_commons.h"
@@ -315,12 +315,12 @@ void print_demo_edges(const auxiliaries::ProgramOptionsHandler& poh)
 
 void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	const int depth=poh.argument<double>("--depth", 1);
+	const int parts=poh.argument<double>("--parts", 2);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 
-	const std::vector< std::vector<std::size_t> > ids=apollota::SplittingSetOfSpheres::split(spheres, depth);
+	const std::vector< std::vector<std::size_t> > ids=apollota::SplittingOfPoints::split_for_number_of_parts(spheres, parts);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 	apollota::OpenGLPrinter opengl_printer(std::cout, "obj_splitting", "cgo_splitting");
