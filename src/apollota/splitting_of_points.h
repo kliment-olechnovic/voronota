@@ -21,6 +21,11 @@ public:
 		return result;
 	}
 
+	template<typename SphereType>
+	static std::vector< std::vector<std::size_t> > split_for_size_of_part(const std::vector<SphereType>& spheres, const std::size_t size_of_part)
+	{
+		return binary_split(spheres, estimate_splitting_depth_by_number_of_parts(spheres.size()/size_of_part));
+	}
 private:
 	template<typename PointType>
 	static std::vector< std::vector<std::size_t> > binary_split(const std::vector<PointType>& points, const unsigned int depth)
