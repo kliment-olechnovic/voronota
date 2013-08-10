@@ -18,9 +18,9 @@ Common options
 
 --mode calculate-triangulation-in-parallel
 
+  --parts                         number      minimal number of parts for splitting
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
-  --threads                       number      number of threads
 
   stdin   <-  list of balls (line format: 'x y z r')
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
