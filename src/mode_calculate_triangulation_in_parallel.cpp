@@ -1,6 +1,6 @@
 #include <iostream>
 
-#ifdef ENABLE_STD_THREAD
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
 #include <thread>
 #endif
 
@@ -12,6 +12,33 @@
 namespace
 {
 
+inline std::set<std::string> get_available_processing_method_names()
+{
+	std::set<std::string> names;
+
+	names.insert("sequential");
+
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+	names.insert("std::thread");
+#endif
+
+#ifdef _OPENMP
+	names.insert("openmp");
+#endif
+
+	return names;
+}
+
+inline std::string list_strings_from_set(const std::set<std::string>& names)
+{
+	std::ostringstream output;
+	for(std::set<std::string>::const_iterator it=names.begin();it!=names.end();++it)
+	{
+		output << " '" << (*it) << "'";
+	}
+	return output.str();
+}
+
 inline void run_thread_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
 {
 	apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map, *result_quadruples_map_ptr);
@@ -21,8 +48,11 @@ inline void run_thread_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, co
 
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	const std::set<std::string> available_processing_method_names=get_available_processing_method_names();
+
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names));
 		basic_map_of_option_descriptions["--parts"].init("number", "minimal number of parts for splitting");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
@@ -40,6 +70,12 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		{
 			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
+	}
+
+	std::string method=poh.argument<std::string>("--method");
+	if(available_processing_method_names.count(method)==0)
+	{
+		throw std::runtime_error("Invalid processing method name, acceptable values are:"+list_strings_from_set(available_processing_method_names)+".");
 	}
 
 	const unsigned int parts=poh.argument<double>("--parts");
@@ -71,31 +107,38 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
 
-	std::string parallelization_method_name="none";
-
-#ifdef ENABLE_STD_THREAD
-	{
-		parallelization_method_name="std::thread";
-		std::vector<std::thread> thread_handles;
-		std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
-		for(std::size_t i=0;i<distributed_ids.size();i++)
-		{
-			thread_handles.push_back(std::thread(run_thread_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
-		}
-		for(std::size_t i=0;i<thread_handles.size();i++)
-		{
-			thread_handles[i].join();
-			apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
-		}
-	}
-#else
+	if(method=="sequential")
 	{
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
 			run_thread_job(&bsh, &distributed_ids[i], &result_quadruples_map);
 		}
 	}
+	else if(method=="std::thread")
+	{
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+		{
+			std::vector<std::thread> thread_handles;
+			std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
+			for(std::size_t i=0;i<distributed_ids.size();i++)
+			{
+				thread_handles.push_back(std::thread(run_thread_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
+			}
+			for(std::size_t i=0;i<thread_handles.size();i++)
+			{
+				thread_handles[i].join();
+				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
+			}
+		}
+#else
 #endif
+	}
+	else if(method=="openmp")
+	{
+#ifdef _OPENMP
+		throw std::runtime_error("OpenMP support not is implemented.");
+#endif
+	}
 
 	if(!skip_output)
 	{
@@ -104,7 +147,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(print_log)
 	{
-		std::clog << "parallelization " << parallelization_method_name << "\n";
+		std::clog << "processing " << method << "\n";
 		std::clog << "balls " << spheres.size() << "\n";
 
 		std::clog << "parts " << distributed_ids.size() << " :";
