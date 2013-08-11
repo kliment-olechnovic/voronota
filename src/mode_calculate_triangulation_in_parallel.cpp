@@ -136,7 +136,22 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	else if(method=="openmp")
 	{
 #ifdef _OPENMP
-		throw std::runtime_error("OpenMP support not is implemented.");
+		{
+			std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
+
+			{
+#pragma omp parallel for
+				for(std::size_t i=0;i<distributed_ids.size();i++)
+				{
+					run_thread_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+				}
+			}
+
+			for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
+			{
+				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
+			}
+		}
 #endif
 	}
 
