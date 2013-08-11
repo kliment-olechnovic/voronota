@@ -105,13 +105,17 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
+	std::size_t sum_of_all_produced_quadruples_counts=0;
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
 
 	if(method=="sequential")
 	{
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			run_thread_job(&bsh, &distributed_ids[i], &result_quadruples_map);
+			apollota::Triangulation::QuadruplesMap temp_quadruples_map;
+			run_thread_job(&bsh, &distributed_ids[i], &temp_quadruples_map);
+			sum_of_all_produced_quadruples_counts+=temp_quadruples_map.size();
+			apollota::Triangulation::merge_quadruples_maps(temp_quadruples_map, result_quadruples_map);
 		}
 	}
 	else if(method=="std::thread")
@@ -127,6 +131,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 			for(std::size_t i=0;i<thread_handles.size();i++)
 			{
 				thread_handles[i].join();
+				sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
 				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
 			}
 		}
@@ -149,6 +154,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 			for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
 			{
+				sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
 				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
 			}
 		}
@@ -174,5 +180,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
+
+		std::clog << "efficiency " << result_quadruples_map.size() << "/" << sum_of_all_produced_quadruples_counts << "=" << (static_cast<double>(result_quadruples_map.size())/static_cast<double>(sum_of_all_produced_quadruples_counts)*100.0) << "%\n";
 	}
 }
