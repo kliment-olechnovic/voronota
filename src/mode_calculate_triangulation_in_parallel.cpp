@@ -105,17 +105,13 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
-	std::size_t sum_of_all_produced_quadruples_counts=0;
-	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
 
 	if(method=="sequential")
 	{
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			apollota::Triangulation::QuadruplesMap temp_quadruples_map;
-			run_job(&bsh, &distributed_ids[i], &temp_quadruples_map);
-			sum_of_all_produced_quadruples_counts+=temp_quadruples_map.size();
-			apollota::Triangulation::merge_quadruples_maps(temp_quadruples_map, result_quadruples_map);
+			run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
 		}
 	}
 	else if(method=="std::thread")
@@ -123,7 +119,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 #ifdef __GXX_EXPERIMENTAL_CXX0X__
 		{
 			std::vector<std::thread> thread_handles;
-			std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
 			for(std::size_t i=0;i<distributed_ids.size();i++)
 			{
 				thread_handles.push_back(std::thread(run_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
@@ -131,8 +126,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 			for(std::size_t i=0;i<thread_handles.size();i++)
 			{
 				thread_handles[i].join();
-				sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
-				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
 			}
 		}
 #else
@@ -142,23 +135,21 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	{
 #ifdef _OPENMP
 		{
-			std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
-
-			{
 #pragma omp parallel for
-				for(std::size_t i=0;i<distributed_ids.size();i++)
-				{
-					run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
-				}
-			}
-
-			for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
+			for(std::size_t i=0;i<distributed_ids.size();i++)
 			{
-				sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
-				apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
+				run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
 			}
 		}
 #endif
+	}
+
+	std::size_t sum_of_all_produced_quadruples_counts=0;
+	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
+	{
+		sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
+		apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
 	}
 
 	if(!skip_output)
@@ -181,6 +172,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
 
-		std::clog << "efficiency " << result_quadruples_map.size() << "/" << sum_of_all_produced_quadruples_counts << "=" << (static_cast<double>(result_quadruples_map.size())/static_cast<double>(sum_of_all_produced_quadruples_counts)*100.0) << "%\n";
+		std::clog << "efficiency " << (static_cast<double>(result_quadruples_map.size())/static_cast<double>(sum_of_all_produced_quadruples_counts)) << "\n";
 	}
 }
