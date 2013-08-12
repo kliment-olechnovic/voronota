@@ -39,7 +39,7 @@ inline std::string list_strings_from_set(const std::set<std::string>& names)
 	return output.str();
 }
 
-inline void run_thread_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
+inline void run_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
 {
 	apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map, *result_quadruples_map_ptr);
 }
@@ -52,8 +52,8 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names));
-		basic_map_of_option_descriptions["--parts"].init("number", "minimal number of parts for splitting");
+		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names), true);
+		basic_map_of_option_descriptions["--parts"].init("number", "minimal number of parts for splitting", true);
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
@@ -79,9 +79,9 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	}
 
 	const unsigned int parts=poh.argument<double>("--parts");
-	if(parts<1 || parts>1024)
+	if(parts<1)
 	{
-		throw std::runtime_error("Number of parts should be in interval [1, 1024].");
+		throw std::runtime_error("Number of parts should be 1 or more.");
 	}
 
 	const bool skip_output=poh.contains_option("--skip-output");
@@ -113,7 +113,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
 			apollota::Triangulation::QuadruplesMap temp_quadruples_map;
-			run_thread_job(&bsh, &distributed_ids[i], &temp_quadruples_map);
+			run_job(&bsh, &distributed_ids[i], &temp_quadruples_map);
 			sum_of_all_produced_quadruples_counts+=temp_quadruples_map.size();
 			apollota::Triangulation::merge_quadruples_maps(temp_quadruples_map, result_quadruples_map);
 		}
@@ -126,7 +126,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 			std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
 			for(std::size_t i=0;i<distributed_ids.size();i++)
 			{
-				thread_handles.push_back(std::thread(run_thread_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
+				thread_handles.push_back(std::thread(run_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
 			}
 			for(std::size_t i=0;i<thread_handles.size();i++)
 			{
@@ -148,7 +148,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 #pragma omp parallel for
 				for(std::size_t i=0;i<distributed_ids.size();i++)
 				{
-					run_thread_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+					run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
 				}
 			}
 
