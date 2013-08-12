@@ -39,6 +39,11 @@ inline std::string list_strings_from_set(const std::set<std::string>& names)
 	return output.str();
 }
 
+inline bool number_is_power_of_two(const unsigned int x)
+{
+	return ( (x>0) && ((x & (x-1))==0) );
+}
+
 inline void run_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
 {
 	apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map, *result_quadruples_map_ptr);
@@ -53,7 +58,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names), true);
-		basic_map_of_option_descriptions["--parts"].init("number", "minimal number of parts for splitting", true);
+		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
 		basic_map_of_option_descriptions["--selection"].init("numbers", "numbers of selected parts - if not provided, all parts are selected");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
@@ -80,9 +85,9 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	}
 
 	const unsigned int parts=poh.argument<unsigned int>("--parts");
-	if(parts<1)
+	if(!number_is_power_of_two(parts))
 	{
-		throw std::runtime_error("Number of parts should be 1 or more.");
+		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
 	const std::vector<unsigned int> selection=poh.argument_vector<unsigned int>("--selection");
