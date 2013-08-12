@@ -54,6 +54,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names), true);
 		basic_map_of_option_descriptions["--parts"].init("number", "minimal number of parts for splitting", true);
+		basic_map_of_option_descriptions["--selection"].init("numbers", "numbers of selected parts - if not provided, all parts are selected");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
@@ -72,16 +73,25 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		}
 	}
 
-	std::string method=poh.argument<std::string>("--method");
+	const std::string method=poh.argument<std::string>("--method");
 	if(available_processing_method_names.count(method)==0)
 	{
 		throw std::runtime_error("Invalid processing method name, acceptable values are:"+list_strings_from_set(available_processing_method_names)+".");
 	}
 
-	const unsigned int parts=poh.argument<double>("--parts");
+	const unsigned int parts=poh.argument<unsigned int>("--parts");
 	if(parts<1)
 	{
 		throw std::runtime_error("Number of parts should be 1 or more.");
+	}
+
+	const std::vector<unsigned int> selection=poh.argument_vector<unsigned int>("--selection");
+	for(std::size_t i=0;i<selection.size();i++)
+	{
+		if(selection[i]>=parts)
+		{
+			throw std::runtime_error("Every selection number should be less than number of parts.");
+		}
 	}
 
 	const bool skip_output=poh.contains_option("--skip-output");
@@ -101,7 +111,29 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+	const std::vector< std::vector<std::size_t> > all_distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+	std::vector< std::vector<std::size_t> > distributed_ids;
+	{
+		if(selection.empty())
+		{
+			distributed_ids=all_distributed_ids;
+		}
+		else
+		{
+			distributed_ids.reserve(selection.size());
+			for(std::size_t i=0;i<selection.size();i++)
+			{
+				if(selection[i]<all_distributed_ids.size())
+				{
+					distributed_ids.push_back(all_distributed_ids[selection[i]]);
+				}
+			}
+		}
+	}
+	if(distributed_ids.empty())
+	{
+		throw std::runtime_error("No requested parts available.");
+	}
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
@@ -159,19 +191,12 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(print_log)
 	{
-		std::clog << "processing " << method << "\n";
 		std::clog << "balls " << spheres.size() << "\n";
-
-		std::clog << "parts " << distributed_ids.size() << " :";
-		for(std::size_t i=0;i<distributed_ids.size();i++)
-		{
-			std::clog << " " << distributed_ids[i].size();
-		}
-		std::clog << "\n";
-
+		std::clog << "processing_method " << method << "\n";
+		std::clog << "all_parts " << all_distributed_ids.size() << "\n";
+		std::clog << "processed_parts " << distributed_ids.size() << "\n";
 		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
-
-		std::clog << "efficiency " << (static_cast<double>(result_quadruples_map.size())/static_cast<double>(sum_of_all_produced_quadruples_counts)) << "\n";
+		std::clog << "parallel_output_overlap " << (static_cast<double>(sum_of_all_produced_quadruples_counts)/static_cast<double>(result_quadruples_map.size())-1.0) << "\n";
 	}
 }

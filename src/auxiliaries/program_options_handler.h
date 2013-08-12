@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
@@ -128,6 +129,37 @@ public:
 		{
 			return default_value;
 		}
+	}
+
+	template<typename T>
+	std::vector<T> argument_vector(const std::string& name) const
+	{
+		std::vector<T> result;
+		if(contains_option_with_argument(name))
+		{
+			std::string input_string=argument_string(name);
+			for(std::size_t i=0;i<input_string.size();i++)
+			{
+				const char c=input_string[i];
+				if(c==',' || c==';')
+				{
+					input_string[i]=' ';
+				}
+			}
+			std::istringstream input(input_string);
+			do
+			{
+				T value;
+				input >> value;
+				if(input.fail())
+				{
+					throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
+				}
+				result.push_back(value);
+			}
+			while(input.good());
+		}
+		return result;
 	}
 
 	void remove_option(const std::string& name)
