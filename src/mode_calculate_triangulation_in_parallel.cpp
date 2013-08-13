@@ -34,7 +34,7 @@ inline bool number_is_power_of_two(const unsigned int x)
 
 inline void run_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
 {
-	apollota::Triangulation::merge_quadruples_maps(apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map, *result_quadruples_map_ptr);
+	(*result_quadruples_map_ptr)=apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map;
 }
 
 }
@@ -149,6 +149,10 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		}
 	}
 #endif
+	else
+	{
+		throw std::runtime_error("Processing method '"+method+"' is not available.");
+	}
 
 	std::size_t sum_of_all_produced_quadruples_counts=0;
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
