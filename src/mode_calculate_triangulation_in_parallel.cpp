@@ -32,11 +32,6 @@ inline bool number_is_power_of_two(const unsigned int x)
 	return ( (x>0) && ((x & (x-1))==0) );
 }
 
-inline void run_job(const apollota::BoundingSpheresHierarchy* bsh_ptr, const std::vector<std::size_t>* thread_ids_ptr, apollota::Triangulation::QuadruplesMap* result_quadruples_map_ptr)
-{
-	(*result_quadruples_map_ptr)=apollota::Triangulation::construct_result_for_admittance_set(*bsh_ptr, *thread_ids_ptr).quadruples_map;
-}
-
 }
 
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
@@ -136,7 +131,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	{
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+			distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
 		}
 	}
 #ifdef _OPENMP
@@ -149,7 +144,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 			{
 				try
 				{
-					run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+					distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
 				}
 				catch(...)
 				{
