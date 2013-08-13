@@ -7,8 +7,8 @@ Common options
 
 --mode calculate-triangulation
 
+  --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
-  --keep-hidden-balls                         flag to not exclude hidden input balls
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
 
