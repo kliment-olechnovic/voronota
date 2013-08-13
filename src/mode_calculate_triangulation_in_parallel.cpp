@@ -148,7 +148,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 				}
 				catch(...)
 				{
-					errors++;
+					errors+=1;
 				}
 			}
 		}
