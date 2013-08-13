@@ -24,7 +24,7 @@ then
 	exit 1
 fi
 
-( time -p (timeout 600 $TEST_SUBJECT --mode calculate-triangulation --clog-file $LOG_FILE --epsilon $EPSILON --include-surplus-quadruples --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE) ) 2> $RAW_TIME_FILE
+( time -p (timeout 600 $TEST_SUBJECT --mode calculate-triangulation --clog-file $LOG_FILE --epsilon $EPSILON --include-surplus-quadruples --keep-hidden-balls --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE) ) 2> $RAW_TIME_FILE
 
 if [ ! -s "$RAW_OUTPUT_FILE" ]
 then
