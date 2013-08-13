@@ -11,9 +11,9 @@ Common options
 --mode calculate-triangulation
 
   --check                                     flag to explicitly check the resulting triangulation (takes time, used only for testing)
+  --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
-  --keep-hidden-balls                         flag to not exclude hidden input balls
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
 
