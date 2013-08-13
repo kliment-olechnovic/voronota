@@ -142,10 +142,24 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 #ifdef _OPENMP
 	else if(method=="openmp")
 	{
-#pragma omp parallel for
-		for(std::size_t i=0;i<distributed_ids.size();i++)
+		int errors=0;
 		{
-			run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+#pragma omp parallel for reduction(+:errors)
+			for(std::size_t i=0;i<distributed_ids.size();i++)
+			{
+				try
+				{
+					run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
+				}
+				catch(...)
+				{
+					errors++;
+				}
+			}
+		}
+		if(errors>0)
+		{
+			throw std::runtime_error("Parallel processing failed because of exception.");
 		}
 	}
 #endif
