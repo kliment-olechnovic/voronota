@@ -1,11 +1,6 @@
 #include <iostream>
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#include <thread>
-#endif
-
 #include "apollota/triangulation.h"
-#include "apollota/splitting_of_spheres.h"
 
 #include "modes_commons.h"
 
@@ -15,17 +10,10 @@ namespace
 inline std::set<std::string> get_available_processing_method_names()
 {
 	std::set<std::string> names;
-
 	names.insert("sequential");
-
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-	names.insert("std::thread");
-#endif
-
 #ifdef _OPENMP
 	names.insert("openmp");
 #endif
-
 	return names;
 }
 
@@ -151,35 +139,16 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 			run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
 		}
 	}
-	else if(method=="std::thread")
-	{
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-		{
-			std::vector<std::thread> thread_handles;
-			for(std::size_t i=0;i<distributed_ids.size();i++)
-			{
-				thread_handles.push_back(std::thread(run_job, &bsh, &distributed_ids[i], &distributed_quadruples_maps[i]));
-			}
-			for(std::size_t i=0;i<thread_handles.size();i++)
-			{
-				thread_handles[i].join();
-			}
-		}
-#else
-#endif
-	}
+#ifdef _OPENMP
 	else if(method=="openmp")
 	{
-#ifdef _OPENMP
-		{
 #pragma omp parallel for
-			for(std::size_t i=0;i<distributed_ids.size();i++)
-			{
-				run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
-			}
+		for(std::size_t i=0;i<distributed_ids.size();i++)
+		{
+			run_job(&bsh, &distributed_ids[i], &distributed_quadruples_maps[i]);
 		}
-#endif
 	}
+#endif
 
 	std::size_t sum_of_all_produced_quadruples_counts=0;
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
@@ -202,6 +171,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		std::clog << "processed_parts " << distributed_ids.size() << "\n";
 		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
-		std::clog << "parallel_output_overlap " << (static_cast<double>(sum_of_all_produced_quadruples_counts)/static_cast<double>(result_quadruples_map.size())-1.0) << "\n";
+		std::clog << "parallel_results_overlap " << (static_cast<double>(sum_of_all_produced_quadruples_counts)/static_cast<double>(result_quadruples_map.size())-1.0) << "\n";
 	}
 }
