@@ -190,6 +190,30 @@ private:
 
 };
 
+void fill_plain_vector_from_spheres(const std::vector<apollota::SimpleSphere>& spheres, std::vector<double>& plain_vector)
+{
+	plain_vector.resize(spheres.size()*4);
+	for(std::size_t i=0;i<spheres.size();i++)
+	{
+		plain_vector[i*4+0]=spheres[i].x;
+		plain_vector[i*4+1]=spheres[i].y;
+		plain_vector[i*4+2]=spheres[i].z;
+		plain_vector[i*4+3]=spheres[i].r;
+	}
+}
+
+void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std::vector<apollota::SimpleSphere>& spheres)
+{
+	spheres.resize(plain_vector.size()/4);
+	for(std::size_t i=0;i<spheres.size();i++)
+	{
+		spheres[i].x=plain_vector[i*4+0];
+		spheres[i].y=plain_vector[i*4+1];
+		spheres[i].z=plain_vector[i*4+2];
+		spheres[i].r=plain_vector[i*4+3];
+	}
+}
+
 void calculate_triangulation_in_parallel_on_multiple_machines(
 		const std::vector<std::string>& argv,
 		const std::size_t parts,
@@ -199,12 +223,30 @@ void calculate_triangulation_in_parallel_on_multiple_machines(
 		const double init_radius_for_BSH)
 {
 	MPIWrapper mpi_wrapper(argv);
-	std::cout << "MPI process " << mpi_wrapper.rank << " of " << mpi_wrapper.size << " executed with options:\n";
-	for(std::size_t i=0;i<argv.size();i++)
+
+	std::vector<apollota::SimpleSphere> spheres;
 	{
-		std::cout << " " << argv[i];
+		std::vector<double> spheres_plain_vector;
+		int spheres_plain_vector_length=0;
+		if(mpi_wrapper.rank==0)
+		{
+			auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+			fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
+			spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
+		}
+		MPI_Bcast(&spheres_plain_vector_length, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		if(mpi_wrapper.rank!=0)
+		{
+			spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
+		}
+		MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+		if(mpi_wrapper.rank!=0)
+		{
+			fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
+		}
 	}
-	std::cout << "\n";
+
+	std::cout << "MPI process " << mpi_wrapper.rank << " of " << mpi_wrapper.size << " initialized with " << spheres.size() << " spheres\n";
 }
 
 #endif
