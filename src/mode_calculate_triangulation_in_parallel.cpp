@@ -7,7 +7,7 @@
 namespace
 {
 
-inline std::set<std::string> get_available_processing_method_names()
+std::set<std::string> get_available_processing_method_names()
 {
 	std::set<std::string> names;
 	names.insert("sequential");
@@ -17,7 +17,7 @@ inline std::set<std::string> get_available_processing_method_names()
 	return names;
 }
 
-inline std::string list_strings_from_set(const std::set<std::string>& names)
+std::string list_strings_from_set(const std::set<std::string>& names)
 {
 	std::ostringstream output;
 	for(std::set<std::string>::const_iterator it=names.begin();it!=names.end();++it)
@@ -27,9 +27,31 @@ inline std::string list_strings_from_set(const std::set<std::string>& names)
 	return output.str();
 }
 
-inline bool number_is_power_of_two(const unsigned int x)
+inline bool number_is_power_of_two(const unsigned long x)
 {
 	return ( (x>0) && ((x & (x-1))==0) );
+}
+
+template<typename T>
+std::vector<T> extract_vector_subset_by_selection(const std::vector<T>& input, const std::vector<std::size_t>& selection)
+{
+	if(selection.empty())
+	{
+		return input;
+	}
+	else
+	{
+		std::vector<T> result;
+		result.reserve(selection.size());
+		for(std::size_t i=0;i<selection.size();i++)
+		{
+			if(selection[i]<input.size())
+			{
+				result.push_back(input[selection[i]]);
+			}
+		}
+		return result;
+	}
 }
 
 }
@@ -67,16 +89,16 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Invalid processing method name, acceptable values are:"+list_strings_from_set(available_processing_method_names)+".");
 	}
 
-	const unsigned int parts=poh.argument<unsigned int>("--parts");
+	const std::size_t parts=poh.argument<std::size_t>("--parts");
 	if(!number_is_power_of_two(parts))
 	{
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
-	const std::vector<unsigned int> selection=poh.argument_vector<unsigned int>("--selection");
+	const std::vector<std::size_t> selection=poh.argument_vector<std::size_t>("--selection");
 	for(std::size_t i=0;i<selection.size();i++)
 	{
-		if(selection[i]>=parts)
+		if(selection[i]>=static_cast<std::size_t>(parts))
 		{
 			throw std::runtime_error("Every selection number should be less than number of parts.");
 		}
@@ -100,24 +122,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	}
 
 	const std::vector< std::vector<std::size_t> > all_distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
-	std::vector< std::vector<std::size_t> > distributed_ids;
-	{
-		if(selection.empty())
-		{
-			distributed_ids=all_distributed_ids;
-		}
-		else
-		{
-			distributed_ids.reserve(selection.size());
-			for(std::size_t i=0;i<selection.size();i++)
-			{
-				if(selection[i]<all_distributed_ids.size())
-				{
-					distributed_ids.push_back(all_distributed_ids[selection[i]]);
-				}
-			}
-		}
-	}
+	const std::vector< std::vector<std::size_t> > distributed_ids=extract_vector_subset_by_selection(all_distributed_ids, selection);
 	if(distributed_ids.empty())
 	{
 		throw std::runtime_error("No requested parts available.");

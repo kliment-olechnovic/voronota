@@ -103,10 +103,10 @@ private:
 		}
 	}
 
-	static unsigned int estimate_splitting_depth_by_number_of_parts(const unsigned int number_of_parts)
+	static unsigned int estimate_splitting_depth_by_number_of_parts(const unsigned long number_of_parts)
 	{
 		unsigned int depth=0;
-		while((static_cast<unsigned int>(1 << depth)<number_of_parts) && (depth<16))
+		while(((1UL << depth)<number_of_parts) && (depth<16))
 		{
 			depth++;
 		}
