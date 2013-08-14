@@ -98,9 +98,9 @@ void calculate_triangulation_in_parallel_on_single_machine(
 			distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
 		}
 	}
-#ifdef _OPENMP
 	else
 	{
+#ifdef _OPENMP
 		int errors=0;
 		{
 #pragma omp parallel for reduction(+:errors)
@@ -120,8 +120,10 @@ void calculate_triangulation_in_parallel_on_single_machine(
 		{
 			throw std::runtime_error("Parallel processing failed because of exception.");
 		}
-	}
+#else
+		throw std::runtime_error("OpenMP was not enabled during compilation.");
 #endif
+	}
 
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
 	const long parallel_results_absolute_overlap=reduce_quadruples_maps(distributed_quadruples_maps, result_quadruples_map);
