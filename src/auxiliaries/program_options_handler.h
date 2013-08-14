@@ -44,22 +44,35 @@ public:
 
 	ProgramOptionsHandler(const int argc, const char** argv)
 	{
-		for(int i=1;i<argc;i++)
+		if(argc>0)
 		{
-			const std::string str(argv[i]);
-			if(str.find("--")==0)
+			original_argv_.resize(argc);
+			for(int i=0;i<argc;i++)
 			{
-				options_[str]="";
+				original_argv_[i]=argv[i];
 			}
-			else if(i>0)
+			for(std::size_t i=1;i<original_argv_.size();i++)
 			{
-				const std::string prev_str(argv[i-1]);
-				if(prev_str.find("--")==0)
+				const std::string& str=original_argv_[i];
+				if(str.find("--")==0)
 				{
-					options_[prev_str]=str;
+					options_[str]="";
+				}
+				else if(i>0)
+				{
+					const std::string& prev_str=original_argv_[i-1];
+					if(prev_str.find("--")==0)
+					{
+						options_[prev_str]=str;
+					}
 				}
 			}
 		}
+	}
+
+	const std::vector<std::string>& original_argv() const
+	{
+		return original_argv_;
 	}
 
 	bool empty() const
@@ -212,6 +225,7 @@ public:
 	}
 
 private:
+	std::vector<std::string> original_argv_;
 	std::map<std::string, std::string> options_;
 };
 
