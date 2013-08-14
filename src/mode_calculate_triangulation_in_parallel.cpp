@@ -1,5 +1,10 @@
 #include <iostream>
 
+#ifdef ENABLE_MPI
+#include <mpi.h>
+#include <cstring>
+#endif
+
 #include "apollota/triangulation.h"
 
 #include "modes_commons.h"
@@ -13,6 +18,9 @@ std::set<std::string> get_available_processing_method_names()
 	names.insert("sequential");
 #ifdef _OPENMP
 	names.insert("openmp");
+#endif
+#ifdef ENABLE_MPI
+	names.insert("mpi");
 #endif
 	return names;
 }
@@ -145,6 +153,62 @@ void calculate_triangulation_in_parallel_on_single_machine(
 	}
 }
 
+#ifdef ENABLE_MPI
+
+class MPIWrapper
+{
+public:
+	MPIWrapper(const std::vector<std::string>& argv) : argc_(static_cast<int>(argv.size()))
+	{
+		argv_=new char*[argc_];
+		for(int i=0;i<argc_;i++)
+		{
+			argv_[i]=new char[argv[i].size()+1];
+			strcpy(argv_[i], argv[i].c_str());
+		}
+		MPI_Init(&argc_, &argv_);
+        MPI_Comm_size(MPI_COMM_WORLD, &size);
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	}
+
+	~MPIWrapper()
+	{
+		MPI_Finalize();
+		for(int i=0;i<argc_;i++)
+		{
+			delete[] argv_[i];
+		}
+		delete argv_;
+	}
+
+	int size;
+	int rank;
+
+private:
+	int argc_;
+	char** argv_;
+
+};
+
+void calculate_triangulation_in_parallel_on_multiple_machines(
+		const std::vector<std::string>& argv,
+		const std::size_t parts,
+		const std::vector<std::size_t>& selection,
+		const bool skip_output,
+		const bool print_log,
+		const double init_radius_for_BSH)
+{
+	MPIWrapper mpi_wrapper(argv);
+	std::cout << "MPI process " << mpi_wrapper.rank << " of " << mpi_wrapper.size << " executed with options:\n";
+	for(std::size_t i=0;i<argv.size();i++)
+	{
+		std::cout << " " << argv[i];
+	}
+	std::cout << "\n";
+}
+
+#endif
+
 }
 
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
@@ -205,10 +269,22 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	if(method=="sequential" || method=="openmp")
+	if(method=="sequential")
 	{
-		calculate_triangulation_in_parallel_on_single_machine(parts, selection, skip_output, print_log, init_radius_for_BSH, (method=="openmp"));
+		calculate_triangulation_in_parallel_on_single_machine(parts, selection, skip_output, print_log, init_radius_for_BSH, false);
 	}
+#ifdef _OPENMP
+	else if(method=="openmp")
+	{
+		calculate_triangulation_in_parallel_on_single_machine(parts, selection, skip_output, print_log, init_radius_for_BSH, true);
+	}
+#endif
+#ifdef ENABLE_MPI
+	else if(method=="mpi")
+	{
+		calculate_triangulation_in_parallel_on_multiple_machines(poh.original_argv(), parts, selection, skip_output, print_log, init_radius_for_BSH);
+	}
+#endif
 	else
 	{
 		throw std::runtime_error("Processing method '"+method+"' is not available.");
