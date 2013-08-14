@@ -62,17 +62,6 @@ std::vector<T> extract_vector_subset_by_selection(const std::vector<T>& input, c
 	}
 }
 
-long reduce_quadruples_maps(const std::vector<apollota::Triangulation::QuadruplesMap>& distributed_quadruples_maps, apollota::Triangulation::QuadruplesMap& result_quadruples_map)
-{
-	std::size_t sum_of_all_produced_quadruples_counts=0;
-	for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
-	{
-		sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
-		apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
-	}
-	return (static_cast<long>(sum_of_all_produced_quadruples_counts)-static_cast<long>(result_quadruples_map.size()));
-}
-
 void calculate_triangulation_in_parallel_on_single_machine(
 		const std::size_t parts,
 		const std::vector<std::size_t>& selection,
@@ -133,9 +122,14 @@ void calculate_triangulation_in_parallel_on_single_machine(
 #endif
 	}
 
+	std::size_t sum_of_all_produced_quadruples_counts=0;
 	apollota::Triangulation::QuadruplesMap result_quadruples_map;
-	const long parallel_results_absolute_overlap=reduce_quadruples_maps(distributed_quadruples_maps, result_quadruples_map);
-	const double parallel_results_relative_overlap=static_cast<double>(parallel_results_absolute_overlap)/static_cast<double>(result_quadruples_map.size());
+	for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
+	{
+		sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
+		apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
+	}
+	const double parallel_results_relative_overlap=static_cast<double>(sum_of_all_produced_quadruples_counts)/static_cast<double>(result_quadruples_map.size()-1.0);
 
 	if(!skip_output)
 	{
