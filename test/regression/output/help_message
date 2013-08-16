@@ -21,7 +21,6 @@ Common options
   --method                        string   *  processing method name, variants are: 'sequential'
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
-  --selection                     numbers     numbers of selected parts - if not provided, all parts are selected
   --skip-output                               flag to disable output of the resulting triangulation
 
   stdin   <-  list of balls (line format: 'x y z r')
