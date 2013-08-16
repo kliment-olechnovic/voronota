@@ -51,20 +51,28 @@ public:
 			{
 				original_argv_[i]=argv[i];
 			}
-			for(std::size_t i=1;i<original_argv_.size();i++)
+			for(std::size_t i=0;i<original_argv_.size();i++)
 			{
 				const std::string& str=original_argv_[i];
-				if(str.find("--")==0)
+				if(i>0 && str.find("--")==0)
 				{
 					options_[str]="";
 				}
-				else if(i>0)
+				else if(i>1)
 				{
 					const std::string& prev_str=original_argv_[i-1];
 					if(prev_str.find("--")==0)
 					{
 						options_[prev_str]=str;
 					}
+					else
+					{
+						unused_argv_.push_back(str);
+					}
+				}
+				else
+				{
+					unused_argv_.push_back(str);
 				}
 			}
 		}
@@ -73,6 +81,11 @@ public:
 	const std::vector<std::string>& original_argv() const
 	{
 		return original_argv_;
+	}
+
+	const std::vector<std::string>& unused_argv() const
+	{
+		return unused_argv_;
 	}
 
 	bool empty() const
@@ -226,6 +239,7 @@ public:
 
 private:
 	std::vector<std::string> original_argv_;
+	std::vector<std::string> unused_argv_;
 	std::map<std::string, std::string> options_;
 };
 
