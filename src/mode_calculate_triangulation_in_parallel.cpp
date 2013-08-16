@@ -125,9 +125,10 @@ public:
 
 		MPIHandle mpi_handle(argv);
 
-		if(mpi_handle.size<=2)
+		if(mpi_handle.size()<=2)
 		{
-			if(mpi_handle.rank==0)
+			mpi_handle.set_abort_on_destruction(false);
+			if(mpi_handle.rank()==0)
 			{
 				ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, result);
 				return true;
@@ -142,19 +143,19 @@ public:
 		{
 			std::vector<double> spheres_plain_vector;
 			int spheres_plain_vector_length=0;
-			if(mpi_handle.rank==0)
+			if(mpi_handle.rank()==0)
 			{
 				auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 				fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 				spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 			}
 			MPI_Bcast(&spheres_plain_vector_length, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-			if(mpi_handle.rank!=0)
+			if(mpi_handle.rank()!=0)
 			{
 				spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
 			}
 			MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-			if(mpi_handle.rank!=0)
+			if(mpi_handle.rank()!=0)
 			{
 				fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
 			}
@@ -164,7 +165,7 @@ public:
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
 
-		if(mpi_handle.rank==0)
+		if(mpi_handle.rank()==0)
 		{
 			for(std::size_t i=0;i<distributed_ids.size();i++)
 			{
@@ -194,7 +195,7 @@ public:
 			const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 			for(std::size_t i=0;i<distributed_ids.size();i++)
 			{
-				if(mpi_handle.rank==(static_cast<int>(i)%(mpi_handle.size-1)+1))
+				if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
 				{
 					std::vector<double> plain_vector;
 					fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
@@ -203,14 +204,20 @@ public:
 			}
 		}
 
-		return (mpi_handle.rank==0);
+		mpi_handle.set_abort_on_destruction(false);
+		return (mpi_handle.rank()==0);
 	}
 
 private:
 	class MPIHandle
 	{
 	public:
-		MPIHandle(const std::vector<std::string>& argv) : argc_(static_cast<int>(argv.size()))
+		MPIHandle(const std::vector<std::string>& argv) :
+			abort_on_destruction_(true),
+			argc_(static_cast<int>(argv.size())),
+			argv_(0),
+			size_(0),
+			rank_(0)
 		{
 			argv_=new char*[argc_];
 			for(int i=0;i<argc_;i++)
@@ -219,13 +226,21 @@ private:
 				strcpy(argv_[i], argv[i].c_str());
 			}
 			MPI_Init(&argc_, &argv_);
-	        MPI_Comm_size(MPI_COMM_WORLD, &size);
-	        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	        MPI_Comm_size(MPI_COMM_WORLD, &size_);
+	        MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
 		}
 
 		~MPIHandle()
 		{
-			MPI_Finalize();
+			if(abort_on_destruction_)
+			{
+				MPI_Abort(MPI_COMM_WORLD, 1);
+			}
+			else
+			{
+				MPI_Finalize();
+			}
+
 			for(int i=0;i<argc_;i++)
 			{
 				delete[] argv_[i];
@@ -233,13 +248,27 @@ private:
 			delete argv_;
 		}
 
-		int size;
-		int rank;
+		void set_abort_on_destruction(const bool abort_on_destruction)
+		{
+			abort_on_destruction_=abort_on_destruction;
+		}
+
+		const int size() const
+		{
+			return size_;
+		}
+
+		const int rank() const
+		{
+			return rank_;
+		}
 
 	private:
+		bool abort_on_destruction_;
 		int argc_;
 		char** argv_;
-
+		int size_;
+		int rank_;
 	};
 
 	static void fill_plain_vector_from_spheres(const std::vector<apollota::SimpleSphere>& spheres, std::vector<double>& plain_vector)
