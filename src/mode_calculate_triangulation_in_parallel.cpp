@@ -169,12 +169,11 @@ void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std
 	}
 }
 
-void calculate_triangulation_in_parallel_on_multiple_machines(
+void calculate_triangulation_in_parallel_with_mpi(
 		const std::vector<std::string>& argv,
 		const std::size_t parts,
-		const bool skip_output,
-		const bool print_log,
-		const double init_radius_for_BSH)
+		const double init_radius_for_BSH,
+		ParallelComputationResult& result)
 {
 	MPIWrapper mpi_wrapper(argv);
 
@@ -201,6 +200,11 @@ void calculate_triangulation_in_parallel_on_multiple_machines(
 	}
 
 	std::cout << "MPI process " << mpi_wrapper.rank << " of " << mpi_wrapper.size << " initialized with " << spheres.size() << " spheres\n";
+	for(std::size_t i=0;i<argv.size();i++)
+	{
+		std::cout << " " << argv[i];
+	}
+	std::cout << "\n";
 }
 
 #endif
@@ -289,7 +293,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 #ifdef ENABLE_MPI
 	else if(method=="mpi")
 	{
-		calculate_triangulation_in_parallel_on_multiple_machines(poh.original_argv(), parts, skip_output, print_log, init_radius_for_BSH);
+		calculate_triangulation_in_parallel_with_mpi(poh.unused_argv(), parts, init_radius_for_BSH, result);
 	}
 #endif
 	else
