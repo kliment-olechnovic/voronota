@@ -308,6 +308,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		std::clog << "parts " << result.number_of_initialized_parts << "\n";
 		std::clog << "quadruples " << result.merged_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
-		std::clog << "parallel_results_overlap " << (static_cast<double>(result.number_of_produced_quadruples)/static_cast<double>(result.merged_quadruples_map.size())) << "\n";
+		std::clog << "parallel_results_overlap " << (result.merged_quadruples_map.empty() ? static_cast<double>(0) : (static_cast<double>(result.number_of_produced_quadruples)/static_cast<double>(result.merged_quadruples_map.size()))) << "\n";
 	}
 }
