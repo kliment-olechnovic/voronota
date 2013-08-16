@@ -17,31 +17,8 @@ inline bool number_is_power_of_two(const unsigned long x)
 	return ( (x>0) && ((x & (x-1))==0) );
 }
 
-template<typename T>
-std::vector<T> extract_vector_subset_by_selection(const std::vector<T>& input, const std::vector<std::size_t>& selection)
-{
-	if(selection.empty())
-	{
-		return input;
-	}
-	else
-	{
-		std::vector<T> result;
-		result.reserve(selection.size());
-		for(std::size_t i=0;i<selection.size();i++)
-		{
-			if(selection[i]<input.size())
-			{
-				result.push_back(input[selection[i]]);
-			}
-		}
-		return result;
-	}
-}
-
 void calculate_triangulation_in_parallel_on_single_machine(
 		const std::size_t parts,
-		const std::vector<std::size_t>& selection,
 		const bool skip_output,
 		const bool print_log,
 		const double init_radius_for_BSH,
@@ -54,12 +31,7 @@ void calculate_triangulation_in_parallel_on_single_machine(
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const std::vector< std::vector<std::size_t> > all_distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
-	const std::vector< std::vector<std::size_t> > distributed_ids=extract_vector_subset_by_selection(all_distributed_ids, selection);
-	if(distributed_ids.empty())
-	{
-		throw std::runtime_error("No requested parts available.");
-	}
+	const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
@@ -116,8 +88,7 @@ void calculate_triangulation_in_parallel_on_single_machine(
 	if(print_log)
 	{
 		std::clog << "balls " << spheres.size() << "\n";
-		std::clog << "all_parts " << all_distributed_ids.size() << "\n";
-		std::clog << "processed_parts " << distributed_ids.size() << "\n";
+		std::clog << "parts " << distributed_ids.size() << "\n";
 		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
 		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
 		std::clog << "parallel_results_overlap " << parallel_results_relative_overlap << "\n";
@@ -188,7 +159,6 @@ void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std
 void calculate_triangulation_in_parallel_on_multiple_machines(
 		const std::vector<std::string>& argv,
 		const std::size_t parts,
-		const std::vector<std::size_t>& selection,
 		const bool skip_output,
 		const bool print_log,
 		const double init_radius_for_BSH)
@@ -251,7 +221,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
-		basic_map_of_option_descriptions["--selection"].init("numbers", "numbers of selected parts - if not provided, all parts are selected");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
@@ -282,15 +251,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
-	const std::vector<std::size_t> selection=poh.argument_vector<std::size_t>("--selection");
-	for(std::size_t i=0;i<selection.size();i++)
-	{
-		if(selection[i]>=static_cast<std::size_t>(parts))
-		{
-			throw std::runtime_error("Every selection number should be less than number of parts.");
-		}
-	}
-
 	const bool skip_output=poh.contains_option("--skip-output");
 
 	const bool print_log=poh.contains_option("--print-log");
@@ -303,18 +263,18 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(method=="sequential")
 	{
-		calculate_triangulation_in_parallel_on_single_machine(parts, selection, skip_output, print_log, init_radius_for_BSH, false);
+		calculate_triangulation_in_parallel_on_single_machine(parts, skip_output, print_log, init_radius_for_BSH, false);
 	}
 #ifdef _OPENMP
 	else if(method=="openmp")
 	{
-		calculate_triangulation_in_parallel_on_single_machine(parts, selection, skip_output, print_log, init_radius_for_BSH, true);
+		calculate_triangulation_in_parallel_on_single_machine(parts, skip_output, print_log, init_radius_for_BSH, true);
 	}
 #endif
 #ifdef ENABLE_MPI
 	else if(method=="mpi")
 	{
-		calculate_triangulation_in_parallel_on_multiple_machines(poh.original_argv(), parts, selection, skip_output, print_log, init_radius_for_BSH);
+		calculate_triangulation_in_parallel_on_multiple_machines(poh.original_argv(), parts, skip_output, print_log, init_radius_for_BSH);
 	}
 #endif
 	else
