@@ -172,6 +172,47 @@ void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std
 	}
 }
 
+void fill_plain_vector_from_quadruples_map(const apollota::Triangulation::QuadruplesMap& quadruples_map, std::vector<double>& plain_vector)
+{
+	plain_vector.resize(apollota::Triangulation::count_tangent_spheres_in_quadruples_map(quadruples_map)*8);
+	std::size_t i=0;
+	for(apollota::Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+	{
+		const apollota::Quadruple& q=it->first;
+		const std::vector<apollota::SimpleSphere>& ts=it->second;
+		for(std::size_t j=0;j<ts.size();j++)
+		{
+			plain_vector[i*8+0]=q.get(0);
+			plain_vector[i*8+1]=q.get(1);
+			plain_vector[i*8+2]=q.get(2);
+			plain_vector[i*8+3]=q.get(3);
+			plain_vector[i*8+4]=ts[j].x;
+			plain_vector[i*8+5]=ts[j].y;
+			plain_vector[i*8+6]=ts[j].z;
+			plain_vector[i*8+7]=ts[j].r;
+			i++;
+		}
+	}
+}
+
+void fill_quadruples_map_from_plain_vector(const std::vector<double>& plain_vector, apollota::Triangulation::QuadruplesMap& quadruples_map)
+{
+	quadruples_map.clear();
+	const std::size_t n=(plain_vector.size()/8);
+	for(std::size_t i=0;i<n;i++)
+	{
+		quadruples_map[apollota::Quadruple(
+				static_cast<std::size_t>(plain_vector[i*8+0]+0.5),
+				static_cast<std::size_t>(plain_vector[i*8+1]+0.5),
+				static_cast<std::size_t>(plain_vector[i*8+2]+0.5),
+				static_cast<std::size_t>(plain_vector[i*8+3]+0.5))].push_back(apollota::SimpleSphere(
+						plain_vector[i*8+4],
+						plain_vector[i*8+5],
+						plain_vector[i*8+6],
+						plain_vector[i*8+7]));
+	}
+}
+
 }
 
 bool calculate_triangulation_in_parallel_with_mpi(
