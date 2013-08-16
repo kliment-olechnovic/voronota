@@ -12,88 +12,101 @@
 namespace
 {
 
+struct ParallelComputationResult
+{
+	ParallelComputationResult() : number_of_input_spheres(0), number_of_initialized_parts(0), number_of_produced_quadruples(0)
+	{
+	}
+
+	std::size_t number_of_input_spheres;
+	std::size_t number_of_initialized_parts;
+	std::size_t number_of_produced_quadruples;
+	apollota::Triangulation::QuadruplesMap merged_quadruples_map;
+};
+
 inline bool number_is_power_of_two(const unsigned long x)
 {
 	return ( (x>0) && ((x & (x-1))==0) );
 }
 
-void calculate_triangulation_in_parallel_on_single_machine(
+void calculate_triangulation_in_parallel_simulated(
 		const std::size_t parts,
-		const bool skip_output,
-		const bool print_log,
 		const double init_radius_for_BSH,
-		const bool use_openmp)
+		ParallelComputationResult& result)
 {
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-	if(spheres.size()<4)
-	{
-		throw std::runtime_error("Less than 4 balls provided to stdin.");
-	}
+	result.number_of_input_spheres=spheres.size();
 
 	const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+	result.number_of_initialized_parts=distributed_ids.size();
+
+	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+
+	for(std::size_t i=0;i<distributed_ids.size();i++)
+	{
+		const apollota::Triangulation::QuadruplesMap partial_quadruples_maps=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
+		result.number_of_produced_quadruples+=partial_quadruples_maps.size();
+		apollota::Triangulation::merge_quadruples_maps(partial_quadruples_maps, result.merged_quadruples_map);
+	}
+}
+
+#ifdef _OPENMP
+void calculate_triangulation_in_parallel_with_openmp(
+		const std::size_t parts,
+		const double init_radius_for_BSH,
+		ParallelComputationResult& result)
+{
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	result.number_of_input_spheres=spheres.size();
+
+	const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+	result.number_of_initialized_parts=distributed_ids.size();
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
 	std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
+	std::vector<int> distributed_errors(distributed_ids.size(), 0);
 
-	if(!use_openmp)
 	{
+#pragma omp parallel for
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
-		}
-	}
-	else
-	{
-#ifdef _OPENMP
-		int errors=0;
-		{
-#pragma omp parallel for reduction(+:errors)
-			for(std::size_t i=0;i<distributed_ids.size();i++)
+			try
 			{
-				try
-				{
-					distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
-				}
-				catch(...)
-				{
-					errors+=1;
-				}
+				distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
+			}
+			catch(...)
+			{
+				distributed_errors[i]=1;
 			}
 		}
-		if(errors>0)
-		{
-			throw std::runtime_error("Parallel processing failed because of exception.");
-		}
-#else
-		throw std::runtime_error("OpenMP was not enabled during compilation.");
-#endif
 	}
 
-	std::size_t sum_of_all_produced_quadruples_counts=0;
-	apollota::Triangulation::QuadruplesMap result_quadruples_map;
+	{
+		std::ostringstream errors_summary_stream;
+		for(std::size_t i=0;i<distributed_errors.size();i++)
+		{
+			if(distributed_errors[i]!=0)
+			{
+				errors_summary_stream << " " << i;
+			}
+		}
+		const std::string errors_summary=errors_summary_stream.str();
+		if(!errors_summary.empty())
+		{
+			throw std::runtime_error("Parallel processing failed because of exceptions in parts:"+errors_summary+".");
+		}
+	}
+
 	for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
 	{
-		sum_of_all_produced_quadruples_counts+=distributed_quadruples_maps[i].size();
-		apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result_quadruples_map);
-	}
-	const double parallel_results_relative_overlap=static_cast<double>(sum_of_all_produced_quadruples_counts)/static_cast<double>(result_quadruples_map.size()-1.0);
-
-	if(!skip_output)
-	{
-		apollota::Triangulation::print_quadruples_map(result_quadruples_map, std::cout);
-	}
-
-	if(print_log)
-	{
-		std::clog << "balls " << spheres.size() << "\n";
-		std::clog << "parts " << distributed_ids.size() << "\n";
-		std::clog << "quadruples " << result_quadruples_map.size() << "\n";
-		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result_quadruples_map) << "\n";
-		std::clog << "parallel_results_overlap " << parallel_results_relative_overlap << "\n";
+		result.number_of_produced_quadruples+=distributed_quadruples_maps[i].size();
+		apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result.merged_quadruples_map);
 	}
 }
+#endif
 
 #ifdef ENABLE_MPI
 
@@ -198,7 +211,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 {
 	std::set<std::string> available_processing_method_names;
 	{
-		available_processing_method_names.insert("sequential");
+		available_processing_method_names.insert("simulated");
 #ifdef _OPENMP
 		available_processing_method_names.insert("openmp");
 #endif
@@ -261,14 +274,16 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	if(method=="sequential")
+	ParallelComputationResult result;
+
+	if(method=="simulated")
 	{
-		calculate_triangulation_in_parallel_on_single_machine(parts, skip_output, print_log, init_radius_for_BSH, false);
+		calculate_triangulation_in_parallel_simulated(parts, init_radius_for_BSH, result);
 	}
 #ifdef _OPENMP
 	else if(method=="openmp")
 	{
-		calculate_triangulation_in_parallel_on_single_machine(parts, skip_output, print_log, init_radius_for_BSH, true);
+		calculate_triangulation_in_parallel_with_openmp(parts, init_radius_for_BSH, result);
 	}
 #endif
 #ifdef ENABLE_MPI
@@ -280,5 +295,19 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	else
 	{
 		throw std::runtime_error("Processing method '"+method+"' is not available.");
+	}
+
+	if(!skip_output)
+	{
+		apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
+	}
+
+	if(print_log)
+	{
+		std::clog << "balls " << result.number_of_input_spheres << "\n";
+		std::clog << "parts " << result.number_of_initialized_parts << "\n";
+		std::clog << "quadruples " << result.merged_quadruples_map.size() << "\n";
+		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
+		std::clog << "parallel_results_overlap " << (static_cast<double>(result.number_of_produced_quadruples)/static_cast<double>(result.merged_quadruples_map.size())) << "\n";
 	}
 }
