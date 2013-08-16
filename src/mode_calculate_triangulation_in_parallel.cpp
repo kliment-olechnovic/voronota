@@ -110,6 +110,9 @@ void calculate_triangulation_in_parallel_with_openmp(
 
 #ifdef ENABLE_MPI
 
+namespace mpi_utilities
+{
+
 class MPIWrapper
 {
 public:
@@ -169,13 +172,15 @@ void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std
 	}
 }
 
-void calculate_triangulation_in_parallel_with_mpi(
+}
+
+bool calculate_triangulation_in_parallel_with_mpi(
 		const std::vector<std::string>& argv,
 		const std::size_t parts,
 		const double init_radius_for_BSH,
 		ParallelComputationResult& result)
 {
-	MPIWrapper mpi_wrapper(argv);
+	mpi_utilities::MPIWrapper mpi_wrapper(argv);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	{
@@ -184,7 +189,7 @@ void calculate_triangulation_in_parallel_with_mpi(
 		if(mpi_wrapper.rank==0)
 		{
 			auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-			fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
+			mpi_utilities::fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 			spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 		}
 		MPI_Bcast(&spheres_plain_vector_length, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -195,7 +200,7 @@ void calculate_triangulation_in_parallel_with_mpi(
 		MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		if(mpi_wrapper.rank!=0)
 		{
-			fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
+			mpi_utilities::fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
 		}
 	}
 
@@ -205,6 +210,8 @@ void calculate_triangulation_in_parallel_with_mpi(
 		std::cout << " " << argv[i];
 	}
 	std::cout << "\n";
+
+	return (mpi_wrapper.rank==0);
 }
 
 #endif
@@ -279,6 +286,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	}
 
 	ParallelComputationResult result;
+	bool master_finished=true;
 
 	if(method=="simulated")
 	{
@@ -293,7 +301,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 #ifdef ENABLE_MPI
 	else if(method=="mpi")
 	{
-		calculate_triangulation_in_parallel_with_mpi(poh.unused_argv(), parts, init_radius_for_BSH, result);
+		master_finished=calculate_triangulation_in_parallel_with_mpi(poh.unused_argv(), parts, init_radius_for_BSH, result);
 	}
 #endif
 	else
@@ -301,17 +309,20 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Processing method '"+method+"' is not available.");
 	}
 
-	if(!skip_output)
+	if(master_finished)
 	{
-		apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
-	}
+		if(!skip_output)
+		{
+			apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
+		}
 
-	if(print_log)
-	{
-		std::clog << "balls " << result.number_of_input_spheres << "\n";
-		std::clog << "parts " << result.number_of_initialized_parts << "\n";
-		std::clog << "quadruples " << result.merged_quadruples_map.size() << "\n";
-		std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
-		std::clog << "parallel_results_overlap " << (result.merged_quadruples_map.empty() ? static_cast<double>(0) : (static_cast<double>(result.number_of_produced_quadruples)/static_cast<double>(result.merged_quadruples_map.size()))) << "\n";
+		if(print_log)
+		{
+			std::clog << "balls " << result.number_of_input_spheres << "\n";
+			std::clog << "parts " << result.number_of_initialized_parts << "\n";
+			std::clog << "quadruples " << result.merged_quadruples_map.size() << "\n";
+			std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
+			std::clog << "parallel_results_overlap " << (result.merged_quadruples_map.empty() ? static_cast<double>(0) : (static_cast<double>(result.number_of_produced_quadruples)/static_cast<double>(result.merged_quadruples_map.size()))) << "\n";
+		}
 	}
 }
