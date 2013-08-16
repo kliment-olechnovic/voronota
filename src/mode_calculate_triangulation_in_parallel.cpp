@@ -221,7 +221,7 @@ bool calculate_triangulation_in_parallel_with_mpi(
 		const double init_radius_for_BSH,
 		ParallelComputationResult& result)
 {
-	const int quadruple_map_data_tag=1;
+	const int quadruples_map_data_tag=1;
 
 	mpi_utilities::MPIWrapper mpi_wrapper(argv);
 
@@ -268,17 +268,17 @@ bool calculate_triangulation_in_parallel_with_mpi(
 	{
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			const int source_rank=static_cast<int>(i)%(mpi_wrapper.size-1)+1;
 			std::vector<double> plain_vector;
 			{
 				MPI_Status status;
-				MPI_Probe(source_rank, quadruple_map_data_tag, MPI_COMM_WORLD, &status);
+				MPI_Probe(MPI_ANY_SOURCE, quadruples_map_data_tag, MPI_COMM_WORLD, &status);
+				const int source_rank=status.MPI_SOURCE;
 				int plain_vector_size=0;
 				MPI_Get_count(&status, MPI_DOUBLE, &plain_vector_size);
 				if(plain_vector_size>0)
 				{
 					plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
-					MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, source_rank, quadruple_map_data_tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+					MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, source_rank, quadruples_map_data_tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 				}
 			}
 			if(!plain_vector.empty())
@@ -300,7 +300,7 @@ bool calculate_triangulation_in_parallel_with_mpi(
 			{
 				std::vector<double> plain_vector;
 				mpi_utilities::fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
-				MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, quadruple_map_data_tag, MPI_COMM_WORLD);
+				MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, quadruples_map_data_tag, MPI_COMM_WORLD);
 			}
 		}
 	}
