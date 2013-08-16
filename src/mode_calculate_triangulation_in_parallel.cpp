@@ -12,29 +12,6 @@
 namespace
 {
 
-std::set<std::string> get_available_processing_method_names()
-{
-	std::set<std::string> names;
-	names.insert("sequential");
-#ifdef _OPENMP
-	names.insert("openmp");
-#endif
-#ifdef ENABLE_MPI
-	names.insert("mpi");
-#endif
-	return names;
-}
-
-std::string list_strings_from_set(const std::set<std::string>& names)
-{
-	std::ostringstream output;
-	for(std::set<std::string>::const_iterator it=names.begin();it!=names.end();++it)
-	{
-		output << " '" << (*it) << "'";
-	}
-	return output.str();
-}
-
 inline bool number_is_power_of_two(const unsigned long x)
 {
 	return ( (x>0) && ((x & (x-1))==0) );
@@ -249,11 +226,30 @@ void calculate_triangulation_in_parallel_on_multiple_machines(
 
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	const std::set<std::string> available_processing_method_names=get_available_processing_method_names();
+	std::set<std::string> available_processing_method_names;
+	{
+		available_processing_method_names.insert("sequential");
+#ifdef _OPENMP
+		available_processing_method_names.insert("openmp");
+#endif
+#ifdef ENABLE_MPI
+		available_processing_method_names.insert("mpi");
+#endif
+	}
+
+	std::string available_processing_method_names_string;
+	{
+		std::ostringstream output;
+		for(std::set<std::string>::const_iterator it=available_processing_method_names.begin();it!=available_processing_method_names.end();++it)
+		{
+			output << " '" << (*it) << "'";
+		}
+		available_processing_method_names_string=output.str();
+	}
 
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+list_strings_from_set(available_processing_method_names), true);
+		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
 		basic_map_of_option_descriptions["--selection"].init("numbers", "numbers of selected parts - if not provided, all parts are selected");
 		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
@@ -277,7 +273,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	const std::string method=poh.argument<std::string>("--method");
 	if(available_processing_method_names.count(method)==0)
 	{
-		throw std::runtime_error("Invalid processing method name, acceptable values are:"+list_strings_from_set(available_processing_method_names)+".");
+		throw std::runtime_error("Invalid processing method name, acceptable values are:"+available_processing_method_names_string+".");
 	}
 
 	const std::size_t parts=poh.argument<std::size_t>("--parts");
