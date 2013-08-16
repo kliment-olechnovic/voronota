@@ -45,9 +45,9 @@ void calculate_triangulation_in_parallel_simulated(
 
 	for(std::size_t i=0;i<distributed_ids.size();i++)
 	{
-		const apollota::Triangulation::QuadruplesMap partial_quadruples_maps=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
-		result.number_of_produced_quadruples+=partial_quadruples_maps.size();
-		apollota::Triangulation::merge_quadruples_maps(partial_quadruples_maps, result.merged_quadruples_map);
+		const apollota::Triangulation::QuadruplesMap partial_quadruples_map=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
+		result.number_of_produced_quadruples+=partial_quadruples_map.size();
+		apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
 	}
 }
 
@@ -221,7 +221,22 @@ bool calculate_triangulation_in_parallel_with_mpi(
 		const double init_radius_for_BSH,
 		ParallelComputationResult& result)
 {
+	const int quadruple_map_data_tag=1;
+
 	mpi_utilities::MPIWrapper mpi_wrapper(argv);
+
+	if(mpi_wrapper.size<=2)
+	{
+		if(mpi_wrapper.rank==0)
+		{
+			calculate_triangulation_in_parallel_simulated(parts, init_radius_for_BSH, result);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	std::vector<apollota::SimpleSphere> spheres;
 	{
@@ -233,7 +248,7 @@ bool calculate_triangulation_in_parallel_with_mpi(
 			mpi_utilities::fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 			spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 		}
-		MPI_Bcast(&spheres_plain_vector_length, 1, MPI_INT, 0, MPI_COMM_WORLD);
+		MPI_Bcast(&spheres_plain_vector_length, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 		if(mpi_wrapper.rank!=0)
 		{
 			spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
@@ -244,13 +259,51 @@ bool calculate_triangulation_in_parallel_with_mpi(
 			mpi_utilities::fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
 		}
 	}
+	result.number_of_input_spheres=spheres.size();
 
-	std::cout << "MPI process " << mpi_wrapper.rank << " of " << mpi_wrapper.size << " initialized with " << spheres.size() << " spheres\n";
-	for(std::size_t i=0;i<argv.size();i++)
+	const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+	result.number_of_initialized_parts=distributed_ids.size();
+
+	if(mpi_wrapper.rank==0)
 	{
-		std::cout << " " << argv[i];
+		for(std::size_t i=0;i<distributed_ids.size();i++)
+		{
+			const int source_rank=static_cast<int>(i)%(mpi_wrapper.size-1)+1;
+			std::vector<double> plain_vector;
+			{
+				MPI_Status status;
+				MPI_Probe(source_rank, quadruple_map_data_tag, MPI_COMM_WORLD, &status);
+				int plain_vector_size=0;
+				MPI_Get_count(&status, MPI_DOUBLE, &plain_vector_size);
+				if(plain_vector_size>0)
+				{
+					plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
+					MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, source_rank, quadruple_map_data_tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+				}
+			}
+			if(!plain_vector.empty())
+			{
+				apollota::Triangulation::QuadruplesMap partial_quadruples_map;
+				mpi_utilities::fill_quadruples_map_from_plain_vector(plain_vector, partial_quadruples_map);
+				result.number_of_produced_quadruples+=partial_quadruples_map.size();
+				apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
+			}
+		}
 	}
-	std::cout << "\n";
+	else
+	{
+		const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+		for(std::size_t i=0;i<distributed_ids.size();i++)
+		{
+			const int source_rank=static_cast<int>(i)%(mpi_wrapper.size-1)+1;
+			if(mpi_wrapper.rank==source_rank)
+			{
+				std::vector<double> plain_vector;
+				mpi_utilities::fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
+				MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, quadruple_map_data_tag, MPI_COMM_WORLD);
+			}
+		}
+	}
 
 	return (mpi_wrapper.rank==0);
 }
