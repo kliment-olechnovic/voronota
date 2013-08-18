@@ -121,85 +121,74 @@ public:
 			const double init_radius_for_BSH,
 			ParallelComputationResult& result)
 	{
-		const int QUADRUPLES_MAP_DATA_TAG=1;
-
 		MPIHandle mpi_handle(argv);
 
 		if(mpi_handle.size()<=2)
 		{
-			mpi_handle.set_abort_on_destruction(false);
-			if(mpi_handle.rank()==0)
-			{
-				ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, result);
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		std::vector<apollota::SimpleSphere> spheres;
-		{
-			std::vector<double> spheres_plain_vector;
-			int spheres_plain_vector_length=0;
-			if(mpi_handle.rank()==0)
-			{
-				auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-				fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
-				spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
-			}
-			MPI_Bcast(&spheres_plain_vector_length, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-			if(mpi_handle.rank()!=0)
-			{
-				spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
-			}
-			MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-			if(mpi_handle.rank()!=0)
-			{
-				fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
-			}
-		}
-		result.number_of_input_spheres=spheres.size();
-
-		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
-		result.number_of_initialized_parts=distributed_ids.size();
-
-		if(mpi_handle.rank()==0)
-		{
-			for(std::size_t i=0;i<distributed_ids.size();i++)
-			{
-				std::vector<double> plain_vector;
-				{
-					MPI_Status status;
-					MPI_Probe(MPI_ANY_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, &status);
-					int plain_vector_size=0;
-					MPI_Get_count(&status, MPI_DOUBLE, &plain_vector_size);
-					if(plain_vector_size>0)
-					{
-						plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
-						MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, status.MPI_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-					}
-				}
-				if(!plain_vector.empty())
-				{
-					apollota::Triangulation::QuadruplesMap partial_quadruples_map;
-					fill_quadruples_map_from_plain_vector(plain_vector, partial_quadruples_map);
-					result.number_of_produced_quadruples+=partial_quadruples_map.size();
-					apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
-				}
-			}
+			ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, result);
 		}
 		else
 		{
-			const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
-			for(std::size_t i=0;i<distributed_ids.size();i++)
+			const int QUADRUPLES_MAP_DATA_TAG=1;
+
+			std::vector<apollota::SimpleSphere> spheres;
 			{
-				if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
+				std::vector<double> spheres_plain_vector;
+				int spheres_plain_vector_length=0;
+				if(mpi_handle.rank()==0)
 				{
-					std::vector<double> plain_vector;
-					fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
-					MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
+					auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+					fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
+					spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
+				}
+				MPI_Bcast(&spheres_plain_vector_length, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+				if(mpi_handle.rank()!=0)
+				{
+					spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
+				}
+				MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+				if(mpi_handle.rank()!=0)
+				{
+					fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
+				}
+			}
+			result.number_of_input_spheres=spheres.size();
+
+			const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+			result.number_of_initialized_parts=distributed_ids.size();
+
+			{
+				std::vector<double> plain_vector;
+				if(mpi_handle.rank()==0)
+				{
+					for(std::size_t i=0;i<distributed_ids.size();i++)
+					{
+						MPI_Status status;
+						MPI_Probe(MPI_ANY_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, &status);
+						int plain_vector_size=0;
+						MPI_Get_count(&status, MPI_DOUBLE, &plain_vector_size);
+						if(plain_vector_size>0)
+						{
+							plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
+							MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, status.MPI_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+							apollota::Triangulation::QuadruplesMap partial_quadruples_map;
+							fill_quadruples_map_from_plain_vector(plain_vector, partial_quadruples_map);
+							result.number_of_produced_quadruples+=partial_quadruples_map.size();
+							apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
+						}
+					}
+				}
+				else
+				{
+					const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+					for(std::size_t i=0;i<distributed_ids.size();i++)
+					{
+						if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
+						{
+							fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
+							MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
+						}
+					}
 				}
 			}
 		}
