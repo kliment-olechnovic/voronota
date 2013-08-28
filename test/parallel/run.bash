@@ -1,8 +1,9 @@
 #!/bin/bash
 
 TEST_SUBJECT=$1
-WORKING_DIR=$2
-PDB_FILE=$3
+MIN_ATOMS_COUNT=$2
+WORKING_DIR=$3
+PDB_FILE=$4
 
 if [ ! -s "$PDB_FILE" ]
 then
@@ -30,6 +31,14 @@ zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-pdb-file > $INPUT_FILE 2>
 if [ ! -s "$INPUT_FILE" ]
 then
 	echo "$PDB_FILE_BASENAME has no acceptable atoms"
+	exit 1
+fi
+
+ATOMS_COUNT=$(wc -l < "$INPUT_FILE")
+
+if [ "$ATOMS_COUNT" -lt "$MIN_ATOMS_COUNT" ]
+then
+	echo "$PDB_FILE_BASENAME has less than $MIN_ATOMS_COUNT atoms"
 	exit 1
 fi
 
