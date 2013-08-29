@@ -229,7 +229,7 @@ void print_demo_face()
 	std::cout << "cmd.set('ambient', 0.3)\n\n";
 }
 
-void print_demo_tangents()
+void print_demo_tangent_spheres()
 {
 	std::vector< std::vector<apollota::SimpleSphere> > generators_sets;
 
@@ -280,6 +280,54 @@ void print_demo_tangents()
 		}
 	}
 
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
+	std::cout << "cmd.set('ambient', 0.3)\n\n";
+}
+
+void print_demo_tangent_planes()
+{
+	std::vector<apollota::SimpleSphere> generators;
+	generators.push_back(apollota::SimpleSphere(2.0, 1.0, 0.1, 0.9));
+	generators.push_back(apollota::SimpleSphere(-1.0, 2.0, -0.1, 1.2));
+	generators.push_back(apollota::SimpleSphere(-1.0, -1.0, 0.1, 1.5));
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+	apollota::OpenGLPrinter opengl_printer(std::cout, "obj", "cgo");
+
+	opengl_printer.print_color(0x36BBCE);
+	opengl_printer.print_alpha(1.0);
+	for(std::size_t i=0;i<generators.size();i++)
+	{
+		opengl_printer.print_sphere(generators[i]);
+	}
+
+	const std::vector< std::pair<apollota::SimplePoint, apollota::SimplePoint> > tangent_planes=apollota::TangentPlaneOfThreeSpheres::calculate(generators[0], generators[1], generators[2]);
+	for(std::size_t i=0;i<tangent_planes.size();i++)
+	{
+		opengl_printer.print_color(0xFF5A40);
+		opengl_printer.print_alpha(0.7);
+		std::vector<apollota::SimplePoint> vertices(generators.size());
+		std::vector<apollota::SimplePoint> normals(generators.size());
+		for(std::size_t j=0;j<generators.size();j++)
+		{
+			vertices[j]=(apollota::SimplePoint(generators[j])+(tangent_planes[i].second.unit()*generators[j].r));
+			normals[j]=tangent_planes[i].second;
+		}
+		{
+			const std::vector<apollota::SimpleSphere> circles=apollota::TangentSphereOfThreeSpheres::calculate(apollota::SimpleSphere(vertices[0], 0.0), apollota::SimpleSphere(vertices[1], 0.0), apollota::SimpleSphere(vertices[2], 0.0));
+			if(circles.size()==1)
+			{
+				const apollota::SimplePoint center(circles.front());
+				for(std::size_t j=0;j<vertices.size();j++)
+				{
+					vertices[j]=vertices[j]+((vertices[j]-center)*1.5);
+				}
+			}
+		}
+		opengl_printer.print_triangle_strip(vertices, normals);
+	}
+
+	std::cout << "cmd.set('two_sided_lighting', 'on')\n\n";
 	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
 	std::cout << "cmd.set('ambient', 0.3)\n\n";
 }
@@ -353,9 +401,13 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_demo_face();
 	}
-	else if(scene=="tangents")
+	else if(scene=="tangent-spheres")
 	{
-		print_demo_tangents();
+		print_demo_tangent_spheres();
+	}
+	else if(scene=="tangent-planes")
+	{
+		print_demo_tangent_planes();
 	}
 	else if(scene=="edges")
 	{
