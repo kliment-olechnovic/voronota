@@ -355,6 +355,7 @@ private:
 			{
 				d_ids_and_tangent_spheres_.resize(2, std::pair<std::size_t, SimpleSphere>(npos, SimpleSphere()));
 				init_central_planes();
+				init_central_sphere();
 				init_middle_region_approximation_sphere();
 			}
 			else
@@ -582,24 +583,33 @@ private:
 			}
 		}
 
-		void init_middle_region_approximation_sphere()
+		void init_central_sphere()
 		{
-			middle_region_approximation_sphere_.first=false;
+			central_sphere_.first=false;
 			if(can_have_d_)
 			{
 				const std::vector<SimpleSphere> minimal_tangent_sphere=TangentSphereOfThreeSpheres::calculate((*a_sphere_), (*b_sphere_), (*c_sphere_));
 				if(minimal_tangent_sphere.size()==1)
 				{
-					const std::vector<SimpleSphere> disk=TangentSphereOfThreeSpheres::calculate(
-							SimpleSphere(SimplePoint(*a_sphere_)+(tangent_planes_[0].second*(a_sphere_->r)), 0),
-							SimpleSphere(SimplePoint(*b_sphere_)+(tangent_planes_[0].second*(b_sphere_->r)), 0),
-							SimpleSphere(SimplePoint(*c_sphere_)+(tangent_planes_[0].second*(c_sphere_->r)), 0));
-					if(disk.size()==1)
-					{
-						middle_region_approximation_sphere_.first=true;
-						middle_region_approximation_sphere_.second=minimal_tangent_sphere.front();
-						middle_region_approximation_sphere_.second.r=distance_from_point_to_point(minimal_tangent_sphere.front(), disk.front())+disk.front().r;
-					}
+					central_sphere_.first=true;
+					central_sphere_.second=minimal_tangent_sphere.front();
+				}
+			}
+		}
+
+		void init_middle_region_approximation_sphere()
+		{
+			middle_region_approximation_sphere_.first=false;
+			if(central_sphere_.first)
+			{
+				const std::vector<SimpleSphere> disk=TangentSphereOfThreeSpheres::calculate(
+						SimpleSphere(SimplePoint(*a_sphere_)+(tangent_planes_[0].second*(a_sphere_->r)), 0),
+						SimpleSphere(SimplePoint(*b_sphere_)+(tangent_planes_[0].second*(b_sphere_->r)), 0),
+						SimpleSphere(SimplePoint(*c_sphere_)+(tangent_planes_[0].second*(c_sphere_->r)), 0));
+				if(disk.size()==1)
+				{
+					middle_region_approximation_sphere_.first=true;
+					middle_region_approximation_sphere_.second=SimpleSphere(central_sphere_.second, distance_from_point_to_point(central_sphere_.second, disk.front())+disk.front().r);
 				}
 			}
 		}
@@ -648,6 +658,7 @@ private:
 		bool can_have_d_;
 		bool can_have_e_;
 		double threshold_distance_for_e_checking;
+		std::pair<bool, SimpleSphere> central_sphere_;
 		std::pair<bool, SimpleSphere> middle_region_approximation_sphere_;
 	};
 
