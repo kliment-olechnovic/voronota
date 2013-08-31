@@ -482,6 +482,30 @@ private:
 			return can_have_e_;
 		}
 
+		void update_middle_region_approximation()
+		{
+			if(can_have_e_ && central_sphere_.first && d_ids_and_tangent_spheres_[0].first!=npos && d_ids_and_tangent_spheres_[1].first!=npos)
+			{
+				const std::vector<SimpleSphere> disk0=TangentSphereOfThreeSpheres::calculate(
+						SimpleSphere(SimplePoint(*a_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[0].second, *a_sphere_).unit()*a_sphere_->r), 0),
+						SimpleSphere(SimplePoint(*b_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[0].second, *b_sphere_).unit()*b_sphere_->r), 0),
+						SimpleSphere(SimplePoint(*c_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[0].second, *c_sphere_).unit()*c_sphere_->r), 0));
+				if(disk0.size()==1)
+				{
+					const std::vector<SimpleSphere> disk1=TangentSphereOfThreeSpheres::calculate(
+							SimpleSphere(SimplePoint(*a_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[1].second, *a_sphere_).unit()*a_sphere_->r), 0),
+							SimpleSphere(SimplePoint(*b_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[1].second, *b_sphere_).unit()*b_sphere_->r), 0),
+							SimpleSphere(SimplePoint(*c_sphere_)+(sub_of_points<SimplePoint>(d_ids_and_tangent_spheres_[1].second, *c_sphere_).unit()*c_sphere_->r), 0));
+					if(disk1.size()==1)
+					{
+						middle_region_approximation_sphere_.first=true;
+						middle_region_approximation_sphere_.second=SimpleSphere(central_sphere_.second,
+								std::max(distance_from_point_to_point(central_sphere_.second, disk0.front())+disk0.front().r, distance_from_point_to_point(central_sphere_.second, disk1.front())+disk1.front().r));
+					}
+				}
+			}
+		}
+
 		template<typename InputSphereType>
 		bool sphere_may_contain_candidate_for_e(const InputSphereType& input_sphere) const
 		{
@@ -819,6 +843,7 @@ private:
 	public:
 		static bool find_valid_e(const BoundingSpheresHierarchy& bsh, Face& face)
 		{
+			face.update_middle_region_approximation();
 			NodeCheckerForValidE node_checker(face);
 			LeafCheckerForValidE leaf_checker(face, bsh);
 			return !bsh.search(node_checker, leaf_checker).empty();
