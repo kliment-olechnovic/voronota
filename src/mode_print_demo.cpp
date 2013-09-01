@@ -78,6 +78,7 @@ void print_demo_face()
 	apollota::OpenGLPrinter opengl_printer2(std::cout, "obj2", "cgo2");
 	apollota::OpenGLPrinter opengl_printer3(std::cout, "obj3", "cgo3");
 	apollota::OpenGLPrinter opengl_printer4(std::cout, "obj4", "cgo4");
+	apollota::OpenGLPrinter opengl_printer5(std::cout, "obj5", "cgo5");
 
 	for(std::size_t i=0;i<generators.size();i++)
 	{
@@ -209,15 +210,46 @@ void print_demo_face()
 			opengl_printer3.print_triangle_strip(vertices, normals);
 		}
 
-		std::size_t i=0;
-		while(i<(curve.size()/2))
 		{
-			opengl_printer4.print_alpha(0.2);
-			opengl_printer4.print_color(0xFF9C40);
-			opengl_printer4.print_sphere(apollota::SimpleSphere(curve[i], radii[i]-0.01));
-			opengl_printer4.print_color(0x37DE6A);
-			opengl_printer4.print_sphere(apollota::SimpleSphere(curve[curve.size()-1-i], radii[curve.size()-1-i]-0.01));
-			i+=30;
+			std::size_t i=0;
+			while(i<(curve.size()/2))
+			{
+				opengl_printer4.print_alpha(0.2);
+				opengl_printer4.print_color(0xFF9C40);
+				opengl_printer4.print_sphere(apollota::SimpleSphere(curve[i], radii[i]-0.01));
+				opengl_printer4.print_color(0x37DE6A);
+				opengl_printer4.print_sphere(apollota::SimpleSphere(curve[curve.size()-1-i], radii[curve.size()-1-i]-0.01));
+				i+=30;
+			}
+		}
+
+		if(!circles_vertices.empty())
+		{
+			opengl_printer5.print_color(0x0000FF);
+			const double gap_distance_threshold=apollota::distance_from_point_to_point(circles_vertices.front().at(0), circles_vertices.back().at(0))/8.0;
+			double gap_distance=0.0;
+			for(std::size_t i=0;i<circles_vertices.size()/2;i++)
+			{
+				bool draw_on=false;
+				if(i==0 || i+1==circles_vertices.size()/2)
+				{
+					draw_on=true;
+				}
+				else
+				{
+					gap_distance+=apollota::distance_from_point_to_point(circles_vertices[i].at(0), circles_vertices[i+1].at(0));
+					if(gap_distance>gap_distance_threshold)
+					{
+						gap_distance=0.0;
+						draw_on=true;
+					}
+				}
+				if(draw_on)
+				{
+					opengl_printer5.print_line_strip(circles_vertices[i]);
+					opengl_printer5.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
+				}
+			}
 		}
 	}
 
