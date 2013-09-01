@@ -128,16 +128,17 @@ void print_demo_face()
 
 		opengl_printer1.print_line_strip(std::vector<apollota::SimplePoint>(curve.begin(), curve.end()));
 
+		std::vector< std::vector<apollota::SimplePoint> > circles_touches;
 		std::vector< std::vector<apollota::SimplePoint> > circles_vertices;
 		std::vector< std::vector<apollota::SimplePoint> > circles_normals;
 		for(std::size_t i=0;i<curve.size();i++)
 		{
-			std::vector<apollota::SimpleSphere> touches;
+			std::vector<apollota::SimplePoint> touches;
 			if(i==0 || i+1==curve.size())
 			{
 				for(std::size_t j=0;j<generators.size();j++)
 				{
-					touches.push_back(apollota::SimpleSphere(apollota::SimplePoint(generators[j])+(tangent_planes[i==0 ? 0 : 1].second*generators[j].r), 0.0));
+					touches.push_back(apollota::SimplePoint(generators[j])+(tangent_planes[i==0 ? 0 : 1].second*generators[j].r));
 				}
 			}
 			else
@@ -148,15 +149,15 @@ void print_demo_face()
 					apollota::SimplePoint a(tangent);
 					apollota::SimplePoint b(generators[j]);
 					apollota::SimplePoint ab=((b-a).unit())*tangent.r;
-					touches.push_back(apollota::SimpleSphere(a+ab, 0.0));
+					touches.push_back(a+ab);
 				}
 			}
-			const std::vector<apollota::SimpleSphere> circles=apollota::TangentSphereOfThreeSpheres::calculate(touches[0], touches[1], touches[2]);
+			const std::vector<apollota::SimpleSphere> circles=apollota::TangentSphereOfThreeSpheres::calculate(apollota::SimpleSphere(touches[0], 0.0), apollota::SimpleSphere(touches[1], 0.0), apollota::SimpleSphere(touches[2], 0.0));
 			if(circles.size()==1)
 			{
 				const apollota::SimpleSphere& circle=circles.front();
 				const apollota::SimplePoint orientation=apollota::plane_normal_from_three_points<apollota::SimplePoint>(touches[0], touches[1], touches[2]);
-				const apollota::SimplePoint first_point(apollota::SimplePoint(circle)-apollota::SimplePoint(touches[0]));
+				const apollota::SimplePoint first_point(apollota::SimplePoint(circle)-touches[0]);
 				apollota::Rotation rotation(apollota::custom_point_from_object<apollota::SimplePoint>(orientation), 0);
 				const double angle_step=10;
 				std::vector<apollota::SimplePoint> circle_vertices;
@@ -169,6 +170,7 @@ void print_demo_face()
 				{
 					circle_normals.push_back((circle_vertices[j]-apollota::SimplePoint(circle)).unit());
 				}
+				circles_touches.push_back(touches);
 				circles_vertices.push_back(circle_vertices);
 				circles_normals.push_back(circle_normals);
 			}
@@ -225,7 +227,6 @@ void print_demo_face()
 
 		if(!circles_vertices.empty())
 		{
-			opengl_printer5.print_color(0x0000FF);
 			const double gap_distance_threshold=apollota::distance_from_point_to_point(circles_vertices.front().at(0), circles_vertices.back().at(0))/8.0;
 			double gap_distance=0.0;
 			for(std::size_t i=0;i<circles_vertices.size()/2;i++)
@@ -246,8 +247,18 @@ void print_demo_face()
 				}
 				if(draw_on)
 				{
+					opengl_printer5.print_color(0x0000FF);
 					opengl_printer5.print_line_strip(circles_vertices[i]);
 					opengl_printer5.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
+					opengl_printer5.print_color(0x00FF00);
+					opengl_printer5.print_line_strip(circles_touches[i], true);
+					opengl_printer5.print_line_strip(circles_touches[circles_vertices.size()-1-i], true);
+					opengl_printer5.print_color(0xFF00FF);
+					for(std::size_t j=0;j<circles_touches[j].size() && j<circles_touches[circles_vertices.size()-1-i].size();j++)
+					{
+						opengl_printer5.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.075));
+						opengl_printer5.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.075));
+					}
 				}
 			}
 		}
