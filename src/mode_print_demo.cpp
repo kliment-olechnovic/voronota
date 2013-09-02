@@ -233,6 +233,7 @@ void print_demo_face()
 
 		if(!circles_vertices.empty())
 		{
+			std::vector< std::pair< std::vector<apollota::SimplePoint>, std::vector<apollota::SimplePoint> > > tps(3);
 			const double gap_distance_threshold=apollota::distance_from_point_to_point(circles_vertices.front().at(0), circles_vertices.back().at(0))/8.0;
 			double gap_distance=0.0;
 			for(std::size_t i=0;i<circles_vertices.size()/2;i++)
@@ -253,19 +254,27 @@ void print_demo_face()
 				}
 				if(draw_on)
 				{
-					opengl_printer_m_contour.print_color(0xFF5A40);
+					opengl_printer_m_contour.print_color(0x111111);
 					opengl_printer_m_contour.print_line_strip(circles_vertices[i]);
 					opengl_printer_m_contour.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
 					opengl_printer_m_contour.print_color(0xED3B83);
-					for(std::size_t j=0;j<circles_touches[j].size() && j<circles_touches[circles_vertices.size()-1-i].size();j++)
+					for(std::size_t j=0;j<circles_touches[i].size() && j<circles_touches[circles_vertices.size()-1-i].size() && j<tps.size();j++)
 					{
 						opengl_printer_m_contour.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.04));
 						opengl_printer_m_contour.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.04));
+						tps[j].first.push_back(circles_touches[i][j]);
+						tps[j].second.push_back(circles_touches[circles_vertices.size()-1-i][j]);
 					}
 					opengl_printer_m_triangles.print_color(0x00FF00);
 					opengl_printer_m_triangles.print_line_strip(circles_touches[i], true);
 					opengl_printer_m_triangles.print_line_strip(circles_touches[circles_vertices.size()-1-i], true);
 				}
+			}
+			opengl_printer_m_contour.print_color(0xED3B83);
+			for(std::size_t j=0;j<tps.size();j++)
+			{
+				tps[j].first.insert(tps[j].first.end(), tps[j].second.rbegin(), tps[j].second.rend());
+				opengl_printer_m_contour.print_line_strip(tps[j].first);
 			}
 		}
 	}
