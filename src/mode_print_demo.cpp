@@ -84,6 +84,7 @@ void print_demo_face()
 	apollota::OpenGLPrinter opengl_printer_m_touch_points(std::cout, "obj_m_touch_points", "cgo_m_touch_points");
 	apollota::OpenGLPrinter opengl_printer_m_touch_curves(std::cout, "obj_m_touch_curves", "cgo_m_touch_curves");
 	apollota::OpenGLPrinter opengl_printer_m_triangles(std::cout, "obj_m_triangles", "cgo_m_triangles");
+	apollota::OpenGLPrinter opengl_printer_m_chull(std::cout, "obj_m_chull", "cgo_m_chull");
 
 	for(std::size_t i=0;i<generators.size();i++)
 	{
@@ -280,6 +281,32 @@ void print_demo_face()
 			{
 				tps[j].first.insert(tps[j].first.end(), tps[j].second.rbegin(), tps[j].second.rend());
 				opengl_printer_m_touch_curves.print_line_strip(tps[j].first);
+			}
+		}
+
+		if(circles_vertices.size()>1)
+		{
+			opengl_printer_m_chull.print_color(0x111111);
+			opengl_printer_m_chull.print_line_strip(circles_vertices.front());
+			opengl_printer_m_chull.print_line_strip(circles_vertices.back());
+			opengl_printer_m_chull.print_color(0xFFFFFF);
+			opengl_printer_m_chull.print_alpha(0.75);
+			opengl_printer_m_chull.print_triangle_strip(circles_vertices.front(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), tangent_planes[0].second), true);
+			opengl_printer_m_chull.print_triangle_strip(circles_vertices.back(), std::vector<apollota::SimplePoint>(circles_vertices.back().size(), tangent_planes[1].second), true);
+			{
+				std::vector<apollota::SimplePoint> vertices;
+				std::vector<apollota::SimplePoint> normals;
+				if(circles_vertices.front().size()==circles_vertices.back().size())
+				{
+					for(std::size_t e=0;e<circles_vertices.front().size();e++)
+					{
+						vertices.push_back(circles_vertices.front()[e]);
+						vertices.push_back(circles_vertices.back()[e]);
+						normals.push_back(circles_normals.front()[e]);
+						normals.push_back(circles_normals.back()[e]);
+					}
+					opengl_printer_m_chull.print_triangle_strip(vertices, normals);
+				}
 			}
 		}
 	}
