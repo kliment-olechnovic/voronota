@@ -260,11 +260,11 @@ void print_demo_face()
 					opengl_printer_m_contour.print_line_strip(circles_vertices[i]);
 					opengl_printer_m_contour.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
 
-					opengl_printer_m_touch_points.print_color(0xED3B83);
+					opengl_printer_m_touch_points.print_color(0x111111);
 					for(std::size_t j=0;j<circles_touches[i].size() && j<circles_touches[circles_vertices.size()-1-i].size() && j<tps.size();j++)
 					{
-						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.04));
-						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.04));
+						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.05));
+						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.05));
 						tps[j].first.push_back(circles_touches[i][j]);
 						tps[j].second.push_back(circles_touches[circles_vertices.size()-1-i][j]);
 					}
@@ -275,7 +275,7 @@ void print_demo_face()
 				}
 			}
 
-			opengl_printer_m_touch_curves.print_color(0xED3B83);
+			opengl_printer_m_touch_curves.print_color(0x111111);
 			for(std::size_t j=0;j<tps.size();j++)
 			{
 				tps[j].first.insert(tps[j].first.end(), tps[j].second.rbegin(), tps[j].second.rend());
