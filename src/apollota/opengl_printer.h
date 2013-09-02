@@ -73,11 +73,18 @@ public:
 	}
 
 	template<typename PointType>
-	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals, const bool fan=false)
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			string_stream_ << "    BEGIN, TRIANGLE_STRIP,\n";
+			if(fan)
+			{
+				string_stream_ << "    BEGIN, TRIANGLE_FAN,\n";
+			}
+			else
+			{
+				string_stream_ << "    BEGIN, TRIANGLE_STRIP,\n";
+			}
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
 				string_stream_ << "    NORMAL, " << point_to_string(normals[i]) << ",\n";
