@@ -252,12 +252,12 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!circles_vertices.empty())
 		{
 			std::vector< std::pair< std::vector<apollota::SimplePoint>, std::vector<apollota::SimplePoint> > > tps(3);
-			const double gap_distance_threshold=apollota::distance_from_point_to_point(circles_vertices.front().at(0), circles_vertices.back().at(0))/8.0;
+			const double gap_distance_threshold=0.3;
 			double gap_distance=0.0;
 			for(std::size_t i=0;i<circles_vertices.size()/2;i++)
 			{
 				bool draw_on=false;
-				if(i==0 || i+1==circles_vertices.size()/2)
+				if(i==0)
 				{
 					draw_on=true;
 				}
