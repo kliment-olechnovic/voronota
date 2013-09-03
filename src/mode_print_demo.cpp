@@ -67,12 +67,19 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 
 void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	const std::string cyclide_type=poh.argument<std::string>("--cyclide-type", "");
 	std::vector<apollota::SimpleSphere> generators;
-	if(poh.contains_option("--spindle"))
+	if(cyclide_type=="spindle")
 	{
 		generators.push_back(apollota::SimpleSphere(2, 1, 0, 2.0));
 		generators.push_back(apollota::SimpleSphere(-1, 2, 0, 2.3));
 		generators.push_back(apollota::SimpleSphere(-1, -1, 0, 2.6));
+	}
+	if(cyclide_type=="horn")
+	{
+		generators.push_back(apollota::SimpleSphere(1, 1, 0, 0.0));
+		generators.push_back(apollota::SimpleSphere(-1, 2, 0, 0.3));
+		generators.push_back(apollota::SimpleSphere(-1, -1, 0, 0.9));
 	}
 	else
 	{
