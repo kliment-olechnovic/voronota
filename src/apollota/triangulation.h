@@ -525,8 +525,6 @@ private:
 					&& (!abc_ids_.contains(e_id))
 					&& (!can_have_d_ || (e_id!=d_ids_and_tangent_spheres_[0].first && e_id!=d_ids_and_tangent_spheres_[1].first))
 					&& (!can_have_d_ || !middle_region_approximation_sphere_.first || sphere_intersects_sphere(middle_region_approximation_sphere_.second, spheres_->at(e_id)))
-					&& (!can_have_d_ || d_ids_and_tangent_spheres_[0].first==npos || d_ids_and_tangent_spheres_[1].first==npos ||
-							((distance_from_point_to_line(spheres_->at(e_id), d_ids_and_tangent_spheres_[0].second, d_ids_and_tangent_spheres_[1].second)-spheres_->at(e_id).r)<std::max(d_ids_and_tangent_spheres_[0].second.r, d_ids_and_tangent_spheres_[1].second.r)))
 					&& (!can_have_d_ || (halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, spheres_->at(e_id))==-1 && halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, spheres_->at(e_id))==-1))
 				)
 			{
@@ -610,7 +608,7 @@ private:
 		void init_middle_region_approximation_sphere()
 		{
 			middle_region_approximation_sphere_.first=false;
-			if(can_have_d_)
+			if(can_have_e_ && can_have_d_)
 			{
 				const std::vector<SimpleSphere> disk0=TangentSphereOfThreeSpheres::calculate(
 						SimpleSphere(SimplePoint(*a_sphere_)+(tangent_planes_[0].second*(a_sphere_->r)), 0),
