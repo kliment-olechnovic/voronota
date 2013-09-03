@@ -354,7 +354,7 @@ private:
 			{
 				d_ids_and_tangent_spheres_.resize(2, std::pair<std::size_t, SimpleSphere>(npos, SimpleSphere()));
 				init_central_planes();
-				init_middle_region_approximation_sphere();
+				init_middle_region_approximation();
 			}
 			else
 			{
@@ -511,8 +511,9 @@ private:
 			return (
 					can_have_e_
 					&& (!can_have_d_ || !middle_region_approximation_sphere_.first || sphere_intersects_sphere(middle_region_approximation_sphere_.second, input_sphere))
-					&& (!can_have_d_ || d_ids_and_tangent_spheres_[0].first==npos || d_ids_and_tangent_spheres_[1].first==npos ||
-							((distance_from_point_to_line(input_sphere, d_ids_and_tangent_spheres_[0].second, d_ids_and_tangent_spheres_[1].second)-input_sphere.r)<std::max(d_ids_and_tangent_spheres_[0].second.r, d_ids_and_tangent_spheres_[1].second.r)))
+					&& (!can_have_d_ || d_ids_and_tangent_spheres_[0].first==npos || d_ids_and_tangent_spheres_[1].first==npos
+							|| (distance_from_point_to_line(input_sphere, d_ids_and_tangent_spheres_[0].second, d_ids_and_tangent_spheres_[1].second)<(input_sphere.r+std::max(d_ids_and_tangent_spheres_[0].second.r, d_ids_and_tangent_spheres_[1].second.r)))
+							|| (can_have_negative_tangent_spheres_ && sphere_intersects_sphere(input_sphere, *a_sphere_) && sphere_intersects_sphere(input_sphere, *b_sphere_) && sphere_intersects_sphere(input_sphere, *c_sphere_)))
 					&& (!can_have_d_ || (halfspace_of_sphere(tangent_planes_[0].first, tangent_planes_[0].second, input_sphere)<=0 && halfspace_of_sphere(tangent_planes_[1].first, tangent_planes_[1].second, input_sphere)<=0))
 					);
 		}
@@ -605,8 +606,9 @@ private:
 			}
 		}
 
-		void init_middle_region_approximation_sphere()
+		void init_middle_region_approximation()
 		{
+			can_have_negative_tangent_spheres_=(sphere_intersects_sphere(*a_sphere_, *b_sphere_) && sphere_intersects_sphere(*a_sphere_, *c_sphere_) && sphere_intersects_sphere(*b_sphere_, *c_sphere_));
 			middle_region_approximation_sphere_.first=false;
 			if(can_have_e_ && can_have_d_)
 			{
@@ -673,6 +675,7 @@ private:
 		bool can_have_d_;
 		bool can_have_e_;
 		std::vector< std::pair<SimplePoint, SimplePoint> > central_planes_;
+		bool can_have_negative_tangent_spheres_;
 		std::pair<bool, SimpleSphere> middle_region_approximation_sphere_;
 	};
 
