@@ -65,12 +65,22 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
-void print_demo_face()
+void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	std::vector<apollota::SimpleSphere> generators;
-	generators.push_back(apollota::SimpleSphere(2, 1, 0, 0.7));
-	generators.push_back(apollota::SimpleSphere(-1, 2, 0, 1.0));
-	generators.push_back(apollota::SimpleSphere(-1, -1, 0, 1.3));
+	if(poh.contains_option("--spindle"))
+	{
+		generators.push_back(apollota::SimpleSphere(2, 1, 0, 2.0));
+		generators.push_back(apollota::SimpleSphere(-1, 2, 0, 2.3));
+		generators.push_back(apollota::SimpleSphere(-1, -1, 0, 2.6));
+	}
+	else
+	{
+		generators.push_back(apollota::SimpleSphere(2, 1, 0, 0.7));
+		generators.push_back(apollota::SimpleSphere(-1, 2, 0, 1.0));
+		generators.push_back(apollota::SimpleSphere(-1, -1, 0, 1.3));
+	}
+
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
@@ -108,7 +118,7 @@ void print_demo_face()
 		std::deque<apollota::SimplePoint> curve;
 		std::deque<double> radii;
 		{
-			const double r_mult=1.01;
+			double r_mult=(min_tangent.r>0.0 ? 1.01 : 1/1.01);
 			const double r_max=14.0;
 			for(double r=min_tangent.r;r<r_max;r=r*r_mult)
 			{
@@ -128,6 +138,11 @@ void print_demo_face()
 							radii.push_back(r);
 						}
 					}
+				}
+				if(r>-0.01 && r_mult<1.0)
+				{
+					r=0.01;
+					r_mult=1.0/r_mult;
 				}
 			}
 		}
@@ -489,7 +504,7 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(scene=="face")
 	{
-		print_demo_face();
+		print_demo_face(poh);
 	}
 	else if(scene=="tangent-spheres")
 	{
