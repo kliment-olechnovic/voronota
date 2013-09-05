@@ -94,15 +94,10 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::OpenGLPrinter opengl_printer_curve(std::cout, "obj_curve", "cgo_curve");
 	apollota::OpenGLPrinter opengl_printer_generators(std::cout, "obj_generators", "cgo_generators");
 	apollota::OpenGLPrinter opengl_printer_m_surface(std::cout, "obj_m_surface", "cgo_m_surface");
-	apollota::OpenGLPrinter opengl_printer_m_trans_surface(std::cout, "obj_m_trans_surface", "cgo_m_trans_surface");
 	apollota::OpenGLPrinter opengl_printer_tangent_planes(std::cout, "obj_tangent_planes", "cgo_tangent_planes");
 	apollota::OpenGLPrinter opengl_printer_tangent_spheres(std::cout, "obj_tangent_spheres", "cgo_tangent_spheres");
 	apollota::OpenGLPrinter opengl_printer_m_contour(std::cout, "obj_m_contour", "cgo_m_contour");
 	apollota::OpenGLPrinter opengl_printer_m_touch_points(std::cout, "obj_m_touch_points", "cgo_m_touch_points");
-	apollota::OpenGLPrinter opengl_printer_m_touch_curves(std::cout, "obj_m_touch_curves", "cgo_m_touch_curves");
-	apollota::OpenGLPrinter opengl_printer_m_triangles(std::cout, "obj_m_triangles", "cgo_m_triangles");
-	apollota::OpenGLPrinter opengl_printer_m_chull(std::cout, "obj_m_chull", "cgo_m_chull");
-	apollota::OpenGLPrinter opengl_printer_cyclide(std::cout, "obj_cyclide", "cgo_cyclide");
 
 	for(std::size_t i=0;i<generators.size();i++)
 	{
@@ -206,8 +201,6 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		opengl_printer_m_surface.print_color(0xFF5A40);
-		opengl_printer_m_trans_surface.print_color(0xFF5A40);
-		opengl_printer_m_trans_surface.print_alpha(0.5);
 		for(std::size_t i=0;i+1<circles_vertices.size();i++)
 		{
 			std::size_t j=i+1;
@@ -223,7 +216,6 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 					normals.push_back(circles_normals[j][e]);
 				}
 				opengl_printer_m_surface.print_triangle_strip(vertices, normals);
-				opengl_printer_m_trans_surface.print_triangle_strip(vertices, normals);
 			}
 		}
 
@@ -259,7 +251,6 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 
 		if(!circles_vertices.empty())
 		{
-			std::vector< std::pair< std::vector<apollota::SimplePoint>, std::vector<apollota::SimplePoint> > > tps(3);
 			const double gap_distance_threshold=0.3;
 			double gap_distance=0.0;
 			for(std::size_t i=0;i<circles_vertices.size()/2;i++)
@@ -285,101 +276,11 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 					opengl_printer_m_contour.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
 
 					opengl_printer_m_touch_points.print_color(0x111111);
-					for(std::size_t j=0;j<circles_touches[i].size() && j<circles_touches[circles_vertices.size()-1-i].size() && j<tps.size();j++)
+					for(std::size_t j=0;j<circles_touches[i].size() && j<circles_touches[circles_vertices.size()-1-i].size() && j<3;j++)
 					{
 						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.05));
 						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.05));
-						tps[j].first.push_back(circles_touches[i][j]);
-						tps[j].second.push_back(circles_touches[circles_vertices.size()-1-i][j]);
 					}
-
-					opengl_printer_m_triangles.print_color(0x00FF00);
-					opengl_printer_m_triangles.print_line_strip(circles_touches[i], true);
-					opengl_printer_m_triangles.print_line_strip(circles_touches[circles_vertices.size()-1-i], true);
-				}
-			}
-
-			opengl_printer_m_touch_curves.print_color(0x111111);
-			for(std::size_t j=0;j<tps.size();j++)
-			{
-				tps[j].first.insert(tps[j].first.end(), tps[j].second.rbegin(), tps[j].second.rend());
-				opengl_printer_m_touch_curves.print_line_strip(tps[j].first);
-			}
-		}
-
-		if(circles_vertices.size()>1)
-		{
-			opengl_printer_m_chull.print_color(0x111111);
-			opengl_printer_m_chull.print_line_strip(circles_vertices.front());
-			opengl_printer_m_chull.print_line_strip(circles_vertices.back());
-			opengl_printer_m_chull.print_color(0xFFFFFF);
-			opengl_printer_m_chull.print_alpha(0.75);
-			opengl_printer_m_chull.print_triangle_strip(circles_vertices.front(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), tangent_planes[0].second), true);
-			opengl_printer_m_chull.print_triangle_strip(circles_vertices.back(), std::vector<apollota::SimplePoint>(circles_vertices.back().size(), tangent_planes[1].second), true);
-			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				if(circles_vertices.front().size()==circles_vertices.back().size())
-				{
-					for(std::size_t e=0;e<circles_vertices.front().size();e++)
-					{
-						vertices.push_back(circles_vertices.front()[e]);
-						vertices.push_back(circles_vertices.back()[e]);
-						normals.push_back(circles_normals.front()[e]);
-						normals.push_back(circles_normals.back()[e]);
-					}
-					opengl_printer_m_chull.print_triangle_strip(vertices, normals);
-				}
-			}
-		}
-
-		if(circles_vertices.size()>=3)
-		{
-			std::vector< std::vector<apollota::SimplePoint> > cyclide_vertices;
-			std::vector< std::vector<apollota::SimplePoint> > cyclide_normals;
-			for(std::size_t i=0;i<circles_vertices.front().size();i++)
-			{
-				const std::vector<apollota::SimpleSphere> circles=apollota::TangentSphereOfThreeSpheres::calculate(apollota::SimpleSphere(circles_vertices.front()[i], 0.0), apollota::SimpleSphere(circles_vertices[circles_vertices.size()/2][i], 0.0), apollota::SimpleSphere(circles_vertices.back()[i], 0.0));
-				if(circles.size()==1)
-				{
-					apollota::SimpleSphere circle=circles.front();
-					circle.r*=1.1;
-					const apollota::SimplePoint orientation=apollota::plane_normal_from_three_points<apollota::SimplePoint>(circles_vertices.front()[i], circles_vertices[circles_vertices.size()/2][i], circles_vertices.back()[i]);
-					const apollota::SimplePoint first_point(apollota::SimplePoint(circle)-circles_vertices.front()[i]);
-					apollota::Rotation rotation(apollota::custom_point_from_object<apollota::SimplePoint>(orientation), 0);
-					const double angle_step=10;
-					std::vector<apollota::SimplePoint> circle_vertices;
-					for(rotation.angle=0;rotation.angle<=360;rotation.angle+=angle_step)
-					{
-						circle_vertices.push_back(apollota::SimplePoint(circle)+rotation.rotate<apollota::SimplePoint>(first_point));
-					}
-					std::vector<apollota::SimplePoint> circle_normals;
-					for(std::size_t j=0;j<circle_vertices.size();j++)
-					{
-						circle_normals.push_back((circle_vertices[j]-apollota::SimplePoint(circle)).unit());
-					}
-					cyclide_vertices.push_back(circle_vertices);
-					cyclide_normals.push_back(circle_normals);
-				}
-			}
-
-			opengl_printer_cyclide.print_color(0xFF5A40);
-			opengl_printer_cyclide.print_alpha(0.5);
-			for(std::size_t i=0;i<cyclide_vertices.size();i++)
-			{
-				std::size_t j=((i+1<cyclide_vertices.size()) ? (i+1) : 0);
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				if(cyclide_vertices[i].size()==cyclide_vertices[j].size())
-				{
-					for(std::size_t e=0;e<cyclide_vertices[i].size();e++)
-					{
-						vertices.push_back(cyclide_vertices[i][e]);
-						vertices.push_back(cyclide_vertices[j][e]);
-						normals.push_back(cyclide_normals[i][e]);
-						normals.push_back(cyclide_normals[j][e]);
-					}
-					opengl_printer_cyclide.print_triangle_strip(vertices, normals);
 				}
 			}
 		}
