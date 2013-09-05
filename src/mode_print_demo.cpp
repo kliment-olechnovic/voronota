@@ -447,6 +447,55 @@ void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
+void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double max_r=poh.argument<double>("--max-r", std::numeric_limits<double>::max());
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const std::tr1::unordered_set<std::size_t> selection_set(selection_vector.begin(), selection_vector.end());
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false);
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+
+	{
+		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_empty_tangent_spheres", "cgo_empty_tangent_spheres");
+		opengl_printer.print_color(0xFF5A40);
+		opengl_printer.print_alpha(0.3);
+		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
+		{
+			const apollota::Quadruple& quadruple=it->first;
+			if(selection_set.empty() || selection_set.count(quadruple.get(0))>0 || selection_set.count(quadruple.get(1))>0 || selection_set.count(quadruple.get(2))>0 || selection_set.count(quadruple.get(3))>0)
+			{
+				const std::vector<apollota::SimpleSphere> tangents=it->second;
+				for(std::size_t i=0;i<tangents.size();i++)
+				{
+					if(tangents[i].r<max_r)
+					{
+						opengl_printer.print_sphere(tangents[i]);
+					}
+				}
+			}
+		}
+	}
+
+	{
+		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_balls", "cgo_balls");
+		opengl_printer.print_color(0x36BBCE);
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			if(selection_set.empty() || selection_set.count(i)>0)
+			{
+				opengl_printer.print_sphere(spheres[i]);
+			}
+		}
+	}
+
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
+	std::cout << "cmd.set('ambient', 0.3)\n\n";
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -481,6 +530,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="splitting")
 	{
 		print_demo_splitting(poh);
+	}
+	else if(scene=="empty-tangents")
+	{
+		print_demo_empty_tangents(poh);
 	}
 	else
 	{
