@@ -452,6 +452,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	const double max_r=poh.argument<double>("--max-r", std::numeric_limits<double>::max());
 	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
 	const std::tr1::unordered_set<std::size_t> selection_set(selection_vector.begin(), selection_vector.end());
+	const double alpha=poh.argument<double>("--alpha", 0.5);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -462,7 +463,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_empty_tangent_spheres", "cgo_empty_tangent_spheres");
 		opengl_printer.print_color(0xFF5A40);
-		opengl_printer.print_alpha(0.3);
+		opengl_printer.print_alpha(alpha);
 		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
 		{
 			const apollota::Quadruple& quadruple=it->first;
