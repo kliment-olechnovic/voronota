@@ -450,9 +450,28 @@ void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	const double max_r=poh.argument<double>("--max-r", std::numeric_limits<double>::max());
-	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
-	const std::tr1::unordered_set<std::size_t> selection_set(selection_vector.begin(), selection_vector.end());
 	const double alpha=poh.argument<double>("--alpha", 0.5);
+	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+
+	std::tr1::unordered_set<std::size_t> selection_set;
+	if(!selection_vector.empty())
+	{
+		if(!selection_as_intervals)
+		{
+			selection_set.insert(selection_vector.begin(), selection_vector.end());
+		}
+		else if(selection_vector.size()%2==0)
+		{
+			for(std::size_t i=0;i<selection_vector.size();i+=2)
+			{
+				for(std::size_t a=selection_vector[i];a<=selection_vector[i+1];a++)
+				{
+					selection_set.insert(a);
+				}
+			}
+		}
+	}
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
