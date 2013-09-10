@@ -77,9 +77,9 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	if(cyclide_type=="horn")
 	{
-		generators.push_back(apollota::SimpleSphere(1, 1, 0, 0.0));
+		generators.push_back(apollota::SimpleSphere(0.0, -0.1, 0, 0.2));
 		generators.push_back(apollota::SimpleSphere(-1, 2, 0, 0.3));
-		generators.push_back(apollota::SimpleSphere(-1, -1, 0, 0.9));
+		generators.push_back(apollota::SimpleSphere(-2.3, 0.2, 0, 1.0));
 	}
 	else
 	{
