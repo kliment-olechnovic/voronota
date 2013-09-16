@@ -37,12 +37,12 @@ public:
 
 	void print_color(const double r, const double g, const double b)
 	{
-		string_stream_ << "    COLOR, " << r << ", " << g << ", " << b << ",\n";
+		string_stream_ << "    COLOR, " << rgb_to_string(r, g, b) << ",\n";
 	}
 
 	void print_color(const unsigned int rgb)
 	{
-		print_color(static_cast<double>((rgb&0xFF0000) >> 16)/255.0, static_cast<double>((rgb&0x00FF00) >> 8)/255.0, static_cast<double>(rgb&0x0000FF)/255.0);
+		string_stream_ << "    COLOR, " << rgb_to_string(rgb) << ",\n";
 	}
 
 	template<typename SphereType>
@@ -94,6 +94,12 @@ public:
 		}
 	}
 
+	template<typename PointType>
+	void print_cylinder(const PointType& p1, const PointType& p2, const double radius, const unsigned int rgb1, const unsigned int rgb2)
+	{
+		string_stream_ << "    CYLINDER, " << point_to_string(p1) << ", " << point_to_string(p2) << ", " << radius << ", " << rgb_to_string(rgb1) << ", " << rgb_to_string(rgb2) << ",\n";
+	}
+
 private:
 	OpenGLPrinter(const OpenGLPrinter& /*opengl_printer*/);
 	OpenGLPrinter& operator=(const OpenGLPrinter& /*opengl_printer*/);
@@ -105,6 +111,18 @@ private:
 		output.precision(std::numeric_limits<double>::digits10);
 		output << std::fixed << a.x << ", " << a.y << ", " << a.z;
 		return output.str();
+	}
+
+	static std::string rgb_to_string(const double r, const double g, const double b)
+	{
+		std::ostringstream output;
+		output << r << ", " << g << ", " << b;
+		return output.str();
+	}
+
+	static std::string rgb_to_string(const unsigned int rgb)
+	{
+		return rgb_to_string(static_cast<double>((rgb&0xFF0000) >> 16)/255.0, static_cast<double>((rgb&0x00FF00) >> 8)/255.0, static_cast<double>(rgb&0x0000FF)/255.0);
 	}
 
 	std::ostream& output_stream_;
