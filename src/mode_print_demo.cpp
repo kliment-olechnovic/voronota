@@ -284,11 +284,12 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 					opengl_printer_m_contour.print_line_strip(circles_vertices[i]);
 					opengl_printer_m_contour.print_line_strip(circles_vertices[circles_vertices.size()-1-i]);
 
+					const double touch_point_size=((cyclide_type=="horn") ? 0.03 : 0.05);
 					opengl_printer_m_touch_points.print_color(0x111111);
 					for(std::size_t j=0;j<circles_touches[i].size() && j<circles_touches[circles_vertices.size()-1-i].size() && j<3;j++)
 					{
-						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[i][j], 0.05));
-						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], 0.05));
+						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[i][j], touch_point_size));
+						opengl_printer_m_touch_points.print_sphere(apollota::SimpleSphere(circles_touches[circles_vertices.size()-1-i][j], touch_point_size));
 					}
 				}
 			}
