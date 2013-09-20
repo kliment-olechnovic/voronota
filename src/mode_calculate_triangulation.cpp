@@ -10,9 +10,9 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		basic_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
-		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
 		full_map_of_option_descriptions["--check"].init("", "flag to explicitly check the resulting triangulation (takes time, used only for testing)");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))

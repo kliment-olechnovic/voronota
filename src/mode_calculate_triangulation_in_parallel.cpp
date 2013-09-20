@@ -361,9 +361,9 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
-		basic_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
