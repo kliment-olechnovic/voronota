@@ -27,6 +27,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--mmcif"].init("", "flag to input in mmCIF format");
 		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
 		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
 		basic_map_of_option_descriptions["--output-comments"].init("", "flag to output additional information about atoms");
@@ -37,7 +38,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
-			std::cerr << "  stdin   <-  file in PDB format\n";
+			std::cerr << "  stdin   <-  file in PDB or mmCIF format\n";
 			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r')\n";
 			return;
 		}
@@ -46,6 +47,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
+
+	const bool mmcif=poh.contains_option("--mmcif");
 
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
 
@@ -57,7 +60,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 
-	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
+	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
+			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms) :
+			auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms));
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");

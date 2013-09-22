@@ -47,11 +47,12 @@ Common options
 
   --default-radius                number      default atomic radius
   --include-heteroatoms                       flag to include heteroatoms
+  --mmcif                                     flag to input in mmCIF format
   --only-default-radius                       flag to make all radii equal to the default radius
   --output-comments                           flag to output additional information about atoms
   --radii-file                    string      path to radii configuration file
 
-  stdin   <-  file in PDB format
+  stdin   <-  file in PDB or mmCIF format
   stdout  ->  list of balls (line format: 'x y z r')
 
 
