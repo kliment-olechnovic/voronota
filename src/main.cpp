@@ -28,9 +28,9 @@ int main(const int argc, const char** argv)
 		MapOfModes basic_map_of_modes;
 		basic_map_of_modes["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
 		basic_map_of_modes["calculate-triangulation-in-parallel"]=ModeFunctionPointer(calculate_triangulation_in_parallel);
-		basic_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
 		basic_map_of_modes["get-balls-from-atoms-file"]=ModeFunctionPointer(get_balls_from_atoms_file);
 		MapOfModes full_map_of_modes=basic_map_of_modes;
+		full_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
 		full_map_of_modes["print-demo"]=ModeFunctionPointer(print_demo);
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
