@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "auxiliaries/pdb_file_parser.h"
+#include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
 
 #include "modes_commons.h"
@@ -57,7 +57,7 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 
-	const std::vector<auxiliaries::PDBFileParser::AtomRecord> atoms=auxiliaries::PDBFileParser::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
+	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms);
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");
@@ -82,7 +82,7 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
-		const auxiliaries::PDBFileParser::AtomRecord& atom=atoms[i];
+		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
 		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(output_comments)
 		{
