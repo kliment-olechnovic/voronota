@@ -37,10 +37,11 @@ Common options
 --mode get-balls-from-atoms-file
 
   --include-heteroatoms                       flag to include heteroatoms
+  --mmcif                                     flag to input in mmCIF format
   --output-comments                           flag to output additional information about atoms
   --radii-file                    string      path to radii configuration file
 
-  stdin   <-  file in PDB format
+  stdin   <-  file in PDB or mmCIF format
   stdout  ->  list of balls (line format: 'x y z r')
 
 
