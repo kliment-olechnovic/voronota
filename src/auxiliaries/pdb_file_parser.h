@@ -16,45 +16,17 @@ public:
 	struct AtomRecord
 	{
 		std::string record_name;
-		int serial;
+		std::string serial;
 		std::string name;
 		std::string altLoc;
 		std::string resName;
 		std::string chainID;
-		int resSeq;
+		std::string resSeq;
 		std::string iCode;
 		double x;
 		double y;
 		double z;
-		double tempFactor;
 		std::string element;
-		std::string charge;
-
-		AtomRecord(const std::string& pdb_file_line) :
-			record_name(substring_of_columned_line(pdb_file_line, 1, 6)),
-			serial(convert_string<int>(substring_of_columned_line(pdb_file_line, 7, 11))),
-			name(substring_of_columned_line(pdb_file_line, 13, 16)),
-			altLoc(substring_of_columned_line(pdb_file_line, 17, 17)),
-			resName(substring_of_columned_line(pdb_file_line, 18, 20)),
-			chainID(substring_of_columned_line(pdb_file_line, 22, 22)),
-			resSeq(convert_string<int>(substring_of_columned_line(pdb_file_line, 23, 26))),
-			iCode(substring_of_columned_line(pdb_file_line, 27, 27)),
-			x(convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38))),
-			y(convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46))),
-			z(convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54))),
-			tempFactor(convert_string_or_return_default_value<double>(substring_of_columned_line(pdb_file_line, 61, 66), 0.0)),
-			element(substring_of_columned_line(pdb_file_line, 77, 78)),
-			charge(substring_of_columned_line(pdb_file_line, 79, 80))
-		{
-			if (record_name.empty() || name.empty() || resName.empty())
-			{
-				throw std::runtime_error("Atom record has not enough string data.");
-			}
-			if(chainID.empty())
-			{
-				chainID="?";
-			}
-		}
 	};
 
 	static std::vector<AtomRecord> read_atom_records_from_pdb_file_stream(std::istream& pdb_file_stream, const bool include_heteroatoms)
@@ -69,7 +41,7 @@ public:
 			{
 				try
 				{
-					const AtomRecord record(line);
+					const AtomRecord record=read_atom_record_from_pdb_file_line(line);
 					if(
 							(record.altLoc.empty() || record.altLoc=="A") &&
 							record.resName!="HOH" &&
@@ -133,6 +105,51 @@ private:
 		{
 			return default_value;
 		}
+	}
+
+	static AtomRecord read_atom_record_from_pdb_file_line(const std::string& pdb_file_line)
+	{
+		AtomRecord record=AtomRecord();
+
+		record.record_name=substring_of_columned_line(pdb_file_line, 1, 6);
+		if(record.record_name.empty())
+		{
+			throw std::runtime_error("Missing record name.");
+		}
+
+		record.serial=substring_of_columned_line(pdb_file_line, 7, 11);
+
+		record.name=substring_of_columned_line(pdb_file_line, 13, 16);
+		if(record.name.empty())
+		{
+			throw std::runtime_error("Missing atom name.");
+		}
+
+		record.altLoc=substring_of_columned_line(pdb_file_line, 17, 17);
+
+		record.resName=substring_of_columned_line(pdb_file_line, 18, 20);
+		if(record.resName.empty())
+		{
+			throw std::runtime_error("Missing residue name.");
+		}
+
+		record.chainID=substring_of_columned_line(pdb_file_line, 22, 22);
+		if(record.chainID.empty())
+		{
+			record.chainID="?";
+		}
+
+		record.resSeq=substring_of_columned_line(pdb_file_line, 23, 26);
+
+		record.iCode=substring_of_columned_line(pdb_file_line, 27, 27);
+
+		record.x=convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38));
+		record.y=convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46));
+		record.z=convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54));
+
+		record.element=substring_of_columned_line(pdb_file_line, 77, 78);
+
+		return record;
 	}
 };
 
