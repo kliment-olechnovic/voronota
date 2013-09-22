@@ -109,7 +109,7 @@ private:
 		return ((record.record_name=="ATOM" || (include_heteroatoms && record.record_name=="HETATM")) &&
 				!record.name.empty() &&
 				!record.resName.empty() &&
-				(record.altLoc.empty() || record.altLoc=="A") &&
+				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc==".") &&
 				record.resName!="HOH" &&
 				record.element!="H" &&
 				record.name.find("H")!=0 &&
@@ -176,7 +176,7 @@ private:
 				if(!header.empty())
 				{
 					std::vector<std::string> values;
-					while(!file_stream.fail() && token.find("_")!=0 && token.find("loop_")!=0)
+					while(!file_stream.fail() && token.find("_")!=0 && token.find("loop_")!=0 && token.find("#")!=0)
 					{
 						values.push_back(token);
 						file_stream >> token;
