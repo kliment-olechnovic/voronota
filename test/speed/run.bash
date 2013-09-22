@@ -25,7 +25,7 @@ LOG_LIST_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.list"
 LOG_TABLE_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.table"
 LOG_ERRORS_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.log.errors"
 
-zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-pdb-file --radii-file $RADII_FILE > $INPUT_FILE 2> /dev/null
+zcat "$PDB_FILE" | $TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE > $INPUT_FILE 2> /dev/null
 
 if [ ! -s "$INPUT_FILE" ]
 then

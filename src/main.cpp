@@ -11,7 +11,7 @@
 void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
 void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh);
-void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh);
+void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
 int main(const int argc, const char** argv)
@@ -29,7 +29,7 @@ int main(const int argc, const char** argv)
 		basic_map_of_modes["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
 		basic_map_of_modes["calculate-triangulation-in-parallel"]=ModeFunctionPointer(calculate_triangulation_in_parallel);
 		basic_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
-		basic_map_of_modes["get-balls-from-pdb-file"]=ModeFunctionPointer(get_balls_from_pdb_file);
+		basic_map_of_modes["get-balls-from-atoms-file"]=ModeFunctionPointer(get_balls_from_atoms_file);
 		MapOfModes full_map_of_modes=basic_map_of_modes;
 		full_map_of_modes["print-demo"]=ModeFunctionPointer(print_demo);
 

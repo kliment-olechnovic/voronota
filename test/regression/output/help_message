@@ -34,7 +34,7 @@ Common options
   stdout  ->  summary of differences
 
 
---mode get-balls-from-pdb-file
+--mode get-balls-from-atoms-file
 
   --include-heteroatoms                       flag to include heteroatoms
   --output-comments                           flag to output additional information about atoms
