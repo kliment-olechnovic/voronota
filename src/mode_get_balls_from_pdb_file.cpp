@@ -86,7 +86,7 @@ void get_balls_from_pdb_file(const auxiliaries::ProgramOptionsHandler& poh)
 		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(output_comments)
 		{
-			std::cout << " # " << atom.serial << " " << atom.resName << " " << atom.name;
+			std::cout << " # " << atom.serial << " " << atom.chainID << " " << atom.resSeq << " " << atom.resName << " " << atom.name;
 		}
 		std::cout << "\n";
 	}
