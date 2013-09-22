@@ -15,9 +15,9 @@ $TEST_SUBJECT --help-full 2> $OUTPUT_DIR/help_full_message
 
 set -e
 
-$TEST_SUBJECT --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls1
-$TEST_SUBJECT --mode get-balls-from-pdb-file --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
-$TEST_SUBJECT --mode get-balls-from-pdb-file --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls3
+$TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls1
+$TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
+$TEST_SUBJECT --mode get-balls-from-atoms-file --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls3
 
 $TEST_SUBJECT --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation1 --check < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/triangulation1
 $TEST_SUBJECT --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation2 --check < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/triangulation2

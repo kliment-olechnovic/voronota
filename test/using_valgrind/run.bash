@@ -22,7 +22,7 @@ g++ -g -O1 -o $TEST_SUBJECT $TEST_SUBJECT_SOURCE_DIR/*.cpp
 
 echo
 echo "Preparing balls:"
-valgrind --tool=memcheck $TEST_SUBJECT --mode get-balls-from-pdb-file --include-heteroatoms --radii-file $RADII_FILE < $INPUT_FILE > $BALLS_FILE
+valgrind --tool=memcheck $TEST_SUBJECT --mode get-balls-from-atoms-file --include-heteroatoms --radii-file $RADII_FILE < $INPUT_FILE > $BALLS_FILE
 
 echo
 echo "Calculating triangulation:"
