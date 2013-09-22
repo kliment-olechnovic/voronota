@@ -33,16 +33,6 @@ Common options
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
---mode compare-triangulations
-
-  --first-triangulation-file      string   *  path to the first triangulation file
-  --init-radius-for-BSH           string      initial radius for bounding sphere hierarchy
-  --second-triangulation-file     string   *  path to the second triangulation file
-
-  stdin   <-  list of balls (line format: 'x y z r')
-  stdout  ->  summary of differences
-
-
 --mode get-balls-from-atoms-file
 
   --default-radius                number      default atomic radius
