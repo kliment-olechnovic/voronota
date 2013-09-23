@@ -1,25 +1,13 @@
 
 Common options
 
-  --help                                      flag to print usage help
+  --help                                      flag to print basic usage help to stderr
+  --help-full                                 flag to print full usage help to stderr
   --mode                          string   *  running mode
 
 
 --mode calculate-triangulation
 
-  --exclude-hidden-balls                      flag to exclude hidden input balls
-  --include-surplus-quadruples                flag to include surplus quadruples
-  --print-log                                 flag to print log of calculations
-
-  stdin   <-  list of balls (line format: 'x y z r')
-  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
-
-
---mode calculate-triangulation-in-parallel
-
-  --include-surplus-quadruples                flag to include surplus quadruples
-  --method                        string   *  processing method name, variants are: 'simulated'
-  --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
 
   stdin   <-  list of balls (line format: 'x y z r')

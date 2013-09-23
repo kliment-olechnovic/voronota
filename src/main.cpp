@@ -27,21 +27,22 @@ int main(const int argc, const char** argv)
 	{
 		MapOfModes basic_map_of_modes;
 		basic_map_of_modes["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
-		basic_map_of_modes["calculate-triangulation-in-parallel"]=ModeFunctionPointer(calculate_triangulation_in_parallel);
 		basic_map_of_modes["get-balls-from-atoms-file"]=ModeFunctionPointer(get_balls_from_atoms_file);
-		MapOfModes full_map_of_modes=basic_map_of_modes;
-		full_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
+		MapOfModes extended_map_of_modes=basic_map_of_modes;
+		extended_map_of_modes["calculate-triangulation-in-parallel"]=ModeFunctionPointer(calculate_triangulation_in_parallel);
+		extended_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
+		MapOfModes full_map_of_modes=extended_map_of_modes;
 		full_map_of_modes["print-demo"]=ModeFunctionPointer(print_demo);
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--mode"].init("string", "running mode", true);
-		basic_map_of_option_descriptions["--help"].init("", "flag to print usage help");
+		basic_map_of_option_descriptions["--help"].init("", "flag to print basic usage help to stderr");
+		basic_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 		full_map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
-		full_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help");
 
 		if(!poh.contains_option("--mode") || poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
@@ -50,7 +51,8 @@ int main(const int argc, const char** argv)
 			std::cerr << "\nCommon options\n\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n\n";
-			for(MapOfModes::const_iterator it=basic_map_of_modes.begin();it!=basic_map_of_modes.end();++it)
+			const MapOfModes& map_of_modes_for_printing=(poh.contains_option("--help-full") ? extended_map_of_modes : basic_map_of_modes);
+			for(MapOfModes::const_iterator it=map_of_modes_for_printing.begin();it!=map_of_modes_for_printing.end();++it)
 			{
 				std::cerr << "--mode " << it->first << "\n\n";
 				it->second(poh);

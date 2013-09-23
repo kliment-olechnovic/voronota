@@ -3,14 +3,14 @@ Common options
 
   --clog-file                     string      path to file for log stream redirection
   --epsilon                       number      threshold for floating-point numbers comparison
-  --help                                      flag to print usage help
-  --help-full                                 flag to print full usage help
+  --help                                      flag to print basic usage help to stderr
+  --help-full                                 flag to print full usage help to stderr
   --mode                          string   *  running mode
 
 
 --mode calculate-triangulation
 
-  --check                                     flag to explicitly check the resulting triangulation (takes time, used only for testing)
+  --check                                     flag to slowly check the resulting triangulation (used only for testing)
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
@@ -25,13 +25,23 @@ Common options
 
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
-  --method                        string   *  processing method name, variants are: 'simulated'
+  --method                        string   *  parallelization method name, variants are: 'simulated'
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
 
   stdin   <-  list of balls (line format: 'x y z r')
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+
+--mode compare-triangulations
+
+  --first-triangulation-file      string   *  path to the first triangulation file
+  --init-radius-for-BSH           string      initial radius for bounding sphere hierarchy
+  --second-triangulation-file     string   *  path to the second triangulation file
+
+  stdin   <-  list of balls (line format: 'x y z r')
+  stdout  ->  summary of differences
 
 
 --mode get-balls-from-atoms-file
