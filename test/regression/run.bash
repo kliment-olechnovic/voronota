@@ -5,6 +5,7 @@ cd $(dirname "$0")
 TEST_SUBJECT=../../Release/apollota
 RADII_FILE=../../resources/radii
 INPUT_FILE=./input.pdb
+INPUT_FILE_MMCIF=./input.cif
 OUTPUT_DIR=./output/
 
 rm -r -f $OUTPUT_DIR
@@ -18,6 +19,7 @@ set -e
 $TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls1
 $TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
 $TEST_SUBJECT --mode get-balls-from-atoms-file --output-comments < $INPUT_FILE > $OUTPUT_DIR/balls3
+$TEST_SUBJECT --mode get-balls-from-atoms-file --mmcif --radii-file $RADII_FILE --output-comments --include-heteroatoms < $INPUT_FILE_MMCIF > $OUTPUT_DIR/balls4
 
 $TEST_SUBJECT --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation1 --check < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/triangulation1
 $TEST_SUBJECT --mode calculate-triangulation --print-log --clog-file $OUTPUT_DIR/log_triangulation2 --check < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/triangulation2
