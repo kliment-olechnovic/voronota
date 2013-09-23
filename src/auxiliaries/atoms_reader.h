@@ -158,28 +158,50 @@ private:
 		return record;
 	}
 
+	static bool read_uncommented_token_from_mmcif_file_stream(std::istream& file_stream, std::string& token)
+	{
+		do
+		{
+			file_stream >> token;
+			if(file_stream.fail())
+			{
+				return false;
+			}
+			else if(token.find("#")==std::string::npos)
+			{
+				return true;
+			}
+			else if(file_stream.good())
+			{
+				std::getline(file_stream, token);
+			}
+		}
+		while(file_stream.good());
+		return false;
+	}
+
 	static std::vector< std::vector<std::string> > read_atom_site_table_from_mmcif_file_stream(std::istream& file_stream)
 	{
 		while(file_stream.good())
 		{
 			std::string token;
-			file_stream >> token;
-			if(!file_stream.fail() && token=="loop_")
+			bool token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
+			if(token_status && token=="loop_")
 			{
 				std::vector<std::string> header;
-				file_stream >> token;
-				while(!file_stream.fail() && token.find("_atom_site.")==0)
+				token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
+				while(token_status && token.find("_atom_site.")==0)
 				{
 					header.push_back(token);
-					file_stream >> token;
+					token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
 				}
 				if(!header.empty())
 				{
 					std::vector<std::string> values;
-					while(!file_stream.fail() && token.find("_")!=0 && token.find("loop_")!=0 && token.find("#")!=0)
+					while(token_status && token.find("_")==std::string::npos)
 					{
 						values.push_back(token);
-						file_stream >> token;
+						token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
 					}
 					if(values.size()%header.size()==0)
 					{
