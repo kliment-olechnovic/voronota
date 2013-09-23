@@ -73,9 +73,10 @@ public:
 		std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
 		std::vector<int> distributed_errors(distributed_ids.size(), 0);
 
+		const int distributed_ids_size=static_cast<int>(distributed_ids.size());
 		{
 	#pragma omp parallel for
-			for(std::size_t i=0;i<distributed_ids.size();i++)
+			for(int i=0;i<distributed_ids_size;i++)
 			{
 				try
 				{
