@@ -1,6 +1,7 @@
 #ifndef AUXILIARIES_CLOG_REDIRECTOR_H_
 #define AUXILIARIES_CLOG_REDIRECTOR_H_
 
+#include <sstream>
 #include <fstream>
 
 namespace auxiliaries
@@ -9,43 +10,34 @@ namespace auxiliaries
 class CLogRedirector
 {
 public:
-	CLogRedirector() : buffer_backup_(0)
+	CLogRedirector(const std::string& filename) : filename_(filename), buffer_backup_(0)
 	{
-	}
-
-	bool init(const std::string& filename)
-	{
-		if(!buffer_backed_up() && !filename.empty())
+		if(!filename_.empty())
 		{
-			file_stream_.open(filename.c_str());
-			if(file_stream_.good())
-			{
-				buffer_backup_=std::clog.rdbuf(file_stream_.rdbuf());
-			}
-			else
-			{
-				buffer_backup_=0;
-				file_stream_.close();
-			}
+			buffer_backup_=std::clog.rdbuf(string_stream_.rdbuf());
 		}
-		return buffer_backed_up();
-	}
-
-	bool buffer_backed_up() const
-	{
-		return (buffer_backup_!=0);
 	}
 
 	~CLogRedirector()
 	{
-		if(buffer_backed_up())
+		if(buffer_backup_!=0)
 		{
+			const std::string text=string_stream_.str();
+			if(!text.empty())
+			{
+				std::ofstream output(filename_.c_str(), std::ios::out);
+				if(output.good())
+				{
+					output << text;
+				}
+			}
 			std::clog.rdbuf(buffer_backup_);
 		}
 	}
 
 private:
-	std::ofstream file_stream_;
+	std::string filename_;
+	std::ostringstream string_stream_;
 	std::streambuf* buffer_backup_;
 };
 
