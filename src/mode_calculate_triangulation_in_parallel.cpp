@@ -210,7 +210,8 @@ private:
 			argc_(static_cast<int>(argv.size())),
 			argv_(0),
 			size_(0),
-			rank_(0)
+			rank_(0),
+			start_time_(0.0)
 		{
 			argv_=new char*[argc_];
 			for(int i=0;i<argc_;i++)
@@ -221,6 +222,8 @@ private:
 			MPI_Init(&argc_, &argv_);
 	        MPI_Comm_size(MPI_COMM_WORLD, &size_);
 	        MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
+
+	        start_time_=MPI_Wtime();
 		}
 
 		~MPIHandle()
@@ -231,6 +234,8 @@ private:
 			}
 			else
 			{
+				const double elapsed_time=MPI_Wtime()-start_time_;
+				std::cerr << "MPI process " << rank_ << " of " << size_ << " took " << elapsed_time << " seconds" << std::endl;
 				MPI_Finalize();
 			}
 
@@ -262,6 +267,7 @@ private:
 		char** argv_;
 		int size_;
 		int rank_;
+		double start_time_;
 	};
 
 	static void fill_plain_vector_from_spheres(const std::vector<apollota::SimpleSphere>& spheres, std::vector<double>& plain_vector)
