@@ -23,6 +23,7 @@ Common options
 
 --mode calculate-triangulation-in-parallel
 
+  --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --method                        string   *  processing method name, variants are: 'simulated'
   --parts                         number   *  number of parts for splitting, must be power of 2

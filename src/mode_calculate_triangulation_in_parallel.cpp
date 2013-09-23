@@ -30,6 +30,7 @@ public:
 	static void process(
 			const std::size_t parts,
 			const double init_radius_for_BSH,
+			const bool include_surplus_quadruples,
 			ParallelComputationResult& result)
 	{
 		std::vector<apollota::SimpleSphere> spheres;
@@ -43,7 +44,7 @@ public:
 
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			const apollota::Triangulation::QuadruplesMap partial_quadruples_map=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
+			const apollota::Triangulation::QuadruplesMap partial_quadruples_map=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
 			result.number_of_produced_quadruples+=partial_quadruples_map.size();
 			apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
 		}
@@ -57,6 +58,7 @@ public:
 	static void process(
 			const std::size_t parts,
 			const double init_radius_for_BSH,
+			const bool include_surplus_quadruples,
 			ParallelComputationResult& result)
 	{
 		std::vector<apollota::SimpleSphere> spheres;
@@ -77,7 +79,7 @@ public:
 			{
 				try
 				{
-					distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map;
+					distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
 				}
 				catch(...)
 				{
@@ -119,13 +121,14 @@ public:
 			const std::vector<std::string>& argv,
 			const std::size_t parts,
 			const double init_radius_for_BSH,
+			const bool include_surplus_quadruples,
 			ParallelComputationResult& result)
 	{
 		MPIHandle mpi_handle(argv);
 
 		if(mpi_handle.size()<=2)
 		{
-			ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, result);
+			ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, include_surplus_quadruples, result);
 		}
 		else
 		{
@@ -185,7 +188,7 @@ public:
 					{
 						if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
 						{
-							fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i]).quadruples_map, plain_vector);
+							fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map, plain_vector);
 							MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
 						}
 					}
@@ -361,6 +364,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--method"].init("string", "processing method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
+		basic_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
@@ -391,6 +395,8 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
+	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
+
 	const bool skip_output=poh.contains_option("--skip-output");
 
 	const bool print_log=poh.contains_option("--print-log");
@@ -406,18 +412,18 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(method=="simulated")
 	{
-		ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, result);
+		ParallelComputationProcessingSimulated::process(parts, init_radius_for_BSH, include_surplus_quadruples, result);
 	}
 #ifdef _OPENMP
 	else if(method=="openmp")
 	{
-		ParallelComputationProcessingWithOpenMP::process(parts, init_radius_for_BSH, result);
+		ParallelComputationProcessingWithOpenMP::process(parts, init_radius_for_BSH, include_surplus_quadruples, result);
 	}
 #endif
 #ifdef ENABLE_MPI
 	else if(method=="mpi")
 	{
-		master_finished=ParallelComputationProcessingWithMPI::process(poh.unused_argv(), parts, init_radius_for_BSH, result);
+		master_finished=ParallelComputationProcessingWithMPI::process(poh.unused_argv(), parts, init_radius_for_BSH, include_surplus_quadruples, result);
 	}
 #endif
 	else

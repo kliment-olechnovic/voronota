@@ -128,7 +128,10 @@ public:
 	}
 
 	template<typename AdmittanceSet>
-	static Result construct_result_for_admittance_set(const BoundingSpheresHierarchy& bsh, const AdmittanceSet& admittance_set)
+	static Result construct_result_for_admittance_set(
+			const BoundingSpheresHierarchy& bsh,
+			const AdmittanceSet& admittance_set,
+			const bool include_surplus_valid_quadruples)
 	{
 		Result result;
 		std::vector<int> admittance(bsh.leaves_spheres().size(), 0);
@@ -145,6 +148,10 @@ public:
 		if(admittance_filled)
 		{
 			result.quadruples_search_log=find_valid_quadruples(bsh, admittance, result.quadruples_map);
+			if(include_surplus_valid_quadruples)
+			{
+				result.surplus_quadruples_search_log=find_surplus_valid_quadruples(bsh, result.quadruples_map);
+			}
 			result.ignored_spheres_ids=collect_ignored_spheres_ids(admittance, result.quadruples_map);
 		}
 		return result;
