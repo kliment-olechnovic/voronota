@@ -17,6 +17,7 @@ Common options
 
 --mode calculate-triangulation-in-parallel
 
+  --include-surplus-quadruples                flag to include surplus quadruples
   --method                        string   *  processing method name, variants are: 'simulated'
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
