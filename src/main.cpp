@@ -86,13 +86,7 @@ int main(const int argc, const char** argv)
 				throw std::runtime_error(msg.str());
 			}
 
-			auxiliaries::CLogRedirector clog_redirector;
-			if(!clog_filename.empty() && !clog_redirector.init(clog_filename))
-			{
-				std::ostringstream msg;
-				msg << "Failed to redirect clog to file '" << clog_filename << "'.";
-				throw std::runtime_error(msg.str());
-			}
+			auxiliaries::CLogRedirector clog_redirector(clog_filename);
 
 			if(epsilon>0.0)
 			{
