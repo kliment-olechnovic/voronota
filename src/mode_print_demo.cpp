@@ -530,7 +530,7 @@ void print_demo_edges(const auxiliaries::ProgramOptionsHandler& poh)
 
 void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	const int parts=poh.argument<double>("--parts", 2);
+	const int parts=poh.argument<int>("--parts", 2);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
