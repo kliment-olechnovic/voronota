@@ -79,7 +79,7 @@ int main(const int argc, const char** argv)
 			{
 				std::ostringstream msg;
 				msg << "Invalid mode. Available modes are:\n";
-				for(MapOfModes::const_iterator it=basic_map_of_modes.begin();it!=basic_map_of_modes.end();++it)
+				for(MapOfModes::const_iterator it=extended_map_of_modes.begin();it!=extended_map_of_modes.end();++it)
 				{
 					msg << "  --mode " << it->first << "\n";
 				}
