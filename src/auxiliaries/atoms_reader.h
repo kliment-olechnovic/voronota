@@ -63,8 +63,9 @@ public:
 
 	static std::vector<AtomRecord> read_atom_records_from_mmcif_file_stream(std::istream& file_stream, const bool include_heteroatoms)
 	{
+		const std::vector< std::vector<std::string> > table=read_atom_site_table_from_mmcif_file_stream(file_stream);
 		std::vector<AtomRecord> records;
-		std::vector< std::vector<std::string> > table=read_atom_site_table_from_mmcif_file_stream(file_stream);
+		records.reserve(table.size());
 		if(table.size()>1)
 		{
 			std::map<std::string, std::size_t> header_map;
