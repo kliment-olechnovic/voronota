@@ -204,14 +204,14 @@ private:
 						values.push_back(token);
 						token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
 					}
-					if(values.size()%header.size()==0)
+					if((values.size()%header.size())==0)
 					{
 						std::vector< std::vector<std::string> > table;
 						table.reserve(values.size()/header.size()+1);
 						table.push_back(header);
 						for(std::size_t i=0;i<values.size();i++)
 						{
-							if(i%header.size()==0)
+							if((i%header.size())==0)
 							{
 								table.push_back(std::vector<std::string>());
 								table.back().reserve(header.size());
@@ -226,7 +226,7 @@ private:
 		return std::vector< std::vector<std::string> >();
 	}
 
-	static std::string get_value_from_table_row(const std::map<std::string, std::size_t> header_map, const std::vector<std::string>& row, const std::string& name)
+	static std::string get_value_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>& row, const std::string& name)
 	{
 		std::map<std::string, std::size_t>::const_iterator it=header_map.find(name);
 		if(it!=header_map.end() && it->second<row.size())
@@ -239,7 +239,7 @@ private:
 		}
 	}
 
-	static AtomRecord read_atom_record_from_table_row(const std::map<std::string, std::size_t> header_map, const std::vector<std::string>& row)
+	static AtomRecord read_atom_record_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>& row)
 	{
 		AtomRecord record=AtomRecord();
 		record.record_name=get_value_from_table_row(header_map, row, "_atom_site.group_PDB");
