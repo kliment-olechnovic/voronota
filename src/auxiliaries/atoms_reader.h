@@ -100,6 +100,10 @@ public:
 					}
 				}
 			}
+			else
+			{
+				throw std::runtime_error("Duplicate key in '_atom_site' loop in mmCIF input stream.");
+			}
 		}
 		return records;
 	}
