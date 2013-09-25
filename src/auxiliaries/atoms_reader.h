@@ -63,11 +63,11 @@ public:
 
 	static std::vector<AtomRecord> read_atom_records_from_mmcif_file_stream(std::istream& file_stream, const bool include_heteroatoms)
 	{
-		const std::vector< std::vector<std::string> > table=read_atom_site_table_from_mmcif_file_stream(file_stream);
+		std::vector< std::vector<std::string> > table;
 		std::vector<AtomRecord> records;
-		records.reserve(table.size());
-		if(table.size()>1)
+		if(read_atom_site_table_from_mmcif_file_stream(file_stream, table) && table.size()>1)
 		{
+			records.reserve(table.size());
 			std::map<std::string, std::size_t> header_map;
 			for(std::size_t i=0;i<table[0].size();i++)
 			{
@@ -181,7 +181,7 @@ private:
 		return false;
 	}
 
-	static std::vector< std::vector<std::string> > read_atom_site_table_from_mmcif_file_stream(std::istream& file_stream)
+	static bool read_atom_site_table_from_mmcif_file_stream(std::istream& file_stream, std::vector< std::vector<std::string> >& table)
 	{
 		while(file_stream.good())
 		{
@@ -204,9 +204,8 @@ private:
 						values.push_back(token);
 						token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
 					}
-					if((values.size()%header.size())==0)
+					if(!values.empty() && ((values.size()%header.size())==0))
 					{
-						std::vector< std::vector<std::string> > table;
 						table.reserve(values.size()/header.size()+1);
 						table.push_back(header);
 						for(std::size_t i=0;i<values.size();i++)
@@ -218,12 +217,16 @@ private:
 							}
 							table.back().push_back(values[i]);
 						}
-						return table;
+						return true;
+					}
+					else
+					{
+						throw std::runtime_error("Invalid '_atom_site' loop in mmCIF input stream.");
 					}
 				}
 			}
 		}
-		return std::vector< std::vector<std::string> >();
+		return false;
 	}
 
 	static std::string get_value_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>& row, const std::string& name)
