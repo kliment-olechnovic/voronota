@@ -30,7 +30,6 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--mmcif"].init("", "flag to input in mmCIF format");
 		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
 		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
-		basic_map_of_option_descriptions["--output-comments"].init("", "flag to output additional information about atoms");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
 		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
@@ -39,7 +38,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  file in PDB or mmCIF format\n";
-			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r')\n";
+			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r # comments')\n";
 			return;
 		}
 		else
@@ -53,8 +52,6 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
 
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
-
-	const bool output_comments=poh.contains_option("--output-comments");
 
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
 
@@ -89,10 +86,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
 		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-		if(output_comments)
-		{
-			std::cout << " # " << atom.serial << " " << atom.chainID << " " << atom.resSeq << " " << atom.resName << " " << atom.name;
-		}
+		std::cout << " # " << atom.serial << " " << atom.chainID << " " << atom.resSeq << " " << atom.resName << " " << atom.name;
 		std::cout << "\n";
 	}
 }
