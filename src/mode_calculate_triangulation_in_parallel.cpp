@@ -380,7 +380,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r')\n";
+			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
 			std::cerr << "  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
 			return;
 		}

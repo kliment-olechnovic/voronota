@@ -17,7 +17,7 @@ Common options
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
 
-  stdin   <-  list of balls (line format: 'x y z r')
+  stdin   <-  list of balls (line format: 'x y z r # comments')
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
@@ -30,7 +30,7 @@ Common options
   --print-log                                 flag to print log of calculations
   --skip-output                               flag to disable output of the resulting triangulation
 
-  stdin   <-  list of balls (line format: 'x y z r')
+  stdin   <-  list of balls (line format: 'x y z r # comments')
   stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
@@ -50,11 +50,10 @@ Common options
   --include-heteroatoms                       flag to include heteroatoms
   --mmcif                                     flag to input in mmCIF format
   --only-default-radius                       flag to make all radii equal to the default radius
-  --output-comments                           flag to output additional information about atoms
   --radii-file                    string      path to radii configuration file
 
   stdin   <-  file in PDB or mmCIF format
-  stdout  ->  list of balls (line format: 'x y z r')
+  stdout  ->  list of balls (line format: 'x y z r # comments')
 
 
 
