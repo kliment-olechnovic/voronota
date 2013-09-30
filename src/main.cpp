@@ -38,13 +38,14 @@ int main(const int argc, const char** argv)
 
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--mode"].init("string", "running mode", true);
-		basic_map_of_option_descriptions["--help"].init("", "flag to print basic usage help to stderr");
-		basic_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr");
+		basic_map_of_option_descriptions["--help"].init("", "flag to print basic usage help to stderr and exit");
+		basic_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr and exit");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 		full_map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
+		full_map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
 
-		if(!poh.contains_option("--mode") || poh.contains_option("--help") || poh.contains_option("--help-full"))
+		if(argc<2 || poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			poh.set_option("--help");
 
@@ -61,6 +62,10 @@ int main(const int argc, const char** argv)
 			std::cerr << std::endl;
 
 			return 1;
+		}
+		else if(poh.contains_option("--version"))
+		{
+			std::cerr << "Apollota version 1.0\n";
 		}
 		else
 		{

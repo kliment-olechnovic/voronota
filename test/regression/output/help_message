@@ -1,8 +1,8 @@
 
 Common options
 
-  --help                                      flag to print basic usage help to stderr
-  --help-full                                 flag to print full usage help to stderr
+  --help                                      flag to print basic usage help to stderr and exit
+  --help-full                                 flag to print full usage help to stderr and exit
   --mode                          string   *  running mode
 
 
