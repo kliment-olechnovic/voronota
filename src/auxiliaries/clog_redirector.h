@@ -1,6 +1,7 @@
 #ifndef AUXILIARIES_CLOG_REDIRECTOR_H_
 #define AUXILIARIES_CLOG_REDIRECTOR_H_
 
+#include <iostream>
 #include <sstream>
 #include <fstream>
 
@@ -29,6 +30,11 @@ public:
 				if(output.good())
 				{
 					output << text;
+				}
+				else
+				{
+					std::cerr << "Failed to redirect log to '" << filename_ << "', redirecting it to stderr.\n";
+					std::cerr << text;
 				}
 			}
 			std::clog.rdbuf(buffer_backup_);
