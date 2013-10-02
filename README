@@ -40,12 +40,22 @@ run the sequence of commands:
     make
 
 
+# Basic usage example
+
+Here is a basic example of computing a quasi-triangulation
+for a structure in a PDB file:
+
+    ./apollota --mode get-balls-from-atoms-file < input.pdb > input.txt
+    ./apollota --mode calculate-triangulation < input.txt > output.txt
+
+
 # Getting usage help
 
 Usage help is displayed when executing Apollota without any
 parameters or with "--help" command line option:
 
     ./apollota --help
+
 
 # Contact information
 
