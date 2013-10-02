@@ -9,7 +9,7 @@ dual of the Voronoi diagram of atomic balls.
 Download the latest package from bitbucket.org/kliment/apollota/downloads.
 
 
-# Building
+# Building from source code
 
 Apollota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
