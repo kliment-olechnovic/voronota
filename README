@@ -1,17 +1,15 @@
-== Overview ==
+# Overview
 
 Apollota is a tool for constructing the quasi-triangulation
 dual of the Voronoi diagram of atomic balls.
 
 
-== Getting the latest version ==
+# Getting the latest version
 
-Download the latest package from the downloads page:
-
-    https://bitbucket.org/kliment/apollota/downloads
+Download the latest package from bitbucket.org/kliment/apollota/downloads.
 
 
-== Building ==
+# Building
 
 Apollota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
@@ -42,15 +40,14 @@ run the sequence of commands:
     make
 
 
-== Getting usage help ==
+# Getting usage help
 
 Usage help is displayed when executing Apollota without any
 parameters or with "--help" command line option:
 
     ./apollota --help
 
-
-== Contact information ==
+# Contact information
 
 If you experience problems with the software or if you have
 questions or suggestions about it, please contact me:
