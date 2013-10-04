@@ -554,6 +554,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	const double max_r=poh.argument<double>("--max-r", std::numeric_limits<double>::max());
 	const double alpha=poh.argument<double>("--alpha", 0.5);
+	const double reduction=poh.argument<double>("--reduction", 0.0);
 	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
 	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
 
@@ -576,6 +577,8 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	std::tr1::unordered_set<std::size_t> extended_selection_set=selection_set;
+
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false);
@@ -583,20 +586,28 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
 	{
-		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_empty_tangent_spheres", "cgo_empty_tangent_spheres");
-		opengl_printer.print_color(0xFF5A40);
-		opengl_printer.print_alpha(alpha);
+		apollota::OpenGLPrinter opengl_printer_opaq(std::cout, "obj_opaq_empty_tangent_spheres", "cgo_opaq_empty_tangent_spheres");
+		opengl_printer_opaq.print_color(0xFF5A40);
+		apollota::OpenGLPrinter opengl_printer_trans(std::cout, "obj_trans_empty_tangent_spheres", "cgo_trans_empty_tangent_spheres");
+		opengl_printer_trans.print_color(0xFF5A40);
+		opengl_printer_trans.print_alpha(alpha);
 		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
 		{
 			const apollota::Quadruple& quadruple=it->first;
 			if(selection_set.empty() || selection_set.count(quadruple.get(0))>0 || selection_set.count(quadruple.get(1))>0 || selection_set.count(quadruple.get(2))>0 || selection_set.count(quadruple.get(3))>0)
 			{
+				for(std::size_t i=0;i<4;i++)
+				{
+					extended_selection_set.insert(quadruple.get(i));
+				}
+
 				const std::vector<apollota::SimpleSphere> tangents=it->second;
 				for(std::size_t i=0;i<tangents.size();i++)
 				{
 					if(tangents[i].r<max_r)
 					{
-						opengl_printer.print_sphere(tangents[i]);
+						opengl_printer_trans.print_sphere(apollota::SimpleSphere(tangents[i], fabs(tangents[i].r+reduction)));
+						opengl_printer_opaq.print_sphere(apollota::SimpleSphere(tangents[i], fabs(tangents[i].r+reduction)));
 					}
 				}
 			}
@@ -604,13 +615,23 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_balls", "cgo_balls");
-		opengl_printer.print_color(0x36BBCE);
+		apollota::OpenGLPrinter opengl_printer_central(std::cout, "obj_central_balls", "cgo_central_balls");
+		opengl_printer_central.print_color(0x36BBCE);
+		apollota::OpenGLPrinter opengl_printer_adjacent_opaq(std::cout, "obj_opaq_adjacent_balls", "cgo_opaq_adjacent_balls");
+		opengl_printer_adjacent_opaq.print_color(0x36BBCE);
+		apollota::OpenGLPrinter opengl_printer_adjacent_trans(std::cout, "obj_trans_adjacent_balls", "cgo_trans_adjacent_balls");
+		opengl_printer_adjacent_trans.print_color(0x36BBCE);
+		opengl_printer_adjacent_trans.print_alpha(alpha);
 		for(std::size_t i=0;i<spheres.size();i++)
 		{
 			if(selection_set.empty() || selection_set.count(i)>0)
 			{
-				opengl_printer.print_sphere(spheres[i]);
+				opengl_printer_central.print_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r-reduction));
+			}
+			if(extended_selection_set.count(i)>0)
+			{
+				opengl_printer_adjacent_trans.print_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r-reduction));
+				opengl_printer_adjacent_opaq.print_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r-reduction));
 			}
 		}
 	}
