@@ -6,7 +6,7 @@ dual of the Voronoi diagram of atomic balls.
 
 # Getting the latest version
 
-Download the latest package from bitbucket.org/kliment/apollota/downloads.
+Download the latest package from bitbucket.org/kliment/voronota/downloads.
 
 
 # Building from source code
@@ -45,8 +45,8 @@ run the sequence of commands:
 Here is a basic example of computing a quasi-triangulation
 for a structure in a PDB file:
 
-    ./apollota --mode get-balls-from-atoms-file < input.pdb > input.txt
-    ./apollota --mode calculate-triangulation < input.txt > output.txt
+    ./voronota --mode get-balls-from-atoms-file < input.pdb > input.txt
+    ./voronota --mode calculate-triangulation < input.txt > output.txt
 
 
 # Getting usage help
@@ -54,7 +54,7 @@ for a structure in a PDB file:
 Usage help is displayed when executing Voronota without any
 parameters or with "--help" command line option:
 
-    ./apollota --help
+    ./voronota --help
 
 
 # Contact information
