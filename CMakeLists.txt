@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(APOLLOTA)
+project(VORONOTA)
 
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
@@ -13,4 +13,4 @@ if (OPENMP_FOUND)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-add_executable(apollota ${sources} ${headers})
+add_executable(voronota ${sources} ${headers})

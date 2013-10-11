@@ -65,7 +65,7 @@ int main(const int argc, const char** argv)
 		}
 		else if(poh.contains_option("--version"))
 		{
-			std::cerr << "Apollota version 1.0\n";
+			std::cerr << "Voronota version 1.0\n";
 		}
 		else
 		{

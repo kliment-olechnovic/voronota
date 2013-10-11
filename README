@@ -1,6 +1,6 @@
 # Overview
 
-Apollota is a tool for constructing the quasi-triangulation
+Voronota is a tool for constructing the quasi-triangulation
 dual of the Voronoi diagram of atomic balls.
 
 
@@ -11,7 +11,7 @@ Download the latest package from bitbucket.org/kliment/apollota/downloads.
 
 # Building from source code
 
-Apollota has no required external dependencies, only
+Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
 
 For example, "apollota" executable can be built from
@@ -51,7 +51,7 @@ for a structure in a PDB file:
 
 # Getting usage help
 
-Usage help is displayed when executing Apollota without any
+Usage help is displayed when executing Voronota without any
 parameters or with "--help" command line option:
 
     ./apollota --help

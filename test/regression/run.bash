@@ -2,13 +2,13 @@
 
 cd $(dirname "$0")
 
-../../package.bash apollota_package
-mv ../../apollota_package.tar.gz ./apollota_package.tar.gz
-tar -xf ./apollota_package.tar.gz
-rm ./apollota_package.tar.gz
+../../package.bash voronota_package
+mv ../../voronota_package.tar.gz ./voronota_package.tar.gz
+tar -xf ./voronota_package.tar.gz
+rm ./voronota_package.tar.gz
 
-TEST_SUBJECT=./apollota_package/apollota
-RADII_FILE=./apollota_package/radii
+TEST_SUBJECT=./voronota_package/voronota
+RADII_FILE=./voronota_package/radii
 
 INPUT_FILE=./input.pdb
 INPUT_FILE_MMCIF=./input.cif
@@ -38,6 +38,6 @@ $TEST_SUBJECT --mode compare-triangulations --first-triangulation-file $OUTPUT_D
 $TEST_SUBJECT --mode compare-triangulations --first-triangulation-file $OUTPUT_DIR/triangulation1 --second-triangulation-file $OUTPUT_DIR/triangulation1p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_1_to_1p
 $TEST_SUBJECT --mode compare-triangulations --first-triangulation-file $OUTPUT_DIR/triangulation2 --second-triangulation-file $OUTPUT_DIR/triangulation2p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_2_to_2p
 
-rm -r ./apollota_package
+rm -r ./voronota_package
 
 hg status ./
