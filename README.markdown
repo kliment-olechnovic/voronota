@@ -14,21 +14,21 @@ Download the latest package from bitbucket.org/kliment/voronota/downloads.
 Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
 
-For example, "apollota" executable can be built from
+For example, "voronota" executable can be built from
 the sources in "src" directory using GNU C++ compiler:
 
-    g++ -O3 -o apollota src/*.cpp
+    g++ -O3 -o voronota src/*.cpp
 
 To enable the usage of OpenMP for parallel processing,
 add "-fopenmp" option when buiding:
 
-    g++ -O3 -fopenmp -o apollota src/*.cpp
+    g++ -O3 -fopenmp -o voronota src/*.cpp
 
 To enable the usage of MPI for parallel processing, you
 can use mpic++ compiler wrapper. You also need to define
 "ENABLE_MPI" macro when buiding:
 
-    mpic++ -O3 -fopenmp -DENABLE_MPI -o apollota ./src/*.cpp
+    mpic++ -O3 -fopenmp -DENABLE_MPI -o voronota ./src/*.cpp
     
 You can also build using cmake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
