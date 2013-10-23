@@ -7,8 +7,13 @@
 #include <vector>
 #include <map>
 
+#ifdef _MSC_VER
+#include <unordered_map>
+#include <unordered_set>
+#else
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
+#endif
 
 #include "tuple.h"
 #include "bounding_spheres_hierarchy.h"
