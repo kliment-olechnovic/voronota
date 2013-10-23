@@ -11,6 +11,11 @@ to the vertices of the Voronoi cells of the given balls.
 Voronota is especially suitable for processing three-dimensional
 structures of biological macromolecules such as proteins and RNA.
 
+## Contact information
+
+If you experience problems with the software or if you have
+questions or suggestions about it, please contact [Kliment Olechnovic](kliment@ibt.lt).
+
 
 # Getting the latest version
 
@@ -97,13 +102,3 @@ parameters or with "--help" command line option:
 Advanced options are shown using "--help-full" command line option:
 
     ./voronota --help-full
-
-
-# Contact information
-
-If you experience problems with the software or if you have
-questions or suggestions about it, please contact me:
-
-Kliment Olechnovic
-
-kliment@ibt.lt
