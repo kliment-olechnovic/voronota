@@ -1,7 +1,15 @@
-# Overview
+# About Voronota
 
 Voronota is a tool for constructing the quasi-triangulation
 dual of the Voronoi diagram of atomic balls.
+
+The Voronoi diagram of balls is a powerful tool for
+the analysis of macromolecular structures. Given a set of balls,
+where each ball represents an atom, Voronota finds quadruples
+of balls that have empty tangent spheres and thus correspond
+to the vertices of the Voronoi cells of the given balls.
+Voronota is especially suitable for processing three-dimensional
+structures of biological macromolecules such as proteins and RNA.
 
 
 # Getting the latest version
