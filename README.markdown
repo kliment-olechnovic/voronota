@@ -6,7 +6,8 @@ dual of the Voronoi diagram of atomic balls.
 
 # Getting the latest version
 
-Download the latest package from [bitbucket.org/kliment/voronota/downloads].
+Download the latest package from
+[the official downloads page](bitbucket.org/kliment/voronota/downloads).
 
 
 # Building from source code
