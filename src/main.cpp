@@ -26,13 +26,13 @@ int main(const int argc, const char** argv)
 	try
 	{
 		MapOfModes basic_map_of_modes;
-		basic_map_of_modes["calculate-triangulation"]=ModeFunctionPointer(calculate_triangulation);
-		basic_map_of_modes["get-balls-from-atoms-file"]=ModeFunctionPointer(get_balls_from_atoms_file);
+		basic_map_of_modes.insert(MapOfModes::value_type("calculate-triangulation", ModeFunctionPointer(calculate_triangulation)));
+		basic_map_of_modes.insert(MapOfModes::value_type("get-balls-from-atoms-file", ModeFunctionPointer(get_balls_from_atoms_file)));
 		MapOfModes extended_map_of_modes=basic_map_of_modes;
-		extended_map_of_modes["calculate-triangulation-in-parallel"]=ModeFunctionPointer(calculate_triangulation_in_parallel);
-		extended_map_of_modes["compare-triangulations"]=ModeFunctionPointer(compare_triangulations);
+		extended_map_of_modes.insert(MapOfModes::value_type("calculate-triangulation-in-parallel", ModeFunctionPointer(calculate_triangulation_in_parallel)));
+		extended_map_of_modes.insert(MapOfModes::value_type("compare-triangulations", ModeFunctionPointer(compare_triangulations)));
 		MapOfModes full_map_of_modes=extended_map_of_modes;
-		full_map_of_modes["print-demo"]=ModeFunctionPointer(print_demo);
+		full_map_of_modes.insert(MapOfModes::value_type("print-demo", ModeFunctionPointer(print_demo)));
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
