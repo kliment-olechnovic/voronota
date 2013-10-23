@@ -57,6 +57,12 @@ for a structure in a PDB file:
     ./voronota --mode get-balls-from-atoms-file < input.pdb > input.txt
     ./voronota --mode calculate-triangulation < input.txt > output.txt
 
+The first command reads a PDB file "input.pdb" and outputs a file "input.txt"
+that contains balls corresponding to the atoms in "input.pdb".
+The second command reads "input.txt" and outputs a file "output.txt"
+that contains a quasi-triangulation dual of the Voronoi diagram of the input balls.
+The formats of "input.txt" and "output.txt" are described in the next section.
+
 ## Formats of the generated files
 
 In "input.txt" the line format is "x y z r # comments".
@@ -74,7 +80,8 @@ For example, below is a part of some possible "input.txt":
     27.69 12.033 51.012 1.54 # 6 A 2 SER OG
 
 In "output.txt" the line format is "q1 q2 q3 q4 x y z r".
-The first four numbers (q1, q2, q3, q4) are positions of lines in "input.txt", starting from 0.
+The first four numbers (q1, q2, q3, q4) are numbers
+of atomic records in "input.txt", starting from 0.
 The remaining four values (x, y, z, r) are the coordinates and the radius of
 an empty tangent sphere of the quadruple of atoms.
 For example, below is a part of some possible "output.txt":
