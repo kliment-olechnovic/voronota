@@ -48,6 +48,9 @@ for a structure in a PDB file:
     ./voronota --mode get-balls-from-atoms-file < input.pdb > input.txt
     ./voronota --mode calculate-triangulation < input.txt > output.txt
 
+
+## Generated files formats
+
 In 'input.txt' the line format is 'x y z r # comments'.
 The first four values (x, y, z, r) are atomic ball coordinates and radius.
 Comments are not needed for further calculations, but can improve readability.
@@ -82,6 +85,11 @@ Usage help is displayed when executing Voronota without any
 parameters or with "--help" command line option:
 
     ./voronota --help
+
+
+Advanced options are shown using "--help-full" command line option:
+
+    ./voronota --help-full
 
 
 # Contact information
