@@ -28,7 +28,7 @@ To enable the usage of MPI for parallel processing, you
 can use mpic++ compiler wrapper. You also need to define
 "ENABLE_MPI" macro when buiding:
 
-    mpic++ -O3 -fopenmp -DENABLE_MPI -o voronota ./src/*.cpp
+    mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
     
 You can also build using cmake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
