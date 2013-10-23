@@ -14,13 +14,14 @@ structures of biological macromolecules such as proteins and RNA.
 ## Contact information
 
 If you experience problems with the software or if you have
-questions or suggestions about it, please contact [Kliment Olechnovic](kliment@ibt.lt).
+questions or suggestions about it, please contact
+[Kliment Olechnovic](mailto:kliment@ibt.lt).
 
 
 # Getting the latest version
 
 Download the latest package from
-[the official downloads page](bitbucket.org/kliment/voronota/downloads).
+[the official downloads page](https://bitbucket.org/kliment/voronota/downloads).
 
 
 # Building from source code
