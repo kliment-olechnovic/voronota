@@ -12,13 +12,13 @@ have empty tangent spheres and thus form a quasi-triangulation
 dual of the Voronoi diagram of balls. Voronota is especially
 suitable for processing three-dimensional structures of
 biological macromolecules such as proteins and RNA.
-Voronota is developed by Kliment Olechnovic ([kliment@ibt.lt](mailto:kliment@ibt.lt)).
+Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 
 
 # Getting the latest version
 
 Download the latest archive from
-[https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
+[the official downloads page](https://bitbucket.org/kliment/voronota/downloads).
 
 
 # Building from source code
