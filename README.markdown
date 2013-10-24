@@ -1,21 +1,29 @@
 # About Voronota
 
-Voronota is a tool for constructing the quasi-triangulation
-dual of the Voronoi diagram of atomic balls.
+The analysis of macromolecular structures often requires
+a comprehensive definition of atomic neighborhoods.
+Such a definition can be based on the Voronoi diagram of balls,
+where each ball represents an atom of some van der Waals radius.
+Voronota is a simple software tool for finding all the vertices
+of the Voronoi diagram of balls. The vertices of Voronoi cells
+of balls correspond to the centers of the empty tangent spheres
+defined by quadruples of balls. Voronota finds quadruples that
+have empty tangent spheres and thus form a quasi-triangulation
+dual of the Voronoi diagram of balls. Voronota is especially
+suitable for processing three-dimensional structures of
+biological macromolecules such as proteins and RNA.
 
-The Voronoi diagram of balls is a powerful tool for
-the analysis of macromolecular structures. Given a set of balls,
-where each ball represents an atom, Voronota finds quadruples
-of balls that have empty tangent spheres and thus correspond
-to the vertices of the Voronoi cells of the given balls.
-Voronota is especially suitable for processing three-dimensional
-structures of biological macromolecules such as proteins and RNA.
+
+# Contact information
+
+If you have questions or suggestions about Voronota,
+please contact Kliment Olechnovic ([kliment@ibt.lt](mailto:kliment@ibt.lt)).
 
 
 # Getting the latest version
 
-Download the latest package from
-[the official downloads page](https://bitbucket.org/kliment/voronota/downloads).
+Download the latest archive from
+[https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
 
 
 # Building from source code
@@ -104,10 +112,3 @@ parameters or with "--help" command line option:
 Advanced options are shown using "--help-full" command line option:
 
     ./voronota --help-full
-
-
-# Contact information
-
-If you experience problems with the software
-or if you have questions or suggestions about it,
-please contact me, [Kliment Olechnovic](mailto:kliment@ibt.lt).
