@@ -12,12 +12,7 @@ have empty tangent spheres and thus form a quasi-triangulation
 dual of the Voronoi diagram of balls. Voronota is especially
 suitable for processing three-dimensional structures of
 biological macromolecules such as proteins and RNA.
-
-
-# Contact information
-
-If you have questions or suggestions about Voronota,
-please contact Kliment Olechnovic ([kliment@ibt.lt](mailto:kliment@ibt.lt)).
+Voronota is developed by Kliment Olechnovic ([kliment@ibt.lt](mailto:kliment@ibt.lt)).
 
 
 # Getting the latest version
