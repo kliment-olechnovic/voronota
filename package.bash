@@ -23,6 +23,7 @@ cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp resources/radii $PACKAGE_NAME/radii
 cp Release/voronota $PACKAGE_NAME/voronota
+pandoc README.markdown -f markdown -t html -s -o $PACKAGE_NAME/README.html
 
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
 rm -r $PACKAGE_NAME
