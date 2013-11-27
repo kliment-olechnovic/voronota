@@ -31,6 +31,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
 		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--include-hydrogens"].init("", "flag to include hydrogen atoms");
 		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
 		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
@@ -51,6 +52,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
 
+	const bool include_hydrogens=poh.contains_option("--include-hydrogens");
+
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
 
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
@@ -58,8 +61,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 
 	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
-			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms) :
-			auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms));
+			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms, include_hydrogens) :
+			auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms, include_hydrogens));
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");
@@ -73,7 +76,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
 			atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
 			atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
+			atom_radius_assigner.add_radius_by_descriptor("*", "S*", 1.80);
 			atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
+			atom_radius_assigner.add_radius_by_descriptor("*", "H*", 1.20);
 		}
 		else
 		{

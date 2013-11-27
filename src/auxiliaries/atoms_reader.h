@@ -30,7 +30,7 @@ public:
 		std::string element;
 	};
 
-	static std::vector<AtomRecord> read_atom_records_from_pdb_file_stream(std::istream& file_stream, const bool include_heteroatoms)
+	static std::vector<AtomRecord> read_atom_records_from_pdb_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
 	{
 		std::vector<AtomRecord> records;
 		while(file_stream.good())
@@ -43,7 +43,7 @@ public:
 				try
 				{
 					const AtomRecord record=read_atom_record_from_pdb_file_line(line);
-					if(check_atom_record_acceptability(record, include_heteroatoms))
+					if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 					{
 						records.push_back(record);
 					}
@@ -61,7 +61,7 @@ public:
 		return records;
 	}
 
-	static std::vector<AtomRecord> read_atom_records_from_mmcif_file_stream(std::istream& file_stream, const bool include_heteroatoms)
+	static std::vector<AtomRecord> read_atom_records_from_mmcif_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
 	{
 		while(file_stream.good())
 		{
@@ -103,7 +103,7 @@ public:
 									if(get_value_from_table_row(header_map, (values.begin()+i), "_atom_site.pdbx_PDB_model_num")==first_model_id)
 									{
 										const AtomRecord record=read_atom_record_from_table_row(header_map, (values.begin()+i));
-										if(check_atom_record_acceptability(record, include_heteroatoms))
+										if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 										{
 											records.push_back(record);
 										}
@@ -137,19 +137,14 @@ public:
 	}
 
 private:
-	static bool check_atom_record_acceptability(const AtomRecord& record, const bool include_heteroatoms)
+	static bool check_atom_record_acceptability(const AtomRecord& record, const bool include_heteroatoms, const bool include_hydrogens)
 	{
 		return ((record.record_name=="ATOM" || (include_heteroatoms && record.record_name=="HETATM")) &&
 				!record.name.empty() &&
 				!record.resName.empty() &&
 				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc==".") &&
-				record.resName!="HOH" &&
-				record.element!="H" &&
-				record.name.find("H")!=0 &&
-				record.name.find("1H")!=0 &&
-				record.name.find("2H")!=0 &&
-				record.name.find("3H")!=0 &&
-				record.name.find("4H")!=0);
+				(include_hydrogens || record.element!="H") &&
+				record.resName!="HOH");
 	}
 
 	template<typename T>
@@ -188,6 +183,7 @@ private:
 		record.y=convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46));
 		record.z=convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54));
 		record.element=substring_of_columned_line(pdb_file_line, 77, 78);
+		normalize_numbered_atom_name(record.name);
 		return record;
 	}
 
@@ -241,7 +237,20 @@ private:
 		record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_y"));
 		record.z=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_z"));
 		record.element=get_value_from_table_row(header_map, values_iter, "_atom_site.type_symbol");
+		normalize_numbered_atom_name(record.name);
 		return record;
+	}
+
+	static void normalize_numbered_atom_name(std::string& name)
+	{
+		if(name.find_first_of("123456789")==0)
+		{
+			std::size_t first_letter_pos=name.find_first_not_of("0123456789");
+			if(first_letter_pos!=std::string::npos)
+			{
+				name=(name.substr(first_letter_pos)+name.substr(0, first_letter_pos));
+			}
+		}
 	}
 };
 
