@@ -6,6 +6,7 @@
 
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
+#include "safe_quadratic_equation_root.h"
 
 namespace apollota
 {
@@ -92,43 +93,31 @@ private:
 					const double cz=(ay*bz+az);
 
 					const double a=(1+cz*cz+bz*bz);
-					if(a>0.0 || a<0.0)
+					const double b=2*(c0*cz+b0*bz);
+
+					if(check_if_quadratic_equation_is_solvable(a, b))
 					{
-						const double b=2*(c0*cz+b0*bz);
 						const double c=(c0*c0+b0*b0-1);
-						const double D=b*b-4*a*c;
-
-						std::vector<double> zs;
-						if(D>=0.0)
-						{
-							if(D==0.0)
-							{
-								zs.push_back((-b)/(2*a));
-							}
-							else
-							{
-								zs.push_back((-b-sqrt(D))/(2*a));
-								zs.push_back((-b+sqrt(D))/(2*a));
-							}
-						}
-
 						std::vector<SimplePoint> results;
-						results.reserve(zs.size());
-						for(std::size_t i=0;i<zs.size();i++)
+						std::vector<double> zs;
+						if(solve_quadratic_equation(a, b, c, zs))
 						{
-							const double z=zs[i];
-							SimplePoint candidate(c0+z*cz, b0+z*bz, z);
-							if(rotation_step>0)
+							results.reserve(zs.size());
+							for(std::size_t i=0;i<zs.size();i++)
 							{
-								const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
-								candidate=rotation.rotate<SimplePoint>(candidate);
-							}
-							if(check_tangent_plane(sm, s1, s2, candidate))
-							{
-								results.push_back(candidate);
+								const double z=zs[i];
+								SimplePoint candidate(c0+z*cz, b0+z*bz, z);
+								if(rotation_step>0)
+								{
+									const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
+									candidate=rotation.rotate<SimplePoint>(candidate);
+								}
+								if(check_tangent_plane(sm, s1, s2, candidate))
+								{
+									results.push_back(candidate);
+								}
 							}
 						}
-
 						return results;
 					}
 				}

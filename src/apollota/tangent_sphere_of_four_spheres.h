@@ -5,6 +5,7 @@
 
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
+#include "safe_quadratic_equation_root.h"
 
 namespace apollota
 {
@@ -90,52 +91,38 @@ public:
 				const double v3 = -( a1*(b3*o2-b2*o3) + b1*(a2*o3-a3*o2) + o1*(a3*b2-a2*b3) ) / w;
 
 				const double a = u1*u1+u2*u2+u3*u3-1;
+				const double b = 2*(u1*v1+u2*v2+u3*v3);
 
-				if(a>0.0 || a<0.0)
+				if(check_if_quadratic_equation_is_solvable(a, b))
 				{
-					const double b = 2*(u1*v1+u2*v2+u3*v3);
 					const double c = v1*v1+v2*v2+v3*v3;
-
-					const double D = b*b-4*a*c;
-
-					std::vector<double> radiuses;
-					if(D>=0.0)
-					{
-						if(D==0.0)
-						{
-							radiuses.push_back((-b)/(2*a));
-						}
-						else
-						{
-							radiuses.push_back((-b-sqrt(D))/(2*a));
-							radiuses.push_back((-b+sqrt(D))/(2*a));
-						}
-					}
-
 					std::vector<SimpleSphere> results;
-					results.reserve(radiuses.size());
-					for(std::size_t i=0;i<radiuses.size();i++)
+					std::vector<double> radiuses;
+					if(solve_quadratic_equation(a, b, c, radiuses))
 					{
-						const double r=radiuses[i];
-						if(r>0)
+						results.reserve(radiuses.size());
+						for(std::size_t i=0;i<radiuses.size();i++)
 						{
-							SimpleSphere candidate((u1*r+v1), (u2*r+v2), (u3*r+v3), r);
-							if(rotation_step>0)
+							const double r=radiuses[i];
+							if(r>=0.0)
 							{
-								const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
-								candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
-							}
-							candidate.x+=sm.x;
-							candidate.y+=sm.y;
-							candidate.z+=sm.z;
-							candidate.r-=sm.r;
-							if(check_tangent_sphere(sm, s1, s2, s3, candidate))
-							{
-								results.push_back(candidate);
+								SimpleSphere candidate((u1*r+v1), (u2*r+v2), (u3*r+v3), r);
+								if(rotation_step>0)
+								{
+									const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
+									candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
+								}
+								candidate.x+=sm.x;
+								candidate.y+=sm.y;
+								candidate.z+=sm.z;
+								candidate.r-=sm.r;
+								if(check_tangent_sphere(sm, s1, s2, s3, candidate))
+								{
+									results.push_back(candidate);
+								}
 							}
 						}
 					}
-
 					return results;
 				}
 			}
