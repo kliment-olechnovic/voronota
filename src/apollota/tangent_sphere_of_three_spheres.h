@@ -5,6 +5,7 @@
 
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
+#include "safe_quadratic_equation_root.h"
 
 namespace apollota
 {
@@ -52,40 +53,32 @@ public:
 
 		const double a = u1*u1+u2*u2-1;
 		const double b = 2*(u1*v1+u2*v2);
-		const double c = v1*v1+v2*v2;
-
-		const double D = b*b-4*a*c;
-
-		std::vector<double> radiuses;
-		if(D>=0.0)
-		{
-			if(D==0.0)
-			{
-				radiuses.push_back((-b)/(2*a));
-			}
-			else
-			{
-				radiuses.push_back((-b-sqrt(D))/(2*a));
-				radiuses.push_back((-b+sqrt(D))/(2*a));
-			}
-		}
 
 		std::vector<SimpleSphere> results;
-		results.reserve(radiuses.size());
-		for(std::size_t i=0;i<radiuses.size();i++)
+
+		if(check_if_quadratic_equation_is_solvable(a, b))
 		{
-			const double r=radiuses[i];
-			if(r>0)
+			const double c = v1*v1+v2*v2;
+			std::vector<double> radiuses;
+			if(solve_quadratic_equation(a, b, c, radiuses))
 			{
-				const double virtual_x=u1*r+v1;
-				const double virtual_y=u2*r+v2;
-				const double real_l1_offset=virtual_y*x2/y2;
-				const double real_l2=sqrt(real_l1_offset*real_l1_offset+virtual_y*virtual_y);
-				const double real_l1=virtual_x-real_l1_offset;
-				const SimpleSphere candidate(SimplePoint(sm)+(sub_of_points<SimplePoint>(s1, sm).unit()*real_l1)+(sub_of_points<SimplePoint>(s2, sm).unit()*real_l2), (r-sm.r));
-				if(check_tangent_sphere(sm, s1, s2, candidate) && equal(fabs(signed_volume_of_tetrahedron(sm, s1, s2, candidate)), 0))
+				results.reserve(radiuses.size());
+				for(std::size_t i=0;i<radiuses.size();i++)
 				{
-					results.push_back(candidate);
+					const double r=radiuses[i];
+					if(r>0)
+					{
+						const double virtual_x=u1*r+v1;
+						const double virtual_y=u2*r+v2;
+						const double real_l1_offset=virtual_y*x2/y2;
+						const double real_l2=sqrt(real_l1_offset*real_l1_offset+virtual_y*virtual_y);
+						const double real_l1=virtual_x-real_l1_offset;
+						const SimpleSphere candidate(SimplePoint(sm)+(sub_of_points<SimplePoint>(s1, sm).unit()*real_l1)+(sub_of_points<SimplePoint>(s2, sm).unit()*real_l2), (r-sm.r));
+						if(check_tangent_sphere(sm, s1, s2, candidate) && equal(fabs(signed_volume_of_tetrahedron(sm, s1, s2, candidate)), 0))
+						{
+							results.push_back(candidate);
+						}
+					}
 				}
 			}
 		}
@@ -155,50 +148,36 @@ public:
 				const double vy=(o2*a1-o1*a2)/w2;
 
 				const double a=(ux*ux+uy*uy+1);
+				const double b=2*(ux*vx+uy*vy);
 
-				if(a>0.0 || a<0.0)
+				if(check_if_quadratic_equation_is_solvable(a, b))
 				{
-					const double b=2*(ux*vx+uy*vy);
 					const double c=(vx*vx+vy*vy-r*r);
-
-					const double D = b*b-4*a*c;
-
-					std::vector<double> zs;
-					if(D>=0.0)
-					{
-						if(D==0.0)
-						{
-							zs.push_back((-b)/(2*a));
-						}
-						else
-						{
-							zs.push_back((-b-sqrt(D))/(2*a));
-							zs.push_back((-b+sqrt(D))/(2*a));
-						}
-					}
-
 					std::vector<SimpleSphere> results;
-					results.reserve(zs.size());
-					for(std::size_t i=0;i<zs.size();i++)
+					std::vector<double> zs;
+					if(solve_quadratic_equation(a, b, c, zs))
 					{
-						const double z=zs[i];
-						SimpleSphere candidate((ux*z+vx), (uy*z+vy), z, r);
-						if(rotation_step>0)
+						results.reserve(zs.size());
+						for(std::size_t i=0;i<zs.size();i++)
 						{
-							const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
-							candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
+							const double z=zs[i];
+							SimpleSphere candidate((ux*z+vx), (uy*z+vy), z, r);
+							if(rotation_step>0)
+							{
+								const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
+								candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
+							}
+							candidate.x+=sm.x;
+							candidate.y+=sm.y;
+							candidate.z+=sm.z;
+							candidate.r-=sm.r;
+							if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
+							{
+								results.push_back(candidate);
+							}
 						}
-						candidate.x+=sm.x;
-						candidate.y+=sm.y;
-						candidate.z+=sm.z;
-						candidate.r-=sm.r;
-						if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
-						{
-							results.push_back(candidate);
-						}
+						return results;
 					}
-
-					return results;
 				}
 			}
 		}
