@@ -557,6 +557,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	const double reduction=poh.argument<double>("--reduction", 0.0);
 	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
 	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const bool no_neighbors=poh.contains_option("--no-neighbors");
 
 	std::tr1::unordered_set<std::size_t> selection_set;
 	if(!selection_vector.empty())
@@ -594,7 +595,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
 		{
 			const apollota::Quadruple& quadruple=it->first;
-			if(selection_set.empty() || selection_set.count(quadruple.get(0))>0 || selection_set.count(quadruple.get(1))>0 || selection_set.count(quadruple.get(2))>0 || selection_set.count(quadruple.get(3))>0)
+			if(selection_set.empty() || (no_neighbors ? (selection_set.count(quadruple.get(0))>0 && selection_set.count(quadruple.get(1))>0 && selection_set.count(quadruple.get(2))>0 && selection_set.count(quadruple.get(3))>0) : (selection_set.count(quadruple.get(0))>0 || selection_set.count(quadruple.get(1))>0 || selection_set.count(quadruple.get(2))>0 || selection_set.count(quadruple.get(3))>0)))
 			{
 				for(std::size_t i=0;i<4;i++)
 				{
