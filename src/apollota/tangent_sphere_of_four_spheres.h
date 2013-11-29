@@ -90,7 +90,7 @@ public:
 				const double u3 = -( a1*(b3*d2-b2*d3) + b1*(a2*d3-a3*d2) + d1*(a3*b2-a2*b3) ) / w;
 				const double v3 = -( a1*(b3*o2-b2*o3) + b1*(a2*o3-a3*o2) + o1*(a3*b2-a2*b3) ) / w;
 
-				const double a = u1*u1+u2*u2+u3*u3-1;
+				const double a = u1*u1+u2*u2+u3*u3-1.0;
 				const double b = 2*(u1*v1+u2*v2+u3*v3);
 
 				if(check_if_quadratic_equation_is_solvable(a, b))
@@ -120,6 +120,14 @@ public:
 								{
 									results.push_back(candidate);
 								}
+								else
+								{
+									candidate.r+=calculate_tangent_sphere_radius_average_error(sm, s1, s2, s3, candidate);
+									if(check_tangent_sphere(sm, s1, s2, s3, candidate))
+									{
+										results.push_back(candidate);
+									}
+								}
 							}
 						}
 					}
@@ -132,6 +140,16 @@ public:
 	}
 
 private:
+	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>
+	static inline double calculate_tangent_sphere_radius_average_error(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
+	{
+		const double d1=minimal_distance_from_sphere_to_sphere(tangent, s1);
+		const double d2=minimal_distance_from_sphere_to_sphere(tangent, s2);
+		const double d3=minimal_distance_from_sphere_to_sphere(tangent, s3);
+		const double d4=minimal_distance_from_sphere_to_sphere(tangent, s4);
+		return ((d1+d2+d3+d4)/4.0);
+	}
+
 	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>
 	static inline bool check_tangent_sphere(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
 	{

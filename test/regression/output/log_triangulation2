@@ -7,5 +7,5 @@ first_iterations 18
 surplus_tangent_spheres 0
 excluded_hidden_balls 0
 ignored_balls 0
-epsilon 1e-08
+epsilon 1e-06
 check 1
