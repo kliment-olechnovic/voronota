@@ -29,6 +29,7 @@ public:
 		SimpleSphere usm(sm);
 		for(int i=0;i<3 && equal(fabs(signed_volume_of_tetrahedron(usm, s1, s2, s3)), 0.0);i++)
 		{
+			usm=SimpleSphere(sm);
 			if(i%3==0) usm.x+=comparison_epsilon(); else if(i%3==1) usm.y+=comparison_epsilon(); else usm.z+=comparison_epsilon();
 		}
 
