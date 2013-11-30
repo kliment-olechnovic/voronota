@@ -138,6 +138,10 @@ public:
 							}
 						}
 					}
+					if(results.size()==2 && equal(distance_from_point_to_point(results[0], results[1]), 0.0))
+					{
+						results=std::vector<SimpleSphere>(1, results[0]);
+					}
 					return results;
 				}
 			}
