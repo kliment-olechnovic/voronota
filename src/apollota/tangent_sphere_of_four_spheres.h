@@ -26,15 +26,21 @@ public:
 			}
 		}
 
+		SimpleSphere usm(sm);
+		for(int i=0;i<3 && equal(fabs(signed_volume_of_tetrahedron(usm, s1, s2, s3)), 0.0);i++)
+		{
+			if(i%3==0) usm.x+=comparison_epsilon(); else if(i%3==1) usm.y+=comparison_epsilon(); else usm.z+=comparison_epsilon();
+		}
+
 		const unsigned int rotation_steps=2;
 		const SimplePoint rotation_axis(1.0, 1.0, 1.0);
 		const double rotation_step_angle=30.0;
 
 		for(unsigned int rotation_step=0;rotation_step<=rotation_steps;rotation_step++)
 		{
-			SimpleSphere ts1(s1.x-sm.x, s1.y-sm.y, s1.z-sm.z, s1.r-sm.r);
-			SimpleSphere ts2(s2.x-sm.x, s2.y-sm.y, s2.z-sm.z, s2.r-sm.r);
-			SimpleSphere ts3(s3.x-sm.x, s3.y-sm.y, s3.z-sm.z, s3.r-sm.r);
+			SimpleSphere ts1(s1.x-usm.x, s1.y-usm.y, s1.z-usm.z, s1.r-usm.r);
+			SimpleSphere ts2(s2.x-usm.x, s2.y-usm.y, s2.z-usm.z, s2.r-usm.r);
+			SimpleSphere ts3(s3.x-usm.x, s3.y-usm.y, s3.z-usm.z, s3.r-usm.r);
 
 			if(rotation_step>0)
 			{
@@ -112,10 +118,10 @@ public:
 									const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
 									candidate=SimpleSphere(rotation.rotate<SimplePoint>(candidate), candidate.r);
 								}
-								candidate.x+=sm.x;
-								candidate.y+=sm.y;
-								candidate.z+=sm.z;
-								candidate.r-=sm.r;
+								candidate.x+=usm.x;
+								candidate.y+=usm.y;
+								candidate.z+=usm.z;
+								candidate.r-=usm.r;
 								if(check_tangent_sphere(sm, s1, s2, s3, candidate))
 								{
 									results.push_back(candidate);
