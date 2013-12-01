@@ -1,6 +1,8 @@
 #ifndef APOLLOTA_SAFE_QUADRATIC_EQUATION_ROOT_H_
 #define APOLLOTA_SAFE_QUADRATIC_EQUATION_ROOT_H_
 
+#include "safe_summation.h"
+
 namespace apollota
 {
 
@@ -16,26 +18,26 @@ inline bool solve_quadratic_equation(const double a, const double b, const doubl
 	{
 		if(a>0.0 || a<0.0)
 		{
-			const double D = b*b-4*a*c;
+			const double D = safer_sum(b*b, -4*a*c);
 			if(D>=0.0)
 			{
 				if(D==0.0)
 				{
-					roots.push_back((0.0-b)/(2*a));
+					roots.push_back((-b)/(2*a));
 				}
 				else
 				{
 					if(b>0.0 || b<0.0)
 					{
 						const double b_sign=(b>0.0 ? 1.0 : -1.0);
-						const double q=0.0-(0.5*(b+b_sign*sqrt(D)));
+						const double q=-(0.5*safer_sum(b, b_sign*sqrt(D)));
 						roots.push_back(q/a);
 						roots.push_back(c/q);
 					}
 					else
 					{
-						roots.push_back((0.0-sqrt(D))/(2*a));
-						roots.push_back((0.0+sqrt(D))/(2*a));
+						roots.push_back((-sqrt(D))/(2*a));
+						roots.push_back((+sqrt(D))/(2*a));
 					}
 				}
 				return true;
@@ -43,7 +45,7 @@ inline bool solve_quadratic_equation(const double a, const double b, const doubl
 		}
 		else if(b>0.0 || b<0.0)
 		{
-			roots.push_back((0.0-c)/b);
+			roots.push_back((-c)/b);
 			return true;
 		}
 	}
