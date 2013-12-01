@@ -3,7 +3,7 @@
 
 #include <cmath>
 
-#include "safe_comparison_of_numbers.h"
+#include "safer_comparison_of_numbers.h"
 
 namespace apollota
 {

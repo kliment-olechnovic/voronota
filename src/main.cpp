@@ -3,7 +3,7 @@
 #include <exception>
 #include <limits>
 
-#include "apollota/safe_comparison_of_numbers.h"
+#include "apollota/safer_comparison_of_numbers.h"
 
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
