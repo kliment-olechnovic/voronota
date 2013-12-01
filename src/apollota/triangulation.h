@@ -322,25 +322,21 @@ public:
 		{
 			const QuadruplesMap::key_type& q=it->first;
 			const QuadruplesMap::mapped_type& ts=it->second;
-			if(q.has_repetetions() || ts.empty() || ts.size()>2 || (ts.size()==2 && spheres_equal(ts.front(), ts.back())))
+			if(q.has_repetetions() || ts.empty() || ts.size()>2)
 			{
 				return false;
 			}
 			for(std::size_t i=0;i<ts.size();i++)
 			{
-				const SimpleSphere& t=ts[i];
-				for(int j=0;j<4;j++)
+				if(!q.contains(i))
 				{
-					if(!sphere_touches_sphere(t, spheres[q.get(j)]))
+					const SimpleSphere& t=ts[i];
+					for(std::size_t j=0;j<spheres.size();j++)
 					{
-						return false;
-					}
-				}
-				for(std::size_t j=0;j<spheres.size();j++)
-				{
-					if(sphere_intersects_sphere(t, spheres[j]))
-					{
-						return false;
+						if(sphere_intersects_sphere(t, spheres[j]))
+						{
+							return false;
+						}
 					}
 				}
 			}
@@ -993,7 +989,8 @@ private:
 		else
 		{
 			std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
-			if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere))
+			const double tangent_spheres_equality_epsilon=std::max(default_comparison_epsilon(), 0.001);
+			if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere, tangent_spheres_equality_epsilon))
 			{
 				quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
 				quadruple_tangent_sphere_added=true;
