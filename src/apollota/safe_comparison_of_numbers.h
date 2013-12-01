@@ -4,30 +4,30 @@
 namespace apollota
 {
 
-inline double& comparison_epsilon_reference()
+inline double& default_comparison_epsilon_reference()
 {
 	static double e=0.000001;
 	return e;
 }
 
-inline double comparison_epsilon()
+inline double default_comparison_epsilon()
 {
-	return comparison_epsilon_reference();
+	return default_comparison_epsilon_reference();
 }
 
 inline bool equal(const double a, const double b)
 {
-	return (((a-b)<=comparison_epsilon()) && ((b-a)<=comparison_epsilon()));
+	return (((a-b)<=default_comparison_epsilon()) && ((b-a)<=default_comparison_epsilon()));
 }
 
 inline bool less(const double a, const double b)
 {
-	return ((a+comparison_epsilon())<b);
+	return ((a+default_comparison_epsilon())<b);
 }
 
 inline bool greater(const double a, const double b)
 {
-	return ((a-comparison_epsilon())>b);
+	return ((a-default_comparison_epsilon())>b);
 }
 
 inline bool less_or_equal(const double a, const double b)

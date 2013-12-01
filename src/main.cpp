@@ -95,7 +95,7 @@ int main(const int argc, const char** argv)
 
 			if(epsilon>0.0)
 			{
-				apollota::comparison_epsilon_reference()=epsilon;
+				apollota::default_comparison_epsilon_reference()=epsilon;
 			}
 
 			full_map_of_modes.find(mode)->second(poh);
