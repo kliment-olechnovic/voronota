@@ -30,8 +30,11 @@ public:
 		SimpleSphere usm(sm);
 		for(int i=0;i<3 && equal(fabs(signed_volume_of_tetrahedron(usm, s1, s2, s3)), 0.0);i++)
 		{
+			const double allowed_shift=std::max(default_comparison_epsilon(), 0.00001);
 			usm=SimpleSphere(sm);
-			if(i%3==0) usm.x+=default_comparison_epsilon(); else if(i%3==1) usm.y+=default_comparison_epsilon(); else usm.z+=default_comparison_epsilon();
+			if(i%3==0) usm.x+=allowed_shift;
+			else if(i%3==1) usm.y+=allowed_shift;
+			else usm.z+=allowed_shift;
 		}
 
 		const unsigned int rotation_steps=2;
@@ -124,24 +127,10 @@ public:
 								candidate.y+=usm.y;
 								candidate.z+=usm.z;
 								candidate.r-=usm.r;
-								if(check_tangent_sphere(sm, s1, s2, s3, candidate))
-								{
-									results.push_back(candidate);
-								}
-								else
-								{
-									candidate.r+=calculate_tangent_sphere_radius_average_error(sm, s1, s2, s3, candidate);
-									if(check_tangent_sphere(sm, s1, s2, s3, candidate))
-									{
-										results.push_back(candidate);
-									}
-								}
+								candidate.r+=calculate_tangent_sphere_radius_largest_overlap(sm, s1, s2, s3, candidate);
+								results.push_back(candidate);
 							}
 						}
-					}
-					if(results.size()==2 && equal(distance_from_point_to_point(results[0], results[1]), 0.0))
-					{
-						results=std::vector<SimpleSphere>(1, results[0]);
 					}
 					return results;
 				}
@@ -153,22 +142,14 @@ public:
 
 private:
 	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>
-	static inline double calculate_tangent_sphere_radius_average_error(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
+	static inline double calculate_tangent_sphere_radius_largest_overlap(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
 	{
 		const double d1=minimal_distance_from_sphere_to_sphere(tangent, s1);
 		const double d2=minimal_distance_from_sphere_to_sphere(tangent, s2);
 		const double d3=minimal_distance_from_sphere_to_sphere(tangent, s3);
 		const double d4=minimal_distance_from_sphere_to_sphere(tangent, s4);
-		return (safer_sum(d1, d2, d3, d4)/4.0);
-	}
-
-	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>
-	static inline bool check_tangent_sphere(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
-	{
-		return (sphere_touches_sphere(tangent, s1) &&
-				sphere_touches_sphere(tangent, s2) &&
-				sphere_touches_sphere(tangent, s3) &&
-				sphere_touches_sphere(tangent, s4));
+		const double largest_overlap=std::min(std::min(d1, d2), std::min(d3, d4));
+		return (largest_overlap<0.0 ? largest_overlap : 0.0);
 	}
 };
 

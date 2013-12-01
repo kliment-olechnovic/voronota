@@ -30,9 +30,9 @@ OutputSphereType custom_sphere_from_point(const InputPointType& p, const double 
 }
 
 template<typename InputSphereTypeA, typename InputSphereTypeB>
-bool spheres_equal(const InputSphereTypeA& a, const InputSphereTypeB& b)
+bool spheres_equal(const InputSphereTypeA& a, const InputSphereTypeB& b, const double epsilon)
 {
-	return (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z) && equal(a.r, b.r));
+	return (equal(a.x, b.x, epsilon) && equal(a.y, b.y, epsilon) && equal(a.z, b.z, epsilon) && equal(a.r, b.r, epsilon));
 }
 
 template<typename InputPointType, typename InputSphereType>
@@ -119,7 +119,7 @@ struct SimpleSphere
 
 	bool operator==(const SimpleSphere& b) const
 	{
-		return spheres_equal(*this, b);
+		return spheres_equal(*this, b, default_comparison_epsilon());
 	}
 };
 
