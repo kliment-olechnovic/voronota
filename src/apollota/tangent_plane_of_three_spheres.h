@@ -6,8 +6,8 @@
 
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
-#include "safe_quadratic_equation_root.h"
-#include "safe_summation.h"
+#include "safer_quadratic_equation_root.h"
+#include "safer_summation.h"
 
 namespace apollota
 {

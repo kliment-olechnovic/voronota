@@ -1,7 +1,7 @@
 #ifndef APOLLOTA_SAFE_QUADRATIC_EQUATION_ROOT_H_
 #define APOLLOTA_SAFE_QUADRATIC_EQUATION_ROOT_H_
 
-#include "safe_summation.h"
+#include "safer_summation.h"
 
 namespace apollota
 {
