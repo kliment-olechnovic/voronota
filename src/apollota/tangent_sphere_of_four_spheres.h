@@ -6,6 +6,7 @@
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
 #include "safe_quadratic_equation_root.h"
+#include "safe_summation.h"
 
 namespace apollota
 {
@@ -70,39 +71,39 @@ public:
 			const double b1=2*y1;
 			const double c1=2*z1;
 			const double d1=2*r1;
-			const double o1=(r1*r1-x1*x1-y1*y1-z1*z1);
+			const double o1=safer_sum(r1*r1, -x1*x1, -y1*y1, -z1*z1);
 
 			const double a2=2*x2;
 			const double b2=2*y2;
 			const double c2=2*z2;
 			const double d2=2*r2;
-			const double o2=(r2*r2-x2*x2-y2*y2-z2*z2);
+			const double o2=safer_sum(r2*r2, -x2*x2, -y2*y2, -z2*z2);
 
 			const double a3=2*x3;
 			const double b3=2*y3;
 			const double c3=2*z3;
 			const double d3=2*r3;
-			const double o3=(r3*r3-x3*x3-y3*y3-z3*z3);
+			const double o3=safer_sum(r3*r3, -x3*x3, -y3*y3, -z3*z3);
 
-			const double w  = (a1*(b3*c2-b2*c3) + b1*(a2*c3-a3*c2) + c1*(a3*b2-a2*b3));
+			const double w = safer_sum(a1*b3*c2, -a1*b2*c3, b1*a2*c3, -b1*a3*c2, c1*a3*b2, -c1*a2*b3);
 
 			if(w>0.0 || w<0.0)
 			{
-				const double u1 = -( b1*(c3*d2-c2*d3) + c1*(b2*d3-b3*d2) + d1*(b3*c2-b2*c3) ) / w;
-				const double v1 = -( b1*(c3*o2-c2*o3) + c1*(b2*o3-b3*o2) + o1*(b3*c2-b2*c3) ) / w;
+				const double u1 = -safer_sum( b1*c3*d2, -b1*c2*d3, c1*b2*d3, -c1*b3*d2, d1*b3*c2, -d1*b2*c3 ) / w;
+				const double v1 = -safer_sum( b1*c3*o2, -b1*c2*o3, c1*b2*o3, -c1*b3*o2, o1*b3*c2, -o1*b2*c3 ) / w;
 
-				const double u2 =  ( a1*(c3*d2-c2*d3) + c1*(a2*d3-a3*d2) + d1*(a3*c2-a2*c3) ) / w;
-				const double v2 =  ( a1*(c3*o2-c2*o3) + c1*(a2*o3-a3*o2) + o1*(a3*c2-a2*c3) ) / w;
+				const double u2 =  safer_sum( a1*c3*d2, -a1*c2*d3, c1*a2*d3, -c1*a3*d2, d1*a3*c2, -d1*a2*c3 ) / w;
+				const double v2 =  safer_sum( a1*c3*o2, -a1*c2*o3, c1*a2*o3, -c1*a3*o2, o1*a3*c2, -o1*a2*c3 ) / w;
 
-				const double u3 = -( a1*(b3*d2-b2*d3) + b1*(a2*d3-a3*d2) + d1*(a3*b2-a2*b3) ) / w;
-				const double v3 = -( a1*(b3*o2-b2*o3) + b1*(a2*o3-a3*o2) + o1*(a3*b2-a2*b3) ) / w;
+				const double u3 = -safer_sum( a1*b3*d2, -a1*b2*d3, b1*a2*d3, -b1*a3*d2, d1*a3*b2, -d1*a2*b3 ) / w;
+				const double v3 = -safer_sum( a1*b3*o2, -a1*b2*o3, b1*a2*o3, -b1*a3*o2, o1*a3*b2, -o1*a2*b3 ) / w;
 
-				const double a = u1*u1+u2*u2+u3*u3-1.0;
-				const double b = 2*(u1*v1+u2*v2+u3*v3);
+				const double a = safer_sum(u1*u1, u2*u2, u3*u3, -1.0);
+				const double b = safer_sum(2*u1*v1, 2*u2*v2, 2*u3*v3);
 
 				if(check_if_quadratic_equation_is_solvable(a, b))
 				{
-					const double c = v1*v1+v2*v2+v3*v3;
+					const double c = safer_sum(v1*v1, v2*v2, v3*v3);
 					std::vector<SimpleSphere> results;
 					std::vector<double> radiuses;
 					if(solve_quadratic_equation(a, b, c, radiuses))
@@ -113,7 +114,7 @@ public:
 							const double r=radiuses[i];
 							if(r>=0.0)
 							{
-								SimpleSphere candidate((u1*r+v1), (u2*r+v2), (u3*r+v3), r);
+								SimpleSphere candidate(safer_sum(u1*r, v1), safer_sum(u2*r, v2), safer_sum(u3*r, v3), r);
 								if(rotation_step>0)
 								{
 									const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
@@ -158,7 +159,7 @@ private:
 		const double d2=minimal_distance_from_sphere_to_sphere(tangent, s2);
 		const double d3=minimal_distance_from_sphere_to_sphere(tangent, s3);
 		const double d4=minimal_distance_from_sphere_to_sphere(tangent, s4);
-		return ((d1+d2+d3+d4)/4.0);
+		return (safer_sum(d1, d2, d3, d4)/4.0);
 	}
 
 	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>

@@ -7,6 +7,7 @@
 #include "basic_operations_on_spheres.h"
 #include "rotation.h"
 #include "safe_quadratic_equation_root.h"
+#include "safe_summation.h"
 
 namespace apollota
 {
@@ -83,21 +84,21 @@ private:
 				const double ay=y1/ad;
 				const double az=z1/ad;
 
-				const double bd=0-(y2+ay*x2);
+				const double bd=-safer_sum(y2, ay*x2);
 				if(bd>0.0 || bd<0.0)
 				{
-					const double b0=(r2+a0*x2)/bd;
-					const double bz=(z2+az*x2)/bd;
+					const double b0=safer_sum(r2, a0*x2)/bd;
+					const double bz=safer_sum(z2, az*x2)/bd;
 
-					const double c0=a0+ay*b0;
-					const double cz=(ay*bz+az);
+					const double c0=safer_sum(a0, ay*b0);
+					const double cz=safer_sum(ay*bz, az);
 
-					const double a=(1+cz*cz+bz*bz);
-					const double b=2*(c0*cz+b0*bz);
+					const double a=safer_sum(1, cz*cz, bz*bz);
+					const double b=safer_sum(2*c0*cz, 2*b0*bz);
 
 					if(check_if_quadratic_equation_is_solvable(a, b))
 					{
-						const double c=(c0*c0+b0*b0-1);
+						const double c=safer_sum(c0*c0, b0*b0, -1.0);
 						std::vector<SimplePoint> results;
 						std::vector<double> zs;
 						if(solve_quadratic_equation(a, b, c, zs))
@@ -106,10 +107,10 @@ private:
 							for(std::size_t i=0;i<zs.size();i++)
 							{
 								const double z=zs[i];
-								SimplePoint candidate(c0+z*cz, b0+z*bz, z);
+								SimplePoint candidate(safer_sum(c0, z*cz), safer_sum(b0, z*bz), z);
 								if(rotation_step>0)
 								{
-									const Rotation rotation(rotation_axis, (0.0-rotation_step_angle)*static_cast<double>(rotation_step));
+									const Rotation rotation(rotation_axis, (-rotation_step_angle)*static_cast<double>(rotation_step));
 									candidate=rotation.rotate<SimplePoint>(candidate);
 								}
 								if(check_tangent_plane(sm, s1, s2, candidate))
