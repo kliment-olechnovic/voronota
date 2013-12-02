@@ -32,8 +32,7 @@ class Triangulation
 public:
 	typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
 	typedef std::vector< std::pair<Quadruple, SimpleSphere> > VerticesVector;
-	typedef std::tr1::unordered_map<std::size_t, std::tr1::unordered_set<std::size_t> > NeighborsMap;
-	typedef std::vector< std::vector<std::size_t> > NeighborsGraph;
+	typedef std::vector< std::tr1::unordered_set<std::size_t> > NeighborsGraph;
 
 	struct QuadruplesSearchLog
 	{
@@ -208,9 +207,9 @@ public:
 		return vertices_vector;
 	}
 
-	static NeighborsMap collect_spheres_neighbors_map_from_quadruples_map(const QuadruplesMap& quadruples_map)
+	static NeighborsGraph collect_spheres_neighbors_graph_from_quadruples_map(const QuadruplesMap& quadruples_map, const std::size_t number_of_spheres)
 	{
-		NeighborsMap neighbors_map;
+		NeighborsGraph neighbors_graph(number_of_spheres);
 		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
 		{
 			const Quadruple& quadruple=it->first;
@@ -218,22 +217,12 @@ public:
 			{
 				for(int b=a+1;b<4;b++)
 				{
-					neighbors_map[quadruple.get(a)].insert(quadruple.get(b));
-					neighbors_map[quadruple.get(b)].insert(quadruple.get(a));
+					if(quadruple.get(a)<number_of_spheres && quadruple.get(b)<number_of_spheres)
+					{
+						neighbors_graph[quadruple.get(a)].insert(quadruple.get(b));
+						neighbors_graph[quadruple.get(b)].insert(quadruple.get(a));
+					}
 				}
-			}
-		}
-		return neighbors_map;
-	}
-
-	static NeighborsGraph collect_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
-	{
-		NeighborsGraph neighbors_graph(number_of_vertices);
-		for(NeighborsMap::const_iterator it=neighbors_map.begin();it!=neighbors_map.end();++it)
-		{
-			if((it->first)<neighbors_graph.size())
-			{
-				neighbors_graph[it->first].insert(neighbors_graph[it->first].end(), it->second.begin(), it->second.end());
 			}
 		}
 		return neighbors_graph;
@@ -1144,14 +1133,14 @@ private:
 	class ConstructionOfVerticesTopology
 	{
 	public:
-		static NeighborsMap construct_vertices_neighbours_map_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+		static NeighborsGraph construct_vertices_neighbours_map_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 		{
 			const VerticesVector valid_vertices_vector=collect_vertices_vector_from_quadruples_map(quadruples_map);
 			const VerticesVector invalid_vertices_vector=collect_vertices_vector_from_quadruples_map(collect_invalid_tangent_spheres_of_valid_quadruples(spheres, quadruples_map));
 			VerticesVector all_vertices_vector=valid_vertices_vector;
 			all_vertices_vector.insert(all_vertices_vector.end(), invalid_vertices_vector.begin(), invalid_vertices_vector.end());
 			const TriplesVerticesMap triples_vertices_map=collect_triples_vertices_map(all_vertices_vector);
-			NeighborsMap result;
+			NeighborsGraph result(valid_vertices_vector.size());
 			for(TriplesVerticesMap::const_iterator it=triples_vertices_map.begin();it!=triples_vertices_map.begin();++it)
 			{
 				add_neghbors_using_triples_vertices(spheres, all_vertices_vector, valid_vertices_vector.size(), it->first, it->second, result);
@@ -1207,15 +1196,15 @@ private:
 				const std::size_t valid_vertices_count,
 				const Triple& triple,
 				const std::vector<std::size_t>& triple_vertices_ids,
-				NeighborsMap& neighbors_map)
+				NeighborsGraph& neighbors_graph)
 		{
 			if(triple_vertices_ids.size()>=2)
 			{
 				const std::vector<std::size_t>& v=triple_vertices_ids;
 				if(v.size()==2 && v[0]<valid_vertices_count && v[1]<valid_vertices_count)
 				{
-					neighbors_map[v[0]].insert(v[1]);
-					neighbors_map[v[1]].insert(v[0]);
+					neighbors_graph[v[0]].insert(v[1]);
+					neighbors_graph[v[1]].insert(v[0]);
 				}
 				else
 				{
@@ -1226,7 +1215,7 @@ private:
 					for(std::size_t i=0;i<v.size();i++)
 					{
 						const std::size_t vi=v[i];
-						if(vi<valid_vertices_count && neighbors_map[vi].size()<4)
+						if(vi<valid_vertices_count && neighbors_graph[vi].size()<4)
 						{
 							double angle_sel=std::numeric_limits<double>::max();
 							std::size_t v_sel=npos;
@@ -1243,10 +1232,10 @@ private:
 									}
 								}
 							}
-							if(v_sel!=npos && v_sel<valid_vertices_count && !(all_vertices_vector[v_sel].first==all_vertices_vector[vi].first) && neighbors_map[v_sel].size()<4)
+							if(v_sel!=npos && v_sel<valid_vertices_count && !(all_vertices_vector[v_sel].first==all_vertices_vector[vi].first) && neighbors_graph[v_sel].size()<4)
 							{
-								neighbors_map[vi].insert(v_sel);
-								neighbors_map[v_sel].insert(vi);
+								neighbors_graph[vi].insert(v_sel);
+								neighbors_graph[v_sel].insert(vi);
 							}
 						}
 					}
