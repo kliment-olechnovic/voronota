@@ -226,7 +226,7 @@ public:
 		return neighbors_map;
 	}
 
-	static NeighborsGraph collect_spheres_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
+	static NeighborsGraph collect_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
 	{
 		NeighborsGraph neighbors_graph(number_of_vertices);
 		for(NeighborsMap::const_iterator it=neighbors_map.begin();it!=neighbors_map.end();++it)
