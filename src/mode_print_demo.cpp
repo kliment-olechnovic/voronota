@@ -554,7 +554,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false, true, true);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 

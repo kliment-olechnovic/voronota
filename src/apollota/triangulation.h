@@ -59,6 +59,8 @@ public:
 		SurplusQuadruplesSearchLog surplus_quadruples_search_log;
 		std::set<std::size_t> excluded_hidden_spheres_ids;
 		std::set<std::size_t> ignored_spheres_ids;
+		NeighborsGraph balls_graph;
+		NeighborsGraph vertices_graph;
 
 		Result() : quadruples_search_log(), surplus_quadruples_search_log()
 		{
@@ -82,7 +84,9 @@ public:
 			const std::vector<SimpleSphere>& spheres,
 			const double initial_radius_for_spheres_bucketing,
 			const bool exclude_hidden_spheres,
-			const bool include_surplus_valid_quadruples)
+			const bool include_surplus_valid_quadruples,
+			const bool construct_balls_graph,
+			const bool construct_vertices_graph)
 	{
 		Result result;
 
@@ -124,6 +128,16 @@ public:
 		}
 
 		result.ignored_spheres_ids=collect_ignored_spheres_ids(std::vector<int>(spheres.size(), 1), result.quadruples_map);
+
+		if(construct_balls_graph)
+		{
+			result.balls_graph=collect_spheres_neighbors_graph_from_quadruples_map(result.quadruples_map, spheres.size());
+		}
+
+		if(construct_vertices_graph)
+		{
+			result.vertices_graph=ConstructionOfVerticesTopology::construct_vertices_neighbours_graph_from_quadruples_map(spheres, result.quadruples_map);
+		}
 
 		return result;
 	}
@@ -1133,7 +1147,7 @@ private:
 	class ConstructionOfVerticesTopology
 	{
 	public:
-		static NeighborsGraph construct_vertices_neighbours_map_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+		static NeighborsGraph construct_vertices_neighbours_graph_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 		{
 			const VerticesVector valid_vertices_vector=collect_vertices_vector_from_quadruples_map(quadruples_map);
 			const VerticesVector invalid_vertices_vector=collect_vertices_vector_from_quadruples_map(collect_invalid_tangent_spheres_of_valid_quadruples(spheres, quadruples_map));
