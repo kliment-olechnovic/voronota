@@ -268,39 +268,6 @@ public:
 		print_quadruples_vector(collect_quadruples_vector_from_quadruples_map(quadruples_map), output);
 	}
 
-	static QuadruplesMap read_quadruples_map(std::istream& input)
-	{
-		QuadruplesMap quadruples_map;
-		bool valid=true;
-		while(input.good() && valid)
-		{
-			std::string line;
-			std::getline(input, line);
-			line=line.substr(0, line.find("#", 0));
-			if(!line.empty())
-			{
-				std::istringstream line_stream(line);
-				std::size_t q[4]={0, 0, 0, 0};
-				double s[4]={0, 0, 0, 0};
-				for(int i=0;i<4 && valid;i++)
-				{
-					line_stream >> q[i];
-					valid=!line_stream.fail();
-				}
-				for(int i=0;i<4 && valid;i++)
-				{
-					line_stream >> s[i];
-					valid=!line_stream.fail();
-				}
-				if(valid)
-				{
-					quadruples_map[Quadruple(q[0], q[1], q[2], q[3])].push_back(SimpleSphere(s[0], s[1], s[2], s[3]));
-				}
-			}
-		}
-		return quadruples_map;
-	}
-
 	template<typename SphereType>
 	static bool check_quadruples_map(const std::vector<SphereType>& spheres, const QuadruplesMap& quadruples_map)
 	{
@@ -314,15 +281,12 @@ public:
 			}
 			for(std::size_t i=0;i<ts.size();i++)
 			{
-				if(!q.contains(i))
+				const SimpleSphere& t=ts[i];
+				for(std::size_t j=0;j<spheres.size();j++)
 				{
-					const SimpleSphere& t=ts[i];
-					for(std::size_t j=0;j<spheres.size();j++)
+					if(sphere_intersects_sphere(t, spheres[j]))
 					{
-						if(sphere_intersects_sphere(t, spheres[j]))
-						{
-							return false;
-						}
+						return false;
 					}
 				}
 			}
