@@ -1141,30 +1141,134 @@ private:
 		return std::max(default_comparison_epsilon(), 0.001);
 	}
 
-	static QuadruplesMap collect_invalid_tangent_spheres_of_valid_quadruples(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+	class ConstructionOfVerticesTopology
 	{
-		QuadruplesMap result;
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+	public:
+		static NeighborsMap construct_vertices_neighbours_map_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 		{
-			const Quadruple& q=it->first;
-			const std::vector<SimpleSphere>& valid_tangent_spheres=it->second;
-			if(valid_tangent_spheres.size()==1 && q.get(0)<spheres.size() && q.get(1)<spheres.size() && q.get(2)<spheres.size() && q.get(3)<spheres.size())
+			const VerticesVector valid_vertices_vector=collect_vertices_vector_from_quadruples_map(quadruples_map);
+			const VerticesVector invalid_vertices_vector=collect_vertices_vector_from_quadruples_map(collect_invalid_tangent_spheres_of_valid_quadruples(spheres, quadruples_map));
+			VerticesVector all_vertices_vector=valid_vertices_vector;
+			all_vertices_vector.insert(all_vertices_vector.end(), invalid_vertices_vector.begin(), invalid_vertices_vector.end());
+			const TriplesVerticesMap triples_vertices_map=collect_triples_vertices_map(all_vertices_vector);
+			NeighborsMap result;
+			for(TriplesVerticesMap::const_iterator it=triples_vertices_map.begin();it!=triples_vertices_map.begin();++it)
 			{
-				const std::vector<SimpleSphere> all_tangent_spheres=TangentSphereOfFourSpheres::calculate(spheres[q.get(0)], spheres[q.get(1)], spheres[q.get(2)], spheres[q.get(3)]);
-				if(all_tangent_spheres.size()==2)
+				add_neghbors_using_triples_vertices(spheres, all_vertices_vector, valid_vertices_vector.size(), it->first, it->second, result);
+			}
+			return result;
+		}
+
+	private:
+		typedef std::tr1::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
+
+		static QuadruplesMap collect_invalid_tangent_spheres_of_valid_quadruples(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+		{
+			QuadruplesMap result;
+			for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+			{
+				const Quadruple& q=it->first;
+				const std::vector<SimpleSphere>& valid_tangent_spheres=it->second;
+				if(valid_tangent_spheres.size()==1 && q.get(0)<spheres.size() && q.get(1)<spheres.size() && q.get(2)<spheres.size() && q.get(3)<spheres.size())
 				{
-					for(std::size_t i=0;i<all_tangent_spheres.size();i++)
+					const std::vector<SimpleSphere> all_tangent_spheres=TangentSphereOfFourSpheres::calculate(spheres[q.get(0)], spheres[q.get(1)], spheres[q.get(2)], spheres[q.get(3)]);
+					if(all_tangent_spheres.size()==2)
 					{
-						if(!spheres_equal(valid_tangent_spheres.front(), all_tangent_spheres[i], tangent_spheres_equality_epsilon()))
+						for(std::size_t i=0;i<all_tangent_spheres.size();i++)
 						{
-							result[q].push_back(all_tangent_spheres[i]);
+							if(!spheres_equal(valid_tangent_spheres.front(), all_tangent_spheres[i], tangent_spheres_equality_epsilon()))
+							{
+								result[q].push_back(all_tangent_spheres[i]);
+							}
+						}
+					}
+				}
+			}
+			return result;
+		}
+
+		static TriplesVerticesMap collect_triples_vertices_map(const VerticesVector& vertices_vector)
+		{
+			TriplesVerticesMap result;
+			for(std::size_t i=0;i<vertices_vector.size();i++)
+			{
+				const Quadruple& q=vertices_vector[i].first;
+				for(int j=0;j<4;j++)
+				{
+					result[q.exclude(j)].push_back(i);
+				}
+			}
+			return result;
+		}
+
+		static void add_neghbors_using_triples_vertices(
+				const std::vector<apollota::SimpleSphere>& spheres,
+				const VerticesVector& all_vertices_vector,
+				const std::size_t valid_vertices_count,
+				const Triple& triple,
+				const std::vector<std::size_t>& triple_vertices_ids,
+				NeighborsMap& neighbors_map)
+		{
+			if(triple_vertices_ids.size()>=2)
+			{
+				const std::vector<std::size_t>& v=triple_vertices_ids;
+				if(v.size()==2 && v[0]<valid_vertices_count && v[1]<valid_vertices_count)
+				{
+					neighbors_map[v[0]].insert(v[1]);
+					neighbors_map[v[1]].insert(v[0]);
+				}
+				else
+				{
+					const double r0=spheres[triple.get(0)].r;
+					const double r1=spheres[triple.get(1)].r;
+					const double r2=spheres[triple.get(2)].r;
+					const SimpleSphere& o=spheres[triple.get((r0<=r1 && r0<=r2) ? 0 : ((r1<=r0 && r1<=r2) ? 1 : 2))];
+					for(std::size_t i=0;i<v.size();i++)
+					{
+						const std::size_t vi=v[i];
+						if(vi<valid_vertices_count && neighbors_map[vi].size()<4)
+						{
+							double angle_sel=std::numeric_limits<double>::max();
+							std::size_t v_sel=npos;
+							for(std::size_t j=0;j<v.size();j++)
+							{
+								const std::size_t vj=v[j];
+								if(vj!=vi)
+								{
+									const double angle=calculate_min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
+									if(angle>0.0 && angle<angle_sel)
+									{
+										angle_sel=angle;
+										v_sel=vj;
+									}
+								}
+							}
+							if(v_sel!=npos && v_sel<valid_vertices_count && !(all_vertices_vector[v_sel].first==all_vertices_vector[vi].first) && neighbors_map[v_sel].size()<4)
+							{
+								neighbors_map[vi].insert(v_sel);
+								neighbors_map[v_sel].insert(vi);
+							}
 						}
 					}
 				}
 			}
 		}
-		return result;
-	}
+
+		template<typename InputSphereO, typename InputSphereA, typename InputSphereB>
+		static double calculate_min_angle(const InputSphereO& o, const InputSphereA& a, const InputSphereB& b)
+		{
+			double cos_val=dot_product(unit_point<PODPoint>(sum_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sum_of_points<PODPoint>(b, o)));
+			if(cos_val<-1.0)
+			{
+				cos_val=-1.0;
+			}
+			else if(cos_val>1.0)
+			{
+				cos_val=1.0;
+			}
+			return acos(cos_val);
+		}
+	};
 };
 
 }
