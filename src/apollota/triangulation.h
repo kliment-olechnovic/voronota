@@ -31,11 +31,9 @@ class Triangulation
 {
 public:
 	typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
-	typedef std::vector< std::pair<QuadruplesMap::key_type, QuadruplesMap::mapped_type> > QuadruplesVector;
+	typedef std::vector< std::pair<Quadruple, SimpleSphere> > QuadruplesVector;
 	typedef std::tr1::unordered_map<std::size_t, std::tr1::unordered_set<std::size_t> > NeighborsMap;
 	typedef std::vector< std::vector<std::size_t> > NeighborsGraph;
-	typedef std::tr1::unordered_map<Pair, std::tr1::unordered_set<std::size_t>, Pair::HashFunctor> PairsNeighborsMap;
-	typedef std::tr1::unordered_map<Triple, std::tr1::unordered_set<std::size_t>, Triple::HashFunctor> TriplesNeighborsMap;
 
 	struct QuadruplesSearchLog
 	{
@@ -175,7 +173,7 @@ public:
 		}
 	}
 
-	static QuadruplesVector collect_quadruples_vector(const QuadruplesMap& quadruples_map)
+	static QuadruplesVector collect_quadruples_vector_from_quadruples_map(const QuadruplesMap& quadruples_map)
 	{
 		typedef std::multimap<QuadruplesMap::key_type, QuadruplesMap::mapped_type> QuadruplesOrderedMultimap;
 		QuadruplesOrderedMultimap quadruples_ordered_multimap;
@@ -184,10 +182,29 @@ public:
 			quadruples_ordered_multimap.insert(*it);
 		}
 		QuadruplesVector quadruples_vector;
-		quadruples_vector.reserve(quadruples_ordered_multimap.size());
+		quadruples_vector.reserve(count_tangent_spheres_in_quadruples_map(quadruples_map));
 		for(QuadruplesOrderedMultimap::const_iterator it=quadruples_ordered_multimap.begin();it!=quadruples_ordered_multimap.end();++it)
 		{
-			quadruples_vector.push_back(*it);
+			const std::vector<SimpleSphere>& tangent_spheres=it->second;
+			if(tangent_spheres.size()==1)
+			{
+				quadruples_vector.push_back(std::make_pair(it->first, tangent_spheres.front()));
+			}
+			else if(tangent_spheres.size()==2)
+			{
+				const SimpleSphere& a=tangent_spheres.front();
+				const SimpleSphere& b=tangent_spheres.back();
+				if(std::make_pair(a.r, std::make_pair(a.x, std::make_pair(a.y, a.z)))<std::make_pair(b.r, std::make_pair(b.x, std::make_pair(b.y, b.z))))
+				{
+					quadruples_vector.push_back(std::make_pair(it->first, a));
+					quadruples_vector.push_back(std::make_pair(it->first, b));
+				}
+				else
+				{
+					quadruples_vector.push_back(std::make_pair(it->first, b));
+					quadruples_vector.push_back(std::make_pair(it->first, a));
+				}
+			}
 		}
 		return quadruples_vector;
 	}
@@ -223,44 +240,6 @@ public:
 		return neighbors_graph;
 	}
 
-	static PairsNeighborsMap collect_pairs_neighbors_map_from_quadruples_map(const QuadruplesMap& quadruples_map)
-	{
-		PairsNeighborsMap pairs_neighbors_map;
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			for(int a=0;a<4;a++)
-			{
-				for(int b=a+1;b<4;b++)
-				{
-					const Pair pair(quadruple.get(a), quadruple.get(b));
-					for(int c=0;c<4;c++)
-					{
-						if(c!=a && c!=b)
-						{
-							pairs_neighbors_map[pair].insert(quadruple.get(c));
-						}
-					}
-				}
-			}
-		}
-		return pairs_neighbors_map;
-	}
-
-	static TriplesNeighborsMap collect_triples_neighbors_map_from_quadruples_map(const QuadruplesMap& quadruples_map)
-	{
-		TriplesNeighborsMap triples_neighbors_map;
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			for(int a=0;a<4;a++)
-			{
-				triples_neighbors_map[quadruple.exclude(a)].insert(quadruple.get(a));
-			}
-		}
-		return triples_neighbors_map;
-	}
-
 	static std::size_t count_tangent_spheres_in_quadruples_map(const QuadruplesMap& quadruples_map)
 	{
 		std::size_t sum=0;
@@ -275,17 +254,13 @@ public:
 	{
 		output.precision(std::numeric_limits<double>::digits10);
 		output << std::fixed;
-		const QuadruplesVector quadruples_vector=collect_quadruples_vector(quadruples_map);
+		const QuadruplesVector quadruples_vector=collect_quadruples_vector_from_quadruples_map(quadruples_map);
 		for(QuadruplesVector::const_iterator it=quadruples_vector.begin();it!=quadruples_vector.end();++it)
 		{
 			const Quadruple& quadruple=it->first;
-			const std::vector<SimpleSphere>& tangent_spheres=it->second;
-			for(std::size_t i=0;i<tangent_spheres.size();i++)
-			{
-				const SimpleSphere& tangent_sphere=tangent_spheres[i];
-				output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
-				output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << "\n";
-			}
+			const SimpleSphere& tangent_sphere=it->second;
+			output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
+			output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << "\n";
 		}
 	}
 
