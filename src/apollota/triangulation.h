@@ -209,7 +209,7 @@ public:
 		return quadruples_vector;
 	}
 
-	static NeighborsMap collect_neighbors_map_from_quadruples_map(const QuadruplesMap& quadruples_map)
+	static NeighborsMap collect_spheres_neighbors_map_from_quadruples_map(const QuadruplesMap& quadruples_map)
 	{
 		NeighborsMap neighbors_map;
 		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
@@ -227,7 +227,7 @@ public:
 		return neighbors_map;
 	}
 
-	static NeighborsGraph collect_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
+	static NeighborsGraph collect_spheres_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
 	{
 		NeighborsGraph neighbors_graph(number_of_vertices);
 		for(NeighborsMap::const_iterator it=neighbors_map.begin();it!=neighbors_map.end();++it)
@@ -250,11 +250,10 @@ public:
 		return sum;
 	}
 
-	static void print_quadruples_map(const QuadruplesMap& quadruples_map, std::ostream& output)
+	static void print_quadruples_vector(const QuadruplesVector& quadruples_vector, std::ostream& output)
 	{
 		output.precision(std::numeric_limits<double>::digits10);
 		output << std::fixed;
-		const QuadruplesVector quadruples_vector=collect_quadruples_vector_from_quadruples_map(quadruples_map);
 		for(QuadruplesVector::const_iterator it=quadruples_vector.begin();it!=quadruples_vector.end();++it)
 		{
 			const Quadruple& quadruple=it->first;
@@ -262,6 +261,11 @@ public:
 			output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
 			output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << "\n";
 		}
+	}
+
+	static void print_quadruples_map(const QuadruplesMap& quadruples_map, std::ostream& output)
+	{
+		print_quadruples_vector(collect_quadruples_vector_from_quadruples_map(quadruples_map), output);
 	}
 
 	static QuadruplesMap read_quadruples_map(std::istream& input)
