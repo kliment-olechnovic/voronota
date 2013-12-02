@@ -1155,7 +1155,7 @@ private:
 			all_vertices_vector.insert(all_vertices_vector.end(), invalid_vertices_vector.begin(), invalid_vertices_vector.end());
 			const TriplesVerticesMap triples_vertices_map=collect_triples_vertices_map(all_vertices_vector);
 			NeighborsGraph result(valid_vertices_vector.size());
-			for(TriplesVerticesMap::const_iterator it=triples_vertices_map.begin();it!=triples_vertices_map.begin();++it)
+			for(TriplesVerticesMap::const_iterator it=triples_vertices_map.begin();it!=triples_vertices_map.end();++it)
 			{
 				add_neghbors_using_triples_vertices(spheres, all_vertices_vector, valid_vertices_vector.size(), it->first, it->second, result);
 			}
