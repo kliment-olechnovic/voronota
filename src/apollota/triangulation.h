@@ -989,8 +989,7 @@ private:
 		else
 		{
 			std::vector<SimpleSphere>& quadruple_tangent_spheres_list=qm_it->second;
-			const double tangent_spheres_equality_epsilon=std::max(default_comparison_epsilon(), 0.001);
-			if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere, tangent_spheres_equality_epsilon))
+			if(quadruple_tangent_spheres_list.size()==1 && !spheres_equal(quadruple_tangent_spheres_list.front(), quadruple_tangent_sphere, tangent_spheres_equality_epsilon()))
 			{
 				quadruple_tangent_spheres_list.push_back(quadruple_tangent_sphere);
 				quadruple_tangent_sphere_added=true;
@@ -1186,6 +1185,36 @@ private:
 			}
 		}
 		return ignored_spheres_ids;
+	}
+
+	inline static double tangent_spheres_equality_epsilon()
+	{
+		return std::max(default_comparison_epsilon(), 0.001);
+	}
+
+	static QuadruplesMap collect_invalid_tangent_spheres_of_valid_quadruples(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+	{
+		QuadruplesMap result;
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& q=it->first;
+			const std::vector<SimpleSphere>& valid_tangent_spheres=it->second;
+			if(valid_tangent_spheres.size()==1 && q.get(0)<spheres.size() && q.get(1)<spheres.size() && q.get(2)<spheres.size() && q.get(3)<spheres.size())
+			{
+				const std::vector<SimpleSphere> all_tangent_spheres=TangentSphereOfFourSpheres::calculate(spheres[q.get(0)], spheres[q.get(1)], spheres[q.get(2)], spheres[q.get(3)]);
+				if(all_tangent_spheres.size()==2)
+				{
+					for(std::size_t i=0;i<all_tangent_spheres.size();i++)
+					{
+						if(!spheres_equal(valid_tangent_spheres.front(), all_tangent_spheres[i], tangent_spheres_equality_epsilon()))
+						{
+							result[q].push_back(all_tangent_spheres[i]);
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 };
 
