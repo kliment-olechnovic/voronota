@@ -79,9 +79,8 @@ public:
 		}
 	};
 
-	template<typename SphereType>
 	static Result construct_result(
-			const std::vector<SphereType>& spheres,
+			const std::vector<SimpleSphere>& spheres,
 			const double initial_radius_for_spheres_bucketing,
 			const bool exclude_hidden_spheres,
 			const bool include_surplus_valid_quadruples)
