@@ -15,11 +15,15 @@ Common options
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --output-balls-graph            string      file for balls graph output
+  --output-vertices-graph         string      file for vertices graph output
   --print-log                                 flag to print log of calculations
-  --skip-output                               flag to disable output of the resulting triangulation
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
-  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+  balls-graph-file     ->  list of balls graph edges (line format: 'a b')
+  vertices-graph-file  ->  list of vertices graph edges (line format: 'a b')
 
 
 --mode calculate-triangulation-in-parallel
@@ -29,10 +33,9 @@ Common options
   --method                        string   *  parallelization method name, variants are: 'simulated'
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
-  --skip-output                               flag to disable output of the resulting triangulation
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
-  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
 --mode compare-triangulations

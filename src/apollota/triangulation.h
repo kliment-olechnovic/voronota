@@ -245,6 +245,18 @@ public:
 		}
 	}
 
+	static void print_neighbors_graph(const NeighborsGraph& neighbors_graph, std::ostream& output)
+	{
+		for(std::size_t i=0;i<neighbors_graph.size();i++)
+		{
+			const NeighborsGraph::value_type& neighbors=neighbors_graph[i];
+			for(NeighborsGraph::value_type::const_iterator it=neighbors.begin();it!=neighbors.end();++it)
+			{
+				output << i << " " << (*it) << "\n";
+			}
+		}
+	}
+
 	static void print_quadruples_map(const QuadruplesMap& quadruples_map, std::ostream& output)
 	{
 		print_vertices_vector(collect_vertices_vector_from_quadruples_map(quadruples_map), output);

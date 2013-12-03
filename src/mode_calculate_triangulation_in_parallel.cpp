@@ -374,14 +374,13 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
-		full_map_of_option_descriptions["--skip-output"].init("", "flag to disable output of the resulting triangulation");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
-			std::cerr << "  stdout  ->  list of quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
+			std::cerr << "  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
 			return;
 		}
 		else
@@ -403,8 +402,6 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	}
 
 	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
-	const bool skip_output=poh.contains_option("--skip-output");
 
 	const bool print_log=poh.contains_option("--print-log");
 
@@ -440,10 +437,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 	if(master_finished)
 	{
-		if(!skip_output)
-		{
-			apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
-		}
+		apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
 
 		if(print_log)
 		{
