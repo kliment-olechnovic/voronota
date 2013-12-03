@@ -14,11 +14,11 @@ namespace
 
 struct ParallelComputationResult
 {
-	ParallelComputationResult() : number_of_input_spheres(0), number_of_initialized_parts(0), number_of_produced_quadruples(0)
+	ParallelComputationResult() : number_of_initialized_parts(0), number_of_produced_quadruples(0)
 	{
 	}
 
-	std::size_t number_of_input_spheres;
+	std::vector<apollota::SimpleSphere> input_spheres;
 	std::size_t number_of_initialized_parts;
 	std::size_t number_of_produced_quadruples;
 	apollota::Triangulation::QuadruplesMap merged_quadruples_map;
@@ -33,9 +33,9 @@ public:
 			const bool include_surplus_quadruples,
 			ParallelComputationResult& result)
 	{
-		std::vector<apollota::SimpleSphere> spheres;
+		result.input_spheres.clear();
+		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
 		auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-		result.number_of_input_spheres=spheres.size();
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -61,9 +61,9 @@ public:
 			const bool include_surplus_quadruples,
 			ParallelComputationResult& result)
 	{
-		std::vector<apollota::SimpleSphere> spheres;
+		result.input_spheres.clear();
+		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
 		auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-		result.number_of_input_spheres=spheres.size();
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -135,7 +135,8 @@ public:
 		{
 			const int QUADRUPLES_MAP_DATA_TAG=1;
 
-			std::vector<apollota::SimpleSphere> spheres;
+			result.input_spheres.clear();
+			std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
 			{
 				std::vector<double> spheres_plain_vector;
 				int spheres_plain_vector_length=0;
@@ -156,7 +157,6 @@ public:
 					fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
 				}
 			}
-			result.number_of_input_spheres=spheres.size();
 
 			const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 			result.number_of_initialized_parts=distributed_ids.size();
@@ -441,7 +441,7 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 
 		if(print_log)
 		{
-			std::clog << "balls " << result.number_of_input_spheres << "\n";
+			std::clog << "balls " << result.input_spheres.size() << "\n";
 			std::clog << "parts " << result.number_of_initialized_parts << "\n";
 			std::clog << "produced_quadruples " << result.number_of_produced_quadruples << "\n";
 			std::clog << "merged_quadruples " << result.merged_quadruples_map.size() << "\n";
