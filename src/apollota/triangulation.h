@@ -137,7 +137,7 @@ public:
 
 		if(construct_vertices_graph)
 		{
-			result.vertices_graph=ConstructionOfVerticesTopology::construct_vertices_neighbours_graph_from_quadruples_map(spheres, result.quadruples_map);
+			result.vertices_graph=construct_vertices_neighbours_graph_from_quadruples_map(spheres, result.quadruples_map);
 		}
 
 		return result;
@@ -230,6 +230,32 @@ public:
 			sum+=it->second.size();
 		}
 		return sum;
+	}
+
+	static NeighborsGraph collect_spheres_neighbors_graph_from_quadruples_map(const QuadruplesMap& quadruples_map, const std::size_t number_of_spheres)
+	{
+		NeighborsGraph neighbors_graph(number_of_spheres);
+		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& quadruple=it->first;
+			for(int a=0;a<4;a++)
+			{
+				for(int b=a+1;b<4;b++)
+				{
+					if(quadruple.get(a)<number_of_spheres && quadruple.get(b)<number_of_spheres)
+					{
+						neighbors_graph[quadruple.get(a)].insert(quadruple.get(b));
+						neighbors_graph[quadruple.get(b)].insert(quadruple.get(a));
+					}
+				}
+			}
+		}
+		return neighbors_graph;
+	}
+
+	static NeighborsGraph construct_vertices_neighbours_graph_from_quadruples_map(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+	{
+		return ConstructionOfVerticesTopology::construct_vertices_neighbours_graph_from_quadruples_map(spheres, quadruples_map);
 	}
 
 	static void print_vertices_vector(const VerticesVector& vertices_vector, std::ostream& output)
@@ -1134,27 +1160,6 @@ private:
 	inline static double tangent_spheres_equality_epsilon()
 	{
 		return std::max(default_comparison_epsilon(), 0.001);
-	}
-
-	static NeighborsGraph collect_spheres_neighbors_graph_from_quadruples_map(const QuadruplesMap& quadruples_map, const std::size_t number_of_spheres)
-	{
-		NeighborsGraph neighbors_graph(number_of_spheres);
-		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			for(int a=0;a<4;a++)
-			{
-				for(int b=a+1;b<4;b++)
-				{
-					if(quadruple.get(a)<number_of_spheres && quadruple.get(b)<number_of_spheres)
-					{
-						neighbors_graph[quadruple.get(a)].insert(quadruple.get(b));
-						neighbors_graph[quadruple.get(b)].insert(quadruple.get(a));
-					}
-				}
-			}
-		}
-		return neighbors_graph;
 	}
 
 	class ConstructionOfVerticesTopology
