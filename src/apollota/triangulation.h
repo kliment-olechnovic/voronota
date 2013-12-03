@@ -1212,13 +1212,16 @@ private:
 				const std::vector<std::size_t>& triple_vertices_ids,
 				NeighborsGraph& neighbors_graph)
 		{
-			if(triple_vertices_ids.size()>=2)
+			if(triple_vertices_ids.size()>1)
 			{
 				const std::vector<std::size_t>& v=triple_vertices_ids;
-				if(v.size()==2 && v[0]<valid_vertices_count && v[1]<valid_vertices_count)
+				if(v.size()==2)
 				{
-					neighbors_graph[v[0]].insert(v[1]);
-					neighbors_graph[v[1]].insert(v[0]);
+					if(v[0]<valid_vertices_count && v[1]<valid_vertices_count)
+					{
+						neighbors_graph[v[0]].insert(v[1]);
+						neighbors_graph[v[1]].insert(v[0]);
+					}
 				}
 				else
 				{
@@ -1231,25 +1234,40 @@ private:
 						const std::size_t vi=v[i];
 						if(vi<valid_vertices_count && neighbors_graph[vi].size()<4)
 						{
-							double angle_sel=std::numeric_limits<double>::max();
-							std::size_t v_sel=npos;
+							std::vector< std::pair<double, std::size_t> > v_candidates;
+							v_candidates.reserve(v.size()-1);
 							for(std::size_t j=0;j<v.size();j++)
 							{
 								const std::size_t vj=v[j];
 								if(vj!=vi)
 								{
 									const double angle=calculate_min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
-									if(angle>0.0 && angle<angle_sel)
-									{
-										angle_sel=angle;
-										v_sel=vj;
-									}
+									v_candidates.push_back(std::make_pair(angle, vj));
 								}
 							}
-							if(v_sel!=npos && v_sel<valid_vertices_count && !(all_vertices_vector[v_sel].first==all_vertices_vector[vi].first) && neighbors_graph[v_sel].size()<4)
+							if(!v_candidates.empty())
 							{
-								neighbors_graph[vi].insert(v_sel);
-								neighbors_graph[v_sel].insert(vi);
+								std::sort(v_candidates.begin(), v_candidates.end());
+								std::vector<std::size_t> v_sel(1, v_candidates[0].second);
+								for(std::size_t j=1;j<v_candidates.size() && v_sel.size()==1;j++)
+								{
+									const std::size_t vj=v_candidates[j].second;
+									const double angle_with_vi=calculate_min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
+									const double angle_with_v_sel0=calculate_min_angle(o, all_vertices_vector[v_sel[0]].second, all_vertices_vector[vj].second);
+									if(angle_with_vi<angle_with_v_sel0)
+									{
+										v_sel.push_back(vj);
+									}
+								}
+								for(std::size_t j=0;j<v_sel.size();j++)
+								{
+									const std::size_t vj=v_sel[j];
+									if(vj<valid_vertices_count)
+									{
+										neighbors_graph[vi].insert(vj);
+										neighbors_graph[vj].insert(vi);
+									}
+								}
 							}
 						}
 					}
