@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #ifdef ENABLE_MPI
 #include <mpi.h>
@@ -372,6 +373,8 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		basic_map_of_option_descriptions["--method"].init("string", "parallelization method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
+		basic_map_of_option_descriptions["--output-balls-graph"].init("string", "file for balls graph output");
+		basic_map_of_option_descriptions["--output-vertices-graph"].init("string", "file for vertices graph output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
@@ -401,9 +404,13 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
 	const bool print_log=poh.contains_option("--print-log");
+
+	const std::string balls_graph_output=poh.argument<std::string>("--output-balls-graph", "");
+
+	const std::string vertices_graph_output=poh.argument<std::string>("--output-vertices-graph", "");
+
+	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
 
 	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
@@ -438,6 +445,24 @@ void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandle
 	if(master_finished)
 	{
 		apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
+
+		if(!balls_graph_output.empty())
+		{
+			std::ofstream output(balls_graph_output.c_str(), std::ios::out);
+			if(output.good())
+			{
+				apollota::Triangulation::print_neighbors_graph(apollota::Triangulation::collect_spheres_neighbors_graph_from_quadruples_map(result.merged_quadruples_map, result.input_spheres.size()), output);
+			}
+		}
+
+		if(!vertices_graph_output.empty())
+		{
+			std::ofstream output(vertices_graph_output.c_str(), std::ios::out);
+			if(output.good())
+			{
+				apollota::Triangulation::print_neighbors_graph(apollota::Triangulation::construct_vertices_neighbours_graph_from_quadruples_map(result.input_spheres, result.merged_quadruples_map), output);
+			}
+		}
 
 		if(print_log)
 		{
