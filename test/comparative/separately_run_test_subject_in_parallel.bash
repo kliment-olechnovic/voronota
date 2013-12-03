@@ -29,7 +29,7 @@ then
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-triangulation-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --epsilon $EPSILON --print-log --skip-output < $INPUT_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-triangulation-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 
 echo "input $PDB_FILE_BASENAME" > $LOG_LIST_FILE
 cat $SEQUENTIAL_LOG_FILE | sed 's/^/sequential_/' >> $LOG_LIST_FILE
