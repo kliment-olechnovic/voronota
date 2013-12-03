@@ -31,6 +31,8 @@ Common options
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --method                        string   *  parallelization method name, variants are: 'simulated'
+  --output-balls-graph            string      file for balls graph output
+  --output-vertices-graph         string      file for vertices graph output
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
 
