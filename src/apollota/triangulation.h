@@ -6,6 +6,7 @@
 #include <limits>
 #include <vector>
 #include <map>
+#include <set>
 
 #ifdef _MSC_VER
 #include <unordered_map>
@@ -32,7 +33,7 @@ class Triangulation
 public:
 	typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
 	typedef std::vector< std::pair<Quadruple, SimpleSphere> > VerticesVector;
-	typedef std::vector< std::tr1::unordered_set<std::size_t> > NeighborsGraph;
+	typedef std::vector< std::set<std::size_t> > NeighborsGraph;
 
 	struct QuadruplesSearchLog
 	{

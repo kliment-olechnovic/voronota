@@ -618,8 +618,8 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::Triangulation::VerticesVector vv=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 		for(std::size_t i=0;i<triangulation_result.vertices_graph.size();i++)
 		{
-			const std::tr1::unordered_set<std::size_t>& neighbors=triangulation_result.vertices_graph[i];
-			for(std::tr1::unordered_set<std::size_t>::const_iterator it=neighbors.begin();it!=neighbors.end();++it)
+			const std::set<std::size_t>& neighbors=triangulation_result.vertices_graph[i];
+			for(std::set<std::size_t>::const_iterator it=neighbors.begin();it!=neighbors.end();++it)
 			{
 				const std::size_t j=(*it);
 				if(i<j && drawn_quadruples.count(vv[i].first)*drawn_quadruples.count(vv[j].first)>0)
