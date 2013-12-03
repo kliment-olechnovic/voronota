@@ -29,9 +29,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--mmcif"].init("", "flag to input in mmCIF format");
 		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
+		basic_map_of_option_descriptions["--include-hydrogens"].init("", "flag to include hydrogen atoms");
 		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--include-hydrogens"].init("", "flag to include hydrogen atoms");
 		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
 		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))

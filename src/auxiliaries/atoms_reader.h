@@ -143,7 +143,7 @@ private:
 				!record.name.empty() &&
 				!record.resName.empty() &&
 				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc==".") &&
-				(include_hydrogens || record.element!="H") &&
+				(include_hydrogens || (record.name.find("H")!=0)) &&
 				record.resName!="HOH");
 	}
 

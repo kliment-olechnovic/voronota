@@ -22,6 +22,7 @@ Common options
 --mode get-balls-from-atoms-file
 
   --include-heteroatoms                       flag to include heteroatoms
+  --include-hydrogens                         flag to include hydrogen atoms
   --mmcif                                     flag to input in mmCIF format
   --radii-file                    string      path to radii configuration file
 
