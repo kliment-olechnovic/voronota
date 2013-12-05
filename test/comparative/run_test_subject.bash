@@ -1,9 +1,8 @@
 #!/bin/bash
 
 TEST_SUBJECT=$1
-EPSILON=$2
-WORKING_DIR=$3
-PDB_FILE=$4
+WORKING_DIR=$2
+PDB_FILE=$3
 
 PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
 PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
@@ -24,7 +23,7 @@ then
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE 2> errstream) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $LOG_FILE --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE 2> /dev/null) ) 2> $RAW_TIME_FILE
 
 if [ ! -s "$RAW_OUTPUT_FILE" ]
 then
