@@ -554,7 +554,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false, true, true);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, true, false);
 
 	std::set<apollota::Quadruple> drawn_quadruples;
 
@@ -608,27 +608,6 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				opengl_printer_adjacent_trans.print_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r-reduction));
 				opengl_printer_adjacent_opaq.print_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r-reduction));
-			}
-		}
-	}
-
-	{
-		apollota::OpenGLPrinter opengl_printer(std::cout, "obj_approx_edges", "cgo_approx_edges");
-		opengl_printer.print_color(0x0077FF);
-		const apollota::Triangulation::VerticesVector vv=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
-		for(std::size_t i=0;i<triangulation_result.vertices_graph.size();i++)
-		{
-			const std::set<std::size_t>& neighbors=triangulation_result.vertices_graph[i];
-			for(std::set<std::size_t>::const_iterator it=neighbors.begin();it!=neighbors.end();++it)
-			{
-				const std::size_t j=(*it);
-				if(i<j && drawn_quadruples.count(vv[i].first)*drawn_quadruples.count(vv[j].first)>0)
-				{
-					std::vector<apollota::SimplePoint> line(2);
-					line[0]=apollota::SimplePoint(vv[i].second);
-					line[1]=apollota::SimplePoint(vv[j].second);
-					opengl_printer.print_line_strip(line);
-				}
 			}
 		}
 	}
