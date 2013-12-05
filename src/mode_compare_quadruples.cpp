@@ -24,12 +24,12 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 
 }
 
-void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
+void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--first-triangulation-file"].init("string", "path to the first triangulation file", true);
-		basic_map_of_option_descriptions["--second-triangulation-file"].init("string", "path to the second triangulation file", true);
+		basic_map_of_option_descriptions["--first-quadruples-file"].init("string", "path to the first quadruples file", true);
+		basic_map_of_option_descriptions["--second-quadruples-file"].init("string", "path to the second quadruples file", true);
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
@@ -46,9 +46,9 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const std::string first_triangulation_file=poh.argument<std::string>("--first-triangulation-file");
+	const std::string first_triangulation_file=poh.argument<std::string>("--first-quadruples-file");
 
-	const std::string second_triangulation_file=poh.argument<std::string>("--second-triangulation-file");
+	const std::string second_triangulation_file=poh.argument<std::string>("--second-quadruples-file");
 
 	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
@@ -68,12 +68,12 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ifstream first_triangulation_stream(first_triangulation_file.c_str(), std::ifstream::in);
 		if(!first_triangulation_stream.good())
 		{
-			throw std::runtime_error("Cannot open the first triangulation file.");
+			throw std::runtime_error("Cannot open the first quadruples file.");
 		}
 		auxiliaries::read_lines_to_container(first_triangulation_stream, "#", add_quadruple_from_stream_to_vector, first_triangulation_quadruples);
 		if(first_triangulation_quadruples.empty())
 		{
-			throw std::runtime_error("No quadruples in the first triangulation file.");
+			throw std::runtime_error("No quadruples in the first quadruples file.");
 		}
 	}
 
@@ -82,12 +82,12 @@ void compare_triangulations(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ifstream second_triangulation_stream(second_triangulation_file.c_str(), std::ifstream::in);
 		if(!second_triangulation_stream.good())
 		{
-			throw std::runtime_error("Cannot open the second triangulation file.");
+			throw std::runtime_error("Cannot open the second quadruples file.");
 		}
 		auxiliaries::read_lines_to_container(second_triangulation_stream, "#", add_quadruple_from_stream_to_vector, second_triangulation_quadruples);
 		if(second_triangulation_quadruples.empty())
 		{
-			throw std::runtime_error("No quadruples in the second triangulation file.");
+			throw std::runtime_error("No quadruples in the second quadruples file.");
 		}
 	}
 
