@@ -68,13 +68,17 @@ public:
 		{
 			output << "quadruples " << quadruples_map.size() << "\n";
 			output << "tangent_spheres " << count_tangent_spheres_in_quadruples_map(quadruples_map) << "\n";
-			output << "processed_faces " << quadruples_search_log.processed_faces << "\n";
-			output << "difficult_faces " << quadruples_search_log.encountered_difficult_faces << "\n";
+			output << "processed_triples " << quadruples_search_log.processed_faces << "\n";
+			output << "loose_triples " << quadruples_search_log.encountered_difficult_faces << "\n";
 			output << "first_iterations " << quadruples_search_log.performed_iterations_for_finding_first_faces << "\n";
 			output << "surplus_tangent_spheres " << surplus_quadruples_search_log.surplus_tangent_spheres << "\n";
 			output << "excluded_hidden_balls " << excluded_hidden_spheres_ids.size() << "\n";
-			output << "ignored_balls " << ignored_spheres_ids.size() << "\n";
-			output << "epsilon " << default_comparison_epsilon() << "\n";
+			output << "ignored_balls " << ignored_spheres_ids.size();
+			for(std::set<std::size_t>::const_iterator it=ignored_spheres_ids.begin();it!=ignored_spheres_ids.end();++it)
+			{
+				output << (it==ignored_spheres_ids.begin() ? ":" : ",") << (*it);
+			}
+			output << "\n";
 		}
 	};
 
