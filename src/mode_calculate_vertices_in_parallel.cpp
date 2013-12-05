@@ -404,10 +404,6 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 
 	const bool print_log=poh.contains_option("--print-log");
 
-	const std::string balls_graph_output=poh.argument<std::string>("--output-balls-graph", "");
-
-	const std::string vertices_graph_output=poh.argument<std::string>("--output-vertices-graph", "");
-
 	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
 
 	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
