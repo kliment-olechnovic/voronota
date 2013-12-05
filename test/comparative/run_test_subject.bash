@@ -24,7 +24,7 @@ then
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE 2> errstream) ) 2> $RAW_TIME_FILE
 
 if [ ! -s "$RAW_OUTPUT_FILE" ]
 then
