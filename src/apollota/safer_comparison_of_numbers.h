@@ -6,7 +6,7 @@ namespace apollota
 
 inline double& default_comparison_epsilon_reference()
 {
-	static double e=0.00000001;
+	static double e=0.0000000001;
 	return e;
 }
 

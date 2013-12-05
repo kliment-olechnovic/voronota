@@ -1028,7 +1028,7 @@ private:
 			for(std::size_t i=0;i<tangent_spheres.size();i++)
 			{
 				const SimpleSphere& tangent_sphere=tangent_spheres[i];
-				const SimpleSphere expanded_tangent_sphere(tangent_sphere, tangent_sphere.r+(3*default_comparison_epsilon()));
+				const SimpleSphere expanded_tangent_sphere(tangent_sphere, tangent_sphere.r+tangent_spheres_equality_epsilon());
 				const std::vector<std::size_t> expanded_collisions=SearchForSphericalCollisions::find_all_collisions(bsh, expanded_tangent_sphere);
 				std::vector<std::size_t> refined_collisions;
 				for(std::size_t j=0;j<expanded_collisions.size();j++)
