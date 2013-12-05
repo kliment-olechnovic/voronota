@@ -4,15 +4,10 @@
 namespace apollota
 {
 
-inline double& default_comparison_epsilon_reference()
+inline double default_comparison_epsilon()
 {
 	static double e=0.000000001;
 	return e;
-}
-
-inline double default_comparison_epsilon()
-{
-	return default_comparison_epsilon_reference();
 }
 
 inline bool equal(const double a, const double b, const double e)
