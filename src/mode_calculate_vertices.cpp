@@ -31,10 +31,6 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool print_log=poh.contains_option("--print-log");
 
-	const std::string balls_graph_output=poh.argument<std::string>("--output-balls-graph", "");
-
-	const std::string vertices_graph_output=poh.argument<std::string>("--output-vertices-graph", "");
-
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
 
 	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
