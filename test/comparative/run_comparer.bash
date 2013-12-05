@@ -19,13 +19,13 @@ gunzip -f $BALLS_FILE.gz $FIRST_GAUGE_QUADRUPLES_FILE.gz $SECOND_GAUGE_QUADRUPLE
 if [ -s "$BALLS_FILE" ] && [ -s "$FIRST_GAUGE_QUADRUPLES_FILE" ] && [ -s "$TEST_SUBJECT_QUADRUPLES_FILE" ]
 then
 	FIRST_RESULTS_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.comparison.first"
-	$COMPARER --mode compare-triangulations --epsilon $EPSILON --first-triangulation-file $FIRST_GAUGE_QUADRUPLES_FILE --second-triangulation-file $TEST_SUBJECT_QUADRUPLES_FILE < $BALLS_FILE > $FIRST_RESULTS_FILE	
+	$COMPARER --mode compare-quadruples-sets --epsilon $EPSILON --first-quadruples-file $FIRST_GAUGE_QUADRUPLES_FILE --second-quadruples-file $TEST_SUBJECT_QUADRUPLES_FILE < $BALLS_FILE > $FIRST_RESULTS_FILE	
 fi
 
 if [ -s "$BALLS_FILE" ] && [ -s "$SECOND_GAUGE_QUADRUPLES_FILE" ] && [ -s "$TEST_SUBJECT_QUADRUPLES_FILE" ]
 then
 	SECOND_RESULTS_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.comparison.second"
-	$COMPARER --mode compare-triangulations --epsilon $EPSILON --first-triangulation-file $SECOND_GAUGE_QUADRUPLES_FILE --second-triangulation-file $TEST_SUBJECT_QUADRUPLES_FILE < $BALLS_FILE > $SECOND_RESULTS_FILE	
+	$COMPARER --mode compare-quadruples-sets --epsilon $EPSILON --first-quadruples-file $SECOND_GAUGE_QUADRUPLES_FILE --second-quadruples-file $TEST_SUBJECT_QUADRUPLES_FILE < $BALLS_FILE > $SECOND_RESULTS_FILE	
 fi
 	
 gzip -f $BALLS_FILE $FIRST_GAUGE_QUADRUPLES_FILE $SECOND_GAUGE_QUADRUPLES_FILE $TEST_SUBJECT_QUADRUPLES_FILE &> /dev/null
