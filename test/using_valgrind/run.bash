@@ -26,10 +26,10 @@ valgrind --tool=memcheck $TEST_SUBJECT --mode get-balls-from-atoms-file --includ
 
 echo
 echo "Calculating triangulation:"
-valgrind --tool=memcheck $TEST_SUBJECT --mode calculate-vertices --print-log --epsilon 0.00000001 < $BALLS_FILE > $TRIANGULATION_FILE
+valgrind --tool=memcheck $TEST_SUBJECT --mode calculate-vertices --print-log < $BALLS_FILE > $TRIANGULATION_FILE
 
 echo
 echo "Comparing triangulations:"
-valgrind --tool=memcheck $TEST_SUBJECT --mode compare-triangulations --first-triangulation-file $TRIANGULATION_FILE --second-triangulation-file $TRIANGULATION_FILE < $BALLS_FILE
+valgrind --tool=memcheck $TEST_SUBJECT --mode compare-quadruples --first-triangulation-file $TRIANGULATION_FILE --second-triangulation-file $TRIANGULATION_FILE < $BALLS_FILE
 
 rm -r "$TMP_DIR"

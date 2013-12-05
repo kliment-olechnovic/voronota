@@ -1,10 +1,9 @@
 #!/bin/bash
 
 TEST_SUBJECT=$1
-EPSILON=$2
-INPUT_DIR=$3
-OUTPUT_DIR=$4
-PDB_FILE=$5
+INPUT_DIR=$2
+OUTPUT_DIR=$3
+PDB_FILE=$4
 
 PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
 PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
@@ -29,7 +28,7 @@ then
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-vertices-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-vertices-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --print-log < $INPUT_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 
 echo "input $PDB_FILE_BASENAME" > $LOG_LIST_FILE
 cat $SEQUENTIAL_LOG_FILE | sed 's/^/sequential_/' >> $LOG_LIST_FILE
