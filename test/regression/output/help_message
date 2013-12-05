@@ -6,7 +6,7 @@ Common options
   --mode                          string   *  running mode
 
 
---mode calculate-triangulation
+--mode calculate-vertices
 
   --print-log                                 flag to print log of calculations
 
