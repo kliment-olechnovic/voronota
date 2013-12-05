@@ -13,8 +13,6 @@ TMP_DIR=$(mktemp -d)
 
 INPUT_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.first_gauge.balls"
 RAW_OUTPUT_FILE="$TMP_DIR/triangulation"
-BALLS_GRAPH_OUTPUT_FILE="$TMP_DIR/balls_graph"
-VERTICES_GRAPH_OUTPUT_FILE="$TMP_DIR/vertices_graph"
 RAW_TIME_FILE="$TMP_DIR/raw_time"
 QUADRUPLES_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.test_subject.quadruples"
 LOG_FILE="$WORKING_DIR/$PDB_FILE_BASENAME.test_subject.log"
@@ -26,7 +24,7 @@ then
 	exit 1
 fi
 
-( time -p ($TEST_SUBJECT --mode calculate-triangulation --clog-file $LOG_FILE --epsilon $EPSILON --print-log --output-balls-graph $BALLS_GRAPH_OUTPUT_FILE --output-vertices-graph $VERTICES_GRAPH_OUTPUT_FILE < $INPUT_FILE > $RAW_OUTPUT_FILE) ) 2> $RAW_TIME_FILE
+( time -p ($TEST_SUBJECT --mode calculate-triangulation --clog-file $LOG_FILE --epsilon $EPSILON --print-log < $INPUT_FILE > $RAW_OUTPUT_FILE) ) 2> $RAW_TIME_FILE
 
 if [ ! -s "$RAW_OUTPUT_FILE" ]
 then

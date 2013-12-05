@@ -8,15 +8,10 @@ Common options
 
 --mode calculate-triangulation
 
-  --output-balls-graph            string      file for balls graph output
-  --output-vertices-graph         string      file for vertices graph output
   --print-log                                 flag to print log of calculations
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
   stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
-
-  balls-graph-file     ->  list of balls graph edges (line format: 'a b')
-  vertices-graph-file  ->  list of vertices graph edges (line format: 'a b')
 
 
 --mode get-balls-from-atoms-file

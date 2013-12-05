@@ -10,8 +10,6 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
-		basic_map_of_option_descriptions["--output-balls-graph"].init("string", "file for balls graph output");
-		basic_map_of_option_descriptions["--output-vertices-graph"].init("string", "file for vertices graph output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
@@ -23,9 +21,6 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
 			std::cerr << "  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
-			std::cerr << "\n";
-			std::cerr << "  balls-graph-file     ->  list of balls graph edges (line format: 'a b')\n";
-			std::cerr << "  vertices-graph-file  ->  list of vertices graph edges (line format: 'a b')\n";
 			return;
 		}
 		else
@@ -59,27 +54,9 @@ void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, include_surplus_quadruples, !balls_graph_output.empty(), !vertices_graph_output.empty());
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, include_surplus_quadruples);
 
 	apollota::Triangulation::print_quadruples_map(triangulation_result.quadruples_map, std::cout);
-
-	if(!balls_graph_output.empty())
-	{
-		std::ofstream output(balls_graph_output.c_str(), std::ios::out);
-		if(output.good())
-		{
-			apollota::Triangulation::print_neighbors_graph(triangulation_result.balls_graph, output);
-		}
-	}
-
-	if(!vertices_graph_output.empty())
-	{
-		std::ofstream output(vertices_graph_output.c_str(), std::ios::out);
-		if(output.good())
-		{
-			apollota::Triangulation::print_neighbors_graph(triangulation_result.vertices_graph, output);
-		}
-	}
 
 	if(print_log)
 	{
