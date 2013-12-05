@@ -42,7 +42,6 @@ int main(const int argc, const char** argv)
 		basic_map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr and exit");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
-		full_map_of_option_descriptions["--epsilon"].init("number", "threshold for floating-point numbers comparison");
 		full_map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
 
 		if(argc<2 || poh.contains_option("--help") || poh.contains_option("--help-full"))
@@ -65,7 +64,7 @@ int main(const int argc, const char** argv)
 		}
 		else if(poh.contains_option("--version"))
 		{
-			std::cerr << "Voronota version 1.0\n";
+			std::cerr << "Voronota version 1.1\n";
 		}
 		else
 		{
@@ -76,9 +75,6 @@ int main(const int argc, const char** argv)
 
 			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
 			poh.remove_option("--clog-file");
-
-			const double epsilon=poh.argument<double>("--epsilon", -1.0);
-			poh.remove_option("--epsilon");
 
 			if(full_map_of_modes.count(mode)==0)
 			{
@@ -92,11 +88,6 @@ int main(const int argc, const char** argv)
 			}
 
 			auxiliaries::CLogRedirector clog_redirector(clog_filename);
-
-			if(epsilon>0.0)
-			{
-				apollota::default_comparison_epsilon_reference()=epsilon;
-			}
 
 			full_map_of_modes.find(mode)->second(poh);
 

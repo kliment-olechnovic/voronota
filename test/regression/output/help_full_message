@@ -2,7 +2,6 @@
 Common options
 
   --clog-file                     string      path to file for log stream redirection
-  --epsilon                       number      threshold for floating-point numbers comparison
   --help                                      flag to print basic usage help to stderr and exit
   --help-full                                 flag to print full usage help to stderr and exit
   --mode                          string   *  running mode
