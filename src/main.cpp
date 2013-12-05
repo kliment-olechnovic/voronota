@@ -8,8 +8,8 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
 
-void calculate_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
 void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
@@ -26,10 +26,10 @@ int main(const int argc, const char** argv)
 	try
 	{
 		MapOfModes basic_map_of_modes;
-		basic_map_of_modes.insert(MapOfModes::value_type("calculate-triangulation", ModeFunctionPointer(calculate_triangulation)));
+		basic_map_of_modes.insert(MapOfModes::value_type("calculate-vertices", ModeFunctionPointer(calculate_vertices)));
 		basic_map_of_modes.insert(MapOfModes::value_type("get-balls-from-atoms-file", ModeFunctionPointer(get_balls_from_atoms_file)));
 		MapOfModes extended_map_of_modes=basic_map_of_modes;
-		extended_map_of_modes.insert(MapOfModes::value_type("calculate-triangulation-in-parallel", ModeFunctionPointer(calculate_triangulation_in_parallel)));
+		extended_map_of_modes.insert(MapOfModes::value_type("calculate-vertices-in-parallel", ModeFunctionPointer(calculate_vertices_in_parallel)));
 		MapOfModes full_map_of_modes=extended_map_of_modes;
 		full_map_of_modes.insert(MapOfModes::value_type("compare-quadruples-sets", ModeFunctionPointer(compare_quadruples_sets)));
 		full_map_of_modes.insert(MapOfModes::value_type("print-demo", ModeFunctionPointer(print_demo)));

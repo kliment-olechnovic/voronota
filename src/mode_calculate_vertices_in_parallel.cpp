@@ -345,7 +345,7 @@ inline bool number_is_power_of_two(const unsigned long x)
 
 }
 
-void calculate_triangulation_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
+void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	std::set<std::string> available_processing_method_names;
 	{

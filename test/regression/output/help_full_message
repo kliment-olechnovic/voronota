@@ -9,9 +9,9 @@ Common options
   --version                                   flag to print version number to stderr and exit
 
 
---mode calculate-triangulation
+--mode calculate-vertices
 
-  --check                                     flag to slowly check the resulting triangulation (used only for testing)
+  --check                                     flag to slowly check the resulting vertices (used only for testing)
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
@@ -21,7 +21,7 @@ Common options
   stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 
---mode calculate-triangulation-in-parallel
+--mode calculate-vertices-in-parallel
 
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
