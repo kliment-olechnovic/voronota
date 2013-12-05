@@ -55,7 +55,7 @@ Here is a basic example of computing Voronoi vertices
 for a structure in a PDB file:
 
     ./voronota --mode get-balls-from-atoms-file < input.pdb > balls.txt
-    ./voronota --mode calculate-triangulation < balls.txt > vertices.txt
+    ./voronota --mode calculate-vertices < balls.txt > vertices.txt
 
 The first command reads a PDB file "input.pdb" and outputs a file "balls.txt"
 that contains balls corresponding to the atoms in "input.pdb".
