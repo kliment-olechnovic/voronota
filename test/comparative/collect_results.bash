@@ -3,10 +3,6 @@
 WORKING_DIR=$1
 OUTPUT_FILE=$2
 
-TMP_FILE=$(mktemp)
+cat $(find $WORKING_DIR -type f -name "*.summary.table" | head -1) | head -1 > $OUTPUT_FILE
 
-( find $WORKING_DIR -type f -name "*.summary.table" |  while read ROW_FILE; do cat $ROW_FILE ; done ) > $TMP_FILE
-
-( cat $TMP_FILE | head -1 ; cat $TMP_FILE | egrep -v 'input' | sort ) | column -t > $OUTPUT_FILE
-	
-rm $TMP_FILE
+( find $WORKING_DIR -type f -name "*.summary.table" | while read ROW_FILE ; do cat $ROW_FILE | tail -1 ; done ) >> $OUTPUT_FILE
