@@ -22,7 +22,7 @@ public:
 		std::vector< std::pair<SimplePoint, SimplePoint> > planes;
 		for(std::size_t i=0;i<normals.size();i++)
 		{
-			planes.push_back(std::make_pair((custom_point_from_object<SimplePoint>(a)+(normals[i]*a.r)), normals[i]));
+			planes.push_back(std::make_pair((custom_point_from_object<SimplePoint>(a)+(normals[i]*(a.r+default_comparison_epsilon()))), normals[i]));
 		}
 		return planes;
 	}
