@@ -34,7 +34,7 @@ fi
 
 if [ "$IN_PARALLEL" == "yes" ]
 then
-	( time -p ($TEST_SUBJECT --mode calculate-vertices-in-parallel --method simulated --parts 4 --clog-file $RAW_LOG_FILE --print-log < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
+	( time -p ($TEST_SUBJECT --mode calculate-vertices-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --print-log < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 else
 	( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $RAW_LOG_FILE --print-log < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 fi
