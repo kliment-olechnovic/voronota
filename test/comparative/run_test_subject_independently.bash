@@ -3,11 +3,12 @@
 TEST_SUBJECT=$1
 OUTPUT_DIR=$2
 INCLUDE_HYDROGENS=$3
-IN_PARALLEL=$4
-PDB_FILE=$5
+EXCLUDE_HIDDEN=$4
+IN_PARALLEL=$5
+PDB_FILE=$6
 
+RAW_PDB_FILE_BASENAME=$(basename $PDB_FILE)
 PDB_FILE_BASENAME=$(basename $PDB_FILE .ent.gz)
-PDB_FILE_DOMAIN=$(echo $PDB_FILE_BASENAME | sed 's/pdb.\(..\)./\1/')
 
 mkdir -p $OUTPUT_DIR
 
@@ -25,18 +26,24 @@ then
 	INCLUDE_HYDROGENS_FLAG="--include-hydrogens"
 fi
 
-zcat $PDB_FILE | $TEST_SUBJECT --mode get-balls-from-atoms-file $INCLUDE_HYDROGENS_FLAG > $INPUT_BALLS_FILE
-
-if [ ! -s "$INPUT_BALLS_FILE" ]
+EXCLUDE_HIDDEN_FLAG=""
+if [ "$EXCLUDE_HIDDEN" == "yes" ]
 then
-	exit 1
+	EXCLUDE_HIDDEN_FLAG="--exclude-hidden-balls"
 fi
+
+PRITING_APP="zcat"
+if [ "$RAW_PDB_FILE_BASENAME" == "$PDB_FILE_BASENAME" ]
+then
+	PRITING_APP="cat"
+fi
+$PRITING_APP $PDB_FILE | $TEST_SUBJECT --mode get-balls-from-atoms-file $INCLUDE_HYDROGENS_FLAG > $INPUT_BALLS_FILE
 
 if [ "$IN_PARALLEL" == "yes" ]
 then
 	( time -p ($TEST_SUBJECT --mode calculate-vertices-in-parallel --method openmp --parts 4 --clog-file $RAW_LOG_FILE --print-log < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 else
-	( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $RAW_LOG_FILE --print-log < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
+	( time -p ($TEST_SUBJECT --mode calculate-vertices --clog-file $RAW_LOG_FILE --print-log $EXCLUDE_HIDDEN_FLAG < $INPUT_BALLS_FILE > /dev/null 2> /dev/null) ) 2> $RAW_TIME_FILE
 fi
 
 echo "input $PDB_FILE_BASENAME" > $LOG_LIST_FILE
