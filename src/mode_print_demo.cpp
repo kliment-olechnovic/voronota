@@ -616,6 +616,35 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "cmd.set('ambient', 0.3)\n\n";
 }
 
+void print_min_distances_of_ignored_balls(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const std::string name=poh.argument<std::string>("--name");
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+
+	for(std::set<std::size_t>::const_iterator it=triangulation_result.ignored_spheres_ids.begin();it!=triangulation_result.ignored_spheres_ids.end();++it)
+	{
+		const std::size_t j=(*it);
+		std::multimap<double, std::size_t> distances_ids;
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			if(i!=j)
+			{
+				distances_ids.insert(std::make_pair(apollota::distance_from_point_to_point(spheres[i], spheres[j]), i));
+			}
+		}
+		std::cout << name << " " << j << " " << spheres[j].r << " ";
+		int n=0;
+		for(std::multimap<double, std::size_t>::const_iterator jt=distances_ids.begin();jt!=distances_ids.end() && n<2;++jt)
+		{
+			std::cout << jt->first << " " << jt->second << " " << spheres[jt->second].r << (n+1<2 ? " " : "\n");
+			n++;
+		}
+	}
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -650,6 +679,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="empty-tangents")
 	{
 		print_demo_empty_tangents(poh);
+	}
+	else if(scene=="print-min-distances-of-ignored-balls")
+	{
+		print_min_distances_of_ignored_balls(poh);
 	}
 	else
 	{
