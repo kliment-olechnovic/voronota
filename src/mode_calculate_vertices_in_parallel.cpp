@@ -438,7 +438,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 
 	if(master_finished)
 	{
-		apollota::Triangulation::print_quadruples_map(result.merged_quadruples_map, std::cout);
+		apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
 
 		if(print_log)
 		{

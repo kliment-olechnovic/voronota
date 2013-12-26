@@ -15,6 +15,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
 		full_map_of_option_descriptions["--check"].init("", "flag to slowly check the resulting vertices (used only for testing)");
+		full_map_of_option_descriptions["--link"].init("", "flag to output links between vertices");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -37,6 +38,8 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool check=poh.contains_option("--check");
 
+	const bool link=poh.contains_option("--link");
+
 	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
 	{
@@ -52,7 +55,14 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, include_surplus_quadruples);
 
-	apollota::Triangulation::print_quadruples_map(triangulation_result.quadruples_map, std::cout);
+	if(link)
+	{
+		apollota::Triangulation::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), apollota::Triangulation::construct_vertices_graph(spheres, triangulation_result.quadruples_map), std::cout);
+	}
+	else
+	{
+		apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), std::cout);
+	}
 
 	if(print_log)
 	{
