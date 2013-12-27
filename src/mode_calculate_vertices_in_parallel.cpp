@@ -376,6 +376,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
+		full_map_of_option_descriptions["--link"].init("", "flag to output links between vertices");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -412,6 +413,8 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
+	const bool link=poh.contains_option("--link");
+
 	ParallelComputationResult result;
 	bool master_finished=true;
 
@@ -438,7 +441,14 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 
 	if(master_finished)
 	{
-		apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
+		if(link)
+		{
+			apollota::Triangulation::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), apollota::Triangulation::construct_vertices_graph(result.input_spheres, result.merged_quadruples_map), std::cout);
+		}
+		else
+		{
+			apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
+		}
 
 		if(print_log)
 		{

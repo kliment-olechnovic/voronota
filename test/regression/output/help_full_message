@@ -14,6 +14,7 @@ Common options
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --link                                      flag to output links between vertices
   --print-log                                 flag to print log of calculations
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
@@ -24,6 +25,7 @@ Common options
 
   --include-surplus-quadruples                flag to include surplus quadruples
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --link                                      flag to output links between vertices
   --method                        string   *  parallelization method name, variants are: 'simulated'
   --parts                         number   *  number of parts for splitting, must be power of 2
   --print-log                                 flag to print log of calculations
