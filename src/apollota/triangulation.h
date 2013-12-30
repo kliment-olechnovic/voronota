@@ -1192,18 +1192,6 @@ private:
 		return result;
 	}
 
-	static int get_number_of_subtriple(const Quadruple& q, const Triple& t)
-	{
-		for(int i=0;i<4;i++)
-		{
-			if(!t.contains(q.get(i)))
-			{
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	static void update_vertices_graph(
 			const std::vector<apollota::SimpleSphere>& spheres,
 			const VerticesVector& all_vertices_vector,
@@ -1219,7 +1207,7 @@ private:
 			const Quadruple& qj=all_vertices_vector[vj].first;
 			if(qi==qj)
 			{
-				const int number_of_subtriple=get_number_of_subtriple(qi, triple);
+				const int number_of_subtriple=qi.number_of_subtuple(triple);
 				if(number_of_subtriple>=0)
 				{
 					const std::size_t common_sphere_id=qi.get(number_of_subtriple);
@@ -1236,8 +1224,8 @@ private:
 			}
 			else
 			{
-				const int number_of_subtriple_for_vi=get_number_of_subtriple(qi, triple);
-				const int number_of_subtriple_for_vj=get_number_of_subtriple(qj, triple);
+				const int number_of_subtriple_for_vi=qi.number_of_subtuple(triple);
+				const int number_of_subtriple_for_vj=qj.number_of_subtuple(triple);
 				if(number_of_subtriple_for_vi>=0 && number_of_subtriple_for_vj>=0)
 				{
 					vertices_graph[vi][number_of_subtriple_for_vi]=vj;
