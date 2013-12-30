@@ -106,6 +106,18 @@ public:
 		return Tuple<N-1>(values);
 	}
 
+	int number_of_subtuple(const Tuple<N-1>& subtuple) const
+	{
+		for(unsigned int i=0;i<N;i++)
+		{
+			if((!subtuple.contains(get(i))) && (subtuple==exclude(i)))
+			{
+				return static_cast<int>(i);
+			}
+		}
+		return -1;
+	}
+
 	bool has_repetetions() const
 	{
 		for(unsigned int i=0;i+1<N;i++)
