@@ -173,6 +173,21 @@ double distance_from_point_to_line(const InputPointTypeA& p, const InputPointTyp
 	return sqrt(squared_point_module(translated_p)-(distance_on_line*distance_on_line));
 }
 
+template<typename InputPointO, typename InputPointA, typename InputPointB>
+static double min_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b)
+{
+	double cos_val=dot_product(unit_point<PODPoint>(sub_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sub_of_points<PODPoint>(b, o)));
+	if(cos_val<-1.0)
+	{
+		cos_val=-1.0;
+	}
+	else if(cos_val>1.0)
+	{
+		cos_val=1.0;
+	}
+	return acos(cos_val);
+}
+
 struct SimplePoint
 {
 	double x;
