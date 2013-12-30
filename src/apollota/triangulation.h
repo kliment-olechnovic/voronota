@@ -1192,21 +1192,6 @@ private:
 		return result;
 	}
 
-	template<typename InputPointO, typename InputPointA, typename InputPointB>
-	static double calculate_min_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b)
-	{
-		double cos_val=dot_product(unit_point<PODPoint>(sum_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sum_of_points<PODPoint>(b, o)));
-		if(cos_val<-1.0)
-		{
-			cos_val=-1.0;
-		}
-		else if(cos_val>1.0)
-		{
-			cos_val=1.0;
-		}
-		return acos(cos_val);
-	}
-
 	static int get_number_of_subtriple(const Quadruple& q, const Triple& t)
 	{
 		for(int i=0;i<4;i++)
@@ -1295,7 +1280,7 @@ private:
 							const std::size_t vj=v[j];
 							if(vj!=vi)
 							{
-								const double angle=calculate_min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
+								const double angle=min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
 								v_candidates.push_back(std::make_pair(angle, vj));
 							}
 						}
@@ -1306,8 +1291,8 @@ private:
 							for(std::size_t j=1;j<v_candidates.size() && v_sel.size()==1;j++)
 							{
 								const std::size_t vj=v_candidates[j].second;
-								const double angle_with_vi=calculate_min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
-								const double angle_with_v_sel0=calculate_min_angle(o, all_vertices_vector[v_sel[0]].second, all_vertices_vector[vj].second);
+								const double angle_with_vi=min_angle(o, all_vertices_vector[vi].second, all_vertices_vector[vj].second);
+								const double angle_with_v_sel0=min_angle(o, all_vertices_vector[v_sel[0]].second, all_vertices_vector[vj].second);
 								if(angle_with_vi<angle_with_v_sel0)
 								{
 									v_sel.push_back(vj);
