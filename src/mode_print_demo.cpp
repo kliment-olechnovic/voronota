@@ -645,6 +645,183 @@ void print_min_distances_of_ignored_balls(const auxiliaries::ProgramOptionsHandl
 	}
 }
 
+void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double probe=poh.argument<double>("--probe", 1.4);
+	const double min_r=poh.argument<double>("--min-r", 0.0);
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+	const apollota::Triangulation::VerticesGraph vertices_graph=apollota::Triangulation::construct_vertices_graph(spheres, triangulation_result.quadruples_map);
+
+	std::vector<int> coloring(vertices_vector.size(), 0);
+	std::deque<std::size_t> stack;
+	std::deque< std::pair< std::pair<std::size_t, std::size_t>, apollota::SimpleSphere > > hitting_stack;
+
+	for(std::size_t a=0;a<vertices_vector.size();a++)
+	{
+		if(vertices_vector[a].second.r>=probe)
+		{
+			for(std::size_t i=0;i<vertices_graph[a].size() && coloring[a]==0;i++)
+			{
+				if(vertices_graph[a][i]>=vertices_graph.size())
+				{
+					coloring[a]=1;
+					stack.push_back(a);
+				}
+			}
+		}
+	}
+
+	while(!stack.empty())
+	{
+		const std::size_t a=stack.back();
+		stack.pop_back();
+		if(a<coloring.size() && coloring[a]==1 && vertices_vector[a].second.r>=probe)
+		{
+			for(std::size_t i=0;i<vertices_graph[a].size();i++)
+			{
+				const std::size_t b=vertices_graph[a][i];
+				if(b<coloring.size() && coloring[b]==0)
+				{
+					bool connect=false;
+					const apollota::SimpleSphere& sa=vertices_vector[a].second;
+					const apollota::SimpleSphere& sb=vertices_vector[b].second;
+					const apollota::Triple triple=vertices_vector[a].first.exclude(i);
+					const std::vector<apollota::SimpleSphere> probe_tangents=apollota::TangentSphereOfThreeSpheres::calculate(spheres[triple.get(0)], spheres[triple.get(1)], spheres[triple.get(2)], probe);
+					if(probe_tangents.size()<2)
+					{
+						if(sb.r>=probe)
+						{
+							connect=true;
+						}
+					}
+					else
+					{
+						apollota::SimpleSphere o;
+						{
+							const double r0=spheres[triple.get(0)].r;
+							const double r1=spheres[triple.get(1)].r;
+							const double r2=spheres[triple.get(2)].r;
+							o=spheres[triple.get((r0<=r1 && r0<=r2) ? 0 : ((r1<=r0 && r1<=r2) ? 1 : 2))];
+						}
+
+						const double d_a0=apollota::min_angle(o, sa, probe_tangents[0]);
+						const double d_a1=apollota::min_angle(o, sa, probe_tangents[1]);
+						const double d_ab=apollota::min_angle(o, sa, sb);
+						const double d_b0=apollota::min_angle(o, sb, probe_tangents[0]);
+						const double d_b1=apollota::min_angle(o, sb, probe_tangents[1]);
+
+						const bool safe0=(d_a0>d_ab || d_b0>d_ab);
+						const bool safe1=(d_a1>d_ab || d_b1>d_ab);
+
+						if(safe0 && safe1 && sb.r>=probe)
+						{
+							connect=true;
+						}
+						else if(!safe0 && safe1)
+						{
+							hitting_stack.push_back(std::make_pair(std::make_pair(a, b), probe_tangents[0]));
+						}
+						else if(safe0 && !safe1)
+						{
+							hitting_stack.push_back(std::make_pair(std::make_pair(a, b), probe_tangents[1]));
+						}
+						else if(!safe0 && !safe1)
+						{
+							hitting_stack.push_back(std::make_pair(std::make_pair(a, b), probe_tangents[d_a0<d_a1 ? 0 : 1]));
+						}
+					}
+					if(connect)
+					{
+						coloring[b]=1;
+						stack.push_back(b);
+					}
+				}
+			}
+		}
+	}
+
+	std::vector<apollota::SimpleSphere> hitters;
+
+	{
+		std::vector<apollota::SimpleSphere> hitting_visits(vertices_vector.size());
+		while(!hitting_stack.empty())
+		{
+			const std::size_t s=hitting_stack.back().first.first;
+			const std::size_t a=hitting_stack.back().first.second;
+			const apollota::SimpleSphere hitter=hitting_stack.back().second;
+			hitting_stack.pop_back();
+			if(coloring[s]==1)
+			{
+				hitters.push_back(hitter);
+			}
+			hitting_visits[a]=hitter;
+			if(a<coloring.size() && coloring[a]!=1)
+			{
+				if(apollota::sphere_intersects_sphere(vertices_vector[a].second, hitter))
+				{
+					coloring[a]=2;
+				}
+				for(std::size_t i=0;i<vertices_graph[a].size();i++)
+				{
+					const std::size_t b=vertices_graph[a][i];
+					if(b<coloring.size() && !(hitting_visits[b]==hitter) && apollota::sphere_intersects_sphere(vertices_vector[b].second, hitter))
+					{
+						hitting_stack.push_back(std::make_pair(std::make_pair(a, b), hitter));
+					}
+				}
+			}
+		}
+	}
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+
+	{
+		apollota::OpenGLPrinter opengl_printer_cavities(std::cout, "obj_cavities", "cgo_cavities");
+		opengl_printer_cavities.print_color(0xFF5A40);
+		for(std::size_t i=0;i<vertices_vector.size();i++)
+		{
+			if(coloring[i]==0 && vertices_vector[i].second.r>=min_r)
+			{
+				opengl_printer_cavities.print_sphere(vertices_vector[i].second);
+			}
+		}
+	}
+
+	{
+		apollota::OpenGLPrinter opengl_printer_precavities(std::cout, "obj_precavities", "cgo_precavities");
+		opengl_printer_precavities.print_color(0xFFFF40);
+		for(std::size_t i=0;i<vertices_vector.size();i++)
+		{
+			if(coloring[i]==2)
+			{
+				opengl_printer_precavities.print_sphere(vertices_vector[i].second);
+			}
+		}
+	}
+
+	{
+		apollota::OpenGLPrinter opengl_printer_hitters(std::cout, "obj_hitters", "cgo_hitters");
+		opengl_printer_hitters.print_color(0xFFAAFF);
+		for(std::size_t i=0;i<hitters.size();i++)
+		{
+			opengl_printer_hitters.print_sphere(hitters[i]);
+		}
+	}
+
+	{
+		apollota::OpenGLPrinter opengl_printer_balls(std::cout, "obj_balls", "cgo_balls");
+		opengl_printer_balls.print_color(0x36BBCE);
+		for(std::size_t i=0;i<spheres.size();i++)
+		{
+			opengl_printer_balls.print_sphere(spheres[i]);
+		}
+	}
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -683,6 +860,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="print-min-distances-of-ignored-balls")
 	{
 		print_min_distances_of_ignored_balls(poh);
+	}
+	else if(scene=="print-cavities")
+	{
+		print_cavities(poh);
 	}
 	else
 	{
