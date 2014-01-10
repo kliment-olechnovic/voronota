@@ -59,30 +59,6 @@ public:
 		}
 		return neighbors_graph;
 	}
-
-	static PairsNeighborsMap collect_pairs_neighbors_map_from_quadruples_map(const Triangulation::QuadruplesMap& quadruples_map)
-	{
-		PairsNeighborsMap pairs_neighbors_map;
-		for(Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			for(int a=0;a<4;a++)
-			{
-				for(int b=a+1;b<4;b++)
-				{
-					const Pair pair(quadruple.get(a), quadruple.get(b));
-					for(int c=0;c<4;c++)
-					{
-						if(c!=a && c!=b)
-						{
-							pairs_neighbors_map[pair].insert(quadruple.get(c));
-						}
-					}
-				}
-			}
-		}
-		return pairs_neighbors_map;
-	}
 };
 
 }
@@ -919,9 +895,11 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	const apollota::UtilitiesForTriangulation::NeighborsGraph neighbors_graph=apollota::UtilitiesForTriangulation::collect_neighbors_graph_from_neighbors_map(apollota::UtilitiesForTriangulation::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
-	const apollota::UtilitiesForTriangulation::PairsNeighborsMap pairs_neighbors=apollota::UtilitiesForTriangulation::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
+
+	const apollota::ContactContour::PairsIDsMap pairs_vertices=apollota::ContactContour::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 
 	const std::vector<std::size_t> neighbors_list=neighbors_graph[sel];
 
@@ -934,11 +912,11 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ostringstream id_string;
 		id_string << neighbor;
 
-		apollota::UtilitiesForTriangulation::PairsNeighborsMap::const_iterator it=pairs_neighbors.find(apollota::Pair(sel, neighbor));
-		if(it!=pairs_neighbors.end())
+		apollota::UtilitiesForTriangulation::PairsNeighborsMap::const_iterator it=pairs_vertices.find(apollota::Pair(sel, neighbor));
+		if(it!=pairs_vertices.end())
 		{
-			const std::set<std::size_t>& pair_neighbors_list=it->second;
-			const std::list<apollota::ContactContour::Contour> contours=apollota::ContactContour::construct_contact_contours(spheres, sel, neighbor, pair_neighbors_list, probe, step, projections);
+			const std::set<std::size_t>& pair_vertices_list=it->second;
+			const std::list<apollota::ContactContour::Contour> contours=apollota::ContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, sel, neighbor, probe, step, projections);
 
 			if(!contours.empty())
 			{

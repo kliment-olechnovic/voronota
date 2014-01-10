@@ -4,7 +4,7 @@
 #include <vector>
 #include <list>
 
-#include "basic_operations_on_spheres.h"
+#include "triangulation.h"
 #include "hyperboloid_between_two_spheres.h"
 #include "rotation.h"
 
@@ -14,6 +14,8 @@ namespace apollota
 class ContactContour
 {
 public:
+	typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsIDsMap;
+
 	struct PointRecord
 	{
 		SimplePoint p;
@@ -27,12 +29,29 @@ public:
 
 	typedef std::list<PointRecord> Contour;
 
-	template<typename ListOfIDs>
+	static PairsIDsMap collect_pairs_vertices_map_from_vertices_vector(const Triangulation::VerticesVector& vertices_vector)
+	{
+		PairsIDsMap pairs_vertices_map;
+		for(std::size_t i=0;i<vertices_vector.size();i++)
+		{
+			const Quadruple& quadruple=vertices_vector[i].first;
+			for(int a=0;a<4;a++)
+			{
+				for(int b=a+1;b<4;b++)
+				{
+					pairs_vertices_map[Pair(quadruple.get(a), quadruple.get(b))].insert(i);
+				}
+			}
+		}
+		return pairs_vertices_map;
+	}
+
 	static std::list<Contour> construct_contact_contours(
 			const std::vector<SimpleSphere>& spheres,
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids,
 			const std::size_t a_id,
 			const std::size_t b_id,
-			const ListOfIDs& neighbor_ids,
 			const double probe,
 			const double step,
 			const int projections)
@@ -40,13 +59,14 @@ public:
 		std::list<Contour> result;
 		if(a_id<spheres.size() && b_id<spheres.size())
 		{
+			std::set<std::size_t> neighbor_ids=collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids);
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
 			const Contour initial_contour=construct_circular_contour(a, b, a_id, probe, step);
 			if(!initial_contour.empty())
 			{
 				result.push_back(initial_contour);
-				for(typename ListOfIDs::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+				for(std::set<std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
 				{
 					const std::size_t c_id=(*it);
 					if(c_id<spheres.size())
@@ -149,6 +169,32 @@ public:
 	}
 
 private:
+	static std::set<std::size_t> collect_pair_neighbors_from_pair_vertices(
+			const std::size_t a_id,
+			const std::size_t b_id,
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids)
+	{
+		std::set<std::size_t> neighbors_ids;
+		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		{
+			const std::size_t vertex_id=(*it);
+			if(vertex_id<vertices_vector.size())
+			{
+				const Quadruple& quadruple=vertices_vector[vertex_id].first;
+				for(int i=0;i<4;i++)
+				{
+					const std::size_t neighbor_id=quadruple.get(i);
+					if(neighbor_id!=a_id && neighbor_id!=b_id)
+					{
+						neighbors_ids.insert(neighbor_id);
+					}
+				}
+			}
+		}
+		return neighbors_ids;
+	}
+
 	static Contour construct_circular_contour(
 			const SimpleSphere& a,
 			const SimpleSphere& b,
