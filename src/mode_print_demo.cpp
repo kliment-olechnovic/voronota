@@ -943,17 +943,24 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 			if(!contours.empty())
 			{
 				apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_c")+id_string.str(), std::string("cgo_c")+id_string.str());
-				opengl_printer.print_color(0xFFFF00);
-				for(std::list<apollota::ContactContour::Contour>::const_iterator jt=contours.begin();jt!=contours.end();++jt)
+
+
 				{
-					const apollota::ContactContour::Contour& contour=(*jt);
-					std::vector<apollota::SimplePoint> points;
-					points.reserve(contour.size());
-					for(apollota::ContactContour::Contour::const_iterator et=contour.begin();et!=contour.end();++et)
+					opengl_printer.print_color(0xFFFF00);
+					const std::vector< std::vector<apollota::SimplePoint> > line_strips=apollota::ContactContour::collect_points_from_contours(contours);
+					for(std::size_t j=0;j<line_strips.size();j++)
 					{
-						points.push_back(et->p);
+						opengl_printer.print_line_strip(line_strips[j], true);
 					}
-					opengl_printer.print_line_strip(points, true);
+				}
+
+				{
+					opengl_printer.print_color(0x00FF00);
+					const std::vector< std::vector<apollota::SimplePoint> > meshes=apollota::ContactContour::collect_meshes_from_contours(contours, spheres[sel], spheres[neighbor]);
+					for(std::size_t j=0;j<meshes.size();j++)
+					{
+						opengl_printer.print_triangle_strip(meshes[j], std::vector<apollota::SimplePoint>(meshes[j].size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit()), true);
+					}
 				}
 			}
 		}
