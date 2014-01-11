@@ -62,7 +62,7 @@ public:
 			std::set<std::size_t> neighbor_ids=collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids);
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
-			const Contour initial_contour=construct_circular_contour(a, b, a_id, probe, step);
+			const Contour initial_contour=construct_circular_contour(a, b, a_id, vertices_vector, vertices_ids, probe, step);
 			if(!initial_contour.empty())
 			{
 				result.push_back(initial_contour);
@@ -195,10 +195,46 @@ private:
 		return neighbors_ids;
 	}
 
+	static bool check_if_radiuses_of_vertices_are_below_probe(
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids,
+			const double probe)
+	{
+		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		{
+			if(vertices_vector[(*it)].second.r>=probe)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	static SimpleSphere construct_bounding_sphere_of_vertices_centers(
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids)
+	{
+		SimplePoint mc;
+		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		{
+			mc=mc+SimplePoint(vertices_vector[(*it)].second);
+		}
+		mc=mc*(1.0/static_cast<double>(vertices_ids.size()));
+		SimpleSphere result(mc, 0.0);
+		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		{
+			result.r=std::max(result.r, distance_from_point_to_point(result, vertices_vector[(*it)].second));
+		}
+		result.r+=0.1;
+		return result;
+	}
+
 	static Contour construct_circular_contour(
 			const SimpleSphere& a,
 			const SimpleSphere& b,
 			const std::size_t a_id,
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids,
 			const double probe,
 			const double step)
 	{
@@ -207,7 +243,19 @@ private:
 		const SimpleSphere b_expanded=custom_sphere_from_point<SimpleSphere>(b, b.r+probe);
 		if(sphere_intersects_sphere(a_expanded, b_expanded))
 		{
-			construct_circular_contour_from_base_and_axis(a_id, intersection_circle_of_two_spheres<SimpleSphere>(a_expanded, b_expanded), sub_of_points<SimplePoint>(b, a).unit(), step, result);
+			const SimplePoint axis=sub_of_points<SimplePoint>(b, a).unit();
+			if(vertices_ids.size()>1 && check_if_radiuses_of_vertices_are_below_probe(vertices_vector, vertices_ids, probe))
+			{
+				construct_circular_contour_from_base_and_axis(a_id, construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids), axis, step, result);
+				for(Contour::iterator it=result.begin();it!=result.end();++it)
+				{
+					it->p=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(it->p, a, b);
+				}
+			}
+			else
+			{
+				construct_circular_contour_from_base_and_axis(a_id, intersection_circle_of_two_spheres<SimpleSphere>(a_expanded, b_expanded), axis, step, result);
+			}
 		}
 		return result;
 	}
