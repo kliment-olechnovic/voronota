@@ -212,7 +212,8 @@ private:
 
 	static SimpleSphere construct_bounding_sphere_of_vertices_centers(
 			const Triangulation::VerticesVector& vertices_vector,
-			const std::set<std::size_t>& vertices_ids)
+			const std::set<std::size_t>& vertices_ids,
+			const double radius_extension)
 	{
 		SimplePoint mc;
 		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
@@ -225,7 +226,7 @@ private:
 		{
 			result.r=std::max(result.r, distance_from_point_to_point(result, vertices_vector[(*it)].second));
 		}
-		result.r+=0.1;
+		result.r+=radius_extension;
 		return result;
 	}
 
@@ -246,7 +247,7 @@ private:
 			const SimplePoint axis=sub_of_points<SimplePoint>(b, a).unit();
 			if(vertices_ids.size()>1 && check_if_radiuses_of_vertices_are_below_probe(vertices_vector, vertices_ids, probe))
 			{
-				construct_circular_contour_from_base_and_axis(a_id, construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids), axis, step, result);
+				construct_circular_contour_from_base_and_axis(a_id, construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step), axis, step, result);
 				for(Contour::iterator it=result.begin();it!=result.end();++it)
 				{
 					it->p=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(it->p, a, b);
