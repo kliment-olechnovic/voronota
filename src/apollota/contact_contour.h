@@ -92,7 +92,11 @@ public:
 										{
 											mend_contour(a, b, c, c_id, step, projections, (*st));
 										}
-										result.splice(jt, segments);
+										filter_contours_intersecting_sphere(construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step), segments);
+										if(!segments.empty())
+										{
+											result.splice(jt, segments);
+										}
 									}
 									jt=result.erase(jt);
 								}
@@ -495,6 +499,34 @@ private:
 				}
 			}
 			++it;
+		}
+	}
+
+	static bool check_contour_intersects_sphere(const SimpleSphere& shell, const Contour& contour)
+	{
+		for(Contour::const_iterator it=contour.begin();it!=contour.end();++it)
+		{
+			if(distance_from_point_to_point(shell, it->p)<=shell.r)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	static void filter_contours_intersecting_sphere(const SimpleSphere& shell, std::list<Contour>& contours)
+	{
+		std::list<Contour>::iterator it=contours.begin();
+		while(it!=contours.end())
+		{
+			if(!check_contour_intersects_sphere(shell, (*it)))
+			{
+				it=contours.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
 
