@@ -207,17 +207,26 @@ private:
 		const SimpleSphere b_expanded=custom_sphere_from_point<SimpleSphere>(b, b.r+probe);
 		if(sphere_intersects_sphere(a_expanded, b_expanded))
 		{
-			const SimpleSphere intersection_circle=intersection_circle_of_two_spheres<SimpleSphere>(a_expanded, b_expanded);
-			Rotation rotation(sub_of_points<SimplePoint>(b, a).unit(), 0);
-			const SimplePoint first_point=any_normal_of_vector<SimplePoint>(rotation.axis)*intersection_circle.r;
-			const double angle_step=std::max(std::min(360*(step/(2*Rotation::pi()*intersection_circle.r)), 60.0), 5.0);
-			result.push_back(PointRecord(sum_of_points<SimplePoint>(intersection_circle, first_point), a_id, a_id));
-			for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
-			{
-				result.push_back(PointRecord(sum_of_points<SimplePoint>(intersection_circle, rotation.rotate<SimplePoint>(first_point)), a_id, a_id));
-			}
+			construct_circular_contour_from_base_and_axis(a_id, intersection_circle_of_two_spheres<SimpleSphere>(a_expanded, b_expanded), sub_of_points<SimplePoint>(b, a).unit(), step, result);
 		}
 		return result;
+	}
+
+	static void construct_circular_contour_from_base_and_axis(
+			const std::size_t a_id,
+			const SimpleSphere& base,
+			const SimplePoint& axis,
+			const double step,
+			Contour& result)
+	{
+		Rotation rotation(axis, 0);
+		const SimplePoint first_point=any_normal_of_vector<SimplePoint>(rotation.axis)*base.r;
+		const double angle_step=std::max(std::min(360*(step/(2*Rotation::pi()*base.r)), 60.0), 5.0);
+		result.push_back(PointRecord(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
+		for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
+		{
+			result.push_back(PointRecord(sum_of_points<SimplePoint>(base, rotation.rotate<SimplePoint>(first_point)), a_id, a_id));
+		}
 	}
 
 	static bool cut_and_split_contour(
