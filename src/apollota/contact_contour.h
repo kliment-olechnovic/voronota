@@ -59,16 +59,16 @@ public:
 		std::list<Contour> result;
 		if(a_id<spheres.size() && b_id<spheres.size())
 		{
-			std::set<std::size_t> neighbor_ids=collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids);
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
+			const std::multimap<double, std::size_t> neighbor_ids=collect_pair_neighbors_with_distances(a, spheres, collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids));
 			const Contour initial_contour=construct_circular_contour(a, b, a_id, vertices_vector, vertices_ids, probe, step);
 			if(!initial_contour.empty())
 			{
 				result.push_back(initial_contour);
-				for(std::set<std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+				for(std::multimap<double, std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
 				{
-					const std::size_t c_id=(*it);
+					const std::size_t c_id=it->second;
 					if(c_id<spheres.size())
 					{
 						const SimpleSphere& c=spheres[c_id];
@@ -197,6 +197,24 @@ private:
 			}
 		}
 		return neighbors_ids;
+	}
+
+	static std::multimap<double, std::size_t> collect_pair_neighbors_with_distances(
+			const SimpleSphere& a,
+			const std::vector<SimpleSphere>& spheres,
+			const std::set<std::size_t>& neighbor_ids)
+	{
+		std::multimap<double, std::size_t> result;
+		for(std::set<std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+		{
+			const std::size_t c_id=(*it);
+			if(c_id<spheres.size())
+			{
+				const SimpleSphere& c=spheres[c_id];
+				result.insert(std::make_pair(minimal_distance_from_sphere_to_sphere(a, c), c_id));
+			}
+		}
+		return result;
 	}
 
 	static bool check_if_radiuses_of_vertices_are_below_probe(
