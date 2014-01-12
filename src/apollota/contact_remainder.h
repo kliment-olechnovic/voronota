@@ -3,6 +3,7 @@
 
 #include "triangulation.h"
 #include "subdivided_icosahedron.h"
+#include "rotation.h"
 
 namespace apollota
 {
@@ -147,24 +148,96 @@ private:
 		return result;
 	}
 
-	static void cut_remainder(const SimpleSphere& c, Remainder& remainder)
+	static void cut_remainder(const SimpleSphere& sphere, Remainder& remainder)
 	{
-		bool marks[3]={false, false, false};
+		int marks[3]={0, 0, 0};
 		Remainder::iterator it=remainder.begin();
 		while(it!=remainder.end())
 		{
 			for(int i=0;i<3;i++)
 			{
-				marks[i]=distance_from_point_to_point(it->p[i], c)<c.r;
+				marks[i]=distance_from_point_to_point(it->p[i], sphere)<sphere.r ? 1 : 0;
 			}
-			if(marks[0] || marks[1] || marks[2])
+			int marks_sum=marks[0]+marks[1]+marks[2];
+			if(marks_sum==3)
 			{
 				it=remainder.erase(it);
+			}
+			else if(marks_sum==2)
+			{
+				int s0=(marks[0]==0 ? 0 : (marks[1]==0 ? 1 : 2));
+				int s1=(s0==0 ? 1 : 0);
+				int s2=(s0==2 ? 1 : 2);
+				SimplePoint c01;
+				SimplePoint c02;
+				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				{
+					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02));
+					it=remainder.erase(it);
+				}
+			}
+			else if(marks_sum==1)
+			{
+				int s0=(marks[0]==1 ? 0 : (marks[1]==1 ? 1 : 2));
+				int s1=(s0==0 ? 1 : 0);
+				int s2=(s0==2 ? 1 : 2);
+				SimplePoint c01;
+				SimplePoint c02;
+				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				{
+					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02));
+					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2]));
+					it=remainder.erase(it);
+				}
 			}
 			else
 			{
 				++it;
 			}
+		}
+	}
+
+	static bool intersect_vector_with_sphere(const SimpleSphere& sphere, const SimplePoint& a, const SimplePoint& b, SimplePoint& c)
+	{
+		if(sphere.r<=0.0)
+		{
+			return false;
+		}
+		const double d_oa=distance_from_point_to_point(a, sphere);
+		const double d_ob=distance_from_point_to_point(b, sphere);
+		if((d_oa<sphere.r && d_ob<sphere.r) || (d_oa>sphere.r && d_ob>sphere.r))
+		{
+			return false;
+		}
+		else if(d_oa>sphere.r && d_ob<sphere.r)
+		{
+			return intersect_vector_with_sphere(sphere, b, a, c);
+		}
+		else
+		{
+			const double angle_oac=min_angle(a, sphere, b);
+			if(equal(angle_oac, 0.0) || equal(angle_oac, Rotation::pi()))
+			{
+				c=SimplePoint(sphere)+((b-SimplePoint(sphere)).unit()*d_ob);
+			}
+			else
+			{
+				const double k=sin(angle_oac)/sphere.r;
+				double sin_aio=k*d_oa;
+				if(sin_aio<-1.0)
+				{
+					sin_aio=-1.0;
+				}
+				else if(sin_aio>1.0)
+				{
+					sin_aio=1.0;
+				}
+				const double angle_aco=asin(sin_aio);
+				const double angle_aoc=Rotation::pi()-(angle_oac+angle_aco);
+				const double d_ai=sin(angle_aoc)/k;
+				c=a+((b-a).unit()*d_ai);
+			}
+			return true;
 		}
 	}
 };
