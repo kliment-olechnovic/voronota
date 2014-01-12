@@ -881,18 +881,33 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 
 void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	const std::size_t sel=poh.argument<std::size_t>("--sel");
+	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
 	const double probe=poh.argument<double>("--probe", 1.4);
 	const double step=poh.argument<double>("--step", 0.3);
 	const int projections=poh.argument<int>("--projections", 7);
 
+	std::set<std::size_t> selection_set;
+	if(!selection_vector.empty())
+	{
+		if(!selection_as_intervals)
+		{
+			selection_set.insert(selection_vector.begin(), selection_vector.end());
+		}
+		else if(selection_vector.size()%2==0)
+		{
+			for(std::size_t i=0;i<selection_vector.size();i+=2)
+			{
+				for(std::size_t a=selection_vector[i];a<=selection_vector[i+1];a++)
+				{
+					selection_set.insert(a);
+				}
+			}
+		}
+	}
+
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
-
-	if(sel>=spheres.size())
-	{
-		return;
-	}
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
@@ -901,53 +916,51 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const apollota::ContactContour::PairsIDsMap pairs_vertices=apollota::ContactContour::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 
-	const std::vector<std::size_t> neighbors_list=neighbors_graph[sel];
-
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
-	for(std::size_t i=0;i<neighbors_list.size();i++)
+	for(std::set<std::size_t>::const_iterator sel_it=selection_set.begin();sel_it!=selection_set.end();++sel_it)
 	{
-		const std::size_t neighbor=neighbors_list[i];
-
-		std::ostringstream id_string;
-		id_string << neighbor;
-
-		apollota::UtilitiesForTriangulation::PairsNeighborsMap::const_iterator it=pairs_vertices.find(apollota::Pair(sel, neighbor));
-		if(it!=pairs_vertices.end())
+		const std::size_t sel=(*sel_it);
+		if(sel<spheres.size())
 		{
-			const std::set<std::size_t>& pair_vertices_list=it->second;
-			const std::list<apollota::ContactContour::Contour> contours=apollota::ContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, sel, neighbor, probe, step, projections);
-
-			if(!contours.empty())
+			const std::vector<std::size_t>& neighbors_list=neighbors_graph[sel];
+			for(std::size_t i=0;i<neighbors_list.size();i++)
 			{
-				apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_c")+id_string.str(), std::string("cgo_c")+id_string.str());
-
-
+				const std::size_t neighbor=neighbors_list[i];
+				if(selection_set.count(neighbor)==0)
 				{
-					opengl_printer.print_color(0xFFFF00);
-					const std::vector< std::vector<apollota::SimplePoint> > line_strips=apollota::ContactContour::collect_points_from_contours(contours);
-					for(std::size_t j=0;j<line_strips.size();j++)
+					apollota::UtilitiesForTriangulation::PairsNeighborsMap::const_iterator it=pairs_vertices.find(apollota::Pair(sel, neighbor));
+					if(it!=pairs_vertices.end())
 					{
-						opengl_printer.print_line_strip(line_strips[j], true);
-					}
-				}
+						const std::set<std::size_t>& pair_vertices_list=it->second;
+						const std::list<apollota::ContactContour::Contour> contours=apollota::ContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, sel, neighbor, probe, step, projections);
+						if(!contours.empty())
+						{
+							std::ostringstream id_string;
+							id_string << "a" << sel << "b" << neighbor;
+							apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
 
-				{
-					opengl_printer.print_color(0x00FF00);
-					const std::vector< std::vector<apollota::SimplePoint> > meshes=apollota::ContactContour::collect_meshes_from_contours(contours, spheres[sel], spheres[neighbor]);
-					for(std::size_t j=0;j<meshes.size();j++)
-					{
-						opengl_printer.print_triangle_strip(meshes[j], std::vector<apollota::SimplePoint>(meshes[j].size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit()), true);
+							{
+								opengl_printer.print_color(0xFFFF00);
+								const std::vector< std::vector<apollota::SimplePoint> > line_strips=apollota::ContactContour::collect_points_from_contours(contours);
+								for(std::size_t j=0;j<line_strips.size();j++)
+								{
+									opengl_printer.print_line_strip(line_strips[j], true);
+								}
+							}
+							{
+								opengl_printer.print_color(0x00FF00);
+								const std::vector< std::vector<apollota::SimplePoint> > meshes=apollota::ContactContour::collect_meshes_from_contours(contours, spheres[sel], spheres[neighbor]);
+								for(std::size_t j=0;j<meshes.size();j++)
+								{
+									opengl_printer.print_triangle_strip(meshes[j], std::vector<apollota::SimplePoint>(meshes[j].size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit()), true);
+								}
+							}
+						}
 					}
 				}
 			}
 		}
-	}
-
-	{
-		apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_center"), std::string("cgo_center"));
-		opengl_printer.print_color(0xFF0000);
-		opengl_printer.print_sphere(spheres[sel]);
 	}
 }
 
