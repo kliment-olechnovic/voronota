@@ -962,6 +962,9 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 	}
+
+	std::cout << "cmd.center('all')\n\n";
+	std::cout << "cmd.zoom('all')\n\n";
 }
 
 }
