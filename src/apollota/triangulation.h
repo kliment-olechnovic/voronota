@@ -1,8 +1,6 @@
 #ifndef APOLLOTA_TRIANGULATION_H_
 #define APOLLOTA_TRIANGULATION_H_
 
-#include <iostream>
-#include <sstream>
 #include <limits>
 #include <vector>
 #include <map>
@@ -17,7 +15,6 @@
 #endif
 
 #include "tuple.h"
-#include "bounding_spheres_hierarchy.h"
 #include "search_for_spherical_collisions.h"
 #include "tangent_plane_of_three_spheres.h"
 #include "tangent_sphere_of_four_spheres.h"
@@ -63,23 +60,6 @@ public:
 
 		Result() : quadruples_search_log(), surplus_quadruples_search_log()
 		{
-		}
-
-		void print_status(std::ostream& output) const
-		{
-			output << "quadruples " << quadruples_map.size() << "\n";
-			output << "tangent_spheres " << count_tangent_spheres_in_quadruples_map(quadruples_map) << "\n";
-			output << "processed_triples " << quadruples_search_log.processed_faces << "\n";
-			output << "loose_triples " << quadruples_search_log.encountered_difficult_faces << "\n";
-			output << "first_iterations " << quadruples_search_log.performed_iterations_for_finding_first_faces << "\n";
-			output << "surplus_tangent_spheres " << surplus_quadruples_search_log.surplus_tangent_spheres << "\n";
-			output << "excluded_hidden_balls " << excluded_hidden_spheres_ids.size() << "\n";
-			output << "ignored_balls " << ignored_spheres_ids.size();
-			for(std::set<std::size_t>::const_iterator it=ignored_spheres_ids.begin();it!=ignored_spheres_ids.end();++it)
-			{
-				output << (it==ignored_spheres_ids.begin() ? ":" : ",") << (*it);
-			}
-			output << "\n";
 		}
 	};
 
@@ -274,48 +254,6 @@ public:
 		}
 
 		return vertices_graph;
-	}
-
-	static void print_vertices_vector(const VerticesVector& vertices_vector, std::ostream& output)
-	{
-		output.precision(std::numeric_limits<double>::digits10);
-		output << std::fixed;
-		for(VerticesVector::const_iterator it=vertices_vector.begin();it!=vertices_vector.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			const SimpleSphere& tangent_sphere=it->second;
-			output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
-			output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << "\n";
-		}
-	}
-
-	static void print_vertices_vector_with_vertices_graph(const VerticesVector& vertices_vector, const VerticesGraph& vertices_graph, std::ostream& output)
-	{
-		if(vertices_vector.size()==vertices_graph.size())
-		{
-			output.precision(std::numeric_limits<double>::digits10);
-			output << std::fixed;
-			for(std::size_t i=0;i<vertices_vector.size();i++)
-			{
-				const Quadruple& quadruple=vertices_vector[i].first;
-				const SimpleSphere& tangent_sphere=vertices_vector[i].second;
-				const std::vector<std::size_t> links=vertices_graph[i];
-				output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
-				output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << " ";
-				for(std::size_t j=0;j<links.size();j++)
-				{
-					if(links[j]==npos)
-					{
-						output << "-1";
-					}
-					else
-					{
-						output << links[j];
-					}
-					output << (j+1<links.size() ? " " : "\n");
-				}
-			}
-		}
 	}
 
 private:

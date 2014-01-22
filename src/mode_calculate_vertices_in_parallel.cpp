@@ -7,6 +7,7 @@
 #endif
 
 #include "apollota/triangulation.h"
+#include "apollota/triangulation_output.h"
 
 #include "modes_commons.h"
 
@@ -443,11 +444,11 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 	{
 		if(link)
 		{
-			apollota::Triangulation::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), apollota::Triangulation::construct_vertices_graph(result.input_spheres, result.merged_quadruples_map), std::cout);
+			apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), apollota::Triangulation::construct_vertices_graph(result.input_spheres, result.merged_quadruples_map), std::cout);
 		}
 		else
 		{
-			apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
+			apollota::TriangulationOutput::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
 		}
 
 		if(print_log)
