@@ -11,8 +11,6 @@ namespace apollota
 class ContactRemainder
 {
 public:
-	typedef std::tr1::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
-
 	struct TriangleRecord
 	{
 		SimplePoint p[3];
@@ -26,20 +24,6 @@ public:
 	};
 
 	typedef std::list<TriangleRecord> Remainder;
-
-	static IDsMap collect_vertices_map_from_vertices_vector(const Triangulation::VerticesVector& vertices_vector)
-	{
-		IDsMap ids_vertices_map;
-		for(std::size_t i=0;i<vertices_vector.size();i++)
-		{
-			const Quadruple& quadruple=vertices_vector[i].first;
-			for(int a=0;a<4;a++)
-			{
-				ids_vertices_map[quadruple.get(a)].insert(i);
-			}
-		}
-		return ids_vertices_map;
-	}
 
 	static Remainder construct_contact_remainder(
 			const std::vector<SimpleSphere>& spheres,

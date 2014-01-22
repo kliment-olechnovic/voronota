@@ -14,8 +14,6 @@ namespace apollota
 class ContactContour
 {
 public:
-	typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsIDsMap;
-
 	struct PointRecord
 	{
 		SimplePoint p;
@@ -28,23 +26,6 @@ public:
 	};
 
 	typedef std::list<PointRecord> Contour;
-
-	static PairsIDsMap collect_pairs_vertices_map_from_vertices_vector(const Triangulation::VerticesVector& vertices_vector)
-	{
-		PairsIDsMap pairs_vertices_map;
-		for(std::size_t i=0;i<vertices_vector.size();i++)
-		{
-			const Quadruple& quadruple=vertices_vector[i].first;
-			for(int a=0;a<4;a++)
-			{
-				for(int b=a+1;b<4;b++)
-				{
-					pairs_vertices_map[Pair(quadruple.get(a), quadruple.get(b))].insert(i);
-				}
-			}
-		}
-		return pairs_vertices_map;
-	}
 
 	static std::list<Contour> construct_contact_contours(
 			const std::vector<SimpleSphere>& spheres,
