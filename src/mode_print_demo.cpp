@@ -2,66 +2,12 @@
 #include <deque>
 
 #include "apollota/triangulation.h"
+#include "apollota/triangulation_queries.h"
 #include "apollota/opengl_printer.h"
 #include "apollota/contact_contour.h"
 #include "apollota/contact_remainder.h"
 
 #include "modes_commons.h"
-
-namespace apollota
-{
-
-class UtilitiesForTriangulation
-{
-public:
-	typedef std::tr1::unordered_map<std::size_t, std::set<std::size_t> > NeighborsMap;
-	typedef std::vector< std::vector<std::size_t> > NeighborsGraph;
-
-	template<typename T>
-	static std::vector<SimpleSphere> collect_simple_spheres(const T& spheres)
-	{
-		std::vector<SimpleSphere> result;
-		result.reserve(spheres.size());
-		for(typename T::const_iterator it=spheres.begin();it!=spheres.end();++it)
-		{
-			result.push_back(SimpleSphere(*it));
-		}
-		return result;
-	}
-
-	static NeighborsMap collect_neighbors_map_from_quadruples_map(const Triangulation::QuadruplesMap& quadruples_map)
-	{
-		NeighborsMap neighbors_map;
-		for(Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			for(int a=0;a<4;a++)
-			{
-				for(int b=a+1;b<4;b++)
-				{
-					neighbors_map[quadruple.get(a)].insert(quadruple.get(b));
-					neighbors_map[quadruple.get(b)].insert(quadruple.get(a));
-				}
-			}
-		}
-		return neighbors_map;
-	}
-
-	static NeighborsGraph collect_neighbors_graph_from_neighbors_map(const NeighborsMap& neighbors_map, const std::size_t number_of_vertices)
-	{
-		NeighborsGraph neighbors_graph(number_of_vertices);
-		for(NeighborsMap::const_iterator it=neighbors_map.begin();it!=neighbors_map.end();++it)
-		{
-			if((it->first)<neighbors_graph.size())
-			{
-				neighbors_graph[it->first].insert(neighbors_graph[it->first].end(), it->second.begin(), it->second.end());
-			}
-		}
-		return neighbors_graph;
-	}
-};
-
-}
 
 namespace
 {
@@ -917,8 +863,8 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
 	{
-		const apollota::UtilitiesForTriangulation::NeighborsGraph neighbors_graph=apollota::UtilitiesForTriangulation::collect_neighbors_graph_from_neighbors_map(apollota::UtilitiesForTriangulation::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
-		const apollota::ContactContour::PairsIDsMap pairs_vertices=apollota::ContactContour::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+		const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_neighbors_graph_from_neighbors_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
+		const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 		for(std::set<std::size_t>::const_iterator sel_it=selection_set.begin();sel_it!=selection_set.end();++sel_it)
 		{
 			const std::size_t sel=(*sel_it);
@@ -930,7 +876,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 					const std::size_t neighbor=neighbors_list[i];
 					if(selection_set.count(neighbor)==0)
 					{
-						apollota::ContactContour::PairsIDsMap::const_iterator it=pairs_vertices.find(apollota::Pair(sel, neighbor));
+						apollota::TriangulationQueries::PairsMap::const_iterator it=pairs_vertices.find(apollota::Pair(sel, neighbor));
 						if(it!=pairs_vertices.end())
 						{
 							const std::set<std::size_t>& pair_vertices_list=it->second;
@@ -968,13 +914,13 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	if(draw_remainders)
 	{
 		apollota::SubdividedIcosahedron sih(sih_depth);
-		const apollota::ContactRemainder::IDsMap ids_vertices=apollota::ContactRemainder::collect_vertices_map_from_vertices_vector(vertices_vector);
+		const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 		for(std::set<std::size_t>::const_iterator sel_it=selection_set.begin();sel_it!=selection_set.end();++sel_it)
 		{
 			const std::size_t sel=(*sel_it);
 			if(sel<spheres.size())
 			{
-				apollota::ContactRemainder::IDsMap::const_iterator it=ids_vertices.find(sel);
+				apollota::TriangulationQueries::IDsMap::const_iterator it=ids_vertices.find(sel);
 				if(it!=ids_vertices.end())
 				{
 					const std::set<std::size_t>& vertices_set=it->second;
