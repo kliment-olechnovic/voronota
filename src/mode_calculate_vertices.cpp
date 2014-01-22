@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "apollota/triangulation.h"
+#include "apollota/triangulation_output.h"
 
 #include "modes_commons.h"
 
@@ -57,17 +58,17 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(link)
 	{
-		apollota::Triangulation::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), apollota::Triangulation::construct_vertices_graph(spheres, triangulation_result.quadruples_map), std::cout);
+		apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), apollota::Triangulation::construct_vertices_graph(spheres, triangulation_result.quadruples_map), std::cout);
 	}
 	else
 	{
-		apollota::Triangulation::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), std::cout);
+		apollota::TriangulationOutput::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map), std::cout);
 	}
 
 	if(print_log)
 	{
 		std::clog << "balls " <<  spheres.size() << "\n";
-		triangulation_result.print_status(std::clog);
+		apollota::TriangulationOutput::print_status(triangulation_result, std::clog);
 	}
 
 	if(check)
