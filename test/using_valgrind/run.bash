@@ -30,6 +30,6 @@ valgrind --tool=memcheck $TEST_SUBJECT --mode calculate-vertices --print-log < $
 
 echo
 echo "Comparing triangulations:"
-valgrind --tool=memcheck $TEST_SUBJECT --mode compare-quadruples-sets --first-triangulation-file $TRIANGULATION_FILE --second-triangulation-file $TRIANGULATION_FILE < $BALLS_FILE
+valgrind --tool=memcheck $TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $TRIANGULATION_FILE --second-quadruples-file $TRIANGULATION_FILE < $BALLS_FILE
 
 rm -r "$TMP_DIR"
