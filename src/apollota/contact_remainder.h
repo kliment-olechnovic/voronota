@@ -25,6 +25,22 @@ public:
 
 	typedef std::list<TriangleRecord> Remainder;
 
+	static bool check_remainder_possible(
+			const Triangulation::VerticesVector& vertices_vector,
+			const std::set<std::size_t>& vertices_ids,
+			const double probe)
+	{
+		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		{
+			const std::size_t vertex_id=(*it);
+			if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	static Remainder construct_contact_remainder(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
@@ -58,22 +74,6 @@ public:
 	}
 
 private:
-	static bool check_remainder_possible(
-			const Triangulation::VerticesVector& vertices_vector,
-			const std::set<std::size_t>& vertices_ids,
-			const double probe)
-	{
-		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
-		{
-			const std::size_t vertex_id=(*it);
-			if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	static std::set<std::size_t> collect_neighbors_from_vertices(
 			const std::size_t a_id,
 			const Triangulation::VerticesVector& vertices_vector,
