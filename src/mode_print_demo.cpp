@@ -863,7 +863,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
 	{
-		const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_neighbors_graph_from_neighbors_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
+		const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
 		const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 		for(std::set<std::size_t>::const_iterator sel_it=selection_set.begin();sel_it!=selection_set.end();++sel_it)
 		{
@@ -961,7 +961,7 @@ void print_contacts_counts(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 
 	const std::vector< std::vector<std::size_t> > neighbors_graph=
-			apollota::TriangulationQueries::collect_neighbors_graph_from_neighbors_map(
+			apollota::TriangulationQueries::collect_ids_graph_from_ids_map(
 					apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
 
 	std::size_t counter_voronoi_all=0;
