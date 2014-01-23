@@ -952,6 +952,53 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "cmd.zoom('all')\n\n";
 }
 
+void print_contacts_counts(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double probe=poh.argument<double>("--probe", 1.4);
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+
+	const std::vector< std::vector<std::size_t> > neighbors_graph=
+			apollota::TriangulationQueries::collect_neighbors_graph_from_neighbors_map(
+					apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
+
+	std::size_t counter_voronoi_all=0;
+	std::size_t counter_voronoi_real=0;
+	std::size_t counter_distance_all=0;
+	std::size_t counter_distance_real=0;
+	for(std::size_t i=0;i<neighbors_graph.size();i++)
+	{
+		for(std::size_t j=0;j<neighbors_graph[i].size();j++)
+		{
+			counter_voronoi_all++;
+			if(apollota::minimal_distance_from_sphere_to_sphere(spheres[i], spheres[neighbors_graph[i][j]])<(probe*2))
+			{
+				counter_voronoi_real++;
+			}
+		}
+		for(std::size_t j=0;j<neighbors_graph.size();j++)
+		{
+			if(i!=j)
+			{
+				counter_distance_all++;
+				if(apollota::minimal_distance_from_sphere_to_sphere(spheres[i], spheres[j])<(probe*2))
+				{
+					counter_distance_real++;
+				}
+			}
+		}
+	}
+
+	std::cout << counter_voronoi_all << " voronoi_all\n";
+	std::cout << counter_voronoi_real << " voronoi_real\n";
+	std::cout << counter_distance_all << " distance_all\n";
+	std::cout << counter_distance_real << " distance_real\n";
+	std::cout << static_cast<double>(counter_voronoi_real)/static_cast<double>(counter_voronoi_all) << " voronoi_real/voronoi_all\n";
+	std::cout << static_cast<double>(counter_voronoi_real)/static_cast<double>(counter_distance_real) << " voronoi_real/distance_real\n";
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -998,6 +1045,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="contact-contours")
 	{
 		print_contact_contours(poh);
+	}
+	else if(scene=="print-contacts-counts")
+	{
+		print_contacts_counts(poh);
 	}
 	else
 	{
