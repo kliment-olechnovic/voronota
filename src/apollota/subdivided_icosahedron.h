@@ -52,6 +52,8 @@ public:
 		{
 			grow();
 		}
+
+		max_edge_length_=calc_max_edge_length();
 	}
 
 	const SimplePoint center() const
@@ -78,11 +80,12 @@ public:
 			vertices_[i]=new_center+((vertices_[i]-center_).unit()*radius);
 		}
 		center_=new_center;
+		max_edge_length_=calc_max_edge_length();
 	}
 
-	double edge_length_estimate() const
+	double max_edge_length() const
 	{
-		return distance_from_point_to_point(vertices_.at(triples_.front().get(0)), vertices_.at(triples_.front().get(1)));
+		return max_edge_length_;
 	}
 
 private:
@@ -119,9 +122,23 @@ private:
 		triples_=new_triples;
 	}
 
+	double calc_max_edge_length() const
+	{
+		double max_length=0.0;
+		for(std::size_t i=0;i<triples_.size();i++)
+		{
+			const Triple& t=triples_[i];
+			max_length=std::max(max_length, distance_from_point_to_point(vertices_[t.get(0)], vertices_[t.get(1)]));
+			max_length=std::max(max_length, distance_from_point_to_point(vertices_[t.get(0)], vertices_[t.get(2)]));
+			max_length=std::max(max_length, distance_from_point_to_point(vertices_[t.get(1)], vertices_[t.get(2)]));
+		}
+		return max_length;
+	}
+
 	SimplePoint center_;
 	std::vector<SimplePoint> vertices_;
 	std::vector<Triple> triples_;
+	double max_edge_length_;
 };
 
 }
