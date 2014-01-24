@@ -14,12 +14,17 @@ public:
 	struct TriangleRecord
 	{
 		SimplePoint p[3];
+		int s[3];
 
-		TriangleRecord(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c)
+		TriangleRecord(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c,
+				const bool sa, const bool sb, const bool sc)
 		{
 			p[0]=a;
 			p[1]=b;
 			p[2]=c;
+			s[0]=sa;
+			s[1]=sb;
+			s[2]=sc;
 		}
 	};
 
@@ -127,7 +132,7 @@ private:
 		for(std::size_t i=0;i<sih.triples().size();i++)
 		{
 			const Triple& t=sih.triples()[i];
-			result.push_back(TriangleRecord(sih.vertices()[t.get(0)], sih.vertices()[t.get(1)], sih.vertices()[t.get(2)]));
+			result.push_back(TriangleRecord(sih.vertices()[t.get(0)], sih.vertices()[t.get(1)], sih.vertices()[t.get(2)], 0, 0, 0));
 		}
 		return result;
 	}
@@ -156,7 +161,7 @@ private:
 				SimplePoint c02;
 				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
-					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02));
+					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02, it->s[s0], 1, 1));
 					it=remainder.erase(it);
 				}
 			}
@@ -169,8 +174,8 @@ private:
 				SimplePoint c02;
 				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
-					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02));
-					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2]));
+					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02, it->s[s1], 1, 1));
+					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2], it->s[s1], 1, it->s[s2]));
 					it=remainder.erase(it);
 				}
 			}
