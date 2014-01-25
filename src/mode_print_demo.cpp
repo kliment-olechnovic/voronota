@@ -881,27 +881,21 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 						{
 							const std::set<std::size_t>& pair_vertices_list=it->second;
 							const std::list<apollota::ContactContour::Contour> contours=apollota::ContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, sel, neighbor, probe, step, projections);
-							if(!contours.empty())
+							for(std::list<apollota::ContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 							{
+								const apollota::ContactContour::Contour& contour=(*contours_it);
 								std::ostringstream id_string;
 								id_string << "a" << sel << "b" << neighbor;
 								apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
-
 								{
 									opengl_printer.print_color(0xFFFF00);
-									const std::vector< std::vector<apollota::SimplePoint> > line_strips=apollota::ContactContour::collect_points_from_contours(contours);
-									for(std::size_t j=0;j<line_strips.size();j++)
-									{
-										opengl_printer.print_line_strip(line_strips[j], true);
-									}
+									opengl_printer.print_line_strip(apollota::ContactContour::collect_points_from_contour(contour), true);
 								}
 								{
 									opengl_printer.print_color(0x00FF00);
-									const std::vector< std::vector<apollota::SimplePoint> > meshes=apollota::ContactContour::collect_meshes_from_contours(contours, spheres[sel], spheres[neighbor]);
-									for(std::size_t j=0;j<meshes.size();j++)
-									{
-										opengl_printer.print_triangle_strip(meshes[j], std::vector<apollota::SimplePoint>(meshes[j].size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit()), true);
-									}
+									const std::vector<apollota::SimplePoint> mesh=apollota::ContactContour::collect_mesh_from_contour(contour, spheres[sel], spheres[neighbor]);
+									const std::vector<apollota::SimplePoint> normals(mesh.size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
+									opengl_printer.print_triangle_strip(mesh, normals, true);
 								}
 							}
 						}
