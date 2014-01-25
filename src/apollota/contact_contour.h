@@ -94,6 +94,39 @@ public:
 		return result;
 	}
 
+	static std::list<Contour> collect_subcontours_from_contour(const Contour& contour)
+	{
+		std::list<Contour> result;
+		Contour::const_iterator start_it=contour.begin();
+		while(start_it!=contour.end() && start_it->left_id==start_it->right_id)
+		{
+			++start_it;
+		}
+		if(start_it==contour.end())
+		{
+			result.push_back(contour);
+		}
+		else
+		{
+			Contour::const_iterator it=start_it;
+			result.push_back(Contour());
+			result.back().push_back(*it);
+			it=get_right_iterator(contour, it);
+			while(it!=start_it)
+			{
+				if(it->left_id!=it->right_id)
+				{
+					result.back().push_back(*it);
+					result.push_back(Contour());
+				}
+				result.back().push_back(*it);
+				it=get_right_iterator(contour, it);
+			}
+			result.back().push_back(*it);
+		}
+		return result;
+	}
+
 	static std::vector<SimplePoint> collect_points_from_contour(const Contour& contour)
 	{
 		std::vector<SimplePoint> result;
