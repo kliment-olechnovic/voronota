@@ -94,61 +94,45 @@ public:
 		return result;
 	}
 
-	static std::vector< std::vector<SimplePoint> > collect_points_from_contours(const std::list<Contour>& contours)
+	static std::vector<SimplePoint> collect_points_from_contour(const Contour& contour)
 	{
-		std::vector< std::vector<SimplePoint> > result;
-		result.reserve(contours.size());
-		for(std::list<Contour>::const_iterator it=contours.begin();it!=contours.end();++it)
+		std::vector<SimplePoint> result;
+		if(!contour.empty())
 		{
-			const Contour& contour=(*it);
-			if(!contour.empty())
+			result.reserve(contour.size());
+			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
 			{
-				const std::size_t contour_size=contour.size();
-				result.push_back(std::vector<SimplePoint>());
-				result.back().reserve(contour_size);
-				for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
-				{
-					result.back().push_back(jt->p);
-				}
+				result.push_back(jt->p);
 			}
 		}
 		return result;
 	}
 
-	static std::vector< std::vector<SimplePoint> > collect_meshes_from_contours(
-			const std::list<Contour>& contours,
+	static std::vector<SimplePoint> collect_mesh_from_contour(
+			const Contour& contour,
 			const SimpleSphere& a,
 			const SimpleSphere& b)
 	{
-		std::vector< std::vector<SimplePoint> > result;
-		result.reserve(contours.size());
-		for(std::list<Contour>::const_iterator it=contours.begin();it!=contours.end();++it)
+		std::vector<SimplePoint> result;
+		if(!contour.empty())
 		{
-			const Contour& contour=(*it);
-			if(!contour.empty())
+			const std::size_t contour_size=contour.size();
+			result.reserve(contour_size+1);
 			{
-				const std::size_t contour_size=contour.size();
-
-				result.push_back(std::vector<SimplePoint>());
-				result.back().reserve(contour_size+1);
-
-				{
-					SimplePoint mc(0.0, 0.0, 0.0);
-					for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
-					{
-						mc=mc+(jt->p);
-					}
-					mc=mc*(1.0/static_cast<double>(contour_size));
-					mc=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mc, a, b);
-					result.back().push_back(mc);
-				}
-
+				SimplePoint mc(0.0, 0.0, 0.0);
 				for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
 				{
-					result.back().push_back(jt->p);
+					mc=mc+(jt->p);
 				}
-				result.back().push_back(contour.begin()->p);
+				mc=mc*(1.0/static_cast<double>(contour_size));
+				mc=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mc, a, b);
+				result.push_back(mc);
 			}
+			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
+			{
+				result.push_back(jt->p);
+			}
+			result.push_back(contour.begin()->p);
 		}
 		return result;
 	}
