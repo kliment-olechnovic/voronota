@@ -971,7 +971,10 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<grouped_remainders[group_id].size();i++)
 		{
 			const std::size_t sphere_id=grouped_remainders[group_id][i].first;
+			opengl_printer.print_color(0x77FF00);
+			opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r-1.0));
 			const apollota::ContactRemainder::Remainder& remainder=grouped_remainders[group_id][i].second;
+			opengl_printer.print_color(0xFF7700);
 			for(apollota::ContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 			{
 				std::vector<apollota::SimplePoint> ts(3);
