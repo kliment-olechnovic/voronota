@@ -10,6 +10,87 @@ namespace apollota
 class ContactRemaindersGrouping
 {
 public:
+	typedef std::vector< std::vector< std::pair<std::size_t, ContactRemainder::Remainder> > > GroupedRemainders;
+
+	static GroupedRemainders construct_grouped_remainders(
+			const std::vector<SimpleSphere>& spheres,
+			const Triangulation::VerticesVector& vertices_vector,
+			const double probe,
+			const double step,
+			const int projections,
+			const std::size_t sih_depth)
+	{
+		apollota::ContactRemaindersGrouping::SurfaceContoursVector pairs_surface_contours_vector;
+		std::vector<int> marks;
+		const int groups_count=apollota::ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, pairs_surface_contours_vector, marks);
+
+		std::vector< std::map<int, std::list<std::size_t> > > spheres_exposures(spheres.size());
+		for(std::size_t i=0;i<pairs_surface_contours_vector.size();i++)
+		{
+			const std::size_t a=pairs_surface_contours_vector[i].first.get(0);
+			const std::size_t b=pairs_surface_contours_vector[i].first.get(1);
+			const int group_id=marks[i];
+			spheres_exposures[a][group_id].push_back(i);
+			spheres_exposures[b][group_id].push_back(i);
+		}
+
+		const SubdividedIcosahedron sih(sih_depth);
+		const TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+		GroupedRemainders result(groups_count+1);
+		for(std::size_t sphere_id=0;sphere_id<spheres_exposures.size();sphere_id++)
+		{
+			if(!spheres_exposures[sphere_id].empty())
+			{
+				apollota::TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(sphere_id);
+				if(ids_vertices_it!=ids_vertices.end())
+				{
+					const apollota::ContactRemainder::Remainder full_remainder=apollota::ContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, sphere_id, probe, sih);
+					if(!full_remainder.empty())
+					{
+						const std::map<int, std::list<std::size_t> >& sphere_exposure=spheres_exposures[sphere_id];
+						if(sphere_exposure.size()==1)
+						{
+							result[sphere_exposure.begin()->first].push_back(std::make_pair(sphere_id, full_remainder));
+						}
+						else
+						{
+							std::map<int, apollota::ContactRemainder::Remainder> split_remainders;
+							for(ContactRemainder::Remainder::const_iterator full_remainder_it=full_remainder.begin();full_remainder_it!=full_remainder.end();++full_remainder_it)
+							{
+								const SimplePoint p=(full_remainder_it->p[0]+full_remainder_it->p[1]+full_remainder_it->p[2])*(1.0/3.0);
+								std::pair<double, int> minimal_distance_to_group(std::numeric_limits<double>::max(), -1);
+								for(std::map<int, std::list<std::size_t> >::const_iterator sphere_exposure_it=sphere_exposure.begin();sphere_exposure_it!=sphere_exposure.end();++sphere_exposure_it)
+								{
+									const int group_id=sphere_exposure_it->first;
+									const std::list<std::size_t>& contours_ids=sphere_exposure_it->second;
+									for(std::list<std::size_t>::const_iterator contours_ids_it=contours_ids.begin();contours_ids_it!=contours_ids.end();++contours_ids_it)
+									{
+										const ContactContour::Contour& contour=pairs_surface_contours_vector[*contours_ids_it].second;
+										for(ContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
+										{
+											minimal_distance_to_group=std::min(minimal_distance_to_group, std::make_pair(distance_from_point_to_point(p, contour_it->p), group_id));
+										}
+									}
+								}
+								split_remainders[minimal_distance_to_group.second].push_back(*full_remainder_it);
+							}
+							for(std::map<int, apollota::ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
+							{
+								if(split_remainders_it->first>=0)
+								{
+									result[split_remainders_it->first].push_back(*split_remainders_it);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+private:
 	typedef std::vector< std::pair<Pair, ContactContour::Contour> > SurfaceContoursVector;
 
 	static int construct_surface_contours(
