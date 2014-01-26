@@ -20,9 +20,9 @@ public:
 			const int projections,
 			const std::size_t sih_depth)
 	{
-		apollota::ContactRemaindersGrouping::SurfaceContoursVector pairs_surface_contours_vector;
+		ContactRemaindersGrouping::SurfaceContoursVector pairs_surface_contours_vector;
 		std::vector<int> marks;
-		const int groups_count=apollota::ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, pairs_surface_contours_vector, marks);
+		const int groups_count=ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, pairs_surface_contours_vector, marks);
 
 		std::vector< std::map<int, std::list<std::size_t> > > spheres_exposures(spheres.size());
 		for(std::size_t i=0;i<pairs_surface_contours_vector.size();i++)
@@ -35,16 +35,16 @@ public:
 		}
 
 		const SubdividedIcosahedron sih(sih_depth);
-		const TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+		const TriangulationQueries::IDsMap ids_vertices=TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 		GroupedRemainders result(groups_count+1);
 		for(std::size_t sphere_id=0;sphere_id<spheres_exposures.size();sphere_id++)
 		{
 			if(!spheres_exposures[sphere_id].empty())
 			{
-				apollota::TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(sphere_id);
+				TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(sphere_id);
 				if(ids_vertices_it!=ids_vertices.end())
 				{
-					const apollota::ContactRemainder::Remainder full_remainder=apollota::ContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, sphere_id, probe, sih);
+					const ContactRemainder::Remainder full_remainder=ContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, sphere_id, probe, sih);
 					if(!full_remainder.empty())
 					{
 						const std::map<int, std::list<std::size_t> >& sphere_exposure=spheres_exposures[sphere_id];
@@ -54,7 +54,7 @@ public:
 						}
 						else
 						{
-							std::map<int, apollota::ContactRemainder::Remainder> split_remainders;
+							std::map<int, ContactRemainder::Remainder> split_remainders;
 							for(ContactRemainder::Remainder::const_iterator full_remainder_it=full_remainder.begin();full_remainder_it!=full_remainder.end();++full_remainder_it)
 							{
 								const SimplePoint p=(full_remainder_it->p[0]+full_remainder_it->p[1]+full_remainder_it->p[2])*(1.0/3.0);
@@ -74,11 +74,11 @@ public:
 								}
 								split_remainders[minimal_distance_to_group.second].push_back(*full_remainder_it);
 							}
-							for(std::map<int, apollota::ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
+							for(std::map<int, ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
 							{
 								if(split_remainders_it->first>=0)
 								{
-									result[split_remainders_it->first].push_back(*split_remainders_it);
+									result[split_remainders_it->first].push_back(std::make_pair(sphere_id, split_remainders_it->second));
 								}
 							}
 						}
