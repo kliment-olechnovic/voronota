@@ -20,15 +20,15 @@ public:
 			const int projections,
 			const std::size_t sih_depth)
 	{
-		ContactRemaindersGrouping::SurfaceContoursVector pairs_surface_contours_vector;
+		ContactRemaindersGrouping::SurfaceContoursVector surface_contours_vector;
 		std::vector<int> marks;
-		const int groups_count=ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, pairs_surface_contours_vector, marks);
+		const int groups_count=ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
 
 		std::vector< std::map<int, std::list<std::size_t> > > spheres_exposures(spheres.size());
-		for(std::size_t i=0;i<pairs_surface_contours_vector.size();i++)
+		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
-			const std::size_t a=pairs_surface_contours_vector[i].first.get(0);
-			const std::size_t b=pairs_surface_contours_vector[i].first.get(1);
+			const std::size_t a=surface_contours_vector[i].first.get(0);
+			const std::size_t b=surface_contours_vector[i].first.get(1);
 			const int group_id=marks[i];
 			spheres_exposures[a][group_id].push_back(i);
 			spheres_exposures[b][group_id].push_back(i);
@@ -65,7 +65,7 @@ public:
 									const std::list<std::size_t>& contours_ids=sphere_exposure_it->second;
 									for(std::list<std::size_t>::const_iterator contours_ids_it=contours_ids.begin();contours_ids_it!=contours_ids.end();++contours_ids_it)
 									{
-										const ContactContour::Contour& contour=pairs_surface_contours_vector[*contours_ids_it].second;
+										const ContactContour::Contour& contour=surface_contours_vector[*contours_ids_it].second;
 										for(ContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
 										{
 											minimal_distance_to_group=std::min(minimal_distance_to_group, std::make_pair(distance_from_point_to_point(p, contour_it->p), group_id));
@@ -99,13 +99,13 @@ private:
 			const double probe,
 			const double step,
 			const int projections,
-			SurfaceContoursVector& pairs_surface_contours_vector,
+			SurfaceContoursVector& surface_contours_vector,
 			std::vector<int>& marks)
 	{
 		typedef std::tr1::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
 		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 		PairsIDsMap pairs_surface_contours_map;
-		pairs_surface_contours_vector.clear();
+		surface_contours_vector.clear();
 		for(TriangulationQueries::PairsMap::const_iterator it=pairs_vertices.begin();it!=pairs_vertices.end();++it)
 		{
 			const std::size_t a=it->first.get(0);
@@ -130,8 +130,8 @@ private:
 							const ContactContour::Contour& subcontour=(*subcontours_it);
 							if(!subcontour.empty() && subcontour.front().right_id==a && subcontour.front().left_id!=a)
 							{
-								pairs_surface_contours_map[it->first].push_back(pairs_surface_contours_vector.size());
-								pairs_surface_contours_vector.push_back(std::make_pair(it->first, subcontour));
+								pairs_surface_contours_map[it->first].push_back(surface_contours_vector.size());
+								surface_contours_vector.push_back(std::make_pair(it->first, subcontour));
 							}
 						}
 					}
@@ -139,7 +139,7 @@ private:
 			}
 		}
 		marks.clear();
-		marks.resize(pairs_surface_contours_vector.size(), 0);
+		marks.resize(surface_contours_vector.size(), 0);
 		int groups_count=0;
 		for(std::size_t i=0;i<marks.size();i++)
 		{
@@ -153,9 +153,9 @@ private:
 				{
 					const std::size_t j=stack.back();
 					stack.pop_back();
-					const std::size_t a=pairs_surface_contours_vector[j].first.get(0);
-					const std::size_t b=pairs_surface_contours_vector[j].first.get(1);
-					const ContactContour::Contour& contour=pairs_surface_contours_vector[j].second;
+					const std::size_t a=surface_contours_vector[j].first.get(0);
+					const std::size_t b=surface_contours_vector[j].first.get(1);
+					const ContactContour::Contour& contour=surface_contours_vector[j].second;
 					const std::size_t c[2]={contour.front().left_id, contour.back().right_id};
 					const Pair related_pairs[4]={Pair(a, c[0]), Pair(a, c[1]), Pair(b, c[0]), Pair(b, c[1])};
 					for(int e=0;e<4;e++)
@@ -171,7 +171,7 @@ private:
 								for(std::list<std::size_t>::const_iterator jt=related_contours_ids.begin();jt!=related_contours_ids.end();++jt)
 								{
 									const std::size_t related_contour_id=(*jt);
-									const ContactContour::Contour& related_contour=pairs_surface_contours_vector[related_contour_id].second;
+									const ContactContour::Contour& related_contour=surface_contours_vector[related_contour_id].second;
 									double shortest_dist=distance_from_point_to_point(contour.front().p, related_contour.front().p);
 									shortest_dist=std::min(shortest_dist, distance_from_point_to_point(contour.front().p, related_contour.back().p));
 									shortest_dist=std::min(shortest_dist, distance_from_point_to_point(contour.back().p, related_contour.front().p));
