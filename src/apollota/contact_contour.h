@@ -63,9 +63,9 @@ public:
 							{
 								if(!contour.empty())
 								{
+									mend_contour(a, b, c, c_id, step, projections, contour);
 									if(check_contour_intersects_sphere(bounding_sphere_of_vertices_centers, contour))
 									{
-										mend_contour(a, b, c, c_id, step, projections, contour);
 										++jt;
 									}
 									else
