@@ -953,6 +953,8 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const double step=poh.argument<double>("--step", 0.3);
 	const int projections=poh.argument<int>("--projections", 7);
 	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
+	const std::size_t min_group_size=poh.argument<std::size_t>("--min-group-size", 10);
+	const std::size_t max_group_size=poh.argument<std::size_t>("--max-group-size", 100);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -962,29 +964,32 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::ContactRemaindersGrouping::GroupedRemainders grouped_remainders=apollota::ContactRemaindersGrouping::construct_grouped_remainders(spheres, vertices_vector, probe, step, projections, sih_depth);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
-	for(std::size_t group_id=2;group_id<grouped_remainders.size();group_id++)
+	for(std::size_t group_id=0;group_id<grouped_remainders.size();group_id++)
 	{
-		std::ostringstream id_string;
-		id_string << "g" << group_id;
-		apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
-		opengl_printer.print_color(0xFF7700);
-		for(std::size_t i=0;i<grouped_remainders[group_id].size();i++)
+		if(grouped_remainders[group_id].size()>=min_group_size && grouped_remainders[group_id].size()<=max_group_size)
 		{
-			const std::size_t sphere_id=grouped_remainders[group_id][i].first;
-			opengl_printer.print_color(0x77FF00);
-			opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r-1.0));
-			const apollota::ContactRemainder::Remainder& remainder=grouped_remainders[group_id][i].second;
+			std::ostringstream id_string;
+			id_string << "g" << group_id;
+			apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
 			opengl_printer.print_color(0xFF7700);
-			for(apollota::ContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+			for(std::size_t i=0;i<grouped_remainders[group_id].size();i++)
 			{
-				std::vector<apollota::SimplePoint> ts(3);
-				std::vector<apollota::SimplePoint> ns(3);
-				for(int i=0;i<3;i++)
+				const std::size_t sphere_id=grouped_remainders[group_id][i].first;
+				opengl_printer.print_color(0x77FF00);
+				opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r-1.0));
+				const apollota::ContactRemainder::Remainder& remainder=grouped_remainders[group_id][i].second;
+				opengl_printer.print_color(0xFF7700);
+				for(apollota::ContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
-					ts[i]=remainder_it->p[i];
-					ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[sphere_id]).unit();
+					std::vector<apollota::SimplePoint> ts(3);
+					std::vector<apollota::SimplePoint> ns(3);
+					for(int i=0;i<3;i++)
+					{
+						ts[i]=remainder_it->p[i];
+						ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[sphere_id]).unit();
+					}
+					opengl_printer.print_triangle_strip(ts, ns, false);
 				}
-				opengl_printer.print_triangle_strip(ts, ns, false);
 			}
 		}
 	}
