@@ -10,7 +10,7 @@ namespace apollota
 class ContactRemaindersGrouping
 {
 public:
-	typedef std::map< int, std::vector< std::pair<std::size_t, ContactRemainder::Remainder> > > ContactRemaindersGroupsMap;
+	typedef std::map< int, std::map<std::size_t, ContactRemainder::Remainder> > ContactRemaindersGroupsMap;
 
 	static ContactRemaindersGroupsMap construct_grouped_remainders(
 			const std::vector<SimpleSphere>& spheres,
@@ -50,7 +50,7 @@ public:
 						const std::map<int, std::list<std::size_t> >& sphere_exposure=spheres_exposures[sphere_id];
 						if(sphere_exposure.size()==1)
 						{
-							result[sphere_exposure.begin()->first].push_back(std::make_pair(sphere_id, full_remainder));
+							result[sphere_exposure.begin()->first][sphere_id]=full_remainder;
 						}
 						else
 						{
@@ -76,7 +76,7 @@ public:
 							}
 							for(std::map<int, ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
 							{
-								result[split_remainders_it->first].push_back(std::make_pair(sphere_id, split_remainders_it->second));
+								result[split_remainders_it->first][sphere_id]=split_remainders_it->second;
 							}
 						}
 					}
