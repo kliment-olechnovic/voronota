@@ -10,9 +10,9 @@ namespace apollota
 class ContactRemaindersGrouping
 {
 public:
-	typedef std::vector< std::vector< std::pair<std::size_t, ContactRemainder::Remainder> > > GroupedRemainders;
+	typedef std::map< int, std::vector< std::pair<std::size_t, ContactRemainder::Remainder> > > ContactRemaindersGroupsMap;
 
-	static GroupedRemainders construct_grouped_remainders(
+	static ContactRemaindersGroupsMap construct_grouped_remainders(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
@@ -22,7 +22,7 @@ public:
 	{
 		ContactRemaindersGrouping::SurfaceContoursVector surface_contours_vector;
 		std::vector<int> marks;
-		const int groups_count=ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
+		ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
 
 		std::vector< std::map<int, std::list<std::size_t> > > spheres_exposures(spheres.size());
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
@@ -36,7 +36,7 @@ public:
 
 		const SubdividedIcosahedron sih(sih_depth);
 		const TriangulationQueries::IDsMap ids_vertices=TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-		GroupedRemainders result(groups_count+1);
+		ContactRemaindersGroupsMap result;
 		for(std::size_t sphere_id=0;sphere_id<spheres_exposures.size();sphere_id++)
 		{
 			if(!spheres_exposures[sphere_id].empty())
@@ -76,10 +76,7 @@ public:
 							}
 							for(std::map<int, ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
 							{
-								if(split_remainders_it->first>=0)
-								{
-									result[split_remainders_it->first].push_back(std::make_pair(sphere_id, split_remainders_it->second));
-								}
+								result[split_remainders_it->first].push_back(std::make_pair(sphere_id, split_remainders_it->second));
 							}
 						}
 					}

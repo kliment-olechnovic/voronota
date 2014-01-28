@@ -961,23 +961,27 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
-	apollota::ContactRemaindersGrouping::GroupedRemainders grouped_remainders=apollota::ContactRemaindersGrouping::construct_grouped_remainders(spheres, vertices_vector, probe, step, projections, sih_depth);
+	apollota::ContactRemaindersGrouping::ContactRemaindersGroupsMap grouped_remainders=apollota::ContactRemaindersGrouping::construct_grouped_remainders(spheres, vertices_vector, probe, step, projections, sih_depth);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
-	for(std::size_t group_id=0;group_id<grouped_remainders.size();group_id++)
+
+	for(apollota::ContactRemaindersGrouping::ContactRemaindersGroupsMap::const_iterator grouped_remainders_it=grouped_remainders.begin();grouped_remainders_it!=grouped_remainders.end();++grouped_remainders_it)
 	{
-		if(grouped_remainders[group_id].size()>=min_group_size && grouped_remainders[group_id].size()<=max_group_size)
+		const std::size_t group_id=grouped_remainders_it->first;
+		const std::vector< std::pair<std::size_t, apollota::ContactRemainder::Remainder> >& group_vector=grouped_remainders_it->second;
+		if(group_vector.size()>=min_group_size && group_vector.size()<=max_group_size)
 		{
 			std::ostringstream id_string;
 			id_string << "g" << group_id;
 			apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
+			apollota::OpenGLPrinter opengl_printer_b(std::cout, std::string("obj_")+id_string.str()+"b", std::string("cgo_")+id_string.str()+"b");
 			opengl_printer.print_color(0xFF7700);
-			for(std::size_t i=0;i<grouped_remainders[group_id].size();i++)
+			for(std::size_t i=0;i<group_vector.size();i++)
 			{
-				const std::size_t sphere_id=grouped_remainders[group_id][i].first;
-				opengl_printer.print_color(0x77FF00);
-				opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r-1.0));
-				const apollota::ContactRemainder::Remainder& remainder=grouped_remainders[group_id][i].second;
+				const std::size_t sphere_id=group_vector[i].first;
+				opengl_printer_b.print_color(0x77FF00);
+				opengl_printer_b.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r));
+				const apollota::ContactRemainder::Remainder& remainder=group_vector[i].second;
 				opengl_printer.print_color(0xFF7700);
 				for(apollota::ContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
@@ -996,6 +1000,8 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::cout << "cmd.center('all')\n\n";
 	std::cout << "cmd.zoom('all')\n\n";
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
+	std::cout << "cmd.set('two_sided_lighting', 1)\n\n";
 }
 
 void print_contacts_counts(const auxiliaries::ProgramOptionsHandler& poh)
