@@ -10,9 +10,36 @@ namespace apollota
 class ContactRemaindersGrouping
 {
 public:
-	typedef std::map< int, std::map<std::size_t, ContactRemainder::Remainder> > ContactRemaindersGroupsMap;
+	struct ContactRemainderDescriptorFull
+	{
+		ContactRemainder::Remainder remainder;
 
-	static ContactRemaindersGroupsMap construct_grouped_remainders(
+		void feed(const ContactRemainder::Remainder& input)
+		{
+			remainder.insert(remainder.end(), input.begin(), input.end());
+		}
+	};
+
+	struct ContactRemainderDescriptorSummary
+	{
+		double area;
+
+		ContactRemainderDescriptorSummary() : area(0.0)
+		{
+		}
+
+		void feed(const ContactRemainder::Remainder& input)
+		{
+			for(ContactRemainder::Remainder::const_iterator it=input.begin();it!=input.end();++it)
+			{
+				area+=triangle_area(it->p[0], it->p[1], it->p[2]);
+			}
+		}
+	};
+
+
+	template<typename ContactRemainderDescriptor>
+	static std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > construct_grouped_remainders(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
@@ -20,7 +47,7 @@ public:
 			const int projections,
 			const std::size_t sih_depth)
 	{
-		ContactRemaindersGrouping::SurfaceContoursVector surface_contours_vector;
+		std::vector< std::pair<Pair, ContactContour::Contour> > surface_contours_vector;
 		std::vector<int> marks;
 		ContactRemaindersGrouping::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
 
@@ -36,7 +63,7 @@ public:
 
 		const SubdividedIcosahedron sih(sih_depth);
 		const TriangulationQueries::IDsMap ids_vertices=TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-		ContactRemaindersGroupsMap result;
+		std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > result;
 		for(std::size_t sphere_id=0;sphere_id<spheres_exposures.size();sphere_id++)
 		{
 			if(!spheres_exposures[sphere_id].empty())
@@ -50,7 +77,7 @@ public:
 						const std::map<int, std::list<std::size_t> >& sphere_exposure=spheres_exposures[sphere_id];
 						if(sphere_exposure.size()==1)
 						{
-							result[sphere_exposure.begin()->first][sphere_id]=full_remainder;
+							result[sphere_exposure.begin()->first][sphere_id].feed(full_remainder);
 						}
 						else
 						{
@@ -76,7 +103,7 @@ public:
 							}
 							for(std::map<int, ContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
 							{
-								result[split_remainders_it->first][sphere_id]=split_remainders_it->second;
+								result[split_remainders_it->first][sphere_id].feed(split_remainders_it->second);
 							}
 						}
 					}
@@ -88,15 +115,13 @@ public:
 	}
 
 private:
-	typedef std::vector< std::pair<Pair, ContactContour::Contour> > SurfaceContoursVector;
-
 	static int construct_surface_contours(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
 			const double step,
 			const int projections,
-			SurfaceContoursVector& surface_contours_vector,
+			std::vector< std::pair<Pair, ContactContour::Contour> >& surface_contours_vector,
 			std::vector<int>& marks)
 	{
 		typedef std::tr1::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
