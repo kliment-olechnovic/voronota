@@ -10,6 +10,42 @@
 
 #include "modes_commons.h"
 
+namespace apollota
+{
+
+std::vector<SimpleSphere> construct_artificial_boundary(const std::vector<SimpleSphere>& spheres, const double probe)
+{
+	std::vector<SimpleSphere> result;
+	if(!spheres.empty())
+	{
+		SimpleSphere a(std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+		SimpleSphere b(std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), std::numeric_limits<double>::min());
+		for(std::vector<SimpleSphere>::const_iterator it=spheres.begin();it!=spheres.end();++it)
+		{
+			a.x=std::min(a.x, it->x);
+			a.y=std::min(a.y, it->y);
+			a.z=std::min(a.z, it->z);
+			a.r=std::min(a.r, it->r);
+			b.x=std::max(b.x, it->x);
+			b.y=std::max(b.y, it->y);
+			b.z=std::max(b.z, it->z);
+			b.r=std::max(b.r, it->r);
+		}
+		result.reserve(8);
+		result.push_back(SimpleSphere(a.x-probe, a.y-probe, a.z-probe, a.r));
+		result.push_back(SimpleSphere(a.x-probe, a.y-probe, b.z+probe, a.r));
+		result.push_back(SimpleSphere(a.x-probe, b.y+probe, a.z-probe, a.r));
+		result.push_back(SimpleSphere(a.x-probe, b.y+probe, b.z+probe, a.r));
+		result.push_back(SimpleSphere(b.x+probe, a.y-probe, a.z-probe, a.r));
+		result.push_back(SimpleSphere(b.x+probe, a.y-probe, b.z+probe, a.r));
+		result.push_back(SimpleSphere(b.x+probe, b.y+probe, a.z-probe, a.r));
+		result.push_back(SimpleSphere(b.x+probe, b.y+probe, b.z+probe, a.r));
+	}
+	return result;
+}
+
+}
+
 namespace
 {
 
@@ -858,6 +894,11 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 
+	{
+		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
+		spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
+	}
+
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
@@ -958,6 +999,12 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+
+	{
+		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
+		spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
+	}
+
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
