@@ -13,7 +13,7 @@
 namespace apollota
 {
 
-std::vector<SimpleSphere> construct_artificial_boundary(const std::vector<SimpleSphere>& spheres, const double probe)
+std::vector<SimpleSphere> construct_artificial_boundary(const std::vector<SimpleSphere>& spheres, const double coordinate_shift)
 {
 	std::vector<SimpleSphere> result;
 	if(!spheres.empty())
@@ -31,15 +31,17 @@ std::vector<SimpleSphere> construct_artificial_boundary(const std::vector<Simple
 			b.z=std::max(b.z, it->z);
 			b.r=std::max(b.r, it->r);
 		}
+		const double r=std::max(b.r, 0.0);
+		const double shift=std::max(coordinate_shift, 0.0)+(r*2.0)+1.0;
 		result.reserve(8);
-		result.push_back(SimpleSphere(a.x-probe, a.y-probe, a.z-probe, a.r));
-		result.push_back(SimpleSphere(a.x-probe, a.y-probe, b.z+probe, a.r));
-		result.push_back(SimpleSphere(a.x-probe, b.y+probe, a.z-probe, a.r));
-		result.push_back(SimpleSphere(a.x-probe, b.y+probe, b.z+probe, a.r));
-		result.push_back(SimpleSphere(b.x+probe, a.y-probe, a.z-probe, a.r));
-		result.push_back(SimpleSphere(b.x+probe, a.y-probe, b.z+probe, a.r));
-		result.push_back(SimpleSphere(b.x+probe, b.y+probe, a.z-probe, a.r));
-		result.push_back(SimpleSphere(b.x+probe, b.y+probe, b.z+probe, a.r));
+		result.push_back(SimpleSphere(a.x-shift, a.y-shift, a.z-shift, r));
+		result.push_back(SimpleSphere(a.x-shift, a.y-shift, b.z+shift, r));
+		result.push_back(SimpleSphere(a.x-shift, b.y+shift, a.z-shift, r));
+		result.push_back(SimpleSphere(a.x-shift, b.y+shift, b.z+shift, r));
+		result.push_back(SimpleSphere(b.x+shift, a.y-shift, a.z-shift, r));
+		result.push_back(SimpleSphere(b.x+shift, a.y-shift, b.z+shift, r));
+		result.push_back(SimpleSphere(b.x+shift, b.y+shift, a.z-shift, r));
+		result.push_back(SimpleSphere(b.x+shift, b.y+shift, b.z+shift, r));
 	}
 	return result;
 }
