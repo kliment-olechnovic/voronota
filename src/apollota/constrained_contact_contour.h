@@ -1,5 +1,5 @@
-#ifndef APOLLOTA_CONTACT_CONTOUR_H_
-#define APOLLOTA_CONTACT_CONTOUR_H_
+#ifndef APOLLOTA_CONSTRAINED_CONTACT_CONTOUR_H_
+#define APOLLOTA_CONSTRAINED_CONTACT_CONTOUR_H_
 
 #include <vector>
 #include <list>
@@ -11,7 +11,7 @@
 namespace apollota
 {
 
-class ContactContour
+class ConstrainedContactContour
 {
 public:
 	struct PointRecord
@@ -596,4 +596,4 @@ private:
 
 }
 
-#endif /* APOLLOTA_CONTACT_CONTOUR_H_ */
+#endif /* APOLLOTA_CONSTRAINED_CONTACT_CONTOUR_H_ */

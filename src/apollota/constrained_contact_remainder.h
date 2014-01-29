@@ -1,5 +1,5 @@
-#ifndef APOLLOTA_CONTACT_REMAINDER_H_
-#define APOLLOTA_CONTACT_REMAINDER_H_
+#ifndef APOLLOTA_CONSTRAINED_CONTACT_REMAINDER_H_
+#define APOLLOTA_CONSTRAINED_CONTACT_REMAINDER_H_
 
 #include "triangulation.h"
 #include "subdivided_icosahedron.h"
@@ -8,7 +8,7 @@
 namespace apollota
 {
 
-class ContactRemainder
+class ConstrainedContactRemainder
 {
 public:
 	struct TriangleRecord
@@ -233,4 +233,4 @@ private:
 
 }
 
-#endif /* APOLLOTA_CONTACT_REMAINDER_H_ */
+#endif /* APOLLOTA_CONSTRAINED_CONTACT_REMAINDER_H_ */
