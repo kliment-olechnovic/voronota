@@ -13,10 +13,11 @@ public:
 	typedef std::vector< std::vector<std::size_t> > IDsGraph;
 	typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
 
-	static IDsMap collect_neighbors_map_from_quadruples_map(const Triangulation::QuadruplesMap& quadruples_map)
+	template<typename QuadruplesMapType>
+	static IDsMap collect_neighbors_map_from_quadruples_map(const QuadruplesMapType& quadruples_map)
 	{
 		IDsMap neighbors_map;
-		for(Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		for(typename QuadruplesMapType::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
 		{
 			const Quadruple& quadruple=it->first;
 			for(int a=0;a<4;a++)

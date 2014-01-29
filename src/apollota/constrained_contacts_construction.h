@@ -79,23 +79,26 @@ public:
 			const int projections,
 			const std::size_t sih_depth)
 	{
+		typedef std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > Result;
+		Result result;
+
 		std::vector< std::pair<Pair, ConstrainedContactContour::Contour> > surface_contours_vector;
-		std::vector<int> marks;
-		ConstrainedContactsConstruction::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
+		std::vector<int> surface_contours_vector_marks;
+		ConstrainedContactsConstruction::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, surface_contours_vector_marks);
 
 		std::vector< std::map<int, std::list<std::size_t> > > spheres_exposures(spheres.size());
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
 			const std::size_t a=surface_contours_vector[i].first.get(0);
 			const std::size_t b=surface_contours_vector[i].first.get(1);
-			const int group_id=marks[i];
+			const int group_id=surface_contours_vector_marks[i];
 			spheres_exposures[a][group_id].push_back(i);
 			spheres_exposures[b][group_id].push_back(i);
 		}
 
 		const SubdividedIcosahedron sih(sih_depth);
 		const TriangulationQueries::IDsMap ids_vertices=TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-		std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > result;
+
 		for(std::size_t sphere_id=0;sphere_id<spheres_exposures.size();sphere_id++)
 		{
 			if(!spheres_exposures[sphere_id].empty())
@@ -135,7 +138,10 @@ public:
 							}
 							for(std::map<int, ConstrainedContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
 							{
-								result[split_remainders_it->first][sphere_id].feed(split_remainders_it->second);
+								if(split_remainders_it->first>0)
+								{
+									result[split_remainders_it->first][sphere_id].feed(split_remainders_it->second);
+								}
 							}
 						}
 					}
@@ -144,6 +150,46 @@ public:
 		}
 
 		return result;
+	}
+
+	static std::vector<int> mark_spheres_by_connected_components(
+			const std::vector<SimpleSphere>& spheres,
+			const Triangulation::VerticesVector& vertices_vector,
+			const double probe)
+	{
+		const std::vector< std::vector<std::size_t> > graph=
+				TriangulationQueries::collect_ids_graph_from_ids_map(
+						TriangulationQueries::collect_neighbors_map_from_quadruples_map(vertices_vector), spheres.size());
+
+		std::vector<int> marks(spheres.size(), 0);
+
+		int groups_count=0;
+		for(std::size_t i=0;i<graph.size();i++)
+		{
+			if(marks[i]==0)
+			{
+				groups_count++;
+				std::deque<std::size_t> stack;
+				marks[i]=groups_count;
+				stack.push_back(i);
+				while(!stack.empty())
+				{
+					const std::size_t a=stack.back();
+					stack.pop_back();
+					for(std::size_t e=0;e<graph[a].size();e++)
+					{
+						const std::size_t b=graph[a][e];
+						if(marks[b]==0 && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(2*probe))
+						{
+							marks[b]=groups_count;
+							stack.push_back(b);
+						}
+					}
+				}
+			}
+		}
+
+		return marks;
 	}
 
 private:
