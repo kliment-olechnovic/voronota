@@ -42,57 +42,60 @@ public:
 		{
 			const SimpleSphere& a=spheres[a_id];
 			const SimpleSphere& b=spheres[b_id];
-			const std::multimap<double, std::size_t> neighbor_ids=collect_pair_neighbors_with_distances(a, spheres, collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids));
-			const Contour initial_contour=construct_circular_contour(a, b, a_id, vertices_vector, vertices_ids, probe, step);
-			if(!initial_contour.empty())
+			if(minimal_distance_from_sphere_to_sphere(a, b)<(probe*2.0))
 			{
-				result.push_back(initial_contour);
-				const SimpleSphere bounding_sphere_of_vertices_centers=construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step);
-				for(std::multimap<double, std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+				const std::multimap<double, std::size_t> neighbor_ids=collect_pair_neighbors_with_distances(a, spheres, collect_pair_neighbors_from_pair_vertices(a_id, b_id, vertices_vector, vertices_ids));
+				const Contour initial_contour=construct_circular_contour(a, b, a_id, vertices_vector, vertices_ids, probe, step);
+				if(!initial_contour.empty())
 				{
-					const std::size_t c_id=it->second;
-					if(c_id<spheres.size())
+					result.push_back(initial_contour);
+					const SimpleSphere bounding_sphere_of_vertices_centers=construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step);
+					for(std::multimap<double, std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
 					{
-						const SimpleSphere& c=spheres[c_id];
-						std::list<Contour>::iterator jt=result.begin();
-						while(jt!=result.end())
+						const std::size_t c_id=it->second;
+						if(c_id<spheres.size())
 						{
-							Contour& contour=(*jt);
-							std::list<Contour> segments;
-							if(cut_and_split_contour(a, c, c_id, contour, segments))
+							const SimpleSphere& c=spheres[c_id];
+							std::list<Contour>::iterator jt=result.begin();
+							while(jt!=result.end())
 							{
-								if(!contour.empty())
+								Contour& contour=(*jt);
+								std::list<Contour> segments;
+								if(cut_and_split_contour(a, c, c_id, contour, segments))
 								{
-									mend_contour(a, b, c, c_id, step, projections, contour);
-									if(check_contour_intersects_sphere(bounding_sphere_of_vertices_centers, contour))
+									if(!contour.empty())
 									{
-										++jt;
+										mend_contour(a, b, c, c_id, step, projections, contour);
+										if(check_contour_intersects_sphere(bounding_sphere_of_vertices_centers, contour))
+										{
+											++jt;
+										}
+										else
+										{
+											jt=result.erase(jt);
+										}
 									}
 									else
 									{
+										if(!segments.empty())
+										{
+											for(std::list<Contour>::iterator st=segments.begin();st!=segments.end();++st)
+											{
+												mend_contour(a, b, c, c_id, step, projections, (*st));
+											}
+											filter_contours_intersecting_sphere(bounding_sphere_of_vertices_centers, segments);
+											if(!segments.empty())
+											{
+												result.splice(jt, segments);
+											}
+										}
 										jt=result.erase(jt);
 									}
 								}
 								else
 								{
-									if(!segments.empty())
-									{
-										for(std::list<Contour>::iterator st=segments.begin();st!=segments.end();++st)
-										{
-											mend_contour(a, b, c, c_id, step, projections, (*st));
-										}
-										filter_contours_intersecting_sphere(bounding_sphere_of_vertices_centers, segments);
-										if(!segments.empty())
-										{
-											result.splice(jt, segments);
-										}
-									}
-									jt=result.erase(jt);
+									++jt;
 								}
-							}
-							else
-							{
-								++jt;
 							}
 						}
 					}
