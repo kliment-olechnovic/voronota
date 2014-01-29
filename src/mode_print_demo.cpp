@@ -958,6 +958,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
 	const std::size_t min_group_size=poh.argument<std::size_t>("--min-group-size", 10);
 	const std::size_t max_group_size=poh.argument<std::size_t>("--max-group-size", 100);
+	const bool show_balls=poh.contains_option("--show-balls");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -971,28 +972,37 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	std::map< int, std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull> > grouped_remainders=
-			apollota::ConstrainedContactsConstruction::construct_contact_remainders<apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>(spheres, vertices_vector, probe, step, projections, sih_depth);
+			apollota::ConstrainedContactsConstruction::construct_contact_remainders<apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>(spheres, vertices_vector, probe, step, projections, sih_depth, false);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
 	for(std::map< int, std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull> >::const_iterator grouped_remainders_it=grouped_remainders.begin();grouped_remainders_it!=grouped_remainders.end();++grouped_remainders_it)
 	{
-		const std::size_t group_id=grouped_remainders_it->first;
+		const int group_id=grouped_remainders_it->first;
 		const std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>& group_map=grouped_remainders_it->second;
 		if(group_map.size()>=min_group_size && group_map.size()<=max_group_size)
 		{
 			std::ostringstream id_string;
-			id_string << "g" << group_id;
+			if(group_id>0)
+			{
+				id_string << "c" << group_id;
+			}
+			else
+			{
+				id_string << "s" << abs(group_id);
+			}
 			apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
-			apollota::OpenGLPrinter opengl_printer_b(std::cout, std::string("obj_")+id_string.str()+"b", std::string("cgo_")+id_string.str()+"b");
 			opengl_printer.print_color(0xFF7700);
 			for(std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>::const_iterator group_map_it=group_map.begin();group_map_it!=group_map.end();++group_map_it)
 			{
 				const std::size_t sphere_id=group_map_it->first;
-				opengl_printer_b.print_color(0x77FF00);
-				opengl_printer_b.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r));
+				if(show_balls)
+				{
+					opengl_printer.print_color(0x77FF00);
+					opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r));
+				}
 				const apollota::ConstrainedContactRemainder::Remainder& remainder=group_map_it->second.remainder;
-				opengl_printer.print_color(0xFF7700);
+				opengl_printer.print_color(group_id>0 ? 0xFF7700 : 0xFF0077);
 				for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
 					std::vector<apollota::SimplePoint> ts(3);
