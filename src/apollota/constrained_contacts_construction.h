@@ -152,46 +152,6 @@ public:
 		return result;
 	}
 
-	static std::vector<int> mark_spheres_by_connected_components(
-			const std::vector<SimpleSphere>& spheres,
-			const Triangulation::VerticesVector& vertices_vector,
-			const double probe)
-	{
-		const std::vector< std::vector<std::size_t> > graph=
-				TriangulationQueries::collect_ids_graph_from_ids_map(
-						TriangulationQueries::collect_neighbors_map_from_quadruples_map(vertices_vector), spheres.size());
-
-		std::vector<int> marks(spheres.size(), 0);
-
-		int groups_count=0;
-		for(std::size_t i=0;i<graph.size();i++)
-		{
-			if(marks[i]==0)
-			{
-				groups_count++;
-				std::deque<std::size_t> stack;
-				marks[i]=groups_count;
-				stack.push_back(i);
-				while(!stack.empty())
-				{
-					const std::size_t a=stack.back();
-					stack.pop_back();
-					for(std::size_t e=0;e<graph[a].size();e++)
-					{
-						const std::size_t b=graph[a][e];
-						if(marks[b]==0 && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(2*probe))
-						{
-							marks[b]=groups_count;
-							stack.push_back(b);
-						}
-					}
-				}
-			}
-		}
-
-		return marks;
-	}
-
 private:
 	static int construct_surface_contours(
 			const std::vector<SimpleSphere>& spheres,
