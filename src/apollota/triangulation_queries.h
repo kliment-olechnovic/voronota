@@ -31,28 +31,6 @@ public:
 		return neighbors_map;
 	}
 
-	static IDsMap collect_neighbors_map_from_quadruples_map(const Triangulation::QuadruplesMap& quadruples_map, const double min_r, const double max_r)
-	{
-		IDsMap neighbors_map;
-		for(Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
-		{
-			const Quadruple& quadruple=it->first;
-			const std::vector<SimpleSphere>& tangents=it->second;
-			if((!tangents.empty() && tangents[0].r>=min_r && tangents[0].r<=max_r) || (tangents.size()>1 && tangents[1].r>=min_r && tangents[1].r<=max_r))
-			{
-				for(int a=0;a<4;a++)
-				{
-					for(int b=a+1;b<4;b++)
-					{
-						neighbors_map[quadruple.get(a)].insert(quadruple.get(b));
-						neighbors_map[quadruple.get(b)].insert(quadruple.get(a));
-					}
-				}
-			}
-		}
-		return neighbors_map;
-	}
-
 	static IDsGraph collect_ids_graph_from_ids_map(const IDsMap& neighbors_map, const std::size_t number_of_vertices)
 	{
 		IDsGraph neighbors_graph(number_of_vertices);
