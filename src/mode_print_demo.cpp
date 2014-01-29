@@ -959,6 +959,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::size_t min_group_size=poh.argument<std::size_t>("--min-group-size", 10);
 	const std::size_t max_group_size=poh.argument<std::size_t>("--max-group-size", 100);
 	const bool show_balls=poh.contains_option("--show-balls");
+	const bool show_exterior=poh.contains_option("--show-exterior");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -980,7 +981,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const int group_id=grouped_remainders_it->first;
 		const std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>& group_map=grouped_remainders_it->second;
-		if(group_map.size()>=min_group_size && group_map.size()<=max_group_size)
+		if(group_map.size()>=min_group_size && group_map.size()<=max_group_size && (group_id>0 || show_exterior))
 		{
 			std::ostringstream id_string;
 			if(group_id>0)
