@@ -1075,6 +1075,42 @@ void print_contacts_counts(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << static_cast<double>(counter_voronoi_real)/static_cast<double>(counter_distance_real) << " voronoi_real/distance_real\n";
 }
 
+void print_constrained_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double probe=poh.argument<double>("--probe", 1.4);
+	const double step=poh.argument<double>("--step", 0.2);
+	const int projections=poh.argument<int>("--projections", 5);
+	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const std::size_t input_spheres_count=spheres.size();
+	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::ConstrainedContactsConstruction::construct_artificial_boundary(spheres, probe*2.0);
+	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
+
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+
+	const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections);
+	const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth);
+
+	for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
+	{
+		if(it->first.get(0)<input_spheres_count)
+		{
+			std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
+		}
+	}
+
+	for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
+	{
+		if(it->first<input_spheres_count)
+		{
+			std::cout << it->first << " " << it->first << " " << it->second << "\n";
+		}
+	}
+}
+
 }
 
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
@@ -1129,6 +1165,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="contacts-counts")
 	{
 		print_contacts_counts(poh);
+	}
+	else if(scene=="constrained-contacts")
+	{
+		print_constrained_contacts(poh);
 	}
 	else
 	{
