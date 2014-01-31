@@ -975,7 +975,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	std::map< int, std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull> > grouped_remainders=
-			apollota::ConstrainedContactsConstruction::construct_contact_remainders<apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>(spheres, vertices_vector, probe, step, projections, sih_depth, false);
+			apollota::ConstrainedContactsConstruction::construct_groups_of_contact_remainders<apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>(spheres, vertices_vector, probe, step, projections, sih_depth, false);
 
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
