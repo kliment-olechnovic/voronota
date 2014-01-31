@@ -73,23 +73,50 @@ public:
 	}
 
 	template<typename PointType>
-	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals, const bool fan=false)
+	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			if(fan)
-			{
-				string_stream_ << "    BEGIN, TRIANGLE_FAN,\n";
-			}
-			else
-			{
-				string_stream_ << "    BEGIN, TRIANGLE_STRIP,\n";
-			}
+			string_stream_ << "    BEGIN, TRIANGLE_STRIP,\n";
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
 				string_stream_ << "    NORMAL, " << point_to_string(normals[i]) << ",\n";
 				string_stream_ << "    VERTEX, " << point_to_string(vertices[i]) << ",\n";
 			}
+			string_stream_ << "    END,\n";
+		}
+	}
+
+	template<typename PointType>
+	void print_triangle_fan(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	{
+		if(!vertices.empty() && vertices.size()==normals.size())
+		{
+			string_stream_ << "    BEGIN, TRIANGLE_FAN,\n";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "    NORMAL, " << point_to_string(normals[i]) << ",\n";
+				string_stream_ << "    VERTEX, " << point_to_string(vertices[i]) << ",\n";
+			}
+			string_stream_ << "    END,\n";
+		}
+	}
+
+	template<typename PointType>
+	void print_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << "    BEGIN, TRIANGLE_FAN,\n";
+			string_stream_ << "    NORMAL, " << point_to_string(normal) << ",\n";
+			string_stream_ << "    VERTEX, " << point_to_string(center) << ",\n";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "    NORMAL, " << point_to_string(normal) << ",\n";
+				string_stream_ << "    VERTEX, " << point_to_string(vertices[i]) << ",\n";
+			}
+			string_stream_ << "    NORMAL, " << point_to_string(normal) << ",\n";
+			string_stream_ << "    VERTEX, " << point_to_string(vertices.front()) << ",\n";
 			string_stream_ << "    END,\n";
 		}
 	}

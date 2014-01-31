@@ -152,22 +152,6 @@ public:
 		return result;
 	}
 
-	static std::vector<SimplePoint> collect_mesh_from_contour(
-			const Contour& contour,
-			const SimpleSphere& a,
-			const SimpleSphere& b)
-	{
-		std::vector<SimplePoint> result;
-		if(!contour.empty())
-		{
-			const std::vector<SimplePoint> ps=collect_points_from_contour(contour);
-			result.push_back(HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(ps.begin(), ps.end()), a, b));
-			result.insert(result.end(), ps.begin(), ps.end());
-			result.push_back(ps.front());
-		}
-		return result;
-	}
-
 private:
 	static std::set<std::size_t> collect_pair_neighbors_from_pair_vertices(
 			const std::size_t a_id,

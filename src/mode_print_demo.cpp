@@ -376,8 +376,8 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				opengl_printer_trans_tangent_planes.print_alpha(0.5);
 				opengl_printer_trans_tangent_planes.print_color(0xFFB673);
-				opengl_printer_trans_tangent_planes.print_triangle_strip(circles_vertices.front(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), apollota::plane_normal_from_three_points<apollota::SimplePoint>(circles_vertices.front()[0], circles_vertices.front()[5], circles_vertices.front()[10])), true);
-				opengl_printer_trans_tangent_planes.print_triangle_strip(circles_vertices.back(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), apollota::plane_normal_from_three_points<apollota::SimplePoint>(circles_vertices.back()[0], circles_vertices.back()[5], circles_vertices.back()[10])), true);
+				opengl_printer_trans_tangent_planes.print_triangle_fan(circles_vertices.front(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), apollota::plane_normal_from_three_points<apollota::SimplePoint>(circles_vertices.front()[0], circles_vertices.front()[5], circles_vertices.front()[10])));
+				opengl_printer_trans_tangent_planes.print_triangle_fan(circles_vertices.back(), std::vector<apollota::SimplePoint>(circles_vertices.front().size(), apollota::plane_normal_from_three_points<apollota::SimplePoint>(circles_vertices.back()[0], circles_vertices.back()[5], circles_vertices.back()[10])));
 			}
 		}
 	}
@@ -897,9 +897,11 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 								}
 								{
 									opengl_printer.print_color(0x00FF00);
-									const std::vector<apollota::SimplePoint> mesh=apollota::ConstrainedContactContour::collect_mesh_from_contour(contour, spheres[sel], spheres[neighbor]);
-									const std::vector<apollota::SimplePoint> normals(mesh.size(), apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
-									opengl_printer.print_triangle_strip(mesh, normals, true);
+									const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(contour);
+									opengl_printer.print_triangle_fan(
+											apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
+											outline,
+											apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
 								}
 							}
 						}
@@ -938,7 +940,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 								ts[i]=jt->p[i];
 								ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[sel]).unit();
 							}
-							opengl_printer.print_triangle_strip(ts, ns, false);
+							opengl_printer.print_triangle_strip(ts, ns);
 						}
 					}
 				}
@@ -1013,7 +1015,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 						ts[i]=remainder_it->p[i];
 						ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[sphere_id]).unit();
 					}
-					opengl_printer.print_triangle_strip(ts, ns, false);
+					opengl_printer.print_triangle_strip(ts, ns);
 				}
 			}
 		}
