@@ -71,7 +71,7 @@ public:
 	}
 
 	template<typename ContactRemainderDescriptor>
-	static std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > construct_contact_remainders(
+	static std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > construct_groups_of_contact_remainders(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
