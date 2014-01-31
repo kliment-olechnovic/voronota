@@ -1110,7 +1110,7 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_demo_empty_tangents(poh);
 	}
-	else if(scene=="print-min-distances-of-ignored-balls")
+	else if(scene=="min-distances-of-ignored-balls")
 	{
 		print_min_distances_of_ignored_balls(poh);
 	}
@@ -1126,7 +1126,7 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_surfaces_contours(poh);
 	}
-	else if(scene=="print-contacts-counts")
+	else if(scene=="contacts-counts")
 	{
 		print_contacts_counts(poh);
 	}
