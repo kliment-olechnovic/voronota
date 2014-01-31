@@ -70,6 +70,78 @@ public:
 		return result;
 	}
 
+	static std::map<Pair, double> construct_contacts(
+			const std::vector<SimpleSphere>& spheres,
+			const Triangulation::VerticesVector& vertices_vector,
+			const double probe,
+			const double step,
+			const int projections)
+	{
+		std::map<Pair, double> result;
+
+		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+		for(TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.begin();pairs_vertices_it!=pairs_vertices.end();++pairs_vertices_it)
+		{
+			const std::size_t a=pairs_vertices_it->first.get(0);
+			const std::size_t b=pairs_vertices_it->first.get(1);
+			if(minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
+			{
+				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections);
+				for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+				{
+					const ConstrainedContactContour::Contour& contour=(*contours_it);
+					if(!contour.empty())
+					{
+						double sum=0.0;
+						const std::vector<SimplePoint> outline=ConstrainedContactContour::collect_points_from_contour(contour);
+						const SimplePoint center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a], spheres[b]);
+						for(std::size_t i=0;i<outline.size();i++)
+						{
+							sum+=triangle_area(center, outline[i], outline[(i+1<outline.size()) ? (i+1) : 0]);
+						}
+						if(sum>0.0)
+						{
+							result[Pair(a,b)]=sum;
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	static std::map<std::size_t, double> construct_contact_remainders(
+			const std::vector<SimpleSphere>& spheres,
+			const Triangulation::VerticesVector& vertices_vector,
+			const double probe,
+			const std::size_t sih_depth)
+	{
+		std::map<std::size_t, double> result;
+
+		SubdividedIcosahedron sih(sih_depth);
+		const TriangulationQueries::IDsMap ids_vertices=TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+		for(TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.begin();ids_vertices_it!=ids_vertices.end();++ids_vertices_it)
+		{
+			const std::size_t a=ids_vertices_it->first;
+			const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, a, probe, sih);
+			if(!remainder.empty())
+			{
+				double sum=0.0;
+				for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+				{
+					sum+=triangle_area(remainder_it->p[0], remainder_it->p[1], remainder_it->p[2]);
+				}
+				if(sum>0.0)
+				{
+					result[a]=sum;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	template<typename ContactRemainderDescriptor>
 	static std::map< int, std::map<std::size_t, ContactRemainderDescriptor> > construct_groups_of_contact_remainders(
 			const std::vector<SimpleSphere>& spheres,
