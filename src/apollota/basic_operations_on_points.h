@@ -188,6 +188,25 @@ static double min_angle(const InputPointO& o, const InputPointA& a, const InputP
 	return acos(cos_val);
 }
 
+template<typename OutputPointType, typename InputIterator>
+static OutputPointType mass_center(const InputIterator begin, const InputIterator end)
+{
+	PODPoint mc=custom_point<PODPoint>(0.0, 0.0, 0.0);
+	unsigned int count=0;
+	InputIterator it=begin;
+	while(it!=end)
+	{
+		mc=sum_of_points<PODPoint>(mc, *it);
+		count++;
+		++it;
+	}
+	if(count>0)
+	{
+		mc=point_and_number_product<PODPoint>(mc, 1.0/static_cast<double>(count));
+	}
+	return custom_point_from_object<OutputPointType>(mc);
+}
+
 struct SimplePoint
 {
 	double x;
