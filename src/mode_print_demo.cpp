@@ -962,6 +962,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::size_t max_group_size=poh.argument<std::size_t>("--max-group-size", 100);
 	const bool show_balls=poh.contains_option("--show-balls");
 	const bool show_exterior=poh.contains_option("--show-exterior");
+	const bool color_by_id=poh.contains_option("--color-by-id");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -1005,7 +1006,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 					opengl_printer.print_sphere(apollota::SimpleSphere(spheres[sphere_id], spheres[sphere_id].r));
 				}
 				const apollota::ConstrainedContactRemainder::Remainder& remainder=group_map_it->second.remainder;
-				opengl_printer.print_color(group_id>0 ? 0xFF7700 : 0xFF0077);
+				opengl_printer.print_color(color_by_id ? (((0x36BBCE)*static_cast<int>(sphere_id+1))%(0xFFFFFF)) : (group_id>0 ? 0xFF7700 : 0xFF0077));
 				for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
 					std::vector<apollota::SimplePoint> ts(3);
