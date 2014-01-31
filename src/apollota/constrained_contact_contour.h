@@ -160,23 +160,10 @@ public:
 		std::vector<SimplePoint> result;
 		if(!contour.empty())
 		{
-			const std::size_t contour_size=contour.size();
-			result.reserve(contour_size+1);
-			{
-				SimplePoint mc(0.0, 0.0, 0.0);
-				for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
-				{
-					mc=mc+(jt->p);
-				}
-				mc=mc*(1.0/static_cast<double>(contour_size));
-				mc=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mc, a, b);
-				result.push_back(mc);
-			}
-			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
-			{
-				result.push_back(jt->p);
-			}
-			result.push_back(contour.begin()->p);
+			const std::vector<SimplePoint> ps=collect_points_from_contour(contour);
+			result.push_back(HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(ps.begin(), ps.end()), a, b));
+			result.insert(result.end(), ps.begin(), ps.end());
+			result.push_back(ps.front());
 		}
 		return result;
 	}
