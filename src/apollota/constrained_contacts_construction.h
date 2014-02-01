@@ -86,24 +86,24 @@ public:
 			const std::size_t b=pairs_vertices_it->first.get(1);
 			if(minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
+				double sum=0.0;
 				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections);
 				for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 				{
 					const ConstrainedContactContour::Contour& contour=(*contours_it);
 					if(!contour.empty())
 					{
-						double sum=0.0;
 						const std::vector<SimplePoint> outline=ConstrainedContactContour::collect_points_from_contour(contour);
 						const SimplePoint center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a], spheres[b]);
 						for(std::size_t i=0;i<outline.size();i++)
 						{
 							sum+=triangle_area(center, outline[i], outline[(i+1<outline.size()) ? (i+1) : 0]);
 						}
-						if(sum>0.0)
-						{
-							result[Pair(a,b)]=sum;
-						}
 					}
+				}
+				if(sum>0.0)
+				{
+					result[Pair(a,b)]=sum;
 				}
 			}
 		}
