@@ -833,6 +833,8 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=poh.argument<int>("--projections", 7);
 	const bool draw_remainders=poh.contains_option("--draw-remainders");
 	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
+	const double alpha=poh.argument<double>("--alpha", 1.0);
+	const std::string prefix=poh.argument<std::string>("--prefix", "");
 
 	std::set<std::size_t> selection_set;
 	if(!selection_vector.empty())
@@ -890,13 +892,14 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 								const apollota::ConstrainedContactContour::Contour& contour=(*contours_it);
 								std::ostringstream id_string;
 								id_string << "a" << sel << "b" << neighbor;
-								apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
+								apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
 								{
-									opengl_printer.print_color(0xFFFF00);
+									opengl_printer.print_color(0x555555);
 									opengl_printer.print_line_strip(apollota::ConstrainedContactContour::collect_points_from_contour(contour), true);
 								}
 								{
-									opengl_printer.print_color(0x00FF00);
+									opengl_printer.print_alpha(alpha);
+									opengl_printer.print_color(0x37DE6A);
 									const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(contour);
 									opengl_printer.print_triangle_fan(
 											apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
@@ -929,8 +932,9 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						std::ostringstream id_string;
 						id_string << "s" << sel;
-						apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
-						opengl_printer.print_color(0xFF7700);
+						apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
+						opengl_printer.print_alpha(alpha);
+						opengl_printer.print_color(0xDE6A37);
 						for(apollota::ConstrainedContactRemainder::Remainder::const_iterator jt=remainder.begin();jt!=remainder.end();++jt)
 						{
 							std::vector<apollota::SimplePoint> ts(3);
@@ -950,6 +954,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::cout << "cmd.center('all')\n\n";
 	std::cout << "cmd.zoom('all')\n\n";
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
 }
 
 void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
