@@ -37,6 +37,7 @@ Common options
 --mode get-balls-from-atoms-file
 
   --default-radius                number      default atomic radius
+  --enhanced-comments                         flag to output enhanced comments
   --include-heteroatoms                       flag to include heteroatoms
   --include-hydrogens                         flag to include hydrogen atoms
   --mmcif                                     flag to input in mmCIF format

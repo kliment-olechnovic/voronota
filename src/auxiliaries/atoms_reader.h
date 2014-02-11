@@ -27,6 +27,8 @@ public:
 		double x;
 		double y;
 		double z;
+		std::string occupancy;
+		std::string tempFactor;
 		std::string element;
 	};
 
@@ -182,6 +184,8 @@ private:
 		record.x=convert_string<double>(substring_of_columned_line(pdb_file_line, 31, 38));
 		record.y=convert_string<double>(substring_of_columned_line(pdb_file_line, 39, 46));
 		record.z=convert_string<double>(substring_of_columned_line(pdb_file_line, 47, 54));
+		record.occupancy=substring_of_columned_line(pdb_file_line, 55, 60);
+		record.tempFactor=substring_of_columned_line(pdb_file_line, 61, 66);
 		record.element=substring_of_columned_line(pdb_file_line, 77, 78);
 		normalize_numbered_atom_name(record.name);
 		return record;
@@ -236,6 +240,8 @@ private:
 		record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_x"));
 		record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_y"));
 		record.z=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_z"));
+		record.occupancy=get_value_from_table_row(header_map, values_iter, "_atom_site.occupancy");
+		record.tempFactor=get_value_from_table_row(header_map, values_iter, "_atom_site.B_iso_or_equiv");
 		record.element=get_value_from_table_row(header_map, values_iter, "_atom_site.type_symbol");
 		normalize_numbered_atom_name(record.name);
 		return record;
