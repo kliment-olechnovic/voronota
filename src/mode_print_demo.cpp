@@ -1123,9 +1123,11 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=poh.argument<int>("--projections", 10);
 	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
 	const double alpha=poh.argument<double>("--alpha", 1.0);
+	const double sas_alpha=poh.argument<double>("--sas-alpha", 1.0);
 	const std::string prefix=poh.argument<std::string>("--prefix", "");
 	const std::string draw_sas_str=poh.argument<std::string>("--draw-sas", "");
 	const bool full_wireframe=poh.contains_option("--full-wireframe");
+	const std::string solid_color_str=poh.argument<std::string>("--solid-color", "");
 
 	int draw_sas=0;
 	if(!draw_sas_str.empty())
@@ -1133,6 +1135,14 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		std::stringstream ss;
 		ss << std::hex << draw_sas_str;
 		ss >> draw_sas;
+	}
+
+	int solid_color=0;
+	if(!solid_color_str.empty())
+	{
+		std::stringstream ss;
+		ss << std::hex << solid_color_str;
+		ss >> solid_color;
 	}
 
 	std::set<std::size_t> selection_sets[2];
@@ -1230,7 +1240,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 								{
 									for(int part_num=0;part_num<2;part_num++)
 									{
-										opengl_printers[part_num]->print_color(((0x36BBCE)*((part_num==0 ? static_cast<int>(spheres.size())+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF));
+										opengl_printers[part_num]->print_color(solid_color>0 ? solid_color : (((0x36BBCE)*((part_num==0 ? static_cast<int>(spheres.size())+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF)));
 										opengl_printers[part_num]->print_triangle_fan(
 												apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
 												outline,
@@ -1262,6 +1272,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 
 		apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_sas", prefix+"sas");
+		opengl_printer.print_alpha(sas_alpha);
 		opengl_printer.print_color(draw_sas);
 
 		for(std::set<std::size_t>::const_iterator sel_it=selection_sets[0].begin();sel_it!=selection_sets[0].end();++sel_it)
