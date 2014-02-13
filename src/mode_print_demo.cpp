@@ -1128,6 +1128,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string draw_sas_str=poh.argument<std::string>("--draw-sas", "");
 	const bool full_wireframe=poh.contains_option("--full-wireframe");
 	const std::string solid_color_str=poh.argument<std::string>("--solid-color", "");
+	const std::string draw_balls_str=poh.argument<std::string>("--draw-balls", "");
 
 	int draw_sas=0;
 	if(!draw_sas_str.empty())
@@ -1143,6 +1144,14 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		std::stringstream ss;
 		ss << std::hex << solid_color_str;
 		ss >> solid_color;
+	}
+
+	int draw_balls=0;
+	if(!draw_balls_str.empty())
+	{
+		std::stringstream ss;
+		ss << std::hex << draw_balls_str;
+		ss >> draw_balls;
 	}
 
 	std::set<std::size_t> selection_sets[2];
@@ -1296,6 +1305,21 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 						opengl_printer.print_triangle_strip(ts, ns);
 					}
 				}
+			}
+		}
+	}
+
+	if(draw_balls>0)
+	{
+		apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_balls", prefix+"balls");
+		opengl_printer.print_color(draw_balls);
+
+		for(std::set<std::size_t>::const_iterator sel_it=selection_sets[0].begin();sel_it!=selection_sets[0].end();++sel_it)
+		{
+			const std::size_t sel=(*sel_it);
+			if(sel<spheres.size())
+			{
+				opengl_printer.print_sphere(spheres[sel]);
 			}
 		}
 	}
