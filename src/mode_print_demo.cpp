@@ -1124,7 +1124,15 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::size_t sih_depth=poh.argument<std::size_t>("--sih-depth", 3);
 	const double alpha=poh.argument<double>("--alpha", 1.0);
 	const std::string prefix=poh.argument<std::string>("--prefix", "");
-	const bool draw_sas=poh.contains_option("--draw-sas");
+	const std::string draw_sas_str=poh.argument<std::string>("--draw-sas", "");
+
+	int draw_sas=0;
+	if(!draw_sas_str.empty())
+	{
+		std::stringstream ss;
+		ss << std::hex << draw_sas_str;
+		ss >> draw_sas;
+	}
 
 	std::set<std::size_t> selection_sets[2];
 	for(int n=0;n<2;n++)
@@ -1227,13 +1235,13 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(draw_sas)
+	if(draw_sas>0)
 	{
 		apollota::SubdividedIcosahedron sih(sih_depth);
 		const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 
 		apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_sas", prefix+"sas");
-		opengl_printer.print_color(0xFFFF00);
+		opengl_printer.print_color(draw_sas);
 
 		for(std::set<std::size_t>::const_iterator sel_it=selection_sets[0].begin();sel_it!=selection_sets[0].end();++sel_it)
 		{
