@@ -1193,10 +1193,12 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		apollota::OpenGLPrinter opengl_printer1(std::cout, prefix+"obj_contacts", prefix+"contacts");
 		apollota::OpenGLPrinter opengl_printer2(std::cout, prefix+"obj_exposure", prefix+"exposure");
 		apollota::OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
+		apollota::OpenGLPrinter opengl_printer_wireborder(std::cout, prefix+"obj_wireborder", prefix+"wireborder");
 
 		opengl_printer1.print_alpha(alpha);
 		opengl_printer2.print_alpha(alpha);
 		opengl_printer_wireframe.print_color(0x555555);
+		opengl_printer_wireborder.print_color(0x111111);
 
 		apollota::OpenGLPrinter* opengl_printers[2]={&opengl_printer1, &opengl_printer2};
 
@@ -1226,6 +1228,17 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 											apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
 											outline,
 											apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
+								}
+								{
+									std::list<apollota::ConstrainedContactContour::Contour> splits=apollota::ConstrainedContactContour::collect_subcontours_from_contour(*contours_it);
+									for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator splits_it=splits.begin();splits_it!=splits.end();++splits_it)
+									{
+										const std::size_t rid=splits_it->front().right_id;
+										if((rid==sel) || (selection_sets[0].count(rid)>0 && spheres_color_ids[rid]!=spheres_color_ids[sel]))
+										{
+											opengl_printer_wireborder.print_line_strip(apollota::ConstrainedContactContour::collect_points_from_contour(*splits_it), false);
+										}
+									}
 								}
 							}
 						}
@@ -1272,6 +1285,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "cmd.zoom('all')\n\n";
 	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
 	std::cout << "cmd.set('two_sided_lighting', 1)\n\n";
+	std::cout << "cmd.set('cgo_line_width', 3)\n\n";
 }
 
 }
