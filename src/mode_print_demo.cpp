@@ -1144,7 +1144,10 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				for(std::size_t a=selection_vector[i];a<=selection_vector[i+1];a++)
 				{
-					selection_sets[n].insert(a);
+					if(n==0 || selection_sets[0].count(a)==0)
+					{
+						selection_sets[n].insert(a);
+					}
 				}
 			}
 		}
@@ -1223,7 +1226,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 								opengl_printer_wireframe.print_line_strip(outline, true);
 								for(int part_num=0;part_num<2;part_num++)
 								{
-									opengl_printers[part_num]->print_color(((0x36BBCE)*((part_num==0 ? spheres_color_ids[sel]*1000000+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF));
+									opengl_printers[part_num]->print_color(((0x36BBCE)*((part_num==0 ? static_cast<int>(spheres.size())+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF));
 									opengl_printers[part_num]->print_triangle_fan(
 											apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
 											outline,
@@ -1285,7 +1288,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "cmd.zoom('all')\n\n";
 	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
 	std::cout << "cmd.set('two_sided_lighting', 1)\n\n";
-	std::cout << "cmd.set('cgo_line_width', 3)\n\n";
+	std::cout << "cmd.set('cgo_line_width', 3.5)\n\n";
 }
 
 }
