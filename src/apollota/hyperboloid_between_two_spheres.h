@@ -19,12 +19,13 @@ public:
 		else
 		{
 			const SimplePoint dv=(custom_point_from_object<SimplePoint>(s1)-custom_point_from_object<SimplePoint>(s2))*(0.5);
+			const SimplePoint dv_unit=dv.unit();
 			const SimplePoint c=custom_point_from_object<SimplePoint>(s2)+dv;
 			const SimplePoint cp=p-c;
-			const double lz=dv.unit()*cp;
-			const double lx=sqrt(squared_point_module(cp)-(lz*lz));
+			const double lz=dv_unit*cp;
+			const double lx=sqrt(std::max(squared_point_module(cp)-(lz*lz), 0.0));
 			const double z=project_point_on_simple_hyperboloid(lx, 0, dv.module(), s1.r, s2.r);
-			return ((p-(dv.unit()*lz))+(dv.unit()*z));
+			return ((p-(dv_unit*lz))+(dv_unit*z));
 		}
 	}
 
@@ -49,7 +50,7 @@ public:
 			const SimplePoint cb=b-c;
 			const double mbz=dv.unit()*cb;
 			const double mbx=cax.unit()*cb;
-			const double mby=sqrt(squared_point_module(cb)-mbz*mbz-mbx*mbx);
+			const double mby=sqrt(std::max(squared_point_module(cb)-mbz*mbz-mbx*mbx, 0.0));
 
 			return intersect_vector_with_simple_hyperboloid(SimplePoint(max, may, maz), SimplePoint(mbx, mby, mbz), dv.module(), s1.r, s2.r);
 		}
@@ -65,7 +66,7 @@ private:
 		else
 		{
 			const double r=r2-r1;
-			return 2*r*sqrt((0-r*r+4*d*d)*(4*x*x+4*y*y+4*d*d-r*r))/(0-4*r*r+16*d*d);
+			return 2*r*sqrt(std::max((0-r*r+4*d*d)*(4*x*x+4*y*y+4*d*d-r*r), 0.0))/(0-4*r*r+16*d*d);
 		}
 	}
 
