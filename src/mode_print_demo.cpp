@@ -1129,6 +1129,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool full_wireframe=poh.contains_option("--full-wireframe");
 	const std::string solid_color_str=poh.argument<std::string>("--solid-color", "");
 	const std::string draw_balls_str=poh.argument<std::string>("--draw-balls", "");
+	const double line_width=poh.argument<double>("--line-width", 1.0);
 
 	int draw_sas=0;
 	if(!draw_sas_str.empty())
@@ -1328,7 +1329,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "cmd.zoom('all')\n\n";
 	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
 	std::cout << "cmd.set('two_sided_lighting', 1)\n\n";
-	std::cout << "cmd.set('cgo_line_width', 3.5)\n\n";
+	std::cout << "cmd.set('cgo_line_width', " << line_width << ")\n\n";
 }
 
 }
