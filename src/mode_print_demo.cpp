@@ -1125,6 +1125,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const double alpha=poh.argument<double>("--alpha", 1.0);
 	const std::string prefix=poh.argument<std::string>("--prefix", "");
 	const std::string draw_sas_str=poh.argument<std::string>("--draw-sas", "");
+	const bool full_wireframe=poh.contains_option("--full-wireframe");
 
 	int draw_sas=0;
 	if(!draw_sas_str.empty())
@@ -1214,7 +1215,8 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 				for(std::size_t i=0;i<neighbors_list.size();i++)
 				{
 					const std::size_t neighbor=neighbors_list[i];
-					if(selection_sets[1].count(neighbor)>0)
+					const bool interface_neigbor=(selection_sets[1].count(neighbor)>0);
+					if(interface_neigbor || full_wireframe)
 					{
 						apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(sel, neighbor));
 						if(pairs_vertices_it!=pairs_vertices.end())
@@ -1224,22 +1226,25 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 							{
 								const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(*contours_it);
 								opengl_printer_wireframe.print_line_strip(outline, true);
-								for(int part_num=0;part_num<2;part_num++)
+								if(interface_neigbor)
 								{
-									opengl_printers[part_num]->print_color(((0x36BBCE)*((part_num==0 ? static_cast<int>(spheres.size())+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF));
-									opengl_printers[part_num]->print_triangle_fan(
-											apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
-											outline,
-											apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
-								}
-								{
-									std::list<apollota::ConstrainedContactContour::Contour> splits=apollota::ConstrainedContactContour::collect_subcontours_from_contour(*contours_it);
-									for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator splits_it=splits.begin();splits_it!=splits.end();++splits_it)
+									for(int part_num=0;part_num<2;part_num++)
 									{
-										const std::size_t rid=splits_it->front().right_id;
-										if((rid==sel) || (selection_sets[0].count(rid)>0 && spheres_color_ids[rid]!=spheres_color_ids[sel]))
+										opengl_printers[part_num]->print_color(((0x36BBCE)*((part_num==0 ? static_cast<int>(spheres.size())+spheres_color_ids[neighbor] : spheres_color_ids[sel])+1))%(0xFFFFFF));
+										opengl_printers[part_num]->print_triangle_fan(
+												apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[sel], spheres[neighbor]),
+												outline,
+												apollota::sub_of_points<apollota::SimplePoint>(spheres[neighbor], spheres[sel]).unit());
+									}
+									{
+										std::list<apollota::ConstrainedContactContour::Contour> splits=apollota::ConstrainedContactContour::collect_subcontours_from_contour(*contours_it);
+										for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator splits_it=splits.begin();splits_it!=splits.end();++splits_it)
 										{
-											opengl_printer_wireborder.print_line_strip(apollota::ConstrainedContactContour::collect_points_from_contour(*splits_it), false);
+											const std::size_t rid=splits_it->front().right_id;
+											if((rid==sel) || (selection_sets[0].count(rid)>0 && spheres_color_ids[rid]!=spheres_color_ids[sel]))
+											{
+												opengl_printer_wireborder.print_line_strip(apollota::ConstrainedContactContour::collect_points_from_contour(*splits_it), false);
+											}
 										}
 									}
 								}
