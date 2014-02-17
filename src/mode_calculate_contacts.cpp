@@ -12,7 +12,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
-		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
 		full_map_of_option_descriptions["--step"].init("number", "curve step length");
 		full_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
@@ -33,7 +32,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool print_log=poh.contains_option("--print-log");
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
 	const double init_radius_for_BSH=std::max(1.0, poh.argument<double>("--init-radius-for-BSH", 3.5));
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
 	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
@@ -51,7 +49,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::ConstrainedContactsConstruction::construct_artificial_boundary(spheres, probe*2.0);
 	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, include_surplus_quadruples);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections);
