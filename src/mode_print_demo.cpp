@@ -1116,6 +1116,110 @@ void print_constrained_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
+void print_tubing(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	const double probe=poh.argument<double>("--probe", 1.4);
+	const double step=poh.argument<double>("--step", 0.1);
+	const int projections=poh.argument<int>("--projections", 5);
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const std::string prefix=poh.argument<std::string>("--prefix", "");
+	const double reduction=poh.argument<double>("--reduction", 0.0);
+	const bool external=poh.contains_option("--external");
+
+	std::set<std::size_t> selection_set;
+	if(!selection_vector.empty() && selection_vector.size()%2==0)
+	{
+		for(std::size_t i=0;i<selection_vector.size();i+=2)
+		{
+			for(std::size_t a=selection_vector[i];a<=selection_vector[i+1];a++)
+			{
+				selection_set.insert(a);
+			}
+		}
+	}
+
+	std::vector<apollota::SimpleSphere> spheres;
+	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+
+	{
+		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::ConstrainedContactsConstruction::construct_artificial_boundary(spheres, probe*2.0);
+		spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
+	}
+
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+	const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
+	const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+
+	apollota::OpenGLPrinter::print_setup(std::cout);
+
+	{
+		apollota::OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
+		apollota::OpenGLPrinter opengl_printer_tubing(std::cout, prefix+"obj_tubing", prefix+"tubing");
+		apollota::OpenGLPrinter opengl_printer_negtubing(std::cout, prefix+"obj_negtubing", prefix+"negtubing");
+		apollota::OpenGLPrinter opengl_printer_watering(std::cout, prefix+"obj_watering", prefix+"watering");
+
+		opengl_printer_wireframe.print_color(0xFF0000);
+		opengl_printer_tubing.print_color(0xFFFF00);
+		opengl_printer_negtubing.print_color(0x00FFFF);
+		opengl_printer_watering.print_color(0x0000FF);
+
+		for(std::set<std::size_t>::const_iterator sel_it=selection_set.begin();sel_it!=selection_set.end();++sel_it)
+		{
+			const std::size_t sel=(*sel_it);
+			if(sel<spheres.size())
+			{
+				const std::vector<std::size_t>& neighbors_list=neighbors_graph[sel];
+				for(std::size_t i=0;i<neighbors_list.size();i++)
+				{
+					const std::size_t neighbor=neighbors_list[i];
+					if(!external || selection_set.count(neighbor)==0)
+					{
+						apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(sel, neighbor));
+						if(pairs_vertices_it!=pairs_vertices.end())
+						{
+							const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, sel, neighbor, probe, step, projections);
+							for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+							{
+								std::list<apollota::ConstrainedContactContour::Contour> splits=apollota::ConstrainedContactContour::collect_subcontours_from_contour(*contours_it);
+								for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator splits_it=splits.begin();splits_it!=splits.end();++splits_it)
+								{
+									const std::vector<apollota::SimplePoint> trace=apollota::ConstrainedContactContour::collect_points_from_contour(*splits_it);
+									const std::size_t rid=splits_it->front().right_id;
+									if(rid==sel)
+									{
+										opengl_printer_watering.print_line_strip(trace, false);
+									}
+									else
+									{
+										opengl_printer_wireframe.print_line_strip(trace, false);
+									}
+									for(std::vector<apollota::SimplePoint>::const_iterator trace_it=trace.begin();trace_it!=trace.end();++trace_it)
+									{
+										const double r=apollota::minimal_distance_from_point_to_sphere(*trace_it, spheres[sel])-reduction;
+										if(r<0.0)
+										{
+											opengl_printer_negtubing.print_sphere(apollota::SimpleSphere(*trace_it, -r));
+										}
+										else
+										{
+											opengl_printer_tubing.print_sphere(apollota::SimpleSphere(*trace_it, r));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	std::cout << "cmd.center('all')\n\n";
+	std::cout << "cmd.zoom('all')\n\n";
+	std::cout << "cmd.set('bg_rgb', [1,1,1])\n\n";
+}
+
 void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	const double probe=poh.argument<double>("--probe", 1.4);
@@ -1394,6 +1498,10 @@ void print_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(scene=="interface-colored")
 	{
 		print_interface_colored(poh);
+	}
+	else if(scene=="tubing")
+	{
+		print_tubing(poh);
 	}
 	else
 	{
