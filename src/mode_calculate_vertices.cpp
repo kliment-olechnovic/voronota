@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"

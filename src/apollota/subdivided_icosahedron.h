@@ -10,7 +10,7 @@ namespace apollota
 class SubdividedIcosahedron
 {
 public:
-	SubdividedIcosahedron(const std::size_t depth) : center_(0, 0, 0)
+	SubdividedIcosahedron(const int depth) : center_(0, 0, 0)
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 
@@ -48,7 +48,7 @@ public:
 		triples_.push_back(Triple(6, 1, 3));
 		triples_.push_back(Triple(11, 7, 5));
 
-		for(std::size_t i=0;i<depth;i++)
+		for(int i=0;i<depth;i++)
 		{
 			grow();
 		}

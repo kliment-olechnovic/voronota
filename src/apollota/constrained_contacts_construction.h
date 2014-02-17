@@ -1,8 +1,11 @@
 #ifndef APOLLOTA_CONSTRAINED_CONTACT_REMAINDERS_GROUPING_H_
 #define APOLLOTA_CONSTRAINED_CONTACT_REMAINDERS_GROUPING_H_
 
+#include <deque>
+
 #include "constrained_contact_contour.h"
 #include "constrained_contact_remainder.h"
+#include "triangulation_queries.h"
 
 namespace apollota
 {
@@ -115,7 +118,7 @@ public:
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
-			const std::size_t sih_depth)
+			const int sih_depth)
 	{
 		std::map<std::size_t, double> result;
 
