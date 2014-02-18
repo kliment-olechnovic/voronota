@@ -145,6 +145,41 @@ double triangle_area(const InputPointTypeA& a, const InputPointTypeB& b, const I
 	return (point_module(cross_product<PODPoint>(sub_of_points<PODPoint>(b, a), sub_of_points<PODPoint>(c, a)))/2.0);
 }
 
+template<typename InputPointO, typename InputPointA, typename InputPointB>
+static double min_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b)
+{
+	double cos_val=dot_product(unit_point<PODPoint>(sub_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sub_of_points<PODPoint>(b, o)));
+	if(cos_val<-1.0)
+	{
+		cos_val=-1.0;
+	}
+	else if(cos_val>1.0)
+	{
+		cos_val=1.0;
+	}
+	return acos(cos_val);
+}
+
+template<typename InputSphereType, typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
+double spherical_triangle_area(const InputSphereType& s, const InputPointTypeA& a, const InputPointTypeB& b, const InputPointTypeC& c)
+{
+	const double va=min_angle(a, b, c);
+	const double vb=min_angle(b, a, c);
+	const double vc=min_angle(c, a, b);
+	const PODPoint sa=sub_of_points<PODPoint>(a, s);
+	const PODPoint sb=sub_of_points<PODPoint>(b, s);
+	const PODPoint sc=sub_of_points<PODPoint>(c, s);
+	const PODPoint o=custom_point<PODPoint>(0.0, 0.0, 0.0);
+	const PODPoint nab=cross_product<PODPoint>(sa, sb);
+	const PODPoint nac=cross_product<PODPoint>(sa, sc);
+	const PODPoint nbc=cross_product<PODPoint>(sb, sc);
+	const double vpa=min_angle(o, nab, nac);
+	const double vpb=min_angle(o, inverted_point<PODPoint>(nab), nbc);
+	const double vpc=min_angle(o, inverted_point<PODPoint>(nac), inverted_point<PODPoint>(nbc));
+	const double e=(vpa+vpb+vpc)-(va+vb+vc);
+	return (e*s.r*s.r);
+}
+
 template<typename OutputPointType, typename InputPointType>
 OutputPointType any_normal_of_vector(const InputPointType& a)
 {
@@ -171,21 +206,6 @@ double distance_from_point_to_line(const InputPointTypeA& p, const InputPointTyp
 	const PODPoint translated_p=sub_of_points<PODPoint>(p, start);
 	const double distance_on_line=dot_product(translated_p, line_vector);
 	return sqrt(squared_point_module(translated_p)-(distance_on_line*distance_on_line));
-}
-
-template<typename InputPointO, typename InputPointA, typename InputPointB>
-static double min_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b)
-{
-	double cos_val=dot_product(unit_point<PODPoint>(sub_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sub_of_points<PODPoint>(b, o)));
-	if(cos_val<-1.0)
-	{
-		cos_val=-1.0;
-	}
-	else if(cos_val>1.0)
-	{
-		cos_val=1.0;
-	}
-	return acos(cos_val);
 }
 
 template<typename OutputPointType, typename InputIterator>

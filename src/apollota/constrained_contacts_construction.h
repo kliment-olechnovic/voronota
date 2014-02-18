@@ -130,10 +130,11 @@ public:
 			const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(spheres, vertices_vector, ids_vertices_it->second, a, probe, sih);
 			if(!remainder.empty())
 			{
+				const SimpleSphere surface_sphere(spheres[a], spheres[a].r+probe);
 				double sum=0.0;
 				for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
-					sum+=triangle_area(remainder_it->p[0], remainder_it->p[1], remainder_it->p[2]);
+					sum+=spherical_triangle_area(surface_sphere, remainder_it->p[0], remainder_it->p[1], remainder_it->p[2]);
 				}
 				if(sum>0.0)
 				{
