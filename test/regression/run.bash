@@ -38,6 +38,10 @@ $TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR
 $TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation1p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_1_to_1p
 $TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation2 --second-quadruples-file $OUTPUT_DIR/triangulation2p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_2_to_2p
 
+$TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts1 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/contacts1
+$TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts2 < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/contacts2
+$TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
+
 rm -r ./voronota_package
 
 hg status ./
