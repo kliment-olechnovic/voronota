@@ -1154,11 +1154,13 @@ void print_tubing(const auxiliaries::ProgramOptionsHandler& poh)
 	apollota::OpenGLPrinter::print_setup(std::cout);
 
 	{
+		apollota::OpenGLPrinter opengl_printer_balls(std::cout, prefix+"obj_balls", prefix+"balls");
 		apollota::OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
 		apollota::OpenGLPrinter opengl_printer_tubing(std::cout, prefix+"obj_tubing", prefix+"tubing");
 		apollota::OpenGLPrinter opengl_printer_negtubing(std::cout, prefix+"obj_negtubing", prefix+"negtubing");
 		apollota::OpenGLPrinter opengl_printer_watering(std::cout, prefix+"obj_watering", prefix+"watering");
 
+		opengl_printer_balls.print_color(0x77FF77);
 		opengl_printer_wireframe.print_color(0xFF0000);
 		opengl_printer_tubing.print_color(0xFFFF00);
 		opengl_printer_negtubing.print_color(0x00FFFF);
@@ -1169,6 +1171,7 @@ void print_tubing(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::size_t sel=(*sel_it);
 			if(sel<spheres.size())
 			{
+				opengl_printer_balls.print_sphere(spheres[sel]);
 				const std::vector<std::size_t>& neighbors_list=neighbors_graph[sel];
 				for(std::size_t i=0;i<neighbors_list.size();i++)
 				{
