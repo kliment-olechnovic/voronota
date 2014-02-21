@@ -12,6 +12,7 @@ Common options
 
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --max-dist                      number      maximal distance to record, may exceed probe diameter
   --print-log                                 flag to print log of calculations
   --probe                         number      probe radius
   --projections                   number      curve optimization depth
@@ -19,7 +20,7 @@ Common options
   --step                          number      curve step length
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
-  stdout  ->  list of contacts (line format: 'b1 b2 a')
+  stdout  ->  list of contacts (line format: 'b1 b2 d a')
 
 
 --mode calculate-vertices
