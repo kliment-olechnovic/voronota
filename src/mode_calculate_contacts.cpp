@@ -16,12 +16,13 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		full_map_of_option_descriptions["--step"].init("number", "curve step length");
 		full_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
 		full_map_of_option_descriptions["--sih-depth"].init("number", "spherical surface optimization depth");
+		full_map_of_option_descriptions["--max-dist"].init("number", "maximal distance to record, may exceed probe diameter");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
-			std::cerr << "  stdout  ->  list of contacts (line format: 'b1 b2 a')\n";
+			std::cerr << "  stdout  ->  list of contacts (line format: 'b1 b2 d a')\n";
 			return;
 		}
 		else
@@ -37,6 +38,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
+	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
@@ -51,21 +53,50 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+	const apollota::TriangulationQueries::IDsMap ids_map=apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
 
-	std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections);
-	const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth);
-
-	for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
+	std::map<apollota::Pair, std::pair<double, double> > interactions_map;
+	for(apollota::TriangulationQueries::IDsMap::const_iterator it=ids_map.begin();it!=ids_map.end();++it)
 	{
-		constrained_contacts[apollota::Pair(it->first, it->first)]=it->second;
+		const std::size_t a_id=it->first;
+		if(a_id<input_spheres_count)
+		{
+			for(std::set<std::size_t>::const_iterator jt=it->second.begin();jt!=it->second.end();++jt)
+			{
+				const std::size_t b_id=(*jt);
+				if(a_id<b_id && b_id<input_spheres_count)
+				{
+					const double dist=apollota::minimal_distance_from_sphere_to_sphere(spheres[a_id], spheres[b_id]);
+					if(dist<=max_dist)
+					{
+						interactions_map[apollota::Pair(a_id, b_id)].first=dist;
+					}
+				}
+			}
+		}
 	}
 
+	const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections);
 	for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 	{
-		if(it->first.get(0)<input_spheres_count)
+		if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
 		{
-			std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
+			interactions_map[it->first].second=it->second;
 		}
+	}
+
+	const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth);
+	for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
+	{
+		if(it->first<input_spheres_count)
+		{
+			interactions_map[apollota::Pair(it->first, it->first)]=std::make_pair(-(spheres[it->first].r*2.0), it->second);
+		}
+	}
+
+	for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+	{
+		std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second.first << " " << it->second.second<< "\n";
 	}
 
 	if(print_log)
@@ -75,28 +106,29 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		std::clog << "step " << step << "\n";
 		std::clog << "projections " << projections << "\n";
 		std::clog << "sih_depth " << sih_depth << "\n";
-		std::clog << "contacts_count_all " << constrained_contacts.size() << "\n";
-		std::clog << "contacts_count_internal " << (constrained_contacts.size()-constrained_contact_remainders.size()) << "\n";
+		std::clog << "max_dist " << max_dist << "\n";
+		std::clog << "output_pairs " << interactions_map.size() << "\n";
+		std::clog << "contacts_count_internal " << constrained_contacts.size() << "\n";
 		std::clog << "contacts_count_external " << constrained_contact_remainders.size() << "\n";
 
 		double contacts_sum_internal=0.0;
-		double contacts_sum_external=0.0;
 		for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 		{
-			if(it->first.get(0)<input_spheres_count)
+			if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
 			{
-				if(it->first.get(0)!=it->first.get(1))
-				{
-					contacts_sum_internal+=it->second;
-				}
-				else
-				{
-					contacts_sum_external+=it->second;
-				}
+				contacts_sum_internal+=it->second;
 			}
 		}
 
-		std::clog << "contacts_sum_all " << (contacts_sum_internal+contacts_sum_external) << "\n";
+		double contacts_sum_external=0.0;
+		for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
+		{
+			if(it->first<input_spheres_count)
+			{
+				contacts_sum_external+=it->second;
+			}
+		}
+
 		std::clog << "contacts_sum_internal " << contacts_sum_internal << "\n";
 		std::clog << "contacts_sum_external " << contacts_sum_external << "\n";
 	}
