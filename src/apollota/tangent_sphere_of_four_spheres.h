@@ -127,8 +127,16 @@ public:
 								candidate.y+=usm.y;
 								candidate.z+=usm.z;
 								candidate.r-=usm.r;
-								candidate.r+=calculate_tangent_sphere_radius_largest_overlap(sm, s1, s2, s3, candidate);
-								results.push_back(candidate);
+								std::pair<double, double> error_estimate=calculate_tangent_sphere_radius_error_estimate(sm, s1, s2, s3, candidate);
+								if(error_estimate.first<0.0)
+								{
+									candidate.r+=error_estimate.first;
+									error_estimate=calculate_tangent_sphere_radius_error_estimate(sm, s1, s2, s3, candidate);
+								}
+								if(std::max(fabs(error_estimate.first), fabs(error_estimate.second))<tangent_spheres_max_allowed_error())
+								{
+									results.push_back(candidate);
+								}
 							}
 						}
 					}
@@ -142,14 +150,18 @@ public:
 
 private:
 	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD, typename InputSphereTypeE>
-	static inline double calculate_tangent_sphere_radius_largest_overlap(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
+	static inline std::pair<double, double> calculate_tangent_sphere_radius_error_estimate(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& s4, const InputSphereTypeE& tangent)
 	{
 		const double d1=minimal_distance_from_sphere_to_sphere(tangent, s1);
 		const double d2=minimal_distance_from_sphere_to_sphere(tangent, s2);
 		const double d3=minimal_distance_from_sphere_to_sphere(tangent, s3);
 		const double d4=minimal_distance_from_sphere_to_sphere(tangent, s4);
-		const double largest_overlap=std::min(std::min(d1, d2), std::min(d3, d4));
-		return (largest_overlap<0.0 ? largest_overlap : 0.0);
+		return std::make_pair(std::min(std::min(d1, d2), std::min(d3, d4)), std::max(std::max(d1, d2), std::max(d3, d4)));
+	}
+
+	inline static double tangent_spheres_max_allowed_error()
+	{
+		return std::max(default_comparison_epsilon(), 0.001);
 	}
 };
 
