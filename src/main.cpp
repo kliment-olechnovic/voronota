@@ -11,9 +11,7 @@
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
-void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
-void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
 int main(const int argc, const char** argv)
 {
@@ -32,9 +30,7 @@ int main(const int argc, const char** argv)
 		MapOfModes extended_map_of_modes=basic_map_of_modes;
 		extended_map_of_modes.insert(MapOfModes::value_type("calculate-contacts", ModeFunctionPointer(calculate_contacts)));
 		extended_map_of_modes.insert(MapOfModes::value_type("calculate-vertices-in-parallel", ModeFunctionPointer(calculate_vertices_in_parallel)));
-		MapOfModes full_map_of_modes=extended_map_of_modes;
-		full_map_of_modes.insert(MapOfModes::value_type("compare-quadruples-sets", ModeFunctionPointer(compare_quadruples_sets)));
-		full_map_of_modes.insert(MapOfModes::value_type("print-demo", ModeFunctionPointer(print_demo)));
+		const MapOfModes full_map_of_modes=extended_map_of_modes;
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
