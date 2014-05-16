@@ -23,6 +23,16 @@ Common options
   stdout  ->  list of contacts (line format: 'b1 b2 d a')
 
 
+--mode calculate-tetrahedral-volumes
+
+  --exclude-hidden-balls                      flag to exclude hidden input balls
+  --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --probes                        list        list of probe radius values
+
+  stdin   <-  list of balls (line format: 'x y z r # comments')
+  stdout  ->  full volume and probe-shaped volumes
+
+
 --mode calculate-vertices
 
   --check                                     flag to slowly check the resulting vertices (used only for testing)
