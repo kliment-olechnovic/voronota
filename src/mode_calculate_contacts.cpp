@@ -4,11 +4,99 @@
 
 #include "modes_commons.h"
 
+namespace
+{
+
+struct Comment
+{
+	std::string serial;
+	std::string chainID;
+	std::string resSeq;
+	std::string resName;
+	std::string name;
+
+	std::string str(bool with_residue, bool with_atom) const
+	{
+		std::ostringstream output;
+		output << chainID;
+		output << ":";
+		if(with_residue)
+		{
+			output << resSeq << "(" << resName << ")";
+		}
+		else
+		{
+			output << "*";
+		}
+		output << ":";
+		if(with_residue && with_atom)
+		{
+			output << serial << "(" << name << ")";
+		}
+		else
+		{
+			output << "*";
+		}
+		return output.str();
+	}
+};
+
+inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
+{
+	apollota::SimpleSphere sphere;
+	std::string separator;
+	Comment comment;
+	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
+	input >> separator;
+	input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name;
+	if(!input.fail() && separator=="#")
+	{
+		spheres_with_comments.first->push_back(sphere);
+		spheres_with_comments.second->push_back(comment);
+	}
+}
+
+void record_annotated_solvent_contact(const Comment& comment, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+{
+	static const std::string solvent_str("solvent");
+	map_of_named_contacts[std::make_pair(comment.str(true, true), solvent_str)]+=area;
+	map_of_named_contacts[std::make_pair(comment.str(true, false), solvent_str)]+=area;
+	map_of_named_contacts[std::make_pair(comment.str(false, false), solvent_str)]+=area;
+}
+
+void record_annotated_inter_atom_contact(const Comment& comment1, const Comment& comment2, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+{
+	const std::string full_str1=comment1.str(true, true);
+	const std::string full_str2=comment2.str(true, true);
+	if(full_str1!=full_str2)
+	{
+		map_of_named_contacts[std::make_pair(full_str1, full_str2)]+=area;
+		map_of_named_contacts[std::make_pair(full_str2, full_str1)]+=area;
+		const std::string residue_str1=comment1.str(true, false);
+		const std::string residue_str2=comment2.str(true, false);
+		if(residue_str1!=residue_str2)
+		{
+			map_of_named_contacts[std::make_pair(residue_str1, residue_str2)]+=area;
+			map_of_named_contacts[std::make_pair(residue_str2, residue_str1)]+=area;
+			const std::string chain_str1=comment1.str(false, false);
+			const std::string chain_str2=comment2.str(false, false);
+			if(chain_str1!=chain_str2)
+			{
+				map_of_named_contacts[std::make_pair(chain_str1, chain_str2)]+=area;
+				map_of_named_contacts[std::make_pair(chain_str2, chain_str1)]+=area;
+			}
+		}
+	}
+}
+
+}
+
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
+		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
@@ -22,7 +110,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
-			std::cerr << "  stdout  ->  list of contacts (line format: 'b1 b2 d a')\n";
+			std::cerr << "  stdout  ->  list of contacts\n";
 			return;
 		}
 		else
@@ -32,6 +120,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool print_log=poh.contains_option("--print-log");
+	const bool annotate=poh.contains_option("--annotate");
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
 	const double init_radius_for_BSH=std::max(1.0, poh.argument<double>("--init-radius-for-BSH", 3.5));
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
@@ -41,7 +130,20 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	std::vector<Comment> input_spheres_comments;
+	if(annotate)
+	{
+		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
+		auxiliaries::read_lines_to_container(std::cin, "", add_sphere_and_comments_from_stream_to_vectors, spheres_with_comments);
+		if(spheres.size()!=input_spheres_comments.size())
+		{
+			throw std::runtime_error("Number of comments does not match number of spheres.");
+		}
+	}
+	else
+	{
+		auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	}
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
@@ -94,9 +196,37 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+	if(!input_spheres_comments.empty())
 	{
-		std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second.first << " " << it->second.second<< "\n";
+		std::map< std::pair<std::string, std::string>, double > map_of_named_contacts;
+		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+		{
+			const double area=it->second.second;
+			if(area>0.0)
+			{
+				const std::size_t a_id=it->first.get(0);
+				const std::size_t b_id=it->first.get(1);
+				if(a_id==b_id)
+				{
+					record_annotated_solvent_contact(input_spheres_comments[a_id], area, map_of_named_contacts);
+				}
+				else
+				{
+					record_annotated_inter_atom_contact(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_named_contacts);
+				}
+			}
+		}
+		for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
+		{
+			std::cout << it->first.first << " " << it->first.second << " " << it->second << "\n";
+		}
+	}
+	else
+	{
+		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+		{
+			std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second.first << " " << it->second.second<< "\n";
+		}
 	}
 
 	if(print_log)
