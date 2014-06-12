@@ -89,6 +89,28 @@ void record_annotated_inter_atom_contact(const Comment& comment1, const Comment&
 	}
 }
 
+void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+{
+	const std::size_t default_width=std::cout.width();
+	std::size_t max_width1=0;
+	std::size_t max_width2=0;
+	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
+	{
+		max_width1=std::max(max_width1, it->first.first.size());
+		max_width2=std::max(max_width2, it->first.second.size());
+	}
+	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
+	{
+		std::cout.width(max_width1+2);
+		std::cout << std::left << it->first.first;
+		std::cout.width(max_width2+2);
+		std::cout << std::left << it->first.second;
+		std::cout.width(default_width);
+		std::cout << std::left << it->second << "\n";
+	}
+	std::cout.width(default_width);
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -216,10 +238,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
-		{
-			std::cout << it->first.first << " " << it->first.second << " " << it->second << "\n";
-		}
+		print_map_of_named_contacts(map_of_named_contacts);
 	}
 	else
 	{
