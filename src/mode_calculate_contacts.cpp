@@ -76,12 +76,20 @@ void record_annotated_inter_atom_contact(const Comment& comment1, const Comment&
 		const std::string residue_str2=comment2.str(true, false);
 		if(residue_str1!=residue_str2)
 		{
+			map_of_named_contacts[std::make_pair(full_str1, residue_str2)]+=area;
+			map_of_named_contacts[std::make_pair(full_str2, residue_str1)]+=area;
+			map_of_named_contacts[std::make_pair(residue_str1, full_str2)]+=area;
+			map_of_named_contacts[std::make_pair(residue_str2, full_str1)]+=area;
 			map_of_named_contacts[std::make_pair(residue_str1, residue_str2)]+=area;
 			map_of_named_contacts[std::make_pair(residue_str2, residue_str1)]+=area;
 			const std::string chain_str1=comment1.str(false, false);
 			const std::string chain_str2=comment2.str(false, false);
 			if(chain_str1!=chain_str2)
 			{
+				map_of_named_contacts[std::make_pair(residue_str1, chain_str2)]+=area;
+				map_of_named_contacts[std::make_pair(residue_str2, chain_str1)]+=area;
+				map_of_named_contacts[std::make_pair(chain_str1, residue_str2)]+=area;
+				map_of_named_contacts[std::make_pair(chain_str2, residue_str1)]+=area;
 				map_of_named_contacts[std::make_pair(chain_str1, chain_str2)]+=area;
 				map_of_named_contacts[std::make_pair(chain_str2, chain_str1)]+=area;
 			}
