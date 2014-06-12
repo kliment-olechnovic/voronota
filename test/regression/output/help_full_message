@@ -10,6 +10,7 @@ Common options
 
 --mode calculate-contacts
 
+  --annotate                                  flag to annotate contacts using balls comments
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --max-dist                      number      maximal distance to record, may exceed probe diameter
@@ -20,7 +21,7 @@ Common options
   --step                          number      curve step length
 
   stdin   <-  list of balls (line format: 'x y z r # comments')
-  stdout  ->  list of contacts (line format: 'b1 b2 d a')
+  stdout  ->  list of contacts
 
 
 --mode calculate-tetrahedral-volumes
