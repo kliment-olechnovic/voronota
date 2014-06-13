@@ -93,32 +93,31 @@ void record_annotated_solvent_contact(const Comment& comment, const double area,
 
 void record_annotated_inter_atom_contact(const Comment& comment1, const Comment& comment2, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
 {
+	static const std::string nonsolvent_str("nonsolvent");
 	const std::string full_str1=comment1.str(true, true);
 	const std::string full_str2=comment2.str(true, true);
 	if(full_str1!=full_str2)
 	{
 		map_of_named_contacts[std::make_pair(full_str1, full_str2)]+=area;
 		map_of_named_contacts[std::make_pair(full_str2, full_str1)]+=area;
+		map_of_named_contacts[std::make_pair(full_str1, nonsolvent_str)]+=area;
+		map_of_named_contacts[std::make_pair(full_str2, nonsolvent_str)]+=area;
 		const std::string residue_str1=comment1.str(true, false);
 		const std::string residue_str2=comment2.str(true, false);
 		if(residue_str1!=residue_str2)
 		{
-			map_of_named_contacts[std::make_pair(full_str1, residue_str2)]+=area;
-			map_of_named_contacts[std::make_pair(full_str2, residue_str1)]+=area;
-			map_of_named_contacts[std::make_pair(residue_str1, full_str2)]+=area;
-			map_of_named_contacts[std::make_pair(residue_str2, full_str1)]+=area;
 			map_of_named_contacts[std::make_pair(residue_str1, residue_str2)]+=area;
 			map_of_named_contacts[std::make_pair(residue_str2, residue_str1)]+=area;
+			map_of_named_contacts[std::make_pair(residue_str1, nonsolvent_str)]+=area;
+			map_of_named_contacts[std::make_pair(residue_str2, nonsolvent_str)]+=area;
 			const std::string chain_str1=comment1.str(false, false);
 			const std::string chain_str2=comment2.str(false, false);
 			if(chain_str1!=chain_str2)
 			{
-				map_of_named_contacts[std::make_pair(residue_str1, chain_str2)]+=area;
-				map_of_named_contacts[std::make_pair(residue_str2, chain_str1)]+=area;
-				map_of_named_contacts[std::make_pair(chain_str1, residue_str2)]+=area;
-				map_of_named_contacts[std::make_pair(chain_str2, residue_str1)]+=area;
 				map_of_named_contacts[std::make_pair(chain_str1, chain_str2)]+=area;
 				map_of_named_contacts[std::make_pair(chain_str2, chain_str1)]+=area;
+				map_of_named_contacts[std::make_pair(chain_str1, nonsolvent_str)]+=area;
+				map_of_named_contacts[std::make_pair(chain_str2, nonsolvent_str)]+=area;
 			}
 		}
 	}
