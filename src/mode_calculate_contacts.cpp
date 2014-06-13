@@ -14,6 +14,8 @@ struct Comment
 	std::string resSeq;
 	std::string resName;
 	std::string name;
+	std::string altLoc;
+	std::string iCode;
 
 	std::string str(bool with_residue, bool with_atom) const
 	{
@@ -22,7 +24,12 @@ struct Comment
 		output << ":";
 		if(with_residue)
 		{
-			output << resSeq << "(" << resName << ")";
+			output << resSeq;
+			if(!iCode.empty())
+			{
+				output << "." << iCode;
+			}
+			output << "(" << resName << ")";
 		}
 		else
 		{
@@ -31,7 +38,12 @@ struct Comment
 		output << ":";
 		if(with_residue && with_atom)
 		{
-			output << serial << "(" << name << ")";
+			output << serial;
+			if(!altLoc.empty())
+			{
+				output << "." << altLoc;
+			}
+			output << "(" << name << ")";
 		}
 		else
 		{
@@ -44,15 +56,30 @@ struct Comment
 inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
 {
 	apollota::SimpleSphere sphere;
-	std::string separator;
-	Comment comment;
 	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
+	std::string separator;
 	input >> separator;
-	input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name;
 	if(!input.fail() && separator=="#")
 	{
-		spheres_with_comments.first->push_back(sphere);
-		spheres_with_comments.second->push_back(comment);
+		Comment comment;
+		input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name;
+		if(input.good())
+		{
+			input >> comment.altLoc >> comment.iCode;
+		}
+		if(!input.fail())
+		{
+			if(comment.altLoc==".")
+			{
+				comment.altLoc.clear();
+			}
+			if(comment.iCode=="?")
+			{
+				comment.iCode.clear();
+			}
+			spheres_with_comments.first->push_back(sphere);
+			spheres_with_comments.second->push_back(comment);
+		}
 	}
 }
 
