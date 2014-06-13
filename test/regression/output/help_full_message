@@ -11,6 +11,7 @@ Common options
 --mode calculate-contacts
 
   --annotate                                  flag to annotate contacts using balls comments
+  --annotation-prefixes           list        list of prefixes to restrict annotated output
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --max-dist                      number      maximal distance to record, may exceed probe diameter
@@ -20,8 +21,12 @@ Common options
   --sih-depth                     number      spherical surface optimization depth
   --step                          number      curve step length
 
-  stdin   <-  list of balls (line format: 'x y z r # comments')
+  stdin   <-  list of balls
+                (default line format: 'x y z r # comments')
+                (annotation mode line format: 'x y z r # atomSerial chainID resSeq resName atomName')
   stdout  ->  list of contacts
+                (default line format: 'b1 b2 distance area')
+                (annotation mode line format: 'annotation1 annotation2 area')
 
 
 --mode calculate-tetrahedral-volumes
