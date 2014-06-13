@@ -143,7 +143,7 @@ void record_annotated_inter_atom_contact(const Comment& comment1, const Comment&
 	}
 }
 
-void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& constraints)
+void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& constraints_first, const std::vector<std::string>& constraints_second)
 {
 	const std::size_t default_width=std::cout.width();
 	std::size_t max_width1=0;
@@ -155,19 +155,27 @@ void print_map_of_named_contacts(const std::map< std::pair<std::string, std::str
 	}
 	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
 	{
-		bool match=constraints.empty();
-		for(std::size_t i=0;!match && i<constraints.size();i++)
+		bool match_first=constraints_first.empty();
+		for(std::size_t i=0;!match_first && i<constraints_first.size();i++)
 		{
-			match=(it->first.first.find(constraints[i])!=std::string::npos);
+			match_first=(it->first.first.find(constraints_first[i])!=std::string::npos);
 		}
-		if(match)
+		if(match_first)
 		{
-			std::cout.width(max_width1+2);
-			std::cout << std::left << it->first.first;
-			std::cout.width(max_width2+2);
-			std::cout << std::left << it->first.second;
-			std::cout.width(default_width);
-			std::cout << std::left << it->second << "\n";
+			bool match_second=constraints_second.empty();
+			for(std::size_t i=0;!match_second && i<constraints_second.size();i++)
+			{
+				match_second=(it->first.second.find(constraints_second[i])!=std::string::npos);
+			}
+			if(match_second)
+			{
+				std::cout.width(max_width1+2);
+				std::cout << std::left << it->first.first;
+				std::cout.width(max_width2+2);
+				std::cout << std::left << it->first.second;
+				std::cout.width(default_width);
+				std::cout << std::left << it->second << "\n";
+			}
 		}
 	}
 	std::cout.width(default_width);
@@ -182,7 +190,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
-		basic_map_of_option_descriptions["--annotation-constraints"].init("list", "list of substrings to match annotated output");
+		basic_map_of_option_descriptions["--annotation-constraints-first"].init("list", "list of substrings to match first annotations output");
+		basic_map_of_option_descriptions["--annotation-constraints-second"].init("list", "list of substrings to match second annotations output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
@@ -218,7 +227,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
-	const std::vector<std::string> annotation_constraints=poh.argument_vector<std::string>("--annotation-constraints");
+	const std::vector<std::string> annotation_constraints_first=poh.argument_vector<std::string>("--annotation-constraints-first");
+	const std::vector<std::string> annotation_constraints_second=poh.argument_vector<std::string>("--annotation-constraints-second");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector<Comment> input_spheres_comments;
@@ -307,7 +317,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_map_of_named_contacts(map_of_named_contacts, annotation_constraints);
+		print_map_of_named_contacts(map_of_named_contacts, annotation_constraints_first, annotation_constraints_second);
 	}
 	else
 	{
