@@ -20,8 +20,8 @@ struct Comment
 	std::string str(bool with_residue, bool with_atom) const
 	{
 		std::ostringstream output;
-		output << chainID;
-		output << ":";
+
+		output << "(" << chainID << ":";
 		if(with_residue)
 		{
 			output << resSeq;
@@ -29,7 +29,6 @@ struct Comment
 			{
 				output << "." << iCode;
 			}
-			output << "(" << resName << ")";
 		}
 		else
 		{
@@ -43,12 +42,33 @@ struct Comment
 			{
 				output << "." << altLoc;
 			}
-			output << "(" << name << ")";
 		}
 		else
 		{
 			output << "*";
 		}
+		output << ")";
+
+		output << "[";
+		if(with_residue)
+		{
+			output << resName;
+		}
+		else
+		{
+			output << "*";
+		}
+		output << ":";
+		if(with_residue && with_atom)
+		{
+			output << name;
+		}
+		else
+		{
+			output << "*";
+		}
+		output << "]";
+
 		return output.str();
 	}
 };
@@ -123,7 +143,7 @@ void record_annotated_inter_atom_contact(const Comment& comment1, const Comment&
 	}
 }
 
-void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& prefixes)
+void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& constraints)
 {
 	const std::size_t default_width=std::cout.width();
 	std::size_t max_width1=0;
@@ -135,10 +155,10 @@ void print_map_of_named_contacts(const std::map< std::pair<std::string, std::str
 	}
 	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
 	{
-		bool match=prefixes.empty();
-		for(std::size_t i=0;!match && i<prefixes.size();i++)
+		bool match=constraints.empty();
+		for(std::size_t i=0;!match && i<constraints.size();i++)
 		{
-			match=(it->first.first.find(prefixes[i])==0);
+			match=(it->first.first.find(constraints[i])!=std::string::npos);
 		}
 		if(match)
 		{
@@ -162,7 +182,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
-		basic_map_of_option_descriptions["--annotation-prefixes"].init("list", "list of prefixes to restrict annotated output");
+		basic_map_of_option_descriptions["--annotation-constraints"].init("list", "list of substrings to match annotated output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
@@ -180,6 +200,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cerr << "  stdout  ->  list of contacts\n";
 			std::cerr << "                (default line format: 'b1 b2 distance area')\n";
 			std::cerr << "                (annotation mode line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "                  (annotation string format: '(chainID:resSeq:atomSerial)[resName:atomName]')\n";
 			return;
 		}
 		else
@@ -197,7 +218,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
-	const std::vector<std::string> annotation_prefixes=poh.argument_vector<std::string>("--annotation-prefixes");
+	const std::vector<std::string> annotation_constraints=poh.argument_vector<std::string>("--annotation-constraints");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector<Comment> input_spheres_comments;
@@ -286,7 +307,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_map_of_named_contacts(map_of_named_contacts, annotation_prefixes);
+		print_map_of_named_contacts(map_of_named_contacts, annotation_constraints);
 	}
 	else
 	{
