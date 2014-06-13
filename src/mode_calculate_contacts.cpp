@@ -105,7 +105,7 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 
 void record_annotated_solvent_contact(const Comment& comment, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
 {
-	static const std::string solvent_str("solvent");
+	static const std::string solvent_str("[solvent]");
 	map_of_named_contacts[std::make_pair(comment.str(true, true), solvent_str)]+=area;
 	map_of_named_contacts[std::make_pair(comment.str(true, false), solvent_str)]+=area;
 	map_of_named_contacts[std::make_pair(comment.str(false, false), solvent_str)]+=area;
@@ -113,7 +113,7 @@ void record_annotated_solvent_contact(const Comment& comment, const double area,
 
 void record_annotated_inter_atom_contact(const Comment& comment1, const Comment& comment2, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
 {
-	static const std::string nonsolvent_str("nonsolvent");
+	static const std::string nonsolvent_str("[nonsolvent]");
 	const std::string full_str1=comment1.str(true, true);
 	const std::string full_str2=comment2.str(true, true);
 	if(full_str1!=full_str2)
