@@ -11,7 +11,7 @@ Common options
 --mode calculate-contacts
 
   --annotate                                  flag to annotate contacts using balls comments
-  --annotation-prefixes           list        list of prefixes to restrict annotated output
+  --annotation-constraints        list        list of substrings to match annotated output
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --max-dist                      number      maximal distance to record, may exceed probe diameter
@@ -27,6 +27,7 @@ Common options
   stdout  ->  list of contacts
                 (default line format: 'b1 b2 distance area')
                 (annotation mode line format: 'annotation1 annotation2 area')
+                  (annotation string format: '(chainID:resSeq:atomSerial)[resName:atomName]')
 
 
 --mode calculate-tetrahedral-volumes
