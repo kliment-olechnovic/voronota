@@ -123,7 +123,7 @@ void record_annotated_inter_atom_contact(const Comment& comment1, const Comment&
 	}
 }
 
-void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& prefixes)
 {
 	const std::size_t default_width=std::cout.width();
 	std::size_t max_width1=0;
@@ -135,12 +135,20 @@ void print_map_of_named_contacts(const std::map< std::pair<std::string, std::str
 	}
 	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
 	{
-		std::cout.width(max_width1+2);
-		std::cout << std::left << it->first.first;
-		std::cout.width(max_width2+2);
-		std::cout << std::left << it->first.second;
-		std::cout.width(default_width);
-		std::cout << std::left << it->second << "\n";
+		bool match=prefixes.empty();
+		for(std::size_t i=0;!match && i<prefixes.size();i++)
+		{
+			match=(it->first.first.find(prefixes[i])==0);
+		}
+		if(match)
+		{
+			std::cout.width(max_width1+2);
+			std::cout << std::left << it->first.first;
+			std::cout.width(max_width2+2);
+			std::cout << std::left << it->first.second;
+			std::cout.width(default_width);
+			std::cout << std::left << it->second << "\n";
+		}
 	}
 	std::cout.width(default_width);
 }
@@ -154,6 +162,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
+		basic_map_of_option_descriptions["--annotation-prefixes"].init("list", "list of prefixes to restrict annotated output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
@@ -165,8 +174,12 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
 			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
+			std::cerr << "  stdin   <-  list of balls\n";
+			std::cerr << "                (default line format: 'x y z r # comments')\n";
+			std::cerr << "                (annotation mode line format: 'x y z r # atomSerial chainID resSeq resName atomName')\n";
 			std::cerr << "  stdout  ->  list of contacts\n";
+			std::cerr << "                (default line format: 'b1 b2 distance area')\n";
+			std::cerr << "                (annotation mode line format: 'annotation1 annotation2 area')\n";
 			return;
 		}
 		else
@@ -184,6 +197,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
+	const std::vector<std::string> annotation_prefixes=poh.argument_vector<std::string>("--annotation-prefixes");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector<Comment> input_spheres_comments;
@@ -272,7 +286,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_map_of_named_contacts(map_of_named_contacts);
+		print_map_of_named_contacts(map_of_named_contacts, annotation_prefixes);
 	}
 	else
 	{
