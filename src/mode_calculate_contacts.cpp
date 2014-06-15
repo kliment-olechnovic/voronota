@@ -19,56 +19,12 @@ struct Comment
 
 	std::string str(bool with_residue, bool with_atom) const
 	{
+		static const std::string any="*";
+		static const std::string sep=":";
+		const bool with_residue_and_atom=(with_residue && with_atom);
 		std::ostringstream output;
-
-		output << "(" << chainID << ":";
-		if(with_residue)
-		{
-			output << resSeq;
-			if(!iCode.empty())
-			{
-				output << "." << iCode;
-			}
-		}
-		else
-		{
-			output << "*";
-		}
-		output << ":";
-		if(with_residue && with_atom)
-		{
-			output << serial;
-			if(!altLoc.empty())
-			{
-				output << "." << altLoc;
-			}
-		}
-		else
-		{
-			output << "*";
-		}
-		output << ")";
-
-		output << "[";
-		if(with_residue)
-		{
-			output << resName;
-		}
-		else
-		{
-			output << "*";
-		}
-		output << ":";
-		if(with_residue && with_atom)
-		{
-			output << name;
-		}
-		else
-		{
-			output << "*";
-		}
-		output << "]";
-
+		output << "(" << chainID << sep << (with_residue ? (resSeq+iCode) : any) << sep << (with_residue_and_atom ? (serial+altLoc) : any) << ")";
+		output << "[" << (with_residue ? resName : any) << sep << (with_residue_and_atom ? name : any) << "]";
 		return output.str();
 	}
 };
@@ -89,11 +45,11 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 		}
 		if(!input.fail())
 		{
-			if(comment.altLoc==".")
+			if(comment.altLoc.find_first_of(".?")==0)
 			{
 				comment.altLoc.clear();
 			}
-			if(comment.iCode=="?")
+			if(comment.iCode.find_first_of(".?")==0)
 			{
 				comment.iCode.clear();
 			}
