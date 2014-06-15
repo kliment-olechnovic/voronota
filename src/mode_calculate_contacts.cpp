@@ -9,9 +9,9 @@ namespace
 
 struct Comment
 {
-	std::string serial;
+	int serial;
 	std::string chainID;
-	std::string resSeq;
+	int resSeq;
 	std::string resName;
 	std::string name;
 	std::string altLoc;
@@ -23,8 +23,11 @@ struct Comment
 		static const std::string sep=":";
 		const bool with_residue_and_atom=(with_residue && with_atom);
 		std::ostringstream output;
-		output << "(" << chainID << sep << (with_residue ? (resSeq+iCode) : any) << sep << (with_residue_and_atom ? (serial+altLoc) : any) << ")";
-		output << "[" << (with_residue ? resName : any) << sep << (with_residue_and_atom ? name : any) << "]";
+		output << "(" << chainID << sep;
+		if(with_residue) { output << resSeq << iCode; } else { output << any; }
+		output << sep;
+		if(with_residue_and_atom) { output << serial << altLoc; } else { output << any; }
+		output << ")[" << (with_residue ? resName : any) << sep << (with_residue_and_atom ? name : any) << "]";
 		return output.str();
 	}
 };
