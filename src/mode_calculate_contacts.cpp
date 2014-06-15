@@ -141,14 +141,14 @@ void record_annotated_inter_atom_contact(
 	using namespace std::rel_ops;
 	if(comment1!=comment2)
 	{
-		map_of_inter_atom_contacts[std::make_pair(comment1, comment2)]+=area;
-		map_of_inter_atom_contacts[std::make_pair(comment2, comment1)]+=area;
-		map_of_nonsolvent_contacts[comment1]+=area;
-		map_of_nonsolvent_contacts[comment2]+=area;
 		const Comment residue_comment1=comment1.without_atom();
 		const Comment residue_comment2=comment2.without_atom();
 		if(residue_comment1!=residue_comment2)
 		{
+			map_of_inter_atom_contacts[std::make_pair(comment1, comment2)]+=area;
+			map_of_inter_atom_contacts[std::make_pair(comment2, comment1)]+=area;
+			map_of_nonsolvent_contacts[comment1]+=area;
+			map_of_nonsolvent_contacts[comment2]+=area;
 			map_of_inter_atom_contacts[std::make_pair(residue_comment1, residue_comment2)]+=area;
 			map_of_inter_atom_contacts[std::make_pair(residue_comment2, residue_comment1)]+=area;
 			map_of_nonsolvent_contacts[residue_comment1]+=area;
