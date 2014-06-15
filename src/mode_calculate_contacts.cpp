@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 #include "apollota/constrained_contacts_construction.h"
 
@@ -17,11 +18,69 @@ struct Comment
 	std::string altLoc;
 	std::string iCode;
 
-	std::string str(bool with_residue, bool with_atom) const
+	Comment() : serial(0), resSeq(0)
+	{
+	}
+
+	Comment without_atom() const
+	{
+		Comment v=(*this);
+		v.serial=std::numeric_limits<int>::min();
+		v.altLoc.clear();
+		v.name.clear();
+		return v;
+	}
+
+	Comment without_residue() const
+	{
+		Comment v=without_atom();
+		v.resSeq=std::numeric_limits<int>::min();
+		v.iCode.clear();
+		v.resName.clear();
+		return v;
+	}
+
+	bool operator==(const Comment& v) const
+	{
+		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
+	}
+
+	bool operator<(const Comment& v) const
+	{
+		if(chainID<v.chainID) { return true; }
+		else if(chainID==v.chainID)
+		{
+			if(resSeq<v.resSeq) { return true; }
+			else if(resSeq==v.resSeq)
+			{
+				if(iCode<v.iCode) { return true; }
+				else if(iCode==v.iCode)
+				{
+					if(serial<v.serial) { return true; }
+					else if(serial==v.serial)
+					{
+						if(altLoc<v.altLoc) { return true; }
+						else if(altLoc==v.altLoc)
+						{
+							if(resName<v.resName) { return true; }
+							else if(resName==v.resName)
+							{
+								return (name<v.name);
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	std::string str() const
 	{
 		static const std::string any="*";
 		static const std::string sep=":";
-		const bool with_residue_and_atom=(with_residue && with_atom);
+		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
+		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
 		std::ostringstream output;
 		output << "(" << chainID << sep;
 		if(with_residue) { output << resSeq << iCode; } else { output << any; }
@@ -62,78 +121,112 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
-void record_annotated_solvent_contact(const Comment& comment, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+void record_annotated_solvent_contact(
+		const Comment& comment,
+		const double area,
+		std::map<Comment, double>& map_of_solvent_contacts)
 {
-	static const std::string solvent_str("[solvent]");
-	map_of_named_contacts[std::make_pair(comment.str(true, true), solvent_str)]+=area;
-	map_of_named_contacts[std::make_pair(comment.str(true, false), solvent_str)]+=area;
-	map_of_named_contacts[std::make_pair(comment.str(false, false), solvent_str)]+=area;
+	map_of_solvent_contacts[comment]+=area;
+	map_of_solvent_contacts[comment.without_atom()]+=area;
+	map_of_solvent_contacts[comment.without_residue()]+=area;
 }
 
-void record_annotated_inter_atom_contact(const Comment& comment1, const Comment& comment2, const double area, std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts)
+void record_annotated_inter_atom_contact(
+		const Comment& comment1,
+		const Comment& comment2,
+		const double area,
+		std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contacts,
+		std::map<Comment, double>& map_of_nonsolvent_contacts)
 {
-	static const std::string nonsolvent_str("[nonsolvent]");
-	const std::string full_str1=comment1.str(true, true);
-	const std::string full_str2=comment2.str(true, true);
-	if(full_str1!=full_str2)
+	using namespace std::rel_ops;
+	if(comment1!=comment2)
 	{
-		map_of_named_contacts[std::make_pair(full_str1, full_str2)]+=area;
-		map_of_named_contacts[std::make_pair(full_str2, full_str1)]+=area;
-		map_of_named_contacts[std::make_pair(full_str1, nonsolvent_str)]+=area;
-		map_of_named_contacts[std::make_pair(full_str2, nonsolvent_str)]+=area;
-		const std::string residue_str1=comment1.str(true, false);
-		const std::string residue_str2=comment2.str(true, false);
-		if(residue_str1!=residue_str2)
+		map_of_inter_atom_contacts[std::make_pair(comment1, comment2)]+=area;
+		map_of_inter_atom_contacts[std::make_pair(comment2, comment1)]+=area;
+		map_of_nonsolvent_contacts[comment1]+=area;
+		map_of_nonsolvent_contacts[comment2]+=area;
+		const Comment residue_comment1=comment1.without_atom();
+		const Comment residue_comment2=comment2.without_atom();
+		if(residue_comment1!=residue_comment2)
 		{
-			map_of_named_contacts[std::make_pair(residue_str1, residue_str2)]+=area;
-			map_of_named_contacts[std::make_pair(residue_str2, residue_str1)]+=area;
-			map_of_named_contacts[std::make_pair(residue_str1, nonsolvent_str)]+=area;
-			map_of_named_contacts[std::make_pair(residue_str2, nonsolvent_str)]+=area;
-			const std::string chain_str1=comment1.str(false, false);
-			const std::string chain_str2=comment2.str(false, false);
-			if(chain_str1!=chain_str2)
+			map_of_inter_atom_contacts[std::make_pair(residue_comment1, residue_comment2)]+=area;
+			map_of_inter_atom_contacts[std::make_pair(residue_comment2, residue_comment1)]+=area;
+			map_of_nonsolvent_contacts[residue_comment1]+=area;
+			map_of_nonsolvent_contacts[residue_comment2]+=area;
+			const Comment chain_comment1=comment1.without_residue();
+			const Comment chain_comment2=comment2.without_residue();
+			if(chain_comment1!=chain_comment2)
 			{
-				map_of_named_contacts[std::make_pair(chain_str1, chain_str2)]+=area;
-				map_of_named_contacts[std::make_pair(chain_str2, chain_str1)]+=area;
-				map_of_named_contacts[std::make_pair(chain_str1, nonsolvent_str)]+=area;
-				map_of_named_contacts[std::make_pair(chain_str2, nonsolvent_str)]+=area;
+				map_of_inter_atom_contacts[std::make_pair(chain_comment1, chain_comment2)]+=area;
+				map_of_inter_atom_contacts[std::make_pair(chain_comment2, chain_comment1)]+=area;
+				map_of_nonsolvent_contacts[chain_comment1]+=area;
+				map_of_nonsolvent_contacts[chain_comment2]+=area;
 			}
 		}
 	}
 }
 
-void print_map_of_named_contacts(const std::map< std::pair<std::string, std::string>, double >& map_of_named_contacts, const std::vector<std::string>& constraints_first, const std::vector<std::string>& constraints_second)
+void print_map_of_named_contacts(
+		const std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contacts,
+		const std::map<Comment, double>& map_of_nonsolvent_contacts,
+		const std::map<Comment, double>& map_of_solvent_contacts,
+		const std::vector<std::string>& constraints_first,
+		const std::vector<std::string>& constraints_second)
 {
+	typedef std::map< Comment, std::vector< std::pair<std::string, double> > > NamedContacts;
+	NamedContacts named_contacts;
+	for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contacts.begin();it!=map_of_inter_atom_contacts.end();++it)
+	{
+		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str(), it->second));
+	}
+	for(std::map<Comment, double>::const_iterator it=map_of_nonsolvent_contacts.begin();it!=map_of_nonsolvent_contacts.end();++it)
+	{
+		named_contacts[it->first].push_back(std::make_pair(std::string("[nonsolvent]"), it->second));
+	}
+	for(std::map<Comment, double>::const_iterator it=map_of_solvent_contacts.begin();it!=map_of_solvent_contacts.end();++it)
+	{
+		named_contacts[it->first].push_back(std::make_pair(std::string("[solvent]"), it->second));
+	}
+
 	const std::size_t default_width=std::cout.width();
-	std::size_t max_width1=0;
-	std::size_t max_width2=0;
-	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
+	std::size_t max_width=0;
+	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
-		max_width1=std::max(max_width1, it->first.first.size());
-		max_width2=std::max(max_width2, it->first.second.size());
-	}
-	for(std::map< std::pair<std::string, std::string>, double >::const_iterator it=map_of_named_contacts.begin();it!=map_of_named_contacts.end();++it)
-	{
-		bool match_first=constraints_first.empty();
-		for(std::size_t i=0;!match_first && i<constraints_first.size();i++)
+		max_width=std::max(max_width, it->first.str().size());
+		for(std::size_t i=0;i<it->second.size();i++)
 		{
-			match_first=(it->first.first.find(constraints_first[i])!=std::string::npos);
+			max_width=std::max(max_width, it->second[i].first.size());
 		}
-		if(match_first)
+	}
+	max_width+=2;
+
+	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
+	{
+		const std::string str1=it->first.str();
+		bool match1=constraints_first.empty();
+		for(std::size_t j=0;!match1 && j<constraints_first.size();j++)
 		{
-			bool match_second=constraints_second.empty();
-			for(std::size_t i=0;!match_second && i<constraints_second.size();i++)
+			match1=(str1.find(constraints_first[j])!=std::string::npos);
+		}
+		if(match1)
+		{
+			for(std::size_t i=0;i<it->second.size();i++)
 			{
-				match_second=(it->first.second.find(constraints_second[i])!=std::string::npos);
-			}
-			if(match_second)
-			{
-				std::cout.width(max_width1+2);
-				std::cout << std::left << it->first.first;
-				std::cout.width(max_width2+2);
-				std::cout << std::left << it->first.second;
-				std::cout.width(default_width);
-				std::cout << std::left << it->second << "\n";
+				const std::string str2=it->second[i].first;
+				bool match2=constraints_second.empty();
+				for(std::size_t j=0;!match2 && j<constraints_second.size();j++)
+				{
+					match2=(str2.find(constraints_second[j])!=std::string::npos);
+				}
+				if(match2)
+				{
+					std::cout.width(max_width);
+					std::cout << std::left << str1;
+					std::cout.width(max_width);
+					std::cout << std::left << str2;
+					std::cout.width(default_width);
+					std::cout << std::left << it->second[i].second << "\n";
+				}
 			}
 		}
 	}
@@ -258,7 +351,9 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!input_spheres_comments.empty())
 	{
-		std::map< std::pair<std::string, std::string>, double > map_of_named_contacts;
+		std::map< std::pair<Comment, Comment>, double > map_of_inter_atom_contacts;
+		std::map< Comment, double > map_of_nonsolvent_contacts;
+		std::map< Comment, double > map_of_solvent_contacts;
 		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second.second;
@@ -268,15 +363,15 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t b_id=it->first.get(1);
 				if(a_id==b_id)
 				{
-					record_annotated_solvent_contact(input_spheres_comments[a_id], area, map_of_named_contacts);
+					record_annotated_solvent_contact(input_spheres_comments[a_id], area, map_of_solvent_contacts);
 				}
 				else
 				{
-					record_annotated_inter_atom_contact(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_named_contacts);
+					record_annotated_inter_atom_contact(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_inter_atom_contacts, map_of_nonsolvent_contacts);
 				}
 			}
 		}
-		print_map_of_named_contacts(map_of_named_contacts, annotation_constraints_first, annotation_constraints_second);
+		print_map_of_named_contacts(map_of_inter_atom_contacts, map_of_nonsolvent_contacts, map_of_solvent_contacts, annotation_constraints_first, annotation_constraints_second);
 	}
 	else
 	{
