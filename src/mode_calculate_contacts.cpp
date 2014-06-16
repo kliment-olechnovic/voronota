@@ -77,36 +77,36 @@ struct Comment
 
 	std::string str(const std::string& suffix) const
 	{
-		static const std::string any="*";
-		static const std::string sep=":";
+		static const std::string b="=";
+		static const std::string e="; ";
 		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
 		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
 		std::ostringstream output;
-		output << "s" << suffix << "=c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << "; ";
-		output << "c" << suffix << "=" << chainID << "; ";
+		output << "s" << suffix << b << "c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << e;
+		output << "c" << suffix << b << chainID << e;
 		if(with_residue)
 		{
-			output << "r" << suffix << "=" << resSeq << "; ";
+			output << "r" << suffix << b << resSeq << e;
 			if(!iCode.empty())
 			{
-				output << "i" << suffix << "=" << iCode << "; ";
+				output << "i" << suffix << b << iCode << e;
 			}
 		}
 		if(with_residue_and_atom)
 		{
-			output << "a" << suffix << "=" << serial << "; ";
+			output << "a" << suffix << b << serial << e;
 			if(!altLoc.empty())
 			{
-				output << "l" << suffix << "=" << altLoc << "; ";
+				output << "l" << suffix << b << altLoc << e;
 			}
 		}
 		if(with_residue)
 		{
-			output << "R" << suffix << "=" << resName << "; ";
+			output << "R" << suffix << b << resName << e;
 		}
 		if(with_residue_and_atom)
 		{
-			output << "A" << suffix << "=" << name << ";";
+			output << "A" << suffix << b << name << e.substr(0, 1);
 		}
 		return output.str();
 	}
