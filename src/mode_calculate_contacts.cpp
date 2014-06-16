@@ -75,18 +75,39 @@ struct Comment
 		return false;
 	}
 
-	std::string str() const
+	std::string str(const std::string& suffix) const
 	{
 		static const std::string any="*";
 		static const std::string sep=":";
 		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
 		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
 		std::ostringstream output;
-		output << "(" << chainID << sep;
-		if(with_residue) { output << resSeq << iCode; } else { output << any; }
-		output << sep;
-		if(with_residue_and_atom) { output << serial << altLoc; } else { output << any; }
-		output << ")[" << (with_residue ? resName : any) << sep << (with_residue_and_atom ? name : any) << "]";
+		output << "s" << suffix << "=c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << "; ";
+		output << "c" << suffix << "=" << chainID << "; ";
+		if(with_residue)
+		{
+			output << "r" << suffix << "=" << resSeq << "; ";
+			if(!iCode.empty())
+			{
+				output << "i" << suffix << "=" << iCode << "; ";
+			}
+		}
+		if(with_residue_and_atom)
+		{
+			output << "a" << suffix << "=" << serial << "; ";
+			if(!altLoc.empty())
+			{
+				output << "l" << suffix << "=" << altLoc << "; ";
+			}
+		}
+		if(with_residue)
+		{
+			output << "R" << suffix << "=" << resName << "; ";
+		}
+		if(with_residue_and_atom)
+		{
+			output << "A" << suffix << "=" << name << ";";
+		}
 		return output.str();
 	}
 };
@@ -175,32 +196,32 @@ void print_map_of_named_contacts(
 	NamedContacts named_contacts;
 	for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contacts.begin();it!=map_of_inter_atom_contacts.end();++it)
 	{
-		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str(), it->second));
+		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str("2"), it->second));
 	}
 	for(std::map<Comment, double>::const_iterator it=map_of_nonsolvent_contacts.begin();it!=map_of_nonsolvent_contacts.end();++it)
 	{
-		named_contacts[it->first].push_back(std::make_pair(std::string("[nonsolvent]"), it->second));
+		named_contacts[it->first].push_back(std::make_pair(std::string("s2=nonsolvent;"), it->second));
 	}
 	for(std::map<Comment, double>::const_iterator it=map_of_solvent_contacts.begin();it!=map_of_solvent_contacts.end();++it)
 	{
-		named_contacts[it->first].push_back(std::make_pair(std::string("[solvent]"), it->second));
+		named_contacts[it->first].push_back(std::make_pair(std::string("s2=solvent;"), it->second));
 	}
 
 	const std::size_t default_width=std::cout.width();
 	std::size_t max_width=0;
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
-		max_width=std::max(max_width, it->first.str().size());
+		max_width=std::max(max_width, it->first.str("1").size());
 		for(std::size_t i=0;i<it->second.size();i++)
 		{
 			max_width=std::max(max_width, it->second[i].first.size());
 		}
 	}
-	max_width+=2;
+	max_width+=5;
 
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
-		const std::string str1=it->first.str();
+		const std::string str1=it->first.str("1");
 		for(std::size_t i=0;i<it->second.size();i++)
 		{
 			const std::string str2=it->second[i].first;
@@ -209,7 +230,7 @@ void print_map_of_named_contacts(
 			std::cout.width(max_width);
 			std::cout << std::left << str2;
 			std::cout.width(default_width);
-			std::cout << std::left << it->second[i].second << "\n";
+			std::cout << std::left << "area=" << it->second[i].second << ";\n";
 		}
 	}
 	std::cout.width(default_width);
@@ -241,7 +262,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cerr << "  stdout  ->  list of contacts\n";
 			std::cerr << "                (default line format: 'b1 b2 distance area')\n";
 			std::cerr << "                (annotation mode line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "                  (annotation string format: '(chainID:resSeq:atomSerial)[resName:atomName]')\n";
 			return;
 		}
 		else

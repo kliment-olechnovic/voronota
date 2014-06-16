@@ -26,7 +26,6 @@ Common options
   stdout  ->  list of contacts
                 (default line format: 'b1 b2 distance area')
                 (annotation mode line format: 'annotation1 annotation2 area')
-                  (annotation string format: '(chainID:resSeq:atomSerial)[resName:atomName]')
 
 
 --mode calculate-tetrahedral-volumes
