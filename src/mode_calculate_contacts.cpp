@@ -75,40 +75,59 @@ struct Comment
 		return false;
 	}
 
-	std::string str(const std::string& suffix) const
+	std::string str(
+			const std::string& suffix,
+			const std::string& value_begin,
+			const std::string& value_end,
+			const bool include_accumulation_descriptor,
+			const bool include_names) const
 	{
-		static const std::string b="=";
-		static const std::string e="; ";
 		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
 		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
 		std::ostringstream output;
-		output << "s" << suffix << b << "c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << e;
-		output << "c" << suffix << b << chainID << e;
+		if(include_accumulation_descriptor)
+		{
+			output << "s" << suffix << value_begin << "c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << value_end;
+		}
+		output << "c" << suffix << value_begin << chainID << value_end;
 		if(with_residue)
 		{
-			output << "r" << suffix << b << resSeq << e;
+			output << "r" << suffix << value_begin << resSeq << value_end;
 			if(!iCode.empty())
 			{
-				output << "i" << suffix << b << iCode << e;
+				output << "i" << suffix << value_begin << iCode << value_end;
 			}
 		}
 		if(with_residue_and_atom)
 		{
-			output << "a" << suffix << b << serial << e;
+			output << "a" << suffix << value_begin << serial << value_end;
 			if(!altLoc.empty())
 			{
-				output << "l" << suffix << b << altLoc << e;
+				output << "l" << suffix << value_begin << altLoc << value_end;
 			}
 		}
-		if(with_residue)
+		if(include_names)
 		{
-			output << "R" << suffix << b << resName << e;
-		}
-		if(with_residue_and_atom)
-		{
-			output << "A" << suffix << b << name << e;
+			if(with_residue)
+			{
+				output << "R" << suffix << value_begin << resName << value_end;
+			}
+			if(with_residue_and_atom)
+			{
+				output << "A" << suffix << value_begin << name << value_end;
+			}
 		}
 		return output.str();
+	}
+
+	std::string str(const std::string& suffix) const
+	{
+		return str(suffix, "=", "; ", true, true);
+	}
+
+	std::string str() const
+	{
+		return str("", "", "", false, false);
 	}
 };
 
