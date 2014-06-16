@@ -10,17 +10,15 @@ Common options
 
 --mode calculate-contacts
 
-  --annotate                                   flag to annotate contacts using balls comments
-  --annotation-constraints-first   list        list of substrings to match first annotations output
-  --annotation-constraints-second  list        list of substrings to match second annotations output
-  --exclude-hidden-balls                       flag to exclude hidden input balls
-  --init-radius-for-BSH            number      initial radius for bounding sphere hierarchy
-  --max-dist                       number      maximal distance to record, may exceed probe diameter
-  --print-log                                  flag to print log of calculations
-  --probe                          number      probe radius
-  --projections                    number      curve optimization depth
-  --sih-depth                      number      spherical surface optimization depth
-  --step                           number      curve step length
+  --annotate                                  flag to annotate contacts using balls comments
+  --exclude-hidden-balls                      flag to exclude hidden input balls
+  --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+  --max-dist                      number      maximal distance to record, may exceed probe diameter
+  --print-log                                 flag to print log of calculations
+  --probe                         number      probe radius
+  --projections                   number      curve optimization depth
+  --sih-depth                     number      spherical surface optimization depth
+  --step                          number      curve step length
 
   stdin   <-  list of balls
                 (default line format: 'x y z r # comments')

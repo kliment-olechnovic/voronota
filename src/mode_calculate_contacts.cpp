@@ -169,9 +169,7 @@ void record_annotated_inter_atom_contact(
 void print_map_of_named_contacts(
 		const std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contacts,
 		const std::map<Comment, double>& map_of_nonsolvent_contacts,
-		const std::map<Comment, double>& map_of_solvent_contacts,
-		const std::vector<std::string>& constraints_first,
-		const std::vector<std::string>& constraints_second)
+		const std::map<Comment, double>& map_of_solvent_contacts)
 {
 	typedef std::map< Comment, std::vector< std::pair<std::string, double> > > NamedContacts;
 	NamedContacts named_contacts;
@@ -203,31 +201,15 @@ void print_map_of_named_contacts(
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
 		const std::string str1=it->first.str();
-		bool match1=constraints_first.empty();
-		for(std::size_t j=0;!match1 && j<constraints_first.size();j++)
+		for(std::size_t i=0;i<it->second.size();i++)
 		{
-			match1=(str1.find(constraints_first[j])!=std::string::npos);
-		}
-		if(match1)
-		{
-			for(std::size_t i=0;i<it->second.size();i++)
-			{
-				const std::string str2=it->second[i].first;
-				bool match2=constraints_second.empty();
-				for(std::size_t j=0;!match2 && j<constraints_second.size();j++)
-				{
-					match2=(str2.find(constraints_second[j])!=std::string::npos);
-				}
-				if(match2)
-				{
-					std::cout.width(max_width);
-					std::cout << std::left << str1;
-					std::cout.width(max_width);
-					std::cout << std::left << str2;
-					std::cout.width(default_width);
-					std::cout << std::left << it->second[i].second << "\n";
-				}
-			}
+			const std::string str2=it->second[i].first;
+			std::cout.width(max_width);
+			std::cout << std::left << str1;
+			std::cout.width(max_width);
+			std::cout << std::left << str2;
+			std::cout.width(default_width);
+			std::cout << std::left << it->second[i].second << "\n";
 		}
 	}
 	std::cout.width(default_width);
@@ -242,8 +224,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
-		basic_map_of_option_descriptions["--annotation-constraints-first"].init("list", "list of substrings to match first annotations output");
-		basic_map_of_option_descriptions["--annotation-constraints-second"].init("list", "list of substrings to match second annotations output");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
 		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
@@ -279,8 +259,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
-	const std::vector<std::string> annotation_constraints_first=poh.argument_vector<std::string>("--annotation-constraints-first");
-	const std::vector<std::string> annotation_constraints_second=poh.argument_vector<std::string>("--annotation-constraints-second");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector<Comment> input_spheres_comments;
@@ -371,7 +349,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_map_of_named_contacts(map_of_inter_atom_contacts, map_of_nonsolvent_contacts, map_of_solvent_contacts, annotation_constraints_first, annotation_constraints_second);
+		print_map_of_named_contacts(map_of_inter_atom_contacts, map_of_nonsolvent_contacts, map_of_solvent_contacts);
 	}
 	else
 	{
