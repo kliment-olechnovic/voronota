@@ -13,18 +13,24 @@ namespace apollota
 class OpenGLPrinter
 {
 public:
+	OpenGLPrinter() : output_stream_(0)
+	{
+	}
+
 	OpenGLPrinter(std::ostream& output_stream, const std::string& obj_name, const std::string& cgo_name) :
-		output_stream_(output_stream),
+		output_stream_(&output_stream),
 		obj_name_(obj_name),
 		cgo_name_(cgo_name)
 	{
-		string_stream_ << obj_name_ << " = [ ";
 	}
 
 	~OpenGLPrinter()
 	{
-		string_stream_ << "]\ncmd.load_cgo(" << obj_name_ << ", '" << cgo_name_ << "')\n";
-		output_stream_ << string_stream_.str() << "\n";
+		if(output_stream_!=0)
+		{
+			(*output_stream_) << obj_name_ << " = [ " << string_stream_.str() << "]\n";
+			(*output_stream_) << "cmd.load_cgo(" << obj_name_ << ", '" << cgo_name_ << "')\n";
+		}
 	}
 
 	static void print_setup(std::ostream& output_stream)
@@ -130,6 +136,11 @@ public:
 		string_stream_ << "CYLINDER, " << point_to_string(p1) << ", " << point_to_string(p2) << ", " << radius << ", " << rgb_to_string(rgb1) << ", " << rgb_to_string(rgb2) << ", ";
 	}
 
+	std::string str() const
+	{
+		return string_stream_.str();
+	}
+
 private:
 	OpenGLPrinter(const OpenGLPrinter& /*opengl_printer*/);
 	OpenGLPrinter& operator=(const OpenGLPrinter& /*opengl_printer*/);
@@ -155,7 +166,7 @@ private:
 		return rgb_to_string(static_cast<double>((rgb&0xFF0000) >> 16)/255.0, static_cast<double>((rgb&0x00FF00) >> 8)/255.0, static_cast<double>(rgb&0x0000FF)/255.0);
 	}
 
-	std::ostream& output_stream_;
+	std::ostream* output_stream_;
 	const std::string obj_name_;
 	const std::string cgo_name_;
 	std::ostringstream string_stream_;
