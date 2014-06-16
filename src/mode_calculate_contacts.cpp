@@ -106,7 +106,7 @@ struct Comment
 		}
 		if(with_residue_and_atom)
 		{
-			output << "A" << suffix << b << name << e.substr(0, 1);
+			output << "A" << suffix << b << name << e;
 		}
 		return output.str();
 	}
@@ -217,7 +217,7 @@ void print_map_of_named_contact_areas(
 			max_width=std::max(max_width, it->second[i].first.size());
 		}
 	}
-	max_width+=5;
+	max_width+=4;
 
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
