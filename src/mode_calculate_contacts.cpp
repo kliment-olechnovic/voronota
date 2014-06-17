@@ -162,48 +162,24 @@ void record_annotated_solvent_contact_area(
 		std::map<Comment, double>& map_of_solvent_contact_areas)
 {
 	map_of_solvent_contact_areas[comment]+=area;
-	map_of_solvent_contact_areas[comment.without_atom()]+=area;
-	map_of_solvent_contact_areas[comment.without_residue()]+=area;
 }
 
 void record_annotated_inter_atom_contact_area(
 		const Comment& comment1,
 		const Comment& comment2,
 		const double area,
-		std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas,
-		std::map<Comment, double>& map_of_nonsolvent_contact_areas)
+		std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas)
 {
 	using namespace std::rel_ops;
-	if(comment1!=comment2)
+	if(comment1!=comment2 && comment1.without_atom()!=comment2.without_atom())
 	{
-		const Comment residue_comment1=comment1.without_atom();
-		const Comment residue_comment2=comment2.without_atom();
-		if(residue_comment1!=residue_comment2)
-		{
-			map_of_inter_atom_contact_areas[std::make_pair(comment1, comment2)]+=area;
-			map_of_inter_atom_contact_areas[std::make_pair(comment2, comment1)]+=area;
-			map_of_nonsolvent_contact_areas[comment1]+=area;
-			map_of_nonsolvent_contact_areas[comment2]+=area;
-			map_of_inter_atom_contact_areas[std::make_pair(residue_comment1, residue_comment2)]+=area;
-			map_of_inter_atom_contact_areas[std::make_pair(residue_comment2, residue_comment1)]+=area;
-			map_of_nonsolvent_contact_areas[residue_comment1]+=area;
-			map_of_nonsolvent_contact_areas[residue_comment2]+=area;
-			const Comment chain_comment1=comment1.without_residue();
-			const Comment chain_comment2=comment2.without_residue();
-			if(chain_comment1!=chain_comment2)
-			{
-				map_of_inter_atom_contact_areas[std::make_pair(chain_comment1, chain_comment2)]+=area;
-				map_of_inter_atom_contact_areas[std::make_pair(chain_comment2, chain_comment1)]+=area;
-				map_of_nonsolvent_contact_areas[chain_comment1]+=area;
-				map_of_nonsolvent_contact_areas[chain_comment2]+=area;
-			}
-		}
+		map_of_inter_atom_contact_areas[std::make_pair(comment1, comment2)]+=area;
+		map_of_inter_atom_contact_areas[std::make_pair(comment2, comment1)]+=area;
 	}
 }
 
 void print_map_of_named_contact_areas(
 		const std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas,
-		const std::map<Comment, double>& map_of_nonsolvent_contact_areas,
 		const std::map<Comment, double>& map_of_solvent_contact_areas)
 {
 	typedef std::map< Comment, std::vector< std::pair<std::string, double> > > NamedContacts;
@@ -211,10 +187,6 @@ void print_map_of_named_contact_areas(
 	for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contact_areas.begin();it!=map_of_inter_atom_contact_areas.end();++it)
 	{
 		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str("2"), it->second));
-	}
-	for(std::map<Comment, double>::const_iterator it=map_of_nonsolvent_contact_areas.begin();it!=map_of_nonsolvent_contact_areas.end();++it)
-	{
-		named_contacts[it->first].push_back(std::make_pair(std::string("s2=nonsolvent;"), it->second));
 	}
 	for(std::map<Comment, double>::const_iterator it=map_of_solvent_contact_areas.begin();it!=map_of_solvent_contact_areas.end();++it)
 	{
@@ -364,7 +336,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!input_spheres_comments.empty())
 	{
 		std::map< std::pair<Comment, Comment>, double > map_of_inter_atom_contact_areas;
-		std::map< Comment, double > map_of_nonsolvent_contact_areas;
 		std::map< Comment, double > map_of_solvent_contact_areas;
 		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
@@ -379,11 +350,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				else
 				{
-					record_annotated_inter_atom_contact_area(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_inter_atom_contact_areas, map_of_nonsolvent_contact_areas);
+					record_annotated_inter_atom_contact_area(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_inter_atom_contact_areas);
 				}
 			}
 		}
-		print_map_of_named_contact_areas(map_of_inter_atom_contact_areas, map_of_nonsolvent_contact_areas, map_of_solvent_contact_areas);
+		print_map_of_named_contact_areas(map_of_inter_atom_contact_areas, map_of_solvent_contact_areas);
 	}
 	else
 	{
