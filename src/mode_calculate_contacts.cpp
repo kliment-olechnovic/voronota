@@ -79,16 +79,11 @@ struct Comment
 			const std::string& suffix,
 			const std::string& value_begin,
 			const std::string& value_end,
-			const bool include_accumulation_descriptor,
 			const bool include_names) const
 	{
 		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
 		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
 		std::ostringstream output;
-		if(include_accumulation_descriptor)
-		{
-			output << "s" << suffix << value_begin << "c" << (with_residue ? "r" : "") << (with_residue_and_atom ? "a" : "") << value_end;
-		}
 		output << "c" << suffix << value_begin << chainID << value_end;
 		if(with_residue)
 		{
@@ -110,11 +105,11 @@ struct Comment
 		{
 			if(with_residue)
 			{
-				output << "R" << suffix << value_begin << resName << value_end;
+				output << "rn" << suffix << value_begin << resName << value_end;
 			}
 			if(with_residue_and_atom)
 			{
-				output << "A" << suffix << value_begin << name << value_end;
+				output << "an" << suffix << value_begin << name << value_end;
 			}
 		}
 		return output.str();
@@ -122,12 +117,12 @@ struct Comment
 
 	std::string str(const std::string& suffix) const
 	{
-		return str(suffix, "=", "; ", true, true);
+		return str(suffix, "=", "; ", true);
 	}
 
 	std::string str() const
 	{
-		return str("", "", "", false, false);
+		return str("", "", "", false);
 	}
 };
 
