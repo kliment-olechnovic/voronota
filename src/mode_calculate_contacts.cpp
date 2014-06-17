@@ -2,6 +2,7 @@
 #include <utility>
 
 #include "apollota/constrained_contacts_construction.h"
+#include "apollota/opengl_printer.h"
 
 #include "modes_commons.h"
 
@@ -144,6 +145,70 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
+std::string draw_iter_atom_contact(
+		const std::vector<apollota::SimpleSphere>& spheres,
+		const apollota::Triangulation::VerticesVector& vertices_vector,
+		const apollota::TriangulationQueries::PairsMap& pairs_vertices,
+		const std::size_t a_id,
+		const std::size_t b_id,
+		const double probe,
+		const double step,
+		const int projections)
+{
+	apollota::OpenGLPrinter opengl_printer;
+	if(a_id<spheres.size() && b_id<spheres.size())
+	{
+		apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(a_id, b_id));
+		if(pairs_vertices_it!=pairs_vertices.end())
+		{
+			const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours(
+					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections);
+			for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+			{
+				const apollota::ConstrainedContactContour::Contour& contour=(*contours_it);
+				const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(contour);
+				opengl_printer.print_triangle_fan(
+						apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[a_id], spheres[b_id]),
+						outline,
+						apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit());
+			}
+		}
+	}
+	return opengl_printer.str();
+}
+
+std::string draw_solvent_contact(
+		const std::vector<apollota::SimpleSphere>& spheres,
+		const apollota::Triangulation::VerticesVector& vertices_vector,
+		const apollota::TriangulationQueries::IDsMap& ids_vertices,
+		const std::size_t a_id,
+		const double probe,
+		const apollota::SubdividedIcosahedron& sih)
+{
+	apollota::OpenGLPrinter opengl_printer;
+	if(a_id<spheres.size())
+	{
+		apollota::TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(a_id);
+		if(ids_vertices_it!=ids_vertices.end())
+		{
+			const apollota::ConstrainedContactRemainder::Remainder remainder=apollota::ConstrainedContactRemainder::construct_contact_remainder(
+					spheres, vertices_vector, ids_vertices_it->second, a_id, probe, sih);
+			for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+			{
+				std::vector<apollota::SimplePoint> ts(3);
+				std::vector<apollota::SimplePoint> ns(3);
+				for(int i=0;i<3;i++)
+				{
+					ts[i]=remainder_it->p[i];
+					ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[a_id]).unit();
+				}
+				opengl_printer.print_triangle_strip(ts, ns);
+			}
+		}
+	}
+	return opengl_printer.str();
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -160,6 +225,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		full_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
 		full_map_of_option_descriptions["--sih-depth"].init("number", "spherical surface optimization depth");
 		full_map_of_option_descriptions["--max-dist"].init("number", "maximal distance to record, may exceed probe diameter");
+		full_map_of_option_descriptions["--draw"].init("", "flag to output graphics for annotated contacts");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -187,6 +253,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const double max_dist=std::max(0.0, std::min(14.0*4.0, poh.argument<double>("--max-dist", probe*4.0)));
+	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector<Comment> input_spheres_comments;
@@ -257,20 +324,44 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!input_spheres_comments.empty())
 	{
-		std::map< std::pair<Comment, Comment>, double > map_of_inter_atom_contact_areas;
-		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+		if(draw)
 		{
-			const double area=it->second.second;
-			if(area>0.0)
+			const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+			const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+			const apollota::SubdividedIcosahedron sih(sih_depth);
+			std::map< std::pair<Comment, Comment>, std::string > map_of_graphics;
+			for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 			{
-				const std::size_t a_id=it->first.get(0);
-				const std::size_t b_id=it->first.get(1);
-				map_of_inter_atom_contact_areas[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=area;
+				const double area=it->second.second;
+				if(area>0.0)
+				{
+					const std::size_t a_id=it->first.get(0);
+					const std::size_t b_id=it->first.get(1);
+					map_of_graphics[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=(a_id==b_id ?
+							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
+							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
+				}
+			}
+			for(std::map< std::pair<Comment, Comment>, std::string >::const_iterator it=map_of_graphics.begin();it!=map_of_graphics.end();++it)
+			{
+				std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
 			}
 		}
-		for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contact_areas.begin();it!=map_of_inter_atom_contact_areas.end();++it)
+		else
 		{
-			std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
+			std::map< std::pair<Comment, Comment>, double > map_of_areas;
+			for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+			{
+				const double area=it->second.second;
+				if(area>0.0)
+				{
+					map_of_areas[std::make_pair(input_spheres_comments[it->first.get(0)], input_spheres_comments[it->first.get(1)])]=area;
+				}
+			}
+			for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_areas.begin();it!=map_of_areas.end();++it)
+			{
+				std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
+			}
 		}
 	}
 	else
