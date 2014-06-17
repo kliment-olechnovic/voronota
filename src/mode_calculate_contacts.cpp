@@ -144,50 +144,6 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
-void print_map_of_named_contact_areas(
-		const std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas,
-		const std::map<Comment, double>& map_of_solvent_contact_areas)
-{
-	typedef std::map< Comment, std::vector< std::pair<std::string, double> > > NamedContacts;
-	NamedContacts named_contacts;
-	for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contact_areas.begin();it!=map_of_inter_atom_contact_areas.end();++it)
-	{
-		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str(), it->second));
-	}
-	for(std::map<Comment, double>::const_iterator it=map_of_solvent_contact_areas.begin();it!=map_of_solvent_contact_areas.end();++it)
-	{
-		named_contacts[it->first].push_back(std::make_pair(std::string("solvent"), it->second));
-	}
-
-	const std::size_t default_width=std::cout.width();
-	std::size_t max_width=0;
-	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
-	{
-		max_width=std::max(max_width, it->first.str().size());
-		for(std::size_t i=0;i<it->second.size();i++)
-		{
-			max_width=std::max(max_width, it->second[i].first.size());
-		}
-	}
-	max_width+=4;
-
-	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
-	{
-		const std::string str1=it->first.str();
-		for(std::size_t i=0;i<it->second.size();i++)
-		{
-			const std::string str2=it->second[i].first;
-			std::cout.width(max_width);
-			std::cout << std::left << str1;
-			std::cout.width(max_width);
-			std::cout << std::left << str2;
-			std::cout.width(default_width);
-			std::cout << std::left << it->second[i].second << "\n";
-		}
-	}
-	std::cout.width(default_width);
-}
-
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -302,7 +258,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!input_spheres_comments.empty())
 	{
 		std::map< std::pair<Comment, Comment>, double > map_of_inter_atom_contact_areas;
-		std::map< Comment, double > map_of_solvent_contact_areas;
 		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second.second;
@@ -310,17 +265,13 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				if(a_id==b_id)
-				{
-					map_of_solvent_contact_areas[input_spheres_comments[a_id]]=area;
-				}
-				else
-				{
-					map_of_inter_atom_contact_areas[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=area;
-				}
+				map_of_inter_atom_contact_areas[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=area;
 			}
 		}
-		print_map_of_named_contact_areas(map_of_inter_atom_contact_areas, map_of_solvent_contact_areas);
+		for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contact_areas.begin();it!=map_of_inter_atom_contact_areas.end();++it)
+		{
+			std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
+		}
 	}
 	else
 	{
