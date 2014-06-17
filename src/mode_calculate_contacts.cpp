@@ -324,43 +324,25 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!input_spheres_comments.empty())
 	{
-		if(draw)
+		const apollota::TriangulationQueries::PairsMap pairs_vertices=(draw ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
+		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
+		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
+
+		for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
-			const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-			const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-			const apollota::SubdividedIcosahedron sih(sih_depth);
-			std::map< std::pair<Comment, Comment>, std::string > map_of_graphics;
-			for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+			const double area=it->second.second;
+			if(area>0.0)
 			{
-				const double area=it->second.second;
-				if(area>0.0)
+				const std::size_t a_id=it->first.get(0);
+				const std::size_t b_id=it->first.get(1);
+				std::cout << input_spheres_comments[a_id].str() << " " << (a_id==b_id ? std::string("solvent") : input_spheres_comments[b_id].str()) << " " << area;
+				if(draw)
 				{
-					const std::size_t a_id=it->first.get(0);
-					const std::size_t b_id=it->first.get(1);
-					map_of_graphics[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=(a_id==b_id ?
+					std::cout << " " << (a_id==b_id ?
 							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 				}
-			}
-			for(std::map< std::pair<Comment, Comment>, std::string >::const_iterator it=map_of_graphics.begin();it!=map_of_graphics.end();++it)
-			{
-				std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
-			}
-		}
-		else
-		{
-			std::map< std::pair<Comment, Comment>, double > map_of_areas;
-			for(std::map<apollota::Pair, std::pair<double, double> >::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
-			{
-				const double area=it->second.second;
-				if(area>0.0)
-				{
-					map_of_areas[std::make_pair(input_spheres_comments[it->first.get(0)], input_spheres_comments[it->first.get(1)])]=area;
-				}
-			}
-			for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_areas.begin();it!=map_of_areas.end();++it)
-			{
-				std::cout << it->first.first.str() << " " << (it->first.first==it->first.second ? std::string("solvent") : it->first.second.str()) << " " << it->second << "\n";
+				std::cout << "\n";
 			}
 		}
 	}
