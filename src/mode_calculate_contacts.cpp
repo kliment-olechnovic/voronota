@@ -173,8 +173,8 @@ void record_annotated_inter_atom_contact_area(
 	using namespace std::rel_ops;
 	if(comment1!=comment2 && comment1.without_atom()!=comment2.without_atom())
 	{
-		map_of_inter_atom_contact_areas[std::make_pair(comment1, comment2)]+=area;
-		map_of_inter_atom_contact_areas[std::make_pair(comment2, comment1)]+=area;
+		map_of_inter_atom_contact_areas[std::make_pair(comment1, comment2)]=area;
+		map_of_inter_atom_contact_areas[std::make_pair(comment2, comment1)]=area;
 	}
 }
 
