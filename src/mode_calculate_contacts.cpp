@@ -18,14 +18,19 @@ struct Comment
 	std::string altLoc;
 	std::string iCode;
 
-	Comment() : serial(0), resSeq(0)
+	Comment() : serial(null_num()), resSeq(null_num())
 	{
+	}
+
+	static int null_num()
+	{
+		return std::numeric_limits<int>::min();
 	}
 
 	Comment without_atom() const
 	{
 		Comment v=(*this);
-		v.serial=std::numeric_limits<int>::min();
+		v.serial=null_num();
 		v.altLoc.clear();
 		v.name.clear();
 		return v;
@@ -34,7 +39,7 @@ struct Comment
 	Comment without_residue() const
 	{
 		Comment v=without_atom();
-		v.resSeq=std::numeric_limits<int>::min();
+		v.resSeq=null_num();
 		v.iCode.clear();
 		v.resName.clear();
 		return v;
@@ -75,54 +80,37 @@ struct Comment
 		return false;
 	}
 
-	std::string str(
-			const std::string& suffix,
-			const std::string& value_begin,
-			const std::string& value_end,
-			const bool include_names) const
+	std::string str() const
 	{
-		const bool with_residue=(resSeq!=std::numeric_limits<int>::min());
-		const bool with_residue_and_atom=(with_residue && (serial!=std::numeric_limits<int>::min()));
+		const bool with_residue=(resSeq!=null_num());
+		const bool with_residue_and_atom=(with_residue && (serial!=null_num()));
 		std::ostringstream output;
-		output << "c" << suffix << value_begin << chainID << value_end;
+		output << "c_" << chainID;
 		if(with_residue)
 		{
-			output << "r" << suffix << value_begin << resSeq << value_end;
+			output << "_r_" << resSeq;
 			if(!iCode.empty())
 			{
-				output << "i" << suffix << value_begin << iCode << value_end;
+				output << "_i_" << iCode;
 			}
 		}
 		if(with_residue_and_atom)
 		{
-			output << "a" << suffix << value_begin << serial << value_end;
+			output << "_a_" << serial;
 			if(!altLoc.empty())
 			{
-				output << "l" << suffix << value_begin << altLoc << value_end;
+				output << "_l_" << altLoc;
 			}
 		}
-		if(include_names)
+		if(with_residue)
 		{
-			if(with_residue)
-			{
-				output << "rn" << suffix << value_begin << resName << value_end;
-			}
-			if(with_residue_and_atom)
-			{
-				output << "an" << suffix << value_begin << name << value_end;
-			}
+			output << "_rn_" << resName;
+		}
+		if(with_residue_and_atom)
+		{
+			output << "_an_" << name;
 		}
 		return output.str();
-	}
-
-	std::string str(const std::string& suffix) const
-	{
-		return str(suffix, "=", "; ", true);
-	}
-
-	std::string str() const
-	{
-		return str("", "", "", false);
 	}
 };
 
@@ -156,28 +144,6 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
-void record_annotated_solvent_contact_area(
-		const Comment& comment,
-		const double area,
-		std::map<Comment, double>& map_of_solvent_contact_areas)
-{
-	map_of_solvent_contact_areas[comment]+=area;
-}
-
-void record_annotated_inter_atom_contact_area(
-		const Comment& comment1,
-		const Comment& comment2,
-		const double area,
-		std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas)
-{
-	using namespace std::rel_ops;
-	if(comment1!=comment2 && comment1.without_atom()!=comment2.without_atom())
-	{
-		map_of_inter_atom_contact_areas[std::make_pair(comment1, comment2)]=area;
-		map_of_inter_atom_contact_areas[std::make_pair(comment2, comment1)]=area;
-	}
-}
-
 void print_map_of_named_contact_areas(
 		const std::map< std::pair<Comment, Comment>, double >& map_of_inter_atom_contact_areas,
 		const std::map<Comment, double>& map_of_solvent_contact_areas)
@@ -186,18 +152,18 @@ void print_map_of_named_contact_areas(
 	NamedContacts named_contacts;
 	for(std::map< std::pair<Comment, Comment>, double >::const_iterator it=map_of_inter_atom_contact_areas.begin();it!=map_of_inter_atom_contact_areas.end();++it)
 	{
-		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str("2"), it->second));
+		named_contacts[it->first.first].push_back(std::make_pair(it->first.second.str(), it->second));
 	}
 	for(std::map<Comment, double>::const_iterator it=map_of_solvent_contact_areas.begin();it!=map_of_solvent_contact_areas.end();++it)
 	{
-		named_contacts[it->first].push_back(std::make_pair(std::string("s2=solvent;"), it->second));
+		named_contacts[it->first].push_back(std::make_pair(std::string("solvent"), it->second));
 	}
 
 	const std::size_t default_width=std::cout.width();
 	std::size_t max_width=0;
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
-		max_width=std::max(max_width, it->first.str("1").size());
+		max_width=std::max(max_width, it->first.str().size());
 		for(std::size_t i=0;i<it->second.size();i++)
 		{
 			max_width=std::max(max_width, it->second[i].first.size());
@@ -207,7 +173,7 @@ void print_map_of_named_contact_areas(
 
 	for(NamedContacts::const_iterator it=named_contacts.begin();it!=named_contacts.end();++it)
 	{
-		const std::string str1=it->first.str("1");
+		const std::string str1=it->first.str();
 		for(std::size_t i=0;i<it->second.size();i++)
 		{
 			const std::string str2=it->second[i].first;
@@ -216,7 +182,7 @@ void print_map_of_named_contact_areas(
 			std::cout.width(max_width);
 			std::cout << std::left << str2;
 			std::cout.width(default_width);
-			std::cout << std::left << "area=" << it->second[i].second << ";\n";
+			std::cout << std::left << it->second[i].second << "\n";
 		}
 	}
 	std::cout.width(default_width);
@@ -346,11 +312,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t b_id=it->first.get(1);
 				if(a_id==b_id)
 				{
-					record_annotated_solvent_contact_area(input_spheres_comments[a_id], area, map_of_solvent_contact_areas);
+					map_of_solvent_contact_areas[input_spheres_comments[a_id]]=area;
 				}
 				else
 				{
-					record_annotated_inter_atom_contact_area(input_spheres_comments[a_id], input_spheres_comments[b_id], area, map_of_inter_atom_contact_areas);
+					map_of_inter_atom_contact_areas[std::make_pair(input_spheres_comments[a_id], input_spheres_comments[b_id])]=area;
 				}
 			}
 		}
