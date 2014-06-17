@@ -11,6 +11,7 @@ Common options
 --mode calculate-contacts
 
   --annotate                                  flag to annotate contacts using balls comments
+  --draw                                      flag to output graphics for annotated contacts
   --exclude-hidden-balls                      flag to exclude hidden input balls
   --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
   --max-dist                      number      maximal distance to record, may exceed probe diameter

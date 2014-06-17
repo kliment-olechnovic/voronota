@@ -149,7 +149,7 @@ private:
 	static std::string point_to_string(const PointType& a)
 	{
 		std::ostringstream output;
-		output.precision(std::numeric_limits<double>::digits10);
+		output.precision(3);
 		output << std::fixed << a.x << ", " << a.y << ", " << a.z;
 		return output.str();
 	}
