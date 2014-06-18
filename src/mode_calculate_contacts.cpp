@@ -232,10 +232,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cerr << "\n";
 			std::cerr << "  stdin   <-  list of balls\n";
 			std::cerr << "                (default line format: 'x y z r # comments')\n";
-			std::cerr << "                (annotation mode line format: 'x y z r # atomSerial chainID resSeq resName atomName')\n";
+			std::cerr << "                (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
 			std::cerr << "  stdout  ->  list of contacts\n";
 			std::cerr << "                (default line format: 'b1 b2 distance area')\n";
-			std::cerr << "                (annotation mode line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "                (annotated line format: 'annotation1 annotation2 area [graphics]')\n";
 			return;
 		}
 		else
@@ -338,9 +338,9 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				std::cout << input_spheres_comments[a_id].str() << " " << (a_id==b_id ? std::string("solvent") : input_spheres_comments[b_id].str()) << " " << area;
 				if(draw)
 				{
-					std::cout << " " << (a_id==b_id ?
+					std::cout << " [ " << (a_id==b_id ?
 							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
+							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections)) << "]";
 				}
 				std::cout << "\n";
 			}
