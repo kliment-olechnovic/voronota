@@ -286,7 +286,7 @@ bool match_string_with_lists(const std::string& str, const std::vector<std::stri
 	bool positive_match=positive_list.empty();
 	for(std::size_t i=0;i<positive_list.size() && !positive_match;i++)
 	{
-		if(str.find(positive_list[i])==std::string::npos)
+		if(str.find(positive_list[i])!=std::string::npos)
 		{
 			positive_match=true;
 		}
@@ -294,7 +294,7 @@ bool match_string_with_lists(const std::string& str, const std::vector<std::stri
 	bool negative_match=false;
 	for(std::size_t i=0;i<negative_list.size() && !negative_match;i++)
 	{
-		if(str.find(negative_list[i])==std::string::npos)
+		if(str.find(negative_list[i])!=std::string::npos)
 		{
 			negative_match=true;
 		}
