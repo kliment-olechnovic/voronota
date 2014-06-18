@@ -23,10 +23,10 @@ Common options
 
   stdin   <-  list of balls
                 (default line format: 'x y z r # comments')
-                (annotation mode line format: 'x y z r # atomSerial chainID resSeq resName atomName')
+                (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
   stdout  ->  list of contacts
                 (default line format: 'b1 b2 distance area')
-                (annotation mode line format: 'annotation1 annotation2 area')
+                (annotated line format: 'annotation1 annotation2 area [graphics]')
 
 
 --mode calculate-vertices
