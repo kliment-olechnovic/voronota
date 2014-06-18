@@ -281,6 +281,27 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
+bool match_string_with_lists(const std::string& str, const std::vector<std::string>& positive_list, const std::vector<std::string>& negative_list)
+{
+	bool positive_match=positive_list.empty();
+	for(std::size_t i=0;i<positive_list.size() && !positive_match;i++)
+	{
+		if(str.find(positive_list[i])==std::string::npos)
+		{
+			positive_match=true;
+		}
+	}
+	bool negative_match=false;
+	for(std::size_t i=0;i<negative_list.size() && !negative_match;i++)
+	{
+		if(str.find(negative_list[i])==std::string::npos)
+		{
+			negative_match=true;
+		}
+	}
+	return (positive_match && (!negative_match));
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -492,10 +513,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool inter_chain=poh.contains_option("--inter-chain");
-//	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first");
-//	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not");
-//	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
-//	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
+	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first");
+	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not");
+	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
+	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -520,14 +541,33 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				comments.first=comments.first.without_atom();
 				comments.second=comments.second.without_atom();
 			}
-			if(comments.second<comments.first)
+			if(!(comments.second==comments.first))
 			{
-				std::swap(comments.first, comments.second);
+				if(comments.second<comments.first)
+				{
+					std::swap(comments.first, comments.second);
+				}
+				std::pair<double, std::string>& value=map_of_reduced_contacts[comments];
+				value.first+=it->second.first;
+				value.second+=it->second.second;
 			}
-			std::pair<double, std::string>& value=map_of_reduced_contacts[comments];
-			value.first+=it->second.first;
-			value.second+=it->second.second;
 		}
 		map_of_contacts=map_of_reduced_contacts;
+	}
+
+	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const std::pair<std::string, std::string> comments(it->first.first.str(), it->first.second.str());
+		if((match_string_with_lists(comments.first, match_first, match_first_not) && match_string_with_lists(comments.second, match_second, match_second_not)) ||
+				(match_string_with_lists(comments.second, match_first, match_first_not) && match_string_with_lists(comments.first, match_second, match_second_not)))
+		{
+			const std::pair<double, std::string>& value=it->second;
+			std::cout << comments.first << " " << comments.second << " " << value.first;
+			if(!value.second.empty())
+			{
+				std::cout << value.second;
+			}
+			std::cout << "\n";
+		}
 	}
 }
