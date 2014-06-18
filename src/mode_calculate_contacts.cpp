@@ -198,18 +198,22 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
-inline void add_contacts_record_from_stream_to_vector(std::istream& input, std::vector< std::pair< std::pair<std::string, std::string>, std::pair<double, std::string> > >& records)
+inline void add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
 {
-	std::pair<std::string, std::string> comments;
+	std::pair<std::string, std::string> comment_strings;
 	std::pair<double, std::string> value(0.0, std::string());
-	input >> comments.first >> comments.second >> value.first;
+	input >> comment_strings.first >> comment_strings.second >> value.first;
 	if(input.good())
 	{
-		input >> value.second;
+		std::getline(input, value.second);
 	}
-	if(!input.fail())
+	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		records.push_back(std::make_pair(comments, value));
+		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
+		if(comments.first.valid() && comments.second.valid())
+		{
+			map_of_records[comments]=value;
+		}
 	}
 }
 
@@ -409,9 +413,9 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area;
 					if(draw)
 					{
-						std::cout << " [ " << (a_id==b_id ?
+						std::cout << " " << (a_id==b_id ?
 								draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-								draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections)) << "]";
+								draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 					}
 					std::cout << "\n";
 				}
@@ -493,19 +497,19 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 //	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
 //	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
 
-	std::vector< std::pair< std::pair<std::string, std::string>, std::pair<double, std::string> > > records;
-	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_vector, records);
-	if(records.size()<4)
+	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
+	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
+	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
-	for(std::size_t i=0;i<records.size();i++)
+	if(inter_chain || inter_residue)
 	{
-		std::pair<Comment, Comment> comments(Comment::from_str(records[i].first.first), Comment::from_str(records[i].first.second));
-		if(comments.first.valid() && comments.second.valid())
+		std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_reduced_contacts;
+		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
+			std::pair<Comment, Comment> comments=it->first;
 			if(inter_chain)
 			{
 				comments.first=comments.first.without_residue();
@@ -516,6 +520,14 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				comments.first=comments.first.without_atom();
 				comments.second=comments.second.without_atom();
 			}
+			if(comments.second<comments.first)
+			{
+				std::swap(comments.first, comments.second);
+			}
+			std::pair<double, std::string>& value=map_of_reduced_contacts[comments];
+			value.first+=it->second.first;
+			value.second+=it->second.second;
 		}
+		map_of_contacts=map_of_reduced_contacts;
 	}
 }
