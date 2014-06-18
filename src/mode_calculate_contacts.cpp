@@ -9,8 +9,9 @@
 namespace
 {
 
-struct Comment
+class Comment
 {
+public:
 	int serial;
 	std::string chainID;
 	int resSeq;
@@ -23,9 +24,14 @@ struct Comment
 	{
 	}
 
-	static int null_num()
+	bool valid() const
 	{
-		return std::numeric_limits<int>::min();
+		return !((chainID.empty()) ||
+				(serial!=null_num() && resSeq==null_num()) ||
+				(resName.empty() && resSeq!=null_num()) ||
+				(!resName.empty() && resSeq==null_num()) ||
+				(name.empty() && serial!=null_num()) ||
+				(!name.empty() && serial==null_num()));
 	}
 
 	Comment without_atom() const
@@ -83,8 +89,6 @@ struct Comment
 
 	std::string str() const
 	{
-		static const std::string vbegin="<";
-		static const std::string vend=">";
 		const bool with_residue=(resSeq!=null_num());
 		const bool with_residue_and_atom=(with_residue && (serial!=null_num()));
 		std::ostringstream output;
@@ -115,6 +119,50 @@ struct Comment
 		}
 		return output.str();
 	}
+
+	static Comment from_str(const std::string& input_str)
+	{
+		Comment v;
+		std::string refined_input_str=input_str;
+		for(std::size_t i=0;i<refined_input_str.size();i++)
+		{
+			char& s=refined_input_str[i];
+			if(s==vend || s==vbegin)
+			{
+				s=' ';
+			}
+		}
+		std::istringstream input(refined_input_str);
+		while(input.good())
+		{
+			std::string marker;
+			input >> marker;
+			if(marker=="c") { input >> v.chainID; }
+			else if(marker=="r") { input >> v.resSeq; }
+			else if(marker=="i") { input >> v.iCode; }
+			else if(marker=="a") { input >> v.serial; }
+			else if(marker=="l") { input >> v.altLoc; }
+			else if(marker=="rn") { input >> v.resName; }
+			else if(marker=="an") { input >> v.name; }
+		}
+		return v;
+	}
+
+	static Comment solvent()
+	{
+		Comment v;
+		v.chainID="solvent";
+		return v;
+	}
+
+private:
+	static const char vbegin='<';
+	static const char vend='>';
+
+	static int null_num()
+	{
+		return std::numeric_limits<int>::min();
+	}
 };
 
 inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
@@ -141,9 +189,27 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 			{
 				comment.iCode.clear();
 			}
-			spheres_with_comments.first->push_back(sphere);
-			spheres_with_comments.second->push_back(comment);
+			if(comment.valid())
+			{
+				spheres_with_comments.first->push_back(sphere);
+				spheres_with_comments.second->push_back(comment);
+			}
 		}
+	}
+}
+
+inline void add_contacts_record_from_stream_to_vector(std::istream& input, std::vector< std::pair< std::pair<std::string, std::string>, std::pair<double, std::string> > >& records)
+{
+	std::pair<std::string, std::string> comments;
+	std::pair<double, std::string> value(0.0, std::string());
+	input >> comments.first >> comments.second >> value.first;
+	if(input.good())
+	{
+		input >> value.second;
+	}
+	if(!input.fail())
+	{
+		records.push_back(std::make_pair(comments, value));
 	}
 }
 
@@ -337,14 +403,18 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				std::cout << input_spheres_comments[a_id].str() << " " << (a_id==b_id ? std::string("solvent") : input_spheres_comments[b_id].str()) << " " << area;
-				if(draw)
+				if(!(a_id!=b_id && input_spheres_comments[a_id].without_atom()==input_spheres_comments[b_id].without_atom()))
 				{
-					std::cout << " [ " << (a_id==b_id ?
-							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections)) << "]";
+					const bool reverse=input_spheres_comments[b_id]<input_spheres_comments[a_id];
+					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area;
+					if(draw)
+					{
+						std::cout << " [ " << (a_id==b_id ?
+								draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
+								draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections)) << "]";
+					}
+					std::cout << "\n";
 				}
-				std::cout << "\n";
 			}
 		}
 	}
@@ -388,5 +458,64 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 		std::clog << "contacts_sum_internal " << contacts_sum_internal << "\n";
 		std::clog << "contacts_sum_external " << contacts_sum_external << "\n";
+	}
+}
+
+void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	{
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
+		basic_map_of_option_descriptions["--inter-residue"].init("", "flag to convert to inter-residue contacts");
+		basic_map_of_option_descriptions["--inter-chain"].init("", "flag to convert to inter-chain contacts");
+		basic_map_of_option_descriptions["--match-first"].init("list", "list of strings to select for first contacting group");
+		basic_map_of_option_descriptions["--match-first-not"].init("list", "list of strings to not select for first contacting group");
+		basic_map_of_option_descriptions["--match-second"].init("list", "list of strings to match second contacting group");
+		basic_map_of_option_descriptions["--match-second-not"].init("list", "list of strings to not match first contacting group");
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		{
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
+			std::cerr << "\n";
+			std::cerr << "  stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "  stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
+			return;
+		}
+		else
+		{
+			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
+		}
+	}
+
+	const bool inter_residue=poh.contains_option("--inter-residue");
+	const bool inter_chain=poh.contains_option("--inter-chain");
+//	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first");
+//	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not");
+//	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
+//	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
+
+	std::vector< std::pair< std::pair<std::string, std::string>, std::pair<double, std::string> > > records;
+	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_vector, records);
+	if(records.size()<4)
+	{
+		throw std::runtime_error("No input.");
+	}
+
+	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
+	for(std::size_t i=0;i<records.size();i++)
+	{
+		std::pair<Comment, Comment> comments(Comment::from_str(records[i].first.first), Comment::from_str(records[i].first.second));
+		if(comments.first.valid() && comments.second.valid())
+		{
+			if(inter_chain)
+			{
+				comments.first=comments.first.without_residue();
+				comments.second=comments.second.without_residue();
+			}
+			else if(inter_residue)
+			{
+				comments.first=comments.first.without_atom();
+				comments.second=comments.second.without_atom();
+			}
+		}
 	}
 }

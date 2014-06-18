@@ -29,6 +29,19 @@ Common options
                 (annotated line format: 'annotation1 annotation2 area [graphics]')
 
 
+--mode calculate-contacts-query
+
+  --inter-chain                               flag to convert to inter-chain contacts
+  --inter-residue                             flag to convert to inter-residue contacts
+  --match-first                   list        list of strings to select for first contacting group
+  --match-first-not               list        list of strings to not select for first contacting group
+  --match-second                  list        list of strings to match second contacting group
+  --match-second-not              list        list of strings to not match first contacting group
+
+  stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
+  stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
+
+
 --mode calculate-vertices
 
   --check                                     flag to slowly check the resulting vertices (used only for testing)
