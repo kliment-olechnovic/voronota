@@ -83,33 +83,35 @@ struct Comment
 
 	std::string str() const
 	{
+		static const std::string vbegin="<";
+		static const std::string vend=">";
 		const bool with_residue=(resSeq!=null_num());
 		const bool with_residue_and_atom=(with_residue && (serial!=null_num()));
 		std::ostringstream output;
-		output << "c_" << chainID;
+		output << "c" << vbegin << chainID << vend;
 		if(with_residue)
 		{
-			output << "_r_" << resSeq;
+			output << "r" << vbegin << resSeq << vend;
 			if(!iCode.empty())
 			{
-				output << "_i_" << iCode;
+				output << "i" << vbegin << iCode << vend;
 			}
 		}
 		if(with_residue_and_atom)
 		{
-			output << "_a_" << serial;
+			output << "a" << vbegin << serial << vend;
 			if(!altLoc.empty())
 			{
-				output << "_l_" << altLoc;
+				output << "l" << vbegin << altLoc << vend;
 			}
 		}
 		if(with_residue)
 		{
-			output << "_rn_" << resName;
+			output << "rn" << vbegin << resName << vend;
 		}
 		if(with_residue_and_atom)
 		{
-			output << "_an_" << name;
+			output << "an" << vbegin << name << vend;
 		}
 		return output.str();
 	}
