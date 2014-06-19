@@ -530,7 +530,7 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	const double alpha=poh.argument<double>("--alpha", 0.5);
 	const double reduction=poh.argument<double>("--reduction", 0.0);
 	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
-	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection", ';');
 	const bool no_neighbors=poh.contains_option("--no-neighbors");
 
 	std::tr1::unordered_set<std::size_t> selection_set;
@@ -827,7 +827,7 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	const bool selection_as_intervals=poh.contains_option("--selection-as-intervals");
-	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection", ';');
 	const double probe=poh.argument<double>("--probe", 1.4);
 	const double step=poh.argument<double>("--step", 0.3);
 	const int projections=poh.argument<int>("--projections", 7);
@@ -1121,7 +1121,7 @@ void print_tubing(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=poh.argument<double>("--probe", 1.4);
 	const double step=poh.argument<double>("--step", 0.1);
 	const int projections=poh.argument<int>("--projections", 5);
-	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection");
+	const std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>("--selection", ';');
 	const std::string prefix=poh.argument<std::string>("--prefix", "");
 	const double reduction=poh.argument<double>("--reduction", 0.0);
 	const bool external=poh.contains_option("--external");
@@ -1265,7 +1265,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	std::set<std::size_t> selection_sets[2];
 	for(int n=0;n<2;n++)
 	{
-		std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>(n==0 ? "--selection1" : "--selection2");
+		std::vector<std::size_t> selection_vector=poh.argument_vector<std::size_t>((n==0 ? "--selection1" : "--selection2") , ';');
 		if(!selection_vector.empty() && selection_vector.size()%2==0)
 		{
 			for(std::size_t i=0;i<selection_vector.size();i+=2)

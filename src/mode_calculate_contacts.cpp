@@ -529,10 +529,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool inter_chain=poh.contains_option("--inter-chain");
-	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first");
-	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not");
-	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
-	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
+	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", '|');
+	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", '|');
+	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", '|');
+	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", '|');
 	const std::string drawing=poh.argument<std::string>("--drawing", "");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
