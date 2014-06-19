@@ -159,32 +159,31 @@ public:
 	}
 
 	template<typename T>
-	std::vector<T> argument_vector(const std::string& name) const
+	std::vector<T> argument_vector(const std::string& name, const char delimiter) const
 	{
 		std::vector<T> result;
 		if(contains_option_with_argument(name))
 		{
-			std::string input_string=argument_string(name);
-			for(std::size_t i=0;i<input_string.size();i++)
+			std::istringstream input(argument_string(name));
+			while(input.good())
 			{
-				const char c=input_string[i];
-				if(c==',' || c==';')
+				std::string token;
+				std::getline(input, token, delimiter);
+				if(!token.empty())
 				{
-					input_string[i]=' ';
+					std::istringstream token_input(token);
+					T value;
+					token_input >> value;
+					if(token_input.fail())
+					{
+						throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
+					}
+					else
+					{
+						result.push_back(value);
+					}
 				}
 			}
-			std::istringstream input(input_string);
-			do
-			{
-				T value;
-				input >> value;
-				if(input.fail())
-				{
-					throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
-				}
-				result.push_back(value);
-			}
-			while(input.good());
 		}
 		return result;
 	}
