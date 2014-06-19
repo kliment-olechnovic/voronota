@@ -31,6 +31,9 @@ Common options
 
 --mode calculate-contacts-query
 
+  --drawing                       string      graphics object name for drawing output
+  --drawing-color                 hex         color for drawing output
+  --drawing-random-colors                     flag to use random color for each drawn contact
   --inter-chain                               flag to convert to inter-chain contacts
   --inter-residue                             flag to convert to inter-residue contacts
   --match-first                   list        list of strings to select for first contacting group
