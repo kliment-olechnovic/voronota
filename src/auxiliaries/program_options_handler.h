@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
+#include <iomanip>
 
 namespace auxiliaries
 {
@@ -235,6 +236,19 @@ public:
 			output << (od.required ? "*" : " ") << "  ";
 			output << od.description_text << "\n";
 		}
+	}
+
+	template<typename T>
+	static T convert_hex_string_to_integer(const std::string& str)
+	{
+		std::istringstream input(str);
+		T value=0;
+		input >> std::hex >> value;
+		if(input.fail())
+		{
+			throw Exception(std::string("Invalid hex string '")+str+"'.");
+		}
+		return value;
 	}
 
 private:

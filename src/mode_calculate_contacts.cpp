@@ -302,6 +302,18 @@ bool match_string_with_lists(const std::string& str, const std::vector<std::stri
 	return (positive_match && (!negative_match));
 }
 
+unsigned int calc_string_color_integer(const std::string& str)
+{
+	const long generator=123456789;
+	const long limiter=0xFFFFFF;
+	long hash=generator;
+	for(std::size_t i=0;i<str.size();i++)
+	{
+		hash+=static_cast<long>(str[i]+1)*static_cast<long>(i+1)*generator;
+	}
+	return static_cast<unsigned int>(hash%limiter);
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -498,6 +510,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--match-second-not"].init("list", "list of strings to not match first contacting group");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--drawing"].init("string", "graphics object name for drawing output");
+		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
+		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -519,6 +533,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
 	const std::string drawing=poh.argument<std::string>("--drawing", "");
+	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
+	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -558,6 +574,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	apollota::OpenGLPrinter opengl_printer;
+	opengl_printer.print_color(drawing_color);
 
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
@@ -568,6 +585,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<double, std::string>& value=it->second;
 			if(!drawing.empty())
 			{
+				if(drawing_random_colors)
+				{
+					opengl_printer.print_color(calc_string_color_integer(comments.first+comments.second));
+				}
 				opengl_printer.print(value.second);
 			}
 			else
