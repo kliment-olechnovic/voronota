@@ -28,7 +28,7 @@ public:
 	{
 		if(output_stream_!=0)
 		{
-			print_wrapped_str(obj_name_, cgo_name_, string_stream_.str(), true, *output_stream_);
+			print_wrapped_str(obj_name_, cgo_name_, string_stream_.str(), *output_stream_);
 		}
 	}
 
@@ -38,10 +38,20 @@ public:
 		output_stream << "from pymol import cmd\n\n";
 	}
 
-	static void print_wrapped_str(const std::string& obj_name, const std::string& cgo_name, const std::string& str, const bool use_brackets, std::ostream& output_stream)
+	static void print_wrapped_str(const std::string& obj_name, const std::string& cgo_name, const std::string& str, std::ostream& output_stream)
 	{
-		output_stream << obj_name << " = " << (use_brackets ? "[" : "") << str << (use_brackets ? "]" : "") << "\n";
+		output_stream << obj_name << " = [" << str << "]\n";
 		output_stream << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
+	}
+
+	static void print_lighting_configuration(const bool two_sided_lighting, std::ostream& output_stream)
+	{
+		output_stream << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
+	}
+
+	void print(const std::string& str)
+	{
+		string_stream_ << str;
 	}
 
 	void print_alpha(const double alpha)
