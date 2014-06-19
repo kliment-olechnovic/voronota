@@ -557,7 +557,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::string graphics_str;
+	apollota::OpenGLPrinter opengl_printer;
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<std::string, std::string> comments(it->first.first.str(), it->first.second.str());
@@ -567,7 +567,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<double, std::string>& value=it->second;
 			if(!print_drawing.empty())
 			{
-				graphics_str+=value.second;
+				opengl_printer.print(value.second);
 			}
 			else
 			{
@@ -583,12 +583,13 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!print_drawing.empty())
 	{
+		const std::string graphics_str=opengl_printer.str();
 		if(graphics_str.empty())
 		{
 			throw std::runtime_error("No graphics input.");
 		}
 		apollota::OpenGLPrinter::print_setup(std::cout);
-		apollota::OpenGLPrinter::print_wrapped_str(print_drawing, print_drawing, graphics_str, true, std::cout);
-		std::cout << "cmd.set('two_sided_lighting', 'on')\n";
+		apollota::OpenGLPrinter::print_wrapped_str(print_drawing, print_drawing, graphics_str, std::cout);
+		apollota::OpenGLPrinter::print_lighting_configuration(true, std::cout);
 	}
 }
