@@ -28,8 +28,7 @@ public:
 	{
 		if(output_stream_!=0)
 		{
-			(*output_stream_) << obj_name_ << " = [ " << string_stream_.str() << "]\n";
-			(*output_stream_) << "cmd.load_cgo(" << obj_name_ << ", '" << cgo_name_ << "')\n";
+			print_wrapped_str(obj_name_, cgo_name_, string_stream_.str(), true, *output_stream_);
 		}
 	}
 
@@ -37,6 +36,12 @@ public:
 	{
 		output_stream << "from pymol.cgo import *\n";
 		output_stream << "from pymol import cmd\n\n";
+	}
+
+	static void print_wrapped_str(const std::string& obj_name, const std::string& cgo_name, const std::string& str, const bool use_brackets, std::ostream& output_stream)
+	{
+		output_stream << obj_name << " = " << (use_brackets ? "[" : "") << str << (use_brackets ? "]" : "") << "\n";
+		output_stream << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
 	}
 
 	void print_alpha(const double alpha)
