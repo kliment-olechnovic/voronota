@@ -164,25 +164,10 @@ public:
 		std::vector<T> result;
 		if(contains_option_with_argument(name))
 		{
-			std::istringstream input(argument_string(name));
-			while(input.good())
+			result=convert_string_vector_to_typed_vector<T>(split_string(argument_string(name), delimiter));
+			if(result.empty())
 			{
-				std::string token;
-				std::getline(input, token, delimiter);
-				if(!token.empty())
-				{
-					std::istringstream token_input(token);
-					T value;
-					token_input >> value;
-					if(token_input.fail())
-					{
-						throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
-					}
-					else
-					{
-						result.push_back(value);
-					}
-				}
+				throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
 			}
 		}
 		return result;
@@ -251,6 +236,43 @@ public:
 	}
 
 private:
+	static std::vector<std::string> split_string(const std::string& str, const char delimiter)
+	{
+		std::vector<std::string> result;
+		std::istringstream input(str);
+		while(input.good())
+		{
+			std::string token;
+			std::getline(input, token, delimiter);
+			if(!token.empty())
+			{
+				result.push_back(token);
+			}
+		}
+		return result;
+	}
+
+	template<typename T>
+	static std::vector<T> convert_string_vector_to_typed_vector(const std::vector<std::string>& strs)
+	{
+		std::vector<T> result;
+		for(std::size_t i=0;i<strs.size();i++)
+		{
+			std::istringstream token_input(strs[i]);
+			T value;
+			token_input >> value;
+			if(token_input.fail())
+			{
+				return std::vector<T>();
+			}
+			else
+			{
+				result.push_back(value);
+			}
+		}
+		return result;
+	}
+
 	std::vector<std::string> original_argv_;
 	std::vector<std::string> unused_argv_;
 	std::map<std::string, std::string> options_;
