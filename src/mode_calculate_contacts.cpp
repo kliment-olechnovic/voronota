@@ -497,6 +497,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--match-second"].init("list", "list of strings to match second contacting group");
 		basic_map_of_option_descriptions["--match-second-not"].init("list", "list of strings to not match first contacting group");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
+		full_map_of_option_descriptions["--print-drawing"].init("string", "graphics object name for drawing output");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -517,6 +518,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not");
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second");
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not");
+	const std::string print_drawing=poh.argument<std::string>("--print-drawing", "");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -555,6 +557,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
+	std::string graphics_str;
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<std::string, std::string> comments(it->first.first.str(), it->first.second.str());
@@ -562,12 +565,30 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				(match_string_with_lists(comments.second, match_first, match_first_not) && match_string_with_lists(comments.first, match_second, match_second_not)))
 		{
 			const std::pair<double, std::string>& value=it->second;
-			std::cout << comments.first << " " << comments.second << " " << value.first;
-			if(!value.second.empty())
+			if(!print_drawing.empty())
 			{
-				std::cout << value.second;
+				graphics_str+=value.second;
 			}
-			std::cout << "\n";
+			else
+			{
+				std::cout << comments.first << " " << comments.second << " " << value.first;
+				if(!value.second.empty())
+				{
+					std::cout << value.second;
+				}
+				std::cout << "\n";
+			}
 		}
+	}
+
+	if(!print_drawing.empty())
+	{
+		if(graphics_str.empty())
+		{
+			throw std::runtime_error("No graphics input.");
+		}
+		apollota::OpenGLPrinter::print_setup(std::cout);
+		apollota::OpenGLPrinter::print_wrapped_str(print_drawing, print_drawing, graphics_str, true, std::cout);
+		std::cout << "cmd.set('two_sided_lighting', 'on')\n";
 	}
 }
