@@ -1,5 +1,6 @@
 #include <iostream>
 #include <utility>
+#include <stdexcept>
 
 #include "apollota/constrained_contacts_construction.h"
 #include "apollota/opengl_printer.h"
@@ -47,6 +48,10 @@ public:
 			else if(marker=="l") { input >> v.altLoc; }
 			else if(marker=="rn") { input >> v.resName; }
 			else if(marker=="an") { input >> v.name; }
+		}
+		if(!v.valid() || v.str()!=input_str)
+		{
+			throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
 		}
 		return v;
 	}
