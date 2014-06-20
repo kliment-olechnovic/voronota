@@ -188,7 +188,7 @@ public:
 		return false;
 	}
 
-	friend void add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
+	friend bool add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
 
 private:
 	static const char vbegin='<';
@@ -273,7 +273,7 @@ private:
 	std::string iCode;
 };
 
-void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
+bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
 {
 	apollota::SimpleSphere sphere;
 	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
@@ -301,12 +301,14 @@ void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pa
 			{
 				spheres_with_comments.first->push_back(sphere);
 				spheres_with_comments.second->push_back(comment);
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
-void add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
+bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
 	std::pair<double, std::string> value(0.0, std::string());
@@ -321,8 +323,10 @@ void add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 		if(comments.first.valid() && comments.second.valid())
 		{
 			map_of_records[comments]=value;
+			return true;
 		}
 	}
+	return false;
 }
 
 std::string draw_iter_atom_contact(

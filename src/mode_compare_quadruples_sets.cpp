@@ -8,7 +8,7 @@
 namespace
 {
 
-void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollota::Quadruple>& quadruples)
+bool add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollota::Quadruple>& quadruples)
 {
 	std::vector<std::size_t> numbers(4, 0);
 	for(std::size_t i=0;i<numbers.size() && !input.fail();i++)
@@ -18,8 +18,9 @@ void add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 	if(!input.fail())
 	{
 		quadruples.push_back(apollota::Quadruple(numbers));
+		return true;
 	}
-
+	return false;
 }
 
 }
