@@ -149,31 +149,33 @@ public:
 
 	bool match_with_member_descriptor(const std::string& descriptor) const
 	{
-		const std::string refined_descriptor=refine_member_descriptor(descriptor);
-		const std::size_t pbegin=refined_descriptor.find(vbegin);
-		const std::size_t pend=refined_descriptor.find(vend);
-		if(pbegin!=std::string::npos && pend!=std::string::npos && (pbegin+1)<pend && pbegin>0 && (pend+1)==refined_descriptor.size())
+		if(descriptor.find_first_of(" \t\n")==std::string::npos)
 		{
-			const std::string marker=refined_descriptor.substr(0, pbegin);
-			const std::vector<std::string> body=split_member_descriptor_body(refined_descriptor.substr(pbegin+1, pend-(pbegin+1)));
-			if(!body.empty())
+			const std::size_t pbegin=descriptor.find(vbegin);
+			const std::size_t pend=descriptor.find(vend);
+			if(pbegin!=std::string::npos && pend!=std::string::npos && (pbegin+1)<pend && pbegin>0 && (pend+1)==descriptor.size())
 			{
-				if(marker=="r" || marker=="a")
+				const std::string marker=descriptor.substr(0, pbegin);
+				const std::vector<std::string> body=split_member_descriptor_body(descriptor.substr(pbegin+1, pend-(pbegin+1)));
+				if(!body.empty())
 				{
-					const std::vector< std::pair<int, int> > intervals=convert_strings_to_integer_intervals(body);
-					if(intervals.size()==body.size())
+					if(marker=="r" || marker=="a")
 					{
-						if(marker=="r") { return match_with_any_interval_from_list(resSeq, intervals); }
-						else if(marker=="a") { return match_with_any_interval_from_list(serial, intervals); }
+						const std::vector< std::pair<int, int> > intervals=convert_strings_to_integer_intervals(body);
+						if(intervals.size()==body.size())
+						{
+							if(marker=="r") { return match_with_any_interval_from_list(resSeq, intervals); }
+							else if(marker=="a") { return match_with_any_interval_from_list(serial, intervals); }
+						}
 					}
-				}
-				else
-				{
-					if(marker=="c") { return match_with_any_string_from_list(chainID, body); }
-					else if(marker=="i") { return match_with_any_string_from_list(iCode, body); }
-					else if(marker=="l") { return match_with_any_string_from_list(altLoc, body); }
-					else if(marker=="rn") { return match_with_any_string_from_list(resName, body); }
-					else if(marker=="an") { return match_with_any_string_from_list(name, body); }
+					else
+					{
+						if(marker=="c") { return match_with_any_string_from_list(chainID, body); }
+						else if(marker=="i") { return match_with_any_string_from_list(iCode, body); }
+						else if(marker=="l") { return match_with_any_string_from_list(altLoc, body); }
+						else if(marker=="rn") { return match_with_any_string_from_list(resName, body); }
+						else if(marker=="an") { return match_with_any_string_from_list(name, body); }
+					}
 				}
 			}
 		}
@@ -190,19 +192,6 @@ private:
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
-	}
-
-	static std::string refine_member_descriptor(const std::string& descriptor)
-	{
-		std::istringstream input(descriptor);
-		std::ostringstream output;
-		while(input.good())
-		{
-			std::string token;
-			input >> token;
-			output << token;
-		}
-		return output.str();
 	}
 
 	static std::vector<std::string> split_member_descriptor_body(const std::string& body)
@@ -641,10 +630,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool inter_chain=poh.contains_option("--inter-chain");
-	const std::vector<std::string> match_first=poh.argument_strings_vector("--match-first", '&');
-	const std::vector<std::string> match_first_not=poh.argument_strings_vector("--match-first-not", '&');
-	const std::vector<std::string> match_second=poh.argument_strings_vector("--match-second", '&');
-	const std::vector<std::string> match_second_not=poh.argument_strings_vector("--match-second-not", '&');
+	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", '&');
+	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", '&');
+	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", '&');
+	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", '&');
 	const std::string drawing=poh.argument<std::string>("--drawing", "");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
