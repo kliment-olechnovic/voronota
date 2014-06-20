@@ -47,11 +47,6 @@ public:
 			else if(marker=="l") { input >> v.altLoc; }
 			else if(marker=="rn") { input >> v.resName; }
 			else if(marker=="an") { input >> v.name; }
-			else { marker.clear(); }
-			if(marker.empty() || input.fail())
-			{
-				throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
-			}
 		}
 		return v;
 	}
@@ -152,6 +147,40 @@ public:
 		return output.str();
 	}
 
+	bool match_with_member_descriptor(const std::string& descriptor) const
+	{
+		const std::string refined_descriptor=refine_member_descriptor(descriptor);
+		const std::size_t pbegin=refined_descriptor.find(vbegin);
+		const std::size_t pend=refined_descriptor.find(vend);
+		if(pbegin!=std::string::npos && pend!=std::string::npos && (pbegin+1)<pend && pbegin>0 && (pend+1)==refined_descriptor.size())
+		{
+			const std::string marker=refined_descriptor.substr(0, pbegin);
+			const std::vector<std::string> body=split_member_descriptor_body(refined_descriptor.substr(pbegin+1, pend-(pbegin+1)));
+			if(!body.empty())
+			{
+				if(marker=="r" || marker=="a")
+				{
+					const std::vector< std::pair<int, int> > intervals=convert_strings_to_integer_intervals(body);
+					if(intervals.size()==body.size())
+					{
+						if(marker=="r") { return match_with_any_interval_from_list(resSeq, intervals); }
+						else if(marker=="a") { return match_with_any_interval_from_list(serial, intervals); }
+					}
+				}
+				else
+				{
+					if(marker=="c") { return match_with_any_string_from_list(chainID, body); }
+					else if(marker=="i") { return match_with_any_string_from_list(iCode, body); }
+					else if(marker=="l") { return match_with_any_string_from_list(altLoc, body); }
+					else if(marker=="rn") { return match_with_any_string_from_list(resName, body); }
+					else if(marker=="an") { return match_with_any_string_from_list(name, body); }
+				}
+			}
+		}
+		throw std::runtime_error(std::string("Invalid comment descriptor '")+descriptor+"'.");
+		return false;
+	}
+
 	friend void add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
 
 private:
@@ -161,6 +190,84 @@ private:
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
+	}
+
+	static std::string refine_member_descriptor(const std::string& descriptor)
+	{
+		std::istringstream input(descriptor);
+		std::ostringstream output;
+		while(input.good())
+		{
+			std::string token;
+			input >> token;
+			output << token;
+		}
+		return output.str();
+	}
+
+	static std::vector<std::string> split_member_descriptor_body(const std::string& body)
+	{
+		std::vector<std::string> result;
+		std::istringstream input(body);
+		while(input.good())
+		{
+			std::string token;
+			std::getline(input, token, ',');
+			if(!token.empty())
+			{
+				result.push_back(token);
+			}
+		}
+		return result;
+	}
+
+	static std::vector< std::pair<int, int> > convert_strings_to_integer_intervals(const std::vector<std::string>& list)
+	{
+		std::vector< std::pair<int, int> > result;
+		for(std::size_t i=0;i<list.size();i++)
+		{
+			std::string str=list[i];
+			const std::size_t sep_pos=str.find(':', 0);
+			if(sep_pos!=std::string::npos)
+			{
+				str[sep_pos]=' ';
+				std::istringstream input(str);
+				std::pair<int, int> value(0, 0);
+				input >> value.first >> value.second;
+				if(!input.fail() && value.first<=value.second)
+				{
+					result.push_back(value);
+				}
+			}
+			else
+			{
+				std::istringstream input(str);
+				int value=0;
+				input >> value;
+				if(!input.fail())
+				{
+					result.push_back(std::make_pair(value, value));
+				}
+			}
+		}
+		return result;
+	}
+
+	static bool match_with_any_string_from_list(const std::string& str, const std::vector<std::string>& list)
+	{
+		return (std::find(list.begin(), list.end(), str)!=list.end());
+	}
+
+	static bool match_with_any_interval_from_list(const int value, const std::vector< std::pair<int, int> >& list)
+	{
+		for(std::size_t i=0;i<list.size();i++)
+		{
+			if(value>=list[i].first && value<=list[i].second)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	int serial;
@@ -288,25 +395,23 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
-bool match_string_with_lists(const std::string& str, const std::vector<std::string>& positive_list, const std::vector<std::string>& negative_list)
+bool match_comment_with_member_descriptors(const Comment& comment, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
 {
-	bool positive_match=positive_list.empty();
-	for(std::size_t i=0;i<positive_list.size() && !positive_match;i++)
+	for(std::size_t i=0;i<positive_descriptors.size();i++)
 	{
-		if(str.find(positive_list[i])!=std::string::npos)
+		if(!comment.match_with_member_descriptor(positive_descriptors[i]))
 		{
-			positive_match=true;
+			return false;
 		}
 	}
-	bool negative_match=false;
-	for(std::size_t i=0;i<negative_list.size() && !negative_match;i++)
+	for(std::size_t i=0;i<negative_descriptors.size();i++)
 	{
-		if(str.find(negative_list[i])!=std::string::npos)
+		if(comment.match_with_member_descriptor(negative_descriptors[i]))
 		{
-			negative_match=true;
+			return false;
 		}
 	}
-	return (positive_match && (!negative_match));
+	return true;
 }
 
 unsigned int calc_string_color_integer(const std::string& str)
@@ -536,10 +641,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool inter_chain=poh.contains_option("--inter-chain");
-	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", '|');
-	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", '|');
-	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", '|');
-	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", '|');
+	const std::vector<std::string> match_first=poh.argument_strings_vector("--match-first", '&');
+	const std::vector<std::string> match_first_not=poh.argument_strings_vector("--match-first-not", '&');
+	const std::vector<std::string> match_second=poh.argument_strings_vector("--match-second", '&');
+	const std::vector<std::string> match_second_not=poh.argument_strings_vector("--match-second-not", '&');
 	const std::string drawing=poh.argument<std::string>("--drawing", "");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
@@ -588,22 +693,22 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
-		const std::pair<std::string, std::string> comments(it->first.first.str(), it->first.second.str());
-		if((match_string_with_lists(comments.first, match_first, match_first_not) && match_string_with_lists(comments.second, match_second, match_second_not)) ||
-				(match_string_with_lists(comments.second, match_first, match_first_not) && match_string_with_lists(comments.first, match_second, match_second_not)))
+		const std::pair<Comment, Comment>& comments=it->first;
+		if((match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not)) ||
+				(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not)))
 		{
 			const std::pair<double, std::string>& value=it->second;
 			if(!drawing.empty())
 			{
 				if(drawing_random_colors)
 				{
-					opengl_printer.print_color(calc_string_color_integer(comments.first+comments.second));
+					opengl_printer.print_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
 				}
 				opengl_printer.print(value.second);
 			}
 			else
 			{
-				std::cout << comments.first << " " << comments.second << " " << value.first;
+				std::cout << comments.first.str() << " " << comments.second.str() << " " << value.first;
 				if(!value.second.empty())
 				{
 					std::cout << value.second;
