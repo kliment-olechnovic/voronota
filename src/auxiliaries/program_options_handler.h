@@ -158,13 +158,28 @@ public:
 		}
 	}
 
+	std::vector<std::string> argument_strings_vector(const std::string& name, const char delimiter) const
+	{
+		std::vector<std::string> result;
+		if(contains_option(name))
+		{
+			result=split_string(argument_string(name), delimiter);
+			if(result.empty())
+			{
+				throw Exception(std::string("Missing command line vector argument for option '")+name+"'.");
+			}
+		}
+		return result;
+	}
+
 	template<typename T>
 	std::vector<T> argument_vector(const std::string& name, const char delimiter) const
 	{
 		std::vector<T> result;
-		if(contains_option_with_argument(name))
+		const std::vector<std::string> result_as_strings=argument_strings_vector(name, delimiter);
+		if(!result_as_strings.empty())
 		{
-			result=convert_string_vector_to_typed_vector<T>(split_string(argument_string(name), delimiter));
+			result=convert_string_vector_to_typed_vector<T>(result_as_strings);
 			if(result.empty())
 			{
 				throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
