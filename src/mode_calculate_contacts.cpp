@@ -49,7 +49,7 @@ public:
 			else if(marker=="rn") { input >> v.resName; }
 			else if(marker=="an") { input >> v.name; }
 		}
-		if(!v.valid() || v.str()!=input_str)
+		if(!(v.valid() && v.str()==input_str))
 		{
 			throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
 		}
@@ -152,62 +152,81 @@ public:
 		return output.str();
 	}
 
-	bool match_with_member_descriptor(const std::string& descriptor) const
+	bool match_with_member_descriptor(const std::string& input_str) const
 	{
-		bool matched=false;
+		const char vsep=',';
+		const char vinterval=':';
 		std::ostringstream control_output;
-		if(descriptor.find_first_of(" \t\n")==std::string::npos)
+		bool matched=false;
+		std::string refined_input_str=input_str;
+		for(std::size_t i=0;i<refined_input_str.size();i++)
 		{
-			const std::size_t pbegin=descriptor.find(vbegin);
-			const std::size_t pend=descriptor.find(vend);
-			if(pbegin!=std::string::npos && pend!=std::string::npos && (pbegin+1)<pend && pbegin>0 && (pend+1)==descriptor.size())
+			char& s=refined_input_str[i];
+			if(s==vend || s==vbegin || s==vsep)
 			{
-				const std::string marker=descriptor.substr(0, pbegin);
-				const std::vector<std::string> body=split_member_descriptor_body(descriptor.substr(pbegin+1, pend-(pbegin+1)));
-				if(!body.empty())
+				s=' ';
+			}
+		}
+		std::istringstream input(refined_input_str);
+		std::string marker;
+		input >> marker;
+		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
+		{
+			control_output << marker << vbegin;
+			bool need_sep=false;
+			while(input.good())
+			{
+				std::string token;
+				input >> token;
+				if(!input.fail() && !token.empty())
 				{
+					if(need_sep) { control_output << vsep; } else { need_sep=true; }
 					if(marker=="r" || marker=="a")
 					{
-						const std::vector< std::pair<int, int> > intervals=convert_strings_to_integer_intervals(body);
-						if(intervals.size()==body.size())
+						std::size_t pinterval=token.find(vinterval);
+						if(pinterval!=std::string::npos)
 						{
-							if(marker=="r") { matched=match_with_any_interval_from_list(resSeq, intervals); }
-							else if(marker=="a") { matched=match_with_any_interval_from_list(serial, intervals); }
-							control_output << marker << vbegin;
-							for(std::size_t i=0;i<intervals.size();i++)
+							token[pinterval]=' ';
+							std::istringstream token_input(token);
+							std::pair<int, int> value(0, 0);
+							token_input >> value.first >> value.second;
+							if(!token_input.fail() && value.first<=value.second)
 							{
-								const std::pair<int, int>& interval=intervals[i];
-								if(interval.first==interval.second)
-								{
-									control_output << interval.first;
-								}
-								else if(interval.first<interval.second)
-								{
-									control_output << interval.first << ':' << interval.second;
-								}
-								control_output << ((i+1<intervals.size()) ? vsep : vend);
+								control_output << value.first << vinterval << value.second;
+								if(marker=="r") { matched=matched || (resSeq>=value.first && resSeq<=value.second); }
+								else if(marker=="a") { matched=matched || (serial>=value.first && serial<=value.second); }
+							}
+						}
+						else
+						{
+							std::istringstream token_input(token);
+							int value=0;
+							token_input >> value;
+							if(!token_input.fail())
+							{
+								control_output << value;
+								if(marker=="r") { matched=matched || (resSeq==value); }
+								else if(marker=="a") { matched=matched || (serial==value); }
 							}
 						}
 					}
-					else if(marker=="c" || marker=="i" || marker=="l" || marker=="rn" || marker=="an")
+					else
 					{
-						if(marker=="c") { matched=match_with_any_string_from_list(chainID, body); }
-						else if(marker=="i") { matched=match_with_any_string_from_list(iCode, body); }
-						else if(marker=="l") { matched=match_with_any_string_from_list(altLoc, body); }
-						else if(marker=="rn") { matched=match_with_any_string_from_list(resName, body); }
-						else if(marker=="an") { matched=match_with_any_string_from_list(name, body); }
-						control_output << marker << vbegin;
-						for(std::size_t i=0;i<body.size();i++)
-						{
-							control_output << body[i] << ((i+1<body.size()) ? vsep : vend);
-						}
+						control_output << token;
+						if(marker=="c") { matched=matched || (token==chainID); }
+						else if(marker=="i") { matched=matched || (token==iCode); }
+						else if(marker=="l") { matched=matched || (token==altLoc); }
+						else if(marker=="rn") { matched=matched || (token==resName); }
+						else if(marker=="an") { matched=matched || (token==name); }
 					}
 				}
 			}
+			control_output << vend;
 		}
-		if(control_output.str()!=descriptor)
+		const std::string control_output_str=control_output.str();
+		if(control_output_str.empty() || control_output_str!=input_str)
 		{
-			throw std::runtime_error(std::string("Invalid match descriptor '")+descriptor+"'.");
+			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
 		}
 		return matched;
 	}
@@ -217,77 +236,10 @@ public:
 private:
 	static const char vbegin='<';
 	static const char vend='>';
-	static const char vsep=',';
-	static const char vinterval=':';
 
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
-	}
-
-	static std::vector<std::string> split_member_descriptor_body(const std::string& body)
-	{
-		std::vector<std::string> result;
-		std::istringstream input(body);
-		while(input.good())
-		{
-			std::string token;
-			std::getline(input, token, ',');
-			if(!token.empty())
-			{
-				result.push_back(token);
-			}
-		}
-		return result;
-	}
-
-	static std::vector< std::pair<int, int> > convert_strings_to_integer_intervals(const std::vector<std::string>& list)
-	{
-		std::vector< std::pair<int, int> > result;
-		for(std::size_t i=0;i<list.size();i++)
-		{
-			std::string str=list[i];
-			const std::size_t sep_pos=str.find(':', 0);
-			if(sep_pos!=std::string::npos)
-			{
-				str[sep_pos]=' ';
-				std::istringstream input(str);
-				std::pair<int, int> value(0, 0);
-				input >> value.first >> value.second;
-				if(!input.fail() && value.first<=value.second)
-				{
-					result.push_back(value);
-				}
-			}
-			else
-			{
-				std::istringstream input(str);
-				int value=0;
-				input >> value;
-				if(!input.fail())
-				{
-					result.push_back(std::make_pair(value, value));
-				}
-			}
-		}
-		return result;
-	}
-
-	static bool match_with_any_string_from_list(const std::string& str, const std::vector<std::string>& list)
-	{
-		return (std::find(list.begin(), list.end(), str)!=list.end());
-	}
-
-	static bool match_with_any_interval_from_list(const int value, const std::vector< std::pair<int, int> >& list)
-	{
-		for(std::size_t i=0;i<list.size();i++)
-		{
-			if(value>=list[i].first && value<=list[i].second)
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	int serial;
