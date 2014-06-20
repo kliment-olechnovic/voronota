@@ -12,16 +12,48 @@ namespace
 class Comment
 {
 public:
-	int serial;
-	std::string chainID;
-	int resSeq;
-	std::string resName;
-	std::string name;
-	std::string altLoc;
-	std::string iCode;
-
 	Comment() : serial(null_num()), resSeq(null_num())
 	{
+	}
+
+	static Comment solvent()
+	{
+		Comment v;
+		v.chainID="solvent";
+		return v;
+	}
+
+	static Comment from_str(const std::string& input_str)
+	{
+		Comment v;
+		std::string refined_input_str=input_str;
+		for(std::size_t i=0;i<refined_input_str.size();i++)
+		{
+			char& s=refined_input_str[i];
+			if(s==vend || s==vbegin)
+			{
+				s=' ';
+			}
+		}
+		std::istringstream input(refined_input_str);
+		while(input.good())
+		{
+			std::string marker;
+			input >> marker;
+			if(marker=="c") { input >> v.chainID; }
+			else if(marker=="r") { input >> v.resSeq; }
+			else if(marker=="i") { input >> v.iCode; }
+			else if(marker=="a") { input >> v.serial; }
+			else if(marker=="l") { input >> v.altLoc; }
+			else if(marker=="rn") { input >> v.resName; }
+			else if(marker=="an") { input >> v.name; }
+			else { marker.clear(); }
+			if(marker.empty() || input.fail())
+			{
+				throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
+			}
+		}
+		return v;
 	}
 
 	bool valid() const
@@ -120,40 +152,7 @@ public:
 		return output.str();
 	}
 
-	static Comment from_str(const std::string& input_str)
-	{
-		Comment v;
-		std::string refined_input_str=input_str;
-		for(std::size_t i=0;i<refined_input_str.size();i++)
-		{
-			char& s=refined_input_str[i];
-			if(s==vend || s==vbegin)
-			{
-				s=' ';
-			}
-		}
-		std::istringstream input(refined_input_str);
-		while(input.good())
-		{
-			std::string marker;
-			input >> marker;
-			if(marker=="c") { input >> v.chainID; }
-			else if(marker=="r") { input >> v.resSeq; }
-			else if(marker=="i") { input >> v.iCode; }
-			else if(marker=="a") { input >> v.serial; }
-			else if(marker=="l") { input >> v.altLoc; }
-			else if(marker=="rn") { input >> v.resName; }
-			else if(marker=="an") { input >> v.name; }
-		}
-		return v;
-	}
-
-	static Comment solvent()
-	{
-		Comment v;
-		v.chainID="solvent";
-		return v;
-	}
+	friend void add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
 
 private:
 	static const char vbegin='<';
@@ -163,9 +162,17 @@ private:
 	{
 		return std::numeric_limits<int>::min();
 	}
+
+	int serial;
+	std::string chainID;
+	int resSeq;
+	std::string resName;
+	std::string name;
+	std::string altLoc;
+	std::string iCode;
 };
 
-inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
+void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
 {
 	apollota::SimpleSphere sphere;
 	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
@@ -198,7 +205,7 @@ inline void add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 	}
 }
 
-inline void add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
+void add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
 	std::pair<double, std::string> value(0.0, std::string());
