@@ -56,6 +56,85 @@ public:
 		return v;
 	}
 
+	static bool match_with_member_descriptor(const Comment& comment, const std::string& input_str)
+	{
+		const char vsep=',';
+		const char vinterval=':';
+		std::ostringstream control_output;
+		bool matched=false;
+		std::string refined_input_str=input_str;
+		for(std::size_t i=0;i<refined_input_str.size();i++)
+		{
+			char& s=refined_input_str[i];
+			if(s==vend || s==vbegin || s==vsep)
+			{
+				s=' ';
+			}
+		}
+		std::istringstream input(refined_input_str);
+		std::string marker;
+		input >> marker;
+		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
+		{
+			control_output << marker << vbegin;
+			bool need_sep=false;
+			while(input.good())
+			{
+				std::string token;
+				input >> token;
+				if(!input.fail() && !token.empty())
+				{
+					if(need_sep) { control_output << vsep; } else { need_sep=true; }
+					if(marker=="r" || marker=="a")
+					{
+						std::size_t pinterval=token.find(vinterval);
+						if(pinterval!=std::string::npos)
+						{
+							token[pinterval]=' ';
+							std::istringstream token_input(token);
+							std::pair<int, int> value(0, 0);
+							token_input >> value.first >> value.second;
+							if(!token_input.fail() && value.first<=value.second)
+							{
+								control_output << value.first << vinterval << value.second;
+								if(marker=="r") { matched=matched || (comment.resSeq>=value.first && comment.resSeq<=value.second); }
+								else if(marker=="a") { matched=matched || (comment.serial>=value.first && comment.serial<=value.second); }
+							}
+						}
+						else
+						{
+							std::istringstream token_input(token);
+							int value=0;
+							token_input >> value;
+							if(!token_input.fail())
+							{
+								control_output << value;
+								if(marker=="r") { matched=matched || (comment.resSeq==value); }
+								else if(marker=="a") { matched=matched || (comment.serial==value); }
+							}
+						}
+					}
+					else
+					{
+						control_output << token;
+						if(marker=="c") { matched=matched || (comment.chainID==token); }
+						else if(marker=="i") { matched=matched || (comment.iCode==token); }
+						else if(marker=="l") { matched=matched || (comment.altLoc==token); }
+						else if(marker=="rn") { matched=matched || (comment.resName==token); }
+						else if(marker=="an") { matched=matched || (comment.name==token); }
+					}
+				}
+			}
+			control_output << vend;
+		}
+		const std::string control_output_str=control_output.str();
+		if(control_output_str.empty() || control_output_str!=input_str)
+		{
+			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
+		}
+		return matched;
+	}
+
 	bool valid() const
 	{
 		return !((chainID.empty()) ||
@@ -150,85 +229,6 @@ public:
 			output << "an" << vbegin << name << vend;
 		}
 		return output.str();
-	}
-
-	bool match_with_member_descriptor(const std::string& input_str) const
-	{
-		const char vsep=',';
-		const char vinterval=':';
-		std::ostringstream control_output;
-		bool matched=false;
-		std::string refined_input_str=input_str;
-		for(std::size_t i=0;i<refined_input_str.size();i++)
-		{
-			char& s=refined_input_str[i];
-			if(s==vend || s==vbegin || s==vsep)
-			{
-				s=' ';
-			}
-		}
-		std::istringstream input(refined_input_str);
-		std::string marker;
-		input >> marker;
-		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
-		{
-			control_output << marker << vbegin;
-			bool need_sep=false;
-			while(input.good())
-			{
-				std::string token;
-				input >> token;
-				if(!input.fail() && !token.empty())
-				{
-					if(need_sep) { control_output << vsep; } else { need_sep=true; }
-					if(marker=="r" || marker=="a")
-					{
-						std::size_t pinterval=token.find(vinterval);
-						if(pinterval!=std::string::npos)
-						{
-							token[pinterval]=' ';
-							std::istringstream token_input(token);
-							std::pair<int, int> value(0, 0);
-							token_input >> value.first >> value.second;
-							if(!token_input.fail() && value.first<=value.second)
-							{
-								control_output << value.first << vinterval << value.second;
-								if(marker=="r") { matched=matched || (resSeq>=value.first && resSeq<=value.second); }
-								else if(marker=="a") { matched=matched || (serial>=value.first && serial<=value.second); }
-							}
-						}
-						else
-						{
-							std::istringstream token_input(token);
-							int value=0;
-							token_input >> value;
-							if(!token_input.fail())
-							{
-								control_output << value;
-								if(marker=="r") { matched=matched || (resSeq==value); }
-								else if(marker=="a") { matched=matched || (serial==value); }
-							}
-						}
-					}
-					else
-					{
-						control_output << token;
-						if(marker=="c") { matched=matched || (token==chainID); }
-						else if(marker=="i") { matched=matched || (token==iCode); }
-						else if(marker=="l") { matched=matched || (token==altLoc); }
-						else if(marker=="rn") { matched=matched || (token==resName); }
-						else if(marker=="an") { matched=matched || (token==name); }
-					}
-				}
-			}
-			control_output << vend;
-		}
-		const std::string control_output_str=control_output.str();
-		if(control_output_str.empty() || control_output_str!=input_str)
-		{
-			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
-		}
-		return matched;
 	}
 
 	friend bool add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
@@ -375,14 +375,14 @@ bool match_comment_with_member_descriptors(const Comment& comment, const std::ve
 {
 	for(std::size_t i=0;i<positive_descriptors.size();i++)
 	{
-		if(!comment.match_with_member_descriptor(positive_descriptors[i]))
+		if(!Comment::match_with_member_descriptor(comment, positive_descriptors[i]))
 		{
 			return false;
 		}
 	}
 	for(std::size_t i=0;i<negative_descriptors.size();i++)
 	{
-		if(comment.match_with_member_descriptor(negative_descriptors[i]))
+		if(Comment::match_with_member_descriptor(comment, negative_descriptors[i]))
 		{
 			return false;
 		}
