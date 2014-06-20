@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <stdexcept>
 
 namespace auxiliaries
 {
@@ -36,7 +37,10 @@ inline void read_lines_to_container(
 		if(!line.empty())
 		{
 			std::istringstream line_input(line);
-			line_reader(line_input, container);
+			if(!line_reader(line_input, container))
+			{
+				throw std::runtime_error(std::string("Failed to read line '")+line+"'.");
+			}
 			line_num++;
 		}
 	}

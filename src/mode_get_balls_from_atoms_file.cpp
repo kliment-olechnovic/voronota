@@ -9,7 +9,7 @@
 namespace
 {
 
-void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
+bool add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
 {
 	std::string resName;
 	std::string name;
@@ -18,7 +18,9 @@ void add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 	if(!input.fail())
 	{
 		atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
+		return true;
 	}
+	return false;
 }
 
 std::string refine_string(const std::string& x)
