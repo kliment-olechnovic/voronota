@@ -154,6 +154,8 @@ public:
 
 	bool match_with_member_descriptor(const std::string& descriptor) const
 	{
+		bool matched=false;
+		std::ostringstream control_output;
 		if(descriptor.find_first_of(" \t\n")==std::string::npos)
 		{
 			const std::size_t pbegin=descriptor.find(vbegin);
@@ -169,23 +171,45 @@ public:
 						const std::vector< std::pair<int, int> > intervals=convert_strings_to_integer_intervals(body);
 						if(intervals.size()==body.size())
 						{
-							if(marker=="r") { return match_with_any_interval_from_list(resSeq, intervals); }
-							else if(marker=="a") { return match_with_any_interval_from_list(serial, intervals); }
+							if(marker=="r") { matched=match_with_any_interval_from_list(resSeq, intervals); }
+							else if(marker=="a") { matched=match_with_any_interval_from_list(serial, intervals); }
+							control_output << marker << vbegin;
+							for(std::size_t i=0;i<intervals.size();i++)
+							{
+								const std::pair<int, int>& interval=intervals[i];
+								if(interval.first==interval.second)
+								{
+									control_output << interval.first;
+								}
+								else if(interval.first<interval.second)
+								{
+									control_output << interval.first << ':' << interval.second;
+								}
+								control_output << ((i+1<intervals.size()) ? vsep : vend);
+							}
 						}
 					}
-					else
+					else if(marker=="c" || marker=="i" || marker=="l" || marker=="rn" || marker=="an")
 					{
-						if(marker=="c") { return match_with_any_string_from_list(chainID, body); }
-						else if(marker=="i") { return match_with_any_string_from_list(iCode, body); }
-						else if(marker=="l") { return match_with_any_string_from_list(altLoc, body); }
-						else if(marker=="rn") { return match_with_any_string_from_list(resName, body); }
-						else if(marker=="an") { return match_with_any_string_from_list(name, body); }
+						if(marker=="c") { matched=match_with_any_string_from_list(chainID, body); }
+						else if(marker=="i") { matched=match_with_any_string_from_list(iCode, body); }
+						else if(marker=="l") { matched=match_with_any_string_from_list(altLoc, body); }
+						else if(marker=="rn") { matched=match_with_any_string_from_list(resName, body); }
+						else if(marker=="an") { matched=match_with_any_string_from_list(name, body); }
+						control_output << marker << vbegin;
+						for(std::size_t i=0;i<body.size();i++)
+						{
+							control_output << body[i] << ((i+1<body.size()) ? vsep : vend);
+						}
 					}
 				}
 			}
 		}
-		throw std::runtime_error(std::string("Invalid comment descriptor '")+descriptor+"'.");
-		return false;
+		if(control_output.str()!=descriptor)
+		{
+			throw std::runtime_error(std::string("Invalid match descriptor '")+descriptor+"'.");
+		}
+		return matched;
 	}
 
 	friend bool add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
@@ -193,6 +217,8 @@ public:
 private:
 	static const char vbegin='<';
 	static const char vend='>';
+	static const char vsep=',';
+	static const char vinterval=':';
 
 	static int null_num()
 	{
