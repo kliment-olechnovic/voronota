@@ -672,6 +672,16 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	opengl_printer.print_color(drawing_color);
 	opengl_printer.print_alpha(drawing_alpha);
 
+	const std::size_t default_column_width=std::cout.width();
+	std::size_t column_width=default_column_width;
+	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const std::pair<Comment, Comment>& comments=it->first;
+		column_width=std::max(column_width, comments.first.str().size());
+		column_width=std::max(column_width, comments.second.str().size());
+	}
+	column_width+=2;
+
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		std::pair<Comment, Comment> comments=it->first;
@@ -694,7 +704,12 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					std::swap(comments.first, comments.second);
 				}
-				std::cout << comments.first.str() << " " << comments.second.str() << " " << value.first;
+				std::cout.width(column_width);
+				std::cout << std::left << comments.first.str();
+				std::cout.width(column_width);
+				std::cout << std::left << comments.second.str();
+				std::cout.width(default_column_width);
+				std::cout << value.first;
 				if(!value.second.empty())
 				{
 					std::cout << value.second;
