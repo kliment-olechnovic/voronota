@@ -234,8 +234,8 @@ public:
 	friend bool add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >&);
 
 private:
-	static const char vbegin='<';
-	static const char vend='>';
+	static const char vbegin='[';
+	static const char vend=']';
 
 	static int null_num()
 	{
