@@ -37,10 +37,10 @@ Common options
   --drawing-random-colors                     flag to use random color for each drawn contact
   --inter-chain                               flag to convert to inter-chain contacts
   --inter-residue                             flag to convert to inter-residue contacts
-  --match-first                   list        list of strings to select for first contacting group
-  --match-first-not               list        list of strings to not select for first contacting group
-  --match-second                  list        list of strings to match second contacting group
-  --match-second-not              list        list of strings to not match first contacting group
+  --match-first                   string      selection for first contacting group
+  --match-first-not               string      negative selection for first contacting group
+  --match-second                  string      selection for second contacting group
+  --match-second-not              string      negative selection for second contacting group
 
   stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
   stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')

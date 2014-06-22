@@ -596,10 +596,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--inter-residue"].init("", "flag to convert to inter-residue contacts");
 		basic_map_of_option_descriptions["--inter-chain"].init("", "flag to convert to inter-chain contacts");
-		basic_map_of_option_descriptions["--match-first"].init("list", "list of strings to select for first contacting group");
-		basic_map_of_option_descriptions["--match-first-not"].init("list", "list of strings to not select for first contacting group");
-		basic_map_of_option_descriptions["--match-second"].init("list", "list of strings to match second contacting group");
-		basic_map_of_option_descriptions["--match-second-not"].init("list", "list of strings to not match first contacting group");
+		basic_map_of_option_descriptions["--match-first"].init("string", "selection for first contacting group");
+		basic_map_of_option_descriptions["--match-first-not"].init("string", "negative selection for first contacting group");
+		basic_map_of_option_descriptions["--match-second"].init("string", "selection for second contacting group");
+		basic_map_of_option_descriptions["--match-second-not"].init("string", "negative selection for second contacting group");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
 		full_map_of_option_descriptions["--drawing"].init("string", "graphics object name for drawing output");
 		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
@@ -621,10 +621,11 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool inter_chain=poh.contains_option("--inter-chain");
-	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", '&');
-	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", '&');
-	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", '&');
-	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", '&');
+	const char selection_list_sep='&';
+	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", selection_list_sep);
+	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
+	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
+	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
 	const std::string drawing=poh.argument<std::string>("--drawing", "");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
