@@ -674,9 +674,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
-		const std::pair<Comment, Comment>& comments=it->first;
-		if((match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not)) ||
-				(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not)))
+		std::pair<Comment, Comment> comments=it->first;
+		const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
+		const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
+		if(matched_first_second || matched_second_first)
 		{
 			const std::pair<double, std::string>& value=it->second;
 			if(!drawing.empty())
@@ -689,6 +690,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			else
 			{
+				if(!matched_first_second)
+				{
+					std::swap(comments.first, comments.second);
+				}
 				std::cout << comments.first.str() << " " << comments.second.str() << " " << value.first;
 				if(!value.second.empty())
 				{
