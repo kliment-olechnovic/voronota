@@ -43,6 +43,9 @@ $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_
 $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
 $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts4 --annotate < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/contacts4
 
+$TEST_SUBJECT --mode calculate-contacts-query --match-first 'r<3:7,9>&an<CA,CB>' < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
+$TEST_SUBJECT --mode calculate-contacts-query --inter-residue --match-first 'rn<THR>' --match-second 'rn<ARG>' < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query2
+
 rm -r ./voronota_package
 
 hg status ./
