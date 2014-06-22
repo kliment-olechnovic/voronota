@@ -300,6 +300,10 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
+			if(comments.second<comments.first)
+			{
+				std::swap(comments.first, comments.second);
+			}
 			map_of_records[comments]=value;
 			return true;
 		}
