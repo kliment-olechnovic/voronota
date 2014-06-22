@@ -180,10 +180,6 @@ public:
 		if(!result_as_strings.empty())
 		{
 			result=convert_string_vector_to_typed_vector<T>(result_as_strings);
-			if(result.empty())
-			{
-				throw Exception(std::string("Invalid command line argument vector for option '")+name+"'.");
-			}
 		}
 		return result;
 	}
@@ -259,10 +255,11 @@ private:
 		{
 			std::string token;
 			std::getline(input, token, delimiter);
-			if(!token.empty())
+			if(token.empty())
 			{
-				result.push_back(token);
+				throw Exception(std::string("Empty substring encountered when splitting '")+str+"'.");
 			}
+			result.push_back(token);
 		}
 		return result;
 	}
@@ -273,16 +270,23 @@ private:
 		std::vector<T> result;
 		for(std::size_t i=0;i<strs.size();i++)
 		{
-			std::istringstream token_input(strs[i]);
+			std::string token=strs[i];
+			const std::size_t end_pos=token.find_last_not_of(' ');
+			if(end_pos!=std::string::npos && (end_pos+1)<=token.size())
+			{
+				token=token.substr(0, end_pos+1);
+			}
+			std::istringstream token_input(token);
 			T value;
 			token_input >> value;
 			if(token_input.fail())
 			{
-				return std::vector<T>();
+				throw Exception(std::string("Failed to convert token '")+token+"'.");
 			}
-			else
+			result.push_back(value);
+			if(!token_input.eof())
 			{
-				result.push_back(value);
+				throw Exception(std::string("Too many spaces in token '")+token+"'.");
 			}
 		}
 		return result;
