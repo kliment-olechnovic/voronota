@@ -166,14 +166,17 @@ public:
 				read_points_vector_from_stream(input);
 				if(vertices.size()>=3)
 				{
+					output << "draw p" << (id++) << " POLYGON " << vertices.size() << " ";
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], "{", " ", "} ", output);
+					}
+					output  << (vertices.size()-2) << " ";
 					for(std::size_t i=0;(i+2)<vertices.size();i++)
 					{
-						output << "draw t" << (id++) << " ";
-						write_point_to_stream(vertices[strip ? i : 0], "{", " ", "} ", output);
-						write_point_to_stream(vertices[i+1], "{", " ", "} ", output);
-						write_point_to_stream(vertices[i+2], "{", " ", "} ", output);
-						write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
+						output << "[" << (strip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
 					}
+					write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
 				}
 			}
 			else if(type_str=="tfanc")
@@ -183,14 +186,18 @@ public:
 				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
 				if(vertices.size()>=3)
 				{
+					output << "draw p" << (id++) << " POLYGON " << (vertices.size()+1) << " ";
+					write_point_to_stream(center, "{", " ", "} ", output);
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
-						output << "draw t" << (id++) << " ";
-						write_point_to_stream(center, "{", " ", "} ", output);
 						write_point_to_stream(vertices[i], "{", " ", "} ", output);
-						write_point_to_stream(vertices[(i+1)<vertices.size() ? (i+1) : 0], "{", " ", "} ", output);
-						write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
 					}
+					output  << vertices.size() << " ";
+					for(std::size_t i=1;i<=vertices.size();i++)
+					{
+						output << "[" << 0 << " " << (i) << " " << (((i+1)<=vertices.size()) ? (i+1) : 1) << " 0] ";
+					}
+					write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
 				}
 			}
 		}
