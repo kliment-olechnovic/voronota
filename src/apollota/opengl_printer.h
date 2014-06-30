@@ -7,148 +7,71 @@
 #include <vector>
 #include <limits>
 
+#include "basic_operations_on_points.h"
+
 namespace apollota
 {
 
 class OpenGLPrinter
 {
 public:
-	OpenGLPrinter() : output_stream_(0)
+	OpenGLPrinter()
 	{
 	}
 
-	OpenGLPrinter(std::ostream& output_stream, const std::string& obj_name, const std::string& cgo_name) :
-		output_stream_(&output_stream),
-		obj_name_(obj_name),
-		cgo_name_(cgo_name)
+	void add(const std::string& str)
 	{
+		string_stream_ << " " << str;
 	}
 
-	~OpenGLPrinter()
+	void add_alpha(const double alpha)
 	{
-		if(output_stream_!=0)
-		{
-			print_wrapped_str(obj_name_, cgo_name_, string_stream_.str(), *output_stream_);
-		}
+		string_stream_ << "alpha " << alpha << " ";
 	}
 
-	static void print_setup(std::ostream& output_stream)
+	void add_color(const unsigned int rgb)
 	{
-		output_stream << "from pymol.cgo import *\n";
-		output_stream << "from pymol import cmd\n\n";
-	}
-
-	static void print_wrapped_str(const std::string& obj_name, const std::string& cgo_name, const std::string& str, std::ostream& output_stream)
-	{
-		output_stream << obj_name << " = [" << str << "]\n";
-		output_stream << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
-	}
-
-	static void print_lighting_configuration(const bool two_sided_lighting, std::ostream& output_stream)
-	{
-		output_stream << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
-	}
-
-	void print(const std::string& str)
-	{
-		string_stream_ << str;
-	}
-
-	void print_alpha(const double alpha)
-	{
-		string_stream_ << "ALPHA, " << alpha << ", ";
-	}
-
-	void print_color(const double r, const double g, const double b)
-	{
-		string_stream_ << "COLOR, " << rgb_to_string(r, g, b) << ", ";
-	}
-
-	void print_color(const unsigned int rgb)
-	{
-		string_stream_ << "COLOR, " << rgb_to_string(rgb) << ", ";
-	}
-
-	template<typename SphereType>
-	void print_sphere(const SphereType& sphere)
-	{
-		string_stream_ << "SPHERE, " << point_to_string(sphere) << ", " << sphere.r << ", ";
+		string_stream_ << "color ";
+		write_color_to_stream(Color(rgb), string_stream_);
 	}
 
 	template<typename PointType>
-	void print_line_strip(const std::vector<PointType>& vertices, const bool loop=false)
-	{
-		if(!vertices.empty())
-		{
-			if(loop)
-			{
-				string_stream_ << "BEGIN, LINE_LOOP, ";
-			}
-			else
-			{
-				string_stream_ << "BEGIN, LINE_STRIP, ";
-			}
-			for(std::size_t i=0;i<vertices.size();i++)
-			{
-				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
-			}
-			string_stream_ << "END, ";
-		}
-	}
-
-	template<typename PointType>
-	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	void add_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			string_stream_ << "BEGIN, TRIANGLE_STRIP, ";
-			for(std::size_t i=0;i<vertices.size();i++)
-			{
-				string_stream_ << "NORMAL, " << point_to_string(normals[i]) << ", ";
-				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
-			}
-			string_stream_ << "END, ";
+			string_stream_ << "tstrip ";
+			write_points_vector_to_stream(vertices, string_stream_);
+			write_points_vector_to_stream(normals, string_stream_);
 		}
 	}
 
 	template<typename PointType>
-	void print_triangle_fan(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	void add_triangle_fan(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			string_stream_ << "BEGIN, TRIANGLE_FAN, ";
-			for(std::size_t i=0;i<vertices.size();i++)
-			{
-				string_stream_ << "NORMAL, " << point_to_string(normals[i]) << ", ";
-				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
-			}
-			string_stream_ << "END, ";
+			string_stream_ << "tfan ";
+			write_points_vector_to_stream(vertices, string_stream_);
+			write_points_vector_to_stream(normals, string_stream_);
 		}
 	}
 
 	template<typename PointType>
-	void print_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
+	void add_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
 	{
 		if(!vertices.empty())
 		{
-			string_stream_ << "BEGIN, TRIANGLE_FAN, ";
-			string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
-			string_stream_ << "VERTEX, " << point_to_string(center) << ", ";
-			for(std::size_t i=0;i<vertices.size();i++)
-			{
-				string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
-				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
-			}
-			string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
-			string_stream_ << "VERTEX, " << point_to_string(vertices.front()) << ", ";
-			string_stream_ << "END, ";
+			string_stream_ << "tfanc ";
+			write_point_to_stream(center, string_stream_);
+			write_point_to_stream(normal, string_stream_);
+			write_points_vector_to_stream(vertices, string_stream_);
 		}
 	}
 
-	template<typename PointType>
-	void print_cylinder(const PointType& p1, const PointType& p2, const double radius, const unsigned int rgb1, const unsigned int rgb2)
+	bool empty() const
 	{
-		string_stream_ << "CYLINDER, " << point_to_string(p1) << ", " << point_to_string(p2) << ", " << radius << ", " << rgb_to_string(rgb1) << ", " << rgb_to_string(rgb2) << ", ";
+		return string_stream_.str().empty();
 	}
 
 	std::string str() const
@@ -156,34 +79,152 @@ public:
 		return string_stream_.str();
 	}
 
+	void print_pymol_script(const std::string& obj_name, const std::string& cgo_name, const bool two_sided_lighting, std::ostream& output)
+	{
+		const std::string sep=", ";
+		std::istringstream input(str());
+		output << "from pymol.cgo import *\n";
+		output << "from pymol import cmd\n";
+		output << obj_name << " = [";
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			if(type_str=="alpha")
+			{
+				double alpha=1.0;
+				input >> alpha;
+				output << "ALPHA, " << alpha << sep;
+			}
+			else if(type_str=="color")
+			{
+				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
+			}
+			else if(type_str=="tstrip" || type_str=="tfan")
+			{
+				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
+				const std::vector<PODPoint> normals=read_points_vector_from_stream(input);
+				if(!vertices.empty() && vertices.size()==normals.size())
+				{
+					output << (type_str=="tstrip" ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+					}
+					output << "END, ";
+				}
+			}
+			else if(type_str=="tfanc")
+			{
+				const PODPoint center=read_point_from_stream(input);
+				const PODPoint normal=read_point_from_stream(input);
+				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
+				output << "BEGIN, TRIANGLE_FAN, ";
+				write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
+				write_point_to_stream(center, "VERTEX, ", sep, sep, output);
+				for(std::size_t i=0;i<vertices.size();i++)
+				{
+					write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
+					write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+				}
+				write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
+				write_point_to_stream(vertices.front(), "VERTEX, ", sep, sep, output);
+				output << "END, ";
+			}
+		}
+		output << "]\n";
+		output << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
+		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
+	}
+
 private:
-	OpenGLPrinter(const OpenGLPrinter& /*opengl_printer*/);
-	OpenGLPrinter& operator=(const OpenGLPrinter& /*opengl_printer*/);
+	struct Color
+	{
+		unsigned int r;
+		unsigned int g;
+		unsigned int b;
+
+		Color() : r(0), g(0), b(0)
+		{
+		}
+
+		Color(const unsigned int rgb) : r((rgb&0xFF0000) >> 16), g((rgb&0x00FF00) >> 8), b(rgb&0x0000FF)
+		{
+		}
+	};
 
 	template<typename PointType>
-	static std::string point_to_string(const PointType& a)
+	static void write_point_to_stream(const PointType& p, const std::string& start, const std::string& sep, const std::string& end, std::ostream& output)
 	{
-		std::ostringstream output;
+		output << start;
 		output.precision(3);
-		output << std::fixed << a.x << ", " << a.y << ", " << a.z;
-		return output.str();
+		output << std::fixed << p.x << sep << p.y << sep << p.z;
+		output << end;
 	}
 
-	static std::string rgb_to_string(const double r, const double g, const double b)
+	template<typename PointType>
+	static void write_point_to_stream(const PointType& p, std::ostream& output)
 	{
-		std::ostringstream output;
-		output << r << ", " << g << ", " << b;
-		return output.str();
+		write_point_to_stream(p, "", " ", " ", output);
 	}
 
-	static std::string rgb_to_string(const unsigned int rgb)
+	static PODPoint read_point_from_stream(std::istream& input)
 	{
-		return rgb_to_string(static_cast<double>((rgb&0xFF0000) >> 16)/255.0, static_cast<double>((rgb&0x00FF00) >> 8)/255.0, static_cast<double>(rgb&0x0000FF)/255.0);
+		PODPoint p;
+		input >> p.x >> p.y >> p.z;
+		return p;
 	}
 
-	std::ostream* output_stream_;
-	const std::string obj_name_;
-	const std::string cgo_name_;
+	template<typename PointType>
+	static void write_points_vector_to_stream(const std::vector<PointType>& v, std::ostream& output)
+	{
+		output << v.size() << " ";
+		for(std::size_t i=0;i<v.size();i++)
+		{
+			write_point_to_stream(v[i], output);
+		}
+	}
+
+	static std::vector<PODPoint> read_points_vector_from_stream(std::istream& input)
+	{
+		std::size_t n=0;
+		input >> n;
+		std::vector<PODPoint> v(n);
+		for(std::size_t i=0;i<v.size();i++)
+		{
+			v[i]=read_point_from_stream(input);
+		}
+		return v;
+	}
+
+	static void write_color_to_stream(const Color& c, const bool normalized, const std::string& start, const std::string& sep, const std::string& end, std::ostream& output)
+	{
+		output << start;
+		if(normalized)
+		{
+			output.precision(3);
+			output << std::fixed << (static_cast<double>(c.r)/255.0) << sep << (static_cast<double>(c.g)/255.0) << sep << (static_cast<double>(c.b)/255.0);
+		}
+		else
+		{
+			output << c.r << sep << c.g << sep << c.b;
+		}
+		output << end;
+	}
+
+	static void write_color_to_stream(const Color& c, std::ostream& output)
+	{
+		write_color_to_stream(c, false, "", " ", " ", output);
+	}
+
+	static Color read_color_from_stream(std::istream& input)
+	{
+		Color c;
+		input >> c.r >> c.g >> c.b;
+		return c;
+	}
+
 	std::ostringstream string_stream_;
 };
 
