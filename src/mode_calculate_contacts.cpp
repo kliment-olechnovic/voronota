@@ -333,7 +333,7 @@ std::string draw_iter_atom_contact(
 			{
 				const apollota::ConstrainedContactContour::Contour& contour=(*contours_it);
 				const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(contour);
-				opengl_printer.print_triangle_fan(
+				opengl_printer.add_triangle_fan(
 						apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[a_id], spheres[b_id]),
 						outline,
 						apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit());
@@ -368,7 +368,7 @@ std::string draw_solvent_contact(
 					ts[i]=remainder_it->p[i];
 					ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[a_id]).unit();
 				}
-				opengl_printer.print_triangle_strip(ts, ns);
+				opengl_printer.add_triangle_strip(ts, ns);
 			}
 		}
 	}
@@ -671,8 +671,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
 
 	apollota::OpenGLPrinter opengl_printer;
-	opengl_printer.print_color(drawing_color);
-	opengl_printer.print_alpha(drawing_alpha);
+	opengl_printer.add_color(drawing_color);
+	opengl_printer.add_alpha(drawing_alpha);
 
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
@@ -686,9 +686,9 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(drawing_random_colors)
 				{
-					opengl_printer.print_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
 				}
-				opengl_printer.print(value.second);
+				opengl_printer.add(value.second);
 			}
 			else
 			{
@@ -706,14 +706,11 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!drawing.empty())
 	{
-		const std::string graphics_str=opengl_printer.str();
-		if(graphics_str.empty())
+		if(opengl_printer.empty())
 		{
 			throw std::runtime_error("No graphics input.");
 		}
-		apollota::OpenGLPrinter::print_setup(std::cout);
-		apollota::OpenGLPrinter::print_wrapped_str(drawing, drawing, graphics_str, std::cout);
-		apollota::OpenGLPrinter::print_lighting_configuration(true, std::cout);
+		opengl_printer.print_pymol_script(drawing, drawing, true, std::cout);
 	}
 	else
 	{

@@ -3,13 +3,189 @@
 
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_queries.h"
-#include "apollota/opengl_printer.h"
 #include "apollota/constrained_contacts_construction.h"
 
 #include "modes_commons.h"
 
 namespace
 {
+
+class OpenGLPrinter
+{
+public:
+	OpenGLPrinter() : output_stream_(0)
+	{
+	}
+
+	OpenGLPrinter(std::ostream& output_stream, const std::string& obj_name, const std::string& cgo_name) :
+		output_stream_(&output_stream),
+		obj_name_(obj_name),
+		cgo_name_(cgo_name)
+	{
+	}
+
+	~OpenGLPrinter()
+	{
+		if(output_stream_!=0)
+		{
+			print_wrapped_str(obj_name_, cgo_name_, string_stream_.str(), *output_stream_);
+		}
+	}
+
+	static void print_setup(std::ostream& output_stream)
+	{
+		output_stream << "from pymol.cgo import *\n";
+		output_stream << "from pymol import cmd\n\n";
+	}
+
+	static void print_wrapped_str(const std::string& obj_name, const std::string& cgo_name, const std::string& str, std::ostream& output_stream)
+	{
+		output_stream << obj_name << " = [" << str << "]\n";
+		output_stream << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
+	}
+
+	static void print_lighting_configuration(const bool two_sided_lighting, std::ostream& output_stream)
+	{
+		output_stream << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
+	}
+
+	void print(const std::string& str)
+	{
+		string_stream_ << str;
+	}
+
+	void print_alpha(const double alpha)
+	{
+		string_stream_ << "ALPHA, " << alpha << ", ";
+	}
+
+	void print_color(const double r, const double g, const double b)
+	{
+		string_stream_ << "COLOR, " << rgb_to_string(r, g, b) << ", ";
+	}
+
+	void print_color(const unsigned int rgb)
+	{
+		string_stream_ << "COLOR, " << rgb_to_string(rgb) << ", ";
+	}
+
+	template<typename SphereType>
+	void print_sphere(const SphereType& sphere)
+	{
+		string_stream_ << "SPHERE, " << point_to_string(sphere) << ", " << sphere.r << ", ";
+	}
+
+	template<typename PointType>
+	void print_line_strip(const std::vector<PointType>& vertices, const bool loop=false)
+	{
+		if(!vertices.empty())
+		{
+			if(loop)
+			{
+				string_stream_ << "BEGIN, LINE_LOOP, ";
+			}
+			else
+			{
+				string_stream_ << "BEGIN, LINE_STRIP, ";
+			}
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
+			}
+			string_stream_ << "END, ";
+		}
+	}
+
+	template<typename PointType>
+	void print_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	{
+		if(!vertices.empty() && vertices.size()==normals.size())
+		{
+			string_stream_ << "BEGIN, TRIANGLE_STRIP, ";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "NORMAL, " << point_to_string(normals[i]) << ", ";
+				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
+			}
+			string_stream_ << "END, ";
+		}
+	}
+
+	template<typename PointType>
+	void print_triangle_fan(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
+	{
+		if(!vertices.empty() && vertices.size()==normals.size())
+		{
+			string_stream_ << "BEGIN, TRIANGLE_FAN, ";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "NORMAL, " << point_to_string(normals[i]) << ", ";
+				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
+			}
+			string_stream_ << "END, ";
+		}
+	}
+
+	template<typename PointType>
+	void print_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << "BEGIN, TRIANGLE_FAN, ";
+			string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
+			string_stream_ << "VERTEX, " << point_to_string(center) << ", ";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
+				string_stream_ << "VERTEX, " << point_to_string(vertices[i]) << ", ";
+			}
+			string_stream_ << "NORMAL, " << point_to_string(normal) << ", ";
+			string_stream_ << "VERTEX, " << point_to_string(vertices.front()) << ", ";
+			string_stream_ << "END, ";
+		}
+	}
+
+	template<typename PointType>
+	void print_cylinder(const PointType& p1, const PointType& p2, const double radius, const unsigned int rgb1, const unsigned int rgb2)
+	{
+		string_stream_ << "CYLINDER, " << point_to_string(p1) << ", " << point_to_string(p2) << ", " << radius << ", " << rgb_to_string(rgb1) << ", " << rgb_to_string(rgb2) << ", ";
+	}
+
+	std::string str() const
+	{
+		return string_stream_.str();
+	}
+
+private:
+	OpenGLPrinter(const OpenGLPrinter& /*opengl_printer*/);
+	OpenGLPrinter& operator=(const OpenGLPrinter& /*opengl_printer*/);
+
+	template<typename PointType>
+	static std::string point_to_string(const PointType& a)
+	{
+		std::ostringstream output;
+		output.precision(3);
+		output << std::fixed << a.x << ", " << a.y << ", " << a.z;
+		return output.str();
+	}
+
+	static std::string rgb_to_string(const double r, const double g, const double b)
+	{
+		std::ostringstream output;
+		output << r << ", " << g << ", " << b;
+		return output.str();
+	}
+
+	static std::string rgb_to_string(const unsigned int rgb)
+	{
+		return rgb_to_string(static_cast<double>((rgb&0xFF0000) >> 16)/255.0, static_cast<double>((rgb&0x00FF00) >> 8)/255.0, static_cast<double>(rgb&0x0000FF)/255.0);
+	}
+
+	std::ostream* output_stream_;
+	const std::string obj_name_;
+	const std::string cgo_name_;
+	std::ostringstream string_stream_;
+};
 
 void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -32,14 +208,14 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(bsh.levels()>0)
 	{
-		apollota::OpenGLPrinter::print_setup(std::cout);
+		OpenGLPrinter::print_setup(std::cout);
 
 		{
 			std::ostringstream obj_name;
 			obj_name << "obj_as";
 			std::ostringstream cgo_name;
 			cgo_name << "cgo_as";
-			apollota::OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
+			OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
 			for(std::size_t i=0;i<spheres.size();i++)
 			{
 				opengl_printer.print_color(0x36BBCE);
@@ -54,7 +230,7 @@ void print_demo_bsh(const auxiliaries::ProgramOptionsHandler& poh)
 			obj_name << "obj_bs" << l;
 			std::ostringstream cgo_name;
 			cgo_name << "cgo_bs" << l;
-			apollota::OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
+			OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
 			for(std::size_t i=0;i<bs.size();i++)
 			{
 				opengl_printer.print_color(0x37DE6A);
@@ -91,19 +267,19 @@ void print_demo_face(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
-	apollota::OpenGLPrinter opengl_printer_curve(std::cout, "obj_curve", "cgo_curve");
-	apollota::OpenGLPrinter opengl_printer_generators(std::cout, "obj_generators", "cgo_generators");
-	apollota::OpenGLPrinter opengl_printer_m_surface(std::cout, "obj_m_surface", "cgo_m_surface");
-	apollota::OpenGLPrinter opengl_printer_tangent_planes(std::cout, "obj_tangent_planes", "cgo_tangent_planes");
-	apollota::OpenGLPrinter opengl_printer_tangent_spheres(std::cout, "obj_tangent_spheres", "cgo_tangent_spheres");
-	apollota::OpenGLPrinter opengl_printer_m_contour(std::cout, "obj_m_contour", "cgo_m_contour");
-	apollota::OpenGLPrinter opengl_printer_m_touch_points(std::cout, "obj_m_touch_points", "cgo_m_touch_points");
-	apollota::OpenGLPrinter opengl_printer_cyclide_contour(std::cout, "obj_cyclide_contour", "cgo_cyclide_contour");
-	apollota::OpenGLPrinter opengl_printer_cyclide_surface(std::cout, "obj_cyclide_surface", "cgo_cyclide_surface");
-	apollota::OpenGLPrinter opengl_printer_cylinder(std::cout, "obj_cylinder", "cgo_cylinder");
-	apollota::OpenGLPrinter opengl_printer_trans_tangent_planes(std::cout, "obj_trans_tangent_planes", "cgo_trans_tangent_planes");
+	OpenGLPrinter opengl_printer_curve(std::cout, "obj_curve", "cgo_curve");
+	OpenGLPrinter opengl_printer_generators(std::cout, "obj_generators", "cgo_generators");
+	OpenGLPrinter opengl_printer_m_surface(std::cout, "obj_m_surface", "cgo_m_surface");
+	OpenGLPrinter opengl_printer_tangent_planes(std::cout, "obj_tangent_planes", "cgo_tangent_planes");
+	OpenGLPrinter opengl_printer_tangent_spheres(std::cout, "obj_tangent_spheres", "cgo_tangent_spheres");
+	OpenGLPrinter opengl_printer_m_contour(std::cout, "obj_m_contour", "cgo_m_contour");
+	OpenGLPrinter opengl_printer_m_touch_points(std::cout, "obj_m_touch_points", "cgo_m_touch_points");
+	OpenGLPrinter opengl_printer_cyclide_contour(std::cout, "obj_cyclide_contour", "cgo_cyclide_contour");
+	OpenGLPrinter opengl_printer_cyclide_surface(std::cout, "obj_cyclide_surface", "cgo_cyclide_surface");
+	OpenGLPrinter opengl_printer_cylinder(std::cout, "obj_cylinder", "cgo_cylinder");
+	OpenGLPrinter opengl_printer_trans_tangent_planes(std::cout, "obj_trans_tangent_planes", "cgo_trans_tangent_planes");
 
 	for(std::size_t i=0;i<generators.size();i++)
 	{
@@ -421,7 +597,7 @@ void print_demo_tangent_spheres()
 		generators_sets.push_back(generators);
 	}
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	for(std::size_t j=0;j<generators_sets.size();j++)
 	{
@@ -431,7 +607,7 @@ void print_demo_tangent_spheres()
 		obj_name << "obj" << j;
 		std::ostringstream cgo_name;
 		cgo_name << "cgo" << j;
-		apollota::OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
+		OpenGLPrinter opengl_printer(std::cout, obj_name.str(), cgo_name.str());
 
 		opengl_printer.print_alpha(j==2 ? 0.25 : 1.0);
 		opengl_printer.print_color(0x36BBCE);
@@ -461,8 +637,8 @@ void print_demo_tangent_planes()
 	generators.push_back(apollota::SimpleSphere(-1.0, 2.0, -0.1, 1.2));
 	generators.push_back(apollota::SimpleSphere(-1.0, -1.0, 0.1, 1.5));
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
-	apollota::OpenGLPrinter opengl_printer(std::cout, "obj", "cgo");
+	OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter opengl_printer(std::cout, "obj", "cgo");
 
 	opengl_printer.print_color(0x36BBCE);
 	opengl_printer.print_alpha(1.0);
@@ -511,8 +687,8 @@ void print_demo_splitting(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::vector< std::vector<std::size_t> > ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
-	apollota::OpenGLPrinter opengl_printer(std::cout, "obj_splitting", "cgo_splitting");
+	OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter opengl_printer(std::cout, "obj_splitting", "cgo_splitting");
 
 	for(std::size_t i=0;i<ids.size();i++)
 	{
@@ -560,12 +736,12 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::set<apollota::Quadruple> drawn_quadruples;
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	{
-		apollota::OpenGLPrinter opengl_printer_opaq(std::cout, "obj_opaq_empty_tangent_spheres", "cgo_opaq_empty_tangent_spheres");
+		OpenGLPrinter opengl_printer_opaq(std::cout, "obj_opaq_empty_tangent_spheres", "cgo_opaq_empty_tangent_spheres");
 		opengl_printer_opaq.print_color(0xFF5A40);
-		apollota::OpenGLPrinter opengl_printer_trans(std::cout, "obj_trans_empty_tangent_spheres", "cgo_trans_empty_tangent_spheres");
+		OpenGLPrinter opengl_printer_trans(std::cout, "obj_trans_empty_tangent_spheres", "cgo_trans_empty_tangent_spheres");
 		opengl_printer_trans.print_color(0xFF5A40);
 		opengl_printer_trans.print_alpha(alpha);
 		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
@@ -593,11 +769,11 @@ void print_demo_empty_tangents(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		apollota::OpenGLPrinter opengl_printer_central(std::cout, "obj_central_balls", "cgo_central_balls");
+		OpenGLPrinter opengl_printer_central(std::cout, "obj_central_balls", "cgo_central_balls");
 		opengl_printer_central.print_color(0x36BBCE);
-		apollota::OpenGLPrinter opengl_printer_adjacent_opaq(std::cout, "obj_opaq_adjacent_balls", "cgo_opaq_adjacent_balls");
+		OpenGLPrinter opengl_printer_adjacent_opaq(std::cout, "obj_opaq_adjacent_balls", "cgo_opaq_adjacent_balls");
 		opengl_printer_adjacent_opaq.print_color(0x36BBCE);
-		apollota::OpenGLPrinter opengl_printer_adjacent_trans(std::cout, "obj_trans_adjacent_balls", "cgo_trans_adjacent_balls");
+		OpenGLPrinter opengl_printer_adjacent_trans(std::cout, "obj_trans_adjacent_balls", "cgo_trans_adjacent_balls");
 		opengl_printer_adjacent_trans.print_color(0x36BBCE);
 		opengl_printer_adjacent_trans.print_alpha(alpha);
 		for(std::size_t i=0;i<spheres.size();i++)
@@ -779,10 +955,10 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	{
-		apollota::OpenGLPrinter opengl_printer_cavities(std::cout, "obj_cavities", "cgo_cavities");
+		OpenGLPrinter opengl_printer_cavities(std::cout, "obj_cavities", "cgo_cavities");
 		opengl_printer_cavities.print_color(0xFF5A40);
 		for(std::size_t i=0;i<vertices_vector.size();i++)
 		{
@@ -794,7 +970,7 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		apollota::OpenGLPrinter opengl_printer_precavities(std::cout, "obj_precavities", "cgo_precavities");
+		OpenGLPrinter opengl_printer_precavities(std::cout, "obj_precavities", "cgo_precavities");
 		opengl_printer_precavities.print_color(0xFFFF40);
 		for(std::size_t i=0;i<vertices_vector.size();i++)
 		{
@@ -806,7 +982,7 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		apollota::OpenGLPrinter opengl_printer_hitters(std::cout, "obj_hitters", "cgo_hitters");
+		OpenGLPrinter opengl_printer_hitters(std::cout, "obj_hitters", "cgo_hitters");
 		opengl_printer_hitters.print_color(0xFFAAFF);
 		for(std::size_t i=0;i<hitters.size();i++)
 		{
@@ -815,7 +991,7 @@ void print_cavities(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		apollota::OpenGLPrinter opengl_printer_balls(std::cout, "obj_balls", "cgo_balls");
+		OpenGLPrinter opengl_printer_balls(std::cout, "obj_balls", "cgo_balls");
 		opengl_printer_balls.print_color(0x36BBCE);
 		for(std::size_t i=0;i<spheres.size();i++)
 		{
@@ -866,7 +1042,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	{
 		const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
@@ -892,7 +1068,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 								const apollota::ConstrainedContactContour::Contour& contour=(*contours_it);
 								std::ostringstream id_string;
 								id_string << "a" << sel << "b" << neighbor;
-								apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
+								OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
 								{
 									opengl_printer.print_color(0x555555);
 									opengl_printer.print_line_strip(apollota::ConstrainedContactContour::collect_points_from_contour(contour), true);
@@ -932,7 +1108,7 @@ void print_contact_contours(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						std::ostringstream id_string;
 						id_string << "s" << sel;
-						apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
+						OpenGLPrinter opengl_printer(std::cout, prefix+"obj_"+id_string.str(), prefix+"cgo_"+id_string.str());
 						opengl_printer.print_alpha(alpha);
 						opengl_printer.print_color(0xDE6A37);
 						for(apollota::ConstrainedContactRemainder::Remainder::const_iterator jt=remainder.begin();jt!=remainder.end();++jt)
@@ -983,7 +1159,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map< int, std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull> > grouped_remainders=
 			apollota::ConstrainedContactsConstruction::construct_groups_of_contact_remainders<apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>(spheres, vertices_vector, probe, step, projections, sih_depth, false);
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	for(std::map< int, std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull> >::const_iterator grouped_remainders_it=grouped_remainders.begin();grouped_remainders_it!=grouped_remainders.end();++grouped_remainders_it)
 	{
@@ -1000,7 +1176,7 @@ void print_surfaces_contours(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				id_string << "s" << abs(group_id);
 			}
-			apollota::OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
+			OpenGLPrinter opengl_printer(std::cout, std::string("obj_")+id_string.str(), std::string("cgo_")+id_string.str());
 			opengl_printer.print_color(0xFF7700);
 			for(std::map<std::size_t, apollota::ConstrainedContactsConstruction::ContactRemainderDescriptorFull>::const_iterator group_map_it=group_map.begin();group_map_it!=group_map.end();++group_map_it)
 			{
@@ -1151,14 +1327,14 @@ void print_tubing(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
 	const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	{
-		apollota::OpenGLPrinter opengl_printer_balls(std::cout, prefix+"obj_balls", prefix+"balls");
-		apollota::OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
-		apollota::OpenGLPrinter opengl_printer_tubing(std::cout, prefix+"obj_tubing", prefix+"tubing");
-		apollota::OpenGLPrinter opengl_printer_negtubing(std::cout, prefix+"obj_negtubing", prefix+"negtubing");
-		apollota::OpenGLPrinter opengl_printer_watering(std::cout, prefix+"obj_watering", prefix+"watering");
+		OpenGLPrinter opengl_printer_balls(std::cout, prefix+"obj_balls", prefix+"balls");
+		OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
+		OpenGLPrinter opengl_printer_tubing(std::cout, prefix+"obj_tubing", prefix+"tubing");
+		OpenGLPrinter opengl_printer_negtubing(std::cout, prefix+"obj_negtubing", prefix+"negtubing");
+		OpenGLPrinter opengl_printer_watering(std::cout, prefix+"obj_watering", prefix+"watering");
 
 		opengl_printer_balls.print_color(0x77FF77);
 		opengl_printer_wireframe.print_color(0xFF0000);
@@ -1315,23 +1491,23 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
-	apollota::OpenGLPrinter::print_setup(std::cout);
+	OpenGLPrinter::print_setup(std::cout);
 
 	{
 		const apollota::TriangulationQueries::IDsGraph neighbors_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), spheres.size());
 		const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 
-		apollota::OpenGLPrinter opengl_printer1(std::cout, prefix+"obj_contacts", prefix+"contacts");
-		apollota::OpenGLPrinter opengl_printer2(std::cout, prefix+"obj_exposure", prefix+"exposure");
-		apollota::OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
-		apollota::OpenGLPrinter opengl_printer_wireborder(std::cout, prefix+"obj_wireborder", prefix+"wireborder");
+		OpenGLPrinter opengl_printer1(std::cout, prefix+"obj_contacts", prefix+"contacts");
+		OpenGLPrinter opengl_printer2(std::cout, prefix+"obj_exposure", prefix+"exposure");
+		OpenGLPrinter opengl_printer_wireframe(std::cout, prefix+"obj_wireframe", prefix+"wireframe");
+		OpenGLPrinter opengl_printer_wireborder(std::cout, prefix+"obj_wireborder", prefix+"wireborder");
 
 		opengl_printer1.print_alpha(alpha);
 		opengl_printer2.print_alpha(alpha);
 		opengl_printer_wireframe.print_color(0x555555);
 		opengl_printer_wireborder.print_color(0x111111);
 
-		apollota::OpenGLPrinter* opengl_printers[2]={&opengl_printer1, &opengl_printer2};
+		OpenGLPrinter* opengl_printers[2]={&opengl_printer1, &opengl_printer2};
 
 		for(std::set<std::size_t>::const_iterator sel_it=selection_sets[0].begin();sel_it!=selection_sets[0].end();++sel_it)
 		{
@@ -1388,7 +1564,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 		apollota::SubdividedIcosahedron sih(sih_depth);
 		const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 
-		apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_sas", prefix+"sas");
+		OpenGLPrinter opengl_printer(std::cout, prefix+"obj_sas", prefix+"sas");
 		opengl_printer.print_alpha(sas_alpha);
 		opengl_printer.print_color(draw_sas);
 
@@ -1419,7 +1595,7 @@ void print_interface_colored(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(draw_balls>0)
 	{
-		apollota::OpenGLPrinter opengl_printer(std::cout, prefix+"obj_balls", prefix+"balls");
+		OpenGLPrinter opengl_printer(std::cout, prefix+"obj_balls", prefix+"balls");
 		opengl_printer.print_color(draw_balls);
 
 		for(std::set<std::size_t>::const_iterator sel_it=selection_sets[0].begin();sel_it!=selection_sets[0].end();++sel_it)
