@@ -601,7 +601,9 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--match-second"].init("string", "selection for second contacting group");
 		basic_map_of_option_descriptions["--match-second-not"].init("string", "negative selection for second contacting group");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--drawing"].init("string", "graphics object name for drawing output");
+		full_map_of_option_descriptions["--drawing-for-pymol"].init("", "flag to output drawing as pymol script");
+		full_map_of_option_descriptions["--drawing-for-jmol"].init("", "flag to output drawing as jmol script");
+		full_map_of_option_descriptions["--drawing-name"].init("string", "graphics object name for drawing output");
 		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
 		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
 		full_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
@@ -626,7 +628,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
-	const std::string drawing=poh.argument<std::string>("--drawing", "");
+	const bool drawing_for_pymol=poh.contains_option("--drawing-for-pymol");
+	const bool drawing_for_jmol=poh.contains_option("--drawing-for-jmol");
+	const bool drawing=(drawing_for_pymol || drawing_for_jmol);
+	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
@@ -682,7 +687,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		if(matched_first_second || matched_second_first)
 		{
 			const std::pair<double, std::string>& value=it->second;
-			if(!drawing.empty())
+			if(drawing)
 			{
 				if(drawing_random_colors)
 				{
@@ -704,13 +709,20 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!drawing.empty())
+	if(drawing)
 	{
 		if(opengl_printer.empty())
 		{
 			throw std::runtime_error("No graphics input.");
 		}
-		opengl_printer.print_pymol_script(drawing, drawing, true, std::cout);
+		if(drawing_for_pymol)
+		{
+			opengl_printer.print_pymol_script(drawing_name, drawing_name, true, std::cout);
+		}
+		if(drawing_for_jmol)
+		{
+			opengl_printer.print_jmol_script(std::cout);
+		}
 	}
 	else
 	{

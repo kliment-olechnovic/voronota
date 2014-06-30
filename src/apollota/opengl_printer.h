@@ -104,7 +104,7 @@ public:
 			{
 				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
 				const std::vector<PODPoint> normals=read_points_vector_from_stream(input);
-				if(!vertices.empty() && vertices.size()==normals.size())
+				if(vertices.size()>=3 && vertices.size()==normals.size())
 				{
 					output << (type_str=="tstrip" ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
 					for(std::size_t i=0;i<vertices.size();i++)
@@ -120,22 +120,88 @@ public:
 				const PODPoint center=read_point_from_stream(input);
 				const PODPoint normal=read_point_from_stream(input);
 				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
-				output << "BEGIN, TRIANGLE_FAN, ";
-				write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-				write_point_to_stream(center, "VERTEX, ", sep, sep, output);
-				for(std::size_t i=0;i<vertices.size();i++)
+				if(vertices.size()>=3)
 				{
+					output << "BEGIN, TRIANGLE_FAN, ";
 					write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-					write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+					write_point_to_stream(center, "VERTEX, ", sep, sep, output);
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+					}
+					write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
+					write_point_to_stream(vertices.front(), "VERTEX, ", sep, sep, output);
+					output << "END, ";
 				}
-				write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-				write_point_to_stream(vertices.front(), "VERTEX, ", sep, sep, output);
-				output << "END, ";
 			}
 		}
 		output << "]\n";
 		output << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
 		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
+	}
+
+	void print_jmol_script(std::ostream& output)
+	{
+		std::istringstream input(str());
+		double alpha=1.0;
+		Color color(0xFFFFFF);
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			if(type_str=="alpha")
+			{
+				input >> alpha;
+			}
+			else if(type_str=="color")
+			{
+				color=read_color_from_stream(input);
+			}
+			else if(type_str=="tstrip" || type_str=="tfan")
+			{
+				const bool strip=(type_str=="tstrip");
+				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
+				read_points_vector_from_stream(input);
+				if(vertices.size()>=3)
+				{
+					output << "draw POLYGON " << vertices.size() << " ";
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], "{", " ", "} ", output);
+					}
+					output  << (vertices.size()-2) << " ";
+					for(std::size_t i=0;(i+2)<vertices.size();i++)
+					{
+						output << "[" << (strip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
+					}
+					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+					output << ";\n";
+				}
+			}
+			else if(type_str=="tfanc")
+			{
+				const PODPoint center=read_point_from_stream(input);
+				read_point_from_stream(input);
+				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
+				if(vertices.size()>=3)
+				{
+					output << "draw POLYGON " << (vertices.size()+1) << " ";
+					write_point_to_stream(center, "{", " ", "} ", output);
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], "{", " ", "} ", output);
+					}
+					output  << vertices.size() << " ";
+					for(std::size_t i=1;i<=vertices.size();i++)
+					{
+						output << "[" << 0 << " " << (i) << " " << (((i+1)<=vertices.size()) ? (i+1) : 1) << " 0] ";
+					}
+					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+					output << ";\n";
+				}
+			}
+		}
 	}
 
 private:
