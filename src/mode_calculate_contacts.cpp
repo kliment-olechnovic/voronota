@@ -717,11 +717,11 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		if(drawing_for_pymol)
 		{
-			opengl_printer.print_pymol_script(drawing_name, drawing_name, true, std::cout);
+			opengl_printer.print_pymol_script(drawing_name, true, std::cout);
 		}
 		if(drawing_for_jmol)
 		{
-			opengl_printer.print_jmol_script(std::cout);
+			opengl_printer.print_jmol_script(drawing_name, std::cout);
 		}
 	}
 	else

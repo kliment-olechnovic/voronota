@@ -7,8 +7,6 @@
 #include <vector>
 #include <limits>
 
-#include "basic_operations_on_points.h"
-
 namespace apollota
 {
 
@@ -79,7 +77,7 @@ public:
 		return string_stream_.str();
 	}
 
-	void print_pymol_script(const std::string& obj_name, const std::string& cgo_name, const bool two_sided_lighting, std::ostream& output)
+	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output)
 	{
 		const std::string sep=", ";
 		std::istringstream input(str());
@@ -107,8 +105,8 @@ public:
 				const bool tfanc=(type_str=="tfanc");
 				if(tstrip || tfan || tfanc)
 				{
-					std::vector<PODPoint> vertices;
-					std::vector<PODPoint> normals;
+					std::vector<PlainPoint> vertices;
+					std::vector<PlainPoint> normals;
 					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
 					{
 						output << (tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
@@ -123,16 +121,17 @@ public:
 			}
 		}
 		output << "]\n";
-		output << "cmd.load_cgo(" << obj_name << ", '" << cgo_name << "')\n";
+		output << "cmd.load_cgo(" << obj_name << ", '" << obj_name << "')\n";
 		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
 	}
 
-	void print_jmol_script(std::ostream& output)
+	void print_jmol_script(const std::string& obj_name, std::ostream& output)
 	{
 		std::istringstream input(str());
 		double alpha=1.0;
 		Color color(0xFFFFFF);
-		int id=0;
+		std::vector<PlainPoint> global_vertices;
+		std::vector<PlainTriple> global_triples;
 		while(input.good())
 		{
 			std::string type_str;
@@ -153,29 +152,46 @@ public:
 				const bool tfanc=(type_str=="tfanc");
 				if(tstrip || tfan || tfanc)
 				{
-					std::vector<PODPoint> vertices;
-					std::vector<PODPoint> normals;
+					std::vector<PlainPoint> vertices;
+					std::vector<PlainPoint> normals;
 					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
 					{
-						output << "draw p" << (id++) << " POLYGON " << vertices.size() << " ";
-						for(std::size_t i=0;i<vertices.size();i++)
-						{
-							write_point_to_stream(vertices[i], "{", " ", "} ", output);
-						}
-						output  << (vertices.size()-2) << " ";
+						const std::size_t offset=global_vertices.size();
+						global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
 						for(std::size_t i=0;(i+2)<vertices.size();i++)
 						{
-							output << "[" << (tstrip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
+							global_triples.push_back(PlainTriple(offset+(tstrip ? i : 0), offset+(i+1), offset+(i+2)));
 						}
-						write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
-						output << "TRANSLUCENT " << alpha << "\n";
 					}
 				}
 			}
 		}
+		print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 	}
 
 private:
+	struct PlainPoint
+	{
+		double x;
+		double y;
+		double z;
+	};
+
+	struct PlainTriple
+	{
+		std::size_t a;
+		std::size_t b;
+		std::size_t c;
+
+		PlainTriple() : a(0), b(0), c(0)
+		{
+		}
+
+		PlainTriple(const std::size_t a, const std::size_t b, const std::size_t c) : a(a), b(b), c(c)
+		{
+		}
+	};
+
 	struct Color
 	{
 		unsigned int r;
@@ -206,9 +222,9 @@ private:
 		write_point_to_stream(p, "", " ", " ", output);
 	}
 
-	static PODPoint read_point_from_stream(std::istream& input)
+	static PlainPoint read_point_from_stream(std::istream& input)
 	{
-		PODPoint p;
+		PlainPoint p;
 		input >> p.x >> p.y >> p.z;
 		return p;
 	}
@@ -223,11 +239,11 @@ private:
 		}
 	}
 
-	static std::vector<PODPoint> read_points_vector_from_stream(std::istream& input)
+	static std::vector<PlainPoint> read_points_vector_from_stream(std::istream& input)
 	{
 		std::size_t n=0;
 		input >> n;
-		std::vector<PODPoint> v(n);
+		std::vector<PlainPoint> v(n);
 		for(std::size_t i=0;i<v.size();i++)
 		{
 			v[i]=read_point_from_stream(input);
@@ -262,7 +278,7 @@ private:
 		return c;
 	}
 
-	static bool read_strip_or_fan_from_stream(const bool tstrip, const bool tfan, const bool tfanc, std::istream& input, std::vector<PODPoint>& vertices, std::vector<PODPoint>& normals)
+	static bool read_strip_or_fan_from_stream(const bool tstrip, const bool tfan, const bool tfanc, std::istream& input, std::vector<PlainPoint>& vertices, std::vector<PlainPoint>& normals)
 	{
 		vertices.clear();
 		normals.clear();
@@ -273,9 +289,9 @@ private:
 		}
 		else if(tfanc)
 		{
-			const PODPoint center=read_point_from_stream(input);
-			const PODPoint normal=read_point_from_stream(input);
-			const std::vector<PODPoint> outer_vertices=read_points_vector_from_stream(input);
+			const PlainPoint center=read_point_from_stream(input);
+			const PlainPoint normal=read_point_from_stream(input);
+			const std::vector<PlainPoint> outer_vertices=read_points_vector_from_stream(input);
 			if(!outer_vertices.empty())
 			{
 				vertices.push_back(center);
@@ -285,6 +301,32 @@ private:
 			}
 		}
 		return (vertices.size()>=3 && vertices.size()==normals.size());
+	}
+
+	static void print_jmol_polygon(
+			const std::vector<PlainPoint>& vertices,
+			const std::vector<PlainTriple>& triples,
+			const Color& color,
+			const double alpha,
+			const std::string& id,
+			std::ostream& output)
+	{
+		if(!(vertices.empty() || triples.empty()))
+		{
+			output << "draw " << id << " POLYGON " << vertices.size() << " ";
+			for(std::size_t i=0;i<vertices.size();i++)
+			{
+				write_point_to_stream(vertices[i], "{", " ", "} ", output);
+			}
+			output  << triples.size() << " ";
+			for(std::size_t i=0;i<triples.size();i++)
+			{
+				const PlainTriple& t=triples[i];
+				output << "[" << t.a << " " << t.b << " " << t.c << " 0] ";
+			}
+			write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+			output << "TRANSLUCENT " << alpha << "\n";
+		}
 	}
 
 	std::ostringstream string_stream_;
