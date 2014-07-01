@@ -608,6 +608,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
 		full_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
 		full_map_of_option_descriptions["--drawing-labels"].init("", "flag to use drawing labels if possible");
+		full_map_of_option_descriptions["--drop-graphics"].init("", "flag to not preserve graphics");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -637,6 +638,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
+	const bool drop_graphics=poh.contains_option("--drop-graphics");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -759,7 +761,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cout << std::left << comments.second.str();
 			std::cout.width(default_column_width);
 			std::cout << value.first;
-			if(!value.second.empty())
+			if(!(drop_graphics || value.second.empty()))
 			{
 				std::cout << value.second;
 			}
