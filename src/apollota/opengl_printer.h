@@ -109,25 +109,7 @@ public:
 				{
 					std::vector<PODPoint> vertices;
 					std::vector<PODPoint> normals;
-					if(tstrip || tfan)
-					{
-						vertices=read_points_vector_from_stream(input);
-						normals=read_points_vector_from_stream(input);
-					}
-					else if(tfanc)
-					{
-						const PODPoint center=read_point_from_stream(input);
-						const PODPoint normal=read_point_from_stream(input);
-						const std::vector<PODPoint> outer_vertices=read_points_vector_from_stream(input);
-						if(!outer_vertices.empty())
-						{
-							vertices.push_back(center);
-							vertices.insert(vertices.end(), outer_vertices.begin(), outer_vertices.end());
-							vertices.push_back(outer_vertices.front());
-							normals.resize(vertices.size(), normal);
-						}
-					}
-					if(vertices.size()>=3 && vertices.size()==normals.size())
+					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
 					{
 						output << (tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
 						for(std::size_t i=0;i<vertices.size();i++)
@@ -164,47 +146,30 @@ public:
 			{
 				color=read_color_from_stream(input);
 			}
-			else if(type_str=="tstrip" || type_str=="tfan")
+			else
 			{
-				const bool strip=(type_str=="tstrip");
-				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
-				read_points_vector_from_stream(input);
-				if(vertices.size()>=3)
+				const bool tstrip=(type_str=="tstrip");
+				const bool tfan=(type_str=="tfan");
+				const bool tfanc=(type_str=="tfanc");
+				if(tstrip || tfan || tfanc)
 				{
-					output << "draw p" << (id++) << " POLYGON " << vertices.size() << " ";
-					for(std::size_t i=0;i<vertices.size();i++)
+					std::vector<PODPoint> vertices;
+					std::vector<PODPoint> normals;
+					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
 					{
-						write_point_to_stream(vertices[i], "{", " ", "} ", output);
+						output << "draw p" << (id++) << " POLYGON " << vertices.size() << " ";
+						for(std::size_t i=0;i<vertices.size();i++)
+						{
+							write_point_to_stream(vertices[i], "{", " ", "} ", output);
+						}
+						output  << (vertices.size()-2) << " ";
+						for(std::size_t i=0;(i+2)<vertices.size();i++)
+						{
+							output << "[" << (tstrip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
+						}
+						write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+						output << "TRANSLUCENT " << alpha << "\n";
 					}
-					output  << (vertices.size()-2) << " ";
-					for(std::size_t i=0;(i+2)<vertices.size();i++)
-					{
-						output << "[" << (strip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
-					}
-					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
-					output << "TRANSLUCENT " << alpha << "\n";
-				}
-			}
-			else if(type_str=="tfanc")
-			{
-				const PODPoint center=read_point_from_stream(input);
-				read_point_from_stream(input);
-				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
-				if(vertices.size()>=3)
-				{
-					output << "draw p" << (id++) << " POLYGON " << (vertices.size()+1) << " ";
-					write_point_to_stream(center, "{", " ", "} ", output);
-					for(std::size_t i=0;i<vertices.size();i++)
-					{
-						write_point_to_stream(vertices[i], "{", " ", "} ", output);
-					}
-					output  << vertices.size() << " ";
-					for(std::size_t i=1;i<=vertices.size();i++)
-					{
-						output << "[" << 0 << " " << (i) << " " << (((i+1)<=vertices.size()) ? (i+1) : 1) << " 0] ";
-					}
-					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
-					output << "TRANSLUCENT " << alpha << "\n";
 				}
 			}
 		}
@@ -295,6 +260,31 @@ private:
 		Color c;
 		input >> c.r >> c.g >> c.b;
 		return c;
+	}
+
+	static bool read_strip_or_fan_from_stream(const bool tstrip, const bool tfan, const bool tfanc, std::istream& input, std::vector<PODPoint>& vertices, std::vector<PODPoint>& normals)
+	{
+		vertices.clear();
+		normals.clear();
+		if(tstrip || tfan)
+		{
+			vertices=read_points_vector_from_stream(input);
+			normals=read_points_vector_from_stream(input);
+		}
+		else if(tfanc)
+		{
+			const PODPoint center=read_point_from_stream(input);
+			const PODPoint normal=read_point_from_stream(input);
+			const std::vector<PODPoint> outer_vertices=read_points_vector_from_stream(input);
+			if(!outer_vertices.empty())
+			{
+				vertices.push_back(center);
+				vertices.insert(vertices.end(), outer_vertices.begin(), outer_vertices.end());
+				vertices.push_back(outer_vertices.front());
+				normals.resize(vertices.size(), normal);
+			}
+		}
+		return (vertices.size()>=3 && vertices.size()==normals.size());
 	}
 
 	std::ostringstream string_stream_;
