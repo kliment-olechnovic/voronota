@@ -88,35 +88,34 @@ public:
 		{
 			std::string type_str;
 			input >> type_str;
-			if(type_str=="alpha")
+			const bool type_alpha=(type_str=="alpha");
+			const bool type_color=(type_str=="color");
+			const bool type_tstrip=(type_str=="tstrip");
+			const bool type_tfan=(type_str=="tfan");
+			const bool type_tfanc=(type_str=="tfanc");
+			if(type_alpha)
 			{
 				double alpha=1.0;
 				input >> alpha;
 				output << "ALPHA, " << alpha << sep;
 			}
-			else if(type_str=="color")
+			else if(type_color)
 			{
 				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
 			}
-			else
+			else if(type_tstrip || type_tfan || type_tfanc)
 			{
-				const bool tstrip=(type_str=="tstrip");
-				const bool tfan=(type_str=="tfan");
-				const bool tfanc=(type_str=="tfanc");
-				if(tstrip || tfan || tfanc)
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
 				{
-					std::vector<PlainPoint> vertices;
-					std::vector<PlainPoint> normals;
-					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
+					output << (type_tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+					for(std::size_t i=0;i<vertices.size();i++)
 					{
-						output << (tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
-						for(std::size_t i=0;i<vertices.size();i++)
-						{
-							write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
-							write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
-						}
-						output << "END, ";
+						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
 					}
+					output << "END, ";
 				}
 			}
 		}
@@ -136,32 +135,35 @@ public:
 		{
 			std::string type_str;
 			input >> type_str;
-			if(type_str=="alpha")
+			const bool type_alpha=(type_str=="alpha");
+			const bool type_color=(type_str=="color");
+			const bool type_tstrip=(type_str=="tstrip");
+			const bool type_tfan=(type_str=="tfan");
+			const bool type_tfanc=(type_str=="tfanc");
+			if(type_alpha || type_color)
 			{
-				input >> alpha;
-				alpha=(1.0-alpha);
-			}
-			else if(type_str=="color")
-			{
-				color=read_color_from_stream(input);
-			}
-			else
-			{
-				const bool tstrip=(type_str=="tstrip");
-				const bool tfan=(type_str=="tfan");
-				const bool tfanc=(type_str=="tfanc");
-				if(tstrip || tfan || tfanc)
+				print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
+				if(type_alpha)
 				{
-					std::vector<PlainPoint> vertices;
-					std::vector<PlainPoint> normals;
-					if(read_strip_or_fan_from_stream(tstrip, tfan, tfanc, input, vertices, normals))
+					input >> alpha;
+					alpha=(1.0-alpha);
+				}
+				else if(type_color)
+				{
+					color=read_color_from_stream(input);
+				}
+			}
+			else if(type_tstrip || type_tfan || type_tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
+				{
+					const std::size_t offset=global_vertices.size();
+					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
+					for(std::size_t i=0;(i+2)<vertices.size();i++)
 					{
-						const std::size_t offset=global_vertices.size();
-						global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
-						for(std::size_t i=0;(i+2)<vertices.size();i++)
-						{
-							global_triples.push_back(PlainTriple(offset+(tstrip ? i : 0), offset+(i+1), offset+(i+2)));
-						}
+						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
 					}
 				}
 			}
@@ -304,16 +306,17 @@ private:
 	}
 
 	static void print_jmol_polygon(
-			const std::vector<PlainPoint>& vertices,
-			const std::vector<PlainTriple>& triples,
+			std::vector<PlainPoint>& vertices,
+			std::vector<PlainTriple>& triples,
 			const Color& color,
 			const double alpha,
 			const std::string& id,
 			std::ostream& output)
 	{
+		static int use_num=0;
 		if(!(vertices.empty() || triples.empty()))
 		{
-			output << "draw " << id << " POLYGON " << vertices.size() << " ";
+			output << "draw " << id << (use_num++) << " POLYGON " << vertices.size() << " ";
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
 				write_point_to_stream(vertices[i], "{", " ", "} ", output);
@@ -324,9 +327,15 @@ private:
 				const PlainTriple& t=triples[i];
 				output << "[" << t.a << " " << t.b << " " << t.c << " 0] ";
 			}
-			write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
-			output << "TRANSLUCENT " << alpha << "\n";
+			write_color_to_stream(color, false, "COLOR [", ",", "]", output);
+			if(alpha>0.0)
+			{
+				output << "TRANSLUCENT " << alpha;
+			}
+			output << "\n";
 		}
+		vertices.clear();
+		triples.clear();
 	}
 
 	std::ostringstream string_stream_;
