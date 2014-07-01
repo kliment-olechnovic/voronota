@@ -678,8 +678,11 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
 
 	apollota::OpenGLPrinter opengl_printer;
-	opengl_printer.add_color(drawing_color);
-	opengl_printer.add_alpha(drawing_alpha);
+	if(drawing)
+	{
+		opengl_printer.add_color(drawing_color);
+		opengl_printer.add_alpha(drawing_alpha);
+	}
 
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
@@ -691,17 +694,20 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<double, std::string>& value=it->second;
 			if(drawing)
 			{
-				if(drawing_random_colors)
+				if(!value.second.empty())
 				{
-					opengl_printer.add_color(calc_string_color_integer(comments.first.without_atom().str()+comments.second.without_atom().str()));
+					if(drawing_random_colors)
+					{
+						opengl_printer.add_color(calc_string_color_integer(comments.first.without_atom().str()+comments.second.without_atom().str()));
+					}
+					if(drawing_labels)
+					{
+						std::ostringstream label;
+						label << comments.first.str() << "<->" << comments.second.str() << "=" << value.first;
+						opengl_printer.add_label(label.str());
+					}
+					opengl_printer.add(value.second);
 				}
-				if(drawing_labels)
-				{
-					std::ostringstream label;
-					label << comments.first.str() << "<->" << comments.second.str() << "=" << value.first;
-					opengl_printer.add_label(label.str());
-				}
-				opengl_printer.add(value.second);
 			}
 			else
 			{
@@ -719,17 +725,16 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(drawing)
 	{
-		if(opengl_printer.empty())
+		if(!opengl_printer.empty())
 		{
-			throw std::runtime_error("No graphics input.");
-		}
-		if(drawing_for_pymol)
-		{
-			opengl_printer.print_pymol_script(drawing_name, true, std::cout);
-		}
-		if(drawing_for_jmol)
-		{
-			opengl_printer.print_jmol_script(drawing_name, std::cout);
+			if(drawing_for_pymol)
+			{
+				opengl_printer.print_pymol_script(drawing_name, true, std::cout);
+			}
+			if(drawing_for_jmol)
+			{
+				opengl_printer.print_jmol_script(drawing_name, std::cout);
+			}
 		}
 	}
 	else
