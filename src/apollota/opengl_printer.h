@@ -154,6 +154,7 @@ public:
 			if(type_str=="alpha")
 			{
 				input >> alpha;
+				alpha=(1.0-alpha);
 			}
 			else if(type_str=="color")
 			{
@@ -176,7 +177,8 @@ public:
 					{
 						output << "[" << (strip ? i : 0) << " " << (i+1) << " " << (i+2) << " 0] ";
 					}
-					write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
+					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+					output << "TRANSLUCENT " << alpha << "\n";
 				}
 			}
 			else if(type_str=="tfanc")
@@ -197,7 +199,8 @@ public:
 					{
 						output << "[" << 0 << " " << (i) << " " << (((i+1)<=vertices.size()) ? (i+1) : 1) << " 0] ";
 					}
-					write_color_to_stream(color, false, "COLOR [", ",", "]\n", output);
+					write_color_to_stream(color, false, "COLOR [", ",", "] ", output);
+					output << "TRANSLUCENT " << alpha << "\n";
 				}
 			}
 		}
