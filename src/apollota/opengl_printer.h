@@ -100,39 +100,43 @@ public:
 			{
 				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
 			}
-			else if(type_str=="tstrip" || type_str=="tfan")
+			else
 			{
-				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
-				const std::vector<PODPoint> normals=read_points_vector_from_stream(input);
-				if(vertices.size()>=3 && vertices.size()==normals.size())
+				const bool tstrip=(type_str=="tstrip");
+				const bool tfan=(type_str=="tfan");
+				const bool tfanc=(type_str=="tfanc");
+				if(tstrip || tfan || tfanc)
 				{
-					output << (type_str=="tstrip" ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
-					for(std::size_t i=0;i<vertices.size();i++)
+					std::vector<PODPoint> vertices;
+					std::vector<PODPoint> normals;
+					if(tstrip || tfan)
 					{
-						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
-						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						vertices=read_points_vector_from_stream(input);
+						normals=read_points_vector_from_stream(input);
 					}
-					output << "END, ";
-				}
-			}
-			else if(type_str=="tfanc")
-			{
-				const PODPoint center=read_point_from_stream(input);
-				const PODPoint normal=read_point_from_stream(input);
-				const std::vector<PODPoint> vertices=read_points_vector_from_stream(input);
-				if(vertices.size()>=3)
-				{
-					output << "BEGIN, TRIANGLE_FAN, ";
-					write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-					write_point_to_stream(center, "VERTEX, ", sep, sep, output);
-					for(std::size_t i=0;i<vertices.size();i++)
+					else if(tfanc)
 					{
-						write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						const PODPoint center=read_point_from_stream(input);
+						const PODPoint normal=read_point_from_stream(input);
+						const std::vector<PODPoint> outer_vertices=read_points_vector_from_stream(input);
+						if(!outer_vertices.empty())
+						{
+							vertices.push_back(center);
+							vertices.insert(vertices.end(), outer_vertices.begin(), outer_vertices.end());
+							vertices.push_back(outer_vertices.front());
+							normals.resize(vertices.size(), normal);
+						}
 					}
-					write_point_to_stream(normal, "NORMAL, ", sep, sep, output);
-					write_point_to_stream(vertices.front(), "VERTEX, ", sep, sep, output);
-					output << "END, ";
+					if(vertices.size()>=3 && vertices.size()==normals.size())
+					{
+						output << (tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+						for(std::size_t i=0;i<vertices.size();i++)
+						{
+							write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
+							write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						}
+						output << "END, ";
+					}
 				}
 			}
 		}
