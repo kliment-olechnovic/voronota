@@ -67,6 +67,11 @@ public:
 		}
 	}
 
+	void add_label(const std::string& label)
+	{
+		string_stream_ << "label " << label << " ";
+	}
+
 	bool empty() const
 	{
 		return string_stream_.str().empty();
@@ -90,6 +95,7 @@ public:
 			input >> type_str;
 			const bool type_alpha=(type_str=="alpha");
 			const bool type_color=(type_str=="color");
+			const bool type_label=(type_str=="label");
 			const bool type_tstrip=(type_str=="tstrip");
 			const bool type_tfan=(type_str=="tfan");
 			const bool type_tfanc=(type_str=="tfanc");
@@ -102,6 +108,11 @@ public:
 			else if(type_color)
 			{
 				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
+			}
+			else if(type_label)
+			{
+				std::string label;
+				input >> label;
 			}
 			else if(type_tstrip || type_tfan || type_tfanc)
 			{
@@ -129,20 +140,26 @@ public:
 		std::istringstream input(str());
 		double alpha=1.0;
 		Color color(0xFFFFFF);
+		std::string label;
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainTriple> global_triples;
+		if(input.good())
+		{
+			output << "set drawHover TRUE\n";
+		}
 		while(input.good())
 		{
 			std::string type_str;
 			input >> type_str;
 			const bool type_alpha=(type_str=="alpha");
 			const bool type_color=(type_str=="color");
+			const bool type_label=(type_str=="label");
 			const bool type_tstrip=(type_str=="tstrip");
 			const bool type_tfan=(type_str=="tfan");
 			const bool type_tfanc=(type_str=="tfanc");
-			if(type_alpha || type_color)
+			if(type_alpha || type_color || type_label)
 			{
-				print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
+				print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
 				if(type_alpha)
 				{
 					input >> alpha;
@@ -151,6 +168,10 @@ public:
 				else if(type_color)
 				{
 					color=read_color_from_stream(input);
+				}
+				else if(type_label)
+				{
+					input >> label;
 				}
 			}
 			else if(type_tstrip || type_tfan || type_tfanc)
@@ -168,7 +189,7 @@ public:
 				}
 			}
 		}
-		print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
+		print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
 	}
 
 private:
@@ -308,6 +329,7 @@ private:
 	static void print_jmol_polygon(
 			std::vector<PlainPoint>& vertices,
 			std::vector<PlainTriple>& triples,
+			const std::string& label,
 			const Color& color,
 			const double alpha,
 			const std::string& id,
@@ -316,7 +338,12 @@ private:
 		static int use_num=0;
 		if(!(vertices.empty() || triples.empty()))
 		{
-			output << "draw " << id << (use_num++) << " POLYGON " << vertices.size() << " ";
+			output << "draw " << id << (use_num++) << " ";
+			if(!label.empty())
+			{
+				output << "\"" << label << "\" ";
+			}
+			output << "POLYGON " << vertices.size() << " ";
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
 				write_point_to_stream(vertices[i], "{", " ", "} ", output);
