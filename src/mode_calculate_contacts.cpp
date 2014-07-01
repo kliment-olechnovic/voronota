@@ -607,6 +607,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
 		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
 		full_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
+		full_map_of_option_descriptions["--drawing-labels"].init("", "flag to use drawing labels if possible");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -635,6 +636,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
+	const bool drawing_labels=poh.contains_option("--drawing-labels");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -692,6 +694,12 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				if(drawing_random_colors)
 				{
 					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+				}
+				if(drawing_labels)
+				{
+					std::ostringstream label;
+					label << comments.first.str() << "<->" << comments.second.str() << "=" << value.first;
+					opengl_printer.add_label(label.str());
 				}
 				opengl_printer.add(value.second);
 			}
