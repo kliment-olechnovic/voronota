@@ -145,6 +145,7 @@ public:
 		std::vector<PlainTriple> global_triples;
 		if(input.good())
 		{
+			output << "set antialiasDisplay TRUE\n";
 			output << "set drawHover TRUE\n";
 		}
 		while(input.good())
@@ -338,7 +339,7 @@ private:
 		static int use_num=0;
 		if(!(vertices.empty() || triples.empty()))
 		{
-			output << "draw " << id << (use_num++) << " ";
+			output << "draw " << id << use_num << " ";
 			if(!label.empty())
 			{
 				output << "\"" << label << "\" ";
@@ -348,18 +349,19 @@ private:
 			{
 				write_point_to_stream(vertices[i], "{", " ", "} ", output);
 			}
-			output  << triples.size() << " ";
+			output  << triples.size();
 			for(std::size_t i=0;i<triples.size();i++)
 			{
 				const PlainTriple& t=triples[i];
-				output << "[" << t.a << " " << t.b << " " << t.c << " 0] ";
+				output << " [" << t.a << " " << t.b << " " << t.c << " 0]";
 			}
-			write_color_to_stream(color, false, "COLOR [", ",", "]", output);
+			output << "\ncolor $" << id << use_num;
 			if(alpha>0.0)
 			{
-				output << "TRANSLUCENT " << alpha;
+				output << " TRANSLUCENT " << alpha;
 			}
-			output << "\n";
+			write_color_to_stream(color, false, " [", ",", "]\n", output);
+			use_num++;
 		}
 		vertices.clear();
 		triples.clear();
