@@ -72,11 +72,6 @@ public:
 		string_stream_ << "label " << label << " ";
 	}
 
-	bool empty() const
-	{
-		return string_stream_.str().empty();
-	}
-
 	std::string str() const
 	{
 		return string_stream_.str();

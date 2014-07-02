@@ -680,6 +680,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
 
 	apollota::OpenGLPrinter opengl_printer;
+	bool opengl_printer_filled=false;
 	if(drawing)
 	{
 		opengl_printer.add_color(drawing_color);
@@ -709,6 +710,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 						opengl_printer.add_label(label.str());
 					}
 					opengl_printer.add(value.second);
+					opengl_printer_filled=true;
 				}
 			}
 			else
@@ -727,7 +729,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(drawing)
 	{
-		if(!opengl_printer.empty())
+		if(opengl_printer_filled)
 		{
 			if(drawing_for_pymol)
 			{
