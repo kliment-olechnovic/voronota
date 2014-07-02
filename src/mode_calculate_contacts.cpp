@@ -1,6 +1,7 @@
 #include <iostream>
 #include <utility>
 #include <stdexcept>
+#include <fstream>
 
 #include "apollota/constrained_contacts_construction.h"
 #include "apollota/opengl_printer.h"
@@ -601,14 +602,14 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--match-second"].init("string", "selection for second contacting group");
 		basic_map_of_option_descriptions["--match-second-not"].init("string", "negative selection for second contacting group");
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--drawing-for-pymol"].init("", "flag to output drawing as pymol script");
-		full_map_of_option_descriptions["--drawing-for-jmol"].init("", "flag to output drawing as jmol script");
+		full_map_of_option_descriptions["--drawing-for-pymol"].init("string", "file path to output drawing as pymol script");
+		full_map_of_option_descriptions["--drawing-for-jmol"].init("string", "file path to output drawing as jmol script");
 		full_map_of_option_descriptions["--drawing-name"].init("string", "graphics object name for drawing output");
 		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
 		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
 		full_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
 		full_map_of_option_descriptions["--drawing-labels"].init("", "flag to use drawing labels if possible");
-		full_map_of_option_descriptions["--drop-graphics"].init("", "flag to not preserve graphics");
+		full_map_of_option_descriptions["--preserve-graphics"].init("", "flag to preserve graphics in output");
 		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
 		{
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
@@ -630,15 +631,15 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
-	const bool drawing_for_pymol=poh.contains_option("--drawing-for-pymol");
-	const bool drawing_for_jmol=poh.contains_option("--drawing-for-jmol");
-	const bool drawing=(drawing_for_pymol || drawing_for_jmol);
+	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
+	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
+	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
-	const bool drop_graphics=poh.contains_option("--drop-graphics");
+	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
@@ -695,53 +696,34 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		if(matched_first_second || matched_second_first)
 		{
 			const std::pair<double, std::string>& value=it->second;
-			if(drawing)
+
+			if(matched_first_second)
 			{
-				if(!value.second.empty())
-				{
-					if(drawing_random_colors)
-					{
-						opengl_printer.add_color(calc_string_color_integer(comments.first.without_atom().str()+comments.second.without_atom().str()));
-					}
-					if(drawing_labels)
-					{
-						std::ostringstream label;
-						label << comments.first.str() << "<->" << comments.second.str() << "=" << value.first;
-						opengl_printer.add_label(label.str());
-					}
-					opengl_printer.add(value.second);
-					opengl_printer_filled=true;
-				}
+				output_map_of_contacts[comments]=value;
 			}
 			else
 			{
-				if(matched_first_second)
+				output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
+			}
+
+			if(drawing && !value.second.empty())
+			{
+				if(drawing_random_colors)
 				{
-					output_map_of_contacts[comments]=value;
+					opengl_printer.add_color(calc_string_color_integer(comments.first.without_atom().str()+comments.second.without_atom().str()));
 				}
-				else
+				if(drawing_labels)
 				{
-					output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
+					std::ostringstream label;
+					label << comments.first.str() << "<->" << comments.second.str() << "=" << value.first;
+					opengl_printer.add_label(label.str());
 				}
+				opengl_printer.add(value.second);
+				opengl_printer_filled=true;
 			}
 		}
 	}
 
-	if(drawing)
-	{
-		if(opengl_printer_filled)
-		{
-			if(drawing_for_pymol)
-			{
-				opengl_printer.print_pymol_script(drawing_name, true, std::cout);
-			}
-			if(drawing_for_jmol)
-			{
-				opengl_printer.print_jmol_script(drawing_name, std::cout);
-			}
-		}
-	}
-	else
 	{
 		const std::size_t default_column_width=std::cout.width();
 		std::pair<std::size_t, std::size_t> column_width(default_column_width, default_column_width);
@@ -763,11 +745,31 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cout << std::left << comments.second.str();
 			std::cout.width(default_column_width);
 			std::cout << value.first;
-			if(!(drop_graphics || value.second.empty()))
+			if(preserve_graphics && !value.second.empty())
 			{
 				std::cout << value.second;
 			}
 			std::cout << "\n";
+		}
+	}
+
+	if(drawing && opengl_printer_filled)
+	{
+		if(!drawing_for_pymol.empty())
+		{
+			std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_pymol_script(drawing_name, true, foutput);
+			}
+		}
+		if(!drawing_for_jmol.empty())
+		{
+			std::ofstream foutput(drawing_for_jmol.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_jmol_script(drawing_name, foutput);
+			}
 		}
 	}
 }
