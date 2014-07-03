@@ -140,11 +140,6 @@ public:
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainTriple> global_triples;
 		std::vector<int> global_meshing;
-		if(input.good())
-		{
-			output << "set antialiasDisplay TRUE\n";
-			output << "set drawHover TRUE\n";
-		}
 		while(input.good())
 		{
 			std::string type_str;
