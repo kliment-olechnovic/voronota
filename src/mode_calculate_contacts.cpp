@@ -708,7 +708,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(drawing_random_colors)
 				{
-					opengl_printer.add_color(calc_string_color_integer(comments.first.without_atom().str()+comments.second.without_atom().str()));
+					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
 				}
 				opengl_printer.add(value.second);
 				opengl_printer_filled=true;
