@@ -113,8 +113,7 @@ public:
 			{
 				std::vector<PlainPoint> vertices;
 				std::vector<PlainPoint> normals;
-				std::vector<int> meshing;
-				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals, meshing))
+				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
 				{
 					output << (type_tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
 					for(std::size_t i=0;i<vertices.size();i++)
@@ -139,7 +138,6 @@ public:
 		std::string label;
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainTriple> global_triples;
-		std::vector<int> global_meshing;
 		while(input.good())
 		{
 			std::string type_str;
@@ -152,7 +150,7 @@ public:
 			const bool type_tfanc=(type_str=="tfanc");
 			if(type_alpha || type_color || type_label)
 			{
-				print_jmol_polygon(global_vertices, global_triples, global_meshing, label, color, alpha, obj_name, output);
+				print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
 				if(type_alpha)
 				{
 					input >> alpha;
@@ -171,12 +169,10 @@ public:
 			{
 				std::vector<PlainPoint> vertices;
 				std::vector<PlainPoint> normals;
-				std::vector<int> meshing;
-				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals, meshing))
+				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
 				{
 					const std::size_t offset=global_vertices.size();
 					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
-					global_meshing.insert(global_meshing.end(), meshing.begin(), meshing.end());
 					for(std::size_t i=0;(i+2)<vertices.size();i++)
 					{
 						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
@@ -184,7 +180,7 @@ public:
 				}
 			}
 		}
-		print_jmol_polygon(global_vertices, global_triples, global_meshing, label, color, alpha, obj_name, output);
+		print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
 	}
 
 private:
@@ -302,17 +298,14 @@ private:
 			const bool tfanc,
 			std::istream& input,
 			std::vector<PlainPoint>& vertices,
-			std::vector<PlainPoint>& normals,
-			std::vector<int>& meshing)
+			std::vector<PlainPoint>& normals)
 	{
 		vertices.clear();
 		normals.clear();
-		meshing.clear();
 		if(tstrip || tfan)
 		{
 			vertices=read_points_vector_from_stream(input);
 			normals=read_points_vector_from_stream(input);
-			meshing.resize(vertices.size(), 0);
 		}
 		else if(tfanc)
 		{
@@ -325,17 +318,14 @@ private:
 				vertices.insert(vertices.end(), outer_vertices.begin(), outer_vertices.end());
 				vertices.push_back(outer_vertices.front());
 				normals.resize(vertices.size(), normal);
-				meshing.resize(vertices.size(), 1);
-				meshing.front()=0;
 			}
 		}
-		return (vertices.size()>=3 && vertices.size()==normals.size() && vertices.size()==meshing.size());
+		return (vertices.size()>=3 && vertices.size()==normals.size());
 	}
 
 	static void print_jmol_polygon(
 			std::vector<PlainPoint>& vertices,
 			std::vector<PlainTriple>& triples,
-			std::vector<int>& meshing,
 			const std::string& label,
 			const Color& color,
 			const double alpha,
@@ -343,7 +333,7 @@ private:
 			std::ostream& output)
 	{
 		static int use_num=0;
-		if(!(vertices.empty() || triples.empty() || vertices.size()!=meshing.size()))
+		if(!(vertices.empty() || triples.empty()))
 		{
 			output << "draw " << id << use_num << " ";
 			if(!label.empty())
@@ -359,8 +349,7 @@ private:
 			for(std::size_t i=0;i<triples.size();i++)
 			{
 				const PlainTriple& t=triples[i];
-				const int mesh=((meshing[t.a]>0 && meshing[t.b]>0) ? 1 : 0)+((meshing[t.b]>0 && meshing[t.c]>0) ? 2 : 0)+((meshing[t.c]>0 && meshing[t.a]>0) ? 4 : 0);
-				output << " [" << t.a << " " << t.b << " " << t.c << " " << mesh << "]";
+				output << " [" << t.a << " " << t.b << " " << t.c << " 0]";
 			}
 			output << " mesh\n";
 			output << "color $" << id << use_num;
@@ -373,7 +362,6 @@ private:
 		}
 		vertices.clear();
 		triples.clear();
-		meshing.clear();
 	}
 
 	std::ostringstream string_stream_;
