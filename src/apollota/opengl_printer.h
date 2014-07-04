@@ -351,7 +351,7 @@ private:
 				const PlainTriple& t=triples[i];
 				output << " [" << t.a << " " << t.b << " " << t.c << " 0]";
 			}
-			output << " mesh\n";
+			output << "\n";
 			output << "color $" << id << use_num;
 			if(alpha>0.0)
 			{
