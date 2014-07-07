@@ -31,19 +31,13 @@ void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
 		basic_map_of_option_descriptions["--first-quadruples-file"].init("string", "path to the first quadruples file", true);
 		basic_map_of_option_descriptions["--second-quadruples-file"].init("string", "path to the second quadruples file", true);
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
-		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
+		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
+		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r')\n";
-			std::cerr << "  stdout  ->  summary of differences\n";
+			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
+			std::cerr << "stdout  ->  summary of differences\n";
 			return;
-		}
-		else
-		{
-			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 

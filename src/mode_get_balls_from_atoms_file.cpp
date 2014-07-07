@@ -38,21 +38,15 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
 		basic_map_of_option_descriptions["--include-hydrogens"].init("", "flag to include hydrogen atoms");
 		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
-		full_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
-		full_map_of_option_descriptions["--enhanced-comments"].init("", "flag to output enhanced comments");
-		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
+		advanced_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
+		advanced_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
+		advanced_map_of_option_descriptions["--enhanced-comments"].init("", "flag to output enhanced comments");
+		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
-			std::cerr << "  stdin   <-  file in PDB or mmCIF format\n";
-			std::cerr << "  stdout  ->  list of balls (line format: 'x y z r # comments')\n";
+			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
+			std::cerr << "stdout  ->  list of balls (line format: 'x y z r # comments')\n";
 			return;
-		}
-		else
-		{
-			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 

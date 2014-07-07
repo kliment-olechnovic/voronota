@@ -1,28 +1,13 @@
+General options:
+--clog-file                     string      path to file for log stream redirection
+--help                                      flag to print usage help to stderr and exit
+--help-full                                 flag to print full usage help to stderr and exit
+--mode                          string   *  running mode
+--version                                   flag to print version number to stderr and exit
 
-Common options
-
-  --help                                      flag to print basic usage help to stderr and exit
-  --help-full                                 flag to print full usage help to stderr and exit
-  --mode                          string   *  running mode
-
-
+Available running modes:
+--mode calculate-contacts
+--mode calculate-contacts-query
 --mode calculate-vertices
-
-  --print-log                                 flag to print log of calculations
-
-  stdin   <-  list of balls (line format: 'x y z r # comments')
-  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
-
-
+--mode calculate-vertices-in-parallel
 --mode get-balls-from-atoms-file
-
-  --include-heteroatoms                       flag to include heteroatoms
-  --include-hydrogens                         flag to include hydrogen atoms
-  --mmcif                                     flag to input in mmCIF format
-  --radii-file                    string      path to radii configuration file
-
-  stdin   <-  file in PDB or mmCIF format
-  stdout  ->  list of balls (line format: 'x y z r # comments')
-
-
-
