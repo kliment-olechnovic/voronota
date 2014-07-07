@@ -30,10 +30,12 @@ inline bool assert_options(
 	{
 		if(!basic_map_of_option_descriptions.empty())
 		{
+			std::cerr << "Basic options:\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", basic_map_of_option_descriptions, std::cerr);
 		}
 		if(!advanced_map_of_option_descriptions.empty())
 		{
+			std::cerr << "Advanced options:\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", advanced_map_of_option_descriptions, std::cerr);
 		}
 		return false;
