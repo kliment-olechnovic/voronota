@@ -189,7 +189,7 @@ public:
 		options_.erase(name);
 	}
 
-	void compare_with_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const bool allow_unrecognized=false) const
+	void compare_with_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const bool allow_unrecognized) const
 	{
 		for(std::map<std::string, std::string>::const_iterator it=options_.begin();it!=options_.end();++it)
 		{
@@ -213,7 +213,7 @@ public:
 		}
 	}
 
-	static void print_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
+	static void print_map_of_option_descriptions(const std::string& prefix, const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
 	{
 		std::size_t max_option_name_length=30;
 		std::size_t max_argument_type_length=7;
@@ -226,7 +226,7 @@ public:
 		{
 			const std::string& name=it->first;
 			const OptionDescription& od=it->second;
-			output << "  " << name << std::string(max_option_name_length+2-name.size(), ' ');
+			output << prefix << name << std::string(max_option_name_length+2-name.size(), ' ');
 			output << od.argument_type << std::string(max_argument_type_length+2-od.argument_type.size(), ' ');
 			output << (od.required ? "*" : " ") << "  ";
 			output << od.description_text << "\n";

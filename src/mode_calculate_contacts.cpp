@@ -416,29 +416,23 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
 		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
 		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
-		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
-		full_map_of_option_descriptions["--step"].init("number", "curve step length");
-		full_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
-		full_map_of_option_descriptions["--sih-depth"].init("number", "spherical surface optimization depth");
-		full_map_of_option_descriptions["--max-dist"].init("number", "maximal distance to record, may exceed probe diameter");
-		full_map_of_option_descriptions["--draw"].init("", "flag to output graphics for annotated contacts");
-		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
+		advanced_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
+		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
+		advanced_map_of_option_descriptions["--step"].init("number", "curve step length");
+		advanced_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
+		advanced_map_of_option_descriptions["--sih-depth"].init("number", "spherical surface optimization depth");
+		advanced_map_of_option_descriptions["--max-dist"].init("number", "maximal distance to record, may exceed probe diameter");
+		advanced_map_of_option_descriptions["--draw"].init("", "flag to output graphics for annotated contacts");
+		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of balls\n";
-			std::cerr << "                (default line format: 'x y z r # comments')\n";
-			std::cerr << "                (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
-			std::cerr << "  stdout  ->  list of contacts\n";
-			std::cerr << "                (default line format: 'b1 b2 distance area')\n";
-			std::cerr << "                (annotated line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "stdin   <-  list of balls\n";
+			std::cerr << "              (default line format: 'x y z r # comments')\n";
+			std::cerr << "              (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
+			std::cerr << "stdout  ->  list of contacts\n";
+			std::cerr << "              (default line format: 'b1 b2 distance area')\n";
+			std::cerr << "              (annotated line format: 'annotation1 annotation2 area [graphics]')\n";
 			return;
-		}
-		else
-		{
-			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 
@@ -601,25 +595,19 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		basic_map_of_option_descriptions["--match-first-not"].init("string", "negative selection for first contacting group");
 		basic_map_of_option_descriptions["--match-second"].init("string", "selection for second contacting group");
 		basic_map_of_option_descriptions["--match-second-not"].init("string", "negative selection for second contacting group");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--drawing-for-pymol"].init("string", "file path to output drawing as pymol script");
-		full_map_of_option_descriptions["--drawing-for-jmol"].init("string", "file path to output drawing as jmol script");
-		full_map_of_option_descriptions["--drawing-name"].init("string", "graphics object name for drawing output");
-		full_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
-		full_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
-		full_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
-		full_map_of_option_descriptions["--preserve-graphics"].init("", "flag to preserve graphics in output");
-		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
+		advanced_map_of_option_descriptions["--drawing-for-pymol"].init("string", "file path to output drawing as pymol script");
+		advanced_map_of_option_descriptions["--drawing-for-jmol"].init("string", "file path to output drawing as jmol script");
+		advanced_map_of_option_descriptions["--drawing-name"].init("string", "graphics object name for drawing output");
+		advanced_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
+		advanced_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
+		advanced_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
+		advanced_map_of_option_descriptions["--preserve-graphics"].init("", "flag to preserve graphics in output");
+		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
-			std::cerr << "  stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
 			return;
-		}
-		else
-		{
-			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 

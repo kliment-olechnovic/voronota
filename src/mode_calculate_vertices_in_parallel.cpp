@@ -374,21 +374,15 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		basic_map_of_option_descriptions["--method"].init("string", "parallelization method name, variants are:"+available_processing_method_names_string, true);
 		basic_map_of_option_descriptions["--parts"].init("number", "number of parts for splitting, must be power of 2", true);
 		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions full_map_of_option_descriptions=basic_map_of_option_descriptions;
-		full_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
-		full_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
-		full_map_of_option_descriptions["--link"].init("", "flag to output links between vertices");
-		if(poh.contains_option("--help") || poh.contains_option("--help-full"))
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
+		advanced_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
+		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
+		advanced_map_of_option_descriptions["--link"].init("", "flag to output links between vertices");
+		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
 		{
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions(poh.contains_option("--help-full") ? full_map_of_option_descriptions : basic_map_of_option_descriptions, std::cerr);
-			std::cerr << "\n";
-			std::cerr << "  stdin   <-  list of balls (line format: 'x y z r # comments')\n";
-			std::cerr << "  stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
+			std::cerr << "stdin   <-  list of balls (line format: 'x y z r # comments')\n";
+			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
 			return;
-		}
-		else
-		{
-			poh.compare_with_map_of_option_descriptions(full_map_of_option_descriptions);
 		}
 	}
 
