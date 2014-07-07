@@ -48,18 +48,18 @@ int main(const int argc, const char** argv)
 		if(poh.contains_option("--help"))
 		{
 			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-			map_of_option_descriptions["--mode"].init("string", "running mode", true);
+			map_of_option_descriptions["--mode"].init("string", "running mode, which has its own options", true);
 			map_of_option_descriptions["--help"].init("", "flag to print usage help to stderr and exit");
 			map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr and exit");
 			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
 			map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
-			std::cerr << "General options:\n";
+			std::cerr << "Common options:\n";
 			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", map_of_option_descriptions, std::cerr);
 			if(poh.contains_option("--help-full"))
 			{
 				for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
 				{
-					std::cerr << "\nMode '" << it->first << "' options are:\n";
+					std::cerr << "\nMode '" << it->first << "'\n";
 					it->second(poh);
 				}
 			}
