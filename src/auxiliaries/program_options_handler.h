@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 namespace auxiliaries
 {
@@ -25,23 +26,28 @@ public:
 
 	struct OptionDescription
 	{
+		std::string name;
 		std::string argument_type;
 		std::string description_text;
 		bool required;
 
-		OptionDescription() : required(false)
+		OptionDescription(
+				const std::string& name,
+				const std::string& argument_type,
+				const std::string& description_text,
+				const bool required=false) :
+					name(name),
+					argument_type(argument_type),
+					description_text(description_text),
+					required(required)
 		{
 		}
 
-		void init(const std::string& new_argument_type, const std::string& new_description_text, const bool new_required=false)
+		bool operator==(const std::string& check_name) const
 		{
-			argument_type=new_argument_type;
-			description_text=new_description_text;
-			required=new_required;
+			return (check_name==name);
 		}
 	};
-
-	typedef std::map<std::string, OptionDescription> MapOfOptionDescriptions;
 
 	ProgramOptionsHandler(const int argc, const char** argv)
 	{
@@ -189,47 +195,45 @@ public:
 		options_.erase(name);
 	}
 
-	void compare_with_map_of_option_descriptions(const MapOfOptionDescriptions& map_of_option_descriptions, const bool allow_unrecognized) const
+	void compare_with_list_of_option_descriptions(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized) const
 	{
 		for(std::map<std::string, std::string>::const_iterator it=options_.begin();it!=options_.end();++it)
 		{
 			const std::string& option=it->first;
-			MapOfOptionDescriptions::const_iterator jt=map_of_option_descriptions.find(option);
-			if(jt==map_of_option_descriptions.end())
+			std::vector<OptionDescription>::const_iterator jt=std::find(list_of_option_descriptions.begin(), list_of_option_descriptions.end(), option);
+			if(jt==list_of_option_descriptions.end())
 			{
 				if(!allow_unrecognized)
 				{
 					throw Exception(std::string("Unrecognized command line option '")+option+"'.");
 				}
 			}
-			else if(it->second.empty() && !jt->second.argument_type.empty())
+			else if(it->second.empty() && !jt->argument_type.empty())
 			{
 				throw Exception(std::string("Command line option '")+option+"' should have arguments.");
 			}
-			else if(!it->second.empty() && jt->second.argument_type.empty())
+			else if(!it->second.empty() && jt->argument_type.empty())
 			{
 				throw Exception(std::string("Command line option '")+option+"' cannot have arguments.");
 			}
 		}
 	}
 
-	static void print_map_of_option_descriptions(const std::string& prefix, const MapOfOptionDescriptions& map_of_option_descriptions, std::ostream& output)
+	static void print_list_of_option_descriptions(const std::string& prefix, const std::vector<OptionDescription>& list_of_option_descriptions, std::ostream& output)
 	{
 		std::size_t max_option_name_length=30;
 		std::size_t max_argument_type_length=7;
-		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
+		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
 		{
-			max_option_name_length=std::max(max_option_name_length, it->first.size());
-			max_argument_type_length=std::max(max_argument_type_length, it->second.argument_type.size());
+			max_option_name_length=std::max(max_option_name_length, it->name.size());
+			max_argument_type_length=std::max(max_argument_type_length, it->argument_type.size());
 		}
-		for(MapOfOptionDescriptions::const_iterator it=map_of_option_descriptions.begin();it!=map_of_option_descriptions.end();++it)
+		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
 		{
-			const std::string& name=it->first;
-			const OptionDescription& od=it->second;
-			output << prefix << name << std::string(max_option_name_length+2-name.size(), ' ');
-			output << od.argument_type << std::string(max_argument_type_length+2-od.argument_type.size(), ' ');
-			output << (od.required ? "*" : " ") << "  ";
-			output << od.description_text << "\n";
+			output << prefix << it->name << std::string(max_option_name_length+2-(it->name.size()), ' ');
+			output << it->argument_type << std::string(max_argument_type_length+2-(it->argument_type.size()), ' ');
+			output << (it->required ? "*" : " ") << "  ";
+			output << it->description_text << "\n";
 		}
 	}
 

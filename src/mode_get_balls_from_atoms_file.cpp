@@ -33,16 +33,16 @@ std::string refine_string(const std::string& x)
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--mmcif"].init("", "flag to input in mmCIF format");
-		basic_map_of_option_descriptions["--include-heteroatoms"].init("", "flag to include heteroatoms");
-		basic_map_of_option_descriptions["--include-hydrogens"].init("", "flag to include hydrogen atoms");
-		basic_map_of_option_descriptions["--radii-file"].init("string", "path to radii configuration file");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
-		advanced_map_of_option_descriptions["--default-radius"].init("number", "default atomic radius");
-		advanced_map_of_option_descriptions["--only-default-radius"].init("", "flag to make all radii equal to the default radius");
-		advanced_map_of_option_descriptions["--enhanced-comments"].init("", "flag to output enhanced comments");
-		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
+		list_of_option_descriptions.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
+		list_of_option_descriptions.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
+		list_of_option_descriptions.push_back(OD("--radii-file", "string", "path to radii configuration file"));
+		list_of_option_descriptions.push_back(OD("--default-radius", "number", "default atomic radius"));
+		list_of_option_descriptions.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
+		list_of_option_descriptions.push_back(OD("--enhanced-comments", "", "flag to output enhanced comments"));
+		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
 			std::cerr << "stdout  ->  list of balls (line format: 'x y z r # comments')\n";

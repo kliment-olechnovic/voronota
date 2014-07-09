@@ -59,11 +59,14 @@ int main(const int argc, const char** argv)
 			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
 		}
 
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-		map_of_option_descriptions["--mode"].init("string", "running mode, which has its own options", true);
-		map_of_option_descriptions["--help"].init("", "flag to print usage help to stderr and exit");
-		map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
-		map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
+		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> list_of_option_descriptions;
+		{
+			typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+			list_of_option_descriptions.push_back(OD("--mode", "string", "running mode, which has its own options", true));
+			list_of_option_descriptions.push_back(OD("--help", "", "flag to print usage help to stderr and exit"));
+			list_of_option_descriptions.push_back(OD("--clog-file", "string", "path to file for log stream redirection"));
+			list_of_option_descriptions.push_back(OD("--version", "", "flag to print version number to stderr and exit"));
+		}
 
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
@@ -97,7 +100,7 @@ int main(const int argc, const char** argv)
 				{
 					if(std::count(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)>0)
 					{
-						std::cerr << "Mode '" << mode << "'\n";
+						std::cerr << "Mode '" << mode << "' options:\n";
 						std::find(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)->func_ptr(poh);
 					}
 				}
@@ -114,7 +117,7 @@ int main(const int argc, const char** argv)
 		else
 		{
 			std::cerr << "Common options:\n";
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", map_of_option_descriptions, std::cerr);
+			auxiliaries::ProgramOptionsHandler::print_list_of_option_descriptions("", list_of_option_descriptions, std::cerr);
 			if(!help_present)
 			{
 				std::cerr << "\nAvailable running modes:\n";
@@ -127,7 +130,7 @@ int main(const int argc, const char** argv)
 			{
 				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
 				{
-					std::cerr << "\nMode '" << it->name << "'\n";
+					std::cerr << "\nMode '" << it->name << "' options:\n";
 					it->func_ptr(poh);
 				}
 			}
