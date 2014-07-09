@@ -8,15 +8,15 @@
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
-		advanced_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
-		advanced_map_of_option_descriptions["--include-surplus-quadruples"].init("", "flag to include surplus quadruples");
-		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
-		advanced_map_of_option_descriptions["--check"].init("", "flag to slowly check the resulting vertices (used only for testing)");
-		advanced_map_of_option_descriptions["--link"].init("", "flag to output links between vertices");
-		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
+		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
+		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
+		list_of_option_descriptions.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
+		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'x y z r # comments')\n";
 			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";

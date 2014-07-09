@@ -412,19 +412,19 @@ unsigned int calc_string_color_integer(const std::string& str)
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--print-log"].init("", "flag to print log of calculations");
-		basic_map_of_option_descriptions["--annotate"].init("", "flag to annotate contacts using balls comments");
-		basic_map_of_option_descriptions["--probe"].init("number", "probe radius");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
-		advanced_map_of_option_descriptions["--exclude-hidden-balls"].init("", "flag to exclude hidden input balls");
-		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("number", "initial radius for bounding sphere hierarchy");
-		advanced_map_of_option_descriptions["--step"].init("number", "curve step length");
-		advanced_map_of_option_descriptions["--projections"].init("number", "curve optimization depth");
-		advanced_map_of_option_descriptions["--sih-depth"].init("number", "spherical surface optimization depth");
-		advanced_map_of_option_descriptions["--max-dist"].init("number", "maximal distance to record, may exceed probe diameter");
-		advanced_map_of_option_descriptions["--draw"].init("", "flag to output graphics for annotated contacts");
-		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
+		list_of_option_descriptions.push_back(OD("--annotate", "", "flag to annotate contacts using balls comments"));
+		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
+		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
+		list_of_option_descriptions.push_back(OD("--step", "number", "curve step length"));
+		list_of_option_descriptions.push_back(OD("--projections", "number", "curve optimization depth"));
+		list_of_option_descriptions.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
+		list_of_option_descriptions.push_back(OD("--max-dist", "number", "maximal distance to record, may exceed probe diameter"));
+		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
+		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
 			std::cerr << "              (default line format: 'x y z r # comments')\n";
@@ -588,22 +588,22 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--inter-residue"].init("", "flag to convert to inter-residue contacts");
-		basic_map_of_option_descriptions["--inter-chain"].init("", "flag to convert to inter-chain contacts");
-		basic_map_of_option_descriptions["--match-first"].init("string", "selection for first contacting group");
-		basic_map_of_option_descriptions["--match-first-not"].init("string", "negative selection for first contacting group");
-		basic_map_of_option_descriptions["--match-second"].init("string", "selection for second contacting group");
-		basic_map_of_option_descriptions["--match-second-not"].init("string", "negative selection for second contacting group");
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
-		advanced_map_of_option_descriptions["--drawing-for-pymol"].init("string", "file path to output drawing as pymol script");
-		advanced_map_of_option_descriptions["--drawing-for-jmol"].init("string", "file path to output drawing as jmol script");
-		advanced_map_of_option_descriptions["--drawing-name"].init("string", "graphics object name for drawing output");
-		advanced_map_of_option_descriptions["--drawing-color"].init("hex", "color for drawing output");
-		advanced_map_of_option_descriptions["--drawing-random-colors"].init("", "flag to use random color for each drawn contact");
-		advanced_map_of_option_descriptions["--drawing-alpha"].init("number", "alpha opacity value for drawing output");
-		advanced_map_of_option_descriptions["--preserve-graphics"].init("", "flag to preserve graphics in output");
-		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--inter-chain", "", "flag to convert to inter-chain contacts"));
+		list_of_option_descriptions.push_back(OD("--match-first", "string", "selection for first contacting group"));
+		list_of_option_descriptions.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
+		list_of_option_descriptions.push_back(OD("--match-second", "string", "selection for second contacting group"));
+		list_of_option_descriptions.push_back(OD("--match-second-not", "string", "negative selection for second contacting group"));
+		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
+		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
+		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
+		list_of_option_descriptions.push_back(OD("--drawing-color", "hex", "color for drawing output"));
+		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
+		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
+		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
+		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
 			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";

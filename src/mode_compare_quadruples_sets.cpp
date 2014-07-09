@@ -28,12 +28,12 @@ bool add_quadruple_from_stream_to_vector(std::istream& input, std::vector<apollo
 void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions basic_map_of_option_descriptions;
-		basic_map_of_option_descriptions["--first-quadruples-file"].init("string", "path to the first quadruples file", true);
-		basic_map_of_option_descriptions["--second-quadruples-file"].init("string", "path to the second quadruples file", true);
-		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions advanced_map_of_option_descriptions;
-		advanced_map_of_option_descriptions["--init-radius-for-BSH"].init("string", "initial radius for bounding sphere hierarchy");
-		if(!modes_commons::assert_options(basic_map_of_option_descriptions, advanced_map_of_option_descriptions, poh, false))
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--first-quadruples-file", "string", "path to the first quadruples file", true));
+		list_of_option_descriptions.push_back(OD("--second-quadruples-file", "string", "path to the second quadruples file", true));
+		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "string", "initial radius for bounding sphere hierarchy"));
+		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
 			std::cerr << "stdout  ->  summary of differences\n";

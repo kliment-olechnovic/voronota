@@ -1,59 +1,51 @@
 Common options:
---clog-file                     string      path to file for log stream redirection
---help                                      flag to print usage help to stderr and exit
 --mode                          string   *  running mode, which has its own options
+--help                                      flag to print usage help to stderr and exit
+--clog-file                     string      path to file for log stream redirection
 --version                                   flag to print version number to stderr and exit
 
-Mode 'get-balls-from-atoms-file'
-Basic options:
+Mode 'get-balls-from-atoms-file' options:
 --include-heteroatoms                       flag to include heteroatoms
 --include-hydrogens                         flag to include hydrogen atoms
 --mmcif                                     flag to input in mmCIF format
 --radii-file                    string      path to radii configuration file
-Advanced options:
 --default-radius                number      default atomic radius
---enhanced-comments                         flag to output enhanced comments
 --only-default-radius                       flag to make all radii equal to the default radius
+--enhanced-comments                         flag to output enhanced comments
 stdin   <-  file in PDB or mmCIF format
 stdout  ->  list of balls (line format: 'x y z r # comments')
 
-Mode 'calculate-vertices'
-Basic options:
+Mode 'calculate-vertices' options:
 --print-log                                 flag to print log of calculations
-Advanced options:
---check                                     flag to slowly check the resulting vertices (used only for testing)
 --exclude-hidden-balls                      flag to exclude hidden input balls
 --include-surplus-quadruples                flag to include surplus quadruples
---init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --link                                      flag to output links between vertices
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--check                                     flag to slowly check the resulting vertices (used only for testing)
 stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
-Mode 'calculate-vertices-in-parallel'
-Basic options:
+Mode 'calculate-vertices-in-parallel' options:
 --method                        string   *  parallelization method name, variants are: 'simulated'
 --parts                         number   *  number of parts for splitting, must be power of 2
 --print-log                                 flag to print log of calculations
-Advanced options:
 --include-surplus-quadruples                flag to include surplus quadruples
---init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --link                                      flag to output links between vertices
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
-Mode 'calculate-contacts'
-Basic options:
---annotate                                  flag to annotate contacts using balls comments
+Mode 'calculate-contacts' options:
 --print-log                                 flag to print log of calculations
+--annotate                                  flag to annotate contacts using balls comments
 --probe                         number      probe radius
-Advanced options:
---draw                                      flag to output graphics for annotated contacts
 --exclude-hidden-balls                      flag to exclude hidden input balls
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
---max-dist                      number      maximal distance to record, may exceed probe diameter
+--step                          number      curve step length
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
---step                          number      curve step length
+--max-dist                      number      maximal distance to record, may exceed probe diameter
+--draw                                      flag to output graphics for annotated contacts
 stdin   <-  list of balls
               (default line format: 'x y z r # comments')
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
@@ -61,21 +53,19 @@ stdout  ->  list of contacts
               (default line format: 'b1 b2 distance area')
               (annotated line format: 'annotation1 annotation2 area [graphics]')
 
-Mode 'calculate-contacts-query'
-Basic options:
---inter-chain                               flag to convert to inter-chain contacts
+Mode 'calculate-contacts-query' options:
 --inter-residue                             flag to convert to inter-residue contacts
+--inter-chain                               flag to convert to inter-chain contacts
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
 --match-second-not              string      negative selection for second contacting group
-Advanced options:
---drawing-alpha                 number      alpha opacity value for drawing output
---drawing-color                 hex         color for drawing output
---drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-for-pymol             string      file path to output drawing as pymol script
+--drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
+--drawing-color                 hex         color for drawing output
 --drawing-random-colors                     flag to use random color for each drawn contact
+--drawing-alpha                 number      alpha opacity value for drawing output
 --preserve-graphics                         flag to preserve graphics in output
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
