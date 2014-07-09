@@ -39,64 +39,73 @@ int main(const int argc, const char** argv)
 		full_map_of_modes.insert(MapOfModes::value_type("compare-quadruples-sets", ModeFunctionPointer(compare_quadruples_sets)));
 		full_map_of_modes.insert(MapOfModes::value_type("print-demo", ModeFunctionPointer(print_demo)));
 
-		auxiliaries::ProgramOptionsHandler poh(argc, argv);
-		if(poh.empty() || poh.contains_option("--help-full"))
-		{
-			poh.set_option("--help");
-		}
+		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
+		map_of_option_descriptions["--mode"].init("string", "running mode, which has its own options", true);
+		map_of_option_descriptions["--help"].init("", "flag to print usage help to stderr and exit");
+		map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
+		map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
 
-		if(poh.contains_option("--help"))
-		{
-			auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
-			map_of_option_descriptions["--mode"].init("string", "running mode, which has its own options", true);
-			map_of_option_descriptions["--help"].init("", "flag to print usage help to stderr and exit");
-			map_of_option_descriptions["--help-full"].init("", "flag to print full usage help to stderr and exit");
-			map_of_option_descriptions["--clog-file"].init("string", "path to file for log stream redirection");
-			map_of_option_descriptions["--version"].init("", "flag to print version number to stderr and exit");
-			std::cerr << "Common options:\n";
-			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", map_of_option_descriptions, std::cerr);
-			if(poh.contains_option("--help-full"))
-			{
-				for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
-				{
-					std::cerr << "\nMode '" << it->first << "'\n";
-					it->second(poh);
-				}
-			}
-			else
-			{
-				const std::string mode=(poh.contains_option_with_argument("--mode") ? poh.argument<std::string>("--mode") : std::string());
-				std::cerr << "\n";
-				if(visible_map_of_modes.count(mode)>0)
-				{
-					std::cerr << "Mode '" << mode << "' options:\n";
-					visible_map_of_modes.find(mode)->second(poh);
-				}
-				else
-				{
-					std::cerr << "Available running modes:\n";
-					for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
-					{
-						std::cerr << "--mode " << it->first << "\n";
-					}
-				}
-			}
-			return 1;
-		}
+		auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
 		if(poh.contains_option("--version"))
 		{
 			std::cerr << "Voronota version 1.2\n";
+			return 1;
 		}
-		else
-		{
-			const std::string mode=poh.argument<std::string>("--mode");
-			poh.remove_option("--mode");
 
-			if(full_map_of_modes.count(mode)==0)
+		const std::string mode=(poh.contains_option_with_argument("--mode") ? poh.argument<std::string>("--mode") : std::string());
+
+		const bool mode_present=!mode.empty();
+		const bool mode_valid=full_map_of_modes.count(mode);
+		const bool help_present=poh.contains_option("--help");
+
+		if(!mode_present && !help_present)
+		{
+			std::cerr << "Common options:\n";
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", map_of_option_descriptions, std::cerr);
+			std::cerr << "Available running modes:\n";
+			for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
 			{
-				throw std::runtime_error("Invalid mode.");
+				std::cerr << "--mode " << it->first << "\n";
 			}
+			return 1;
+		}
+
+		if(!mode_present && help_present)
+		{
+			std::cerr << "Common options:\n";
+			auxiliaries::ProgramOptionsHandler::print_map_of_option_descriptions("", map_of_option_descriptions, std::cerr);
+			for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
+			{
+				std::cerr << "\nMode '" << it->first << "' options\n";
+				it->second(poh);
+			}
+			return 1;
+		}
+
+		if(mode_present && !mode_valid)
+		{
+			std::cerr << "Invalid mode, available running modes are:\n";
+			for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
+			{
+				std::cerr << "--mode " << it->first << "\n";
+			}
+			return 1;
+		}
+
+		if(mode_present && mode_valid && help_present)
+		{
+			if(visible_map_of_modes.count(mode)>0)
+			{
+				std::cerr << "Mode '" << mode << "' options:\n";
+				visible_map_of_modes.find(mode)->second(poh);
+			}
+			return 1;
+		}
+
+		if(mode_valid)
+		{
+			poh.remove_option("--mode");
 
 			const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
 			poh.remove_option("--clog-file");
