@@ -1,7 +1,6 @@
 Common options:
 --clog-file                     string      path to file for log stream redirection
 --help                                      flag to print usage help to stderr and exit
---help-full                                 flag to print full usage help to stderr and exit
 --mode                          string   *  running mode, which has its own options
 --version                                   flag to print version number to stderr and exit
 
