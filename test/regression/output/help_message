@@ -5,8 +5,8 @@ Common options:
 --version                                   flag to print version number to stderr and exit
 
 Available running modes:
---mode calculate-contacts
---mode calculate-contacts-query
+--mode get-balls-from-atoms-file
 --mode calculate-vertices
 --mode calculate-vertices-in-parallel
---mode get-balls-from-atoms-file
+--mode calculate-contacts
+--mode calculate-contacts-query

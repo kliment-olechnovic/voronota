@@ -2,6 +2,8 @@
 #include <functional>
 #include <exception>
 #include <limits>
+#include <vector>
+#include <algorithm>
 
 #include "apollota/safer_comparison_of_numbers.h"
 
@@ -18,26 +20,44 @@ void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
+struct ModeDescriptor
+{
+	typedef std::pointer_to_unary_function<const auxiliaries::ProgramOptionsHandler&, void> FunctionPtr;
+
+	std::string name;
+	FunctionPtr func_ptr;
+
+	ModeDescriptor(const std::string& name, const FunctionPtr& func_ptr) : name(name), func_ptr(func_ptr)
+	{
+	}
+
+	bool operator==(const std::string& check_name) const
+	{
+		return (check_name==name);
+	}
+};
+
 int main(const int argc, const char** argv)
 {
-	typedef std::pointer_to_unary_function<const auxiliaries::ProgramOptionsHandler&, void> ModeFunctionPointer;
-	typedef std::map<std::string, ModeFunctionPointer> MapOfModes;
-
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
 	std::ios_base::sync_with_stdio(false);
 
 	try
 	{
-		MapOfModes visible_map_of_modes;
-		visible_map_of_modes.insert(MapOfModes::value_type("calculate-vertices", ModeFunctionPointer(calculate_vertices)));
-		visible_map_of_modes.insert(MapOfModes::value_type("get-balls-from-atoms-file", ModeFunctionPointer(get_balls_from_atoms_file)));
-		visible_map_of_modes.insert(MapOfModes::value_type("calculate-contacts", ModeFunctionPointer(calculate_contacts)));
-		visible_map_of_modes.insert(MapOfModes::value_type("calculate-contacts-query", ModeFunctionPointer(calculate_contacts_query)));
-		visible_map_of_modes.insert(MapOfModes::value_type("calculate-vertices-in-parallel", ModeFunctionPointer(calculate_vertices_in_parallel)));
-		MapOfModes full_map_of_modes=visible_map_of_modes;
-		full_map_of_modes.insert(MapOfModes::value_type("compare-quadruples-sets", ModeFunctionPointer(compare_quadruples_sets)));
-		full_map_of_modes.insert(MapOfModes::value_type("print-demo", ModeFunctionPointer(print_demo)));
+		std::vector<ModeDescriptor> visible_list_of_modes;
+		{
+			visible_list_of_modes.push_back(ModeDescriptor("get-balls-from-atoms-file", ModeDescriptor::FunctionPtr(get_balls_from_atoms_file)));
+			visible_list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
+			visible_list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
+			visible_list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+			visible_list_of_modes.push_back(ModeDescriptor("calculate-contacts-query", ModeDescriptor::FunctionPtr(calculate_contacts_query)));
+		}
+		std::vector<ModeDescriptor> full_list_of_modes=visible_list_of_modes;
+		{
+			full_list_of_modes.push_back(ModeDescriptor("compare-quadruples-sets", ModeDescriptor::FunctionPtr(compare_quadruples_sets)));
+			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
+		}
 
 		auxiliaries::ProgramOptionsHandler::MapOfOptionDescriptions map_of_option_descriptions;
 		map_of_option_descriptions["--mode"].init("string", "running mode, which has its own options", true);
@@ -58,7 +78,7 @@ int main(const int argc, const char** argv)
 
 		if(!mode.empty())
 		{
-			if(full_map_of_modes.count(mode)>0)
+			if(std::count(full_list_of_modes.begin(), full_list_of_modes.end(), mode)>0)
 			{
 				if(!help_present)
 				{
@@ -69,25 +89,25 @@ int main(const int argc, const char** argv)
 
 					auxiliaries::CLogRedirector clog_redirector(clog_filename);
 
-					full_map_of_modes.find(mode)->second(poh);
+					std::find(full_list_of_modes.begin(), full_list_of_modes.end(), mode)->func_ptr(poh);
 
 					return 0;
 				}
 				else
 				{
-					if(visible_map_of_modes.count(mode)>0)
+					if(std::count(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)>0)
 					{
 						std::cerr << "Mode '" << mode << "'\n";
-						visible_map_of_modes.find(mode)->second(poh);
+						std::find(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)->func_ptr(poh);
 					}
 				}
 			}
 			else
 			{
 				std::cerr << "Invalid mode, available running modes are:\n";
-				for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
 				{
-					std::cerr << "--mode " << it->first << "\n";
+					std::cerr << "--mode " << it->name << "\n";
 				}
 			}
 		}
@@ -98,17 +118,17 @@ int main(const int argc, const char** argv)
 			if(!help_present)
 			{
 				std::cerr << "\nAvailable running modes:\n";
-				for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
 				{
-					std::cerr << "--mode " << it->first << "\n";
+					std::cerr << "--mode " << it->name << "\n";
 				}
 			}
 			else
 			{
-				for(MapOfModes::const_iterator it=visible_map_of_modes.begin();it!=visible_map_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
 				{
-					std::cerr << "\nMode '" << it->first << "'\n";
-					it->second(poh);
+					std::cerr << "\nMode '" << it->name << "'\n";
+					it->func_ptr(poh);
 				}
 			}
 		}

@@ -4,6 +4,43 @@ Common options:
 --mode                          string   *  running mode, which has its own options
 --version                                   flag to print version number to stderr and exit
 
+Mode 'get-balls-from-atoms-file'
+Basic options:
+--include-heteroatoms                       flag to include heteroatoms
+--include-hydrogens                         flag to include hydrogen atoms
+--mmcif                                     flag to input in mmCIF format
+--radii-file                    string      path to radii configuration file
+Advanced options:
+--default-radius                number      default atomic radius
+--enhanced-comments                         flag to output enhanced comments
+--only-default-radius                       flag to make all radii equal to the default radius
+stdin   <-  file in PDB or mmCIF format
+stdout  ->  list of balls (line format: 'x y z r # comments')
+
+Mode 'calculate-vertices'
+Basic options:
+--print-log                                 flag to print log of calculations
+Advanced options:
+--check                                     flag to slowly check the resulting vertices (used only for testing)
+--exclude-hidden-balls                      flag to exclude hidden input balls
+--include-surplus-quadruples                flag to include surplus quadruples
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--link                                      flag to output links between vertices
+stdin   <-  list of balls (line format: 'x y z r # comments')
+stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
+Mode 'calculate-vertices-in-parallel'
+Basic options:
+--method                        string   *  parallelization method name, variants are: 'simulated'
+--parts                         number   *  number of parts for splitting, must be power of 2
+--print-log                                 flag to print log of calculations
+Advanced options:
+--include-surplus-quadruples                flag to include surplus quadruples
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--link                                      flag to output links between vertices
+stdin   <-  list of balls (line format: 'x y z r # comments')
+stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
+
 Mode 'calculate-contacts'
 Basic options:
 --annotate                                  flag to annotate contacts using balls comments
@@ -42,40 +79,3 @@ Advanced options:
 --preserve-graphics                         flag to preserve graphics in output
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
-
-Mode 'calculate-vertices'
-Basic options:
---print-log                                 flag to print log of calculations
-Advanced options:
---check                                     flag to slowly check the resulting vertices (used only for testing)
---exclude-hidden-balls                      flag to exclude hidden input balls
---include-surplus-quadruples                flag to include surplus quadruples
---init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
---link                                      flag to output links between vertices
-stdin   <-  list of balls (line format: 'x y z r # comments')
-stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
-
-Mode 'calculate-vertices-in-parallel'
-Basic options:
---method                        string   *  parallelization method name, variants are: 'simulated'
---parts                         number   *  number of parts for splitting, must be power of 2
---print-log                                 flag to print log of calculations
-Advanced options:
---include-surplus-quadruples                flag to include surplus quadruples
---init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
---link                                      flag to output links between vertices
-stdin   <-  list of balls (line format: 'x y z r # comments')
-stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
-
-Mode 'get-balls-from-atoms-file'
-Basic options:
---include-heteroatoms                       flag to include heteroatoms
---include-hydrogens                         flag to include hydrogen atoms
---mmcif                                     flag to input in mmCIF format
---radii-file                    string      path to radii configuration file
-Advanced options:
---default-radius                number      default atomic radius
---enhanced-comments                         flag to output enhanced comments
---only-default-radius                       flag to make all radii equal to the default radius
-stdin   <-  file in PDB or mmCIF format
-stdout  ->  list of balls (line format: 'x y z r # comments')
