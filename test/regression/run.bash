@@ -17,8 +17,8 @@ OUTPUT_DIR=./output/
 rm -r -f $OUTPUT_DIR
 mkdir $OUTPUT_DIR
 
-$TEST_SUBJECT --help 2> $OUTPUT_DIR/help_message
-$TEST_SUBJECT --help-full 2> $OUTPUT_DIR/help_full_message
+$TEST_SUBJECT 2> $OUTPUT_DIR/help_message
+$TEST_SUBJECT --help 2> $OUTPUT_DIR/help_full_message
 
 $TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE < $INPUT_FILE > $OUTPUT_DIR/balls1
 $TEST_SUBJECT --mode get-balls-from-atoms-file --radii-file $RADII_FILE --include-heteroatoms < $INPUT_FILE > $OUTPUT_DIR/balls2
