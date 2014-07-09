@@ -1,4 +1,4 @@
-# About Voronota 1.0
+# About Voronota 1.2
 
 The analysis of macromolecular structures often requires
 a comprehensive definition of atomic neighborhoods.
@@ -101,16 +101,17 @@ By default, Voronota ignores all heteroatoms and all hydrogen
 atoms when reading PDB files. This behavior can be altered using
 "--include-heteroatoms" and "--include-hydrogens" command-line options.
 
-Log output can be enabled using "--print-log" command-line option.
+Since version 1.2 Voronota also calculates inter-atom contacts and works with them in various ways.
+These features are currently not covered in this document, but can be viewed using built-in usage help options.
 
 
 # Getting usage help
 
-Usage help is displayed when executing Voronota without any
-parameters or with "--help" command line option:
+Basic usage help is displayed when executing Voronota without any parameters.
+Advanced options are shown using "--help" command line option:
 
     ./voronota --help
 
-Advanced options are shown using "--help-full" command line option:
+Mode-specific usage help is shown when both "--mode" and "--help" options are present:
 
-    ./voronota --help-full
+    ./voronota --mode calculate-vertices --help
