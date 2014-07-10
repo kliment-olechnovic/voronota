@@ -16,9 +16,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
-void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
-void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
 struct ModeDescriptor
 {
@@ -54,10 +52,6 @@ int main(const int argc, const char** argv)
 			visible_list_of_modes.push_back(ModeDescriptor("calculate-contacts-query", ModeDescriptor::FunctionPtr(calculate_contacts_query)));
 		}
 		std::vector<ModeDescriptor> full_list_of_modes=visible_list_of_modes;
-		{
-			full_list_of_modes.push_back(ModeDescriptor("compare-quadruples-sets", ModeDescriptor::FunctionPtr(compare_quadruples_sets)));
-			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
-		}
 
 		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> list_of_option_descriptions;
 		{
