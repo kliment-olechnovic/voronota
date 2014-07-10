@@ -101,8 +101,9 @@ By default, Voronota ignores all heteroatoms and all hydrogen
 atoms when reading PDB files. This behavior can be altered using
 "--include-heteroatoms" and "--include-hydrogens" command-line options.
 
-Since version 1.2 Voronota also calculates inter-atom contacts and works with them in various ways.
-These features are currently not covered in this document, but can be viewed using built-in usage help options.
+Since version 1.2 Voronota also calculates inter-atom contacts and works with
+them in various ways. These features are currently not covered in this document,
+but can be viewed using built-in usage help options.
 
 
 # Getting usage help
