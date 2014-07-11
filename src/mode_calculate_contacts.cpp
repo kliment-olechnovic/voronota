@@ -18,6 +18,11 @@ public:
 	{
 	}
 
+	static int null_num()
+	{
+		return std::numeric_limits<int>::min();
+	}
+
 	static Comment solvent()
 	{
 		Comment v;
@@ -136,6 +141,16 @@ public:
 		return matched;
 	}
 
+	static bool match_with_sequence_separation_interval(const Comment& a, const Comment& b, const int min_sep, const int max_sep)
+	{
+		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
+		{
+			const int sep=abs(a.resSeq-b.resSeq);
+			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
+		}
+		return true;
+	}
+
 	bool valid() const
 	{
 		return !((chainID.empty()) ||
@@ -237,11 +252,6 @@ public:
 private:
 	static const char vbegin='[';
 	static const char vend=']';
-
-	static int null_num()
-	{
-		return std::numeric_limits<int>::min();
-	}
 
 	int serial;
 	std::string chainID;
@@ -596,10 +606,12 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second", "string", "selection for second contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second-not", "string", "negative selection for second contacting group"));
+		list_of_option_descriptions.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
+		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
-		list_of_option_descriptions.push_back(OD("--drawing-color", "hex", "color for drawing output"));
+		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
@@ -618,6 +630,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
+	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
+	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
@@ -677,29 +691,32 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
-		const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
-		const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
-		if(matched_first_second || matched_second_first)
+		if(Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation))
 		{
-			const std::pair<double, std::string>& value=it->second;
+			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
+			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
+			if(matched_first_second || matched_second_first)
+			{
+				const std::pair<double, std::string>& value=it->second;
 
-			if(matched_first_second)
-			{
-				output_map_of_contacts[comments]=value;
-			}
-			else
-			{
-				output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
-			}
-
-			if(drawing && !value.second.empty())
-			{
-				if(drawing_random_colors)
+				if(matched_first_second)
 				{
-					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+					output_map_of_contacts[comments]=value;
 				}
-				opengl_printer.add(value.second);
-				opengl_printer_filled=true;
+				else
+				{
+					output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
+				}
+
+				if(drawing && !value.second.empty())
+				{
+					if(drawing_random_colors)
+					{
+						opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+					}
+					opengl_printer.add(value.second);
+					opengl_printer_filled=true;
+				}
 			}
 		}
 	}

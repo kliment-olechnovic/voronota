@@ -60,10 +60,12 @@ Mode 'calculate-contacts-query' options:
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
 --match-second-not              string      negative selection for second contacting group
+--match-min-seq-sep             number      minimum residue sequence separation
+--match-max-seq-sep             number      maximum residue sequence separation
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
---drawing-color                 hex         color for drawing output
+--drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --preserve-graphics                         flag to preserve graphics in output
