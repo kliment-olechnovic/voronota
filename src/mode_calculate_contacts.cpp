@@ -14,6 +14,14 @@ namespace
 class ChainResidueAtomComment
 {
 public:
+	int serial;
+	std::string chainID;
+	int resSeq;
+	std::string resName;
+	std::string name;
+	std::string altLoc;
+	std::string iCode;
+
 	ChainResidueAtomComment() : serial(null_num()), resSeq(null_num())
 	{
 	}
@@ -247,19 +255,9 @@ public:
 		return output.str();
 	}
 
-	friend bool add_sphere_and_comments_from_stream_to_vectors(std::istream&, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<ChainResidueAtomComment>* >&);
-
 private:
 	static const char vbegin='[';
 	static const char vend=']';
-
-	int serial;
-	std::string chainID;
-	int resSeq;
-	std::string resName;
-	std::string name;
-	std::string altLoc;
-	std::string iCode;
 };
 
 bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<ChainResidueAtomComment>* >& spheres_with_comments)
