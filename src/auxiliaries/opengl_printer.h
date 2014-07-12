@@ -32,6 +32,15 @@ public:
 		write_color_to_stream(Color(rgb), string_stream_);
 	}
 
+	template<typename SphereType>
+	void add_sphere(const SphereType& sphere)
+	{
+		string_stream_ << "sphere ";
+		write_point_to_stream(sphere, string_stream_);
+		string_stream_.precision(3);
+		string_stream_ << std::fixed << sphere.r << " ";
+	}
+
 	template<typename PointType>
 	void add_triangle_strip(const std::vector<PointType>& vertices, const std::vector<PointType>& normals)
 	{

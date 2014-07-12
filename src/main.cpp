@@ -14,6 +14,7 @@
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
 void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
@@ -55,6 +56,7 @@ int main(const int argc, const char** argv)
 		}
 		std::vector<ModeDescriptor> full_list_of_modes=visible_list_of_modes;
 		{
+			full_list_of_modes.push_back(ModeDescriptor("calculate-quadrons", ModeDescriptor::FunctionPtr(calculate_quadrons)));
 			full_list_of_modes.push_back(ModeDescriptor("compare-quadruples-sets", ModeDescriptor::FunctionPtr(compare_quadruples_sets)));
 			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
 		}
