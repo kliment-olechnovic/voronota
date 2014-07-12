@@ -15,41 +15,6 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomComment Comment;
 
-bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
-{
-	apollota::SimpleSphere sphere;
-	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
-	std::string separator;
-	input >> separator;
-	if(!input.fail() && separator=="#")
-	{
-		Comment comment;
-		input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name;
-		if(input.good())
-		{
-			input >> comment.altLoc >> comment.iCode;
-		}
-		if(!input.fail())
-		{
-			if(comment.altLoc.find_first_of(".?")==0)
-			{
-				comment.altLoc.clear();
-			}
-			if(comment.iCode.find_first_of(".?")==0)
-			{
-				comment.iCode.clear();
-			}
-			if(comment.valid())
-			{
-				spheres_with_comments.first->push_back(sphere);
-				spheres_with_comments.second->push_back(comment);
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
 bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
@@ -215,7 +180,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(annotate)
 	{
 		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
-		auxiliaries::read_lines_to_container(std::cin, "", add_sphere_and_comments_from_stream_to_vectors, spheres_with_comments);
+		auxiliaries::read_lines_to_container(std::cin, "", modes_commons::add_sphere_and_comments_from_stream_to_vectors<apollota::SimpleSphere, Comment>, spheres_with_comments);
 		if(spheres.size()!=input_spheres_comments.size())
 		{
 			throw std::runtime_error("Number of comments does not match number of spheres.");
