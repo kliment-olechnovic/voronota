@@ -60,18 +60,22 @@ void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
 		apollota::SimpleSphere s=it->second;
 		if(s.r<probe && q.get(0)<input_spheres_comments.size() && q.get(1)<input_spheres_comments.size() && q.get(2)<input_spheres_comments.size() && q.get(3)<input_spheres_comments.size())
 		{
-			s.r=(probe-s.r);
-			const double volume=(4.0/3.0)*apollota::Rotation::pi()*s.r*s.r*s.r;
 			Comment comments[4]={input_spheres_comments[q.get(0)], input_spheres_comments[q.get(1)], input_spheres_comments[q.get(2)], input_spheres_comments[q.get(3)]};
 			std::sort(comments, comments+4);
-			std::cout << comments[0].str() << " " << comments[1].str() << " " << comments[2].str() << " " << comments[3].str() << " " << volume;
-			if(draw)
+			const Comment comments_wa[4]={comments[0].without_atom(), comments[1].without_atom(), comments[2].without_atom(), comments[3].without_atom()};
+			if(!(comments_wa[0]==comments_wa[1] && comments_wa[0]==comments_wa[2] && comments_wa[0]==comments_wa[3]))
 			{
-				auxiliaries::OpenGLPrinter opengl_printer;
-				opengl_printer.add_sphere(s);
-				std::cout << " " << opengl_printer.str();
+				s.r=(probe-s.r);
+				const double volume=(4.0/3.0)*apollota::Rotation::pi()*s.r*s.r*s.r;
+				std::cout << comments[0].str() << " " << comments[1].str() << " " << comments[2].str() << " " << comments[3].str() << " " << volume;
+				if(draw)
+				{
+					auxiliaries::OpenGLPrinter opengl_printer;
+					opengl_printer.add_sphere(s);
+					std::cout << " " << opengl_printer.str();
+				}
+				std::cout << "\n";
 			}
-			std::cout << "\n";
 		}
 	}
 }
