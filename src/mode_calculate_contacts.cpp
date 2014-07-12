@@ -4,9 +4,9 @@
 #include <fstream>
 
 #include "apollota/constrained_contacts_construction.h"
-#include "apollota/opengl_printer.h"
 
 #include "auxiliaries/chain_residue_atom_comment.h"
+#include "auxiliaries/opengl_printer.h"
 
 #include "modes_commons.h"
 
@@ -85,7 +85,7 @@ std::string draw_iter_atom_contact(
 		const double step,
 		const int projections)
 {
-	apollota::OpenGLPrinter opengl_printer;
+	auxiliaries::OpenGLPrinter opengl_printer;
 	if(a_id<spheres.size() && b_id<spheres.size())
 	{
 		apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(a_id, b_id));
@@ -115,7 +115,7 @@ std::string draw_solvent_contact(
 		const double probe,
 		const apollota::SubdividedIcosahedron& sih)
 {
-	apollota::OpenGLPrinter opengl_printer;
+	auxiliaries::OpenGLPrinter opengl_printer;
 	if(a_id<spheres.size())
 	{
 		apollota::TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(a_id);
@@ -433,7 +433,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
 
-	apollota::OpenGLPrinter opengl_printer;
+	auxiliaries::OpenGLPrinter opengl_printer;
 	bool opengl_printer_filled=false;
 	if(drawing)
 	{

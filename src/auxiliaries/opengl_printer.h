@@ -1,13 +1,12 @@
-#ifndef APOLLOTA_OPENGL_PRINTER_H_
-#define APOLLOTA_OPENGL_PRINTER_H_
+#ifndef AUXILIARIES_OPENGL_PRINTER_H_
+#define AUXILIARIES_OPENGL_PRINTER_H_
 
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
-#include <limits>
 
-namespace apollota
+namespace auxiliaries
 {
 
 class OpenGLPrinter
@@ -369,4 +368,4 @@ private:
 
 }
 
-#endif /* APOLLOTA_OPENGL_PRINTER_H_ */
+#endif /* AUXILIARIES_OPENGL_PRINTER_H_ */
