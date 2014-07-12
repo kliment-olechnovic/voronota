@@ -6,261 +6,16 @@
 #include "apollota/constrained_contacts_construction.h"
 #include "apollota/opengl_printer.h"
 
+#include "auxiliaries/chain_residue_atom_comment.h"
+
 #include "modes_commons.h"
 
 namespace
 {
 
-class ChainResidueAtomComment
-{
-public:
-	int serial;
-	std::string chainID;
-	int resSeq;
-	std::string resName;
-	std::string name;
-	std::string altLoc;
-	std::string iCode;
+typedef auxiliaries::ChainResidueAtomComment Comment;
 
-	ChainResidueAtomComment() : serial(null_num()), resSeq(null_num())
-	{
-	}
-
-	static int null_num()
-	{
-		return std::numeric_limits<int>::min();
-	}
-
-	static ChainResidueAtomComment solvent()
-	{
-		ChainResidueAtomComment v;
-		v.chainID="solvent";
-		return v;
-	}
-
-	static ChainResidueAtomComment from_str(const std::string& input_str)
-	{
-		ChainResidueAtomComment v;
-		std::string refined_input_str=input_str;
-		for(std::size_t i=0;i<refined_input_str.size();i++)
-		{
-			char& s=refined_input_str[i];
-			if(s==vend || s==vbegin)
-			{
-				s=' ';
-			}
-		}
-		std::istringstream input(refined_input_str);
-		while(input.good())
-		{
-			std::string marker;
-			input >> marker;
-			if(marker=="c") { input >> v.chainID; }
-			else if(marker=="r") { input >> v.resSeq; }
-			else if(marker=="i") { input >> v.iCode; }
-			else if(marker=="a") { input >> v.serial; }
-			else if(marker=="l") { input >> v.altLoc; }
-			else if(marker=="rn") { input >> v.resName; }
-			else if(marker=="an") { input >> v.name; }
-		}
-		if(!(v.valid() && v.str()==input_str))
-		{
-			throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
-		}
-		return v;
-	}
-
-	static bool match_with_member_descriptor(const ChainResidueAtomComment& comment, const std::string& input_str)
-	{
-		const char vsep=',';
-		const char vinterval=':';
-		std::ostringstream control_output;
-		bool matched=false;
-		std::string refined_input_str=input_str;
-		for(std::size_t i=0;i<refined_input_str.size();i++)
-		{
-			char& s=refined_input_str[i];
-			if(s==vend || s==vbegin || s==vsep)
-			{
-				s=' ';
-			}
-		}
-		std::istringstream input(refined_input_str);
-		std::string marker;
-		input >> marker;
-		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
-		{
-			control_output << marker << vbegin;
-			bool need_sep=false;
-			while(input.good())
-			{
-				std::string token;
-				input >> token;
-				if(!input.fail() && !token.empty())
-				{
-					if(need_sep) { control_output << vsep; } else { need_sep=true; }
-					if(marker=="r" || marker=="a")
-					{
-						std::size_t pinterval=token.find(vinterval);
-						if(pinterval!=std::string::npos)
-						{
-							token[pinterval]=' ';
-							std::istringstream token_input(token);
-							std::pair<int, int> value(0, 0);
-							token_input >> value.first >> value.second;
-							if(!token_input.fail() && value.first<=value.second)
-							{
-								control_output << value.first << vinterval << value.second;
-								if(marker=="r") { matched=matched || (comment.resSeq>=value.first && comment.resSeq<=value.second); }
-								else if(marker=="a") { matched=matched || (comment.serial>=value.first && comment.serial<=value.second); }
-							}
-						}
-						else
-						{
-							std::istringstream token_input(token);
-							int value=0;
-							token_input >> value;
-							if(!token_input.fail())
-							{
-								control_output << value;
-								if(marker=="r") { matched=matched || (comment.resSeq==value); }
-								else if(marker=="a") { matched=matched || (comment.serial==value); }
-							}
-						}
-					}
-					else
-					{
-						control_output << token;
-						if(marker=="c") { matched=matched || (comment.chainID==token); }
-						else if(marker=="i") { matched=matched || (comment.iCode==token); }
-						else if(marker=="l") { matched=matched || (comment.altLoc==token); }
-						else if(marker=="rn") { matched=matched || (comment.resName==token); }
-						else if(marker=="an") { matched=matched || (comment.name==token); }
-					}
-				}
-			}
-			control_output << vend;
-		}
-		const std::string control_output_str=control_output.str();
-		if(control_output_str.empty() || control_output_str!=input_str)
-		{
-			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
-		}
-		return matched;
-	}
-
-	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep)
-	{
-		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
-		{
-			const int sep=abs(a.resSeq-b.resSeq);
-			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
-		}
-		return true;
-	}
-
-	bool valid() const
-	{
-		return !((chainID.empty()) ||
-				(serial!=null_num() && resSeq==null_num()) ||
-				(resName.empty() && resSeq!=null_num()) ||
-				(!resName.empty() && resSeq==null_num()) ||
-				(name.empty() && serial!=null_num()) ||
-				(!name.empty() && serial==null_num()));
-	}
-
-	ChainResidueAtomComment without_atom() const
-	{
-		ChainResidueAtomComment v=(*this);
-		v.serial=null_num();
-		v.altLoc.clear();
-		v.name.clear();
-		return v;
-	}
-
-	ChainResidueAtomComment without_residue() const
-	{
-		ChainResidueAtomComment v=without_atom();
-		v.resSeq=null_num();
-		v.iCode.clear();
-		v.resName.clear();
-		return v;
-	}
-
-	bool operator==(const ChainResidueAtomComment& v) const
-	{
-		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
-	}
-
-	bool operator<(const ChainResidueAtomComment& v) const
-	{
-		if(chainID<v.chainID) { return true; }
-		else if(chainID==v.chainID)
-		{
-			if(resSeq<v.resSeq) { return true; }
-			else if(resSeq==v.resSeq)
-			{
-				if(iCode<v.iCode) { return true; }
-				else if(iCode==v.iCode)
-				{
-					if(serial<v.serial) { return true; }
-					else if(serial==v.serial)
-					{
-						if(altLoc<v.altLoc) { return true; }
-						else if(altLoc==v.altLoc)
-						{
-							if(resName<v.resName) { return true; }
-							else if(resName==v.resName)
-							{
-								return (name<v.name);
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	std::string str() const
-	{
-		const bool with_residue=(resSeq!=null_num());
-		const bool with_residue_and_atom=(with_residue && (serial!=null_num()));
-		std::ostringstream output;
-		output << "c" << vbegin << chainID << vend;
-		if(with_residue)
-		{
-			output << "r" << vbegin << resSeq << vend;
-			if(!iCode.empty())
-			{
-				output << "i" << vbegin << iCode << vend;
-			}
-		}
-		if(with_residue_and_atom)
-		{
-			output << "a" << vbegin << serial << vend;
-			if(!altLoc.empty())
-			{
-				output << "l" << vbegin << altLoc << vend;
-			}
-		}
-		if(with_residue)
-		{
-			output << "rn" << vbegin << resName << vend;
-		}
-		if(with_residue_and_atom)
-		{
-			output << "an" << vbegin << name << vend;
-		}
-		return output.str();
-	}
-
-private:
-	static const char vbegin='[';
-	static const char vend=']';
-};
-
-bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<ChainResidueAtomComment>* >& spheres_with_comments)
+bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* >& spheres_with_comments)
 {
 	apollota::SimpleSphere sphere;
 	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
@@ -268,7 +23,7 @@ bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pa
 	input >> separator;
 	if(!input.fail() && separator=="#")
 	{
-		ChainResidueAtomComment comment;
+		Comment comment;
 		input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name;
 		if(input.good())
 		{
@@ -295,7 +50,7 @@ bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, std::pa
 	return false;
 }
 
-bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> >& map_of_records)
+bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
 	std::pair<double, std::string> value(0.0, std::string());
@@ -306,7 +61,7 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		std::pair<ChainResidueAtomComment, ChainResidueAtomComment> comments(ChainResidueAtomComment::from_str(comment_strings.first), ChainResidueAtomComment::from_str(comment_strings.second));
+		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
 			if(comments.second<comments.first)
@@ -384,18 +139,18 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
-bool match_comment_with_member_descriptors(const ChainResidueAtomComment& comment, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
+bool match_comment_with_member_descriptors(const Comment& comment, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
 {
 	for(std::size_t i=0;i<positive_descriptors.size();i++)
 	{
-		if(!ChainResidueAtomComment::match_with_member_descriptor(comment, positive_descriptors[i]))
+		if(!Comment::match_with_member_descriptor(comment, positive_descriptors[i]))
 		{
 			return false;
 		}
 	}
 	for(std::size_t i=0;i<negative_descriptors.size();i++)
 	{
-		if(ChainResidueAtomComment::match_with_member_descriptor(comment, negative_descriptors[i]))
+		if(Comment::match_with_member_descriptor(comment, negative_descriptors[i]))
 		{
 			return false;
 		}
@@ -456,10 +211,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector<ChainResidueAtomComment> input_spheres_comments;
+	std::vector<Comment> input_spheres_comments;
 	if(annotate)
 	{
-		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<ChainResidueAtomComment>* > spheres_with_comments(&spheres, &input_spheres_comments);
+		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
 		auxiliaries::read_lines_to_container(std::cin, "", add_sphere_and_comments_from_stream_to_vectors, spheres_with_comments);
 		if(spheres.size()!=input_spheres_comments.size())
 		{
@@ -538,7 +293,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				if(!(a_id!=b_id && input_spheres_comments[a_id].without_atom()==input_spheres_comments[b_id].without_atom()))
 				{
 					const bool reverse=input_spheres_comments[b_id]<input_spheres_comments[a_id];
-					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? ChainResidueAtomComment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area;
+					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area;
 					if(draw)
 					{
 						std::cout << " " << (a_id==b_id ?
@@ -628,8 +383,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
-	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", ChainResidueAtomComment::null_num());
-	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", ChainResidueAtomComment::null_num());
+	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
+	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
@@ -639,7 +394,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
-	std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> > map_of_contacts;
+	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
@@ -648,10 +403,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(inter_chain || inter_residue)
 	{
-		std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> > map_of_reduced_contacts;
-		for(std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_reduced_contacts;
+		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			std::pair<ChainResidueAtomComment, ChainResidueAtomComment> comments=it->first;
+			std::pair<Comment, Comment> comments=it->first;
 			if(inter_chain)
 			{
 				comments.first=comments.first.without_residue();
@@ -676,7 +431,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> > output_map_of_contacts;
+	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
 
 	apollota::OpenGLPrinter opengl_printer;
 	bool opengl_printer_filled=false;
@@ -686,10 +441,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		opengl_printer.add_alpha(drawing_alpha);
 	}
 
-	for(std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
-		const std::pair<ChainResidueAtomComment, ChainResidueAtomComment>& comments=it->first;
-		if(ChainResidueAtomComment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation))
+		const std::pair<Comment, Comment>& comments=it->first;
+		if(Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation))
 		{
 			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
 			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
@@ -722,17 +477,17 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::size_t default_column_width=std::cout.width();
 		std::pair<std::size_t, std::size_t> column_width(default_column_width, default_column_width);
-		for(std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			const std::pair<ChainResidueAtomComment, ChainResidueAtomComment>& comments=it->first;
+			const std::pair<Comment, Comment>& comments=it->first;
 			column_width.first=std::max(column_width.first, comments.first.str().size());
 			column_width.second=std::max(column_width.second, comments.second.str().size());
 		}
 		column_width.first+=2;
 		column_width.second+=2;
-		for(std::map< std::pair<ChainResidueAtomComment, ChainResidueAtomComment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			const std::pair<ChainResidueAtomComment, ChainResidueAtomComment>& comments=it->first;
+			const std::pair<Comment, Comment>& comments=it->first;
 			const std::pair<double, std::string>& value=it->second;
 			std::cout.width(column_width.first);
 			std::cout << std::left << comments.first.str();
