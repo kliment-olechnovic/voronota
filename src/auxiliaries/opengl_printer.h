@@ -102,6 +102,7 @@ public:
 			const bool type_tstrip=(type_str=="tstrip");
 			const bool type_tfan=(type_str=="tfan");
 			const bool type_tfanc=(type_str=="tfanc");
+			const bool type_sphere=(type_str=="sphere");
 			if(type_alpha)
 			{
 				double alpha=1.0;
@@ -131,6 +132,14 @@ public:
 					}
 					output << "END, ";
 				}
+			}
+			else if(type_sphere)
+			{
+				const PlainPoint c=read_point_from_stream(input);
+				double r;
+				input >> r;
+				write_point_to_stream(c, "SPHERE, ", sep, sep, output);
+				output << r << sep;
 			}
 		}
 		output << "]\n";
