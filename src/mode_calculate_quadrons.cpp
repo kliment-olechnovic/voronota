@@ -32,12 +32,47 @@ public:
 
 	bool is_in_single_seq_group(const int max_sep) const
 	{
-		return (Comment::match_with_sequence_separation_interval(comments_[0], comments_[1], Comment::null_num(), max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[0], comments_[2], Comment::null_num(), max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[0], comments_[3], Comment::null_num(), max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[1], comments_[2], Comment::null_num(), max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[1], comments_[3], Comment::null_num(), max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[2], comments_[3], Comment::null_num(), max_sep, false));
+		for(int i=0;i<4;i++)
+		{
+			for(int j=(i+1);j<4;j++)
+			{
+				if(!Comment::match_with_sequence_separation_interval(comments_[i], comments_[j], Comment::null_num(), max_sep, false))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	int count_seq_groups(const int max_sep) const
+	{
+		int colors[4]={-1, -1, -1, -1};
+		for(int i=0;i<4;i++)
+		{
+			if(colors[i]<0)
+			{
+				colors[i]=i;
+			}
+			for(int j=(i+1);j<4;j++)
+			{
+				if(Comment::match_with_sequence_separation_interval(comments_[i], comments_[j], Comment::null_num(), max_sep, false))
+				{
+					colors[j]=colors[i];
+				}
+			}
+		}
+		int mask[4]={0, 0, 0, 0};
+		for(int i=0;i<4;i++)
+		{
+			mask[colors[i]]=1;
+		}
+		int count=0;
+		for(int i=0;i<4;i++)
+		{
+			count+=mask[i];
+		}
+		return count;
 	}
 
 	bool operator==(const Quadron& v) const
@@ -176,6 +211,8 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--group-max-seq-sep", "number", "maximum residue sequence separation to define sequence group"));
+		list_of_option_descriptions.push_back(OD("--min-groups-count", "number", "minimum number of sequence groups"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
@@ -189,6 +226,8 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
+	const int group_max_seq_sep=poh.argument<int>("--group-max-seq-sep", 0);
+	const int min_groups_count=poh.argument<int>("--min-groups-count", 2);
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const bool drawing=!drawing_for_pymol.empty();
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "quadrons");
@@ -225,17 +264,20 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< Quadron, std::pair<double, std::string> >::const_iterator it=map_of_quadrons.begin();it!=map_of_quadrons.end();++it)
 	{
 		const Quadron& q=it->first;
-		const std::pair<double, std::string>& value=it->second;
-		std::cout << q.get_comments()[0].str() << " " << q.get_comments()[1].str() << " " << q.get_comments()[2].str() << " " << q.get_comments()[3].str() << " " << value.first;
-		if(preserve_graphics && !value.second.empty())
+		if(q.count_seq_groups(group_max_seq_sep)>=min_groups_count)
 		{
-			std::cout << value.second;
-		}
-		std::cout << "\n";
-		if(drawing && !value.second.empty())
-		{
-			opengl_printer.add(value.second);
-			opengl_printer_filled=true;
+			const std::pair<double, std::string>& value=it->second;
+			std::cout << q.get_comments()[0].str() << " " << q.get_comments()[1].str() << " " << q.get_comments()[2].str() << " " << q.get_comments()[3].str() << " " << value.first;
+			if(preserve_graphics && !value.second.empty())
+			{
+				std::cout << value.second;
+			}
+			std::cout << "\n";
+			if(drawing && !value.second.empty())
+			{
+				opengl_printer.add(value.second);
+				opengl_printer_filled=true;
+			}
 		}
 	}
 
