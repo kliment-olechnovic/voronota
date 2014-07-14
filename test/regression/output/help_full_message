@@ -40,7 +40,6 @@ Mode 'calculate-contacts' options:
 --annotate                                  flag to annotate contacts using balls comments
 --probe                         number      probe radius
 --exclude-hidden-balls                      flag to exclude hidden input balls
---init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --step                          number      curve step length
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
