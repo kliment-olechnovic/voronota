@@ -12,6 +12,40 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomComment Comment;
 
+class Quadron
+{
+public:
+	Quadron(const Comment& a, const Comment& b, const Comment& c, const Comment& d, const double volume) : comments_(4), volume_(volume)
+	{
+		comments_[0]=a;
+		comments_[1]=b;
+		comments_[2]=c;
+		comments_[3]=d;
+		std::sort(comments_.begin(), comments_.end());
+	}
+
+	const std::vector<Comment>& get_comments() const
+	{
+		return comments_;
+	}
+
+	double get_volume() const
+	{
+		return volume_;
+	}
+
+	bool is_of_same_sequence_separation_interval(const int min_sep, const int max_sep) const
+	{
+		return (Comment::match_with_sequence_separation_interval(comments_[0], comments_[1], min_sep, max_sep, false) &&
+				Comment::match_with_sequence_separation_interval(comments_[0], comments_[2], min_sep, max_sep, false) &&
+				Comment::match_with_sequence_separation_interval(comments_[0], comments_[3], min_sep, max_sep, false));
+	}
+
+private:
+	std::vector<Comment> comments_;
+	double volume_;
+};
+
 }
 
 void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
@@ -58,14 +92,11 @@ void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
 		apollota::SimpleSphere s=it->second;
 		if(s.r<probe && q.get(0)<input_spheres_comments.size() && q.get(1)<input_spheres_comments.size() && q.get(2)<input_spheres_comments.size() && q.get(3)<input_spheres_comments.size())
 		{
-			Comment comments[4]={input_spheres_comments[q.get(0)], input_spheres_comments[q.get(1)], input_spheres_comments[q.get(2)], input_spheres_comments[q.get(3)]};
-			std::sort(comments, comments+4);
-			const Comment comments_wa[4]={comments[0].without_atom(), comments[1].without_atom(), comments[2].without_atom(), comments[3].without_atom()};
-			if(!(comments_wa[0]==comments_wa[1] && comments_wa[0]==comments_wa[2] && comments_wa[0]==comments_wa[3]))
+			s.r=(probe-s.r);
+			Quadron quadron(input_spheres_comments[q.get(0)], input_spheres_comments[q.get(1)], input_spheres_comments[q.get(2)], input_spheres_comments[q.get(3)], ((4.0/3.0)*apollota::Rotation::pi()*s.r*s.r*s.r));
+			if(!quadron.is_of_same_sequence_separation_interval(0, 0))
 			{
-				s.r=(probe-s.r);
-				const double volume=(4.0/3.0)*apollota::Rotation::pi()*s.r*s.r*s.r;
-				std::cout << comments[0].str() << " " << comments[1].str() << " " << comments[2].str() << " " << comments[3].str() << " " << volume;
+				std::cout << quadron.get_comments()[0].str() << " " << quadron.get_comments()[1].str() << " " << quadron.get_comments()[2].str() << " " << quadron.get_comments()[3].str() << " " << quadron.get_volume();
 				if(draw)
 				{
 					auxiliaries::OpenGLPrinter opengl_printer;

@@ -147,14 +147,14 @@ public:
 		return matched;
 	}
 
-	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep)
+	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep, const bool uncheckable_result)
 	{
 		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
 		{
 			const int sep=abs(a.resSeq-b.resSeq);
 			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
 		}
-		return true;
+		return uncheckable_result;
 	}
 
 	bool valid() const
