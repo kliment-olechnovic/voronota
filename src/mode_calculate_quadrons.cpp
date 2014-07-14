@@ -38,7 +38,10 @@ public:
 	{
 		return (Comment::match_with_sequence_separation_interval(comments_[0], comments_[1], min_sep, max_sep, false) &&
 				Comment::match_with_sequence_separation_interval(comments_[0], comments_[2], min_sep, max_sep, false) &&
-				Comment::match_with_sequence_separation_interval(comments_[0], comments_[3], min_sep, max_sep, false));
+				Comment::match_with_sequence_separation_interval(comments_[0], comments_[3], min_sep, max_sep, false) &&
+				Comment::match_with_sequence_separation_interval(comments_[1], comments_[2], min_sep, max_sep, false) &&
+				Comment::match_with_sequence_separation_interval(comments_[1], comments_[3], min_sep, max_sep, false) &&
+				Comment::match_with_sequence_separation_interval(comments_[2], comments_[3], min_sep, max_sep, false));
 	}
 
 private:
