@@ -21,7 +21,6 @@ void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
 		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
 		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics"));
 		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -32,7 +31,6 @@ void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
-	const double init_radius_for_BSH=std::max(1.0, poh.argument<double>("--init-radius-for-BSH", 3.5));
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
 	const bool draw=poh.contains_option("--draw");
 
@@ -51,7 +49,7 @@ void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, init_radius_for_BSH, exclude_hidden_balls, false);
+	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, exclude_hidden_balls, false);
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	for(apollota::Triangulation::VerticesVector::const_iterator it=vertices_vector.begin();it!=vertices_vector.end();++it)
