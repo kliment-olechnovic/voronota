@@ -213,9 +213,11 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--group-max-seq-sep", "number", "maximum residue sequence separation to define sequence group"));
 		list_of_option_descriptions.push_back(OD("--min-groups-count", "number", "minimum number of sequence groups"));
+		list_of_option_descriptions.push_back(OD("--max-groups-count", "number", "maximum number of sequence groups"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
+		list_of_option_descriptions.push_back(OD("--drawing-color-by-groups-count", "", "flag to color by number of sequence groups"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -228,10 +230,12 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const int group_max_seq_sep=poh.argument<int>("--group-max-seq-sep", 0);
 	const int min_groups_count=poh.argument<int>("--min-groups-count", 2);
+	const int max_groups_count=poh.argument<int>("--max-groups-count", 4);
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const bool drawing=!drawing_for_pymol.empty();
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "quadrons");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
+	const bool drawing_color_by_groups_count=poh.contains_option("--drawing-color-by-groups-count");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< Quadron, std::pair<double, std::string> > map_of_quadrons;
@@ -264,7 +268,8 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< Quadron, std::pair<double, std::string> >::const_iterator it=map_of_quadrons.begin();it!=map_of_quadrons.end();++it)
 	{
 		const Quadron& q=it->first;
-		if(q.count_seq_groups(group_max_seq_sep)>=min_groups_count)
+		const int seq_groups_count=q.count_seq_groups(group_max_seq_sep);
+		if(seq_groups_count>=min_groups_count && seq_groups_count<=max_groups_count)
 		{
 			const std::pair<double, std::string>& value=it->second;
 			std::cout << q.get_comments()[0].str() << " " << q.get_comments()[1].str() << " " << q.get_comments()[2].str() << " " << q.get_comments()[3].str() << " " << value.first;
@@ -275,6 +280,10 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cout << "\n";
 			if(drawing && !value.second.empty())
 			{
+				if(drawing_color_by_groups_count)
+				{
+					opengl_printer.add_color(seq_groups_count<=2 ? 0xFF0000 : (seq_groups_count==3 ? 0x00FF00 : 0xFFFF00));
+				}
 				opengl_printer.add(value.second);
 				opengl_printer_filled=true;
 			}
