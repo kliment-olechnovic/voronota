@@ -282,7 +282,7 @@ void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(drawing_color_by_groups_count)
 				{
-					opengl_printer.add_color(seq_groups_count<=2 ? 0xFF0000 : (seq_groups_count==3 ? 0x00FF00 : 0xFFFF00));
+					opengl_printer.add_color(seq_groups_count<=2 ? 0x00FFFF : (seq_groups_count==3 ? 0xFF00FF : 0xFFFF00));
 				}
 				opengl_printer.add(value.second);
 				opengl_printer_filled=true;
