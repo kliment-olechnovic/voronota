@@ -326,6 +326,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-min-area", "number", "minimum contact area"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
+		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include contacts in same chain"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
@@ -352,6 +353,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", 0.0);
 	const bool no_solvent=poh.contains_option("--no-solvent");
+	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
@@ -415,6 +417,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		if(
 				value.first>=match_min_area &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
+				(!(no_same_chain && comments.first.without_residue()==comments.second.without_residue())) &&
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true)
 		)
 		{

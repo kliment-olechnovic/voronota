@@ -63,6 +63,7 @@ Mode 'calculate-contacts-query' options:
 --match-max-seq-sep             number      maximum residue sequence separation
 --match-min-area                number      minimum contact area
 --no-solvent                                flag to not include solvent accessible areas
+--no-same-chain                             flag to not include contacts in same chain
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
