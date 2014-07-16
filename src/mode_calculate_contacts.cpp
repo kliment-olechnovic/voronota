@@ -324,6 +324,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-second-not", "string", "negative selection for second contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
+		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
@@ -348,6 +349,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
 	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
+	const bool no_solvent=poh.contains_option("--no-solvent");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
@@ -407,7 +409,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
-		if(Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true))
+		if(
+				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
+				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true)
+		)
 		{
 			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
 			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));

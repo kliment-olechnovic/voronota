@@ -61,6 +61,7 @@ Mode 'calculate-contacts-query' options:
 --match-second-not              string      negative selection for second contacting group
 --match-min-seq-sep             number      minimum residue sequence separation
 --match-max-seq-sep             number      maximum residue sequence separation
+--no-solvent                                flag to not include solvent accessible areas
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
