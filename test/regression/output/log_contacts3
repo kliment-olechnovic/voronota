@@ -3,8 +3,7 @@ probe 1.4
 step 0.2
 projections 5
 sih_depth 3
-max_dist 5.6
-output_pairs 13791
+output_pairs 12465
 contacts_count_internal 11290
 contacts_count_external 1183
 contacts_sum_internal 36460.9
