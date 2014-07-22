@@ -18,9 +18,10 @@ typedef auxiliaries::ChainResidueAtomComment Comment;
 struct ContactValue
 {
 	double area;
+	double dist;
 	std::string graphics;
 
-	ContactValue() : area(0.0)
+	ContactValue() : area(0.0), dist(0.0)
 	{
 	}
 };
@@ -29,7 +30,7 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 {
 	std::pair<std::string, std::string> comment_strings;
 	ContactValue value;
-	input >> comment_strings.first >> comment_strings.second >> value.area;
+	input >> comment_strings.first >> comment_strings.second >> value.area >> value.dist;
 	if(input.good())
 	{
 		std::getline(input, value.graphics);
@@ -167,7 +168,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cerr << "              (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
 			std::cerr << "stdout  ->  list of contacts\n";
 			std::cerr << "              (default line format: 'b1 b2 area')\n";
-			std::cerr << "              (annotated line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "              (annotated line format: 'annotation1 annotation2 area distance [graphics]')\n";
 			return;
 		}
 	}
@@ -244,8 +245,9 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t b_id=it->first.get(1);
 				if(!(a_id!=b_id && input_spheres_comments[a_id].without_atom()==input_spheres_comments[b_id].without_atom()))
 				{
+					const double dist=(a_id==b_id ? 0.0 : apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]));
 					const bool reverse=input_spheres_comments[b_id]<input_spheres_comments[a_id];
-					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area;
+					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area << " " << dist;
 					if(draw)
 					{
 						std::cout << " " << (a_id==b_id ?
@@ -455,7 +457,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			std::cout.width(column_width.second);
 			std::cout << std::left << comments.second.str();
 			std::cout.width(default_column_width);
-			std::cout << value.area;
+			std::cout << value.area << " " << value.dist;
 			if(preserve_graphics && !value.graphics.empty())
 			{
 				std::cout << value.graphics;
