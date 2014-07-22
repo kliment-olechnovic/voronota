@@ -15,14 +15,24 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomComment Comment;
 
-bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >& map_of_records)
+struct ContactValue
+{
+	double area;
+	std::string graphics;
+
+	ContactValue() : area(0.0)
+	{
+	}
+};
+
+bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
-	std::pair<double, std::string> value(0.0, std::string());
-	input >> comment_strings.first >> comment_strings.second >> value.first;
+	ContactValue value;
+	input >> comment_strings.first >> comment_strings.second >> value.area;
 	if(input.good())
 	{
-		std::getline(input, value.second);
+		std::getline(input, value.graphics);
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
@@ -363,7 +373,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
-	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_contacts;
+	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
 	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
@@ -372,8 +382,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(inter_chain || inter_residue)
 	{
-		std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > map_of_reduced_contacts;
-		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			std::pair<Comment, Comment> comments=it->first;
 			if(inter_chain)
@@ -392,15 +402,15 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					std::swap(comments.first, comments.second);
 				}
-				std::pair<double, std::string>& value=map_of_reduced_contacts[comments];
-				value.first+=it->second.first;
-				value.second+=it->second.second;
+				ContactValue& value=map_of_reduced_contacts[comments];
+				value.area+=it->second.area;
+				value.graphics+=it->second.graphics;
 			}
 		}
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::map< std::pair<Comment, Comment>, std::pair<double, std::string> > output_map_of_contacts;
+	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
 
 	auxiliaries::OpenGLPrinter opengl_printer;
 	bool opengl_printer_filled=false;
@@ -410,12 +420,12 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		opengl_printer.add_alpha(drawing_alpha);
 	}
 
-	for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
-		const std::pair<double, std::string>& value=it->second;
+		const ContactValue& value=it->second;
 		if(
-				value.first>=match_min_area &&
+				value.area>=match_min_area &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
 				(!(no_same_chain && comments.first.without_residue()==comments.second.without_residue())) &&
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true)
@@ -434,13 +444,13 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 					output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
 				}
 
-				if(drawing && !value.second.empty())
+				if(drawing && !value.graphics.empty())
 				{
 					if(drawing_random_colors)
 					{
 						opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
 					}
-					opengl_printer.add(value.second);
+					opengl_printer.add(value.graphics);
 					opengl_printer_filled=true;
 				}
 			}
@@ -450,7 +460,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::size_t default_column_width=std::cout.width();
 		std::pair<std::size_t, std::size_t> column_width(default_column_width, default_column_width);
-		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			const std::pair<Comment, Comment>& comments=it->first;
 			column_width.first=std::max(column_width.first, comments.first.str().size());
@@ -458,19 +468,19 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		column_width.first+=2;
 		column_width.second+=2;
-		for(std::map< std::pair<Comment, Comment>, std::pair<double, std::string> >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			const std::pair<Comment, Comment>& comments=it->first;
-			const std::pair<double, std::string>& value=it->second;
+			const ContactValue& value=it->second;
 			std::cout.width(column_width.first);
 			std::cout << std::left << comments.first.str();
 			std::cout.width(column_width.second);
 			std::cout << std::left << comments.second.str();
 			std::cout.width(default_column_width);
-			std::cout << value.first;
-			if(preserve_graphics && !value.second.empty())
+			std::cout << value.area;
+			if(preserve_graphics && !value.graphics.empty())
 			{
-				std::cout << value.second;
+				std::cout << value.graphics;
 			}
 			std::cout << "\n";
 		}
