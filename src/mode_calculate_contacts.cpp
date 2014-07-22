@@ -26,6 +26,25 @@ struct ContactValue
 	}
 };
 
+void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics)
+{
+	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
+	{
+		const std::pair<Comment, Comment>& comments=it->first;
+		const ContactValue& value=it->second;
+		std::cout << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
+		if(preserve_graphics && !value.graphics.empty())
+		{
+			if(value.graphics[0]!=' ')
+			{
+				std::cout << " ";
+			}
+			std::cout << value.graphics;
+		}
+		std::cout << "\n";
+	}
+}
+
 bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
@@ -236,6 +255,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 
+		std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -245,19 +265,24 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t b_id=it->first.get(1);
 				if(!(a_id!=b_id && input_spheres_comments[a_id].without_atom()==input_spheres_comments[b_id].without_atom()))
 				{
-					const double dist=(a_id==b_id ? 0.0 : apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]));
-					const bool reverse=input_spheres_comments[b_id]<input_spheres_comments[a_id];
-					std::cout << input_spheres_comments[reverse ? b_id : a_id].str() << " " << (a_id==b_id ? Comment::solvent().str() : input_spheres_comments[reverse ? a_id : b_id].str()) << " " << area << " " << dist;
+					std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
+					if(comments.second<comments.first)
+					{
+						std::swap(comments.first, comments.second);
+					}
+					ContactValue& value=output_map_of_contacts[comments];
+					value.area=area;
+					value.dist=(a_id==b_id ? 0.0 : apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]));
 					if(draw)
 					{
-						std::cout << " " << (a_id==b_id ?
+						value.graphics=(a_id==b_id ?
 								draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 								draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 					}
-					std::cout << "\n";
 				}
 			}
 		}
+		print_map_of_contacts_records(output_map_of_contacts, true);
 	}
 	else
 	{
@@ -437,17 +462,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
-	{
-		const std::pair<Comment, Comment>& comments=it->first;
-		const ContactValue& value=it->second;
-		std::cout << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
-		if(preserve_graphics && !value.graphics.empty())
-		{
-			std::cout << value.graphics;
-		}
-		std::cout << "\n";
-	}
+	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics);
 
 	if(drawing && opengl_printer_filled)
 	{
