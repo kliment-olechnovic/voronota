@@ -26,22 +26,22 @@ struct ContactValue
 	}
 };
 
-void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics)
+void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
 {
 	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
 		const ContactValue& value=it->second;
-		std::cout << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
+		output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
 		if(preserve_graphics && !value.graphics.empty())
 		{
 			if(value.graphics[0]!=' ')
 			{
-				std::cout << " ";
+				output << " ";
 			}
-			std::cout << value.graphics;
+			output << value.graphics;
 		}
-		std::cout << "\n";
+		output << "\n";
 	}
 }
 
@@ -282,7 +282,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_map_of_contacts_records(output_map_of_contacts, true);
+		print_map_of_contacts_records(output_map_of_contacts, true, std::cout);
 	}
 	else
 	{
@@ -462,7 +462,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics);
+	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics, std::cout);
 
 	if(drawing && opengl_printer_filled)
 	{
