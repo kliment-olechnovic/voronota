@@ -43,13 +43,12 @@ Mode 'calculate-contacts' options:
 --step                          number      curve step length
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
---max-dist                      number      maximal distance to record, may exceed probe diameter
 --draw                                      flag to output graphics for annotated contacts
 stdin   <-  list of balls
               (default line format: 'x y z r # comments')
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
 stdout  ->  list of contacts
-              (default line format: 'b1 b2 distance area')
+              (default line format: 'b1 b2 area')
               (annotated line format: 'annotation1 annotation2 area [graphics]')
 
 Mode 'calculate-contacts-query' options:
