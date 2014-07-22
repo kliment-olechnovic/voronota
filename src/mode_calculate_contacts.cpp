@@ -326,8 +326,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
-			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
+			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
 			return;
 		}
 	}

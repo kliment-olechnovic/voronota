@@ -70,5 +70,5 @@ Mode 'calculate-contacts-query' options:
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --preserve-graphics                         flag to preserve graphics in output
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
-stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
