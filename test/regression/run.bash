@@ -43,10 +43,10 @@ $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_
 $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
 $TEST_SUBJECT --mode calculate-contacts --print-log --clog-file $OUTPUT_DIR/log_contacts4 --annotate < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/contacts4
 
-$TEST_SUBJECT --mode calculate-contacts-query --match-first 'r[3:7,9]&an[CA,CB]' < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
-$TEST_SUBJECT --mode calculate-contacts-query --inter-residue --match-first 'rn[THR]' --match-second 'rn[ARG]' < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query2
+($TEST_SUBJECT --mode calculate-contacts-query --match-first 'r[3:7,9]&an[CA,CB]' | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
+($TEST_SUBJECT --mode calculate-contacts-query --inter-residue --match-first 'rn[THR]' --match-second 'rn[ARG]' | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query2
 cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT --mode calculate-contacts --annotate --draw | $TEST_SUBJECT --mode calculate-contacts-query --match-first 'rn[CRO]' --preserve-graphics --drawing-for-pymol $OUTPUT_DIR/contacts4_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_DIR/contacts4_query3_drawing_for_jmol > $OUTPUT_DIR/contacts4_query3
-$TEST_SUBJECT --mode calculate-contacts-query --no-solvent --match-min-area 10.0 < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
+($TEST_SUBJECT --mode calculate-contacts-query --no-solvent --match-min-area 10.0 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
 
 rm -r ./voronota_package
 
