@@ -49,7 +49,7 @@ stdin   <-  list of balls
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
 stdout  ->  list of contacts
               (default line format: 'b1 b2 area')
-              (annotated line format: 'annotation1 annotation2 area [graphics]')
+              (annotated line format: 'annotation1 annotation2 area distance [graphics]')
 
 Mode 'calculate-contacts-query' options:
 --inter-residue                             flag to convert to inter-residue contacts
