@@ -70,6 +70,26 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 	return false;
 }
 
+bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
+{
+	std::pair<std::string, std::string> comment_strings;
+	input >> comment_strings.first >> comment_strings.second;
+	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
+	{
+		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
+		if(comments.first.valid() && comments.second.valid())
+		{
+			if(comments.second<comments.first)
+			{
+				std::swap(comments.first, comments.second);
+			}
+			set_of_name_pairs.insert(comments);
+			return true;
+		}
+	}
+	return false;
+}
+
 std::string draw_iter_atom_contact(
 		const std::vector<apollota::SimpleSphere>& spheres,
 		const apollota::Triangulation::VerticesVector& vertices_vector,
@@ -151,6 +171,22 @@ bool match_comment_with_member_descriptors(const Comment& comment, const std::ve
 		}
 	}
 	return true;
+}
+
+bool match_two_comments_with_set_of_name_pairs(const Comment& a, const Comment& b, const std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
+{
+	if(set_of_name_pairs.count(std::make_pair(a, b))>0 || set_of_name_pairs.count(std::make_pair(b, a))>0)
+	{
+		return true;
+	}
+	for(std::set< std::pair<Comment, Comment> >::const_iterator it=set_of_name_pairs.begin();it!=set_of_name_pairs.end();++it)
+	{
+		if((a.contains(it->first) && b.contains(it->second)) || (b.contains(it->first) && a.contains(it->second)))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 unsigned int calc_string_color_integer(const std::string& str)
@@ -340,6 +376,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-min-area", "number", "minimum contact area"));
+		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include contacts in same chain"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
@@ -367,6 +404,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", 0.0);
+	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
@@ -383,6 +421,17 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
+	}
+
+	std::set< std::pair<Comment, Comment> > matchable_set_of_name_pairs;
+	if(!match_external_annotations.empty())
+	{
+		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, "", add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		if(matchable_set_of_name_pairs.empty())
+		{
+			throw std::runtime_error("No input for matchable annotation pairs.");
+		}
 	}
 
 	if(inter_chain || inter_residue)
@@ -433,7 +482,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				value.area>=match_min_area &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
 				(!(no_same_chain && comments.first.without_residue()==comments.second.without_residue())) &&
-				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true)
+				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
+				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
 		{
 			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));

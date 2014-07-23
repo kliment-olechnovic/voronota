@@ -61,6 +61,7 @@ Mode 'calculate-contacts-query' options:
 --match-min-seq-sep             number      minimum residue sequence separation
 --match-max-seq-sep             number      maximum residue sequence separation
 --match-min-area                number      minimum contact area
+--match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --no-same-chain                             flag to not include contacts in same chain
 --drawing-for-pymol             string      file path to output drawing as pymol script
