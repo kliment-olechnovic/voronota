@@ -21,13 +21,8 @@ struct ContactValue
 	double dist;
 	std::string graphics;
 
-	ContactValue() : area(0.0), dist(null_dist())
+	ContactValue() : area(0.0), dist(0.0)
 	{
-	}
-
-	static double null_dist()
-	{
-		return (-1);
 	}
 };
 
@@ -311,7 +306,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 					ContactValue& value=output_map_of_contacts[comments];
 					value.area=area;
-					value.dist=(a_id==b_id ? ContactValue::null_dist() : apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]));
+					if(a_id!=b_id)
+					{
+						value.dist=apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]);
+					}
 					if(draw)
 					{
 						value.graphics=(a_id==b_id ?
@@ -428,7 +426,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				ContactValue& value=map_of_reduced_contacts[comments];
 				value.area+=it->second.area;
-				value.dist=ContactValue::null_dist();
 				value.graphics+=it->second.graphics;
 			}
 		}
