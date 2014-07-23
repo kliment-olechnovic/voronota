@@ -310,6 +310,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						value.dist=apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]);
 					}
+					else
+					{
+						value.dist=(spheres[a_id].r+(probe*3.0));
+					}
 					if(draw)
 					{
 						value.graphics=(a_id==b_id ?
@@ -426,6 +430,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				ContactValue& value=map_of_reduced_contacts[comments];
 				value.area+=it->second.area;
+				value.dist=(value.dist<=0.0 ? it->second.dist : std::min(value.dist, it->second.dist));
 				value.graphics+=it->second.graphics;
 			}
 		}
