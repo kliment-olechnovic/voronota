@@ -208,7 +208,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
 		list_of_option_descriptions.push_back(OD("--annotate", "", "flag to annotate contacts using balls comments"));
 		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
 		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
@@ -228,7 +227,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const bool print_log=poh.contains_option("--print-log");
 	const bool annotate=poh.contains_option("--annotate");
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
@@ -326,39 +324,6 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
 		}
-	}
-
-	if(print_log)
-	{
-		std::clog << "balls " << input_spheres_count << "\n";
-		std::clog << "probe " << probe << "\n";
-		std::clog << "step " << step << "\n";
-		std::clog << "projections " << projections << "\n";
-		std::clog << "sih_depth " << sih_depth << "\n";
-		std::clog << "output_pairs " << interactions_map.size() << "\n";
-		std::clog << "contacts_count_internal " << constrained_contacts.size() << "\n";
-		std::clog << "contacts_count_external " << constrained_contact_remainders.size() << "\n";
-
-		double contacts_sum_internal=0.0;
-		for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
-		{
-			if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
-			{
-				contacts_sum_internal+=it->second;
-			}
-		}
-
-		double contacts_sum_external=0.0;
-		for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
-		{
-			if(it->first<input_spheres_count)
-			{
-				contacts_sum_external+=it->second;
-			}
-		}
-
-		std::clog << "contacts_sum_internal " << contacts_sum_internal << "\n";
-		std::clog << "contacts_sum_external " << contacts_sum_external << "\n";
 	}
 }
 
