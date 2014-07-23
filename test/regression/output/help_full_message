@@ -36,7 +36,6 @@ stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 Mode 'calculate-contacts' options:
---print-log                                 flag to print log of calculations
 --annotate                                  flag to annotate contacts using balls comments
 --probe                         number      probe radius
 --exclude-hidden-balls                      flag to exclude hidden input balls
