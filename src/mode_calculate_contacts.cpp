@@ -297,29 +297,26 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				if(!(a_id!=b_id && input_spheres_comments[a_id].without_atom()==input_spheres_comments[b_id].without_atom()))
+				std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
+				if(comments.second<comments.first)
 				{
-					std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
-					if(comments.second<comments.first)
-					{
-						std::swap(comments.first, comments.second);
-					}
-					ContactValue& value=output_map_of_contacts[comments];
-					value.area=area;
-					if(a_id!=b_id)
-					{
-						value.dist=apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]);
-					}
-					else
-					{
-						value.dist=(spheres[a_id].r+(probe*3.0));
-					}
-					if(draw)
-					{
-						value.graphics=(a_id==b_id ?
-								draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-								draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
-					}
+					std::swap(comments.first, comments.second);
+				}
+				ContactValue& value=output_map_of_contacts[comments];
+				value.area=area;
+				if(a_id!=b_id)
+				{
+					value.dist=apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]);
+				}
+				else
+				{
+					value.dist=(spheres[a_id].r+(probe*3.0));
+				}
+				if(draw)
+				{
+					value.graphics=(a_id==b_id ?
+							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
+							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 				}
 			}
 		}
@@ -375,7 +372,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
 	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
-	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
+	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", 1);
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
