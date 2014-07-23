@@ -214,6 +214,18 @@ public:
 		return v;
 	}
 
+	bool contains(const ChainResidueAtomComment& v) const
+	{
+		return (valid() && v.valid() &&
+				(v.serial==null_num() || v.serial==serial) &&
+				(v.chainID.empty() || v.chainID==chainID) &&
+				(v.resSeq==null_num() || v.resSeq==resSeq) &&
+				(v.resName.empty() || v.resName==resName) &&
+				(v.name.empty() || v.name==name) &&
+				(v.altLoc.empty() || v.altLoc==altLoc) &&
+				(v.iCode.empty() || v.iCode==iCode));
+	}
+
 	bool operator==(const ChainResidueAtomComment& v) const
 	{
 		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
