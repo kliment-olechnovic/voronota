@@ -183,7 +183,18 @@ public:
 	{
 		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
 		{
-			const int sep=abs(a.resSeq-b.resSeq);
+			int sep=abs(a.resSeq-b.resSeq);
+			if(sep==0 && !(a.iCode.empty() && b.iCode.empty()) && a.iCode!=b.iCode)
+			{
+				if(!a.iCode.empty() && !b.iCode.empty())
+				{
+					sep=abs(static_cast<int>(a.iCode[0])-static_cast<int>(b.iCode[1]));
+				}
+				else
+				{
+					sep=1;
+				}
+			}
 			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
 		}
 		return uncheckable_result;
