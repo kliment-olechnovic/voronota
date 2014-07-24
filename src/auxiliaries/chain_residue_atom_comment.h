@@ -53,13 +53,45 @@ public:
 		{
 			std::string marker;
 			input >> marker;
-			if(marker=="c") { input >> v.chainID; }
-			else if(marker=="r") { input >> v.resSeq; }
-			else if(marker=="i") { input >> v.iCode; }
-			else if(marker=="a") { input >> v.serial; }
-			else if(marker=="l") { input >> v.altLoc; }
-			else if(marker=="rn") { input >> v.resName; }
-			else if(marker=="an") { input >> v.name; }
+			if(!marker.empty())
+			{
+				if(marker=="c")
+				{
+					input >> v.chainID;
+				}
+				else if(marker=="r")
+				{
+					input >> v.resSeq;
+				}
+				else if(marker=="i")
+				{
+					input >> v.iCode;
+				}
+				else if(marker=="a")
+				{
+					input >> v.serial;
+				}
+				else if(marker=="l")
+				{
+					input >> v.altLoc;
+				}
+				else if(marker=="rn")
+				{
+					input >> v.resName;
+				}
+				else if(marker=="an")
+				{
+					input >> v.name;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in comment string '"+input_str+"'.");
+				}
+				if(input.fail())
+				{
+					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in comment string '"+input_str+"'.");
+				}
+			}
 		}
 		if(!(v.valid() && v.str()==input_str))
 		{
@@ -149,9 +181,20 @@ public:
 
 	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep, const bool uncheckable_result)
 	{
-		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
+		if(!(min_sep==null_num() && max_sep==null_num()) && a.resSeq!=null_num() && b.resSeq!=null_num() && a.chainID==b.chainID)
 		{
-			const int sep=abs(a.resSeq-b.resSeq);
+			int sep=abs(a.resSeq-b.resSeq);
+			if(sep==0 && !(a.iCode.empty() && b.iCode.empty()) && a.iCode!=b.iCode)
+			{
+				if(!a.iCode.empty() && !b.iCode.empty())
+				{
+					sep=abs(static_cast<int>(a.iCode[0])-static_cast<int>(b.iCode[1]));
+				}
+				else
+				{
+					sep=1;
+				}
+			}
 			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
 		}
 		return uncheckable_result;
@@ -159,12 +202,9 @@ public:
 
 	bool valid() const
 	{
-		return !((chainID.empty()) ||
-				(serial!=null_num() && resSeq==null_num()) ||
-				(resName.empty() && resSeq!=null_num()) ||
-				(!resName.empty() && resSeq==null_num()) ||
-				(name.empty() && serial!=null_num()) ||
-				(!name.empty() && serial==null_num()));
+		return ((!chainID.empty() || resSeq!=null_num() || !resName.empty() || serial!=null_num() || !name.empty()) &&
+				!(resSeq==null_num() && !iCode.empty()) &&
+				!(serial==null_num() && !altLoc.empty()));
 	}
 
 	ChainResidueAtomComment without_atom() const
@@ -176,13 +216,31 @@ public:
 		return v;
 	}
 
-	ChainResidueAtomComment without_residue() const
+	ChainResidueAtomComment without_numbering() const
 	{
-		ChainResidueAtomComment v=without_atom();
-		v.resSeq=null_num();
-		v.iCode.clear();
-		v.resName.clear();
-		return v;
+		if((*this)==solvent())
+		{
+			return solvent();
+		}
+		else
+		{
+			ChainResidueAtomComment v;
+			v.resName=resName;
+			v.name=name;
+			return v;
+		}
+	}
+
+	bool contains(const ChainResidueAtomComment& v) const
+	{
+		return (valid() && v.valid() &&
+				(v.serial==null_num() || v.serial==serial) &&
+				(v.chainID.empty() || v.chainID==chainID) &&
+				(v.resSeq==null_num() || v.resSeq==resSeq) &&
+				(v.resName.empty() || v.resName==resName) &&
+				(v.name.empty() || v.name==name) &&
+				(v.altLoc.empty() || v.altLoc==altLoc) &&
+				(v.iCode.empty() || v.iCode==iCode));
 	}
 
 	bool operator==(const ChainResidueAtomComment& v) const
@@ -222,11 +280,12 @@ public:
 
 	std::string str() const
 	{
-		const bool with_residue=(resSeq!=null_num());
-		const bool with_residue_and_atom=(with_residue && (serial!=null_num()));
 		std::ostringstream output;
-		output << "c" << vbegin << chainID << vend;
-		if(with_residue)
+		if(!chainID.empty())
+		{
+			output << "c" << vbegin << chainID << vend;
+		}
+		if(resSeq!=null_num())
 		{
 			output << "r" << vbegin << resSeq << vend;
 			if(!iCode.empty())
@@ -234,7 +293,7 @@ public:
 				output << "i" << vbegin << iCode << vend;
 			}
 		}
-		if(with_residue_and_atom)
+		if(serial!=null_num())
 		{
 			output << "a" << vbegin << serial << vend;
 			if(!altLoc.empty())
@@ -242,11 +301,11 @@ public:
 				output << "l" << vbegin << altLoc << vend;
 			}
 		}
-		if(with_residue)
+		if(!resName.empty())
 		{
 			output << "rn" << vbegin << resName << vend;
 		}
-		if(with_residue_and_atom)
+		if(!name.empty())
 		{
 			output << "an" << vbegin << name << vend;
 		}
