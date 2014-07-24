@@ -51,7 +51,6 @@ stdout  ->  list of contacts
               (annotated line format: 'annotation1 annotation2 area distance [graphics]')
 
 Mode 'calculate-contacts-query' options:
---inter-residue                             flag to firstly convert to inter-residue contacts
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
@@ -64,6 +63,7 @@ Mode 'calculate-contacts-query' options:
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --no-same-chain                             flag to not include contacts in same chain
+--inter-residue                             flag to convert final result to inter-residue contacts
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
