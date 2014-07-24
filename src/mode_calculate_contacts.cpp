@@ -24,6 +24,13 @@ struct ContactValue
 	ContactValue() : area(0.0), dist(0.0)
 	{
 	}
+
+	void add(const ContactValue& v)
+	{
+		area+=v.area;
+		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
+		graphics+=v.graphics;
+	}
 };
 
 void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
@@ -419,10 +426,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					std::swap(comments.first, comments.second);
 				}
-				ContactValue& value=map_of_reduced_contacts[comments];
-				value.area+=it->second.area;
-				value.dist=(value.dist<=0.0 ? it->second.dist : std::min(value.dist, it->second.dist));
-				value.graphics+=it->second.graphics;
+				map_of_reduced_contacts[comments].add(it->second);
 			}
 		}
 		map_of_contacts=map_of_reduced_contacts;
