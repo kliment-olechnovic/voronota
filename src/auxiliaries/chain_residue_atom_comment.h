@@ -181,7 +181,7 @@ public:
 
 	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep, const bool uncheckable_result)
 	{
-		if(!(min_sep==null_num() && max_sep==null_num()) && a.chainID==b.chainID)
+		if(!(min_sep==null_num() && max_sep==null_num()) && a.resSeq!=null_num() && b.resSeq!=null_num() && a.chainID==b.chainID)
 		{
 			int sep=abs(a.resSeq-b.resSeq);
 			if(sep==0 && !(a.iCode.empty() && b.iCode.empty()) && a.iCode!=b.iCode)
