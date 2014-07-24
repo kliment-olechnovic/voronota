@@ -64,6 +64,7 @@ Mode 'calculate-contacts-query' options:
 --no-solvent                                flag to not include solvent accessible areas
 --no-same-chain                             flag to not include contacts in same chain
 --inter-residue                             flag to convert final result to inter-residue contacts
+--only-names                                flag to leave only residue and atom names in result annotations
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output

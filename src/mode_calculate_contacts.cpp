@@ -356,6 +356,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include contacts in same chain"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert final result to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--only-names", "", "flag to leave only residue and atom names in result annotations"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
@@ -385,6 +386,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const bool inter_residue=poh.contains_option("--inter-residue");
+	const bool only_names=poh.contains_option("--only-names");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
@@ -459,6 +461,23 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				map_of_reduced_contacts[comments].add(it->second);
 			}
+		}
+		output_map_of_contacts=map_of_reduced_contacts;
+	}
+
+	if(only_names)
+	{
+		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		{
+			std::pair<Comment, Comment> comments=it->first;
+			comments.first=comments.first.without_numbering();
+			comments.second=comments.second.without_numbering();
+			if(comments.second<comments.first)
+			{
+				std::swap(comments.first, comments.second);
+			}
+			map_of_reduced_contacts[comments].add(it->second);
 		}
 		output_map_of_contacts=map_of_reduced_contacts;
 	}
