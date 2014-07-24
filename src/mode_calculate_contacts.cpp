@@ -33,6 +33,19 @@ struct ContactValue
 	}
 };
 
+template<typename T>
+T refine_pair(const T& p, const bool reverse)
+{
+	if(reverse)
+	{
+		return T(p.second, p.first);
+	}
+	else
+	{
+		return p;
+	}
+}
+
 void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
 {
 	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
@@ -63,14 +76,10 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
+		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			if(comments.second<comments.first)
-			{
-				std::swap(comments.first, comments.second);
-			}
-			map_of_records[comments]=value;
+			map_of_records[refine_pair(comments, comments.second<comments.first)]=value;
 			return true;
 		}
 	}
@@ -83,14 +92,10 @@ bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< st
 	input >> comment_strings.first >> comment_strings.second;
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
+		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			if(comments.second<comments.first)
-			{
-				std::swap(comments.first, comments.second);
-			}
-			set_of_name_pairs.insert(comments);
+			set_of_name_pairs.insert(refine_pair(comments, comments.second<comments.first));
 			return true;
 		}
 	}
@@ -304,12 +309,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
-				if(comments.second<comments.first)
-				{
-					std::swap(comments.first, comments.second);
-				}
-				ContactValue& value=output_map_of_contacts[comments];
+				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
+				ContactValue& value=output_map_of_contacts[refine_pair(comments, comments.second<comments.first)];
 				value.area=area;
 				if(a_id!=b_id)
 				{
@@ -433,14 +434,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
 			if(matched_first_second || matched_second_first)
 			{
-				if(matched_first_second)
-				{
-					output_map_of_contacts[comments]=value;
-				}
-				else
-				{
-					output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
-				}
+				output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
 			}
 		}
 	}
@@ -450,16 +444,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			std::pair<Comment, Comment> comments=it->first;
-			comments.first=comments.first.without_atom();
-			comments.second=comments.second.without_atom();
+			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
 			if(!(comments.second==comments.first))
 			{
-				if(comments.second<comments.first)
-				{
-					std::swap(comments.first, comments.second);
-				}
-				map_of_reduced_contacts[comments].add(it->second);
+				map_of_reduced_contacts[refine_pair(comments, map_of_reduced_contacts.count(refine_pair(comments, true))>0)].add(it->second);
 			}
 		}
 		output_map_of_contacts=map_of_reduced_contacts;
@@ -470,14 +458,8 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			std::pair<Comment, Comment> comments=it->first;
-			comments.first=comments.first.without_numbering();
-			comments.second=comments.second.without_numbering();
-			if(comments.second<comments.first)
-			{
-				std::swap(comments.first, comments.second);
-			}
-			map_of_reduced_contacts[comments].add(it->second);
+			const std::pair<Comment, Comment> comments(it->first.first.without_numbering(), it->first.second.without_numbering());
+			map_of_reduced_contacts[refine_pair(comments, comments.second<comments.first)].add(it->second);
 		}
 		output_map_of_contacts=map_of_reduced_contacts;
 	}
