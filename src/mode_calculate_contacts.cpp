@@ -336,7 +336,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to firstly convert to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--match-first", "string", "selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second", "string", "selection for second contacting group"));

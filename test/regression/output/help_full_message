@@ -51,7 +51,7 @@ stdout  ->  list of contacts
               (annotated line format: 'annotation1 annotation2 area distance [graphics]')
 
 Mode 'calculate-contacts-query' options:
---inter-residue                             flag to convert to inter-residue contacts
+--inter-residue                             flag to firstly convert to inter-residue contacts
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
