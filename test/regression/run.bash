@@ -50,7 +50,7 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT --mode calculate-contacts --annotate --dr
 ($TEST_SUBJECT --mode calculate-contacts-query --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query5
 ($TEST_SUBJECT --mode calculate-contacts-query --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query6
 ($TEST_SUBJECT --mode calculate-contacts-query --inter-residue --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query7
-($TEST_SUBJECT --mode calculate-contacts-query --match-min-area 14.0 --invert | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query8
+($TEST_SUBJECT --mode calculate-contacts-query --match-both-not 'rn[VAL]' --invert | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query8
 
 rm -r ./voronota_package
 
