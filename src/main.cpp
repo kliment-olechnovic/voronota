@@ -66,7 +66,7 @@ int main(const int argc, const char** argv)
 
 		if(poh.contains_option("--version"))
 		{
-			std::cerr << "Voronota version 1.2\n";
+			std::cerr << "Voronota version 1.3\n";
 			return 1;
 		}
 

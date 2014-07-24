@@ -36,34 +36,38 @@ stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 Mode 'calculate-contacts' options:
---print-log                                 flag to print log of calculations
 --annotate                                  flag to annotate contacts using balls comments
 --probe                         number      probe radius
 --exclude-hidden-balls                      flag to exclude hidden input balls
 --step                          number      curve step length
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
---max-dist                      number      maximal distance to record, may exceed probe diameter
 --draw                                      flag to output graphics for annotated contacts
 stdin   <-  list of balls
               (default line format: 'x y z r # comments')
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
 stdout  ->  list of contacts
-              (default line format: 'b1 b2 distance area')
-              (annotated line format: 'annotation1 annotation2 area [graphics]')
+              (default line format: 'b1 b2 area')
+              (annotated line format: 'annotation1 annotation2 area distance [graphics]')
 
 Mode 'calculate-contacts-query' options:
---inter-residue                             flag to convert to inter-residue contacts
---inter-chain                               flag to convert to inter-chain contacts
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
 --match-second-not              string      negative selection for second contacting group
+--match-both                    string      selection for first and second contacting groups
+--match-both-not                string      negative selection for first and second contacting groups
 --match-min-seq-sep             number      minimum residue sequence separation
 --match-max-seq-sep             number      maximum residue sequence separation
 --match-min-area                number      minimum contact area
+--match-min-dist                number      minimum distance
+--match-max-dist                number      maximum distance
+--match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --no-same-chain                             flag to not include contacts in same chain
+--invert                                    flag to invert selection
+--inter-residue                             flag to convert final result to inter-residue contacts
+--only-names                                flag to leave only residue and atom names in result annotations
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-name                  string      graphics object name for drawing output
@@ -71,5 +75,5 @@ Mode 'calculate-contacts-query' options:
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --preserve-graphics                         flag to preserve graphics in output
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
-stdout  ->  list of contacts (line format: 'annotation1 annotation2 area [graphics]')
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
