@@ -48,6 +48,8 @@ $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts4 --
 cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT --mode calculate-contacts --annotate --draw | $TEST_SUBJECT --mode calculate-contacts-query --match-first 'rn[CRO]' --preserve-graphics --drawing-for-pymol $OUTPUT_DIR/contacts4_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_DIR/contacts4_query3_drawing_for_jmol > $OUTPUT_DIR/contacts4_query3
 ($TEST_SUBJECT --mode calculate-contacts-query --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
 ($TEST_SUBJECT --mode calculate-contacts-query --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query5
+($TEST_SUBJECT --mode calculate-contacts-query --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query6
+($TEST_SUBJECT --mode calculate-contacts-query --inter-residue --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query7
 
 rm -r ./voronota_package
 

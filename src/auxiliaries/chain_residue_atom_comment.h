@@ -216,6 +216,21 @@ public:
 		return v;
 	}
 
+	ChainResidueAtomComment without_numbering() const
+	{
+		if((*this)==solvent())
+		{
+			return solvent();
+		}
+		else
+		{
+			ChainResidueAtomComment v;
+			v.resName=resName;
+			v.name=name;
+			return v;
+		}
+	}
+
 	bool contains(const ChainResidueAtomComment& v) const
 	{
 		return (valid() && v.valid() &&
