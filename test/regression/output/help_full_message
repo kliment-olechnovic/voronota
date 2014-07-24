@@ -52,7 +52,6 @@ stdout  ->  list of contacts
 
 Mode 'calculate-contacts-query' options:
 --inter-residue                             flag to convert to inter-residue contacts
---inter-chain                               flag to convert to inter-chain contacts
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
