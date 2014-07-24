@@ -216,15 +216,6 @@ public:
 		return v;
 	}
 
-	ChainResidueAtomComment without_residue() const
-	{
-		ChainResidueAtomComment v=without_atom();
-		v.resSeq=null_num();
-		v.iCode.clear();
-		v.resName.clear();
-		return v;
-	}
-
 	bool contains(const ChainResidueAtomComment& v) const
 	{
 		return (valid() && v.valid() &&

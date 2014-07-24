@@ -337,7 +337,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert to inter-residue contacts"));
-		list_of_option_descriptions.push_back(OD("--inter-chain", "", "flag to convert to inter-chain contacts"));
 		list_of_option_descriptions.push_back(OD("--match-first", "string", "selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second", "string", "selection for second contacting group"));
@@ -366,7 +365,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool inter_residue=poh.contains_option("--inter-residue");
-	const bool inter_chain=poh.contains_option("--inter-chain");
 	const char selection_list_sep='&';
 	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", selection_list_sep);
 	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
@@ -407,22 +405,14 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(inter_chain || inter_residue)
+	if(inter_residue)
 	{
 		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			std::pair<Comment, Comment> comments=it->first;
-			if(inter_chain)
-			{
-				comments.first=comments.first.without_residue();
-				comments.second=comments.second.without_residue();
-			}
-			else if(inter_residue)
-			{
-				comments.first=comments.first.without_atom();
-				comments.second=comments.second.without_atom();
-			}
+			comments.first=comments.first.without_atom();
+			comments.second=comments.second.without_atom();
 			if(!(comments.second==comments.first))
 			{
 				if(comments.second<comments.first)
@@ -456,7 +446,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				value.area>=match_min_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
-				(!(no_same_chain && comments.first.without_residue()==comments.second.without_residue())) &&
+				(!(no_same_chain && comments.first.chainID==comments.second.chainID)) &&
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
