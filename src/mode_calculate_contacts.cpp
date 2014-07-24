@@ -356,6 +356,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include contacts in same chain"));
+		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert final result to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--only-names", "", "flag to leave only residue and atom names in result annotations"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
@@ -386,6 +387,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool no_same_chain=poh.contains_option("--no-same-chain");
+	const bool invert=poh.contains_option("--invert");
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool only_names=poh.contains_option("--only-names");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
@@ -421,6 +423,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
 		const ContactValue& value=it->second;
+		bool passed=false;
 		if(
 				value.area>=match_min_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
@@ -434,8 +437,16 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
 			if(matched_first_second || matched_second_first)
 			{
-				output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
+				passed=true;
+				if(!invert)
+				{
+					output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
+				}
 			}
+		}
+		if(!passed && invert)
+		{
+			output_map_of_contacts[comments]=value;
 		}
 	}
 
