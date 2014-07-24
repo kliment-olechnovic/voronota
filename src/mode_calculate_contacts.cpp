@@ -414,14 +414,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
 
-	auxiliaries::OpenGLPrinter opengl_printer;
-	bool opengl_printer_filled=false;
-	if(drawing)
-	{
-		opengl_printer.add_color(drawing_color);
-		opengl_printer.add_alpha(drawing_alpha);
-	}
-
 	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const std::pair<Comment, Comment>& comments=it->first;
@@ -446,16 +438,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				else
 				{
 					output_map_of_contacts[std::make_pair(comments.second, comments.first)]=value;
-				}
-
-				if(drawing && !value.graphics.empty())
-				{
-					if(drawing_random_colors)
-					{
-						opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
-					}
-					opengl_printer.add(value.graphics);
-					opengl_printer_filled=true;
 				}
 			}
 		}
@@ -483,8 +465,24 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics, std::cout);
 
-	if(drawing && opengl_printer_filled)
+	if(drawing && !output_map_of_contacts.empty())
 	{
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(drawing_color);
+		opengl_printer.add_alpha(drawing_alpha);
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		{
+			const std::pair<Comment, Comment>& comments=it->first;
+			const ContactValue& value=it->second;
+			if(!value.graphics.empty())
+			{
+				if(drawing_random_colors)
+				{
+					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+				}
+				opengl_printer.add(value.graphics);
+			}
+		}
 		if(!drawing_for_pymol.empty())
 		{
 			std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
