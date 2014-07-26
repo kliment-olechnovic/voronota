@@ -358,6 +358,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-min-area", "number", "minimum contact area"));
+		list_of_option_descriptions.push_back(OD("--match-max-area", "number", "maximum contact area"));
 		list_of_option_descriptions.push_back(OD("--match-min-dist", "number", "minimum distance"));
 		list_of_option_descriptions.push_back(OD("--match-max-dist", "number", "maximum distance"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
@@ -391,6 +392,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", 1);
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
+	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
@@ -434,7 +436,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		const ContactValue& value=it->second;
 		bool passed=false;
 		if(
-				value.area>=match_min_area &&
+				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
 				(!(no_same_chain && comments.first.chainID==comments.second.chainID)) &&
