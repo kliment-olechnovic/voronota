@@ -389,7 +389,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
 	const std::vector<std::string> match_both=poh.argument_vector<std::string>("--match-both", selection_list_sep);
 	const std::vector<std::string> match_both_not=poh.argument_vector<std::string>("--match-both-not", selection_list_sep);
-	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", 1);
+	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
 	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
