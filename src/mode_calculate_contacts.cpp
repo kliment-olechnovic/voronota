@@ -213,6 +213,11 @@ unsigned int calc_string_color_integer(const std::string& str)
 	return static_cast<unsigned int>(hash%limiter);
 }
 
+unsigned int calc_two_comments_color_integer(const Comment& a, const Comment& b)
+{
+	return calc_string_color_integer(a<b ? (a.str()+b.str()) : (b.str()+a.str()));
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -496,7 +501,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(drawing_random_colors)
 				{
-					opengl_printer.add_color(calc_string_color_integer(comments.first.str()+comments.second.str()));
+					opengl_printer.add_color(calc_two_comments_color_integer(comments.first, comments.second));
 				}
 				opengl_printer.add(value.graphics);
 			}
