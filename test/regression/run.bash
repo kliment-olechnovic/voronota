@@ -43,12 +43,12 @@ $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts2 < 
 $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
 $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts4 --annotate < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/contacts4
 
-($TEST_SUBJECT --mode calculate-contacts-query --match-first 'r[3:7,9]&an[CA,CB]' | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
+($TEST_SUBJECT --mode calculate-contacts-query --match-first 'r[3:7,9]&an[CA,CB]' --match-min-seq-sep 1 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
 ($TEST_SUBJECT --mode calculate-contacts-query --inter-residue --match-first 'rn[THR]' --match-second 'rn[ARG]' | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query2
-cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT --mode calculate-contacts --annotate --draw | $TEST_SUBJECT --mode calculate-contacts-query --match-first 'rn[CRO]' --preserve-graphics --drawing-for-pymol $OUTPUT_DIR/contacts4_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_DIR/contacts4_query3_drawing_for_jmol > $OUTPUT_DIR/contacts4_query3
-($TEST_SUBJECT --mode calculate-contacts-query --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
+cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT --mode calculate-contacts --annotate --draw | $TEST_SUBJECT --mode calculate-contacts-query --match-first 'rn[CRO]' --match-min-seq-sep 1 --preserve-graphics --drawing-for-pymol $OUTPUT_DIR/contacts4_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_DIR/contacts4_query3_drawing_for_jmol > $OUTPUT_DIR/contacts4_query3
+($TEST_SUBJECT --mode calculate-contacts-query --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 --match-min-seq-sep 1 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
 ($TEST_SUBJECT --mode calculate-contacts-query --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query5
-($TEST_SUBJECT --mode calculate-contacts-query --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query6
+($TEST_SUBJECT --mode calculate-contacts-query --match-min-seq-sep 1 --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query6
 ($TEST_SUBJECT --mode calculate-contacts-query --inter-residue --only-names | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query7
 ($TEST_SUBJECT --mode calculate-contacts-query --match-both-not 'rn[VAL]' --invert | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query8
 
