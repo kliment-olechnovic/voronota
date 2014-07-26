@@ -403,7 +403,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool only_names=poh.contains_option("--only-names");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
-	const bool drawing=!(drawing_for_pymol.empty() && drawing_for_jmol.empty());
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
@@ -436,7 +435,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		const ContactValue& value=it->second;
 		bool passed=false;
 		if(
-				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!(no_solvent && (comments.first==Comment::solvent() || comments.second==Comment::solvent()))) &&
 				(!(no_same_chain && comments.first.chainID==comments.second.chainID)) &&
@@ -448,13 +446,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
 			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
-			if(matched_first_second || matched_second_first)
+			passed=(matched_first_second || matched_second_first);
+			if(passed && !invert)
 			{
-				passed=true;
-				if(!invert)
-				{
-					output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
-				}
+				output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
 			}
 		}
 		if(!passed && invert)
@@ -477,6 +472,21 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		output_map_of_contacts=map_of_reduced_contacts;
 	}
 
+	if(match_min_area>std::numeric_limits<double>::min() || match_max_area<std::numeric_limits<double>::max())
+	{
+		std::map< std::pair<Comment, Comment>, ContactValue > map_of_filtered_contacts;
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		{
+			const ContactValue& value=it->second;
+			const bool passed=(value.area>=match_min_area && value.area<=match_max_area);
+			if((passed && !invert) || (!passed && invert))
+			{
+				map_of_filtered_contacts.insert(*it);
+			}
+		}
+		output_map_of_contacts=map_of_filtered_contacts;
+	}
+
 	if(only_names)
 	{
 		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
@@ -490,7 +500,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics, std::cout);
 
-	if(drawing && !output_map_of_contacts.empty())
+	if(!output_map_of_contacts.empty() && (!drawing_for_pymol.empty() || drawing_for_jmol.empty()))
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_color);
