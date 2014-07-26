@@ -60,6 +60,7 @@ Mode 'calculate-contacts-query' options:
 --match-min-seq-sep             number      minimum residue sequence separation
 --match-max-seq-sep             number      maximum residue sequence separation
 --match-min-area                number      minimum contact area
+--match-max-area                number      maximum contact area
 --match-min-dist                number      minimum distance
 --match-max-dist                number      maximum distance
 --match-external-annotations    string      file path to input matchable annotation pairs
