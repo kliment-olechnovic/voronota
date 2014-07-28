@@ -363,7 +363,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-max-dist", "number", "maximum distance"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
-		list_of_option_descriptions.push_back(OD("--only-interface", "", "flag to include only interface contacts"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert final result to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--only-names", "", "flag to leave only residue and atom names in result annotations"));
@@ -397,7 +396,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
-	const bool only_interface=poh.contains_option("--only-interface");
 	const bool invert=poh.contains_option("--invert");
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool only_names=poh.contains_option("--only-names");
@@ -427,20 +425,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	std::set<Comment> set_of_interface_annotations;
-	if(only_interface)
-	{
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-		{
-			const std::pair<Comment, Comment>& comments=it->first;
-			if(comments.first.chainID!=comments.second.chainID && !(comments.first==Comment::solvent() || comments.second==Comment::solvent()))
-			{
-				set_of_interface_annotations.insert(comments.first);
-				set_of_interface_annotations.insert(comments.second);
-			}
-		}
-	}
-
 	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
 
 	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
@@ -454,7 +438,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				match_comment_with_member_descriptors(comments.first, match_both, match_both_not) &&
 				match_comment_with_member_descriptors(comments.second, match_both, match_both_not) &&
-				(!only_interface || (comments.first.chainID!=comments.second.chainID && (set_of_interface_annotations.count(comments.first)>0 || set_of_interface_annotations.count(comments.second)>0))) &&
 				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
 		{

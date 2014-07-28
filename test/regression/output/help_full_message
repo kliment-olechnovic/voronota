@@ -65,7 +65,6 @@ Mode 'calculate-contacts-query' options:
 --match-max-dist                number      maximum distance
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
---only-interface                            flag to include only interface contacts
 --invert                                    flag to invert selection
 --inter-residue                             flag to convert final result to inter-residue contacts
 --only-names                                flag to leave only residue and atom names in result annotations
