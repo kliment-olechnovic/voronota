@@ -373,6 +373,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
+		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -407,6 +408,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
+	const bool drawing_labels=poh.contains_option("--drawing-labels");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
@@ -510,6 +512,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const ContactValue& value=it->second;
 			if(!value.graphics.empty())
 			{
+				if(drawing_labels)
+				{
+					opengl_printer.add_label(comments.first.str()+"<->"+comments.second.str());
+				}
 				if(drawing_random_colors)
 				{
 					opengl_printer.add_color(calc_two_comments_color_integer(comments.first, comments.second));

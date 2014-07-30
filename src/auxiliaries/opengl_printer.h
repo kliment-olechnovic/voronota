@@ -217,7 +217,7 @@ public:
 		}
 		double alpha=1.0;
 		Color color(0xFFFFFF);
-		std::string label;
+		std::string label=obj_name;
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
@@ -233,7 +233,7 @@ public:
 			const bool type_tfanc=(type_str=="tfanc");
 			if(type_alpha || type_color || type_label)
 			{
-				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, obj_name, output);
+				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, output);
 				if(type_alpha)
 				{
 					input >> alpha;
@@ -264,7 +264,7 @@ public:
 				}
 			}
 		}
-		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, obj_name, output);
+		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, output);
 	}
 
 private:
@@ -456,10 +456,9 @@ private:
 			const std::string& id,
 			std::ostream& output)
 	{
-		static int use_num=0;
 		if(!(vertices.empty() || normals.size()!=vertices.size() || triples.empty()))
 		{
-			output << "{type:\"name\",name:\"" << id << use_num << "\",";
+			output << "{type:\"name\",name:\"" << id << "\",";
 			{
 				output << "nodes:[{type:\"material\",";
 				output.precision(3);
