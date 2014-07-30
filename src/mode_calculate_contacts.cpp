@@ -368,6 +368,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--only-names", "", "flag to leave only residue and atom names in result annotations"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
+		list_of_option_descriptions.push_back(OD("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
@@ -401,6 +402,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool only_names=poh.contains_option("--only-names");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
+	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
@@ -497,7 +499,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 
 	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics, std::cout);
 
-	if(!output_map_of_contacts.empty() && (!drawing_for_pymol.empty() || drawing_for_jmol.empty()))
+	if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_color);
@@ -529,6 +531,14 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			if(foutput.good())
 			{
 				opengl_printer.print_jmol_script(drawing_name, foutput);
+			}
+		}
+		if(!drawing_for_scenejs.empty())
+		{
+			std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_scenejs_script(drawing_name, foutput);
 			}
 		}
 	}

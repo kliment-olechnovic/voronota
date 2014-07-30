@@ -87,8 +87,12 @@ public:
 
 	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output)
 	{
-		const std::string sep=", ";
 		std::istringstream input(str());
+		if(!input.good())
+		{
+			return;
+		}
+		const std::string sep=", ";
 		output << "from pymol.cgo import *\n";
 		output << "from pymol import cmd\n";
 		output << obj_name << " = [";
@@ -150,6 +154,10 @@ public:
 	void print_jmol_script(const std::string& obj_name, std::ostream& output)
 	{
 		std::istringstream input(str());
+		if(!input.good())
+		{
+			return;
+		}
 		double alpha=1.0;
 		Color color(0xFFFFFF);
 		std::string label;
@@ -198,6 +206,67 @@ public:
 			}
 		}
 		print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
+	}
+
+	void print_scenejs_script(const std::string& obj_name, std::ostream& output)
+	{
+		std::istringstream input(str());
+		if(!input.good())
+		{
+			return;
+		}
+		double alpha=1.0;
+		Color color(0xFFFFFF);
+		std::string label;
+		std::vector<PlainPoint> global_vertices;
+		std::vector<PlainPoint> global_normals;
+		std::vector<PlainTriple> global_triples;
+		output << "nodes:[";
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			const bool type_alpha=(type_str=="alpha");
+			const bool type_color=(type_str=="color");
+			const bool type_label=(type_str=="label");
+			const bool type_tstrip=(type_str=="tstrip");
+			const bool type_tfan=(type_str=="tfan");
+			const bool type_tfanc=(type_str=="tfanc");
+			if(type_alpha || type_color || type_label)
+			{
+				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, obj_name, output);
+				if(type_alpha)
+				{
+					input >> alpha;
+					alpha=(1.0-alpha);
+				}
+				else if(type_color)
+				{
+					color=read_color_from_stream(input);
+				}
+				else if(type_label)
+				{
+					input >> label;
+				}
+			}
+			else if(type_tstrip || type_tfan || type_tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals) && vertices.size()==normals.size())
+				{
+					const std::size_t offset=global_vertices.size();
+					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
+					global_normals.insert(global_normals.end(), normals.begin(), normals.end());
+					for(std::size_t i=0;(i+2)<vertices.size();i++)
+					{
+						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
+					}
+				}
+			}
+		}
+		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, obj_name, output);
+		output << "]\n";
 	}
 
 private:
@@ -378,6 +447,60 @@ private:
 			use_num++;
 		}
 		vertices.clear();
+		triples.clear();
+	}
+
+	static void print_scenejs_polygon(
+			std::vector<PlainPoint>& vertices,
+			std::vector<PlainPoint>& normals,
+			std::vector<PlainTriple>& triples,
+			const Color& color,
+			const std::string& id,
+			std::ostream& output)
+	{
+		static int use_num=0;
+		if(!(vertices.empty() || normals.size()!=vertices.size() || triples.empty()))
+		{
+			output << "{type:\"name\",name:\"" << id << use_num << "\",";
+			{
+				output << "nodes:[{type:\"material\",";
+				output.precision(3);
+				output << "color:{r:" << std::fixed << (static_cast<double>(color.r)/255.0) << ",g:" << (static_cast<double>(color.g)/255.0) << ",b:" << (static_cast<double>(color.b)/255.0) << "},";
+				{
+					output << "nodes:[{type:\"geometry\", primitive:\"triangles\",";
+					{
+						output << "positions:[";
+						for(std::size_t i=0;i<vertices.size();i++)
+						{
+							write_point_to_stream(vertices[i], (i==0 ? "" : ","), ",", "", output);
+						}
+						output << "],";
+					}
+					{
+						output << "normals:[";
+						for(std::size_t i=0;i<normals.size();i++)
+						{
+							write_point_to_stream(normals[i], (i==0 ? "" : ","), ",", "", output);
+						}
+						output << "],";
+					}
+					{
+						output << "indices:[";
+						for(std::size_t i=0;i<triples.size();i++)
+						{
+							const PlainTriple& t=triples[i];
+							output << (i==0  ? "" : ",") << t.a << "," << t.b << "," << t.c;
+						}
+						output << "],";
+					}
+					output << "}]";
+				}
+				output << "}]";
+			}
+			output << "},";
+		}
+		vertices.clear();
+		normals.clear();
 		triples.clear();
 	}
 
