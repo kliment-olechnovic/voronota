@@ -221,7 +221,6 @@ public:
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
-		output << "nodes:[";
 		while(input.good())
 		{
 			std::string type_str;
@@ -266,7 +265,6 @@ public:
 			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, obj_name, output);
-		output << "]\n";
 	}
 
 private:
