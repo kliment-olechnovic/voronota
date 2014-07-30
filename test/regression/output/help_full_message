@@ -75,6 +75,7 @@ Mode 'calculate-contacts-query' options:
 --drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
+--drawing-labels                            flag to use labels in drawing if possible
 --preserve-graphics                         flag to preserve graphics in output
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
