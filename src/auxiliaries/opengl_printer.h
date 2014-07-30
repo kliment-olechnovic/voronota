@@ -494,7 +494,7 @@ private:
 				}
 				output << "}]";
 			}
-			output << "},";
+			output << "},\n";
 		}
 		vertices.clear();
 		normals.clear();
