@@ -1,7 +1,10 @@
+var contacts={type:"scale",x:0.046,y:0.046,z:0.046,
+nodes:[{type:"translate",x:-17.531,y:-16.398,z:-21.919,
+nodes:[
 {type:"name",name:"contacts",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:1.000},
-nodes:[{type:"geometry", primitive:"triangles",
+nodes:[{type:"geometry",primitive:"triangles",
 positions:[
 24.767,28.637,35.996,
 25.734,28.324,36.577,
@@ -18477,3 +18480,6 @@ indices:[
 }]
 }]
 },
+]
+}]
+};
