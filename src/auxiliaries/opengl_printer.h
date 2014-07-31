@@ -208,19 +208,21 @@ public:
 		print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
 	}
 
-	void print_scenejs_script(const std::string& obj_name, std::ostream& output)
+	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output)
 	{
 		std::istringstream input(str());
 		if(!input.good())
 		{
 			return;
 		}
+		std::ostringstream body_output;
 		double alpha=1.0;
 		Color color(0xFFFFFF);
 		std::string label=obj_name;
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
+		std::pair<PlainPoint, PlainPoint> bounding_box;
 		while(input.good())
 		{
 			std::string type_str;
@@ -233,7 +235,7 @@ public:
 			const bool type_tfanc=(type_str=="tfanc");
 			if(type_alpha || type_color || type_label)
 			{
-				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, output);
+				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
 				if(type_alpha)
 				{
 					input >> alpha;
@@ -261,10 +263,34 @@ public:
 					{
 						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
 					}
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						update_bounding_box(vertices[i], bounding_box);
+					}
 				}
 			}
 		}
-		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, output);
+		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
+		if(fit)
+		{
+			const std::pair<PlainPoint, double> transformation=calc_bounding_box_normal_transformation(bounding_box);
+			output.precision(3);
+			output << "var " << obj_name << "={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
+			{
+				output << "nodes:[{type:\"translate\",x:" << std::fixed << transformation.first.x << ",y:" << transformation.first.y << ",z:" << transformation.first.z << ",\n";
+				{
+					output << "nodes:[\n";
+					output << body_output.str();
+					output << "]\n";
+				}
+				output << "}]\n";
+			}
+			output << "};\n";
+		}
+		else
+		{
+			output << body_output.str();
+		}
 	}
 
 private:
@@ -304,6 +330,27 @@ private:
 		{
 		}
 	};
+
+	template<typename PointType>
+	static void update_bounding_box(const PointType& p, std::pair<PlainPoint, PlainPoint>& box)
+	{
+		box.first.x=std::min(box.first.x, p.x);
+		box.first.y=std::min(box.first.y, p.y);
+		box.first.z=std::min(box.first.z, p.z);
+		box.second.x=std::max(box.second.x, p.x);
+		box.second.y=std::max(box.second.y, p.y);
+		box.second.z=std::max(box.second.z, p.z);
+	}
+
+	static std::pair<PlainPoint, double> calc_bounding_box_normal_transformation(const std::pair<PlainPoint, PlainPoint>& box)
+	{
+		PlainPoint translation;
+		translation.x=0.0-((box.first.x+box.second.x)*0.5);
+		translation.y=0.0-((box.first.y+box.second.y)*0.5);
+		translation.z=0.0-((box.first.z+box.second.z)*0.5);
+		const double max_side=std::max(box.second.x-box.first.x, std::max(box.second.y-box.first.y, box.second.z-box.first.z));
+		return std::make_pair(translation, (max_side>0.0 ? 2.0/max_side : 1.0));
+	}
 
 	template<typename PointType>
 	static void write_point_to_stream(const PointType& p, const std::string& start, const std::string& sep, const std::string& end, std::ostream& output)

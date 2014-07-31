@@ -544,7 +544,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
 			if(foutput.good())
 			{
-				opengl_printer.print_scenejs_script(drawing_name, foutput);
+				opengl_printer.print_scenejs_script(drawing_name, true, foutput);
 			}
 		}
 	}
