@@ -458,41 +458,41 @@ private:
 	{
 		if(!(vertices.empty() || normals.size()!=vertices.size() || triples.empty()))
 		{
-			output << "{type:\"name\",name:\"" << id << "\",";
+			output << "{type:\"name\",name:\"" << id << "\",\n";
 			{
-				output << "nodes:[{type:\"material\",";
+				output << "nodes:[{type:\"material\",\n";
 				output.precision(3);
-				output << "color:{r:" << std::fixed << (static_cast<double>(color.r)/255.0) << ",g:" << (static_cast<double>(color.g)/255.0) << ",b:" << (static_cast<double>(color.b)/255.0) << "},";
+				output << "color:{r:" << std::fixed << (static_cast<double>(color.r)/255.0) << ",g:" << (static_cast<double>(color.g)/255.0) << ",b:" << (static_cast<double>(color.b)/255.0) << "},\n";
 				{
-					output << "nodes:[{type:\"geometry\", primitive:\"triangles\",";
+					output << "nodes:[{type:\"geometry\",primitive:\"triangles\",\n";
 					{
-						output << "positions:[";
+						output << "positions:[\n";
 						for(std::size_t i=0;i<vertices.size();i++)
 						{
-							write_point_to_stream(vertices[i], (i==0 ? "" : ","), ",", "", output);
+							write_point_to_stream(vertices[i], (i==0 ? "" : ",\n"), ",", "", output);
 						}
-						output << "],";
+						output << "\n],\n";
 					}
 					{
-						output << "normals:[";
+						output << "normals:[\n";
 						for(std::size_t i=0;i<normals.size();i++)
 						{
-							write_point_to_stream(normals[i], (i==0 ? "" : ","), ",", "", output);
+							write_point_to_stream(normals[i], (i==0 ? "" : ",\n"), ",", "", output);
 						}
-						output << "],";
+						output << "\n],\n";
 					}
 					{
-						output << "indices:[";
+						output << "indices:[\n";
 						for(std::size_t i=0;i<triples.size();i++)
 						{
 							const PlainTriple& t=triples[i];
-							output << (i==0  ? "" : ",") << t.a << "," << t.b << "," << t.c;
+							output << (i==0  ? "" : ",\n") << t.a << "," << t.b << "," << t.c;
 						}
-						output << "],";
+						output << "\n],\n";
 					}
-					output << "}]";
+					output << "}]\n";
 				}
-				output << "}]";
+				output << "}]\n";
 			}
 			output << "},\n";
 		}
