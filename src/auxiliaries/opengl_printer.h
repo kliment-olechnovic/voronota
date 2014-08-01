@@ -149,7 +149,6 @@ public:
 		}
 		double alpha=1.0;
 		Color color(0xFFFFFF);
-		std::string label;
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainTriple> global_triples;
 		while(input.good())
@@ -159,7 +158,7 @@ public:
 			const ObjectTypeMarker type(type_str, object_typer_);
 			if(type.alpha || type.color || type.label)
 			{
-				print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
+				print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 				if(type.alpha)
 				{
 					input >> alpha;
@@ -168,10 +167,6 @@ public:
 				else if(type.color)
 				{
 					color=read_color_from_stream(input);
-				}
-				else if(type.label)
-				{
-					input >> label;
 				}
 			}
 			else if(type.tstrip || type.tfan || type.tfanc)
@@ -189,7 +184,7 @@ public:
 				}
 			}
 		}
-		print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
+		print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 	}
 
 	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output)
@@ -480,7 +475,6 @@ private:
 	static void print_jmol_polygon(
 			std::vector<PlainPoint>& vertices,
 			std::vector<PlainTriple>& triples,
-			const std::string& label,
 			const Color& color,
 			const double alpha,
 			const std::string& id,
@@ -490,10 +484,6 @@ private:
 		if(!(vertices.empty() || triples.empty()))
 		{
 			output << "draw " << id << use_num << " ";
-			if(!label.empty())
-			{
-				output << "\"" << label << "\" ";
-			}
 			output << "POLYGON " << vertices.size() << " ";
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
