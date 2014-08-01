@@ -250,9 +250,8 @@ public:
 			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
-		if(fit)
 		{
-			const std::pair<PlainPoint, double> transformation=calc_bounding_box_normal_transformation(bounding_box);
+			const std::pair<PlainPoint, double> transformation=(fit ? calc_bounding_box_normal_transformation(bounding_box) : std::pair<PlainPoint, double>(PlainPoint(), 1.0));
 			output.precision(3);
 			output << "var " << obj_name << "={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
 			{
@@ -265,10 +264,6 @@ public:
 				output << "}]\n";
 			}
 			output << "};\n";
-		}
-		else
-		{
-			output << body_output.str();
 		}
 	}
 
@@ -322,6 +317,14 @@ private:
 		double x;
 		double y;
 		double z;
+
+		PlainPoint() : x(0), y(0), z(0)
+		{
+		}
+
+		PlainPoint(const double x, const double y, const double z) : x(x), y(y), z(z)
+		{
+		}
 	};
 
 	struct PlainTriple
@@ -367,10 +370,7 @@ private:
 
 	static std::pair<PlainPoint, double> calc_bounding_box_normal_transformation(const std::pair<PlainPoint, PlainPoint>& box)
 	{
-		PlainPoint translation;
-		translation.x=0.0-((box.first.x+box.second.x)*0.5);
-		translation.y=0.0-((box.first.y+box.second.y)*0.5);
-		translation.z=0.0-((box.first.z+box.second.z)*0.5);
+		const PlainPoint translation(0.0-((box.first.x+box.second.x)*0.5), 0.0-((box.first.y+box.second.y)*0.5), 0.0-((box.first.z+box.second.z)*0.5));
 		const double max_side=std::max(box.second.x-box.first.x, std::max(box.second.y-box.first.y, box.second.z-box.first.z));
 		return std::make_pair(translation, (max_side>0.0 ? 2.0/max_side : 1.0));
 	}
