@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <limits>
 
 namespace auxiliaries
 {
@@ -201,7 +202,7 @@ public:
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
-		std::pair<PlainPoint, PlainPoint> bounding_box;
+		BoundingBox bounding_box;
 		while(input.good())
 		{
 			std::string type_str;
@@ -239,14 +240,14 @@ public:
 					}
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
-						update_bounding_box(vertices[i], bounding_box);
+						bounding_box.update(vertices[i]);
 					}
 				}
 			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
 		{
-			const std::pair<PlainPoint, double> transformation=(fit ? calc_bounding_box_normal_transformation(bounding_box) : std::pair<PlainPoint, double>(PlainPoint(), 1.0));
+			const std::pair<PlainPoint, double> transformation=(fit ? bounding_box.calc_normal_transformation() : std::make_pair(PlainPoint(), 1.0));
 			output.precision(3);
 			output << "var " << obj_name << "={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
 			{
@@ -352,23 +353,48 @@ private:
 		}
 	};
 
-	template<typename PointType>
-	static void update_bounding_box(const PointType& p, std::pair<PlainPoint, PlainPoint>& box)
+	class BoundingBox
 	{
-		box.first.x=std::min(box.first.x, p.x);
-		box.first.y=std::min(box.first.y, p.y);
-		box.first.z=std::min(box.first.z, p.z);
-		box.second.x=std::max(box.second.x, p.x);
-		box.second.y=std::max(box.second.y, p.y);
-		box.second.z=std::max(box.second.z, p.z);
-	}
+	public:
+		BoundingBox() : modified_(false)
+		{
+			const double max_double=std::numeric_limits<double>::max();
+			const double min_double=-max_double;
+			low_=PlainPoint(max_double, max_double, max_double);
+			high_=PlainPoint(min_double, min_double, min_double);
+		}
 
-	static std::pair<PlainPoint, double> calc_bounding_box_normal_transformation(const std::pair<PlainPoint, PlainPoint>& box)
-	{
-		const PlainPoint translation(0.0-((box.first.x+box.second.x)*0.5), 0.0-((box.first.y+box.second.y)*0.5), 0.0-((box.first.z+box.second.z)*0.5));
-		const double max_side=std::max(box.second.x-box.first.x, std::max(box.second.y-box.first.y, box.second.z-box.first.z));
-		return std::make_pair(translation, (max_side>0.0 ? 2.0/max_side : 1.0));
-	}
+		template<typename PointType>
+		void update(const PointType& p)
+		{
+			low_.x=std::min(low_.x, p.x);
+			low_.y=std::min(low_.y, p.y);
+			low_.z=std::min(low_.z, p.z);
+			high_.x=std::max(high_.x, p.x);
+			high_.y=std::max(high_.y, p.y);
+			high_.z=std::max(high_.z, p.z);
+			modified_=true;
+		}
+
+		std::pair<PlainPoint, double> calc_normal_transformation() const
+		{
+			if(modified_)
+			{
+				const PlainPoint translation(0.0-((low_.x+high_.x)*0.5), 0.0-((low_.y+high_.y)*0.5), 0.0-((low_.z+high_.z)*0.5));
+				const double max_side=std::max(high_.x-low_.x, std::max(high_.y-low_.y, high_.z-low_.z));
+				return std::make_pair(translation, (max_side>0.0 ? 2.0/max_side : 1.0));
+			}
+			else
+			{
+				return std::make_pair(PlainPoint(), 1.0);
+			}
+		}
+
+	private:
+		bool modified_;
+		PlainPoint low_;
+		PlainPoint high_;
+	};
 
 	template<typename PointType>
 	static void write_point_to_stream(const PointType& p, const std::string& start, const std::string& sep, const std::string& end, std::ostream& output)
