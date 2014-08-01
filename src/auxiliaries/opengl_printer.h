@@ -157,7 +157,7 @@ public:
 			std::string type_str;
 			input >> type_str;
 			const ObjectTypeMarker type(type_str, object_typer_);
-			if(type.alpha || type.color || type.label)
+			if(type.alpha || type.color)
 			{
 				print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 				if(type.alpha)
@@ -196,7 +196,6 @@ public:
 			return;
 		}
 		std::ostringstream body_output;
-		double alpha=1.0;
 		Color color(0xFFFFFF);
 		std::string label=obj_name;
 		std::vector<PlainPoint> global_vertices;
@@ -208,15 +207,10 @@ public:
 			std::string type_str;
 			input >> type_str;
 			const ObjectTypeMarker type(type_str, object_typer_);
-			if(type.alpha || type.color || type.label)
+			if(type.color || type.label)
 			{
 				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
-				if(type.alpha)
-				{
-					input >> alpha;
-					alpha=(1.0-alpha);
-				}
-				else if(type.color)
+				if(type.color)
 				{
 					color=read_color_from_stream(input);
 				}
