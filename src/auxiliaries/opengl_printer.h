@@ -279,13 +279,13 @@ private:
 		std::string sphere;
 
 		ObjectTyper() :
-			alpha("alpha"),
-			color("color"),
-			label("label"),
-			tstrip("tstrip"),
-			tfan("tfan"),
-			tfanc("tfanc"),
-			sphere("sphere")
+			alpha("_alpha"),
+			color("_color"),
+			label("_label"),
+			tstrip("_tstrip"),
+			tfan("_tfan"),
+			tfanc("_tfanc"),
+			sphere("_sphere")
 		{
 		}
 	};
