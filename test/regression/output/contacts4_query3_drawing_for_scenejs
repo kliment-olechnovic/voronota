@@ -1,5 +1,5 @@
-var contacts={type:"scale",x:0.046,y:0.046,z:0.046,
-nodes:[{type:"translate",x:-17.531,y:-16.398,z:-21.919,
+var contacts={type:"scale",x:0.139,y:0.139,z:0.139,
+nodes:[{type:"translate",x:-27.880,y:-27.597,z:-38.066,
 nodes:[
 {type:"name",name:"contacts",
 nodes:[{type:"material",
