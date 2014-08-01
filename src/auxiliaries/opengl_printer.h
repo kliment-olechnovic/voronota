@@ -23,19 +23,19 @@ public:
 
 	void add_alpha(const double alpha)
 	{
-		string_stream_ << "alpha " << alpha << " ";
+		string_stream_ << object_typer_.alpha << " " << alpha << " ";
 	}
 
 	void add_color(const unsigned int rgb)
 	{
-		string_stream_ << "color ";
+		string_stream_ << object_typer_.color << " ";
 		write_color_to_stream(Color(rgb), string_stream_);
 	}
 
 	template<typename SphereType>
 	void add_sphere(const SphereType& sphere)
 	{
-		string_stream_ << "sphere ";
+		string_stream_ << object_typer_.sphere << " ";
 		write_point_to_stream(sphere, string_stream_);
 		string_stream_.precision(3);
 		string_stream_ << std::fixed << sphere.r << " ";
@@ -46,7 +46,7 @@ public:
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			string_stream_ << "tstrip ";
+			string_stream_ << object_typer_.tstrip << " ";
 			write_points_vector_to_stream(vertices, string_stream_);
 			write_points_vector_to_stream(normals, string_stream_);
 		}
@@ -57,7 +57,7 @@ public:
 	{
 		if(!vertices.empty() && vertices.size()==normals.size())
 		{
-			string_stream_ << "tfan ";
+			string_stream_ << object_typer_.tfan << " ";
 			write_points_vector_to_stream(vertices, string_stream_);
 			write_points_vector_to_stream(normals, string_stream_);
 		}
@@ -68,7 +68,7 @@ public:
 	{
 		if(!vertices.empty())
 		{
-			string_stream_ << "tfanc ";
+			string_stream_ << object_typer_.tfanc << " ";
 			write_point_to_stream(center, string_stream_);
 			write_point_to_stream(normal, string_stream_);
 			write_points_vector_to_stream(vertices, string_stream_);
@@ -77,7 +77,7 @@ public:
 
 	void add_label(const std::string& label)
 	{
-		string_stream_ << "label " << label << " ";
+		string_stream_ << object_typer_.label << " " << label << " ";
 	}
 
 	std::string str() const
@@ -100,35 +100,24 @@ public:
 		{
 			std::string type_str;
 			input >> type_str;
-			const bool type_alpha=(type_str=="alpha");
-			const bool type_color=(type_str=="color");
-			const bool type_label=(type_str=="label");
-			const bool type_tstrip=(type_str=="tstrip");
-			const bool type_tfan=(type_str=="tfan");
-			const bool type_tfanc=(type_str=="tfanc");
-			const bool type_sphere=(type_str=="sphere");
-			if(type_alpha)
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.alpha)
 			{
 				double alpha=1.0;
 				input >> alpha;
 				output << "ALPHA, " << alpha << sep;
 			}
-			else if(type_color)
+			else if(type.color)
 			{
 				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
 			}
-			else if(type_label)
-			{
-				std::string label;
-				input >> label;
-			}
-			else if(type_tstrip || type_tfan || type_tfanc)
+			else if(type.tstrip || type.tfan || type.tfanc)
 			{
 				std::vector<PlainPoint> vertices;
 				std::vector<PlainPoint> normals;
-				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
 				{
-					output << (type_tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+					output << (type.tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
 						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
@@ -137,7 +126,7 @@ public:
 					output << "END, ";
 				}
 			}
-			else if(type_sphere)
+			else if(type.sphere)
 			{
 				const PlainPoint c=read_point_from_stream(input);
 				double r;
@@ -167,40 +156,35 @@ public:
 		{
 			std::string type_str;
 			input >> type_str;
-			const bool type_alpha=(type_str=="alpha");
-			const bool type_color=(type_str=="color");
-			const bool type_label=(type_str=="label");
-			const bool type_tstrip=(type_str=="tstrip");
-			const bool type_tfan=(type_str=="tfan");
-			const bool type_tfanc=(type_str=="tfanc");
-			if(type_alpha || type_color || type_label)
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.alpha || type.color || type.label)
 			{
 				print_jmol_polygon(global_vertices, global_triples, label, color, alpha, obj_name, output);
-				if(type_alpha)
+				if(type.alpha)
 				{
 					input >> alpha;
 					alpha=(1.0-alpha);
 				}
-				else if(type_color)
+				else if(type.color)
 				{
 					color=read_color_from_stream(input);
 				}
-				else if(type_label)
+				else if(type.label)
 				{
 					input >> label;
 				}
 			}
-			else if(type_tstrip || type_tfan || type_tfanc)
+			else if(type.tstrip || type.tfan || type.tfanc)
 			{
 				std::vector<PlainPoint> vertices;
 				std::vector<PlainPoint> normals;
-				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals))
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
 				{
 					const std::size_t offset=global_vertices.size();
 					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
 					for(std::size_t i=0;(i+2)<vertices.size();i++)
 					{
-						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
+						global_triples.push_back(PlainTriple(offset+(type.tstrip ? i : 0), offset+(i+1), offset+(i+2)));
 					}
 				}
 			}
@@ -227,41 +211,36 @@ public:
 		{
 			std::string type_str;
 			input >> type_str;
-			const bool type_alpha=(type_str=="alpha");
-			const bool type_color=(type_str=="color");
-			const bool type_label=(type_str=="label");
-			const bool type_tstrip=(type_str=="tstrip");
-			const bool type_tfan=(type_str=="tfan");
-			const bool type_tfanc=(type_str=="tfanc");
-			if(type_alpha || type_color || type_label)
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.alpha || type.color || type.label)
 			{
 				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
-				if(type_alpha)
+				if(type.alpha)
 				{
 					input >> alpha;
 					alpha=(1.0-alpha);
 				}
-				else if(type_color)
+				else if(type.color)
 				{
 					color=read_color_from_stream(input);
 				}
-				else if(type_label)
+				else if(type.label)
 				{
 					input >> label;
 				}
 			}
-			else if(type_tstrip || type_tfan || type_tfanc)
+			else if(type.tstrip || type.tfan || type.tfanc)
 			{
 				std::vector<PlainPoint> vertices;
 				std::vector<PlainPoint> normals;
-				if(read_strip_or_fan_from_stream(type_tstrip, type_tfan, type_tfanc, input, vertices, normals) && vertices.size()==normals.size())
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals) && vertices.size()==normals.size())
 				{
 					const std::size_t offset=global_vertices.size();
 					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
 					global_normals.insert(global_normals.end(), normals.begin(), normals.end());
 					for(std::size_t i=0;(i+2)<vertices.size();i++)
 					{
-						global_triples.push_back(PlainTriple(offset+(type_tstrip ? i : 0), offset+(i+1), offset+(i+2)));
+						global_triples.push_back(PlainTriple(offset+(type.tstrip ? i : 0), offset+(i+1), offset+(i+2)));
 					}
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
@@ -294,6 +273,50 @@ public:
 	}
 
 private:
+	struct ObjectTyper
+	{
+		std::string alpha;
+		std::string color;
+		std::string label;
+		std::string tstrip;
+		std::string tfan;
+		std::string tfanc;
+		std::string sphere;
+
+		ObjectTyper() :
+			alpha("alpha"),
+			color("color"),
+			label("label"),
+			tstrip("tstrip"),
+			tfan("tfan"),
+			tfanc("tfanc"),
+			sphere("sphere")
+		{
+		}
+	};
+
+	struct ObjectTypeMarker
+	{
+		bool alpha;
+		bool color;
+		bool label;
+		bool tstrip;
+		bool tfan;
+		bool tfanc;
+		bool sphere;
+
+		ObjectTypeMarker(const std::string& type_str, const ObjectTyper& object_typer) :
+			alpha(type_str==object_typer.alpha),
+			color(type_str==object_typer.color),
+			label(type_str==object_typer.label),
+			tstrip(type_str==object_typer.tstrip),
+			tfan(type_str==object_typer.tfan),
+			tfanc(type_str==object_typer.tfanc),
+			sphere(type_str==object_typer.sphere)
+		{
+		}
+	};
+
 	struct PlainPoint
 	{
 		double x;
@@ -548,6 +571,7 @@ private:
 		triples.clear();
 	}
 
+	ObjectTyper object_typer_;
 	std::ostringstream string_stream_;
 };
 
