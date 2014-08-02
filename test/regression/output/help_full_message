@@ -68,6 +68,7 @@ Mode 'calculate-contacts-query' options:
 --invert                                    flag to invert selection
 --inter-residue                             flag to convert final result to inter-residue contacts
 --only-names                                flag to leave only residue and atom names in result annotations
+--preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
 --drawing-for-scenejs           string      file path to output drawing as scenejs script
@@ -76,6 +77,5 @@ Mode 'calculate-contacts-query' options:
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
---preserve-graphics                         flag to preserve graphics in output
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
