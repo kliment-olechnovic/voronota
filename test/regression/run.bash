@@ -31,13 +31,6 @@ $TEST_SUBJECT --mode calculate-vertices --print-log --clog-file $OUTPUT_DIR/log_
 $TEST_SUBJECT --mode calculate-vertices-in-parallel --print-log --clog-file $OUTPUT_DIR/log_triangulation1p --method simulated --parts 8 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/triangulation1p
 $TEST_SUBJECT --mode calculate-vertices-in-parallel --print-log --clog-file $OUTPUT_DIR/log_triangulation2p --method simulated --parts 8 < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/triangulation2p
 
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation2 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_1_to_2_on_1
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation2 < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/comparison_1_to_2_on_2
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation3 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_1_to_3_on_1
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/comparison_1_to_3_on_3
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation1 --second-quadruples-file $OUTPUT_DIR/triangulation1p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_1_to_1p
-$TEST_SUBJECT --mode compare-quadruples-sets --first-quadruples-file $OUTPUT_DIR/triangulation2 --second-quadruples-file $OUTPUT_DIR/triangulation2p < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/comparison_2_to_2p
-
 $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts1 < $OUTPUT_DIR/balls1 > $OUTPUT_DIR/contacts1
 $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts2 < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/contacts2
 $TEST_SUBJECT --mode calculate-contacts --clog-file $OUTPUT_DIR/log_contacts3 < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
