@@ -96,47 +96,62 @@ public:
 		const std::string sep=", ";
 		output << "from pymol.cgo import *\n";
 		output << "from pymol import cmd\n";
-		output << obj_name << " = [";
+		int sublist_id=0;
 		while(input.good())
 		{
-			std::string type_str;
-			input >> type_str;
-			const ObjectTypeMarker type(type_str, object_typer_);
-			if(type.alpha)
+			std::size_t sublist_size=0;
+			output << obj_name << "_" << sublist_id << " = [";
+			while(input.good() && sublist_size<10000)
 			{
-				double alpha=1.0;
-				input >> alpha;
-				output << "ALPHA, " << alpha << sep;
-			}
-			else if(type.color)
-			{
-				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
-			}
-			else if(type.tstrip || type.tfan || type.tfanc)
-			{
-				std::vector<PlainPoint> vertices;
-				std::vector<PlainPoint> normals;
-				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
+				std::string type_str;
+				input >> type_str;
+				const ObjectTypeMarker type(type_str, object_typer_);
+				if(type.alpha)
 				{
-					output << (type.tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
-					for(std::size_t i=0;i<vertices.size();i++)
+					double alpha=1.0;
+					input >> alpha;
+					output << "ALPHA, " << alpha << sep;
+					sublist_size+=2;
+				}
+				else if(type.color)
+				{
+					write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
+					sublist_size+=5;
+				}
+				else if(type.tstrip || type.tfan || type.tfanc)
+				{
+					std::vector<PlainPoint> vertices;
+					std::vector<PlainPoint> normals;
+					if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
 					{
-						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
-						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						output << (type.tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+						for(std::size_t i=0;i<vertices.size();i++)
+						{
+							write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
+							write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						}
+						output << "END, ";
 					}
-					output << "END, ";
+					sublist_size+=vertices.size()*4+normals.size()*4+3;
+				}
+				else if(type.sphere)
+				{
+					const PlainPoint c=read_point_from_stream(input);
+					double r;
+					input >> r;
+					write_point_to_stream(c, "SPHERE, ", sep, sep, output);
+					output << r << sep;
+					sublist_size+=5;
 				}
 			}
-			else if(type.sphere)
-			{
-				const PlainPoint c=read_point_from_stream(input);
-				double r;
-				input >> r;
-				write_point_to_stream(c, "SPHERE, ", sep, sep, output);
-				output << r << sep;
-			}
+			output << "]\n";
+			sublist_id++;
 		}
-		output << "]\n";
+		output << obj_name << " = " << obj_name << "_0\n";
+		for(int i=1;i<sublist_id;i++)
+		{
+			output << obj_name << ".extend(" << obj_name << "_" << i << ")\n";
+		}
 		output << "cmd.load_cgo(" << obj_name << ", '" << obj_name << "')\n";
 		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
 	}
