@@ -65,7 +65,7 @@ void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, 
 	}
 }
 
-template<bool Unnumbered, bool Accumulation>
+template<bool Summarize>
 bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
@@ -77,13 +77,13 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		const std::pair<Comment, Comment> comments=(Unnumbered ?
+		const std::pair<Comment, Comment> comments=(Summarize ?
 				std::make_pair(Comment::from_str(comment_strings.first).without_numbering(), Comment::from_str(comment_strings.second).without_numbering()) :
 				std::make_pair(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second)));
 		if(comments.first.valid() && comments.second.valid())
 		{
 			ContactValue& target=map_of_records[refine_pair(comments, comments.second<comments.first)];
-			if(Accumulation)
+			if(Summarize)
 			{
 				target.add(value);
 			}
@@ -425,11 +425,11 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
 	if(summarize_input)
 	{
-		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<true, true>, map_of_contacts);
+		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<true>, map_of_contacts);
 	}
 	else
 	{
-		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<false, false>, map_of_contacts);
+		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<false>, map_of_contacts);
 	}
 	if(map_of_contacts.empty())
 	{
