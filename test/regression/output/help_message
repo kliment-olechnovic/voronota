@@ -9,4 +9,4 @@ Available running modes:
 --mode calculate-vertices
 --mode calculate-vertices-in-parallel
 --mode calculate-contacts
---mode calculate-contacts-query
+--mode query-contacts
