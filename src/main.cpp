@@ -12,14 +12,11 @@
 
 #include "modes_commons.h"
 
-void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh);
+void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh);
-void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
-void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh);
 
 struct ModeDescriptor
 {
@@ -46,19 +43,13 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		std::vector<ModeDescriptor> visible_list_of_modes;
+		std::vector<ModeDescriptor> list_of_modes;
 		{
-			visible_list_of_modes.push_back(ModeDescriptor("get-balls-from-atoms-file", ModeDescriptor::FunctionPtr(get_balls_from_atoms_file)));
-			visible_list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
-			visible_list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
-			visible_list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
-			visible_list_of_modes.push_back(ModeDescriptor("calculate-contacts-query", ModeDescriptor::FunctionPtr(calculate_contacts_query)));
-		}
-		std::vector<ModeDescriptor> full_list_of_modes=visible_list_of_modes;
-		{
-			full_list_of_modes.push_back(ModeDescriptor("calculate-quadrons", ModeDescriptor::FunctionPtr(calculate_quadrons)));
-			full_list_of_modes.push_back(ModeDescriptor("calculate-quadrons-query", ModeDescriptor::FunctionPtr(calculate_quadrons_query)));
-			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
+			list_of_modes.push_back(ModeDescriptor("get-balls-from-atoms-file", ModeDescriptor::FunctionPtr(get_balls_from_atoms_file)));
+			list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
+			list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
+			list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+			list_of_modes.push_back(ModeDescriptor("calculate-contacts-query", ModeDescriptor::FunctionPtr(calculate_contacts_query)));
 		}
 
 		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> list_of_option_descriptions;
@@ -83,7 +74,7 @@ int main(const int argc, const char** argv)
 
 		if(!mode.empty())
 		{
-			if(std::count(full_list_of_modes.begin(), full_list_of_modes.end(), mode)>0)
+			if(std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
 			{
 				if(!help_present)
 				{
@@ -94,23 +85,20 @@ int main(const int argc, const char** argv)
 
 					auxiliaries::CLogRedirector clog_redirector(clog_filename);
 
-					std::find(full_list_of_modes.begin(), full_list_of_modes.end(), mode)->func_ptr(poh);
+					std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 
 					return 0;
 				}
 				else
 				{
-					if(std::count(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)>0)
-					{
-						std::cerr << "Mode '" << mode << "' options:\n";
-						std::find(visible_list_of_modes.begin(), visible_list_of_modes.end(), mode)->func_ptr(poh);
-					}
+					std::cerr << "Mode '" << mode << "' options:\n";
+					std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 				}
 			}
 			else
 			{
 				std::cerr << "Invalid mode, available running modes are:\n";
-				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{
 					std::cerr << "--mode " << it->name << "\n";
 				}
@@ -123,14 +111,14 @@ int main(const int argc, const char** argv)
 			if(!help_present)
 			{
 				std::cerr << "\nAvailable running modes:\n";
-				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{
 					std::cerr << "--mode " << it->name << "\n";
 				}
 			}
 			else
 			{
-				for(std::vector<ModeDescriptor>::const_iterator it=visible_list_of_modes.begin();it!=visible_list_of_modes.end();++it)
+				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{
 					std::cerr << "\nMode '" << it->name << "' options:\n";
 					it->func_ptr(poh);
