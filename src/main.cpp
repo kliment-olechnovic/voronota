@@ -18,7 +18,6 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_quadrons(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_quadrons_query(const auxiliaries::ProgramOptionsHandler& poh);
-void compare_quadruples_sets(const auxiliaries::ProgramOptionsHandler& poh);
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void print_demo(const auxiliaries::ProgramOptionsHandler& poh);
 
@@ -59,7 +58,6 @@ int main(const int argc, const char** argv)
 		{
 			full_list_of_modes.push_back(ModeDescriptor("calculate-quadrons", ModeDescriptor::FunctionPtr(calculate_quadrons)));
 			full_list_of_modes.push_back(ModeDescriptor("calculate-quadrons-query", ModeDescriptor::FunctionPtr(calculate_quadrons_query)));
-			full_list_of_modes.push_back(ModeDescriptor("compare-quadruples-sets", ModeDescriptor::FunctionPtr(compare_quadruples_sets)));
 			full_list_of_modes.push_back(ModeDescriptor("print-demo", ModeDescriptor::FunctionPtr(print_demo)));
 		}
 
