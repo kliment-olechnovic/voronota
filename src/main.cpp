@@ -10,8 +10,6 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/clog_redirector.h"
 
-#include "modes_commons.h"
-
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);

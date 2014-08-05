@@ -8,7 +8,8 @@
 #include "auxiliaries/chain_residue_atom_comment.h"
 #include "auxiliaries/opengl_printer.h"
 
-#include "modes_commons.h"
+#include "modescommon_assert_options.h"
+#include "modescommon_read_sphere.h"
 
 namespace
 {
@@ -232,7 +233,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--projections", "number", "curve optimization depth"));
 		list_of_option_descriptions.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
 		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
-		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
+		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
 			std::cerr << "              (default line format: 'x y z r # comments')\n";
@@ -257,7 +258,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(annotate)
 	{
 		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
-		auxiliaries::read_lines_to_container(std::cin, "", modes_commons::add_sphere_and_comments_from_stream_to_vectors<apollota::SimpleSphere, Comment>, spheres_with_comments);
+		auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_sphere_and_comments_from_stream_to_vectors<apollota::SimpleSphere, Comment>, spheres_with_comments);
 		if(spheres.size()!=input_spheres_comments.size())
 		{
 			throw std::runtime_error("Number of comments does not match number of spheres.");
@@ -265,7 +266,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	}
 	if(spheres.size()<4)
 	{
@@ -374,7 +375,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
-		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
+		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
 			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
