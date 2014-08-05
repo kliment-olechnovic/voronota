@@ -1,31 +1,10 @@
-#ifndef MODES_COMMONS_H_
-#define MODES_COMMONS_H_
+#ifndef MODESCOMMON_READ_SPHERE_H_
+#define MODESCOMMON_READ_SPHERE_H_
 
-#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-namespace modes_commons
+namespace modescommon
 {
-
-inline bool assert_options(
-		const std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription>& basic_list_of_option_descriptions,
-		const auxiliaries::ProgramOptionsHandler& poh,
-		const bool allow_unrecognized_options)
-{
-	if(poh.contains_option("--help"))
-	{
-		if(!basic_list_of_option_descriptions.empty())
-		{
-			auxiliaries::ProgramOptionsHandler::print_list_of_option_descriptions("", basic_list_of_option_descriptions, std::cerr);
-		}
-		return false;
-	}
-	else
-	{
-		poh.compare_with_list_of_option_descriptions(basic_list_of_option_descriptions, allow_unrecognized_options);
-		return true;
-	}
-}
 
 template<typename SphereType>
 inline bool add_sphere_from_stream_to_vector(std::istream& input, std::vector<SphereType>& spheres)
@@ -78,4 +57,4 @@ inline bool add_sphere_and_comments_from_stream_to_vectors(std::istream& input, 
 
 }
 
-#endif /* MODES_COMMONS_H_ */
+#endif /* MODESCOMMON_READ_SPHERE_H_ */

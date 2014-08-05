@@ -3,8 +3,9 @@
 
 #include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "modes_commons.h"
+#include "modescommon_assert_options.h"
 
 namespace
 {
@@ -42,7 +43,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--default-radius", "number", "default atomic radius"));
 		list_of_option_descriptions.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
 		list_of_option_descriptions.push_back(OD("--enhanced-comments", "", "flag to output enhanced comments"));
-		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
+		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
 			std::cerr << "stdout  ->  list of balls (line format: 'x y z r # comments')\n";
