@@ -9,7 +9,8 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
-#include "modes_commons.h"
+#include "modescommon_assert_options.h"
+#include "modescommon_read_sphere.h"
 
 namespace
 {
@@ -37,7 +38,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -378,7 +379,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
 		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
 		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
+		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'x y z r # comments')\n";
 			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
