@@ -65,7 +65,6 @@ void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, 
 	}
 }
 
-template<bool Summarize>
 bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> comment_strings;
@@ -77,20 +76,10 @@ bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
-		const std::pair<Comment, Comment> comments=(Summarize ?
-				std::make_pair(Comment::from_str(comment_strings.first).without_numbering(), Comment::from_str(comment_strings.second).without_numbering()) :
-				std::make_pair(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second)));
+		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			ContactValue& target=map_of_records[refine_pair(comments, comments.second<comments.first)];
-			if(Summarize)
-			{
-				target.add(value);
-			}
-			else
-			{
-				target=value;
-			}
+			map_of_records[refine_pair(comments, comments.second<comments.first)]=value;
 			return true;
 		}
 	}
@@ -376,7 +365,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert final result to inter-residue contacts"));
-		list_of_option_descriptions.push_back(OD("--summarize-input", "", "flag to summarize input annotations"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
@@ -411,7 +399,6 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
 	const bool inter_residue=poh.contains_option("--inter-residue");
-	const bool summarize_input=poh.contains_option("--summarize-input");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
@@ -423,14 +410,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	if(summarize_input)
-	{
-		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<true>, map_of_contacts);
-	}
-	else
-	{
-		auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map<false>, map_of_contacts);
-	}
+	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -483,7 +463,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
-			if(!(comments.second==comments.first) || comments.first==comments.first.without_numbering())
+			if(!(comments.second==comments.first))
 			{
 				map_of_reduced_contacts[refine_pair(comments, map_of_reduced_contacts.count(refine_pair(comments, true))>0)].add(it->second);
 			}
