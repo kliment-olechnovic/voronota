@@ -1,109 +1,22 @@
 #include <iostream>
-#include <utility>
 #include <stdexcept>
 #include <fstream>
 
 #include "apollota/constrained_contacts_construction.h"
 
-#include "auxiliaries/chain_residue_atom_comment.h"
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon_assert_options.h"
 #include "modescommon_read_sphere.h"
+#include "modescommon_handle_contact.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomComment Comment;
+typedef modescommon::contact::Comment Comment;
+typedef modescommon::contact::ContactValue ContactValue;
 
-struct ContactValue
-{
-	double area;
-	double dist;
-	std::string graphics;
-
-	ContactValue() : area(0.0), dist(0.0)
-	{
-	}
-
-	void add(const ContactValue& v)
-	{
-		area+=v.area;
-		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
-		graphics+=v.graphics;
-	}
-};
-
-template<typename T>
-T refine_pair(const T& p, const bool reverse)
-{
-	if(reverse)
-	{
-		return T(p.second, p.first);
-	}
-	else
-	{
-		return p;
-	}
-}
-
-void print_map_of_contacts_records(const std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
-{
-	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
-	{
-		const std::pair<Comment, Comment>& comments=it->first;
-		const ContactValue& value=it->second;
-		output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
-		if(preserve_graphics && !value.graphics.empty())
-		{
-			if(value.graphics[0]!=' ')
-			{
-				output << " ";
-			}
-			output << value.graphics;
-		}
-		output << "\n";
-	}
-}
-
-bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)
-{
-	std::pair<std::string, std::string> comment_strings;
-	ContactValue value;
-	input >> comment_strings.first >> comment_strings.second >> value.area >> value.dist;
-	if(input.good())
-	{
-		std::getline(input, value.graphics);
-	}
-	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
-	{
-		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
-		if(comments.first.valid() && comments.second.valid())
-		{
-			map_of_records[refine_pair(comments, comments.second<comments.first)]=value;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
-{
-	std::pair<std::string, std::string> comment_strings;
-	input >> comment_strings.first >> comment_strings.second;
-	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
-	{
-		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
-		if(comments.first.valid() && comments.second.valid())
-		{
-			set_of_name_pairs.insert(refine_pair(comments, comments.second<comments.first));
-			return true;
-		}
-	}
-	return false;
-}
-
-std::string draw_iter_atom_contact(
+std::string draw_inter_atom_contact(
 		const std::vector<apollota::SimpleSphere>& spheres,
 		const apollota::Triangulation::VerticesVector& vertices_vector,
 		const apollota::TriangulationQueries::PairsMap& pairs_vertices,
@@ -316,7 +229,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
 				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
-				ContactValue& value=output_map_of_contacts[refine_pair(comments, comments.second<comments.first)];
+				ContactValue& value=output_map_of_contacts[modescommon::contact::refine_pair(comments, comments.second<comments.first)];
 				value.area=area;
 				if(a_id!=b_id)
 				{
@@ -330,11 +243,14 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					value.graphics=(a_id==b_id ?
 							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-							draw_iter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
+							draw_inter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 				}
 			}
 		}
-		print_map_of_contacts_records(output_map_of_contacts, true, std::cout);
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		{
+			modescommon::contact::print_contact_record(it->first, it->second, true, std::cout);
+		}
 	}
 	else
 	{
@@ -411,7 +327,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, "", add_contacts_record_from_stream_to_map, map_of_contacts);
+	auxiliaries::read_lines_to_container(std::cin, "", modescommon::contact::add_contacts_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -421,7 +337,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, "", add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		auxiliaries::read_lines_to_container(input_file, "", modescommon::contact::add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
 		if(matchable_set_of_name_pairs.empty())
 		{
 			throw std::runtime_error("No input for matchable annotation pairs.");
@@ -449,7 +365,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
-				output_map_of_contacts[refine_pair(comments, !matched_first_second)]=value;
+				output_map_of_contacts[modescommon::contact::refine_pair(comments, !matched_first_second)]=value;
 			}
 		}
 		if(!passed && invert)
@@ -466,7 +382,7 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
 			if(!(comments.second==comments.first))
 			{
-				map_of_reduced_contacts[refine_pair(comments, map_of_reduced_contacts.count(refine_pair(comments, true))>0)].add(it->second);
+				map_of_reduced_contacts[modescommon::contact::refine_pair(comments, map_of_reduced_contacts.count(modescommon::contact::refine_pair(comments, true))>0)].add(it->second);
 			}
 		}
 		output_map_of_contacts=map_of_reduced_contacts;
@@ -487,7 +403,10 @@ void calculate_contacts_query(const auxiliaries::ProgramOptionsHandler& poh)
 		output_map_of_contacts=map_of_filtered_contacts;
 	}
 
-	print_map_of_contacts_records(output_map_of_contacts, preserve_graphics, std::cout);
+	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+	{
+		modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+	}
 
 	if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
 	{
