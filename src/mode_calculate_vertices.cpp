@@ -3,7 +3,8 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
-#include "modes_commons.h"
+#include "modescommon_assert_options.h"
+#include "modescommon_read_sphere.h"
 
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -16,7 +17,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
 		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
 		list_of_option_descriptions.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
-		if(!modes_commons::assert_options(list_of_option_descriptions, poh, false))
+		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'x y z r # comments')\n";
 			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
@@ -41,7 +42,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, "#", modes_commons::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
