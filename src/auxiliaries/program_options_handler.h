@@ -65,17 +65,9 @@ public:
 				{
 					options_[str]="";
 				}
-				else if(i>1)
+				else if(i>1 && original_argv_[i-1].find("--")==0)
 				{
-					const std::string& prev_str=original_argv_[i-1];
-					if(prev_str.find("--")==0)
-					{
-						options_[prev_str]=str;
-					}
-					else
-					{
-						unused_argv_.push_back(str);
-					}
+					options_[original_argv_[i-1]]=str;
 				}
 				else
 				{
@@ -88,6 +80,11 @@ public:
 	const std::vector<std::string>& original_argv() const
 	{
 		return original_argv_;
+	}
+
+	std::string original_arg(const std::size_t pos) const
+	{
+		return (pos<original_argv_.size() ? original_argv_[pos] : std::string());
 	}
 
 	const std::vector<std::string>& unused_argv() const

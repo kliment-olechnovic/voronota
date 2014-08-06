@@ -1,10 +1,14 @@
-Common options:
---mode                          string   *  running mode, which has its own options
---help                                      flag to print usage help to stderr and exit
---clog-file                     string      path to file for log stream redirection
---version                                   flag to print version number to stderr and exit
+Voronota version 1.5
 
-Mode 'get-balls-from-atoms-file' options:
+Commands:
+
+get-balls-from-atoms-file
+calculate-vertices
+calculate-vertices-in-parallel
+calculate-contacts
+query-contacts
+
+Command 'get-balls-from-atoms-file' options:
 --include-heteroatoms                       flag to include heteroatoms
 --include-hydrogens                         flag to include hydrogen atoms
 --mmcif                                     flag to input in mmCIF format
@@ -12,30 +16,33 @@ Mode 'get-balls-from-atoms-file' options:
 --default-radius                number      default atomic radius
 --only-default-radius                       flag to make all radii equal to the default radius
 --enhanced-comments                         flag to output enhanced comments
+--help                                      flag to print usage help to stderr and exit
 stdin   <-  file in PDB or mmCIF format
 stdout  ->  list of balls (line format: 'x y z r # comments')
 
-Mode 'calculate-vertices' options:
+Command 'calculate-vertices' options:
 --print-log                                 flag to print log of calculations
 --exclude-hidden-balls                      flag to exclude hidden input balls
 --include-surplus-quadruples                flag to include surplus quadruples
 --link                                      flag to output links between vertices
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --check                                     flag to slowly check the resulting vertices (used only for testing)
+--help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
-Mode 'calculate-vertices-in-parallel' options:
+Command 'calculate-vertices-in-parallel' options:
 --method                        string   *  parallelization method name, variants are: 'simulated'
 --parts                         number   *  number of parts for splitting, must be power of 2
 --print-log                                 flag to print log of calculations
 --include-surplus-quadruples                flag to include surplus quadruples
 --link                                      flag to output links between vertices
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
-Mode 'calculate-contacts' options:
+Command 'calculate-contacts' options:
 --annotate                                  flag to annotate contacts using balls comments
 --probe                         number      probe radius
 --exclude-hidden-balls                      flag to exclude hidden input balls
@@ -43,6 +50,7 @@ Mode 'calculate-contacts' options:
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
 --draw                                      flag to output graphics for annotated contacts
+--help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls
               (default line format: 'x y z r # comments')
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
@@ -50,7 +58,7 @@ stdout  ->  list of contacts
               (default line format: 'b1 b2 area')
               (annotated line format: 'annotation1 annotation2 area distance [graphics]')
 
-Mode 'query-contacts' options:
+Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
@@ -76,5 +84,7 @@ Mode 'query-contacts' options:
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
+--help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
+
