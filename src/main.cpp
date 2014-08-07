@@ -8,13 +8,12 @@
 #include "apollota/safer_comparison_of_numbers.h"
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/clog_redirector.h"
 
-void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh);
-void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh);
-void query_contacts(const auxiliaries::ProgramOptionsHandler& poh);
+void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
+void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
+void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
+void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
+void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -33,6 +32,17 @@ struct ModeDescriptor
 	}
 };
 
+std::vector<ModeDescriptor> get_list_of_modes()
+{
+	std::vector<ModeDescriptor> list_of_modes;
+	list_of_modes.push_back(ModeDescriptor("get-balls-from-atoms-file", ModeDescriptor::FunctionPtr(get_balls_from_atoms_file)));
+	list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
+	list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
+	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
+	return list_of_modes;
+}
+
 int main(const int argc, const char** argv)
 {
 	std::cin.exceptions(std::istream::badbit);
@@ -41,85 +51,40 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		std::vector<ModeDescriptor> list_of_modes;
+		const std::vector<ModeDescriptor> list_of_modes=get_list_of_modes();
+
+		const auxiliaries::ProgramOptionsHandler poh(argc, argv);
+		const std::string mode=(poh.original_arg(1));
+		const bool help=poh.contains_option("--help");
+
+		if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
 		{
-			list_of_modes.push_back(ModeDescriptor("get-balls-from-atoms-file", ModeDescriptor::FunctionPtr(get_balls_from_atoms_file)));
-			list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
-			list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
-			list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
-			list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
-		}
-
-		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> list_of_option_descriptions;
-		{
-			typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-			list_of_option_descriptions.push_back(OD("--mode", "string", "running mode, which has its own options", true));
-			list_of_option_descriptions.push_back(OD("--help", "", "flag to print usage help to stderr and exit"));
-			list_of_option_descriptions.push_back(OD("--clog-file", "string", "path to file for log stream redirection"));
-			list_of_option_descriptions.push_back(OD("--version", "", "flag to print version number to stderr and exit"));
-		}
-
-		auxiliaries::ProgramOptionsHandler poh(argc, argv);
-
-		if(poh.contains_option("--version"))
-		{
-			std::cerr << "Voronota version 1.3\n";
-			return 1;
-		}
-
-		const std::string mode=(poh.contains_option_with_argument("--mode") ? poh.argument<std::string>("--mode") : std::string());
-		const bool help_present=poh.contains_option("--help");
-
-		if(!mode.empty())
-		{
-			if(std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
+			if(!help)
 			{
-				if(!help_present)
-				{
-					poh.remove_option("--mode");
-
-					const std::string clog_filename=poh.argument<std::string>("--clog-file", "");
-					poh.remove_option("--clog-file");
-
-					auxiliaries::CLogRedirector clog_redirector(clog_filename);
-
-					std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
-
-					return 0;
-				}
-				else
-				{
-					std::cerr << "Mode '" << mode << "' options:\n";
-					std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
-				}
+				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
+				return 0;
 			}
 			else
 			{
-				std::cerr << "Invalid mode, available running modes are:\n";
-				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
-				{
-					std::cerr << "--mode " << it->name << "\n";
-				}
+				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 			}
 		}
 		else
 		{
-			std::cerr << "Common options:\n";
-			auxiliaries::ProgramOptionsHandler::print_list_of_option_descriptions("", list_of_option_descriptions, std::cerr);
-			if(!help_present)
+			std::cerr << "Voronota version 1.5\n\n";
+			std::cerr << "Commands:\n\n";
+			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 			{
-				std::cerr << "\nAvailable running modes:\n";
-				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
-				{
-					std::cerr << "--mode " << it->name << "\n";
-				}
+				std::cerr << it->name << "\n";
 			}
-			else
+			std::cerr << "\n";
+			if(help)
 			{
 				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{
-					std::cerr << "\nMode '" << it->name << "' options:\n";
+					std::cerr << "Command '" << it->name << "' options:\n";
 					it->func_ptr(poh);
+					std::cerr << "\n";
 				}
 			}
 		}

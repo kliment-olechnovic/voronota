@@ -1,4 +1,4 @@
-# About Voronota 1.3
+# About Voronota 1.5
 
 The analysis of macromolecular structures often requires
 a comprehensive definition of atomic neighborhoods.
@@ -54,8 +54,8 @@ run the sequence of commands:
 Here is a basic example of computing Voronoi vertices
 for a structure in a PDB file:
 
-    ./voronota --mode get-balls-from-atoms-file < input.pdb > balls.txt
-    ./voronota --mode calculate-vertices < balls.txt > vertices.txt
+    ./voronota get-balls-from-atoms-file < input.pdb > balls.txt
+    ./voronota calculate-vertices < balls.txt > vertices.txt
 
 The first command reads a PDB file "input.pdb" and outputs a file "balls.txt"
 that contains balls corresponding to the atoms in "input.pdb".
@@ -108,11 +108,12 @@ but can be viewed using built-in usage help options.
 
 # Getting usage help
 
-Basic usage help is displayed when executing Voronota without any parameters.
-Advanced options are shown using "--help" command line option:
+The list of Voronota commands is displayed when executing Voronota without any parameters.
+
+Command help is shown when "--help" command line option is present, for example:
+
+    ./voronota calculate-vertices --help
+
+Using "--help" option without specific command results in printing help for all commands:
 
     ./voronota --help
-
-Mode-specific usage help is shown when both "--mode" and "--help" options are present:
-
-    ./voronota --mode calculate-vertices --help
