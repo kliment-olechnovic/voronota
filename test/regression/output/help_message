@@ -1,12 +1,10 @@
-Common options:
---mode                          string   *  running mode, which has its own options
---help                                      flag to print usage help to stderr and exit
---clog-file                     string      path to file for log stream redirection
---version                                   flag to print version number to stderr and exit
+Voronota version 1.5
 
-Available running modes:
---mode get-balls-from-atoms-file
---mode calculate-vertices
---mode calculate-vertices-in-parallel
---mode calculate-contacts
---mode query-contacts
+Commands:
+
+get-balls-from-atoms-file
+calculate-vertices
+calculate-vertices-in-parallel
+calculate-contacts
+query-contacts
+
