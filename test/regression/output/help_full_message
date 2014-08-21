@@ -74,6 +74,8 @@ Command 'query-contacts' options:
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --invert                                    flag to invert selection
+--drop-tags                                 flag to drop all tags from input
+--add-tag                       string      add tag instead of filtering
 --inter-residue                             flag to convert final result to inter-residue contacts
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
