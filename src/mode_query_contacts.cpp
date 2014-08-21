@@ -85,6 +85,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-max-area", "number", "maximum contact area"));
 		list_of_option_descriptions.push_back(OD("--match-min-dist", "number", "minimum distance"));
 		list_of_option_descriptions.push_back(OD("--match-max-dist", "number", "maximum distance"));
+		list_of_option_descriptions.push_back(OD("--match-tags", "string", "comma-separated list of tags to match"));
+		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "comma-separated list of tags to not match"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
@@ -121,6 +123,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
+	const std::vector<std::string> match_tags=poh.argument_vector<std::string>("--match-tags", ',');
+	const std::vector<std::string> match_tags_not=poh.argument_vector<std::string>("--match-tags-not", ',');
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
@@ -156,10 +160,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
 		auxiliaries::read_lines_to_container(input_file, "", modescommon::contact::add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
-		if(matchable_set_of_name_pairs.empty())
-		{
-			throw std::runtime_error("No input for matchable annotation pairs.");
-		}
 	}
 
 	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
@@ -175,6 +175,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				match_comment_with_member_descriptors(comments.first, match_both, match_both_not) &&
 				match_comment_with_member_descriptors(comments.second, match_both, match_both_not) &&
+				(match_tags.empty() || std::find_first_of(value.tags.begin(), value.tags.end(), match_tags.begin(), match_tags.end())!=value.tags.end()) &&
+				(match_tags_not.empty() || std::find_first_of(value.tags.begin(), value.tags.end(), match_tags_not.begin(), match_tags_not.end())==value.tags.end()) &&
 				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
 		{
