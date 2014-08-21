@@ -71,6 +71,8 @@ Command 'query-contacts' options:
 --match-max-area                number      maximum contact area
 --match-min-dist                number      minimum distance
 --match-max-dist                number      maximum distance
+--match-tags                    string      comma-separated list of tags to match
+--match-tags-not                string      comma-separated list of tags to not match
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --invert                                    flag to invert selection
