@@ -100,8 +100,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
-			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')\n";
+			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')\n";
 			return;
 		}
 	}

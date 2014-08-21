@@ -1,66 +1,66 @@
-c[A]r[38]a[257]rn[THR]an[CA]   c[A]r[71]a[532]rn[ARG]an[CG]     0.678485    5.12574
-c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[531]rn[ARG]an[CB]     0.174138    4.67568
-c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[532]rn[ARG]an[CG]     0.328536    4.40749
-c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[533]rn[ARG]an[CD]     0.213738    3.98161
-c[A]r[38]a[259]rn[THR]an[O]    c[A]r[71]a[532]rn[ARG]an[CG]     1.71163     3.7663
-c[A]r[38]a[259]rn[THR]an[O]    c[A]r[71]a[533]rn[ARG]an[CD]     12.7469     3.05976
-c[A]r[62]a[443]rn[THR]an[C]    c[A]r[94]a[737]rn[ARG]an[NH1]    1.54714     3.29753
-c[A]r[62]a[444]rn[THR]an[O]    c[A]r[94]a[737]rn[ARG]an[NH1]    5.50788     2.74317
-c[A]r[62]a[444]rn[THR]an[O]    c[A]r[94]a[738]rn[ARG]an[NH2]    0.723152    3.66518
-c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[736]rn[ARG]an[CZ]     1.3185      4.38517
-c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[737]rn[ARG]an[NH1]    4.35836     3.73298
-c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[738]rn[ARG]an[NH2]    1.04991     4.59776
-c[A]r[62]a[446]rn[THR]an[OG1]  c[A]r[94]a[737]rn[ARG]an[NH1]    0.753915    4.01908
-c[A]r[63]a[448]rn[THR]an[N]    c[A]r[94]a[737]rn[ARG]an[NH1]    0.533834    3.80922
-c[A]r[63]a[449]rn[THR]an[CA]   c[A]r[94]a[737]rn[ARG]an[NH1]    6.28431     3.95222
-c[A]r[63]a[453]rn[THR]an[OG1]  c[A]r[94]a[737]rn[ARG]an[NH1]    2.05042     4.54784
-c[A]r[71]a[527]rn[ARG]an[N]    c[A]r[223]a[1744]rn[THR]an[CA]   1.55894     4.15753
-c[A]r[71]a[528]rn[ARG]an[CA]   c[A]r[223]a[1744]rn[THR]an[CA]   0.108863    4.55986
-c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1744]rn[THR]an[CA]   2.33864     3.47209
-c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1747]rn[THR]an[CB]   3.16464     3.77148
-c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1748]rn[THR]an[OG1]  0.00247612  4.0805
-c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1744]rn[THR]an[CA]   0.222732    4.52488
-c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1747]rn[THR]an[CB]   5.66093     4.25164
-c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1749]rn[THR]an[CG2]  1.05401     4.98538
-c[A]r[71]a[532]rn[ARG]an[CG]   c[A]r[223]a[1747]rn[THR]an[CB]   0.275188    4.95422
-c[A]r[71]a[534]rn[ARG]an[NE]   c[A]r[223]a[1747]rn[THR]an[CB]   2.58152     4.52134
-c[A]r[71]a[534]rn[ARG]an[NE]   c[A]r[223]a[1749]rn[THR]an[CG2]  2.8936      4.91122
-c[A]r[71]a[535]rn[ARG]an[CZ]   c[A]r[223]a[1747]rn[THR]an[CB]   2.03566     4.7772
-c[A]r[71]a[535]rn[ARG]an[CZ]   c[A]r[223]a[1748]rn[THR]an[OG1]  0.364068    4.63634
-c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1747]rn[THR]an[CB]   2.04243     4.64393
-c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1748]rn[THR]an[OG1]  6.16141     4.24217
-c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1749]rn[THR]an[CG2]  2.96639     5.01931
-c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[831]rn[THR]an[N]     0.00312732  4.41992
-c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[834]rn[THR]an[O]     5.09791     3.06238
-c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[836]rn[THR]an[OG1]   2.7688      3.57068
-c[A]r[94]a[729]rn[ARG]an[CA]   c[A]r[95]a[739]rn[THR]an[N]      2.84601     2.33737
-c[A]r[94]a[729]rn[ARG]an[CA]   c[A]r[106]a[836]rn[THR]an[OG1]   0.022208    3.86257
-c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[739]rn[THR]an[N]      7.71542     1.3049
-c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[740]rn[THR]an[CA]     2.21396     2.40376
-c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[744]rn[THR]an[OG1]    3.50016     3.39856
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[95]a[740]rn[THR]an[CA]     3.21733     2.77149
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[95]a[744]rn[THR]an[OG1]    2.02603     3.47879
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[831]rn[THR]an[N]     6.74123     2.9905
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[834]rn[THR]an[O]     2.62812     3.62469
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[836]rn[THR]an[OG1]   0.563408    3.80828
-c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[837]rn[THR]an[CG2]   0.037386    4.95408
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[739]rn[THR]an[N]      2.69109     2.94868
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[740]rn[THR]an[CA]     0.317204    4.08318
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[741]rn[THR]an[C]      0.777955    4.34585
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[742]rn[THR]an[O]      0.620871    4.44754
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[831]rn[THR]an[N]     0.00242859  4.75959
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[836]rn[THR]an[OG1]   8.73273     3.18446
-c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[837]rn[THR]an[CG2]   0.519183    5.09234
-c[A]r[94]a[733]rn[ARG]an[CG]   c[A]r[106]a[836]rn[THR]an[OG1]   4.1572      3.90883
-c[A]r[94]a[734]rn[ARG]an[CD]   c[A]r[95]a[742]rn[THR]an[O]      0.295535    5.1423
-c[A]r[94]a[734]rn[ARG]an[CD]   c[A]r[106]a[836]rn[THR]an[OG1]   0.556899    4.62821
-c[A]r[94]a[737]rn[ARG]an[NH1]  c[A]r[106]a[836]rn[THR]an[OG1]   1.80515     5.29109
-c[A]r[106]a[832]rn[THR]an[CA]  c[A]r[107]a[838]rn[ARG]an[N]     2.77509     2.35676
-c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[838]rn[ARG]an[N]     7.85443     1.30754
-c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[839]rn[ARG]an[CA]    2.20282     2.3842
-c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[842]rn[ARG]an[CB]    2.88411     3.24061
-c[A]r[106]a[834]rn[THR]an[O]   c[A]r[107]a[839]rn[ARG]an[CA]    2.87199     2.75136
-c[A]r[106]a[834]rn[THR]an[O]   c[A]r[107]a[842]rn[ARG]an[CB]    3.20992     3.4142
-c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[838]rn[ARG]an[N]     3.55293     3.12807
-c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[839]rn[ARG]an[CA]    0.146558    4.372
-c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[840]rn[ARG]an[C]     0.189514    4.93559
+c[A]r[38]a[257]rn[THR]an[CA]   c[A]r[71]a[532]rn[ARG]an[CG]     0.678485    5.12574  .
+c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[531]rn[ARG]an[CB]     0.174138    4.67568  .
+c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[532]rn[ARG]an[CG]     0.328536    4.40749  .
+c[A]r[38]a[258]rn[THR]an[C]    c[A]r[71]a[533]rn[ARG]an[CD]     0.213738    3.98161  .
+c[A]r[38]a[259]rn[THR]an[O]    c[A]r[71]a[532]rn[ARG]an[CG]     1.71163     3.7663   .
+c[A]r[38]a[259]rn[THR]an[O]    c[A]r[71]a[533]rn[ARG]an[CD]     12.7469     3.05976  .
+c[A]r[62]a[443]rn[THR]an[C]    c[A]r[94]a[737]rn[ARG]an[NH1]    1.54714     3.29753  .
+c[A]r[62]a[444]rn[THR]an[O]    c[A]r[94]a[737]rn[ARG]an[NH1]    5.50788     2.74317  .
+c[A]r[62]a[444]rn[THR]an[O]    c[A]r[94]a[738]rn[ARG]an[NH2]    0.723152    3.66518  .
+c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[736]rn[ARG]an[CZ]     1.3185      4.38517  .
+c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[737]rn[ARG]an[NH1]    4.35836     3.73298  .
+c[A]r[62]a[445]rn[THR]an[CB]   c[A]r[94]a[738]rn[ARG]an[NH2]    1.04991     4.59776  .
+c[A]r[62]a[446]rn[THR]an[OG1]  c[A]r[94]a[737]rn[ARG]an[NH1]    0.753915    4.01908  .
+c[A]r[63]a[448]rn[THR]an[N]    c[A]r[94]a[737]rn[ARG]an[NH1]    0.533834    3.80922  .
+c[A]r[63]a[449]rn[THR]an[CA]   c[A]r[94]a[737]rn[ARG]an[NH1]    6.28431     3.95222  .
+c[A]r[63]a[453]rn[THR]an[OG1]  c[A]r[94]a[737]rn[ARG]an[NH1]    2.05042     4.54784  .
+c[A]r[71]a[527]rn[ARG]an[N]    c[A]r[223]a[1744]rn[THR]an[CA]   1.55894     4.15753  .
+c[A]r[71]a[528]rn[ARG]an[CA]   c[A]r[223]a[1744]rn[THR]an[CA]   0.108863    4.55986  .
+c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1744]rn[THR]an[CA]   2.33864     3.47209  .
+c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1747]rn[THR]an[CB]   3.16464     3.77148  .
+c[A]r[71]a[530]rn[ARG]an[O]    c[A]r[223]a[1748]rn[THR]an[OG1]  0.00247612  4.0805   .
+c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1744]rn[THR]an[CA]   0.222732    4.52488  .
+c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1747]rn[THR]an[CB]   5.66093     4.25164  .
+c[A]r[71]a[531]rn[ARG]an[CB]   c[A]r[223]a[1749]rn[THR]an[CG2]  1.05401     4.98538  .
+c[A]r[71]a[532]rn[ARG]an[CG]   c[A]r[223]a[1747]rn[THR]an[CB]   0.275188    4.95422  .
+c[A]r[71]a[534]rn[ARG]an[NE]   c[A]r[223]a[1747]rn[THR]an[CB]   2.58152     4.52134  .
+c[A]r[71]a[534]rn[ARG]an[NE]   c[A]r[223]a[1749]rn[THR]an[CG2]  2.8936      4.91122  .
+c[A]r[71]a[535]rn[ARG]an[CZ]   c[A]r[223]a[1747]rn[THR]an[CB]   2.03566     4.7772   .
+c[A]r[71]a[535]rn[ARG]an[CZ]   c[A]r[223]a[1748]rn[THR]an[OG1]  0.364068    4.63634  .
+c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1747]rn[THR]an[CB]   2.04243     4.64393  .
+c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1748]rn[THR]an[OG1]  6.16141     4.24217  .
+c[A]r[71]a[537]rn[ARG]an[NH2]  c[A]r[223]a[1749]rn[THR]an[CG2]  2.96639     5.01931  .
+c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[831]rn[THR]an[N]     0.00312732  4.41992  .
+c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[834]rn[THR]an[O]     5.09791     3.06238  .
+c[A]r[94]a[728]rn[ARG]an[N]    c[A]r[106]a[836]rn[THR]an[OG1]   2.7688      3.57068  .
+c[A]r[94]a[729]rn[ARG]an[CA]   c[A]r[95]a[739]rn[THR]an[N]      2.84601     2.33737  .
+c[A]r[94]a[729]rn[ARG]an[CA]   c[A]r[106]a[836]rn[THR]an[OG1]   0.022208    3.86257  .
+c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[739]rn[THR]an[N]      7.71542     1.3049   .
+c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[740]rn[THR]an[CA]     2.21396     2.40376  .
+c[A]r[94]a[730]rn[ARG]an[C]    c[A]r[95]a[744]rn[THR]an[OG1]    3.50016     3.39856  .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[95]a[740]rn[THR]an[CA]     3.21733     2.77149  .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[95]a[744]rn[THR]an[OG1]    2.02603     3.47879  .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[831]rn[THR]an[N]     6.74123     2.9905   .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[834]rn[THR]an[O]     2.62812     3.62469  .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[836]rn[THR]an[OG1]   0.563408    3.80828  .
+c[A]r[94]a[731]rn[ARG]an[O]    c[A]r[106]a[837]rn[THR]an[CG2]   0.037386    4.95408  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[739]rn[THR]an[N]      2.69109     2.94868  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[740]rn[THR]an[CA]     0.317204    4.08318  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[741]rn[THR]an[C]      0.777955    4.34585  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[95]a[742]rn[THR]an[O]      0.620871    4.44754  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[831]rn[THR]an[N]     0.00242859  4.75959  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[836]rn[THR]an[OG1]   8.73273     3.18446  .
+c[A]r[94]a[732]rn[ARG]an[CB]   c[A]r[106]a[837]rn[THR]an[CG2]   0.519183    5.09234  .
+c[A]r[94]a[733]rn[ARG]an[CG]   c[A]r[106]a[836]rn[THR]an[OG1]   4.1572      3.90883  .
+c[A]r[94]a[734]rn[ARG]an[CD]   c[A]r[95]a[742]rn[THR]an[O]      0.295535    5.1423   .
+c[A]r[94]a[734]rn[ARG]an[CD]   c[A]r[106]a[836]rn[THR]an[OG1]   0.556899    4.62821  .
+c[A]r[94]a[737]rn[ARG]an[NH1]  c[A]r[106]a[836]rn[THR]an[OG1]   1.80515     5.29109  .
+c[A]r[106]a[832]rn[THR]an[CA]  c[A]r[107]a[838]rn[ARG]an[N]     2.77509     2.35676  .
+c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[838]rn[ARG]an[N]     7.85443     1.30754  .
+c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[839]rn[ARG]an[CA]    2.20282     2.3842   .
+c[A]r[106]a[833]rn[THR]an[C]   c[A]r[107]a[842]rn[ARG]an[CB]    2.88411     3.24061  .
+c[A]r[106]a[834]rn[THR]an[O]   c[A]r[107]a[839]rn[ARG]an[CA]    2.87199     2.75136  .
+c[A]r[106]a[834]rn[THR]an[O]   c[A]r[107]a[842]rn[ARG]an[CB]    3.20992     3.4142   .
+c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[838]rn[ARG]an[N]     3.55293     3.12807  .
+c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[839]rn[ARG]an[CA]    0.146558    4.372    .
+c[A]r[106]a[835]rn[THR]an[CB]  c[A]r[107]a[840]rn[ARG]an[C]     0.189514    4.93559  .

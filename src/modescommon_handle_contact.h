@@ -16,6 +16,7 @@ struct ContactValue
 {
 	double area;
 	double dist;
+	std::set<std::string> tags;
 	std::string graphics;
 
 	ContactValue() : area(0.0), dist(0.0)
@@ -26,13 +27,52 @@ struct ContactValue
 	{
 		area+=v.area;
 		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
+		tags.insert(v.tags.begin(), v.tags.end());
 		graphics+=v.graphics;
+	}
+
+	void tag(const std::string& str)
+	{
+		if(!str.empty())
+		{
+			std::string refined_input_str=str;
+			bool filled=false;
+			for(std::size_t i=0;i<refined_input_str.size();i++)
+			{
+				char& s=refined_input_str[i];
+				if(s=='.' || s==';' || s==',')
+				{
+					s=' ';
+				}
+				else
+				{
+					filled=true;
+				}
+			}
+			if(filled)
+			{
+				std::istringstream input(refined_input_str);
+				while(input.good())
+				{
+					std::string marker;
+					input >> marker;
+					if(!marker.empty())
+					{
+						tags.insert(marker);
+					}
+				}
+			}
+		}
 	}
 };
 
 inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
-	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
+	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
+	for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
+	{
+		output << (it==value.tags.begin() ? "" : ";") << (*it);
+	}
 	if(preserve_graphics && !value.graphics.empty())
 	{
 		if(value.graphics[0]!=' ')
@@ -62,6 +102,11 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	std::pair<std::string, std::string> comment_strings;
 	ContactValue value;
 	input >> comment_strings.first >> comment_strings.second >> value.area >> value.dist;
+	{
+		std::string tags;
+		input >> tags;
+		value.tag(tags);
+	}
 	if(input.good())
 	{
 		std::getline(input, value.graphics);
