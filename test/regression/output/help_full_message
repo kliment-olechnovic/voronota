@@ -56,7 +56,7 @@ stdin   <-  list of balls
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
 stdout  ->  list of contacts
               (default line format: 'b1 b2 area')
-              (annotated line format: 'annotation1 annotation2 area distance [graphics]')
+              (annotated line format: 'annotation1 annotation2 area distance tags [graphics]')
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group
@@ -74,6 +74,8 @@ Command 'query-contacts' options:
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --invert                                    flag to invert selection
+--drop-tags                                 flag to drop all tags from input
+--add-tag                       string      add tag instead of filtering
 --inter-residue                             flag to convert final result to inter-residue contacts
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
@@ -85,6 +87,6 @@ Command 'query-contacts' options:
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
 --help                                      flag to print usage help to stderr and exit
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
-stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance [graphics]')
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')
 
