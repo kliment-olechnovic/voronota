@@ -33,6 +33,25 @@ bool match_comment_with_member_descriptors(const Comment& comment, const std::ve
 	return true;
 }
 
+bool match_tags_with_tag_values(const std::set<std::string>& tags, const std::vector<std::string>& positive_values, const std::vector<std::string>& negative_values)
+{
+	for(std::size_t i=0;i<positive_values.size();i++)
+	{
+		if(tags.count(positive_values[i])==0)
+		{
+			return false;
+		}
+	}
+	for(std::size_t i=0;i<negative_values.size();i++)
+	{
+		if(tags.count(negative_values[i])>0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool match_two_comments_with_set_of_name_pairs(const Comment& a, const Comment& b, const std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
 {
 	if(set_of_name_pairs.count(std::make_pair(a, b))>0 || set_of_name_pairs.count(std::make_pair(b, a))>0)
@@ -123,8 +142,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
-	const std::vector<std::string> match_tags=poh.argument_vector<std::string>("--match-tags", ',');
-	const std::vector<std::string> match_tags_not=poh.argument_vector<std::string>("--match-tags-not", ',');
+	const std::vector<std::string> match_tags=poh.argument_vector<std::string>("--match-tags", selection_list_sep);
+	const std::vector<std::string> match_tags_not=poh.argument_vector<std::string>("--match-tags-not", selection_list_sep);
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
@@ -191,8 +210,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				match_comment_with_member_descriptors(comments.first, match_both, match_both_not) &&
 				match_comment_with_member_descriptors(comments.second, match_both, match_both_not) &&
-				(match_tags.empty() || std::find_first_of(value.tags.begin(), value.tags.end(), match_tags.begin(), match_tags.end())!=value.tags.end()) &&
-				(match_tags_not.empty() || std::find_first_of(value.tags.begin(), value.tags.end(), match_tags_not.begin(), match_tags_not.end())==value.tags.end()) &&
+				match_tags_with_tag_values(value.tags, match_tags, match_tags_not) &&
 				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
 		{
