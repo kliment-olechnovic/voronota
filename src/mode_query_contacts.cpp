@@ -92,7 +92,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--add-tag", "string", "add tag instead of filtering"));
-		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert final result to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
@@ -147,12 +147,27 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		throw std::runtime_error("No input.");
 	}
+
 	if(drop_tags)
 	{
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			it->second.tags.clear();
 		}
+	}
+
+	if(inter_residue)
+	{
+		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
+			if(!(comments.second==comments.first))
+			{
+				map_of_reduced_contacts[modescommon::contact::refine_pair(comments, map_of_reduced_contacts.count(modescommon::contact::refine_pair(comments, true))>0)].add(it->second);
+			}
+		}
+		map_of_contacts=map_of_reduced_contacts;
 	}
 
 	std::set< std::pair<Comment, Comment> > matchable_set_of_name_pairs;
@@ -170,6 +185,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const ContactValue& value=it->second;
 		bool passed=false;
 		if(
+				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!no_solvent || !(comments.first==Comment::solvent() || comments.second==Comment::solvent())) &&
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
@@ -192,35 +208,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			output_map_of_contacts[comments]=value;
 		}
-	}
-
-	if(inter_residue)
-	{
-		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
-		{
-			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
-			if(!(comments.second==comments.first))
-			{
-				map_of_reduced_contacts[modescommon::contact::refine_pair(comments, map_of_reduced_contacts.count(modescommon::contact::refine_pair(comments, true))>0)].add(it->second);
-			}
-		}
-		output_map_of_contacts=map_of_reduced_contacts;
-	}
-
-	if(match_min_area>std::numeric_limits<double>::min() || match_max_area<std::numeric_limits<double>::max())
-	{
-		std::map< std::pair<Comment, Comment>, ContactValue > map_of_filtered_contacts;
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
-		{
-			const ContactValue& value=it->second;
-			const bool passed=(value.area>=match_min_area && value.area<=match_max_area);
-			if((passed && !invert) || (!passed && invert))
-			{
-				map_of_filtered_contacts.insert(*it);
-			}
-		}
-		output_map_of_contacts=map_of_filtered_contacts;
 	}
 
 	if(!add_tag.empty())
