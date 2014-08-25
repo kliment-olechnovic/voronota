@@ -196,7 +196,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			modescommon::contact::print_contact_record(it->first, false, it->second, true, std::cout);
+			modescommon::contact::print_contact_record(it->first, it->second, true, std::cout);
 		}
 	}
 	else
