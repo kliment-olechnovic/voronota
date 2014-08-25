@@ -176,7 +176,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
 				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
-				ContactValue& value=output_map_of_contacts[modescommon::contact::refine_pair(comments, comments.second<comments.first)];
+				ContactValue& value=output_map_of_contacts[modescommon::contact::refine_pair_by_ordering(comments)];
 				value.area=area;
 				if(a_id!=b_id)
 				{

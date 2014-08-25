@@ -79,6 +79,12 @@ inline T refine_pair(const T& p, const bool reverse)
 	}
 }
 
+template<typename T>
+inline T refine_pair_by_ordering(const T& p)
+{
+	return refine_pair(p, p.second<p.first);
+}
+
 inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
 	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
@@ -116,7 +122,7 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			map_of_records[refine_pair(comments, comments.second<comments.first)]=value;
+			map_of_records[refine_pair_by_ordering(comments)]=value;
 			return true;
 		}
 	}
@@ -132,7 +138,7 @@ inline bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::
 		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			set_of_name_pairs.insert(refine_pair(comments, comments.second<comments.first));
+			set_of_name_pairs.insert(refine_pair_by_ordering(comments));
 			return true;
 		}
 	}
