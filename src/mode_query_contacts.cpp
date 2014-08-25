@@ -183,7 +183,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
 			if(!(comments.second==comments.first))
 			{
-				map_of_reduced_contacts[modescommon::contact::refine_pair(comments, map_of_reduced_contacts.count(modescommon::contact::refine_pair(comments, true))>0)].add(it->second);
+				map_of_reduced_contacts[modescommon::contact::refine_pair_by_ordering(comments)].add(it->second);
 			}
 		}
 		map_of_contacts=map_of_reduced_contacts;
