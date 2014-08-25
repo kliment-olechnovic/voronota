@@ -79,30 +79,22 @@ inline T refine_pair(const T& p, const bool reverse)
 	}
 }
 
-inline void print_contact_record(const std::pair<Comment, Comment>& comments, const bool remove_numbering, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
+inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
-	if(remove_numbering)
+	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
+	for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
 	{
-		const std::pair<Comment, Comment> comments_without_numbering(comments.first.without_numbering(), comments.second.without_numbering());
-		print_contact_record(refine_pair(comments_without_numbering, comments_without_numbering.second<comments_without_numbering.first), false, value, preserve_graphics, output);
+		output << (it==value.tags.begin() ? "" : ";") << (*it);
 	}
-	else
+	if(preserve_graphics && !value.graphics.empty())
 	{
-		output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
-		for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
+		if(value.graphics[0]!=' ')
 		{
-			output << (it==value.tags.begin() ? "" : ";") << (*it);
+			output << " ";
 		}
-		if(preserve_graphics && !value.graphics.empty())
-		{
-			if(value.graphics[0]!=' ')
-			{
-				output << " ";
-			}
-			output << value.graphics;
-		}
-		output << "\n";
+		output << value.graphics;
 	}
+	output << "\n";
 }
 
 inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<Comment, Comment>, ContactValue >& map_of_records)

@@ -112,7 +112,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--add-tag", "string", "add tag instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
-		list_of_option_descriptions.push_back(OD("--remove-numbering", "", "flag to remove numbering info from output"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
@@ -151,7 +150,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string add_tag=poh.argument<std::string>("--add-tag", "");
 	const bool inter_residue=poh.contains_option("--inter-residue");
-	const bool remove_numbering=poh.contains_option("--remove-numbering");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
@@ -239,14 +237,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				it->second.tag(add_tag);
 			}
-			modescommon::contact::print_contact_record(it->first, remove_numbering, it->second, preserve_graphics, std::cout);
+			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 	}
 	else
 	{
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			modescommon::contact::print_contact_record(it->first, remove_numbering, it->second, preserve_graphics, std::cout);
+			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 
 		if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
