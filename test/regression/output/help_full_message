@@ -79,6 +79,7 @@ Command 'query-contacts' options:
 --drop-tags                                 flag to drop all tags from input
 --add-tag                       string      add tag instead of filtering
 --inter-residue                             flag to convert input to inter-residue contacts
+--remove-numbering                          flag to remove numbering info from output
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script

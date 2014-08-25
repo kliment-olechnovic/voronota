@@ -66,24 +66,6 @@ struct ContactValue
 	}
 };
 
-inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
-{
-	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
-	for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
-	{
-		output << (it==value.tags.begin() ? "" : ";") << (*it);
-	}
-	if(preserve_graphics && !value.graphics.empty())
-	{
-		if(value.graphics[0]!=' ')
-		{
-			output << " ";
-		}
-		output << value.graphics;
-	}
-	output << "\n";
-}
-
 template<typename T>
 inline T refine_pair(const T& p, const bool reverse)
 {
@@ -94,6 +76,32 @@ inline T refine_pair(const T& p, const bool reverse)
 	else
 	{
 		return p;
+	}
+}
+
+inline void print_contact_record(const std::pair<Comment, Comment>& comments, const bool remove_numbering, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
+{
+	if(remove_numbering)
+	{
+		const std::pair<Comment, Comment> comments_without_numbering(comments.first.without_numbering(), comments.second.without_numbering());
+		print_contact_record(refine_pair(comments_without_numbering, comments_without_numbering.second<comments_without_numbering.first), false, value, preserve_graphics, output);
+	}
+	else
+	{
+		output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
+		for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
+		{
+			output << (it==value.tags.begin() ? "" : ";") << (*it);
+		}
+		if(preserve_graphics && !value.graphics.empty())
+		{
+			if(value.graphics[0]!=' ')
+			{
+				output << " ";
+			}
+			output << value.graphics;
+		}
+		output << "\n";
 	}
 }
 
