@@ -246,52 +246,52 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
+	}
 
-		if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
+	if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
+	{
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(drawing_color);
+		opengl_printer.add_alpha(drawing_alpha);
+		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
-			opengl_printer.add_color(drawing_color);
-			opengl_printer.add_alpha(drawing_alpha);
-			for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+			const std::pair<Comment, Comment>& comments=it->first;
+			const ContactValue& value=it->second;
+			if(!value.graphics.empty())
 			{
-				const std::pair<Comment, Comment>& comments=it->first;
-				const ContactValue& value=it->second;
-				if(!value.graphics.empty())
+				if(drawing_labels)
 				{
-					if(drawing_labels)
-					{
-						opengl_printer.add_label(comments.first.str()+"<->"+comments.second.str());
-					}
-					if(drawing_random_colors)
-					{
-						opengl_printer.add_color(calc_two_comments_color_integer(comments.first, comments.second));
-					}
-					opengl_printer.add(value.graphics);
+					opengl_printer.add_label(comments.first.str()+"<->"+comments.second.str());
 				}
+				if(drawing_random_colors)
+				{
+					opengl_printer.add_color(calc_two_comments_color_integer(comments.first, comments.second));
+				}
+				opengl_printer.add(value.graphics);
 			}
-			if(!drawing_for_pymol.empty())
+		}
+		if(!drawing_for_pymol.empty())
+		{
+			std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
+			if(foutput.good())
 			{
-				std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
-				if(foutput.good())
-				{
-					opengl_printer.print_pymol_script(drawing_name, true, foutput);
-				}
+				opengl_printer.print_pymol_script(drawing_name, true, foutput);
 			}
-			if(!drawing_for_jmol.empty())
+		}
+		if(!drawing_for_jmol.empty())
+		{
+			std::ofstream foutput(drawing_for_jmol.c_str(), std::ios::out);
+			if(foutput.good())
 			{
-				std::ofstream foutput(drawing_for_jmol.c_str(), std::ios::out);
-				if(foutput.good())
-				{
-					opengl_printer.print_jmol_script(drawing_name, foutput);
-				}
+				opengl_printer.print_jmol_script(drawing_name, foutput);
 			}
-			if(!drawing_for_scenejs.empty())
+		}
+		if(!drawing_for_scenejs.empty())
+		{
+			std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
+			if(foutput.good())
 			{
-				std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
-				if(foutput.good())
-				{
-					opengl_printer.print_scenejs_script(drawing_name, true, foutput);
-				}
+				opengl_printer.print_scenejs_script(drawing_name, true, foutput);
 			}
 		}
 	}
