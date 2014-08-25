@@ -44,6 +44,7 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotate --draw | $T
 ($TEST_SUBJECT query-contacts --match-both-not 'rn[VAL]' --invert | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query6
 ($TEST_SUBJECT query-contacts --match-first 'an[O]' --add-tag 'withO' | $TEST_SUBJECT query-contacts --match-first 'an[NZ]' --add-tag 'withNZ' | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query7
 ($TEST_SUBJECT query-contacts --match-tags 'withO' --match-tags-not 'withNZ' | column -t) < $OUTPUT_DIR/contacts4_query7 > $OUTPUT_DIR/contacts4_query8
+($TEST_SUBJECT query-contacts --remove-numbering) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query9
 
 rm -r ./voronota_package
 
