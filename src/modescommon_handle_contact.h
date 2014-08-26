@@ -28,7 +28,21 @@ struct ContactValue
 		area+=v.area;
 		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
 		tags.insert(v.tags.begin(), v.tags.end());
-		graphics+=v.graphics;
+		if(!v.graphics.empty())
+		{
+			if(graphics.empty())
+			{
+				graphics=v.graphics;
+			}
+			else
+			{
+				if(graphics[graphics.size()-1]!=' ' || v.graphics[0]!=' ')
+				{
+					graphics+=" ";
+				}
+				graphics+=v.graphics;
+			}
+		}
 	}
 
 	void tag(const std::string& str)
@@ -94,11 +108,9 @@ inline void print_contact_record(const std::pair<Comment, Comment>& comments, co
 	}
 	if(preserve_graphics && !value.graphics.empty())
 	{
-		if(value.graphics[0]!=' ')
-		{
-			output << " ";
-		}
+		output << " \"";
 		output << value.graphics;
+		output << "\"";
 	}
 	output << "\n";
 }
@@ -115,7 +127,8 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	}
 	if(input.good())
 	{
-		std::getline(input, value.graphics);
+		std::getline(input, value.graphics, '"');
+		std::getline(input, value.graphics, '"');
 	}
 	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
 	{
