@@ -9,7 +9,7 @@
 namespace auxiliaries
 {
 
-class ChainResidueAtomComment
+class ChainResidueAtomDescriptor
 {
 public:
 	int serial;
@@ -20,7 +20,7 @@ public:
 	std::string altLoc;
 	std::string iCode;
 
-	ChainResidueAtomComment() : serial(null_num()), resSeq(null_num())
+	ChainResidueAtomDescriptor() : serial(null_num()), resSeq(null_num())
 	{
 	}
 
@@ -29,16 +29,16 @@ public:
 		return std::numeric_limits<int>::min();
 	}
 
-	static ChainResidueAtomComment solvent()
+	static ChainResidueAtomDescriptor solvent()
 	{
-		ChainResidueAtomComment v;
+		ChainResidueAtomDescriptor v;
 		v.chainID="solvent";
 		return v;
 	}
 
-	static ChainResidueAtomComment from_str(const std::string& input_str)
+	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
 	{
-		ChainResidueAtomComment v;
+		ChainResidueAtomDescriptor v;
 		std::string refined_input_str=input_str;
 		for(std::size_t i=0;i<refined_input_str.size();i++)
 		{
@@ -100,7 +100,7 @@ public:
 		return v;
 	}
 
-	static bool match_with_member_descriptor(const ChainResidueAtomComment& comment, const std::string& input_str)
+	static bool match_with_member_descriptor(const ChainResidueAtomDescriptor& comment, const std::string& input_str)
 	{
 		const char vsep=',';
 		const char vinterval=':';
@@ -179,7 +179,7 @@ public:
 		return matched;
 	}
 
-	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep, const bool uncheckable_result)
+	static bool match_with_sequence_separation_interval(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b, const int min_sep, const int max_sep, const bool uncheckable_result)
 	{
 		if(!(min_sep==null_num() && max_sep==null_num()) && a.resSeq!=null_num() && b.resSeq!=null_num() && a.chainID==b.chainID)
 		{
@@ -207,16 +207,16 @@ public:
 				!(serial==null_num() && !altLoc.empty()));
 	}
 
-	ChainResidueAtomComment without_atom() const
+	ChainResidueAtomDescriptor without_atom() const
 	{
-		ChainResidueAtomComment v=(*this);
+		ChainResidueAtomDescriptor v=(*this);
 		v.serial=null_num();
 		v.altLoc.clear();
 		v.name.clear();
 		return v;
 	}
 
-	bool contains(const ChainResidueAtomComment& v) const
+	bool contains(const ChainResidueAtomDescriptor& v) const
 	{
 		return (valid() && v.valid() &&
 				(v.serial==null_num() || v.serial==serial) &&
@@ -228,12 +228,12 @@ public:
 				(v.iCode.empty() || v.iCode==iCode));
 	}
 
-	bool operator==(const ChainResidueAtomComment& v) const
+	bool operator==(const ChainResidueAtomDescriptor& v) const
 	{
 		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
 	}
 
-	bool operator<(const ChainResidueAtomComment& v) const
+	bool operator<(const ChainResidueAtomDescriptor& v) const
 	{
 		if(chainID<v.chainID) { return true; }
 		else if(chainID==v.chainID)

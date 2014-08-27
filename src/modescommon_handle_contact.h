@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_HANDLE_CONTACT_H_
 #define MODESCOMMON_HANDLE_CONTACT_H_
 
-#include "auxiliaries/chain_residue_atom_comment.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/io_utilities.h"
 
 namespace modescommon
@@ -10,7 +10,7 @@ namespace modescommon
 namespace contact
 {
 
-typedef auxiliaries::ChainResidueAtomComment Comment;
+typedef auxiliaries::ChainResidueAtomDescriptor Comment;
 
 struct ContactValue
 {
