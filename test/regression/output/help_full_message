@@ -56,7 +56,7 @@ stdin   <-  list of balls
               (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
 stdout  ->  list of contacts
               (default line format: 'b1 b2 area')
-              (annotated line format: 'annotation1 annotation2 area distance tags [graphics]')
+              (annotated line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group
@@ -89,6 +89,6 @@ Command 'query-contacts' options:
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
 --help                                      flag to print usage help to stderr and exit
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')
-stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags [graphics]')
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 

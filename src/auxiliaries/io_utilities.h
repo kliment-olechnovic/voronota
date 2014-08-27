@@ -87,6 +87,45 @@ inline std::string print_set_to_string(const std::set<T>& set, const std::string
 	return output.str();
 }
 
+template<typename A, typename B>
+inline std::map<A, B> read_map_from_string(const std::string& input_str, const std::string& separators)
+{
+	std::map<A, B> result;
+	const std::set<std::string> set=read_set_from_string<std::string>(input_str, separators);
+	for(std::set<std::string>::const_iterator it=set.begin();it!=set.end();++it)
+	{
+		const std::size_t op_pos=it->find('=');
+		if(op_pos<it->size())
+		{
+			std::string str=(*it);
+			str[op_pos]=' ';
+			std::istringstream input(str);
+			if(input.good())
+			{
+				A a;
+				B b;
+				input >> a >> b;
+				if(!input.fail())
+				{
+					result[a]=b;
+				}
+			}
+		}
+	}
+	return result;
+}
+
+template<typename A, typename B>
+inline std::string print_map_to_string(const std::map<A, B>& map, const std::string& sep)
+{
+	std::ostringstream output;
+	for(typename std::map<A, B>::const_iterator it=map.begin();it!=map.end();++it)
+	{
+		output << (it==map.begin() ? std::string() : sep) << it->first << "=" << it->second;
+	}
+	return output.str();
+}
+
 }
 
 #endif /* AUXILIARIES_IO_UTILITIES__H_ */

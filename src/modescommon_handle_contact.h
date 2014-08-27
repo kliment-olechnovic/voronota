@@ -17,6 +17,7 @@ struct ContactValue
 	double area;
 	double dist;
 	std::set<std::string> tags;
+	std::map<std::string, double> adjuncts;
 	std::string graphics;
 
 	ContactValue() : area(0.0), dist(0.0)
@@ -28,6 +29,10 @@ struct ContactValue
 		area+=v.area;
 		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
 		tags.insert(v.tags.begin(), v.tags.end());
+		for(std::map<std::string, double>::const_iterator it=v.adjuncts.begin();it!=v.adjuncts.end();++it)
+		{
+			adjuncts[it->first]=it->second;
+		}
 		if(!v.graphics.empty())
 		{
 			if(graphics.empty())
@@ -56,6 +61,18 @@ struct ContactValue
 			}
 		}
 	}
+
+	void set_adjuncts(const std::string& str)
+	{
+		if(!str.empty())
+		{
+			const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ".;,");
+			for(std::map<std::string, double>::const_iterator it=input_adjuncts.begin();it!=input_adjuncts.end();++it)
+			{
+				adjuncts[it->first]=it->second;
+			}
+		}
+	}
 };
 
 template<typename T>
@@ -79,8 +96,9 @@ inline T refine_pair_by_ordering(const T& p)
 
 inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
-	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " ";
-	output << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
+	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
+	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
+	output << " " << (value.adjuncts.empty() ? std::string(".") : auxiliaries::print_map_to_string(value.adjuncts, ";"));
 	if(preserve_graphics && !value.graphics.empty())
 	{
 		output << " \"";
@@ -99,6 +117,11 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 		std::string tags;
 		input >> tags;
 		value.tag(tags);
+	}
+	{
+		std::string adjuncts;
+		input >> adjuncts;
+		value.set_adjuncts(adjuncts);
 	}
 	if(input.good())
 	{
