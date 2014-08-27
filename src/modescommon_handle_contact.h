@@ -140,22 +140,6 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	return false;
 }
 
-inline bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
-{
-	std::pair<std::string, std::string> comment_strings;
-	input >> comment_strings.first >> comment_strings.second;
-	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
-	{
-		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
-		if(comments.first.valid() && comments.second.valid())
-		{
-			set_of_name_pairs.insert(refine_pair_by_ordering(comments));
-			return true;
-		}
-	}
-	return false;
-}
-
 }
 
 }
