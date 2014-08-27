@@ -110,7 +110,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		list_of_option_descriptions.push_back(OD("--add-tag", "string", "add tag instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-tag", "string", "set tag instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
@@ -148,7 +148,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
-	const std::string add_tag=poh.argument<std::string>("--add-tag", "");
+	const std::string set_tag=poh.argument<std::string>("--set-tag", "");
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
@@ -228,14 +228,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!add_tag.empty())
+	if(!set_tag.empty())
 	{
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const std::pair<Comment, Comment>& comments=it->first;
 			if(output_map_of_contacts.count(comments)>0 || output_map_of_contacts.count(modescommon::contact::refine_pair(comments, true))>0)
 			{
-				it->second.tag(add_tag);
+				it->second.set_tags(set_tag);
 			}
 			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
