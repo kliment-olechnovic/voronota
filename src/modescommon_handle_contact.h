@@ -50,7 +50,7 @@ struct ContactValue
 		}
 	}
 
-	void tag(const std::string& str)
+	void set_tags(const std::string& str)
 	{
 		if(!str.empty())
 		{
@@ -116,7 +116,7 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	{
 		std::string tags;
 		input >> tags;
-		value.tag(tags);
+		value.set_tags(tags);
 	}
 	{
 		std::string adjuncts;
