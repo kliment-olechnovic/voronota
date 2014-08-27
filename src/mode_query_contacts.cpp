@@ -52,6 +52,22 @@ bool match_tags_with_tag_values(const std::set<std::string>& tags, const std::ve
 	return true;
 }
 
+bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
+{
+	std::pair<std::string, std::string> comment_strings;
+	input >> comment_strings.first >> comment_strings.second;
+	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
+	{
+		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
+		if(comments.first.valid() && comments.second.valid())
+		{
+			set_of_name_pairs.insert(modescommon::contact::refine_pair_by_ordering(comments));
+			return true;
+		}
+	}
+	return false;
+}
+
 bool match_two_comments_with_set_of_name_pairs(const Comment& a, const Comment& b, const std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
 {
 	if(set_of_name_pairs.count(std::make_pair(a, b))>0 || set_of_name_pairs.count(std::make_pair(b, a))>0)
@@ -193,7 +209,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, "", modescommon::contact::add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		auxiliaries::read_lines_to_container(input_file, "", add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
 	}
 
 	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
