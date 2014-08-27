@@ -77,7 +77,9 @@ Command 'query-contacts' options:
 --no-solvent                                flag to not include solvent accessible areas
 --invert                                    flag to invert selection
 --drop-tags                                 flag to drop all tags from input
---set-tag                       string      set tag instead of filtering
+--set-tags                      string      set tags instead of filtering
+--drop-adjuncts                             flag to drop all adjuncts from input
+--set-adjuncts                  string      set adjuncts instead of filtering
 --inter-residue                             flag to convert input to inter-residue contacts
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script

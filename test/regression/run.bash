@@ -42,8 +42,9 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotate --draw | $T
 ($TEST_SUBJECT query-contacts --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 --match-min-seq-sep 1 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query4
 ($TEST_SUBJECT query-contacts --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query5
 ($TEST_SUBJECT query-contacts --match-both-not 'rn[VAL]' --invert | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query6
-($TEST_SUBJECT query-contacts --match-first 'an[O]' --set-tag 'withO' | $TEST_SUBJECT query-contacts --match-first 'an[NZ]' --set-tag 'withNZ' | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query7
+($TEST_SUBJECT query-contacts --match-first 'an[O]' --set-tags 'withO' | $TEST_SUBJECT query-contacts --match-first 'an[NZ]' --set-tags 'withNZ' | column -t) < $OUTPUT_DIR/contacts4_query4 > $OUTPUT_DIR/contacts4_query7
 ($TEST_SUBJECT query-contacts --match-tags 'withO' --match-tags-not 'withNZ' | column -t) < $OUTPUT_DIR/contacts4_query7 > $OUTPUT_DIR/contacts4_query8
+($TEST_SUBJECT query-contacts --match-first 'an[O,NZ]' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_DIR/contacts4_query7 > $OUTPUT_DIR/contacts4_query9
 
 rm -r ./voronota_package
 
