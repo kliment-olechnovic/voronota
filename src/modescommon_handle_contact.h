@@ -49,32 +49,10 @@ struct ContactValue
 	{
 		if(!str.empty())
 		{
-			std::string refined_input_str=str;
-			bool filled=false;
-			for(std::size_t i=0;i<refined_input_str.size();i++)
+			const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ".;,");
+			if(!input_tags.empty())
 			{
-				char& s=refined_input_str[i];
-				if(s=='.' || s==';' || s==',')
-				{
-					s=' ';
-				}
-				else
-				{
-					filled=true;
-				}
-			}
-			if(filled)
-			{
-				std::istringstream input(refined_input_str);
-				while(input.good())
-				{
-					std::string marker;
-					input >> marker;
-					if(!marker.empty())
-					{
-						tags.insert(marker);
-					}
-				}
+				tags.insert(input_tags.begin(), input_tags.end());
 			}
 		}
 	}
@@ -101,11 +79,8 @@ inline T refine_pair_by_ordering(const T& p)
 
 inline void print_contact_record(const std::pair<Comment, Comment>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
-	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " " << (value.tags.empty() ? "." : "");
-	for(std::set<std::string>::const_iterator it=value.tags.begin();it!=value.tags.end();++it)
-	{
-		output << (it==value.tags.begin() ? "" : ";") << (*it);
-	}
+	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist << " ";
+	output << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
 	if(preserve_graphics && !value.graphics.empty())
 	{
 		output << " \"";

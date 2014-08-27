@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <set>
+#include <map>
 #include <stdexcept>
 
 namespace auxiliaries
@@ -44,6 +46,45 @@ inline void read_lines_to_container(
 			line_num++;
 		}
 	}
+}
+
+template<typename T>
+inline std::set<T> read_set_from_string(const std::string& input_str, const std::string& separators)
+{
+	std::set<T> result;
+	if(input_str.find_first_not_of(separators)!=std::string::npos)
+	{
+		std::string str=input_str;
+		for(std::size_t i=0;i<str.size();i++)
+		{
+			if(separators.find(str[i])!=std::string::npos)
+			{
+				str[i]=' ';
+			}
+		}
+		std::istringstream input(str);
+		while(input.good())
+		{
+			std::string token;
+			input >> token;
+			if(!token.empty())
+			{
+				result.insert(token);
+			}
+		}
+	}
+	return result;
+}
+
+template<typename T>
+inline std::string print_set_to_string(const std::set<T>& set, const std::string& sep)
+{
+	std::ostringstream output;
+	for(typename std::set<T>::const_iterator it=set.begin();it!=set.end();++it)
+	{
+		output << (it==set.begin() ? std::string() : sep) << (*it);
+	}
+	return output.str();
 }
 
 }
