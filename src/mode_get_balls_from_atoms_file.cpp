@@ -47,8 +47,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
-			std::cerr << "stdout  <-  list of balls\n";
-			std::cerr << "              (default mode line format: 'x y z r # comments')\n";
+			std::cerr << "stdout  ->  list of balls\n";
+			std::cerr << "              (default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')\n";
 			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
 			return;
 		}
@@ -85,7 +85,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::read_lines_to_container(radii_file_stream, "#", add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			auxiliaries::read_lines_to_container(radii_file_stream, add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 
