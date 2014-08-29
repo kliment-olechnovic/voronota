@@ -3,6 +3,7 @@
 
 #include "apollota/constrained_contacts_construction.h"
 
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon_assert_options.h"
