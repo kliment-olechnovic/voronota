@@ -118,6 +118,18 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					value.y=atom.y;
 					value.z=atom.z;
 					value.r=radius;
+					if(!atom.element.empty())
+					{
+						value.set_tags(atom.element);
+					}
+					if(!atom.occupancy.empty())
+					{
+						value.set_adjuncts(std::string("oc=")+atom.occupancy);
+					}
+					if(!atom.tempFactor.empty())
+					{
+						value.set_adjuncts(std::string("tf=")+atom.tempFactor);
+					}
 					modescommon::print_ball_record(comment, value, std::cout);
 				}
 			}
