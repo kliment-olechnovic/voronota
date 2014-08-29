@@ -181,7 +181,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_contacts_record_from_stream_to_map, map_of_contacts);
+	auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_contacts_record_from_stream_to_map<Comment>, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
