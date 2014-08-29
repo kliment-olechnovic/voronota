@@ -21,9 +21,9 @@ struct BallValue
 
 	void set_tags(const std::string& str)
 	{
-		if(!str.empty())
+		if(!str.empty() && str[0]!='.')
 		{
-			const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ".;,");
+			const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ";,");
 			if(!input_tags.empty())
 			{
 				tags.insert(input_tags.begin(), input_tags.end());
@@ -33,9 +33,9 @@ struct BallValue
 
 	void set_adjuncts(const std::string& str)
 	{
-		if(!str.empty())
+		if(!str.empty() && str[0]!='.')
 		{
-			const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ".;,");
+			const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ";,");
 			for(std::map<std::string, double>::const_iterator it=input_adjuncts.begin();it!=input_adjuncts.end();++it)
 			{
 				adjuncts[it->first]=it->second;
