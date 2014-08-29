@@ -11,8 +11,8 @@
 namespace
 {
 
-typedef modescommon::contact::Comment Comment;
-typedef modescommon::contact::ContactValue ContactValue;
+typedef auxiliaries::ChainResidueAtomDescriptor Comment;
+typedef modescommon::ContactValue ContactValue;
 
 bool match_comment_with_member_descriptors(const Comment& comment, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
 {
@@ -61,7 +61,7 @@ bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< st
 		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
 		if(comments.first.valid() && comments.second.valid())
 		{
-			set_of_name_pairs.insert(modescommon::contact::refine_pair_by_ordering(comments));
+			set_of_name_pairs.insert(modescommon::refine_pair_by_ordering(comments));
 			return true;
 		}
 	}
@@ -181,7 +181,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, "", modescommon::contact::add_contacts_record_from_stream_to_map, map_of_contacts);
+	auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_contacts_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -210,7 +210,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
 			if(!(comments.second==comments.first))
 			{
-				map_of_reduced_contacts[modescommon::contact::refine_pair_by_ordering(comments)].add(it->second);
+				map_of_reduced_contacts[modescommon::refine_pair_by_ordering(comments)].add(it->second);
 			}
 		}
 		map_of_contacts=map_of_reduced_contacts;
@@ -246,7 +246,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
-				output_map_of_contacts[modescommon::contact::refine_pair(comments, !matched_first_second)]=value;
+				output_map_of_contacts[modescommon::refine_pair(comments, !matched_first_second)]=value;
 			}
 		}
 		if(!passed && invert)
@@ -260,19 +260,19 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const std::pair<Comment, Comment>& comments=it->first;
-			if(output_map_of_contacts.count(comments)>0 || output_map_of_contacts.count(modescommon::contact::refine_pair(comments, true))>0)
+			if(output_map_of_contacts.count(comments)>0 || output_map_of_contacts.count(modescommon::refine_pair(comments, true))>0)
 			{
 				it->second.set_tags(set_tags);
 				it->second.set_adjuncts(set_adjuncts);
 			}
-			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 	}
 	else
 	{
 		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			modescommon::contact::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 	}
 
