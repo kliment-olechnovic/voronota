@@ -182,7 +182,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_contacts_record_from_stream_to_map<Comment>, map_of_contacts);
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_contacts_record_from_stream_to_map<Comment>, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -221,7 +221,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, "", add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		auxiliaries::read_lines_to_container(input_file, add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
 	}
 
 	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;

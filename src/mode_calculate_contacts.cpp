@@ -98,7 +98,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
-			std::cerr << "              (default mode line format: 'x y z r # comments')\n";
+			std::cerr << "              (default mode line format: 'x y z r')\n";
 			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
 			std::cerr << "stdout  ->  list of contacts\n";
 			std::cerr << "              (default mode line format: 'b1 b2 area')\n";
@@ -119,12 +119,12 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector< std::pair<Comment, modescommon::BallValue> > input_spheres_comments;
 	if(annotated)
 	{
-		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_ball_record_from_stream_to_vector<Comment>, input_spheres_comments);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector<Comment>, input_spheres_comments);
 		modescommon::collect_spheres_from_vector_of_ball_records(input_spheres_comments, spheres);
 	}
 	else
 	{
-		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	}
 	if(spheres.size()<4)
 	{
