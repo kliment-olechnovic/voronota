@@ -26,7 +26,7 @@ bool add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 
 std::string refine_string(const std::string& x)
 {
-	return (x.empty() ? std::string("?") : x);
+	return (x.empty() ? std::string(".") : x);
 }
 
 }
@@ -42,7 +42,6 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--radii-file", "string", "path to radii configuration file"));
 		list_of_option_descriptions.push_back(OD("--default-radius", "number", "default atomic radius"));
 		list_of_option_descriptions.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
-		list_of_option_descriptions.push_back(OD("--enhanced-comments", "", "flag to output enhanced comments"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
@@ -62,8 +61,6 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
 
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
-
-	const bool enhanced_comments=poh.contains_option("--enhanced-comments");
 
 	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
 			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms, include_hydrogens) :
@@ -101,16 +98,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 				<< refine_string(atom.chainID) << " "
 				<< refine_string(atom.resSeq) << " "
 				<< refine_string(atom.resName) << " "
-				<< refine_string(atom.name);
-		if(enhanced_comments)
-		{
-			std::cout << " "
-					<< refine_string(atom.altLoc) << " "
-					<< refine_string(atom.iCode) << " "
-					<< refine_string(atom.occupancy) << " "
-					<< refine_string(atom.tempFactor) << " "
-					<< refine_string(atom.element);
-		}
-		std::cout << "\n";
+				<< refine_string(atom.name) << " "
+				<< refine_string(atom.altLoc) << " "
+				<< refine_string(atom.iCode) << "\n";
 	}
 }
