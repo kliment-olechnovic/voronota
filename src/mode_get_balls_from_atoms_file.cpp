@@ -3,9 +3,10 @@
 
 #include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/io_utilities.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 
 #include "modescommon_assert_options.h"
+#include "modescommon_handle_ball.h"
 
 namespace
 {
@@ -36,6 +37,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--annotated", "", "flag to enable annotated mode"));
 		list_of_option_descriptions.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
 		list_of_option_descriptions.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
 		list_of_option_descriptions.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
@@ -45,21 +47,19 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
-			std::cerr << "stdout  ->  list of balls (line format: 'x y z r # comments')\n";
+			std::cerr << "stdout  <-  list of balls\n";
+			std::cerr << "              (default mode line format: 'x y z r # comments')\n";
+			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
 			return;
 		}
 	}
 
+	const bool annotated=poh.contains_option("--annotated");
 	const bool mmcif=poh.contains_option("--mmcif");
-
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
-
 	const bool include_hydrogens=poh.contains_option("--include-hydrogens");
-
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
-
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
-
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 
 	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
@@ -92,14 +92,40 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
 		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
-		std::cout << atom.x << " " << atom.y << " " << atom.z << " " << atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-		std::cout << " # "
-				<< refine_string(atom.serial) << " "
-				<< refine_string(atom.chainID) << " "
-				<< refine_string(atom.resSeq) << " "
-				<< refine_string(atom.resName) << " "
-				<< refine_string(atom.name) << " "
-				<< refine_string(atom.altLoc) << " "
-				<< refine_string(atom.iCode) << "\n";
+		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
+		std::ostringstream comment_output;
+		comment_output << refine_string(atom.serial) << " " << refine_string(atom.chainID) << " " << refine_string(atom.resSeq) << " "
+				<< refine_string(atom.resName) << " " << refine_string(atom.name) << " " << refine_string(atom.altLoc) << " " << refine_string(atom.iCode);
+		if(annotated)
+		{
+			std::istringstream comment_input(comment_output.str());
+			auxiliaries::ChainResidueAtomDescriptor comment;
+			comment_input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name >> comment.altLoc >> comment.iCode;
+			if(!comment_input.fail())
+			{
+				if(comment.altLoc.find_first_of(".?")==0)
+				{
+					comment.altLoc.clear();
+				}
+				if(comment.iCode.find_first_of(".?")==0)
+				{
+					comment.iCode.clear();
+				}
+				if(comment.valid())
+				{
+					modescommon::BallValue value;
+					value.x=atom.x;
+					value.y=atom.y;
+					value.z=atom.z;
+					value.r=radius;
+					modescommon::print_ball_record(comment, value, std::cout);
+				}
+			}
+		}
+		else
+		{
+			std::cout << atom.x << " " << atom.y << " " << atom.z << " " << radius;
+			std::cout << " # " << comment_output.str() << "\n";
+		}
 	}
 }

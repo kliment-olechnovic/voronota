@@ -9,6 +9,7 @@ calculate-contacts
 query-contacts
 
 Command 'get-balls-from-atoms-file' options:
+--annotated                                 flag to enable annotated mode
 --include-heteroatoms                       flag to include heteroatoms
 --include-hydrogens                         flag to include hydrogen atoms
 --mmcif                                     flag to input in mmCIF format
@@ -17,7 +18,9 @@ Command 'get-balls-from-atoms-file' options:
 --only-default-radius                       flag to make all radii equal to the default radius
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  file in PDB or mmCIF format
-stdout  ->  list of balls (line format: 'x y z r # comments')
+stdout  <-  list of balls
+              (default mode line format: 'x y z r # comments')
+              (annotated mode line format: 'annotation x y z r tags adjuncts')
 
 Command 'calculate-vertices' options:
 --print-log                                 flag to print log of calculations
@@ -42,7 +45,7 @@ stdin   <-  list of balls (line format: 'x y z r # comments')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
 Command 'calculate-contacts' options:
---annotate                                  flag to annotate contacts using balls comments
+--annotated                                 flag to enable annotated mode
 --probe                         number      probe radius
 --exclude-hidden-balls                      flag to exclude hidden input balls
 --step                          number      curve step length
@@ -51,11 +54,11 @@ Command 'calculate-contacts' options:
 --draw                                      flag to output graphics for annotated contacts
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls
-              (default line format: 'x y z r # comments')
-              (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')
+              (default mode line format: 'x y z r # comments')
+              (annotated mode line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of contacts
-              (default line format: 'b1 b2 area')
-              (annotated line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+              (default mode line format: 'b1 b2 area')
+              (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group

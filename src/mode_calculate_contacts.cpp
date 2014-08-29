@@ -8,6 +8,7 @@
 
 #include "modescommon_assert_options.h"
 #include "modescommon_read_sphere.h"
+#include "modescommon_handle_ball.h"
 #include "modescommon_handle_contact.h"
 
 namespace
@@ -87,7 +88,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--annotate", "", "flag to annotate contacts using balls comments"));
+		list_of_option_descriptions.push_back(OD("--annotated", "", "flag to enable annotated mode"));
 		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
 		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
 		list_of_option_descriptions.push_back(OD("--step", "number", "curve step length"));
@@ -97,16 +98,16 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
-			std::cerr << "              (default line format: 'x y z r # comments')\n";
-			std::cerr << "              (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
+			std::cerr << "              (default mode line format: 'x y z r # comments')\n";
+			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
 			std::cerr << "stdout  ->  list of contacts\n";
-			std::cerr << "              (default line format: 'b1 b2 area')\n";
-			std::cerr << "              (annotated line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";
+			std::cerr << "              (default mode line format: 'b1 b2 area')\n";
+			std::cerr << "              (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";
 			return;
 		}
 	}
 
-	const bool annotate=poh.contains_option("--annotate");
+	const bool annotated=poh.contains_option("--annotated");
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
 	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
@@ -115,15 +116,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector<Comment> input_spheres_comments;
-	if(annotate)
+	std::vector< std::pair<Comment, modescommon::BallValue> > input_spheres_comments;
+	if(annotated)
 	{
-		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
-		auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_sphere_and_comments_from_stream_to_vectors<apollota::SimpleSphere, Comment>, spheres_with_comments);
-		if(spheres.size()!=input_spheres_comments.size())
-		{
-			throw std::runtime_error("Number of comments does not match number of spheres.");
-		}
+		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_ball_record_from_stream_to_vector<Comment>, input_spheres_comments);
+		modescommon::collect_spheres_from_vector_of_ball_records(input_spheres_comments, spheres);
 	}
 	else
 	{
@@ -176,7 +173,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
+				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id].first, (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id].first));
 				ContactValue& value=output_map_of_contacts[modescommon::refine_pair_by_ordering(comments)];
 				value.area=area;
 				if(a_id!=b_id)
