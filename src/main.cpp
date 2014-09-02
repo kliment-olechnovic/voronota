@@ -71,7 +71,7 @@ int main(const int argc, const char** argv)
 		}
 		else
 		{
-			std::cerr << "Voronota version 1.5\n\n";
+			std::cerr << "Voronota version 1.6\n\n";
 			std::cerr << "Commands:\n\n";
 			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 			{
