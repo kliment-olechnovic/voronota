@@ -14,7 +14,7 @@
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor Comment;
+typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::ContactValue ContactValue;
 
 std::string draw_inter_atom_contact(
@@ -116,11 +116,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector< std::pair<Comment, modescommon::BallValue> > input_spheres_comments;
+	std::vector< std::pair<CRAD, modescommon::BallValue> > input_ball_records;
 	if(annotated)
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector<Comment>, input_spheres_comments);
-		modescommon::collect_spheres_from_vector_of_ball_records(input_spheres_comments, spheres);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector<CRAD>, input_ball_records);
+		modescommon::collect_spheres_from_vector_of_ball_records(input_ball_records, spheres);
 	}
 	else
 	{
@@ -159,13 +159,13 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!input_spheres_comments.empty())
+	if(!input_ball_records.empty())
 	{
 		const apollota::TriangulationQueries::PairsMap pairs_vertices=(draw ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 
-		std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
+		std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -173,8 +173,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id].first, (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id].first));
-				ContactValue& value=output_map_of_contacts[modescommon::refine_pair_by_ordering(comments)];
+				const std::pair<CRAD, CRAD> crads(input_ball_records[a_id].first, (a_id==b_id ? CRAD::solvent() : input_ball_records[b_id].first));
+				ContactValue& value=output_map_of_contacts[modescommon::refine_pair_by_ordering(crads)];
 				value.area=area;
 				if(a_id!=b_id)
 				{
@@ -192,7 +192,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			modescommon::print_contact_record(it->first, it->second, true, std::cout);
 		}

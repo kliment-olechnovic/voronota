@@ -93,25 +93,25 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-		std::ostringstream comment_output;
-		comment_output << refine_string(atom.serial) << " " << refine_string(atom.chainID) << " " << refine_string(atom.resSeq) << " "
+		std::ostringstream crad_output;
+		crad_output << refine_string(atom.serial) << " " << refine_string(atom.chainID) << " " << refine_string(atom.resSeq) << " "
 				<< refine_string(atom.resName) << " " << refine_string(atom.name) << " " << refine_string(atom.altLoc) << " " << refine_string(atom.iCode);
 		if(annotated)
 		{
-			std::istringstream comment_input(comment_output.str());
-			auxiliaries::ChainResidueAtomDescriptor comment;
-			comment_input >> comment.serial >> comment.chainID >> comment.resSeq >> comment.resName >> comment.name >> comment.altLoc >> comment.iCode;
-			if(!comment_input.fail())
+			std::istringstream crad_input(crad_output.str());
+			auxiliaries::ChainResidueAtomDescriptor crad;
+			crad_input >> crad.serial >> crad.chainID >> crad.resSeq >> crad.resName >> crad.name >> crad.altLoc >> crad.iCode;
+			if(!crad_input.fail())
 			{
-				if(comment.altLoc.find_first_of(".?")==0)
+				if(crad.altLoc.find_first_of(".?")==0)
 				{
-					comment.altLoc.clear();
+					crad.altLoc.clear();
 				}
-				if(comment.iCode.find_first_of(".?")==0)
+				if(crad.iCode.find_first_of(".?")==0)
 				{
-					comment.iCode.clear();
+					crad.iCode.clear();
 				}
-				if(comment.valid())
+				if(crad.valid())
 				{
 					modescommon::BallValue value;
 					value.x=atom.x;
@@ -134,14 +134,14 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						value.set_adjuncts(std::string("tf=")+atom.tempFactor);
 					}
-					modescommon::print_ball_record(comment, value, std::cout);
+					modescommon::print_ball_record(crad, value, std::cout);
 				}
 			}
 		}
 		else
 		{
 			std::cout << atom.x << " " << atom.y << " " << atom.z << " " << radius;
-			std::cout << " # " << comment_output.str() << "\n";
+			std::cout << " # " << crad_output.str() << "\n";
 		}
 	}
 }

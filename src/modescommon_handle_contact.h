@@ -89,9 +89,9 @@ inline T refine_pair_by_ordering(const T& p)
 }
 
 template<typename T>
-inline void print_contact_record(const std::pair<T, T>& comments, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
+inline void print_contact_record(const std::pair<T, T>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
-	output << comments.first.str() << " " << comments.second.str() << " " << value.area << " " << value.dist;
+	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
 	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
 	output << " " << (value.adjuncts.empty() ? std::string(".") : auxiliaries::print_map_to_string(value.adjuncts, ";"));
 	if(preserve_graphics && !value.graphics.empty())
@@ -106,9 +106,9 @@ inline void print_contact_record(const std::pair<T, T>& comments, const ContactV
 template<typename T>
 inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<T, T>, ContactValue >& map_of_records)
 {
-	std::pair<std::string, std::string> comment_strings;
+	std::pair<std::string, std::string> name_strings;
 	ContactValue value;
-	input >> comment_strings.first >> comment_strings.second >> value.area >> value.dist;
+	input >> name_strings.first >> name_strings.second >> value.area >> value.dist;
 	{
 		std::string tags;
 		input >> tags;
@@ -124,12 +124,12 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 		std::getline(input, value.graphics, '"');
 		std::getline(input, value.graphics, '"');
 	}
-	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
+	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
 	{
-		const std::pair<T, T> comments(T::from_str(comment_strings.first), T::from_str(comment_strings.second));
-		if(comments.first.valid() && comments.second.valid())
+		const std::pair<T, T> names(T::from_str(name_strings.first), T::from_str(name_strings.second));
+		if(names.first.valid() && names.second.valid())
 		{
-			map_of_records[refine_pair_by_ordering(comments)]=value;
+			map_of_records[refine_pair_by_ordering(names)]=value;
 			return true;
 		}
 	}
