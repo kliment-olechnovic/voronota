@@ -118,6 +118,10 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					value.y=atom.y;
 					value.z=atom.z;
 					value.r=radius;
+					if(atom.record_name=="HETATM")
+					{
+						value.set_tags("het");
+					}
 					if(!atom.element.empty())
 					{
 						value.set_tags(atom.element);
