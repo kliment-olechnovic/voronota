@@ -4,9 +4,9 @@
 #include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
 
-#include "modescommon_assert_options.h"
-#include "modescommon_handle_ball.h"
-#include "modescommon_handle_annotations.h"
+#include "modescommon/assert_options.h"
+#include "modescommon/handle_ball.h"
+#include "modescommon/handle_annotations.h"
 
 namespace
 {

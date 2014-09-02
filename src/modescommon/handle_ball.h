@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_HANDLE_BALL_H_
 #define MODESCOMMON_HANDLE_BALL_H_
 
-#include "auxiliaries/io_utilities.h"
+#include "../auxiliaries/io_utilities.h"
 
 namespace modescommon
 {

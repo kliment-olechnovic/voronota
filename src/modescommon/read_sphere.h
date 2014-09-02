@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_READ_SPHERE_H_
 #define MODESCOMMON_READ_SPHERE_H_
 
-#include "auxiliaries/io_utilities.h"
+#include "../auxiliaries/io_utilities.h"
 
 namespace modescommon
 {
