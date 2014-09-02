@@ -45,9 +45,9 @@ struct BallValue
 };
 
 template<typename T>
-inline void print_ball_record(const T& comment, const BallValue& value, std::ostream& output)
+inline void print_ball_record(const T& name, const BallValue& value, std::ostream& output)
 {
-	output << comment.str() << " " << value.x << " " << value.y << " " << value.z << " " << value.r;
+	output << name.str() << " " << value.x << " " << value.y << " " << value.z << " " << value.r;
 	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
 	output << " " << (value.adjuncts.empty() ? std::string(".") : auxiliaries::print_map_to_string(value.adjuncts, ";"));
 	output << "\n";
@@ -56,9 +56,9 @@ inline void print_ball_record(const T& comment, const BallValue& value, std::ost
 template<typename T>
 inline bool add_ball_record_from_stream_to_vector(std::istream& input, std::vector< std::pair<T, BallValue> >& vector_of_records)
 {
-	std::string comment_string;
+	std::string name_string;
 	BallValue value;
-	input >> comment_string >> value.x >> value.y >> value.z >> value.r;
+	input >> name_string >> value.x >> value.y >> value.z >> value.r;
 	{
 		std::string tags;
 		input >> tags;
@@ -69,12 +69,12 @@ inline bool add_ball_record_from_stream_to_vector(std::istream& input, std::vect
 		input >> adjuncts;
 		value.set_adjuncts(adjuncts);
 	}
-	if(!input.fail() && !comment_string.empty())
+	if(!input.fail() && !name_string.empty())
 	{
-		const T comment=T::from_str(comment_string);
-		if(comment.valid())
+		const T name=T::from_str(name_string);
+		if(name.valid())
 		{
-			vector_of_records.push_back(std::make_pair(comment, value));
+			vector_of_records.push_back(std::make_pair(name, value));
 			return true;
 		}
 	}

@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
-#include <set>
 
 #include "auxiliaries/opengl_printer.h"
 
@@ -12,32 +11,32 @@
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor Comment;
+typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::ContactValue ContactValue;
 
-bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
+bool add_crad_pair_from_stream_to_set(std::istream& input, std::set< std::pair<CRAD, CRAD> >& set_of_name_pairs)
 {
-	std::pair<std::string, std::string> comment_strings;
-	input >> comment_strings.first >> comment_strings.second;
-	if(!input.fail() && !comment_strings.first.empty() && !comment_strings.second.empty())
+	std::pair<std::string, std::string> crad_strings;
+	input >> crad_strings.first >> crad_strings.second;
+	if(!input.fail() && !crad_strings.first.empty() && !crad_strings.second.empty())
 	{
-		const std::pair<Comment, Comment> comments(Comment::from_str(comment_strings.first), Comment::from_str(comment_strings.second));
-		if(comments.first.valid() && comments.second.valid())
+		const std::pair<CRAD, CRAD> crads(CRAD::from_str(crad_strings.first), CRAD::from_str(crad_strings.second));
+		if(crads.first.valid() && crads.second.valid())
 		{
-			set_of_name_pairs.insert(modescommon::refine_pair_by_ordering(comments));
+			set_of_name_pairs.insert(modescommon::refine_pair_by_ordering(crads));
 			return true;
 		}
 	}
 	return false;
 }
 
-bool match_two_comments_with_set_of_name_pairs(const Comment& a, const Comment& b, const std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
+bool match_two_crads_with_set_of_crads(const CRAD& a, const CRAD& b, const std::set< std::pair<CRAD, CRAD> >& set_of_name_pairs)
 {
 	if(set_of_name_pairs.count(std::make_pair(a, b))>0 || set_of_name_pairs.count(std::make_pair(b, a))>0)
 	{
 		return true;
 	}
-	for(std::set< std::pair<Comment, Comment> >::const_iterator it=set_of_name_pairs.begin();it!=set_of_name_pairs.end();++it)
+	for(std::set< std::pair<CRAD, CRAD> >::const_iterator it=set_of_name_pairs.begin();it!=set_of_name_pairs.end();++it)
 	{
 		if((a.contains(it->first) && b.contains(it->second)) || (b.contains(it->first) && a.contains(it->second)))
 		{
@@ -59,7 +58,7 @@ unsigned int calc_string_color_integer(const std::string& str)
 	return static_cast<unsigned int>(hash%limiter);
 }
 
-unsigned int calc_two_comments_color_integer(const Comment& a, const Comment& b)
+unsigned int calc_two_crads_color_integer(const CRAD& a, const CRAD& b)
 {
 	return calc_string_color_integer(a<b ? (a.str()+b.str()) : (b.str()+a.str()));
 }
@@ -117,8 +116,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
 	const std::vector<std::string> match_both=poh.argument_vector<std::string>("--match-both", selection_list_sep);
 	const std::vector<std::string> match_both_not=poh.argument_vector<std::string>("--match-both-not", selection_list_sep);
-	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", Comment::null_num());
-	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", Comment::null_num());
+	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", CRAD::null_num());
+	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", CRAD::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
 	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
@@ -143,8 +142,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
-	std::map< std::pair<Comment, Comment>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_contacts_record_from_stream_to_map<Comment>, map_of_contacts);
+	std::map< std::pair<CRAD, CRAD>, ContactValue > map_of_contacts;
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_contacts_record_from_stream_to_map<CRAD>, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -152,7 +151,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(drop_tags || drop_adjuncts)
 	{
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			if(drop_tags)
 			{
@@ -167,63 +166,63 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(inter_residue)
 	{
-		std::map< std::pair<Comment, Comment>, ContactValue > map_of_reduced_contacts;
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		std::map< std::pair<CRAD, CRAD>, ContactValue > map_of_reduced_contacts;
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			const std::pair<Comment, Comment> comments(it->first.first.without_atom(), it->first.second.without_atom());
-			if(!(comments.second==comments.first))
+			const std::pair<CRAD, CRAD> crads(it->first.first.without_atom(), it->first.second.without_atom());
+			if(!(crads.second==crads.first))
 			{
-				map_of_reduced_contacts[modescommon::refine_pair_by_ordering(comments)].add(it->second);
+				map_of_reduced_contacts[modescommon::refine_pair_by_ordering(crads)].add(it->second);
 			}
 		}
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::set< std::pair<Comment, Comment> > matchable_set_of_name_pairs;
+	std::set< std::pair<CRAD, CRAD> > matchable_set_of_name_pairs;
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, add_contacts_name_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		auxiliaries::read_lines_to_container(input_file, add_crad_pair_from_stream_to_set, matchable_set_of_name_pairs);
 	}
 
-	std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
+	std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
 
-	for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
-		const std::pair<Comment, Comment>& comments=it->first;
+		const std::pair<CRAD, CRAD>& crads=it->first;
 		const ContactValue& value=it->second;
 		bool passed=false;
 		if(
 				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
-				(!no_solvent || !(comments.first==Comment::solvent() || comments.second==Comment::solvent())) &&
-				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
-				modescommon::match_chain_residue_atom_descriptor(comments.first, match_both, match_both_not) &&
-				modescommon::match_chain_residue_atom_descriptor(comments.second, match_both, match_both_not) &&
+				(!no_solvent || !(crads.first==CRAD::solvent() || crads.second==CRAD::solvent())) &&
+				CRAD::match_with_sequence_separation_interval(crads.first, crads.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
+				modescommon::match_chain_residue_atom_descriptor(crads.first, match_both, match_both_not) &&
+				modescommon::match_chain_residue_atom_descriptor(crads.second, match_both, match_both_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
-				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
+				(matchable_set_of_name_pairs.empty() || match_two_crads_with_set_of_crads(crads.first, crads.second, matchable_set_of_name_pairs))
 		)
 		{
-			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(comments.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(comments.second, match_second, match_second_not));
-			const bool matched_second_first=(modescommon::match_chain_residue_atom_descriptor(comments.second, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(comments.first, match_second, match_second_not));
+			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not));
+			const bool matched_second_first=(modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not));
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
-				output_map_of_contacts[modescommon::refine_pair(comments, !matched_first_second)]=value;
+				output_map_of_contacts[modescommon::refine_pair(crads, !matched_first_second)]=value;
 			}
 		}
 		if(!passed && invert)
 		{
-			output_map_of_contacts[comments]=value;
+			output_map_of_contacts[crads]=value;
 		}
 	}
 
 	if(!set_tags.empty() || !set_adjuncts.empty())
 	{
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			const std::pair<Comment, Comment>& comments=it->first;
-			if(output_map_of_contacts.count(comments)>0 || output_map_of_contacts.count(modescommon::refine_pair(comments, true))>0)
+			const std::pair<CRAD, CRAD>& crads=it->first;
+			if(output_map_of_contacts.count(crads)>0 || output_map_of_contacts.count(modescommon::refine_pair(crads, true))>0)
 			{
 				it->second.set_tags(set_tags);
 				it->second.set_adjuncts(set_adjuncts);
@@ -233,7 +232,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
@@ -244,19 +243,19 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_color);
 		opengl_printer.add_alpha(drawing_alpha);
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			const std::pair<Comment, Comment>& comments=it->first;
+			const std::pair<CRAD, CRAD>& crads=it->first;
 			const ContactValue& value=it->second;
 			if(!value.graphics.empty())
 			{
 				if(drawing_labels)
 				{
-					opengl_printer.add_label(comments.first.str()+"<->"+comments.second.str());
+					opengl_printer.add_label(crads.first.str()+"<->"+crads.second.str());
 				}
 				if(drawing_random_colors)
 				{
-					opengl_printer.add_color(calc_two_comments_color_integer(comments.first, comments.second));
+					opengl_printer.add_color(calc_two_crads_color_integer(crads.first, crads.second));
 				}
 				opengl_printer.add(value.graphics);
 			}

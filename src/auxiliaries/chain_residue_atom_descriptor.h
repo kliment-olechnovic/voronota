@@ -1,5 +1,5 @@
-#ifndef AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_
-#define AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_
+#ifndef AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_
+#define AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_
 
 #include <string>
 #include <sstream>
@@ -86,22 +86,22 @@ public:
 				}
 				else
 				{
-					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in comment string '"+input_str+"'.");
+					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in descriptor string '"+input_str+"'.");
 				}
 				if(input.fail())
 				{
-					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in comment string '"+input_str+"'.");
+					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in descriptor string '"+input_str+"'.");
 				}
 			}
 		}
 		if(!(v.valid() && v.str()==input_str))
 		{
-			throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
+			throw std::runtime_error(std::string("Invalid descriptor string '")+input_str+"'.");
 		}
 		return v;
 	}
 
-	static bool match_with_member_descriptor(const ChainResidueAtomDescriptor& comment, const std::string& input_str)
+	static bool match_with_member_descriptor(const ChainResidueAtomDescriptor& crad, const std::string& input_str)
 	{
 		const char vsep=',';
 		const char vinterval=':';
@@ -142,8 +142,8 @@ public:
 							if(!token_input.fail() && value.first<=value.second)
 							{
 								control_output << value.first << vinterval << value.second;
-								if(marker=="r") { matched=matched || (comment.resSeq>=value.first && comment.resSeq<=value.second); }
-								else if(marker=="a") { matched=matched || (comment.serial>=value.first && comment.serial<=value.second); }
+								if(marker=="r") { matched=matched || (crad.resSeq>=value.first && crad.resSeq<=value.second); }
+								else if(marker=="a") { matched=matched || (crad.serial>=value.first && crad.serial<=value.second); }
 							}
 						}
 						else
@@ -154,19 +154,19 @@ public:
 							if(!token_input.fail())
 							{
 								control_output << value;
-								if(marker=="r") { matched=matched || (comment.resSeq==value); }
-								else if(marker=="a") { matched=matched || (comment.serial==value); }
+								if(marker=="r") { matched=matched || (crad.resSeq==value); }
+								else if(marker=="a") { matched=matched || (crad.serial==value); }
 							}
 						}
 					}
 					else
 					{
 						control_output << token;
-						if(marker=="c") { matched=matched || (comment.chainID==token); }
-						else if(marker=="i") { matched=matched || (comment.iCode==token); }
-						else if(marker=="l") { matched=matched || (comment.altLoc==token); }
-						else if(marker=="rn") { matched=matched || (comment.resName==token); }
-						else if(marker=="an") { matched=matched || (comment.name==token); }
+						if(marker=="c") { matched=matched || (crad.chainID==token); }
+						else if(marker=="i") { matched=matched || (crad.iCode==token); }
+						else if(marker=="l") { matched=matched || (crad.altLoc==token); }
+						else if(marker=="rn") { matched=matched || (crad.resName==token); }
+						else if(marker=="an") { matched=matched || (crad.name==token); }
 					}
 				}
 			}
@@ -305,4 +305,4 @@ private:
 
 }
 
-#endif /* AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_ */
+#endif /* AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_ */
