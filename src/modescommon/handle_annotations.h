@@ -4,7 +4,7 @@
 #include <set>
 #include <vector>
 
-#include "auxiliaries/chain_residue_atom_descriptor.h"
+#include "../auxiliaries/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {

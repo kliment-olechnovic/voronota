@@ -9,8 +9,8 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
-#include "modescommon_assert_options.h"
-#include "modescommon_read_sphere.h"
+#include "modescommon/assert_options.h"
+#include "modescommon/read_sphere.h"
 
 namespace
 {

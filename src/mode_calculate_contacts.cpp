@@ -5,11 +5,11 @@
 
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon_assert_options.h"
-#include "modescommon_read_sphere.h"
-#include "modescommon_handle_ball.h"
-#include "modescommon_handle_contact.h"
-#include "modescommon_handle_annotations.h"
+#include "modescommon/assert_options.h"
+#include "modescommon/read_sphere.h"
+#include "modescommon/handle_ball.h"
+#include "modescommon/handle_contact.h"
+#include "modescommon/handle_annotations.h"
 
 namespace
 {
