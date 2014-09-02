@@ -3,55 +3,17 @@
 #include <fstream>
 #include <set>
 
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon_assert_options.h"
 #include "modescommon_handle_contact.h"
+#include "modescommon_handle_annotations.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor Comment;
 typedef modescommon::ContactValue ContactValue;
-
-bool match_comment_with_member_descriptors(const Comment& comment, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
-{
-	for(std::size_t i=0;i<positive_descriptors.size();i++)
-	{
-		if(!Comment::match_with_member_descriptor(comment, positive_descriptors[i]))
-		{
-			return false;
-		}
-	}
-	for(std::size_t i=0;i<negative_descriptors.size();i++)
-	{
-		if(Comment::match_with_member_descriptor(comment, negative_descriptors[i]))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-bool match_tags_with_tag_values(const std::set<std::string>& tags, const std::vector<std::string>& positive_values, const std::vector<std::string>& negative_values)
-{
-	for(std::size_t i=0;i<positive_values.size();i++)
-	{
-		if(tags.count(positive_values[i])==0)
-		{
-			return false;
-		}
-	}
-	for(std::size_t i=0;i<negative_values.size();i++)
-	{
-		if(tags.count(negative_values[i])>0)
-		{
-			return false;
-		}
-	}
-	return true;
-}
 
 bool add_contacts_name_pair_from_stream_to_set(std::istream& input, std::set< std::pair<Comment, Comment> >& set_of_name_pairs)
 {
@@ -236,14 +198,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!no_solvent || !(comments.first==Comment::solvent() || comments.second==Comment::solvent())) &&
 				Comment::match_with_sequence_separation_interval(comments.first, comments.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
-				match_comment_with_member_descriptors(comments.first, match_both, match_both_not) &&
-				match_comment_with_member_descriptors(comments.second, match_both, match_both_not) &&
-				match_tags_with_tag_values(value.tags, match_tags, match_tags_not) &&
+				modescommon::match_chain_residue_atom_descriptor(comments.first, match_both, match_both_not) &&
+				modescommon::match_chain_residue_atom_descriptor(comments.second, match_both, match_both_not) &&
+				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				(matchable_set_of_name_pairs.empty() || match_two_comments_with_set_of_name_pairs(comments.first, comments.second, matchable_set_of_name_pairs))
 		)
 		{
-			const bool matched_first_second=(match_comment_with_member_descriptors(comments.first, match_first, match_first_not) && match_comment_with_member_descriptors(comments.second, match_second, match_second_not));
-			const bool matched_second_first=(match_comment_with_member_descriptors(comments.second, match_first, match_first_not) && match_comment_with_member_descriptors(comments.first, match_second, match_second_not));
+			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(comments.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(comments.second, match_second, match_second_not));
+			const bool matched_second_first=(modescommon::match_chain_residue_atom_descriptor(comments.second, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(comments.first, match_second, match_second_not));
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{

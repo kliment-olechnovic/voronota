@@ -3,10 +3,10 @@
 
 #include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
 #include "modescommon_assert_options.h"
 #include "modescommon_handle_ball.h"
+#include "modescommon_handle_annotations.h"
 
 namespace
 {
