@@ -36,6 +36,8 @@ $TEST_SUBJECT calculate-contacts < $OUTPUT_DIR/balls2 > $OUTPUT_DIR/contacts2
 $TEST_SUBJECT calculate-contacts < $OUTPUT_DIR/balls3 > $OUTPUT_DIR/contacts3
 $TEST_SUBJECT calculate-contacts --annotated < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/contacts4
 
+($TEST_SUBJECT query-balls --match 'r[3:7,9]&an[CA,CB]' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query1
+
 ($TEST_SUBJECT query-contacts --match-first 'r[3:7,9]&an[CA,CB]' --match-min-seq-sep 1 | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query1
 ($TEST_SUBJECT query-contacts --inter-residue --match-first 'rn[THR]' --match-second 'rn[ARG]' | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_query2
 cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $TEST_SUBJECT query-contacts --match-first 'rn[CRO]' --match-min-seq-sep 1 --preserve-graphics --drawing-for-pymol $OUTPUT_DIR/contacts4_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_DIR/contacts4_query3_drawing_for_jmol --drawing-for-scenejs $OUTPUT_DIR/contacts4_query3_drawing_for_scenejs > $OUTPUT_DIR/contacts4_query3
