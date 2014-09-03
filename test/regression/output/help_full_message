@@ -6,6 +6,7 @@ get-balls-from-atoms-file
 calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
+query-balls
 query-contacts
 
 Command 'get-balls-from-atoms-file' options:
@@ -59,6 +60,20 @@ stdin   <-  list of balls
 stdout  ->  list of contacts
               (default mode line format: 'b1 b2 area')
               (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'query-balls' options:
+--match                         string      selection
+--match-not                     string      negative selection
+--match-tags                    string      comma-separated list of tags to match
+--match-tags-not                string      comma-separated list of tags to not match
+--invert                                    flag to invert selection
+--drop-tags                                 flag to drop all tags from input
+--set-tags                      string      set tags instead of filtering
+--drop-adjuncts                             flag to drop all adjuncts from input
+--set-adjuncts                  string      set adjuncts instead of filtering
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group

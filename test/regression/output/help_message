@@ -6,5 +6,6 @@ get-balls-from-atoms-file
 calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
+query-balls
 query-contacts
 
