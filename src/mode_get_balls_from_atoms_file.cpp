@@ -119,19 +119,19 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					value.r=radius;
 					if(atom.record_name=="HETATM")
 					{
-						modescommon::update_tags_set(value.tags, "het");
+						modescommon::update_set_of_tags(value.tags, "het");
 					}
 					if(!atom.element.empty())
 					{
-						modescommon::update_tags_set(value.tags, atom.element);
+						modescommon::update_set_of_tags(value.tags, atom.element);
 					}
 					if(!atom.occupancy.empty())
 					{
-						modescommon::update_adjuncts_map(value.adjuncts, std::string("oc=")+atom.occupancy);
+						modescommon::update_map_of_adjuncts(value.adjuncts, std::string("oc=")+atom.occupancy);
 					}
 					if(!atom.tempFactor.empty())
 					{
-						modescommon::update_adjuncts_map(value.adjuncts, std::string("tf=")+atom.tempFactor);
+						modescommon::update_map_of_adjuncts(value.adjuncts, std::string("tf=")+atom.tempFactor);
 					}
 					modescommon::print_ball_record(crad, value, std::cout);
 				}

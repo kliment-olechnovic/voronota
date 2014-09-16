@@ -86,8 +86,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
 			BallValue& value=list_of_balls[*it].second;
-			modescommon::update_tags_set(value.tags, set_tags);
-			modescommon::update_adjuncts_map(value.adjuncts, set_adjuncts);
+			modescommon::update_set_of_tags(value.tags, set_tags);
+			modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
 		}
 		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
 		{
