@@ -6,7 +6,6 @@
 
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_contact.h"
-#include "modescommon/handle_annotations.h"
 
 namespace
 {
@@ -224,8 +223,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			if(output_map_of_contacts.count(crads)>0 || output_map_of_contacts.count(modescommon::refine_pair(crads, true))>0)
 			{
-				it->second.set_tags(set_tags);
-				it->second.set_adjuncts(set_adjuncts);
+				modescommon::update_tags_set(it->second.tags, set_tags);
+				modescommon::update_adjuncts_map(it->second.adjuncts, set_adjuncts);
 			}
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}

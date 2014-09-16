@@ -9,7 +9,6 @@
 #include "modescommon/read_sphere.h"
 #include "modescommon/handle_ball.h"
 #include "modescommon/handle_contact.h"
-#include "modescommon/handle_annotations.h"
 
 namespace
 {
