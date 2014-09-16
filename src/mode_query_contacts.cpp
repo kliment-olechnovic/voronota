@@ -108,13 +108,12 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const char selection_list_sep='&';
-	const std::vector<std::string> match_first=poh.argument_vector<std::string>("--match-first", selection_list_sep);
-	const std::vector<std::string> match_first_not=poh.argument_vector<std::string>("--match-first-not", selection_list_sep);
-	const std::vector<std::string> match_second=poh.argument_vector<std::string>("--match-second", selection_list_sep);
-	const std::vector<std::string> match_second_not=poh.argument_vector<std::string>("--match-second-not", selection_list_sep);
-	const std::vector<std::string> match_both=poh.argument_vector<std::string>("--match-both", selection_list_sep);
-	const std::vector<std::string> match_both_not=poh.argument_vector<std::string>("--match-both-not", selection_list_sep);
+	const std::string match_first=poh.argument<std::string>("--match-first", "");
+	const std::string match_first_not=poh.argument<std::string>("--match-first-not", "");
+	const std::string match_second=poh.argument<std::string>("--match-second", "");
+	const std::string match_second_not=poh.argument<std::string>("--match-second-not", "");
+	const std::string match_both=poh.argument<std::string>("--match-both", "");
+	const std::string match_both_not=poh.argument<std::string>("--match-both-not", "");
 	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", CRAD::null_num());
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", CRAD::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());

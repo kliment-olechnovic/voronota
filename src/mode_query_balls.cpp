@@ -35,9 +35,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const char selection_list_sep='&';
-	const std::vector<std::string> match=poh.argument_vector<std::string>("--match", selection_list_sep);
-	const std::vector<std::string> match_not=poh.argument_vector<std::string>("--match-not", selection_list_sep);
+	const std::string match=poh.argument<std::string>("--match", "");
+	const std::string match_not=poh.argument<std::string>("--match-not", "");
 	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const bool invert=poh.contains_option("--invert");

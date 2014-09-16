@@ -34,35 +34,17 @@ inline void update_map_of_adjuncts(std::map<std::string, double>& adjuncts, cons
 	}
 }
 
-inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueAtomDescriptor& full_descriptor, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
-{
-	for(std::size_t i=0;i<positive_descriptors.size();i++)
-	{
-		if(!auxiliaries::ChainResidueAtomDescriptor::match_with_member_descriptor(full_descriptor, positive_descriptors[i]))
-		{
-			return false;
-		}
-	}
-	for(std::size_t i=0;i<negative_descriptors.size();i++)
-	{
-		if(auxiliaries::ChainResidueAtomDescriptor::match_with_member_descriptor(full_descriptor, negative_descriptors[i]))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-inline bool match_set_of_tags(const std::set<std::string>& tags, const std::string& values)
+template<typename T, typename F>
+inline bool match_container_with_multiple_values(const T& container, const F& matcher, const std::string& values)
 {
 	const std::set<std::string> or_set=auxiliaries::read_set_from_string<std::string>(values, "|");
 	for(std::set<std::string>::const_iterator it=or_set.begin();it!=or_set.end();++it)
 	{
 		const std::set<std::string> and_set=auxiliaries::read_set_from_string<std::string>(*it, "&");
 		bool and_result=true;
-		for(std::set<std::string>::const_iterator jt=and_set.begin();jt!=and_set.end();++jt)
+		for(std::set<std::string>::const_iterator jt=and_set.begin();and_result && jt!=and_set.end();++jt)
 		{
-			and_result=(and_result && (tags.count(*jt)>0));
+			and_result=(and_result && matcher(container, *jt));
 		}
 		if(and_result)
 		{
@@ -72,9 +54,32 @@ inline bool match_set_of_tags(const std::set<std::string>& tags, const std::stri
 	return false;
 }
 
+struct functor_match_chain_residue_atom_descriptor_with_single_value
+{
+	bool operator()(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::string& value) const
+	{
+		return auxiliaries::ChainResidueAtomDescriptor::match_with_member_descriptor(descriptor, value);
+	}
+};
+
+inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueAtomDescriptor& full_descriptor, const std::string& positive_values, const std::string& negative_values)
+{
+	return ((positive_values.empty() || match_container_with_multiple_values(full_descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), positive_values))
+			&& (negative_values.empty() || !match_container_with_multiple_values(full_descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), negative_values)));
+}
+
+struct functor_match_set_of_tags_with_single_value
+{
+	bool operator()(const std::set<std::string>& tags, const std::string& value) const
+	{
+		return (tags.count(value)>0);
+	}
+};
+
 inline bool match_set_of_tags(const std::set<std::string>& tags, const std::string& positive_values, const std::string& negative_values)
 {
-	return ((positive_values.empty() || match_set_of_tags(tags, positive_values)) && (negative_values.empty() || !match_set_of_tags(tags, negative_values)));
+	return ((positive_values.empty() || match_container_with_multiple_values(tags, functor_match_set_of_tags_with_single_value(), positive_values))
+			&& (negative_values.empty() || !match_container_with_multiple_values(tags, functor_match_set_of_tags_with_single_value(), negative_values)));
 }
 
 }
