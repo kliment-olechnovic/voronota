@@ -81,8 +81,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-max-area", "number", "maximum contact area"));
 		list_of_option_descriptions.push_back(OD("--match-min-dist", "number", "minimum distance"));
 		list_of_option_descriptions.push_back(OD("--match-max-dist", "number", "maximum distance"));
-		list_of_option_descriptions.push_back(OD("--match-tags", "string", "comma-separated list of tags to match"));
-		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "comma-separated list of tags to not match"));
+		list_of_option_descriptions.push_back(OD("--match-tags", "string", "tags to match"));
+		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
@@ -121,8 +121,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
 	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
-	const std::vector<std::string> match_tags=poh.argument_vector<std::string>("--match-tags", selection_list_sep);
-	const std::vector<std::string> match_tags_not=poh.argument_vector<std::string>("--match-tags-not", selection_list_sep);
+	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
+	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
