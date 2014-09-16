@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_HANDLE_CONTACT_H_
 #define MODESCOMMON_HANDLE_CONTACT_H_
 
-#include "../auxiliaries/io_utilities.h"
+#include "handle_annotations.h"
 
 namespace modescommon
 {
@@ -40,30 +40,6 @@ struct ContactValue
 					graphics+=" ";
 				}
 				graphics+=v.graphics;
-			}
-		}
-	}
-
-	void set_tags(const std::string& str)
-	{
-		if(!str.empty() && str[0]!='.')
-		{
-			const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ";,");
-			if(!input_tags.empty())
-			{
-				tags.insert(input_tags.begin(), input_tags.end());
-			}
-		}
-	}
-
-	void set_adjuncts(const std::string& str)
-	{
-		if(!str.empty() && str[0]!='.')
-		{
-			const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ";,");
-			for(std::map<std::string, double>::const_iterator it=input_adjuncts.begin();it!=input_adjuncts.end();++it)
-			{
-				adjuncts[it->first]=it->second;
 			}
 		}
 	}
@@ -112,12 +88,12 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	{
 		std::string tags;
 		input >> tags;
-		value.set_tags(tags);
+		update_tags_set(value.tags, tags);
 	}
 	{
 		std::string adjuncts;
 		input >> adjuncts;
-		value.set_adjuncts(adjuncts);
+		update_adjuncts_map(value.adjuncts, adjuncts);
 	}
 	if(input.good())
 	{

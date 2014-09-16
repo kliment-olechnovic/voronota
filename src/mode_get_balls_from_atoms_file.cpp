@@ -6,7 +6,6 @@
 
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_ball.h"
-#include "modescommon/handle_annotations.h"
 
 namespace
 {
@@ -120,19 +119,19 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					value.r=radius;
 					if(atom.record_name=="HETATM")
 					{
-						value.set_tags("het");
+						modescommon::update_tags_set(value.tags, "het");
 					}
 					if(!atom.element.empty())
 					{
-						value.set_tags(atom.element);
+						modescommon::update_tags_set(value.tags, atom.element);
 					}
 					if(!atom.occupancy.empty())
 					{
-						value.set_adjuncts(std::string("oc=")+atom.occupancy);
+						modescommon::update_adjuncts_map(value.adjuncts, std::string("oc=")+atom.occupancy);
 					}
 					if(!atom.tempFactor.empty())
 					{
-						value.set_adjuncts(std::string("tf=")+atom.tempFactor);
+						modescommon::update_adjuncts_map(value.adjuncts, std::string("tf=")+atom.tempFactor);
 					}
 					modescommon::print_ball_record(crad, value, std::cout);
 				}

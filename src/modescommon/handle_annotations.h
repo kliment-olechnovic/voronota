@@ -4,10 +4,35 @@
 #include <set>
 #include <vector>
 
+#include "../auxiliaries/io_utilities.h"
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {
+
+inline void update_tags_set(std::set<std::string>& tags, const std::string& str)
+{
+	if(!str.empty() && str[0]!='.')
+	{
+		const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ";,");
+		if(!input_tags.empty())
+		{
+			tags.insert(input_tags.begin(), input_tags.end());
+		}
+	}
+}
+
+inline void update_adjuncts_map(std::map<std::string, double>& adjuncts, const std::string& str)
+{
+	if(!str.empty() && str[0]!='.')
+	{
+		const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ";,");
+		for(std::map<std::string, double>::const_iterator it=input_adjuncts.begin();it!=input_adjuncts.end();++it)
+		{
+			adjuncts[it->first]=it->second;
+		}
+	}
+}
 
 inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueAtomDescriptor& full_descriptor, const std::vector<std::string>& positive_descriptors, const std::vector<std::string>& negative_descriptors)
 {
