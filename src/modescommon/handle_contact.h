@@ -88,12 +88,12 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	{
 		std::string tags;
 		input >> tags;
-		update_tags_set(value.tags, tags);
+		update_set_of_tags(value.tags, tags);
 	}
 	{
 		std::string adjuncts;
 		input >> adjuncts;
-		update_adjuncts_map(value.adjuncts, adjuncts);
+		update_map_of_adjuncts(value.adjuncts, adjuncts);
 	}
 	if(input.good())
 	{

@@ -10,7 +10,7 @@
 namespace modescommon
 {
 
-inline void update_tags_set(std::set<std::string>& tags, const std::string& str)
+inline void update_set_of_tags(std::set<std::string>& tags, const std::string& str)
 {
 	if(!str.empty() && str[0]!='.')
 	{
@@ -22,7 +22,7 @@ inline void update_tags_set(std::set<std::string>& tags, const std::string& str)
 	}
 }
 
-inline void update_adjuncts_map(std::map<std::string, double>& adjuncts, const std::string& str)
+inline void update_map_of_adjuncts(std::map<std::string, double>& adjuncts, const std::string& str)
 {
 	if(!str.empty() && str[0]!='.')
 	{

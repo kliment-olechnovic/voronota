@@ -223,8 +223,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			if(output_map_of_contacts.count(crads)>0 || output_map_of_contacts.count(modescommon::refine_pair(crads, true))>0)
 			{
-				modescommon::update_tags_set(it->second.tags, set_tags);
-				modescommon::update_adjuncts_map(it->second.adjuncts, set_adjuncts);
+				modescommon::update_set_of_tags(it->second.tags, set_tags);
+				modescommon::update_map_of_adjuncts(it->second.adjuncts, set_adjuncts);
 			}
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
