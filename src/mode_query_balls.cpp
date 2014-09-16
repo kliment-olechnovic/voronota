@@ -20,8 +20,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--match", "string", "selection"));
 		list_of_option_descriptions.push_back(OD("--match-not", "string", "negative selection"));
-		list_of_option_descriptions.push_back(OD("--match-tags", "string", "comma-separated list of tags to match"));
-		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "comma-separated list of tags to not match"));
+		list_of_option_descriptions.push_back(OD("--match-tags", "string", "tags to match"));
+		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
@@ -38,8 +38,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const char selection_list_sep='&';
 	const std::vector<std::string> match=poh.argument_vector<std::string>("--match", selection_list_sep);
 	const std::vector<std::string> match_not=poh.argument_vector<std::string>("--match-not", selection_list_sep);
-	const std::vector<std::string> match_tags=poh.argument_vector<std::string>("--match-tags", selection_list_sep);
-	const std::vector<std::string> match_tags_not=poh.argument_vector<std::string>("--match-tags-not", selection_list_sep);
+	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
+	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");

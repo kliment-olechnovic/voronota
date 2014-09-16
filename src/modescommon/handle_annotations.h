@@ -53,23 +53,28 @@ inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueA
 	return true;
 }
 
-inline bool match_set_of_tags(const std::set<std::string>& tags, const std::vector<std::string>& positive_values, const std::vector<std::string>& negative_values)
+inline bool match_set_of_tags(const std::set<std::string>& tags, const std::string& values)
 {
-	for(std::size_t i=0;i<positive_values.size();i++)
+	const std::set<std::string> or_set=auxiliaries::read_set_from_string<std::string>(values, "|");
+	for(std::set<std::string>::const_iterator it=or_set.begin();it!=or_set.end();++it)
 	{
-		if(tags.count(positive_values[i])==0)
+		const std::set<std::string> and_set=auxiliaries::read_set_from_string<std::string>(*it, "&");
+		bool and_result=true;
+		for(std::set<std::string>::const_iterator jt=and_set.begin();jt!=and_set.end();++jt)
 		{
-			return false;
+			and_result=(and_result && (tags.count(*jt)>0));
+		}
+		if(and_result)
+		{
+			return true;
 		}
 	}
-	for(std::size_t i=0;i<negative_values.size();i++)
-	{
-		if(tags.count(negative_values[i])>0)
-		{
-			return false;
-		}
-	}
-	return true;
+	return false;
+}
+
+inline bool match_set_of_tags(const std::set<std::string>& tags, const std::string& positive_values, const std::string& negative_values)
+{
+	return ((positive_values.empty() || match_set_of_tags(tags, positive_values)) && (negative_values.empty() || !match_set_of_tags(tags, negative_values)));
 }
 
 }
