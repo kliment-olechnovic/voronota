@@ -62,10 +62,10 @@ struct functor_match_chain_residue_atom_descriptor_with_single_value
 	}
 };
 
-inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueAtomDescriptor& full_descriptor, const std::string& positive_values, const std::string& negative_values)
+inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::string& positive_values, const std::string& negative_values)
 {
-	return ((positive_values.empty() || match_container_with_multiple_values(full_descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), positive_values))
-			&& (negative_values.empty() || !match_container_with_multiple_values(full_descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), negative_values)));
+	return ((positive_values.empty() || match_container_with_multiple_values(descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), positive_values))
+			&& (negative_values.empty() || !match_container_with_multiple_values(descriptor, functor_match_chain_residue_atom_descriptor_with_single_value(), negative_values)));
 }
 
 struct functor_match_set_of_tags_with_single_value
@@ -118,6 +118,75 @@ inline bool match_map_of_adjuncts(const std::map<std::string, double>& adjuncts,
 {
 	return ((positive_values.empty() || match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), positive_values))
 			&& (negative_values.empty() || !match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), negative_values)));
+}
+
+inline bool add_chain_residue_atom_descriptors_from_stream_to_set(std::istream& input, std::set<auxiliaries::ChainResidueAtomDescriptor>& set_of_descriptors)
+{
+	bool filled=false;
+	while(input.good())
+	{
+		std::string crad_string;
+		input >> crad_string;
+		if(!input.fail() && !crad_string.empty())
+		{
+			const auxiliaries::ChainResidueAtomDescriptor crad=auxiliaries::ChainResidueAtomDescriptor::from_str(crad_string);
+			if(crad.valid())
+			{
+				set_of_descriptors.insert(crad);
+				filled=true;
+			}
+		}
+	}
+	return filled;
+}
+
+inline bool match_chain_residue_atom_descriptor_with_set_of_descriptors(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::set<auxiliaries::ChainResidueAtomDescriptor>& set_of_descriptors)
+{
+	if(set_of_descriptors.count(descriptor)>0)
+	{
+		return true;
+	}
+	for(std::set<auxiliaries::ChainResidueAtomDescriptor>::const_iterator it=set_of_descriptors.begin();it!=set_of_descriptors.end();++it)
+	{
+		if(descriptor.contains(*it))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+inline bool add_chain_residue_atom_descriptors_pair_from_stream_to_set(std::istream& input, std::set< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> >& set_of_descriptors_pairs)
+{
+	std::pair<std::string, std::string> crad_strings;
+	input >> crad_strings.first >> crad_strings.second;
+	if(!input.fail() && !crad_strings.first.empty() && !crad_strings.second.empty())
+	{
+		const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> crads(auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.second));
+		if(crads.first.valid() && crads.second.valid())
+		{
+			set_of_descriptors_pairs.insert(crads.first<crads.second ? crads : std::make_pair(crads.second, crads.first));
+			return true;
+		}
+	}
+	return false;
+}
+
+inline bool match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& descriptors_pair, const std::set< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> >& set_of_descriptors_pairs)
+{
+	if(set_of_descriptors_pairs.count(descriptors_pair)>0 || set_of_descriptors_pairs.count(std::make_pair(descriptors_pair.second, descriptors_pair.first))>0)
+	{
+		return true;
+	}
+	for(std::set< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> >::const_iterator it=set_of_descriptors_pairs.begin();it!=set_of_descriptors_pairs.end();++it)
+	{
+		if((descriptors_pair.first.contains(it->first) && descriptors_pair.second.contains(it->second)) ||
+				(descriptors_pair.first.contains(it->second) && descriptors_pair.second.contains(it->first)))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 }

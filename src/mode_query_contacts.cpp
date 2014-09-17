@@ -13,38 +13,6 @@ namespace
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::ContactValue ContactValue;
 
-bool add_crad_pair_from_stream_to_set(std::istream& input, std::set< std::pair<CRAD, CRAD> >& set_of_name_pairs)
-{
-	std::pair<std::string, std::string> crad_strings;
-	input >> crad_strings.first >> crad_strings.second;
-	if(!input.fail() && !crad_strings.first.empty() && !crad_strings.second.empty())
-	{
-		const std::pair<CRAD, CRAD> crads(CRAD::from_str(crad_strings.first), CRAD::from_str(crad_strings.second));
-		if(crads.first.valid() && crads.second.valid())
-		{
-			set_of_name_pairs.insert(modescommon::refine_pair_by_ordering(crads));
-			return true;
-		}
-	}
-	return false;
-}
-
-bool match_two_crads_with_set_of_crads(const CRAD& a, const CRAD& b, const std::set< std::pair<CRAD, CRAD> >& set_of_name_pairs)
-{
-	if(set_of_name_pairs.count(std::make_pair(a, b))>0 || set_of_name_pairs.count(std::make_pair(b, a))>0)
-	{
-		return true;
-	}
-	for(std::set< std::pair<CRAD, CRAD> >::const_iterator it=set_of_name_pairs.begin();it!=set_of_name_pairs.end();++it)
-	{
-		if((a.contains(it->first) && b.contains(it->second)) || (b.contains(it->first) && a.contains(it->second)))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 unsigned int calc_string_color_integer(const std::string& str)
 {
 	const long generator=123456789;
@@ -180,11 +148,11 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::set< std::pair<CRAD, CRAD> > matchable_set_of_name_pairs;
+	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, add_crad_pair_from_stream_to_set, matchable_set_of_name_pairs);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
 	}
 
 	std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
@@ -203,7 +171,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				modescommon::match_chain_residue_atom_descriptor(crads.second, match_both, match_both_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(matchable_set_of_name_pairs.empty() || match_two_crads_with_set_of_crads(crads.first, crads.second, matchable_set_of_name_pairs))
+				(matchable_external_set_of_crad_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
 		)
 		{
 			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not));
