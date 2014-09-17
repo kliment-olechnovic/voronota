@@ -49,6 +49,7 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 ($TEST_SUBJECT query-balls --match 'r[3:7,9]&an[CA,CB]' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query1
 ($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'N|O' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query2
 ($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query3
+($TEST_SUBJECT query-balls --match 'an[OE1]' --whole-residues | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query4
 
 rm -r ./voronota_package
 

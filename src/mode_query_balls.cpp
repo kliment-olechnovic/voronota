@@ -26,6 +26,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
+		list_of_option_descriptions.push_back(OD("--whole-residues", "", "flag to select whole residues"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
@@ -46,6 +47,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool invert=poh.contains_option("--invert");
+	const bool whole_residues=poh.contains_option("--whole-residues");
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
@@ -93,6 +95,22 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		if((passed && !invert) || (!passed && invert))
 		{
 			output_set_of_ball_ids.insert(i);
+		}
+	}
+
+	if(whole_residues)
+	{
+		std::set<CRAD> residues_crads;
+		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		{
+			residues_crads.insert(list_of_balls[*it].first.without_atom());
+		}
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			if(modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(list_of_balls[i].first, residues_crads))
+			{
+				output_set_of_ball_ids.insert(i);
+			}
 		}
 	}
 
