@@ -82,8 +82,6 @@ Command 'query-contacts' options:
 --match-first-not               string      negative selection for first contacting group
 --match-second                  string      selection for second contacting group
 --match-second-not              string      negative selection for second contacting group
---match-both                    string      selection for first and second contacting groups
---match-both-not                string      negative selection for first and second contacting groups
 --match-min-seq-sep             number      minimum residue sequence separation
 --match-max-seq-sep             number      maximum residue sequence separation
 --match-min-area                number      minimum contact area
