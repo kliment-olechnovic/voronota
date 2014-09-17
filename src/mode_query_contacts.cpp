@@ -41,8 +41,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second", "string", "selection for second contacting group"));
 		list_of_option_descriptions.push_back(OD("--match-second-not", "string", "negative selection for second contacting group"));
-		list_of_option_descriptions.push_back(OD("--match-both", "string", "selection for first and second contacting groups"));
-		list_of_option_descriptions.push_back(OD("--match-both-not", "string", "negative selection for first and second contacting groups"));
 		list_of_option_descriptions.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
 		list_of_option_descriptions.push_back(OD("--match-min-area", "number", "minimum contact area"));
@@ -82,8 +80,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_first_not=poh.argument<std::string>("--match-first-not", "");
 	const std::string match_second=poh.argument<std::string>("--match-second", "");
 	const std::string match_second_not=poh.argument<std::string>("--match-second-not", "");
-	const std::string match_both=poh.argument<std::string>("--match-both", "");
-	const std::string match_both_not=poh.argument<std::string>("--match-both-not", "");
 	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", CRAD::null_num());
 	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", CRAD::null_num());
 	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
@@ -167,8 +163,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!no_solvent || !(crads.first==CRAD::solvent() || crads.second==CRAD::solvent())) &&
 				CRAD::match_with_sequence_separation_interval(crads.first, crads.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
-				modescommon::match_chain_residue_atom_descriptor(crads.first, match_both, match_both_not) &&
-				modescommon::match_chain_residue_atom_descriptor(crads.second, match_both, match_both_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
 				(matchable_external_set_of_crad_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
