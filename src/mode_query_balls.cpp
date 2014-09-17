@@ -24,6 +24,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
+		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
@@ -43,6 +44,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
 	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
+	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
@@ -71,6 +73,13 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	std::set<CRAD> matchable_external_set_of_crads;
+	if(!match_external_annotations.empty())
+	{
+		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_set_of_crads);
+	}
+
 	std::set<std::size_t> output_set_of_ball_ids;
 
 	for(std::size_t i=0;i<list_of_balls.size();i++)
@@ -79,7 +88,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		const BallValue& value=list_of_balls[i].second;
 		const bool passed=(modescommon::match_chain_residue_atom_descriptor(crad, match, match_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
-				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not));
+				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
+				(matchable_external_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crad, matchable_external_set_of_crads)));
 		if((passed && !invert) || (!passed && invert))
 		{
 			output_set_of_ball_ids.insert(i);
