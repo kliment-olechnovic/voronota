@@ -22,6 +22,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-not", "string", "negative selection"));
 		list_of_option_descriptions.push_back(OD("--match-tags", "string", "tags to match"));
 		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
+		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
+		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
@@ -39,6 +41,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_not=poh.argument<std::string>("--match-not", "");
 	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
+	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
+	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
@@ -73,7 +77,9 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const CRAD& crad=list_of_balls[i].first;
 		const BallValue& value=list_of_balls[i].second;
-		const bool passed=(modescommon::match_chain_residue_atom_descriptor(crad, match, match_not) && modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not));
+		const bool passed=(modescommon::match_chain_residue_atom_descriptor(crad, match, match_not) &&
+				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
+				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not));
 		if((passed && !invert) || (!passed && invert))
 		{
 			output_set_of_ball_ids.insert(i);
