@@ -56,7 +56,7 @@ inline bool match_container_with_multiple_values(const T& container, const F& ma
 
 struct functor_match_chain_residue_atom_descriptor_with_single_value
 {
-	bool operator()(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::string& value) const
+	inline bool operator()(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::string& value) const
 	{
 		return auxiliaries::ChainResidueAtomDescriptor::match_with_member_descriptor(descriptor, value);
 	}
@@ -70,7 +70,7 @@ inline bool match_chain_residue_atom_descriptor(const auxiliaries::ChainResidueA
 
 struct functor_match_set_of_tags_with_single_value
 {
-	bool operator()(const std::set<std::string>& tags, const std::string& value) const
+	inline bool operator()(const std::set<std::string>& tags, const std::string& value) const
 	{
 		return (tags.count(value)>0);
 	}
@@ -80,6 +80,44 @@ inline bool match_set_of_tags(const std::set<std::string>& tags, const std::stri
 {
 	return ((positive_values.empty() || match_container_with_multiple_values(tags, functor_match_set_of_tags_with_single_value(), positive_values))
 			&& (negative_values.empty() || !match_container_with_multiple_values(tags, functor_match_set_of_tags_with_single_value(), negative_values)));
+}
+
+struct functor_match_map_of_adjuncts_with_single_value
+{
+	inline bool operator()(const std::map<std::string, double>& adjuncts, const std::string& value) const
+	{
+		const std::size_t eq_pos=value.find('=');
+		if(eq_pos!=std::string::npos)
+		{
+			const std::size_t sep_pos=value.find(':', eq_pos);
+			if(sep_pos!=std::string::npos)
+			{
+				std::string spaced_value=value;
+				spaced_value[eq_pos]=' ';
+				spaced_value[sep_pos]=' ';
+				std::istringstream input(spaced_value);
+				if(input.good())
+				{
+					std::string name;
+					double a=0.0;
+					double b=0.0;
+					input >> name >> a >> b;
+					if(!input.fail() && !name.empty() && a<b)
+					{
+						std::map<std::string, double>::const_iterator it=adjuncts.find(name);
+						return (it!=adjuncts.end() && it->second>=a && it->second<=b);
+					}
+				}
+			}
+		}
+		return false;
+	}
+};
+
+inline bool match_map_of_adjuncts(const std::map<std::string, double>& adjuncts, const std::string& positive_values, const std::string& negative_values)
+{
+	return ((positive_values.empty() || match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), positive_values))
+			&& (negative_values.empty() || !match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), negative_values)));
 }
 
 }

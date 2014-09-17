@@ -83,6 +83,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-max-dist", "number", "maximum distance"));
 		list_of_option_descriptions.push_back(OD("--match-tags", "string", "tags to match"));
 		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
+		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
+		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
@@ -122,6 +124,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
 	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
+	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
+	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool invert=poh.contains_option("--invert");
@@ -198,6 +202,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				modescommon::match_chain_residue_atom_descriptor(crads.first, match_both, match_both_not) &&
 				modescommon::match_chain_residue_atom_descriptor(crads.second, match_both, match_both_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
+				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
 				(matchable_set_of_name_pairs.empty() || match_two_crads_with_set_of_crads(crads.first, crads.second, matchable_set_of_name_pairs))
 		)
 		{

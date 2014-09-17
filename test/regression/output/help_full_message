@@ -66,6 +66,8 @@ Command 'query-balls' options:
 --match-not                     string      negative selection
 --match-tags                    string      tags to match
 --match-tags-not                string      tags to not match
+--match-adjuncts                string      adjuncts intervals to match
+--match-adjuncts-not            string      adjuncts intervals to not match
 --invert                                    flag to invert selection
 --drop-tags                                 flag to drop all tags from input
 --set-tags                      string      set tags instead of filtering
@@ -90,6 +92,8 @@ Command 'query-contacts' options:
 --match-max-dist                number      maximum distance
 --match-tags                    string      tags to match
 --match-tags-not                string      tags to not match
+--match-adjuncts                string      adjuncts intervals to match
+--match-adjuncts-not            string      adjuncts intervals to not match
 --match-external-annotations    string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --invert                                    flag to invert selection
