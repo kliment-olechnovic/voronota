@@ -6,6 +6,7 @@
 #include <limits>
 #include <stdexcept>
 #include <cstdlib>
+#include <vector>
 
 namespace auxiliaries
 {
@@ -39,7 +40,7 @@ public:
 
 	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
 	{
-		const MarkerNaming mn;
+		static const MarkerNaming mn;
 		ChainResidueAtomDescriptor v;
 		std::string refined_input_str=input_str;
 		for(std::size_t i=0;i<refined_input_str.size();i++)
@@ -51,6 +52,7 @@ public:
 			}
 		}
 		std::istringstream input(refined_input_str);
+		std::vector<std::string> markers;
 		while(input.good())
 		{
 			std::string marker;
@@ -93,9 +95,10 @@ public:
 				{
 					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in descriptor string '"+input_str+"'.");
 				}
+				markers.push_back(marker);
 			}
 		}
-		if(!(v.valid() && v.str()==input_str))
+		if(!(v.valid() && v.str(markers)==input_str))
 		{
 			throw std::runtime_error(std::string("Invalid descriptor string '")+input_str+"'.");
 		}
@@ -104,7 +107,7 @@ public:
 
 	static bool match_with_member_selection_string(const ChainResidueAtomDescriptor& crad, const std::string& input_str)
 	{
-		const MarkerNaming mn;
+		static const MarkerNaming mn;
 		const char vsep=',';
 		const char vinterval=':';
 		std::ostringstream control_output;
@@ -268,37 +271,10 @@ public:
 
 	std::string str() const
 	{
-		const MarkerNaming mn;
-		std::ostringstream output;
-		if(!chainID.empty())
-		{
-			output << mn.chainID << vbegin << chainID << vend;
-		}
-		if(resSeq!=null_num())
-		{
-			output << mn.resSeq << vbegin << resSeq << vend;
-			if(!iCode.empty())
-			{
-				output << mn.iCode << vbegin << iCode << vend;
-			}
-		}
-		if(serial!=null_num())
-		{
-			output << mn.serial << vbegin << serial << vend;
-			if(!altLoc.empty())
-			{
-				output << mn.altLoc << vbegin << altLoc << vend;
-			}
-		}
-		if(!resName.empty())
-		{
-			output << mn.resName << vbegin << resName << vend;
-		}
-		if(!name.empty())
-		{
-			output << mn.name << vbegin << name << vend;
-		}
-		return output.str();
+		static const MarkerNaming mn;
+		static const std::string markers_array[7]={mn.chainID, mn.resSeq, mn.iCode, mn.serial, mn.altLoc, mn.resName, mn.name};
+		static const std::vector<std::string> markers(markers_array, markers_array+7);
+		return str(markers);
 	}
 
 private:
@@ -337,6 +313,45 @@ private:
 
 	static const char vbegin='[';
 	static const char vend=']';
+
+	std::string str(const std::vector<std::string>& markers) const
+	{
+		const MarkerNaming mn;
+		std::ostringstream output;
+		for(std::size_t i=0;i<markers.size();i++)
+		{
+			const std::string& m=markers[i];
+			if(m==mn.chainID && !chainID.empty())
+			{
+				output << mn.chainID << vbegin << chainID << vend;
+			}
+			else if(m==mn.resSeq && resSeq!=null_num())
+			{
+				output << mn.resSeq << vbegin << resSeq << vend;
+			}
+			else if(m==mn.iCode && !iCode.empty())
+			{
+				output << mn.iCode << vbegin << iCode << vend;
+			}
+			else if(m==mn.serial && serial!=null_num())
+			{
+				output << mn.serial << vbegin << serial << vend;
+			}
+			else if(m==mn.altLoc && !altLoc.empty())
+			{
+				output << mn.altLoc << vbegin << altLoc << vend;
+			}
+			else if(m==mn.resName && !resName.empty())
+			{
+				output << mn.resName << vbegin << resName << vend;
+			}
+			else if(m==mn.name && !name.empty())
+			{
+				output << mn.name << vbegin << name << vend;
+			}
+		}
+		return output.str();
+	}
 };
 
 }
