@@ -1,4 +1,4 @@
-# About Voronota 1.5
+# About Voronota 1.6
 
 The analysis of macromolecular structures often requires
 a comprehensive definition of atomic neighborhoods.
