@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "apollota/constrained_contacts_construction.h"
+#include "apollota/spheres_boundary_construction.h"
 
 #include "auxiliaries/opengl_printer.h"
 
@@ -131,7 +132,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::size_t input_spheres_count=spheres.size();
-	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::ConstrainedContactsConstruction::construct_artificial_boundary(spheres, probe*2.0);
+	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
 	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, exclude_hidden_balls, false);
