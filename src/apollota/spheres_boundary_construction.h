@@ -2,6 +2,7 @@
 #define APOLLOTA_SPHERES_BOUNDARY_CONSTRUCTION_H_
 
 #include <vector>
+#include <limits>
 
 #include "basic_operations_on_spheres.h"
 

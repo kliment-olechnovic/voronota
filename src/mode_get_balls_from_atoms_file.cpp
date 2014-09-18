@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "apollota/spheres_boundary_construction.h"
+
 #include "auxiliaries/atoms_reader.h"
 #include "auxiliaries/atom_radius_assigner.h"
 
@@ -43,6 +45,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--radii-file", "string", "path to radii configuration file"));
 		list_of_option_descriptions.push_back(OD("--default-radius", "number", "default atomic radius"));
 		list_of_option_descriptions.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
+		list_of_option_descriptions.push_back(OD("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
@@ -60,6 +63,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
+	const double hull_offset=poh.argument<double>("--hull-offset", -1.0);
 
 	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
 			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms, include_hydrogens) :
@@ -87,6 +91,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			auxiliaries::read_lines_to_container(radii_file_stream, add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
+
+	std::vector<apollota::SimpleSphere> all_spheres;
+	all_spheres.reserve(atoms.size());
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
@@ -134,6 +141,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 						modescommon::update_map_of_adjuncts(value.adjuncts, std::string("tf=")+atom.tempFactor);
 					}
 					modescommon::print_ball_record(crad, value, std::cout);
+					all_spheres.push_back(apollota::SimpleSphere(value));
 				}
 			}
 		}
@@ -141,6 +149,31 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::cout << atom.x << " " << atom.y << " " << atom.z << " " << radius;
 			std::cout << " # " << crad_output.str() << "\n";
+			all_spheres.push_back(apollota::SimpleSphere(atom, radius));
+		}
+	}
+
+	if(hull_offset>0.0 && !all_spheres.empty())
+	{
+		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(all_spheres, hull_offset);
+		for(std::size_t i=0;i<artificial_boundary.size();i++)
+		{
+			const apollota::SimpleSphere& s=artificial_boundary[i];
+			if(annotated)
+			{
+				auxiliaries::ChainResidueAtomDescriptor crad;
+				crad.chainID="hull";
+				modescommon::BallValue value;
+				value.x=s.x;
+				value.y=s.y;
+				value.z=s.z;
+				value.r=s.r;
+				modescommon::print_ball_record(crad, value, std::cout);
+			}
+			else
+			{
+				std::cout << s.x << " " << s.y << " " << s.z << " " << s.r << " # artificial hull ball\n";
+			}
 		}
 	}
 }
