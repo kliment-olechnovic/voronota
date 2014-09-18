@@ -2,18 +2,20 @@
 #include <stdexcept>
 
 #include "apollota/constrained_contacts_construction.h"
+#include "apollota/spheres_boundary_construction.h"
 
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon_assert_options.h"
-#include "modescommon_read_sphere.h"
-#include "modescommon_handle_contact.h"
+#include "modescommon/assert_options.h"
+#include "modescommon/read_sphere.h"
+#include "modescommon/handle_ball.h"
+#include "modescommon/handle_contact.h"
 
 namespace
 {
 
-typedef modescommon::contact::Comment Comment;
-typedef modescommon::contact::ContactValue ContactValue;
+typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef modescommon::ContactValue ContactValue;
 
 std::string draw_inter_atom_contact(
 		const std::vector<apollota::SimpleSphere>& spheres,
@@ -86,7 +88,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--annotate", "", "flag to annotate contacts using balls comments"));
+		list_of_option_descriptions.push_back(OD("--annotated", "", "flag to enable annotated mode"));
 		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
 		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
 		list_of_option_descriptions.push_back(OD("--step", "number", "curve step length"));
@@ -96,16 +98,16 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
-			std::cerr << "              (default line format: 'x y z r # comments')\n";
-			std::cerr << "              (annotated line format: 'x y z r # atomSerial chainID resSeq resName atomName [altLoc iCode]')\n";
+			std::cerr << "              (default mode line format: 'x y z r')\n";
+			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
 			std::cerr << "stdout  ->  list of contacts\n";
-			std::cerr << "              (default line format: 'b1 b2 area')\n";
-			std::cerr << "              (annotated line format: 'annotation1 annotation2 area distance tags [graphics]')\n";
+			std::cerr << "              (default mode line format: 'b1 b2 area')\n";
+			std::cerr << "              (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";
 			return;
 		}
 	}
 
-	const bool annotate=poh.contains_option("--annotate");
+	const bool annotated=poh.contains_option("--annotated");
 	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
 	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
 	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
@@ -114,19 +116,15 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector<Comment> input_spheres_comments;
-	if(annotate)
+	std::vector< std::pair<CRAD, modescommon::BallValue> > input_ball_records;
+	if(annotated)
 	{
-		std::pair< std::vector<apollota::SimpleSphere>*, std::vector<Comment>* > spheres_with_comments(&spheres, &input_spheres_comments);
-		auxiliaries::read_lines_to_container(std::cin, "", modescommon::add_sphere_and_comments_from_stream_to_vectors<apollota::SimpleSphere, Comment>, spheres_with_comments);
-		if(spheres.size()!=input_spheres_comments.size())
-		{
-			throw std::runtime_error("Number of comments does not match number of spheres.");
-		}
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector<CRAD>, input_ball_records);
+		modescommon::collect_spheres_from_vector_of_ball_records(input_ball_records, spheres);
 	}
 	else
 	{
-		auxiliaries::read_lines_to_container(std::cin, "#", modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
 	}
 	if(spheres.size()<4)
 	{
@@ -134,7 +132,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::size_t input_spheres_count=spheres.size();
-	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::ConstrainedContactsConstruction::construct_artificial_boundary(spheres, probe*2.0);
+	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
 	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
 	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, exclude_hidden_balls, false);
@@ -161,13 +159,13 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!input_spheres_comments.empty())
+	if(!input_ball_records.empty())
 	{
 		const apollota::TriangulationQueries::PairsMap pairs_vertices=(draw ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 
-		std::map< std::pair<Comment, Comment>, ContactValue > output_map_of_contacts;
+		std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -175,8 +173,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				const std::pair<Comment, Comment> comments(input_spheres_comments[a_id], (a_id==b_id ? Comment::solvent() : input_spheres_comments[b_id]));
-				ContactValue& value=output_map_of_contacts[modescommon::contact::refine_pair(comments, comments.second<comments.first)];
+				const std::pair<CRAD, CRAD> crads(input_ball_records[a_id].first, (a_id==b_id ? CRAD::solvent() : input_ball_records[b_id].first));
+				ContactValue& value=output_map_of_contacts[modescommon::refine_pair_by_ordering(crads)];
 				value.area=area;
 				if(a_id!=b_id)
 				{
@@ -194,9 +192,9 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		for(std::map< std::pair<Comment, Comment>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			modescommon::contact::print_contact_record(it->first, it->second, true, std::cout);
+			modescommon::print_contact_record(it->first, it->second, true, std::cout);
 		}
 	}
 	else

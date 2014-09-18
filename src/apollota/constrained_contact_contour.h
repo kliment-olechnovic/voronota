@@ -344,8 +344,8 @@ private:
 		{
 			if(it->left_id==c_id && it->right_id==c_id)
 			{
-				Contour::iterator left_it=get_left_iterator(contour, it);
-				Contour::iterator right_it=get_right_iterator(contour, it);
+				const Contour::iterator left_it=get_left_iterator(contour, it);
+				const Contour::iterator right_it=get_right_iterator(contour, it);
 
 				if(left_it->right_id!=c_id)
 				{
@@ -462,7 +462,7 @@ private:
 		{
 			if(it->left_id!=c_id && it->right_id==c_id)
 			{
-				Contour::iterator jt=get_right_iterator(contour, it);
+				const Contour::iterator jt=get_right_iterator(contour, it);
 				if(jt->left_id==c_id)
 				{
 					SimplePoint& p0=it->p;

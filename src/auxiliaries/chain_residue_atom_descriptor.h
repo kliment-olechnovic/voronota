@@ -1,15 +1,17 @@
-#ifndef AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_
-#define AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_
+#ifndef AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_
+#define AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_
 
 #include <string>
 #include <sstream>
 #include <limits>
 #include <stdexcept>
+#include <cstdlib>
+#include <vector>
 
 namespace auxiliaries
 {
 
-class ChainResidueAtomComment
+class ChainResidueAtomDescriptor
 {
 public:
 	int serial;
@@ -20,7 +22,7 @@ public:
 	std::string altLoc;
 	std::string iCode;
 
-	ChainResidueAtomComment() : serial(null_num()), resSeq(null_num())
+	ChainResidueAtomDescriptor() : serial(null_num()), resSeq(null_num())
 	{
 	}
 
@@ -29,16 +31,17 @@ public:
 		return std::numeric_limits<int>::min();
 	}
 
-	static ChainResidueAtomComment solvent()
+	static ChainResidueAtomDescriptor solvent()
 	{
-		ChainResidueAtomComment v;
+		ChainResidueAtomDescriptor v;
 		v.chainID="solvent";
 		return v;
 	}
 
-	static ChainResidueAtomComment from_str(const std::string& input_str)
+	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
 	{
-		ChainResidueAtomComment v;
+		static const MarkerNaming mn;
+		ChainResidueAtomDescriptor v;
 		std::string refined_input_str=input_str;
 		for(std::size_t i=0;i<refined_input_str.size();i++)
 		{
@@ -49,59 +52,62 @@ public:
 			}
 		}
 		std::istringstream input(refined_input_str);
+		std::vector<std::string> markers;
 		while(input.good())
 		{
 			std::string marker;
 			input >> marker;
 			if(!marker.empty())
 			{
-				if(marker=="c")
+				if(marker==mn.chainID)
 				{
 					input >> v.chainID;
 				}
-				else if(marker=="r")
+				else if(marker==mn.resSeq)
 				{
 					input >> v.resSeq;
 				}
-				else if(marker=="i")
+				else if(marker==mn.iCode)
 				{
 					input >> v.iCode;
 				}
-				else if(marker=="a")
+				else if(marker==mn.serial)
 				{
 					input >> v.serial;
 				}
-				else if(marker=="l")
+				else if(marker==mn.altLoc)
 				{
 					input >> v.altLoc;
 				}
-				else if(marker=="rn")
+				else if(marker==mn.resName)
 				{
 					input >> v.resName;
 				}
-				else if(marker=="an")
+				else if(marker==mn.name)
 				{
 					input >> v.name;
 				}
 				else
 				{
-					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in comment string '"+input_str+"'.");
+					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in descriptor string '"+input_str+"'.");
 				}
 				if(input.fail())
 				{
-					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in comment string '"+input_str+"'.");
+					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in descriptor string '"+input_str+"'.");
 				}
+				markers.push_back(marker);
 			}
 		}
-		if(!(v.valid() && v.str()==input_str))
+		if(!(v.valid() && v.str(markers)==input_str))
 		{
-			throw std::runtime_error(std::string("Invalid comment string '")+input_str+"'.");
+			throw std::runtime_error(std::string("Invalid descriptor string '")+input_str+"'.");
 		}
 		return v;
 	}
 
-	static bool match_with_member_descriptor(const ChainResidueAtomComment& comment, const std::string& input_str)
+	static bool match_with_member_selection_string(const ChainResidueAtomDescriptor& crad, const std::string& input_str)
 	{
+		static const MarkerNaming mn;
 		const char vsep=',';
 		const char vinterval=':';
 		std::ostringstream control_output;
@@ -118,7 +124,7 @@ public:
 		std::istringstream input(refined_input_str);
 		std::string marker;
 		input >> marker;
-		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
+		if(!input.fail() && mn.valid(marker))
 		{
 			control_output << marker << vbegin;
 			bool need_sep=false;
@@ -129,7 +135,7 @@ public:
 				if(!input.fail() && !token.empty())
 				{
 					if(need_sep) { control_output << vsep; } else { need_sep=true; }
-					if(marker=="r" || marker=="a")
+					if(marker==mn.resSeq || marker==mn.serial)
 					{
 						std::size_t pinterval=token.find(vinterval);
 						if(pinterval!=std::string::npos)
@@ -141,8 +147,8 @@ public:
 							if(!token_input.fail() && value.first<=value.second)
 							{
 								control_output << value.first << vinterval << value.second;
-								if(marker=="r") { matched=matched || (comment.resSeq>=value.first && comment.resSeq<=value.second); }
-								else if(marker=="a") { matched=matched || (comment.serial>=value.first && comment.serial<=value.second); }
+								if(marker==mn.resSeq) { matched=matched || (crad.resSeq>=value.first && crad.resSeq<=value.second); }
+								else if(marker==mn.serial) { matched=matched || (crad.serial>=value.first && crad.serial<=value.second); }
 							}
 						}
 						else
@@ -153,19 +159,19 @@ public:
 							if(!token_input.fail())
 							{
 								control_output << value;
-								if(marker=="r") { matched=matched || (comment.resSeq==value); }
-								else if(marker=="a") { matched=matched || (comment.serial==value); }
+								if(marker==mn.resSeq) { matched=matched || (crad.resSeq==value); }
+								else if(marker==mn.serial) { matched=matched || (crad.serial==value); }
 							}
 						}
 					}
 					else
 					{
 						control_output << token;
-						if(marker=="c") { matched=matched || (comment.chainID==token); }
-						else if(marker=="i") { matched=matched || (comment.iCode==token); }
-						else if(marker=="l") { matched=matched || (comment.altLoc==token); }
-						else if(marker=="rn") { matched=matched || (comment.resName==token); }
-						else if(marker=="an") { matched=matched || (comment.name==token); }
+						if(marker==mn.chainID) { matched=matched || (crad.chainID==token); }
+						else if(marker==mn.iCode) { matched=matched || (crad.iCode==token); }
+						else if(marker==mn.altLoc) { matched=matched || (crad.altLoc==token); }
+						else if(marker==mn.resName) { matched=matched || (crad.resName==token); }
+						else if(marker==mn.name) { matched=matched || (crad.name==token); }
 					}
 				}
 			}
@@ -174,12 +180,12 @@ public:
 		const std::string control_output_str=control_output.str();
 		if(control_output_str.empty() || control_output_str!=input_str)
 		{
-			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
+			throw std::runtime_error(std::string("Invalid selection string '")+input_str+"'.");
 		}
 		return matched;
 	}
 
-	static bool match_with_sequence_separation_interval(const ChainResidueAtomComment& a, const ChainResidueAtomComment& b, const int min_sep, const int max_sep, const bool uncheckable_result)
+	static bool match_with_sequence_separation_interval(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b, const int min_sep, const int max_sep, const bool uncheckable_result)
 	{
 		if(!(min_sep==null_num() && max_sep==null_num()) && a.resSeq!=null_num() && b.resSeq!=null_num() && a.chainID==b.chainID)
 		{
@@ -207,31 +213,16 @@ public:
 				!(serial==null_num() && !altLoc.empty()));
 	}
 
-	ChainResidueAtomComment without_atom() const
+	ChainResidueAtomDescriptor without_atom() const
 	{
-		ChainResidueAtomComment v=(*this);
+		ChainResidueAtomDescriptor v=(*this);
 		v.serial=null_num();
 		v.altLoc.clear();
 		v.name.clear();
 		return v;
 	}
 
-	ChainResidueAtomComment without_numbering() const
-	{
-		if((*this)==solvent())
-		{
-			return solvent();
-		}
-		else
-		{
-			ChainResidueAtomComment v;
-			v.resName=resName;
-			v.name=name;
-			return v;
-		}
-	}
-
-	bool contains(const ChainResidueAtomComment& v) const
+	bool contains(const ChainResidueAtomDescriptor& v) const
 	{
 		return (valid() && v.valid() &&
 				(v.serial==null_num() || v.serial==serial) &&
@@ -243,12 +234,12 @@ public:
 				(v.iCode.empty() || v.iCode==iCode));
 	}
 
-	bool operator==(const ChainResidueAtomComment& v) const
+	bool operator==(const ChainResidueAtomDescriptor& v) const
 	{
 		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
 	}
 
-	bool operator<(const ChainResidueAtomComment& v) const
+	bool operator<(const ChainResidueAtomDescriptor& v) const
 	{
 		if(chainID<v.chainID) { return true; }
 		else if(chainID==v.chainID)
@@ -280,43 +271,89 @@ public:
 
 	std::string str() const
 	{
-		std::ostringstream output;
-		if(!chainID.empty())
-		{
-			output << "c" << vbegin << chainID << vend;
-		}
-		if(resSeq!=null_num())
-		{
-			output << "r" << vbegin << resSeq << vend;
-			if(!iCode.empty())
-			{
-				output << "i" << vbegin << iCode << vend;
-			}
-		}
-		if(serial!=null_num())
-		{
-			output << "a" << vbegin << serial << vend;
-			if(!altLoc.empty())
-			{
-				output << "l" << vbegin << altLoc << vend;
-			}
-		}
-		if(!resName.empty())
-		{
-			output << "rn" << vbegin << resName << vend;
-		}
-		if(!name.empty())
-		{
-			output << "an" << vbegin << name << vend;
-		}
-		return output.str();
+		static const MarkerNaming mn;
+		static const std::string markers_array[7]={mn.chainID, mn.resSeq, mn.iCode, mn.serial, mn.altLoc, mn.resName, mn.name};
+		static const std::vector<std::string> markers(markers_array, markers_array+7);
+		return str(markers);
 	}
 
 private:
+	struct MarkerNaming
+	{
+		std::string serial;
+		std::string chainID;
+		std::string resSeq;
+		std::string resName;
+		std::string name;
+		std::string altLoc;
+		std::string iCode;
+
+		MarkerNaming() :
+			serial("a"),
+			chainID("c"),
+			resSeq("r"),
+			resName("rn"),
+			name("an"),
+			altLoc("l"),
+			iCode("i")
+		{
+		}
+
+		bool valid(const std::string& marker_name) const
+		{
+			return (marker_name==serial
+					|| marker_name==chainID
+					|| marker_name==resSeq
+					|| marker_name==resName
+					|| marker_name==name
+					|| marker_name==altLoc
+					|| marker_name==iCode);
+		}
+	};
+
 	static const char vbegin='[';
 	static const char vend=']';
+
+	std::string str(const std::vector<std::string>& markers) const
+	{
+		const MarkerNaming mn;
+		std::ostringstream output;
+		for(std::size_t i=0;i<markers.size();i++)
+		{
+			const std::string& m=markers[i];
+			if(m==mn.chainID && !chainID.empty())
+			{
+				output << mn.chainID << vbegin << chainID << vend;
+			}
+			else if(m==mn.resSeq && resSeq!=null_num())
+			{
+				output << mn.resSeq << vbegin << resSeq << vend;
+			}
+			else if(m==mn.iCode && !iCode.empty())
+			{
+				output << mn.iCode << vbegin << iCode << vend;
+			}
+			else if(m==mn.serial && serial!=null_num())
+			{
+				output << mn.serial << vbegin << serial << vend;
+			}
+			else if(m==mn.altLoc && !altLoc.empty())
+			{
+				output << mn.altLoc << vbegin << altLoc << vend;
+			}
+			else if(m==mn.resName && !resName.empty())
+			{
+				output << mn.resName << vbegin << resName << vend;
+			}
+			else if(m==mn.name && !name.empty())
+			{
+				output << mn.name << vbegin << name << vend;
+			}
+		}
+		return output.str();
+	}
 };
 
 }
 
-#endif /* AUXILIARIES_CHAIN_RESIDUE_ATOM_COMMENT_H_ */
+#endif /* AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_ */

@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_ASSERT_OPTIONS_H_
 #define MODESCOMMON_ASSERT_OPTIONS_H_
 
-#include "auxiliaries/program_options_handler.h"
+#include "../auxiliaries/program_options_handler.h"
 
 namespace modescommon
 {
