@@ -177,7 +177,7 @@ public:
 		const std::string control_output_str=control_output.str();
 		if(control_output_str.empty() || control_output_str!=input_str)
 		{
-			throw std::runtime_error(std::string("Invalid match descriptor '")+input_str+"'.");
+			throw std::runtime_error(std::string("Invalid selection string '")+input_str+"'.");
 		}
 		return matched;
 	}
