@@ -13,6 +13,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
+void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
@@ -39,6 +40,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
 	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	return list_of_modes;
 }
@@ -71,7 +73,7 @@ int main(const int argc, const char** argv)
 		}
 		else
 		{
-			std::cerr << "Voronota version 1.5\n\n";
+			std::cerr << "Voronota version 1.6\n\n";
 			std::cerr << "Commands:\n\n";
 			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 			{
