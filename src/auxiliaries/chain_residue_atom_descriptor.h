@@ -39,6 +39,7 @@ public:
 
 	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
 	{
+		const MarkerNaming mn;
 		ChainResidueAtomDescriptor v;
 		std::string refined_input_str=input_str;
 		for(std::size_t i=0;i<refined_input_str.size();i++)
@@ -56,31 +57,31 @@ public:
 			input >> marker;
 			if(!marker.empty())
 			{
-				if(marker=="c")
+				if(marker==mn.chainID)
 				{
 					input >> v.chainID;
 				}
-				else if(marker=="r")
+				else if(marker==mn.resSeq)
 				{
 					input >> v.resSeq;
 				}
-				else if(marker=="i")
+				else if(marker==mn.iCode)
 				{
 					input >> v.iCode;
 				}
-				else if(marker=="a")
+				else if(marker==mn.serial)
 				{
 					input >> v.serial;
 				}
-				else if(marker=="l")
+				else if(marker==mn.altLoc)
 				{
 					input >> v.altLoc;
 				}
-				else if(marker=="rn")
+				else if(marker==mn.resName)
 				{
 					input >> v.resName;
 				}
-				else if(marker=="an")
+				else if(marker==mn.name)
 				{
 					input >> v.name;
 				}
@@ -101,8 +102,9 @@ public:
 		return v;
 	}
 
-	static bool match_with_member_descriptor(const ChainResidueAtomDescriptor& crad, const std::string& input_str)
+	static bool match_with_member_selection_string(const ChainResidueAtomDescriptor& crad, const std::string& input_str)
 	{
+		const MarkerNaming mn;
 		const char vsep=',';
 		const char vinterval=':';
 		std::ostringstream control_output;
@@ -119,7 +121,7 @@ public:
 		std::istringstream input(refined_input_str);
 		std::string marker;
 		input >> marker;
-		if(!input.fail() && (marker=="c" || marker=="r" || marker=="i" || marker=="a" || marker=="l" || marker=="rn" || marker=="an"))
+		if(!input.fail() && mn.valid(marker))
 		{
 			control_output << marker << vbegin;
 			bool need_sep=false;
@@ -130,7 +132,7 @@ public:
 				if(!input.fail() && !token.empty())
 				{
 					if(need_sep) { control_output << vsep; } else { need_sep=true; }
-					if(marker=="r" || marker=="a")
+					if(marker==mn.resSeq || marker==mn.serial)
 					{
 						std::size_t pinterval=token.find(vinterval);
 						if(pinterval!=std::string::npos)
@@ -142,8 +144,8 @@ public:
 							if(!token_input.fail() && value.first<=value.second)
 							{
 								control_output << value.first << vinterval << value.second;
-								if(marker=="r") { matched=matched || (crad.resSeq>=value.first && crad.resSeq<=value.second); }
-								else if(marker=="a") { matched=matched || (crad.serial>=value.first && crad.serial<=value.second); }
+								if(marker==mn.resSeq) { matched=matched || (crad.resSeq>=value.first && crad.resSeq<=value.second); }
+								else if(marker==mn.serial) { matched=matched || (crad.serial>=value.first && crad.serial<=value.second); }
 							}
 						}
 						else
@@ -154,19 +156,19 @@ public:
 							if(!token_input.fail())
 							{
 								control_output << value;
-								if(marker=="r") { matched=matched || (crad.resSeq==value); }
-								else if(marker=="a") { matched=matched || (crad.serial==value); }
+								if(marker==mn.resSeq) { matched=matched || (crad.resSeq==value); }
+								else if(marker==mn.serial) { matched=matched || (crad.serial==value); }
 							}
 						}
 					}
 					else
 					{
 						control_output << token;
-						if(marker=="c") { matched=matched || (crad.chainID==token); }
-						else if(marker=="i") { matched=matched || (crad.iCode==token); }
-						else if(marker=="l") { matched=matched || (crad.altLoc==token); }
-						else if(marker=="rn") { matched=matched || (crad.resName==token); }
-						else if(marker=="an") { matched=matched || (crad.name==token); }
+						if(marker==mn.chainID) { matched=matched || (crad.chainID==token); }
+						else if(marker==mn.iCode) { matched=matched || (crad.iCode==token); }
+						else if(marker==mn.altLoc) { matched=matched || (crad.altLoc==token); }
+						else if(marker==mn.resName) { matched=matched || (crad.resName==token); }
+						else if(marker==mn.name) { matched=matched || (crad.name==token); }
 					}
 				}
 			}
@@ -266,39 +268,73 @@ public:
 
 	std::string str() const
 	{
+		const MarkerNaming mn;
 		std::ostringstream output;
 		if(!chainID.empty())
 		{
-			output << "c" << vbegin << chainID << vend;
+			output << mn.chainID << vbegin << chainID << vend;
 		}
 		if(resSeq!=null_num())
 		{
-			output << "r" << vbegin << resSeq << vend;
+			output << mn.resSeq << vbegin << resSeq << vend;
 			if(!iCode.empty())
 			{
-				output << "i" << vbegin << iCode << vend;
+				output << mn.iCode << vbegin << iCode << vend;
 			}
 		}
 		if(serial!=null_num())
 		{
-			output << "a" << vbegin << serial << vend;
+			output << mn.serial << vbegin << serial << vend;
 			if(!altLoc.empty())
 			{
-				output << "l" << vbegin << altLoc << vend;
+				output << mn.altLoc << vbegin << altLoc << vend;
 			}
 		}
 		if(!resName.empty())
 		{
-			output << "rn" << vbegin << resName << vend;
+			output << mn.resName << vbegin << resName << vend;
 		}
 		if(!name.empty())
 		{
-			output << "an" << vbegin << name << vend;
+			output << mn.name << vbegin << name << vend;
 		}
 		return output.str();
 	}
 
 private:
+	struct MarkerNaming
+	{
+		std::string serial;
+		std::string chainID;
+		std::string resSeq;
+		std::string resName;
+		std::string name;
+		std::string altLoc;
+		std::string iCode;
+
+		MarkerNaming() :
+			serial("a"),
+			chainID("c"),
+			resSeq("r"),
+			resName("rn"),
+			name("an"),
+			altLoc("l"),
+			iCode("i")
+		{
+		}
+
+		bool valid(const std::string& marker_name) const
+		{
+			return (marker_name==serial
+					|| marker_name==chainID
+					|| marker_name==resSeq
+					|| marker_name==resName
+					|| marker_name==name
+					|| marker_name==altLoc
+					|| marker_name==iCode);
+		}
+	};
+
 	static const char vbegin='[';
 	static const char vend=']';
 };

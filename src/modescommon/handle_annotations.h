@@ -58,7 +58,7 @@ struct functor_match_chain_residue_atom_descriptor_with_single_value
 {
 	inline bool operator()(const auxiliaries::ChainResidueAtomDescriptor& descriptor, const std::string& value) const
 	{
-		return auxiliaries::ChainResidueAtomDescriptor::match_with_member_descriptor(descriptor, value);
+		return auxiliaries::ChainResidueAtomDescriptor::match_with_member_selection_string(descriptor, value);
 	}
 };
 
