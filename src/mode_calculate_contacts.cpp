@@ -94,6 +94,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--step", "number", "curve step length"));
 		list_of_option_descriptions.push_back(OD("--projections", "number", "curve optimization depth"));
 		list_of_option_descriptions.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
+		list_of_option_descriptions.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -113,6 +114,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
 	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
+	const bool add_mirrored=poh.contains_option("--add-mirrored");
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
@@ -199,9 +201,28 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+		if(add_mirrored)
 		{
-			std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
+			std::map< std::pair<std::size_t, std::size_t>, double > mirrored_interactions_map;
+			for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+			{
+				mirrored_interactions_map[std::make_pair(it->first.get(0), it->first.get(1))]=it->second;
+				if(it->first.get(0)!=it->first.get(1))
+				{
+					mirrored_interactions_map[std::make_pair(it->first.get(1), it->first.get(0))]=it->second;
+				}
+			}
+			for(std::map< std::pair<std::size_t, std::size_t>, double >::const_iterator it=mirrored_interactions_map.begin();it!=mirrored_interactions_map.end();++it)
+			{
+				std::cout << it->first.first << " " << it->first.second << " " << it->second << "\n";
+			}
+		}
+		else
+		{
+			for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+			{
+				std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
+			}
 		}
 	}
 }

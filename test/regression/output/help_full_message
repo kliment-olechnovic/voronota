@@ -53,6 +53,7 @@ Command 'calculate-contacts' options:
 --step                          number      curve step length
 --projections                   number      curve optimization depth
 --sih-depth                     number      spherical surface optimization depth
+--add-mirrored                              flag to add mirrored contacts to non-annnotated output
 --draw                                      flag to output graphics for annotated contacts
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls
