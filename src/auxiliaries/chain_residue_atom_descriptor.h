@@ -38,7 +38,7 @@ public:
 		return v;
 	}
 
-	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
+	static std::string from_str(const std::string& input_str, ChainResidueAtomDescriptor& output_descriptor)
 	{
 		static const MarkerNaming mn;
 		ChainResidueAtomDescriptor v;
@@ -89,18 +89,30 @@ public:
 				}
 				else
 				{
-					throw std::runtime_error(std::string("Unrecognized marker '")+marker+"' in descriptor string '"+input_str+"'.");
+					return (std::string("Unrecognized marker '")+marker+"' in descriptor string '"+input_str+"'.");
 				}
 				if(input.fail())
 				{
-					throw std::runtime_error(std::string("Unreadable marker '")+marker+"' value in descriptor string '"+input_str+"'.");
+					return (std::string("Unreadable marker '")+marker+"' value in descriptor string '"+input_str+"'.");
 				}
 				markers.push_back(marker);
 			}
 		}
 		if(!(v.valid() && v.str(markers)==input_str))
 		{
-			throw std::runtime_error(std::string("Invalid descriptor string '")+input_str+"'.");
+			return (std::string("Invalid descriptor string '")+input_str+"'.");
+		}
+		output_descriptor=v;
+		return std::string();
+	}
+
+	static ChainResidueAtomDescriptor from_str(const std::string& input_str)
+	{
+		ChainResidueAtomDescriptor v;
+		const std::string error_msg=from_str(input_str, v);
+		if(!error_msg.empty())
+		{
+			throw std::runtime_error(error_msg);
 		}
 		return v;
 	}
