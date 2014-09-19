@@ -129,8 +129,8 @@ inline bool add_chain_residue_atom_descriptors_from_stream_to_set(std::istream& 
 		input >> crad_string;
 		if(!input.fail() && !crad_string.empty())
 		{
-			const auxiliaries::ChainResidueAtomDescriptor crad=auxiliaries::ChainResidueAtomDescriptor::from_str(crad_string);
-			if(crad.valid())
+			auxiliaries::ChainResidueAtomDescriptor crad;
+			if(auxiliaries::ChainResidueAtomDescriptor::from_str(crad_string, crad).empty())
 			{
 				set_of_descriptors.insert(crad);
 				filled=true;
@@ -162,8 +162,9 @@ inline bool add_chain_residue_atom_descriptors_pair_from_stream_to_set(std::istr
 	input >> crad_strings.first >> crad_strings.second;
 	if(!input.fail() && !crad_strings.first.empty() && !crad_strings.second.empty())
 	{
-		const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> crads(auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.second));
-		if(crads.first.valid() && crads.second.valid())
+		std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> crads;
+		if(auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.first, crads.first).empty()
+				&& auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.second, crads.second).empty())
 		{
 			set_of_descriptors_pairs.insert(crads.first<crads.second ? crads : std::make_pair(crads.second, crads.first));
 			return true;
