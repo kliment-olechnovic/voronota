@@ -17,6 +17,7 @@ rn[ALA] rn[SER] 57.2098 6
 rn[ALA] rn[THR] 55.48 5
 rn[ALA] rn[TYR] 68.8503 8
 rn[ALA] rn[VAL] 28.5753 4
+rn[ALA] c[any] 1081.92 89
 rn[ALA] c[solvent] 146.419 8
 rn[ARG] rn[ARG] 1.09974 1
 rn[ARG] rn[ASN] 61.3679 3
@@ -37,6 +38,7 @@ rn[ARG] rn[SER] 34.6384 2
 rn[ARG] rn[THR] 158.957 7
 rn[ARG] rn[TYR] 52.6919 5
 rn[ARG] rn[VAL] 70.499 4
+rn[ARG] c[any] 1851.82 77
 rn[ARG] c[solvent] 687.796 7
 rn[ASN] rn[ASN] 47.2911 3
 rn[ASN] rn[ASP] 78.1793 9
@@ -55,6 +57,7 @@ rn[ASN] rn[SER] 52.6586 4
 rn[ASN] rn[THR] 39.9178 5
 rn[ASN] rn[TYR] 247.141 9
 rn[ASN] rn[VAL] 176.761 13
+rn[ASN] c[any] 2425.82 139
 rn[ASN] c[solvent] 658.85 13
 rn[ASP] rn[ASP] 33.1118 2
 rn[ASP] rn[CYS] 15.9568 2
@@ -73,6 +76,7 @@ rn[ASP] rn[THR] 45.148 5
 rn[ASP] rn[TRP] 20.1058 1
 rn[ASP] rn[TYR] 84.6482 4
 rn[ASP] rn[VAL] 60.3905 4
+rn[ASP] c[any] 3286.36 152
 rn[ASP] c[solvent] 1272.04 17
 rn[CRO] rn[GLN] 50.4357 3
 rn[CRO] rn[GLU] 28.9006 1
@@ -84,6 +88,7 @@ rn[CRO] rn[SER] 7.66474 1
 rn[CRO] rn[THR] 69.0203 3
 rn[CRO] rn[TYR] 13.8614 2
 rn[CRO] rn[VAL] 84.7474 6
+rn[CRO] c[any] 383.592 28
 rn[CRO] c[solvent] 5.37565 1
 rn[CYS] rn[GLN] 15.1323 1
 rn[CYS] rn[GLY] 23.9827 1
@@ -98,6 +103,7 @@ rn[CYS] rn[THR] 28.8755 2
 rn[CYS] rn[TRP] 10.3065 1
 rn[CYS] rn[TYR] 10.393 1
 rn[CYS] rn[VAL] 23.8383 3
+rn[CYS] c[any] 299.459 27
 rn[CYS] c[solvent] 4.19185 1
 rn[GLN] rn[GLN] 65.115 5
 rn[GLN] rn[GLU] 79.0061 4
@@ -110,6 +116,7 @@ rn[GLN] rn[SER] 67.7296 3
 rn[GLN] rn[THR] 38.7463 5
 rn[GLN] rn[TYR] 47.4463 4
 rn[GLN] rn[VAL] 132.727 11
+rn[GLN] c[any] 1315.52 86
 rn[GLN] c[solvent] 312.069 7
 rn[GLU] rn[GLU] 48.3802 2
 rn[GLU] rn[GLY] 196.097 16
@@ -124,6 +131,7 @@ rn[GLU] rn[SER] 82.7057 5
 rn[GLU] rn[THR] 99.851 8
 rn[GLU] rn[TYR] 28.3449 3
 rn[GLU] rn[VAL] 172.436 12
+rn[GLU] c[any] 3098.11 141
 rn[GLU] c[solvent] 1114.85 15
 rn[GLY] rn[GLY] 24.7372 4
 rn[GLY] rn[HIS] 54.7693 4
@@ -137,6 +145,7 @@ rn[GLY] rn[SER] 56.1406 5
 rn[GLY] rn[THR] 77.602 9
 rn[GLY] rn[TYR] 58.7992 4
 rn[GLY] rn[VAL] 132.112 12
+rn[GLY] c[any] 2319.5 176
 rn[GLY] c[solvent] 446.045 19
 rn[HIS] rn[HIS] 15.1626 3
 rn[HIS] rn[ILE] 195.291 11
@@ -150,6 +159,7 @@ rn[HIS] rn[THR] 52.0628 4
 rn[HIS] rn[TRP] 14.9351 1
 rn[HIS] rn[TYR] 111.347 8
 rn[HIS] rn[VAL] 54.3509 6
+rn[HIS] c[any] 1856.67 115
 rn[HIS] c[solvent] 346.667 9
 rn[ILE] rn[ILE] 14.0399 1
 rn[ILE] rn[LEU] 173.571 12
@@ -162,6 +172,7 @@ rn[ILE] rn[THR] 118.505 12
 rn[ILE] rn[TRP] 3.66562 1
 rn[ILE] rn[TYR] 97.0955 7
 rn[ILE] rn[VAL] 128.106 13
+rn[ILE] c[any] 2348.53 160
 rn[ILE] c[solvent] 294.641 12
 rn[LEU] rn[LEU] 171.526 13
 rn[LEU] rn[LYS] 258.763 14
@@ -173,6 +184,7 @@ rn[LEU] rn[THR] 213.968 16
 rn[LEU] rn[TRP] 47.2493 3
 rn[LEU] rn[TYR] 116.391 7
 rn[LEU] rn[VAL] 447.08 33
+rn[LEU] c[any] 3432.98 242
 rn[LEU] c[solvent] 439.461 16
 rn[LYS] rn[LYS] 31.0496 2
 rn[LYS] rn[MSE] 84.5046 7
@@ -183,6 +195,7 @@ rn[LYS] rn[THR] 85.2969 7
 rn[LYS] rn[TRP] 8.30722 1
 rn[LYS] rn[TYR] 109.106 8
 rn[LYS] rn[VAL] 98.6147 6
+rn[LYS] c[any] 4207.87 196
 rn[LYS] c[solvent] 1588.08 19
 rn[MSE] rn[PHE] 75.149 5
 rn[MSE] rn[PRO] 52.7954 4
@@ -190,6 +203,7 @@ rn[MSE] rn[SER] 4.34096 2
 rn[MSE] rn[TRP] 32.3156 1
 rn[MSE] rn[TYR] 54.3764 4
 rn[MSE] rn[VAL] 51.1196 3
+rn[MSE] c[any] 791.656 56
 rn[MSE] c[solvent] 86.6267 2
 rn[PHE] rn[PHE] 129.206 6
 rn[PHE] rn[PRO] 70.9291 4
@@ -198,6 +212,7 @@ rn[PHE] rn[THR] 136.884 12
 rn[PHE] rn[TRP] 21.1216 2
 rn[PHE] rn[TYR] 126.752 9
 rn[PHE] rn[VAL] 255.114 20
+rn[PHE] c[any] 2743.67 198
 rn[PHE] c[solvent] 224.563 11
 rn[PRO] rn[PRO] 11.4713 1
 rn[PRO] rn[SER] 6.39522 1
@@ -205,22 +220,30 @@ rn[PRO] rn[THR] 102.612 6
 rn[PRO] rn[TRP] 44.6839 2
 rn[PRO] rn[TYR] 59.2576 4
 rn[PRO] rn[VAL] 159.177 9
+rn[PRO] c[any] 1798.65 105
 rn[PRO] c[solvent] 465.306 10
 rn[SER] rn[SER] 16.1323 3
 rn[SER] rn[THR] 129.738 8
 rn[SER] rn[TYR] 76.1419 4
 rn[SER] rn[VAL] 174.632 10
+rn[SER] c[any] 1591.09 100
 rn[SER] c[solvent] 380.302 10
 rn[THR] rn[THR] 88.1885 6
 rn[THR] rn[TRP] 1.80963 1
 rn[THR] rn[TYR] 130.063 10
 rn[THR] rn[VAL] 136.697 12
+rn[THR] c[any] 2414.49 157
 rn[THR] c[solvent] 605.071 14
 rn[TRP] rn[TYR] 12.84 1
 rn[TRP] rn[VAL] 16.5808 3
+rn[TRP] c[any] 248.364 19
 rn[TRP] c[solvent] 14.4432 1
 rn[TYR] rn[TYR] 23.9778 1
 rn[TYR] rn[VAL] 152.2 12
+rn[TYR] c[any] 2213.88 122
 rn[TYR] c[solvent] 532.158 7
 rn[VAL] rn[VAL] 73.7848 7
+rn[VAL] c[any] 2906.62 219
 rn[VAL] c[solvent] 277.071 16
+c[any] c[any] 26668.6 1440
+c[any] c[solvent] 9902.02 215

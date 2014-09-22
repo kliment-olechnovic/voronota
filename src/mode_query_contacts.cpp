@@ -219,8 +219,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()))].add(it->second);
+			const std::pair<CRAD, CRAD> crads(it->first.first.without_numbering(), it->first.second.without_numbering());
+			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.first, crads.second))].add(it->second);
+			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.first, CRAD::any()))].add(it->second);
+			if(!(crads.first==crads.second))
+			{
+				map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.second, CRAD::any()))].add(it->second);
+			}
+			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(CRAD::any(), CRAD::any()))].add(it->second);
 		}
 		{
 			std::ofstream foutput(summary_file.c_str(), std::ios::out);
