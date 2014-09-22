@@ -15,6 +15,12 @@ struct ContactSummaryValue
 	{
 	}
 
+	void add(const ContactSummaryValue& v)
+	{
+		area+=v.area;
+		count+=v.count;
+	}
+
 	void add(const ContactValue& v)
 	{
 		area+=v.area;
@@ -37,7 +43,7 @@ inline bool add_contact_summary_record_from_stream_to_map(std::istream& input, s
 		const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
 		if(names.first.valid() && names.second.valid())
 		{
-			map_of_records[refine_pair_by_ordering(names)]=value;
+			map_of_records[refine_pair_by_ordering(names)].add(value);
 			return true;
 		}
 	}
