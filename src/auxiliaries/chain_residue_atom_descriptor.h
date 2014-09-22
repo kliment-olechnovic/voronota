@@ -26,15 +26,18 @@ public:
 	{
 	}
 
+	ChainResidueAtomDescriptor(const std::string& chainID) : serial(null_num()), chainID(chainID), resSeq(null_num())
+	{
+	}
+
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
 	}
 
-	static ChainResidueAtomDescriptor solvent()
+	static const ChainResidueAtomDescriptor& solvent()
 	{
-		ChainResidueAtomDescriptor v;
-		v.chainID="solvent";
+		static const ChainResidueAtomDescriptor v("solvent");
 		return v;
 	}
 
@@ -232,6 +235,21 @@ public:
 		v.altLoc.clear();
 		v.name.clear();
 		return v;
+	}
+
+	ChainResidueAtomDescriptor without_numbering() const
+	{
+		if((*this)==solvent())
+		{
+			return solvent();
+		}
+		else
+		{
+			ChainResidueAtomDescriptor v;
+			v.resName=resName;
+			v.name=name;
+			return v;
+		}
 	}
 
 	bool contains(const ChainResidueAtomDescriptor& v) const
