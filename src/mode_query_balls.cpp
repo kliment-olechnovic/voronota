@@ -54,7 +54,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector<CRAD>, list_of_balls);
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");

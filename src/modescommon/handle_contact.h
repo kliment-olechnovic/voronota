@@ -64,8 +64,7 @@ inline T refine_pair_by_ordering(const T& p)
 	return refine_pair(p, p.second<p.first);
 }
 
-template<typename T>
-inline void print_contact_record(const std::pair<T, T>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
+inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
 	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
 	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
@@ -79,8 +78,7 @@ inline void print_contact_record(const std::pair<T, T>& names, const ContactValu
 	output << "\n";
 }
 
-template<typename T>
-inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<T, T>, ContactValue >& map_of_records)
+inline bool add_contact_record_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> name_strings;
 	ContactValue value;
@@ -102,7 +100,7 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	}
 	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
 	{
-		const std::pair<T, T> names(T::from_str(name_strings.first), T::from_str(name_strings.second));
+		const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
 		if(names.first.valid() && names.second.valid())
 		{
 			map_of_records[refine_pair_by_ordering(names)]=value;
