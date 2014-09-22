@@ -56,6 +56,7 @@ rn[ALA]an[C] rn[TYR]an[CZ] 0.0140689 1
 rn[ALA]an[C] rn[TYR]an[N] 0.98493 1
 rn[ALA]an[C] rn[TYR]an[O] 0.400637 1
 rn[ALA]an[C] rn[VAL]an[CG1] 1.06198 1
+rn[ALA]an[C] c[any] 120.321 79
 rn[ALA]an[C] c[solvent] 1.18034 4
 rn[ALA]an[CA] rn[ALA]an[N] 2.41639 1
 rn[ALA]an[CA] rn[ALA]an[O] 4.00947 1
@@ -106,6 +107,7 @@ rn[ALA]an[CA] rn[TYR]an[CB] 0.116377 1
 rn[ALA]an[CA] rn[TYR]an[N] 0.306167 1
 rn[ALA]an[CA] rn[TYR]an[O] 3.05334 2
 rn[ALA]an[CA] rn[VAL]an[CG1] 5.23612 1
+rn[ALA]an[CA] c[any] 137.92 73
 rn[ALA]an[CA] c[solvent] 10.0912 4
 rn[ALA]an[CB] rn[ALA]an[N] 1.95753 1
 rn[ALA]an[CB] rn[ALA]an[O] 5.43751 1
@@ -185,6 +187,7 @@ rn[ALA]an[CB] rn[TYR]an[CZ] 5.06627 2
 rn[ALA]an[CB] rn[TYR]an[O] 1.95702 2
 rn[ALA]an[CB] rn[TYR]an[OH] 7.49596 1
 rn[ALA]an[CB] rn[VAL]an[CG1] 9.56895 2
+rn[ALA]an[CB] c[any] 444.451 129
 rn[ALA]an[CB] c[solvent] 106.231 7
 rn[ALA]an[N] rn[ARG]an[C] 7.16108 1
 rn[ALA]an[N] rn[ARG]an[CA] 2.93364 1
@@ -236,6 +239,7 @@ rn[ALA]an[N] rn[THR]an[O] 0.537865 1
 rn[ALA]an[N] rn[THR]an[OG1] 1.34849 1
 rn[ALA]an[N] rn[TYR]an[O] 6.45462 1
 rn[ALA]an[N] rn[VAL]an[CG1] 0.786579 2
+rn[ALA]an[N] c[any] 182.728 69
 rn[ALA]an[N] c[solvent] 2.0899 3
 rn[ALA]an[O] rn[ARG]an[CA] 5.66991 1
 rn[ALA]an[O] rn[ARG]an[CB] 2.42589 1
@@ -312,6 +316,7 @@ rn[ALA]an[O] rn[VAL]an[CB] 0.0762073 1
 rn[ALA]an[O] rn[VAL]an[CG1] 5.09088 2
 rn[ALA]an[O] rn[VAL]an[CG2] 1.43354 1
 rn[ALA]an[O] rn[VAL]an[O] 1.46968 1
+rn[ALA]an[O] c[any] 220.737 102
 rn[ALA]an[O] c[solvent] 26.8266 5
 rn[ARG]an[C] rn[ASN]an[C] 6.32285e-05 1
 rn[ARG]an[C] rn[ASN]an[N] 0.00296253 1
@@ -352,6 +357,7 @@ rn[ARG]an[C] rn[TYR]an[CD1] 1.59368 1
 rn[ARG]an[C] rn[TYR]an[N] 6.66159 1
 rn[ARG]an[C] rn[TYR]an[O] 0.0382986 1
 rn[ARG]an[C] rn[VAL]an[CG1] 0.549475 1
+rn[ARG]an[C] c[any] 101.246 55
 rn[ARG]an[C] c[solvent] 3.12461 4
 rn[ARG]an[CA] rn[ASN]an[C] 1.74057 1
 rn[ARG]an[CA] rn[ASN]an[O] 3.44502 1
@@ -389,6 +395,7 @@ rn[ARG]an[CA] rn[THR]an[OG1] 0.022208 1
 rn[ARG]an[CA] rn[TYR]an[N] 4.39345 1
 rn[ARG]an[CA] rn[TYR]an[O] 5.46523 1
 rn[ARG]an[CA] rn[VAL]an[CG1] 1.96064 1
+rn[ARG]an[CA] c[any] 115.123 52
 rn[ARG]an[CA] c[solvent] 12.1574 4
 rn[ARG]an[CB] rn[ASN]an[CB] 0.502594 1
 rn[ARG]an[CB] rn[ASN]an[ND2] 6.87006 2
@@ -425,6 +432,7 @@ rn[ARG]an[CB] rn[TYR]an[O] 2.32391 3
 rn[ARG]an[CB] rn[VAL]an[CG1] 5.88225 1
 rn[ARG]an[CB] rn[VAL]an[CG2] 2.81637 1
 rn[ARG]an[CB] rn[VAL]an[O] 2.05829 1
+rn[ARG]an[CB] c[any] 173.642 55
 rn[ARG]an[CB] c[solvent] 55.0466 5
 rn[ARG]an[CD] rn[CYS]an[O] 0.566206 1
 rn[ARG]an[CD] rn[GLN]an[CB] 2.45176 1
@@ -456,6 +464,7 @@ rn[ARG]an[CD] rn[TYR]an[CD1] 0.0794752 1
 rn[ARG]an[CD] rn[TYR]an[N] 1.3588 1
 rn[ARG]an[CD] rn[TYR]an[O] 1.28278 2
 rn[ARG]an[CD] rn[VAL]an[CG1] 9.188 1
+rn[ARG]an[CD] c[any] 256.357 41
 rn[ARG]an[CD] c[solvent] 168.669 6
 rn[ARG]an[CG] rn[ASN]an[C] 0.735659 1
 rn[ARG]an[CG] rn[ASN]an[O] 0.600322 1
@@ -501,6 +510,7 @@ rn[ARG]an[CG] rn[TYR]an[N] 3.51185 1
 rn[ARG]an[CG] rn[TYR]an[O] 6.23883 2
 rn[ARG]an[CG] rn[VAL]an[CG1] 19.6278 3
 rn[ARG]an[CG] rn[VAL]an[CG2] 0.0419239 1
+rn[ARG]an[CG] c[any] 178.158 67
 rn[ARG]an[CG] c[solvent] 39.8784 7
 rn[ARG]an[CZ] rn[ASN]an[CB] 1.35792 1
 rn[ARG]an[CZ] rn[ASN]an[ND2] 0.0959706 1
@@ -523,6 +533,7 @@ rn[ARG]an[CZ] rn[THR]an[CB] 3.35416 2
 rn[ARG]an[CZ] rn[THR]an[OG1] 0.364068 1
 rn[ARG]an[CZ] rn[VAL]an[CG1] 3.29657 1
 rn[ARG]an[CZ] rn[VAL]an[CG2] 0.319924 1
+rn[ARG]an[CZ] c[any] 57.2385 31
 rn[ARG]an[CZ] c[solvent] 26.1747 5
 rn[ARG]an[N] rn[ASN]an[C] 7.50436 1
 rn[ARG]an[N] rn[ASN]an[CA] 3.05227 1
@@ -565,6 +576,7 @@ rn[ARG]an[N] rn[THR]an[OG1] 2.7688 1
 rn[ARG]an[N] rn[VAL]an[C] 0.346104 1
 rn[ARG]an[N] rn[VAL]an[CG1] 1.13017 1
 rn[ARG]an[N] rn[VAL]an[O] 4.99111 2
+rn[ARG]an[N] c[any] 149.698 57
 rn[ARG]an[N] c[solvent] 3.03927 3
 rn[ARG]an[NE] rn[ASN]an[ND2] 1.14212 1
 rn[ARG]an[NE] rn[GLN]an[CB] 2.46215 1
@@ -588,6 +600,7 @@ rn[ARG]an[NE] rn[THR]an[CB] 2.58152 1
 rn[ARG]an[NE] rn[THR]an[CG2] 2.8936 1
 rn[ARG]an[NE] rn[TYR]an[CA] 0.0736193 1
 rn[ARG]an[NE] rn[TYR]an[O] 0.898626 1
+rn[ARG]an[NE] c[any] 79.4171 34
 rn[ARG]an[NE] c[solvent] 47.1463 5
 rn[ARG]an[NH1] rn[ASP]an[OD2] 4.8938 1
 rn[ARG]an[NH1] rn[CRO]an[C2] 0.0305442 1
@@ -622,6 +635,7 @@ rn[ARG]an[NH1] rn[TYR]an[C] 0.257904 1
 rn[ARG]an[NH1] rn[TYR]an[O] 0.762354 1
 rn[ARG]an[NH1] rn[VAL]an[CG1] 7.09642 1
 rn[ARG]an[NH1] rn[VAL]an[CG2] 1.38434 1
+rn[ARG]an[NH1] c[any] 248.419 43
 rn[ARG]an[NH1] c[solvent] 144.917 6
 rn[ARG]an[NH2] rn[ASN]an[CB] 8.57281 1
 rn[ARG]an[NH2] rn[ASN]an[CG] 4.58679 1
@@ -658,6 +672,7 @@ rn[ARG]an[NH2] rn[THR]an[CG2] 2.96639 1
 rn[ARG]an[NH2] rn[THR]an[O] 0.723152 1
 rn[ARG]an[NH2] rn[THR]an[OG1] 6.16141 1
 rn[ARG]an[NH2] rn[VAL]an[CG2] 9.80963 1
+rn[ARG]an[NH2] c[any] 303.716 47
 rn[ARG]an[NH2] c[solvent] 168.704 5
 rn[ARG]an[O] rn[ARG]an[O] 1.09974 1
 rn[ARG]an[O] rn[ASN]an[CB] 2.10637 1
@@ -704,6 +719,7 @@ rn[ARG]an[O] rn[THR]an[OG1] 2.59191 3
 rn[ARG]an[O] rn[TYR]an[CA] 3.19982 2
 rn[ARG]an[O] rn[TYR]an[CD1] 0.754699 1
 rn[ARG]an[O] rn[TYR]an[O] 0.979109 1
+rn[ARG]an[O] c[any] 188.803 76
 rn[ARG]an[O] c[solvent] 18.938 6
 rn[ASN]an[C] rn[ASP]an[C] 0.519587 1
 rn[ASN]an[C] rn[ASP]an[CG] 0.493357 1
@@ -771,6 +787,7 @@ rn[ASN]an[C] rn[VAL]an[CG1] 1.56204 2
 rn[ASN]an[C] rn[VAL]an[CG2] 2.60645 2
 rn[ASN]an[C] rn[VAL]an[N] 7.69898 1
 rn[ASN]an[C] rn[VAL]an[O] 1.85976 1
+rn[ASN]an[C] c[any] 190.422 102
 rn[ASN]an[C] c[solvent] 6.36953 4
 rn[ASN]an[CA] rn[ASP]an[C] 1.82686 1
 rn[ASN]an[CA] rn[ASP]an[O] 3.75092 2
@@ -831,6 +848,7 @@ rn[ASN]an[CA] rn[VAL]an[CG1] 0.000894704 1
 rn[ASN]an[CA] rn[VAL]an[CG2] 1.41873 2
 rn[ASN]an[CA] rn[VAL]an[N] 2.69063 1
 rn[ASN]an[CA] rn[VAL]an[O] 12.3856 4
+rn[ASN]an[CA] c[any] 197.357 93
 rn[ASN]an[CA] c[solvent] 21.6458 5
 rn[ASN]an[CB] rn[ASN]an[OD1] 5.01091 1
 rn[ASN]an[CB] rn[ASP]an[OD1] 7.66809 1
@@ -900,6 +918,7 @@ rn[ASN]an[CB] rn[VAL]an[CG1] 13.2972 3
 rn[ASN]an[CB] rn[VAL]an[CG2] 6.17882 1
 rn[ASN]an[CB] rn[VAL]an[N] 1.10614 1
 rn[ASN]an[CB] rn[VAL]an[O] 8.74493 3
+rn[ASN]an[CB] c[any] 382.709 113
 rn[ASN]an[CB] c[solvent] 124.278 10
 rn[ASN]an[CG] rn[ASN]an[CG] 0.0947929 1
 rn[ASN]an[CG] rn[ASN]an[ND2] 2.75735 2
@@ -959,6 +978,7 @@ rn[ASN]an[CG] rn[VAL]an[CB] 0.333866 1
 rn[ASN]an[CG] rn[VAL]an[CG1] 3.2332 4
 rn[ASN]an[CG] rn[VAL]an[CG2] 2.62118 1
 rn[ASN]an[CG] rn[VAL]an[O] 0.288165 1
+rn[ASN]an[CG] c[any] 167.818 89
 rn[ASN]an[CG] c[solvent] 87.1977 11
 rn[ASN]an[N] rn[ASN]an[ND2] 1.21764 1
 rn[ASN]an[N] rn[ASN]an[O] 0.640875 1
@@ -1023,6 +1043,7 @@ rn[ASN]an[N] rn[TYR]an[O] 5.91137 1
 rn[ASN]an[N] rn[VAL]an[C] 21.4968 3
 rn[ASN]an[N] rn[VAL]an[CA] 9.24601 3
 rn[ASN]an[N] rn[VAL]an[CG1] 8.19626 3
+rn[ASN]an[N] c[any] 286.358 104
 rn[ASN]an[N] c[solvent] 12.4807 8
 rn[ASN]an[ND2] rn[ASN]an[ND2] 10.0998 1
 rn[ASN]an[ND2] rn[ASN]an[OD1] 3.96787 4
@@ -1089,6 +1110,7 @@ rn[ASN]an[ND2] rn[VAL]an[CG1] 4.69498 4
 rn[ASN]an[ND2] rn[VAL]an[CG2] 18.9306 3
 rn[ASN]an[ND2] rn[VAL]an[N] 0.824193 1
 rn[ASN]an[ND2] rn[VAL]an[O] 0.397011 2
+rn[ASN]an[ND2] c[any] 489.462 122
 rn[ASN]an[ND2] c[solvent] 200.75 11
 rn[ASN]an[O] rn[ASN]an[OD1] 0.00177615 1
 rn[ASN]an[O] rn[ASP]an[C] 1.36382 1
@@ -1162,6 +1184,7 @@ rn[ASN]an[O] rn[VAL]an[CA] 6.21343 3
 rn[ASN]an[O] rn[VAL]an[CG1] 3.51385 4
 rn[ASN]an[O] rn[VAL]an[CG2] 4.29858 2
 rn[ASN]an[O] rn[VAL]an[O] 0.313026 1
+rn[ASN]an[O] c[any] 353.191 139
 rn[ASN]an[O] c[solvent] 61.6655 8
 rn[ASN]an[OD1] rn[ASN]an[OD1] 15.8969 3
 rn[ASN]an[OD1] rn[ASP]an[CA] 0.50316 2
@@ -1220,6 +1243,7 @@ rn[ASN]an[OD1] rn[VAL]an[CB] 0.556938 1
 rn[ASN]an[OD1] rn[VAL]an[CG1] 6.8777 2
 rn[ASN]an[OD1] rn[VAL]an[CG2] 6.64485 2
 rn[ASN]an[OD1] rn[VAL]an[O] 0.0963046 1
+rn[ASN]an[OD1] c[any] 379.707 108
 rn[ASN]an[OD1] c[solvent] 144.463 11
 rn[ASP]an[C] rn[ASP]an[CA] 2.46464 1
 rn[ASP]an[C] rn[ASP]an[CB] 1.36913 1
@@ -1278,6 +1302,7 @@ rn[ASP]an[C] rn[TYR]an[CE2] 0.603056 1
 rn[ASP]an[C] rn[VAL]an[CA] 1.75309 1
 rn[ASP]an[C] rn[VAL]an[CG2] 2.03562 1
 rn[ASP]an[C] rn[VAL]an[N] 6.43389 1
+rn[ASP]an[C] c[any] 240.344 124
 rn[ASP]an[C] c[solvent] 8.44499 7
 rn[ASP]an[CA] rn[ASP]an[N] 3.38393 1
 rn[ASP]an[CA] rn[ASP]an[O] 3.26562 2
@@ -1327,6 +1352,7 @@ rn[ASP]an[CA] rn[TYR]an[OH] 0.774107 1
 rn[ASP]an[CA] rn[VAL]an[CA] 0.909805 1
 rn[ASP]an[CA] rn[VAL]an[CG2] 1.17388 1
 rn[ASP]an[CA] rn[VAL]an[N] 2.92128 1
+rn[ASP]an[CA] c[any] 271.409 114
 rn[ASP]an[CA] c[solvent] 57.4336 11
 rn[ASP]an[CB] rn[ASP]an[O] 4.76896 2
 rn[ASP]an[CB] rn[CYS]an[CB] 5.16101 1
@@ -1389,6 +1415,7 @@ rn[ASP]an[CB] rn[VAL]an[CA] 1.6691 1
 rn[ASP]an[CB] rn[VAL]an[CB] 0.0710554 1
 rn[ASP]an[CB] rn[VAL]an[CG1] 4.21509 1
 rn[ASP]an[CB] rn[VAL]an[CG2] 10.5191 2
+rn[ASP]an[CB] c[any] 539.171 132
 rn[ASP]an[CB] c[solvent] 271.187 17
 rn[ASP]an[CG] rn[ASP]an[O] 0.966375 1
 rn[ASP]an[CG] rn[CYS]an[CB] 0.165631 1
@@ -1438,6 +1465,7 @@ rn[ASP]an[CG] rn[TYR]an[OH] 2.81884 1
 rn[ASP]an[CG] rn[VAL]an[CA] 0.644222 1
 rn[ASP]an[CG] rn[VAL]an[CG2] 3.53584 1
 rn[ASP]an[CG] rn[VAL]an[N] 0.578455 1
+rn[ASP]an[CG] c[any] 159.045 90
 rn[ASP]an[CG] c[solvent] 63.7317 15
 rn[ASP]an[N] rn[ASP]an[N] 2.6424 1
 rn[ASP]an[N] rn[ASP]an[O] 0.00917308 1
@@ -1500,6 +1528,7 @@ rn[ASP]an[N] rn[TYR]an[CD2] 0.914547 1
 rn[ASP]an[N] rn[TYR]an[CE2] 0.49971 1
 rn[ASP]an[N] rn[TYR]an[O] 1.50896 1
 rn[ASP]an[N] rn[VAL]an[CG2] 3.21963 2
+rn[ASP]an[N] c[any] 397.467 136
 rn[ASP]an[N] c[solvent] 32.9409 12
 rn[ASP]an[O] rn[ASP]an[O] 1.01374 1
 rn[ASP]an[O] rn[ASP]an[OD1] 0.984708 1
@@ -1578,6 +1607,7 @@ rn[ASP]an[O] rn[TYR]an[N] 3.51009 2
 rn[ASP]an[O] rn[VAL]an[CA] 2.59199 1
 rn[ASP]an[O] rn[VAL]an[CG1] 4.82492 1
 rn[ASP]an[O] rn[VAL]an[CG2] 1.65567 2
+rn[ASP]an[O] c[any] 468.709 172
 rn[ASP]an[O] c[solvent] 119.419 11
 rn[ASP]an[OD1] rn[CYS]an[CA] 0.339138 1
 rn[ASP]an[OD1] rn[GLN]an[CA] 2.71947 1
@@ -1637,6 +1667,7 @@ rn[ASP]an[OD1] rn[VAL]an[C] 0.606714 1
 rn[ASP]an[OD1] rn[VAL]an[CA] 0.220217 2
 rn[ASP]an[OD1] rn[VAL]an[CG2] 0.048085 1
 rn[ASP]an[OD1] rn[VAL]an[N] 2.93598 2
+rn[ASP]an[OD1] c[any] 549.862 130
 rn[ASP]an[OD1] c[solvent] 274.875 14
 rn[ASP]an[OD2] rn[CYS]an[CB] 0.143381 1
 rn[ASP]an[OD2] rn[GLN]an[CB] 1.79866 1
@@ -1686,6 +1717,7 @@ rn[ASP]an[OD2] rn[TYR]an[CE1] 0.036045 1
 rn[ASP]an[OD2] rn[TYR]an[CE2] 8.70413 1
 rn[ASP]an[OD2] rn[TYR]an[CG] 0.225283 1
 rn[ASP]an[OD2] rn[VAL]an[CG2] 7.82691 1
+rn[ASP]an[OD2] c[any] 689.804 106
 rn[ASP]an[OD2] c[solvent] 444.011 17
 rn[CRO]an[C1] rn[GLN]an[CG] 0.266365 1
 rn[CRO]an[C1] rn[GLU]an[OE2] 0.125334 1
@@ -1696,12 +1728,14 @@ rn[CRO]an[C1] rn[THR]an[O] 1.30357 1
 rn[CRO]an[C1] rn[VAL]an[CG2] 0.00869964 1
 rn[CRO]an[C1] rn[VAL]an[N] 3.57463 1
 rn[CRO]an[C1] rn[VAL]an[O] 0.708493 1
+rn[CRO]an[C1] c[any] 7.79559 10
 rn[CRO]an[C1] c[solvent] 0.929811 1
 rn[CRO]an[C2] rn[GLN]an[CD] 0.0953981 1
 rn[CRO]an[C2] rn[GLN]an[CG] 3.07022 1
 rn[CRO]an[C2] rn[GLN]an[NE2] 0.333966 1
 rn[CRO]an[C2] rn[THR]an[O] 4.61554 1
 rn[CRO]an[C2] rn[VAL]an[N] 0.461772 1
+rn[CRO]an[C2] c[any] 9.78241 7
 rn[CRO]an[C3] rn[GLN]an[CG] 0.45587 1
 rn[CRO]an[C3] rn[GLN]an[N] 2.1328 1
 rn[CRO]an[C3] rn[GLN]an[NE2] 0.535649 1
@@ -1710,17 +1744,20 @@ rn[CRO]an[C3] rn[PHE]an[O] 0.797932 1
 rn[CRO]an[C3] rn[VAL]an[CA] 1.86445 1
 rn[CRO]an[C3] rn[VAL]an[CG1] 2.49535 1
 rn[CRO]an[C3] rn[VAL]an[N] 7.855 1
+rn[CRO]an[C3] c[any] 18.3516 9
 rn[CRO]an[CA1] rn[PHE]an[C] 1.34234 1
 rn[CRO]an[CA1] rn[PHE]an[O] 2.71089 1
 rn[CRO]an[CA1] rn[VAL]an[CG2] 2.68325 1
 rn[CRO]an[CA1] rn[VAL]an[N] 2.47562 1
 rn[CRO]an[CA1] rn[VAL]an[O] 0.0156575 1
+rn[CRO]an[CA1] c[any] 9.22776 5
 rn[CRO]an[CA2] rn[GLN]an[CG] 2.52401 1
 rn[CRO]an[CA2] rn[GLU]an[OE2] 0.138802 1
 rn[CRO]an[CA2] rn[THR]an[C] 0.0543141 1
 rn[CRO]an[CA2] rn[THR]an[CA] 2.05431 1
 rn[CRO]an[CA2] rn[THR]an[CB] 0.0206832 1
 rn[CRO]an[CA2] rn[THR]an[O] 1.83967 1
+rn[CRO]an[CA2] c[any] 7.17714 8
 rn[CRO]an[CA2] c[solvent] 0.497218 1
 rn[CRO]an[CA3] rn[GLN]an[NE2] 5.35377 1
 rn[CRO]an[CA3] rn[PHE]an[C] 1.82633 1
@@ -1728,6 +1765,7 @@ rn[CRO]an[CA3] rn[PHE]an[O] 1.41146 1
 rn[CRO]an[CA3] rn[THR]an[C] 0.559989 1
 rn[CRO]an[CA3] rn[THR]an[O] 8.96857 2
 rn[CRO]an[CA3] rn[VAL]an[N] 0.579167 1
+rn[CRO]an[CA3] c[any] 21.465 9
 rn[CRO]an[CA3] c[solvent] 0.274809 1
 rn[CRO]an[CB1] rn[GLU]an[CD] 0.868322 1
 rn[CRO]an[CB1] rn[GLU]an[OE1] 0.773341 1
@@ -1735,6 +1773,7 @@ rn[CRO]an[CB1] rn[GLU]an[OE2] 2.69685 1
 rn[CRO]an[CB1] rn[LEU]an[CD1] 5.44538 1
 rn[CRO]an[CB1] rn[VAL]an[CG2] 1.90362 1
 rn[CRO]an[CB1] rn[VAL]an[N] 0.000759403 1
+rn[CRO]an[CB1] c[any] 11.6883 6
 rn[CRO]an[CB2] rn[GLN]an[CD] 0.145611 1
 rn[CRO]an[CB2] rn[GLN]an[CG] 2.35819 1
 rn[CRO]an[CB2] rn[GLN]an[NE2] 7.39355 1
@@ -1743,6 +1782,7 @@ rn[CRO]an[CB2] rn[PHE]an[CZ] 1.48281 1
 rn[CRO]an[CB2] rn[THR]an[CA] 0.485839 1
 rn[CRO]an[CB2] rn[THR]an[CB] 2.4015 1
 rn[CRO]an[CB2] rn[THR]an[O] 0.0369114 1
+rn[CRO]an[CB2] c[any] 20.2228 10
 rn[CRO]an[CB2] c[solvent] 1.34336 1
 rn[CRO]an[CD1] rn[GLU]an[CD] 0.592605 1
 rn[CRO]an[CD1] rn[GLU]an[OE1] 0.452476 1
@@ -1753,6 +1793,7 @@ rn[CRO]an[CD1] rn[VAL]an[C] 0.0317314 1
 rn[CRO]an[CD1] rn[VAL]an[CG1] 3.11509 1
 rn[CRO]an[CD1] rn[VAL]an[CG2] 0.0916916 1
 rn[CRO]an[CD1] rn[VAL]an[O] 0.172966 1
+rn[CRO]an[CD1] c[any] 16.422 11
 rn[CRO]an[CD1] c[solvent] 0.053012 1
 rn[CRO]an[CD2] rn[GLN]an[NE2] 2.35608 1
 rn[CRO]an[CD2] rn[PHE]an[CE1] 0.0515106 1
@@ -1761,6 +1802,7 @@ rn[CRO]an[CD2] rn[PHE]an[CZ] 4.67035 1
 rn[CRO]an[CD2] rn[THR]an[CB] 0.0387828 1
 rn[CRO]an[CD2] rn[THR]an[CG2] 5.29745 2
 rn[CRO]an[CD2] rn[VAL]an[CG2] 6.77874 1
+rn[CRO]an[CD2] c[any] 22.3936 9
 rn[CRO]an[CD2] c[solvent] 0.0436075 1
 rn[CRO]an[CE1] rn[GLU]an[CD] 3.23384 1
 rn[CRO]an[CE1] rn[GLU]an[CG] 0.120182 1
@@ -1773,6 +1815,7 @@ rn[CRO]an[CE1] rn[TYR]an[CE2] 3.47242 1
 rn[CRO]an[CE1] rn[TYR]an[CZ] 0.0207634 1
 rn[CRO]an[CE1] rn[TYR]an[OH] 0.615962 1
 rn[CRO]an[CE1] rn[VAL]an[CG1] 4.99873 1
+rn[CRO]an[CE1] c[any] 26.805 12
 rn[CRO]an[CE2] rn[HIS]an[CB] 3.77644 1
 rn[CRO]an[CE2] rn[HIS]an[CG] 0.000276523 1
 rn[CRO]an[CE2] rn[ILE]an[CD1] 4.96908 1
@@ -1781,6 +1824,7 @@ rn[CRO]an[CE2] rn[PHE]an[CE2] 1.91556 1
 rn[CRO]an[CE2] rn[THR]an[CG2] 4.96469 2
 rn[CRO]an[CE2] rn[THR]an[OG1] 1.00655 1
 rn[CRO]an[CE2] rn[VAL]an[CG2] 5.37185 1
+rn[CRO]an[CE2] c[any] 23.2693 9
 rn[CRO]an[CG1] rn[GLU]an[OE1] 0.771065 1
 rn[CRO]an[CG1] rn[LEU]an[CB] 1.32164 1
 rn[CRO]an[CG1] rn[LEU]an[CD1] 5.94227 1
@@ -1791,12 +1835,14 @@ rn[CRO]an[CG1] rn[PHE]an[CB] 3.46716 1
 rn[CRO]an[CG1] rn[PHE]an[CZ] 5.0792 1
 rn[CRO]an[CG1] rn[PHE]an[O] 3.69925 1
 rn[CRO]an[CG1] rn[VAL]an[CG2] 7.45345 2
+rn[CRO]an[CG1] c[any] 49.5587 14
 rn[CRO]an[CG1] c[solvent] 0.178809 1
 rn[CRO]an[CG2] rn[GLN]an[NE2] 0.0174768 1
 rn[CRO]an[CG2] rn[GLU]an[OE2] 0.000316938 1
 rn[CRO]an[CG2] rn[THR]an[CA] 0.493101 1
 rn[CRO]an[CG2] rn[THR]an[CB] 0.390386 1
 rn[CRO]an[CG2] rn[THR]an[CG2] 4.07406 2
+rn[CRO]an[CG2] c[any] 5.77385 7
 rn[CRO]an[CG2] c[solvent] 0.798506 1
 rn[CRO]an[CZ] rn[ILE]an[CD1] 1.85669 1
 rn[CRO]an[CZ] rn[THR]an[CB] 2.14423 1
@@ -1804,6 +1850,7 @@ rn[CRO]an[CZ] rn[THR]an[CG2] 2.74746 2
 rn[CRO]an[CZ] rn[THR]an[OG1] 0.42247 1
 rn[CRO]an[CZ] rn[TYR]an[CE2] 1.16165 1
 rn[CRO]an[CZ] rn[TYR]an[OH] 0.385593 1
+rn[CRO]an[CZ] c[any] 8.71809 7
 rn[CRO]an[N1] rn[PHE]an[C] 6.00584 1
 rn[CRO]an[N1] rn[PHE]an[CA] 0.694914 1
 rn[CRO]an[N1] rn[PHE]an[CB] 1.74205 1
@@ -1811,18 +1858,22 @@ rn[CRO]an[N1] rn[PHE]an[N] 1.38129 1
 rn[CRO]an[N1] rn[THR]an[C] 1.47774 2
 rn[CRO]an[N1] rn[THR]an[O] 0.140956 1
 rn[CRO]an[N1] rn[VAL]an[O] 4.25737 1
+rn[CRO]an[N1] c[any] 15.7002 8
 rn[CRO]an[N2] rn[GLU]an[OE2] 3.80113 1
 rn[CRO]an[N2] rn[THR]an[C] 0.0836182 1
 rn[CRO]an[N2] rn[THR]an[CA] 1.60492 1
 rn[CRO]an[N2] rn[THR]an[O] 0.000285779 1
 rn[CRO]an[N2] rn[VAL]an[O] 1.27766 1
+rn[CRO]an[N2] c[any] 7.2211 6
 rn[CRO]an[N2] c[solvent] 0.453489 1
 rn[CRO]an[N3] rn[THR]an[O] 0.451506 1
 rn[CRO]an[N3] rn[VAL]an[N] 1.85558 1
+rn[CRO]an[N3] c[any] 2.30709 2
 rn[CRO]an[O2] rn[GLN]an[CD] 4.42169 1
 rn[CRO]an[O2] rn[GLN]an[CG] 1.53103 1
 rn[CRO]an[O2] rn[GLN]an[NE2] 6.53021 2
 rn[CRO]an[O2] rn[GLN]an[OE1] 2.18196 2
+rn[CRO]an[O2] c[any] 20.4269 8
 rn[CRO]an[O3] rn[GLN]an[CB] 0.00540568 1
 rn[CRO]an[O3] rn[GLN]an[CD] 1.89727 1
 rn[CRO]an[O3] rn[GLN]an[N] 0.387824 1
@@ -1833,6 +1884,7 @@ rn[CRO]an[O3] rn[TYR]an[OH] 2.26076 1
 rn[CRO]an[O3] rn[VAL]an[CA] 3.73159 1
 rn[CRO]an[O3] rn[VAL]an[CG1] 11.5773 2
 rn[CRO]an[O3] rn[VAL]an[CG2] 0.0654901 1
+rn[CRO]an[O3] c[any] 32.2924 15
 rn[CRO]an[O3] c[solvent] 0.803031 1
 rn[CRO]an[OG1] rn[GLU]an[CD] 0.416858 1
 rn[CRO]an[OG1] rn[GLU]an[OE1] 5.12589 1
@@ -1841,6 +1893,7 @@ rn[CRO]an[OG1] rn[LEU]an[CD2] 3.10996 1
 rn[CRO]an[OG1] rn[PHE]an[CB] 0.0393524 1
 rn[CRO]an[OG1] rn[VAL]an[CG1] 4.43709 1
 rn[CRO]an[OG1] rn[VAL]an[O] 4.90464 1
+rn[CRO]an[OG1] c[any] 19.1896 7
 rn[CRO]an[OH] rn[GLN]an[CA] 0.0611568 1
 rn[CRO]an[OH] rn[HIS]an[CB] 1.30536 1
 rn[CRO]an[OH] rn[HIS]an[CG] 0.0127054 1
@@ -1851,6 +1904,7 @@ rn[CRO]an[OH] rn[THR]an[CB] 2.60015 1
 rn[CRO]an[OH] rn[THR]an[OG1] 5.62888 1
 rn[CRO]an[OH] rn[TYR]an[CD2] 0.462693 1
 rn[CRO]an[OH] rn[TYR]an[CE2] 5.06708 1
+rn[CRO]an[OH] c[any] 27.804 11
 rn[CYS]an[C] rn[GLN]an[C] 0.0505529 1
 rn[CYS]an[C] rn[GLN]an[O] 1.40738 1
 rn[CYS]an[C] rn[GLY]an[N] 0.420813 1
@@ -1869,6 +1923,7 @@ rn[CYS]an[C] rn[THR]an[C] 0.14776 1
 rn[CYS]an[C] rn[THR]an[CA] 1.94163 1
 rn[CYS]an[C] rn[THR]an[CG2] 0.0840194 1
 rn[CYS]an[C] rn[THR]an[N] 7.81807 2
+rn[CYS]an[C] c[any] 27.4704 19
 rn[CYS]an[CA] rn[GLN]an[C] 1.25638 1
 rn[CYS]an[CA] rn[GLN]an[O] 3.23933 1
 rn[CYS]an[CA] rn[ILE]an[C] 1.81664 1
@@ -1884,6 +1939,7 @@ rn[CYS]an[CA] rn[TRP]an[CH2] 1.05906 1
 rn[CYS]an[CA] rn[VAL]an[CA] 0.789915 1
 rn[CYS]an[CA] rn[VAL]an[CG1] 0.0297067 1
 rn[CYS]an[CA] rn[VAL]an[CG2] 3.49663 1
+rn[CYS]an[CA] c[any] 29.6161 16
 rn[CYS]an[CB] rn[GLY]an[O] 4.83868 1
 rn[CYS]an[CB] rn[LEU]an[CA] 0.0142719 1
 rn[CYS]an[CB] rn[LEU]an[CB] 2.82264 1
@@ -1906,6 +1962,7 @@ rn[CYS]an[CB] rn[TRP]an[CZ2] 4.18069 1
 rn[CYS]an[CB] rn[TYR]an[CE2] 2.31115 1
 rn[CYS]an[CB] rn[TYR]an[OH] 1.31752 1
 rn[CYS]an[CB] rn[VAL]an[CG2] 1.39844 1
+rn[CYS]an[CB] c[any] 53.9239 26
 rn[CYS]an[N] rn[GLN]an[C] 6.33352 1
 rn[CYS]an[N] rn[GLN]an[CA] 1.43005 1
 rn[CYS]an[N] rn[GLN]an[N] 1.41509 1
@@ -1920,6 +1977,7 @@ rn[CYS]an[N] rn[TRP]an[CZ2] 0.814608 1
 rn[CYS]an[N] rn[TYR]an[OH] 3.00304 1
 rn[CYS]an[N] rn[VAL]an[C] 1.76106 1
 rn[CYS]an[N] rn[VAL]an[O] 1.20554 1
+rn[CYS]an[N] c[any] 39.2615 15
 rn[CYS]an[O] rn[GLY]an[CA] 2.75561 1
 rn[CYS]an[O] rn[GLY]an[N] 3.42209 1
 rn[CYS]an[O] rn[GLY]an[O] 3.97522 1
@@ -1937,6 +1995,7 @@ rn[CYS]an[O] rn[SER]an[N] 0.593816 1
 rn[CYS]an[O] rn[THR]an[C] 1.47043 1
 rn[CYS]an[O] rn[THR]an[CA] 5.42002 1
 rn[CYS]an[O] rn[THR]an[O] 0.110932 1
+rn[CYS]an[O] c[any] 57.3223 26
 rn[CYS]an[O] c[solvent] 4.19185 1
 rn[CYS]an[SG] rn[GLY]an[C] 2.66255 1
 rn[CYS]an[SG] rn[GLY]an[N] 3.11594 1
@@ -1971,6 +2030,7 @@ rn[CYS]an[SG] rn[VAL]an[CA] 1.55944 1
 rn[CYS]an[SG] rn[VAL]an[CB] 3.66775 1
 rn[CYS]an[SG] rn[VAL]an[CG2] 7.26268 2
 rn[CYS]an[SG] rn[VAL]an[O] 1.10014 1
+rn[CYS]an[SG] c[any] 91.8646 37
 rn[GLN]an[C] rn[GLN]an[CA] 1.85336 1
 rn[GLN]an[C] rn[GLN]an[CG] 4.43222 2
 rn[GLN]an[C] rn[GLN]an[N] 6.95336 1
@@ -1998,6 +2058,7 @@ rn[GLN]an[C] rn[THR]an[CG2] 0.30138 1
 rn[GLN]an[C] rn[THR]an[OG1] 0.0043049 1
 rn[GLN]an[C] rn[VAL]an[CG1] 3.75185 2
 rn[GLN]an[C] rn[VAL]an[O] 0.484141 1
+rn[GLN]an[C] c[any] 97.4086 44
 rn[GLN]an[C] c[solvent] 3.6219 3
 rn[GLN]an[CA] rn[GLN]an[CG] 1.39287 2
 rn[GLN]an[CA] rn[GLN]an[N] 3.20711 1
@@ -2033,6 +2094,7 @@ rn[GLN]an[CA] rn[VAL]an[C] 6.72817 3
 rn[GLN]an[CA] rn[VAL]an[CG1] 0.120764 2
 rn[GLN]an[CA] rn[VAL]an[CG2] 0.15079 1
 rn[GLN]an[CA] rn[VAL]an[O] 13.8727 4
+rn[GLN]an[CA] c[any] 152.603 65
 rn[GLN]an[CA] c[solvent] 42.4609 4
 rn[GLN]an[CB] rn[GLN]an[OE1] 0.574789 1
 rn[GLN]an[CB] rn[GLU]an[CB] 3.81484 1
@@ -2072,6 +2134,7 @@ rn[GLN]an[CB] rn[VAL]an[C] 0.011359 1
 rn[GLN]an[CB] rn[VAL]an[CB] 3.21245 1
 rn[GLN]an[CB] rn[VAL]an[CG1] 7.1347 2
 rn[GLN]an[CB] rn[VAL]an[O] 3.85014 1
+rn[GLN]an[CB] c[any] 147.256 61
 rn[GLN]an[CB] c[solvent] 13.0991 3
 rn[GLN]an[CD] rn[GLN]an[CD] 2.21408 1
 rn[GLN]an[CD] rn[GLN]an[CG] 0.624421 1
@@ -2090,6 +2153,7 @@ rn[GLN]an[CD] rn[PHE]an[CZ] 2.59886 1
 rn[GLN]an[CD] rn[VAL]an[CB] 2.93091 1
 rn[GLN]an[CD] rn[VAL]an[CG1] 1.73187 3
 rn[GLN]an[CD] rn[VAL]an[CG2] 0.498126 2
+rn[GLN]an[CD] c[any] 54.5664 45
 rn[GLN]an[CD] c[solvent] 13.0562 5
 rn[GLN]an[CG] rn[GLN]an[CG] 3.74332 1
 rn[GLN]an[CG] rn[GLN]an[N] 3.42716 2
@@ -2126,6 +2190,7 @@ rn[GLN]an[CG] rn[VAL]an[CB] 2.20391 1
 rn[GLN]an[CG] rn[VAL]an[CG1] 0.76285 1
 rn[GLN]an[CG] rn[VAL]an[CG2] 1.6274 1
 rn[GLN]an[CG] rn[VAL]an[N] 0.724175 1
+rn[GLN]an[CG] c[any] 127.521 70
 rn[GLN]an[CG] c[solvent] 18.9981 4
 rn[GLN]an[N] rn[GLN]an[OE1] 0.367147 1
 rn[GLN]an[N] rn[GLU]an[CB] 2.28672e-06 1
@@ -2157,6 +2222,7 @@ rn[GLN]an[N] rn[VAL]an[CG1] 6.55894 3
 rn[GLN]an[N] rn[VAL]an[CG2] 0.00788876 1
 rn[GLN]an[N] rn[VAL]an[N] 2.61831 1
 rn[GLN]an[N] rn[VAL]an[O] 7.00213 1
+rn[GLN]an[N] c[any] 163.422 53
 rn[GLN]an[N] c[solvent] 9.09237 4
 rn[GLN]an[NE2] rn[GLN]an[NE2] 0.351879 2
 rn[GLN]an[NE2] rn[GLN]an[OE1] 13.727 4
@@ -2184,6 +2250,7 @@ rn[GLN]an[NE2] rn[THR]an[O] 1.97923 2
 rn[GLN]an[NE2] rn[VAL]an[CB] 0.0180757 1
 rn[GLN]an[NE2] rn[VAL]an[CG1] 11.7811 3
 rn[GLN]an[NE2] rn[VAL]an[CG2] 8.00899 2
+rn[GLN]an[NE2] c[any] 242.865 67
 rn[GLN]an[NE2] c[solvent] 100.034 5
 rn[GLN]an[O] rn[GLU]an[CA] 8.85786 3
 rn[GLN]an[O] rn[GLU]an[CB] 2.11943 2
@@ -2228,6 +2295,7 @@ rn[GLN]an[O] rn[VAL]an[CG1] 1.4563 3
 rn[GLN]an[O] rn[VAL]an[CG2] 0.369776 1
 rn[GLN]an[O] rn[VAL]an[N] 6.62654 1
 rn[GLN]an[O] rn[VAL]an[O] 4.21821 2
+rn[GLN]an[O] c[any] 194.365 85
 rn[GLN]an[O] c[solvent] 39.9459 5
 rn[GLN]an[OE1] rn[GLN]an[OE1] 5.69968 2
 rn[GLN]an[OE1] rn[GLU]an[CB] 1.25283 1
@@ -2246,6 +2314,7 @@ rn[GLN]an[OE1] rn[TYR]an[OH] 1.90142 1
 rn[GLN]an[OE1] rn[VAL]an[CB] 0.0397936 1
 rn[GLN]an[OE1] rn[VAL]an[CG1] 4.72561 3
 rn[GLN]an[OE1] rn[VAL]an[CG2] 0.29033 1
+rn[GLN]an[OE1] c[any] 188.62 50
 rn[GLN]an[OE1] c[solvent] 71.7605 3
 rn[GLU]an[C] rn[GLU]an[C] 0.0713572 1
 rn[GLU]an[C] rn[GLU]an[CA] 2.29626 1
@@ -2293,6 +2362,7 @@ rn[GLU]an[C] rn[VAL]an[CB] 0.217138 1
 rn[GLU]an[C] rn[VAL]an[CG1] 3.63076 2
 rn[GLU]an[C] rn[VAL]an[CG2] 0.384873 1
 rn[GLU]an[C] rn[VAL]an[N] 7.3427 1
+rn[GLU]an[C] c[any] 210.944 112
 rn[GLU]an[C] c[solvent] 4.61031 10
 rn[GLU]an[CA] rn[GLU]an[CB] 1.35039 1
 rn[GLU]an[CA] rn[GLU]an[CG] 5.50751 1
@@ -2342,6 +2412,7 @@ rn[GLU]an[CA] rn[VAL]an[CG1] 0.495344 2
 rn[GLU]an[CA] rn[VAL]an[CG2] 0.141102 1
 rn[GLU]an[CA] rn[VAL]an[N] 3.68983 1
 rn[GLU]an[CA] rn[VAL]an[O] 9.13114 3
+rn[GLU]an[CA] c[any] 230.654 103
 rn[GLU]an[CA] c[solvent] 22.3941 8
 rn[GLU]an[CB] rn[GLU]an[CG] 6.11381 2
 rn[GLU]an[CB] rn[GLU]an[N] 6.52109 2
@@ -2387,6 +2458,7 @@ rn[GLU]an[CB] rn[VAL]an[CG1] 9.1737 2
 rn[GLU]an[CB] rn[VAL]an[CG2] 7.51372 1
 rn[GLU]an[CB] rn[VAL]an[N] 0.757066 1
 rn[GLU]an[CB] rn[VAL]an[O] 2.65701 1
+rn[GLU]an[CB] c[any] 454.259 121
 rn[GLU]an[CB] c[solvent] 217.001 14
 rn[GLU]an[CD] rn[GLY]an[CA] 2.26669 2
 rn[GLU]an[CD] rn[GLY]an[N] 0.481151 1
@@ -2412,6 +2484,7 @@ rn[GLU]an[CD] rn[SER]an[OG] 3.37002 2
 rn[GLU]an[CD] rn[THR]an[CB] 0.0187106 1
 rn[GLU]an[CD] rn[VAL]an[CG1] 3.85575 2
 rn[GLU]an[CD] rn[VAL]an[O] 1.39781 2
+rn[GLU]an[CD] c[any] 121.268 63
 rn[GLU]an[CD] c[solvent] 55.5894 11
 rn[GLU]an[CG] rn[GLU]an[N] 1.71859 2
 rn[GLU]an[CG] rn[GLY]an[C] 5.37432 4
@@ -2463,6 +2536,7 @@ rn[GLU]an[CG] rn[VAL]an[CG1] 15.2515 4
 rn[GLU]an[CG] rn[VAL]an[CG2] 24.0183 3
 rn[GLU]an[CG] rn[VAL]an[N] 0.00997141 1
 rn[GLU]an[CG] rn[VAL]an[O] 1.39287 1
+rn[GLU]an[CG] c[any] 456.587 136
 rn[GLU]an[CG] c[solvent] 163.198 12
 rn[GLU]an[N] rn[GLU]an[N] 2.73955 2
 rn[GLU]an[N] rn[GLU]an[OE2] 0.0700954 1
@@ -2515,6 +2589,7 @@ rn[GLU]an[N] rn[VAL]an[CB] 0.0246817 1
 rn[GLU]an[N] rn[VAL]an[CG1] 3.95315 4
 rn[GLU]an[N] rn[VAL]an[CG2] 1.52927 1
 rn[GLU]an[N] rn[VAL]an[O] 0.0324257 1
+rn[GLU]an[N] c[any] 315.379 128
 rn[GLU]an[N] c[solvent] 7.21081 6
 rn[GLU]an[O] rn[GLU]an[OE2] 4.56608 1
 rn[GLU]an[O] rn[GLY]an[C] 1.0039 2
@@ -2574,6 +2649,7 @@ rn[GLU]an[O] rn[VAL]an[CB] 0.64156 2
 rn[GLU]an[O] rn[VAL]an[CG1] 0.800557 2
 rn[GLU]an[O] rn[VAL]an[CG2] 0.0120143 1
 rn[GLU]an[O] rn[VAL]an[O] 3.56927 1
+rn[GLU]an[O] c[any] 438.611 169
 rn[GLU]an[O] c[solvent] 94.3658 14
 rn[GLU]an[OE1] rn[GLY]an[C] 1.43943 1
 rn[GLU]an[OE1] rn[GLY]an[CA] 1.71059 2
@@ -2605,6 +2681,7 @@ rn[GLU]an[OE1] rn[SER]an[OG] 10.627 3
 rn[GLU]an[OE1] rn[VAL]an[C] 0.0057956 1
 rn[GLU]an[OE1] rn[VAL]an[CG1] 5.85118 2
 rn[GLU]an[OE1] rn[VAL]an[O] 3.62866 1
+rn[GLU]an[OE1] c[any] 423.334 69
 rn[GLU]an[OE1] c[solvent] 267.64 11
 rn[GLU]an[OE2] rn[GLY]an[CA] 3.25931 1
 rn[GLU]an[OE2] rn[GLY]an[N] 1.26086 2
@@ -2633,6 +2710,7 @@ rn[GLU]an[OE2] rn[THR]an[OG1] 5.98007 1
 rn[GLU]an[OE2] rn[VAL]an[CG1] 18.6461 2
 rn[GLU]an[OE2] rn[VAL]an[CG2] 11.8135 3
 rn[GLU]an[OE2] rn[VAL]an[O] 3.44668 2
+rn[GLU]an[OE2] c[any] 492.642 83
 rn[GLU]an[OE2] c[solvent] 282.838 12
 rn[GLY]an[C] rn[GLY]an[N] 3.21426 1
 rn[GLY]an[C] rn[GLY]an[O] 0.516726 2
@@ -2700,6 +2778,7 @@ rn[GLY]an[C] rn[VAL]an[CG1] 2.63453 3
 rn[GLY]an[C] rn[VAL]an[CG2] 1.54615 2
 rn[GLY]an[C] rn[VAL]an[N] 8.20735 1
 rn[GLY]an[C] rn[VAL]an[O] 1.56407 1
+rn[GLY]an[C] c[any] 351.47 191
 rn[GLY]an[C] c[solvent] 18.5741 13
 rn[GLY]an[CA] rn[GLY]an[N] 2.77366 1
 rn[GLY]an[CA] rn[GLY]an[O] 6.04768 1
@@ -2773,6 +2852,7 @@ rn[GLY]an[CA] rn[VAL]an[CG1] 2.11637 1
 rn[GLY]an[CA] rn[VAL]an[CG2] 4.64177 3
 rn[GLY]an[CA] rn[VAL]an[N] 10.6905 2
 rn[GLY]an[CA] rn[VAL]an[O] 11.7532 4
+rn[GLY]an[CA] c[any] 870.083 245
 rn[GLY]an[CA] c[solvent] 253.744 16
 rn[GLY]an[N] rn[GLY]an[N] 1.48067 1
 rn[GLY]an[N] rn[GLY]an[O] 6.1492 3
@@ -2836,6 +2916,7 @@ rn[GLY]an[N] rn[VAL]an[CG1] 2.25132 3
 rn[GLY]an[N] rn[VAL]an[CG2] 2.17161 2
 rn[GLY]an[N] rn[VAL]an[N] 0.0431576 1
 rn[GLY]an[N] rn[VAL]an[O] 11.9287 3
+rn[GLY]an[N] c[any] 516.735 205
 rn[GLY]an[N] c[solvent] 36.9019 10
 rn[GLY]an[O] rn[GLY]an[O] 4.55504 2
 rn[GLY]an[O] rn[HIS]an[C] 2.98794 1
@@ -2896,6 +2977,7 @@ rn[GLY]an[O] rn[VAL]an[CG1] 10.1744 3
 rn[GLY]an[O] rn[VAL]an[CG2] 12.9666 6
 rn[GLY]an[O] rn[VAL]an[N] 19.9182 5
 rn[GLY]an[O] rn[VAL]an[O] 2.11249 3
+rn[GLY]an[O] c[any] 599.91 214
 rn[GLY]an[O] c[solvent] 136.825 15
 rn[HIS]an[C] rn[ILE]an[CB] 0.751955 1
 rn[HIS]an[C] rn[LEU]an[CB] 1.33391 1
@@ -2937,6 +3019,7 @@ rn[HIS]an[C] rn[TYR]an[N] 14.4041 2
 rn[HIS]an[C] rn[VAL]an[CG1] 0.870935 1
 rn[HIS]an[C] rn[VAL]an[CG2] 1.17903 2
 rn[HIS]an[C] rn[VAL]an[O] 0.1709 1
+rn[HIS]an[C] c[any] 131.484 85
 rn[HIS]an[C] c[solvent] 1.83122 4
 rn[HIS]an[CA] rn[ILE]an[CA] 1.79639 2
 rn[HIS]an[CA] rn[ILE]an[CB] 0.0627944 1
@@ -2966,6 +3049,7 @@ rn[HIS]an[CA] rn[TRP]an[NE1] 0.0371924 1
 rn[HIS]an[CA] rn[TYR]an[CD2] 2.71703 2
 rn[HIS]an[CA] rn[TYR]an[N] 5.99054 2
 rn[HIS]an[CA] rn[VAL]an[O] 0.141722 1
+rn[HIS]an[CA] c[any] 157.412 74
 rn[HIS]an[CA] c[solvent] 21.3847 6
 rn[HIS]an[CB] rn[HIS]an[CD2] 0.184554 1
 rn[HIS]an[CB] rn[HIS]an[CE1] 4.23144 1
@@ -3008,6 +3092,7 @@ rn[HIS]an[CB] rn[TYR]an[N] 3.338 2
 rn[HIS]an[CB] rn[VAL]an[CB] 1.61894 1
 rn[HIS]an[CB] rn[VAL]an[CG2] 3.61679 1
 rn[HIS]an[CB] rn[VAL]an[O] 5.12428 1
+rn[HIS]an[CB] c[any] 249.698 94
 rn[HIS]an[CB] c[solvent] 62.9235 5
 rn[HIS]an[CD2] rn[HIS]an[O] 1.46751 1
 rn[HIS]an[CD2] rn[ILE]an[C] 2.61729 2
@@ -3051,6 +3136,7 @@ rn[HIS]an[CD2] rn[TYR]an[O] 2.12829 1
 rn[HIS]an[CD2] rn[TYR]an[OH] 0.0131331 1
 rn[HIS]an[CD2] rn[VAL]an[CG2] 6.04926 1
 rn[HIS]an[CD2] rn[VAL]an[N] 0.499151 1
+rn[HIS]an[CD2] c[any] 241.803 92
 rn[HIS]an[CD2] c[solvent] 58.3386 4
 rn[HIS]an[CE1] rn[HIS]an[NE2] 0.910738 1
 rn[HIS]an[CE1] rn[HIS]an[O] 4.29368 1
@@ -3093,6 +3179,7 @@ rn[HIS]an[CE1] rn[VAL]an[C] 2.61768 1
 rn[HIS]an[CE1] rn[VAL]an[CA] 2.04925 1
 rn[HIS]an[CE1] rn[VAL]an[N] 0.56865 1
 rn[HIS]an[CE1] rn[VAL]an[O] 3.89291 1
+rn[HIS]an[CE1] c[any] 289.697 97
 rn[HIS]an[CE1] c[solvent] 75.9606 9
 rn[HIS]an[CG] rn[HIS]an[ND1] 0.0226748 1
 rn[HIS]an[CG] rn[ILE]an[CB] 0.640949 1
@@ -3116,6 +3203,7 @@ rn[HIS]an[CG] rn[SER]an[C] 1.12294 1
 rn[HIS]an[CG] rn[SER]an[O] 0.94778 1
 rn[HIS]an[CG] rn[THR]an[CG2] 0.00148978 1
 rn[HIS]an[CG] rn[TYR]an[N] 0.0675245 1
+rn[HIS]an[CG] c[any] 42.7157 41
 rn[HIS]an[CG] c[solvent] 6.9075 3
 rn[HIS]an[N] rn[ILE]an[C] 0.934547 2
 rn[HIS]an[N] rn[ILE]an[CB] 0.312464 1
@@ -3149,6 +3237,7 @@ rn[HIS]an[N] rn[VAL]an[C] 0.569554 1
 rn[HIS]an[N] rn[VAL]an[CG1] 2.24343 1
 rn[HIS]an[N] rn[VAL]an[N] 0.838945 1
 rn[HIS]an[N] rn[VAL]an[O] 3.68886 1
+rn[HIS]an[N] c[any] 181.658 78
 rn[HIS]an[N] c[solvent] 1.74509 4
 rn[HIS]an[ND1] rn[ILE]an[CB] 1.05962 1
 rn[HIS]an[ND1] rn[ILE]an[CD1] 3.46158 3
@@ -3179,6 +3268,7 @@ rn[HIS]an[ND1] rn[TYR]an[CD1] 1.78414 1
 rn[HIS]an[ND1] rn[TYR]an[CE1] 2.76257 1
 rn[HIS]an[ND1] rn[TYR]an[CE2] 0.722554 1
 rn[HIS]an[ND1] rn[VAL]an[O] 4.19252 1
+rn[HIS]an[ND1] c[any] 145.349 74
 rn[HIS]an[ND1] c[solvent] 25.0225 6
 rn[HIS]an[NE2] rn[HIS]an[O] 1.05982 2
 rn[HIS]an[NE2] rn[ILE]an[C] 9.32985 1
@@ -3212,6 +3302,7 @@ rn[HIS]an[NE2] rn[TYR]an[CZ] 0.216985 1
 rn[HIS]an[NE2] rn[TYR]an[OH] 6.41541 1
 rn[HIS]an[NE2] rn[VAL]an[CA] 0.555869 1
 rn[HIS]an[NE2] rn[VAL]an[CG2] 0.133414 1
+rn[HIS]an[NE2] c[any] 189.793 76
 rn[HIS]an[NE2] c[solvent] 51.6627 6
 rn[HIS]an[O] rn[ILE]an[CA] 0.0378394 1
 rn[HIS]an[O] rn[ILE]an[CB] 2.69952 1
@@ -3267,6 +3358,7 @@ rn[HIS]an[O] rn[VAL]an[CG1] 1.78768 1
 rn[HIS]an[O] rn[VAL]an[CG2] 0.726026 2
 rn[HIS]an[O] rn[VAL]an[N] 5.49504 1
 rn[HIS]an[O] rn[VAL]an[O] 1.3811 2
+rn[HIS]an[O] c[any] 242.224 110
 rn[HIS]an[O] c[solvent] 40.8902 6
 rn[ILE]an[C] rn[LEU]an[C] 0.266943 1
 rn[ILE]an[C] rn[LEU]an[CA] 4.28145 2
@@ -3299,6 +3391,7 @@ rn[ILE]an[C] rn[THR]an[N] 0.112671 1
 rn[ILE]an[C] rn[TRP]an[CH2] 1.5032 1
 rn[ILE]an[C] rn[VAL]an[CG1] 1.11776 2
 rn[ILE]an[C] rn[VAL]an[CG2] 0.532889 1
+rn[ILE]an[C] c[any] 160.219 89
 rn[ILE]an[C] c[solvent] 11.6701 3
 rn[ILE]an[CA] rn[LEU]an[CA] 1.43734 1
 rn[ILE]an[CA] rn[LEU]an[CB] 0.631908 1
@@ -3333,6 +3426,7 @@ rn[ILE]an[CA] rn[TYR]an[N] 0.0106265 1
 rn[ILE]an[CA] rn[TYR]an[O] 3.84092 1
 rn[ILE]an[CA] rn[VAL]an[CA] 0.281438 1
 rn[ILE]an[CA] rn[VAL]an[CG2] 1.41403 2
+rn[ILE]an[CA] c[any] 150.905 81
 rn[ILE]an[CA] c[solvent] 8.58942 3
 rn[ILE]an[CB] rn[ILE]an[CG2] 4.12028 1
 rn[ILE]an[CB] rn[LEU]an[CA] 1.43445 1
@@ -3367,6 +3461,7 @@ rn[ILE]an[CB] rn[TYR]an[CD2] 0.785257 1
 rn[ILE]an[CB] rn[TYR]an[N] 0.549115 1
 rn[ILE]an[CB] rn[TYR]an[O] 0.703113 1
 rn[ILE]an[CB] rn[VAL]an[CG2] 0.872688 2
+rn[ILE]an[CB] c[any] 130.04 88
 rn[ILE]an[CB] c[solvent] 9.63703 3
 rn[ILE]an[CD1] rn[ILE]an[CD1] 0.946005 1
 rn[ILE]an[CD1] rn[ILE]an[CG1] 0.512214 1
@@ -3419,6 +3514,7 @@ rn[ILE]an[CD1] rn[VAL]an[CG1] 10.5922 3
 rn[ILE]an[CD1] rn[VAL]an[CG2] 14.8933 4
 rn[ILE]an[CD1] rn[VAL]an[N] 3.63002 2
 rn[ILE]an[CD1] rn[VAL]an[O] 7.07309 3
+rn[ILE]an[CD1] c[any] 556.795 196
 rn[ILE]an[CD1] c[solvent] 61.6364 7
 rn[ILE]an[CG1] rn[LEU]an[CB] 3.61268 1
 rn[ILE]an[CG1] rn[LEU]an[CD1] 3.86022 2
@@ -3465,6 +3561,7 @@ rn[ILE]an[CG1] rn[VAL]an[CG1] 8.37518 3
 rn[ILE]an[CG1] rn[VAL]an[CG2] 19.8033 3
 rn[ILE]an[CG1] rn[VAL]an[N] 1.6131 1
 rn[ILE]an[CG1] rn[VAL]an[O] 6.75919 2
+rn[ILE]an[CG1] c[any] 267.813 145
 rn[ILE]an[CG1] c[solvent] 29.2312 6
 rn[ILE]an[CG2] rn[ILE]an[CG2] 1.34857 1
 rn[ILE]an[CG2] rn[LEU]an[C] 1.34433 1
@@ -3514,6 +3611,7 @@ rn[ILE]an[CG2] rn[VAL]an[CB] 3.40249 2
 rn[ILE]an[CG2] rn[VAL]an[CG1] 14.6516 3
 rn[ILE]an[CG2] rn[VAL]an[CG2] 15.4854 3
 rn[ILE]an[CG2] rn[VAL]an[N] 0.0285354 1
+rn[ILE]an[CG2] c[any] 531.754 178
 rn[ILE]an[CG2] c[solvent] 91.9002 10
 rn[ILE]an[N] rn[LEU]an[CD1] 0.379448 1
 rn[ILE]an[N] rn[LEU]an[N] 2.84921 1
@@ -3548,6 +3646,7 @@ rn[ILE]an[N] rn[TYR]an[O] 6.24691 1
 rn[ILE]an[N] rn[VAL]an[CA] 0.506551 1
 rn[ILE]an[N] rn[VAL]an[CG1] 2.26354 1
 rn[ILE]an[N] rn[VAL]an[O] 0.949378 2
+rn[ILE]an[N] c[any] 243.239 88
 rn[ILE]an[N] c[solvent] 3.74729 4
 rn[ILE]an[O] rn[LEU]an[C] 1.29747 1
 rn[ILE]an[O] rn[LEU]an[CA] 12.2672 4
@@ -3582,6 +3681,7 @@ rn[ILE]an[O] rn[VAL]an[CA] 4.42024 2
 rn[ILE]an[O] rn[VAL]an[CB] 0.0986322 1
 rn[ILE]an[O] rn[VAL]an[CG1] 2.81144 2
 rn[ILE]an[O] rn[VAL]an[CG2] 0.829074 2
+rn[ILE]an[O] c[any] 319.508 136
 rn[ILE]an[O] c[solvent] 78.2292 7
 rn[LEU]an[C] rn[LEU]an[C] 1.87564 1
 rn[LEU]an[C] rn[LEU]an[CA] 3.81129 2
@@ -3631,6 +3731,7 @@ rn[LEU]an[C] rn[VAL]an[CG1] 3.00884 3
 rn[LEU]an[C] rn[VAL]an[CG2] 4.50899 3
 rn[LEU]an[C] rn[VAL]an[N] 23.66 4
 rn[LEU]an[C] rn[VAL]an[O] 0.691416 2
+rn[LEU]an[C] c[any] 258.129 146
 rn[LEU]an[C] c[solvent] 3.38269 8
 rn[LEU]an[CA] rn[LEU]an[CA] 0.0727166 1
 rn[LEU]an[CA] rn[LEU]an[CD1] 0.0144331 1
@@ -3670,6 +3771,7 @@ rn[LEU]an[CA] rn[VAL]an[CB] 0.0454284 1
 rn[LEU]an[CA] rn[VAL]an[CG1] 0.277095 1
 rn[LEU]an[CA] rn[VAL]an[N] 7.00635 4
 rn[LEU]an[CA] rn[VAL]an[O] 12.6827 4
+rn[LEU]an[CA] c[any] 223.871 129
 rn[LEU]an[CA] c[solvent] 4.08621 6
 rn[LEU]an[CB] rn[LEU]an[CB] 2.6566 2
 rn[LEU]an[CB] rn[LEU]an[CD1] 6.09728 1
@@ -3730,6 +3832,7 @@ rn[LEU]an[CB] rn[VAL]an[CG1] 18.6291 7
 rn[LEU]an[CB] rn[VAL]an[CG2] 7.73003 2
 rn[LEU]an[CB] rn[VAL]an[N] 0.489818 2
 rn[LEU]an[CB] rn[VAL]an[O] 4.38895 4
+rn[LEU]an[CB] c[any] 351.797 174
 rn[LEU]an[CB] c[solvent] 29.4619 9
 rn[LEU]an[CD1] rn[LEU]an[CD1] 9.27846 2
 rn[LEU]an[CD1] rn[LEU]an[CD2] 36.8815 8
@@ -3790,6 +3893,7 @@ rn[LEU]an[CD1] rn[VAL]an[CG1] 30.0983 6
 rn[LEU]an[CD1] rn[VAL]an[CG2] 56.9031 12
 rn[LEU]an[CD1] rn[VAL]an[N] 3.73487 4
 rn[LEU]an[CD1] rn[VAL]an[O] 9.72329 5
+rn[LEU]an[CD1] c[any] 839.572 258
 rn[LEU]an[CD1] c[solvent] 167.596 9
 rn[LEU]an[CD2] rn[LEU]an[CD2] 8.67366 5
 rn[LEU]an[CD2] rn[LEU]an[CG] 1.72229 1
@@ -3864,6 +3968,7 @@ rn[LEU]an[CD2] rn[VAL]an[CG1] 31.9375 6
 rn[LEU]an[CD2] rn[VAL]an[CG2] 41.9248 11
 rn[LEU]an[CD2] rn[VAL]an[N] 3.76442 3
 rn[LEU]an[CD2] rn[VAL]an[O] 8.40687 6
+rn[LEU]an[CD2] c[any] 778.103 287
 rn[LEU]an[CD2] c[solvent] 84.1903 7
 rn[LEU]an[CG] rn[LEU]an[N] 2.76128 3
 rn[LEU]an[CG] rn[LEU]an[O] 0.552215 2
@@ -3906,6 +4011,7 @@ rn[LEU]an[CG] rn[VAL]an[CG1] 1.65362 3
 rn[LEU]an[CG] rn[VAL]an[CG2] 12.3262 7
 rn[LEU]an[CG] rn[VAL]an[N] 1.56984 3
 rn[LEU]an[CG] rn[VAL]an[O] 8.96209 3
+rn[LEU]an[CG] c[any] 242.176 142
 rn[LEU]an[CG] c[solvent] 37.4463 10
 rn[LEU]an[N] rn[LEU]an[O] 18.0095 3
 rn[LEU]an[N] rn[LYS]an[C] 22.4787 3
@@ -3944,6 +4050,7 @@ rn[LEU]an[N] rn[VAL]an[CG1] 9.00359 5
 rn[LEU]an[N] rn[VAL]an[CG2] 0.168692 1
 rn[LEU]an[N] rn[VAL]an[N] 2.79028 2
 rn[LEU]an[N] rn[VAL]an[O] 18.0624 4
+rn[LEU]an[N] c[any] 380.832 153
 rn[LEU]an[N] c[solvent] 11.2833 9
 rn[LEU]an[O] rn[LEU]an[O] 5.32314 3
 rn[LEU]an[O] rn[LYS]an[C] 2.56225 2
@@ -3993,6 +4100,7 @@ rn[LEU]an[O] rn[VAL]an[CG1] 10.0875 3
 rn[LEU]an[O] rn[VAL]an[CG2] 16.2562 5
 rn[LEU]an[O] rn[VAL]an[N] 11.4005 3
 rn[LEU]an[O] rn[VAL]an[O] 4.32533 3
+rn[LEU]an[O] c[any] 502.149 196
 rn[LEU]an[O] c[solvent] 102.015 11
 rn[LYS]an[C] rn[LYS]an[N] 0.48156 1
 rn[LYS]an[C] rn[MSE]an[C] 0.0936117 1
@@ -4030,6 +4138,7 @@ rn[LYS]an[C] rn[VAL]an[CA] 2.61889 1
 rn[LYS]an[C] rn[VAL]an[CB] 0.0764857 1
 rn[LYS]an[C] rn[VAL]an[CG2] 5.72516 2
 rn[LYS]an[C] rn[VAL]an[N] 7.81114 1
+rn[LYS]an[C] c[any] 270.47 163
 rn[LYS]an[C] c[solvent] 5.42316 8
 rn[LYS]an[CA] rn[LYS]an[O] 0.085689 2
 rn[LYS]an[CA] rn[MSE]an[C] 1.39285 1
@@ -4064,6 +4173,7 @@ rn[LYS]an[CA] rn[VAL]an[CG1] 0.00393369 1
 rn[LYS]an[CA] rn[VAL]an[CG2] 3.56535 3
 rn[LYS]an[CA] rn[VAL]an[N] 3.14964 2
 rn[LYS]an[CA] rn[VAL]an[O] 1.7545 1
+rn[LYS]an[CA] c[any] 312.914 136
 rn[LYS]an[CA] c[solvent] 45.323 8
 rn[LYS]an[CB] rn[LYS]an[CB] 7.92313 1
 rn[LYS]an[CB] rn[LYS]an[CG] 0.742145 1
@@ -4101,6 +4211,7 @@ rn[LYS]an[CB] rn[VAL]an[CG1] 3.12606 1
 rn[LYS]an[CB] rn[VAL]an[CG2] 2.11978 1
 rn[LYS]an[CB] rn[VAL]an[N] 3.06884 1
 rn[LYS]an[CB] rn[VAL]an[O] 2.32201 1
+rn[LYS]an[CB] c[any] 505.364 145
 rn[LYS]an[CB] c[solvent] 244.697 15
 rn[LYS]an[CD] rn[LYS]an[O] 0.852411 1
 rn[LYS]an[CD] rn[MSE]an[C] 0.0118625 1
@@ -4131,6 +4242,7 @@ rn[LYS]an[CD] rn[TYR]an[O] 2.13422 1
 rn[LYS]an[CD] rn[TYR]an[OH] 2.64681 1
 rn[LYS]an[CD] rn[VAL]an[CB] 0.0331342 1
 rn[LYS]an[CD] rn[VAL]an[CG2] 4.8531 1
+rn[LYS]an[CD] c[any] 646.536 118
 rn[LYS]an[CD] c[solvent] 358.262 16
 rn[LYS]an[CE] rn[PHE]an[CB] 5.99182 1
 rn[LYS]an[CE] rn[PHE]an[CD1] 0.0955052 1
@@ -4153,6 +4265,7 @@ rn[LYS]an[CE] rn[TYR]an[CG] 0.626912 1
 rn[LYS]an[CE] rn[TYR]an[CZ] 1.0905 1
 rn[LYS]an[CE] rn[TYR]an[N] 0.789472 1
 rn[LYS]an[CE] rn[TYR]an[O] 1.03078 1
+rn[LYS]an[CE] c[any] 527.839 95
 rn[LYS]an[CE] c[solvent] 311.588 12
 rn[LYS]an[CG] rn[MSE]an[C] 0.38857 1
 rn[LYS]an[CG] rn[MSE]an[CA] 0.114806 1
@@ -4187,6 +4300,7 @@ rn[LYS]an[CG] rn[VAL]an[CG1] 0.0320524 1
 rn[LYS]an[CG] rn[VAL]an[CG2] 5.04537 1
 rn[LYS]an[CG] rn[VAL]an[N] 0.571878 1
 rn[LYS]an[CG] rn[VAL]an[O] 0.83939 1
+rn[LYS]an[CG] c[any] 494.392 154
 rn[LYS]an[CG] c[solvent] 219.63 16
 rn[LYS]an[N] rn[LYS]an[N] 0.000582001 1
 rn[LYS]an[N] rn[LYS]an[O] 13.2595 2
@@ -4222,6 +4336,7 @@ rn[LYS]an[N] rn[VAL]an[CA] 3.23798 1
 rn[LYS]an[N] rn[VAL]an[CB] 0.416767 2
 rn[LYS]an[N] rn[VAL]an[CG2] 2.36507 3
 rn[LYS]an[N] rn[VAL]an[O] 4.90442 1
+rn[LYS]an[N] c[any] 448.204 162
 rn[LYS]an[N] c[solvent] 40.4785 12
 rn[LYS]an[NZ] rn[MSE]an[C] 0.0319221 1
 rn[LYS]an[NZ] rn[MSE]an[CA] 0.00443796 1
@@ -4244,6 +4359,7 @@ rn[LYS]an[NZ] rn[TYR]an[N] 2.12828 2
 rn[LYS]an[NZ] rn[TYR]an[O] 11.4399 1
 rn[LYS]an[NZ] rn[TYR]an[OH] 2.75085 2
 rn[LYS]an[NZ] rn[VAL]an[CG1] 3.79458 1
+rn[LYS]an[NZ] c[any] 463.003 89
 rn[LYS]an[NZ] c[solvent] 223.981 9
 rn[LYS]an[O] rn[LYS]an[O] 0.936112 1
 rn[LYS]an[O] rn[MSE]an[CA] 0.274753 2
@@ -4284,6 +4400,7 @@ rn[LYS]an[O] rn[VAL]an[CB] 4.56357 2
 rn[LYS]an[O] rn[VAL]an[CG2] 3.96871 3
 rn[LYS]an[O] rn[VAL]an[N] 5.57084 1
 rn[LYS]an[O] rn[VAL]an[O] 1.55084 1
+rn[LYS]an[O] c[any] 561.337 214
 rn[LYS]an[O] c[solvent] 138.695 16
 rn[MSE]an[C] rn[PRO]an[CA] 0.0490493 1
 rn[MSE]an[C] rn[PRO]an[CD] 1.8465 1
@@ -4296,6 +4413,7 @@ rn[MSE]an[C] rn[VAL]an[C] 0.190242 1
 rn[MSE]an[C] rn[VAL]an[CA] 1.88609 1
 rn[MSE]an[C] rn[VAL]an[CG2] 1.3906 1
 rn[MSE]an[C] rn[VAL]an[N] 6.79114 1
+rn[MSE]an[C] c[any] 57.8341 37
 rn[MSE]an[CA] rn[PHE]an[CB] 0.00794822 1
 rn[MSE]an[CA] rn[PRO]an[C] 1.36634 1
 rn[MSE]an[CA] rn[PRO]an[CA] 3.05019 1
@@ -4305,6 +4423,7 @@ rn[MSE]an[CA] rn[PRO]an[O] 0.969762 2
 rn[MSE]an[CA] rn[SER]an[O] 1.10305 1
 rn[MSE]an[CA] rn[TYR]an[OH] 4.51148 1
 rn[MSE]an[CA] rn[VAL]an[N] 3.63985 1
+rn[MSE]an[CA] c[any] 65.8133 41
 rn[MSE]an[CB] rn[PHE]an[CB] 1.62443 1
 rn[MSE]an[CB] rn[PHE]an[CD1] 0.936077 1
 rn[MSE]an[CB] rn[PHE]an[CD2] 0.98124 1
@@ -4326,6 +4445,7 @@ rn[MSE]an[CB] rn[TYR]an[CD2] 4.89888 1
 rn[MSE]an[CB] rn[TYR]an[CE1] 1.16251 1
 rn[MSE]an[CB] rn[TYR]an[CE2] 0.00272646 1
 rn[MSE]an[CB] rn[TYR]an[OH] 2.48032 1
+rn[MSE]an[CB] c[any] 69.1707 40
 rn[MSE]an[CB] c[solvent] 0.357397 1
 rn[MSE]an[CE] rn[PHE]an[CB] 0.556965 1
 rn[MSE]an[CE] rn[PHE]an[CD1] 5.35464 1
@@ -4346,6 +4466,7 @@ rn[MSE]an[CE] rn[VAL]an[CA] 1.527 1
 rn[MSE]an[CE] rn[VAL]an[CG2] 13.8666 2
 rn[MSE]an[CE] rn[VAL]an[N] 0.769049 1
 rn[MSE]an[CE] rn[VAL]an[O] 3.3474 1
+rn[MSE]an[CE] c[any] 187.582 56
 rn[MSE]an[CE] c[solvent] 45.0644 1
 rn[MSE]an[CG] rn[PHE]an[CD1] 2.08515 1
 rn[MSE]an[CG] rn[PHE]an[CE2] 5.46589 2
@@ -4362,6 +4483,7 @@ rn[MSE]an[CG] rn[TYR]an[OH] 4.39134 1
 rn[MSE]an[CG] rn[VAL]an[C] 2.11586 1
 rn[MSE]an[CG] rn[VAL]an[N] 2.12798 1
 rn[MSE]an[CG] rn[VAL]an[O] 3.50921 1
+rn[MSE]an[CG] c[any] 87.1723 44
 rn[MSE]an[CG] c[solvent] 2.04068 1
 rn[MSE]an[N] rn[PHE]an[CB] 1.18642 1
 rn[MSE]an[N] rn[PHE]an[O] 5.03117 2
@@ -4376,6 +4498,7 @@ rn[MSE]an[N] rn[TRP]an[CE3] 0.0331103 1
 rn[MSE]an[N] rn[TRP]an[CH2] 0.980638 1
 rn[MSE]an[N] rn[TRP]an[CZ2] 0.296658 1
 rn[MSE]an[N] rn[TRP]an[CZ3] 0.695902 1
+rn[MSE]an[N] c[any] 76.8485 41
 rn[MSE]an[O] rn[PHE]an[CA] 0.0557257 1
 rn[MSE]an[O] rn[PHE]an[CB] 0.952227 1
 rn[MSE]an[O] rn[PHE]an[CD1] 4.43235 1
@@ -4389,6 +4512,7 @@ rn[MSE]an[O] rn[TYR]an[CD2] 6.26266 1
 rn[MSE]an[O] rn[VAL]an[C] 0.0116445 1
 rn[MSE]an[O] rn[VAL]an[CA] 3.47499 1
 rn[MSE]an[O] rn[VAL]an[CG2] 0.0813865 1
+rn[MSE]an[O] c[any] 85.3257 49
 rn[MSE]an[SE] rn[PHE]an[CD2] 4.68205 1
 rn[MSE]an[SE] rn[PHE]an[CE2] 1.65945 1
 rn[MSE]an[SE] rn[PHE]an[CZ] 1.67079 1
@@ -4409,6 +4533,7 @@ rn[MSE]an[SE] rn[TYR]an[CE1] 2.13371 1
 rn[MSE]an[SE] rn[TYR]an[CZ] 0.152264 1
 rn[MSE]an[SE] rn[TYR]an[O] 0.695519 1
 rn[MSE]an[SE] rn[VAL]an[CG2] 6.00198 2
+rn[MSE]an[SE] c[any] 161.91 59
 rn[MSE]an[SE] c[solvent] 39.1642 2
 rn[PHE]an[C] rn[PHE]an[C] 2.15317 2
 rn[PHE]an[C] rn[PHE]an[CA] 3.23256 2
@@ -4433,6 +4558,7 @@ rn[PHE]an[C] rn[VAL]an[CB] 0.581994 1
 rn[PHE]an[C] rn[VAL]an[CG2] 2.91986 2
 rn[PHE]an[C] rn[VAL]an[N] 7.28124 1
 rn[PHE]an[C] rn[VAL]an[O] 0.0329678 1
+rn[PHE]an[C] c[any] 185.909 103
 rn[PHE]an[C] c[solvent] 3.72228 5
 rn[PHE]an[CA] rn[PHE]an[CD1] 0.037198 1
 rn[PHE]an[CA] rn[PHE]an[CD2] 2.95656 1
@@ -4454,6 +4580,7 @@ rn[PHE]an[CA] rn[VAL]an[CG1] 2.63418 1
 rn[PHE]an[CA] rn[VAL]an[CG2] 4.46539 3
 rn[PHE]an[CA] rn[VAL]an[N] 2.88852 1
 rn[PHE]an[CA] rn[VAL]an[O] 0.141018 2
+rn[PHE]an[CA] c[any] 182.293 98
 rn[PHE]an[CA] c[solvent] 4.3908 4
 rn[PHE]an[CB] rn[PHE]an[CD2] 1.1396 1
 rn[PHE]an[CB] rn[PHE]an[CE1] 0.00135979 1
@@ -4486,6 +4613,7 @@ rn[PHE]an[CB] rn[VAL]an[CG1] 9.13186 3
 rn[PHE]an[CB] rn[VAL]an[CG2] 1.85825 3
 rn[PHE]an[CB] rn[VAL]an[N] 2.2915 1
 rn[PHE]an[CB] rn[VAL]an[O] 7.94783 2
+rn[PHE]an[CB] c[any] 331.89 140
 rn[PHE]an[CB] c[solvent] 27.6303 9
 rn[PHE]an[CD1] rn[PHE]an[CD1] 2.8494 1
 rn[PHE]an[CD1] rn[PHE]an[CD2] 5.41593 3
@@ -4513,6 +4641,7 @@ rn[PHE]an[CD1] rn[VAL]an[CB] 4.50752 3
 rn[PHE]an[CD1] rn[VAL]an[CG1] 21.1395 5
 rn[PHE]an[CD1] rn[VAL]an[CG2] 8.3276 3
 rn[PHE]an[CD1] rn[VAL]an[O] 0.0963547 1
+rn[PHE]an[CD1] c[any] 255.5 150
 rn[PHE]an[CD1] c[solvent] 11.6041 4
 rn[PHE]an[CD2] rn[PHE]an[CD2] 1.78219 2
 rn[PHE]an[CD2] rn[PHE]an[CE1] 5.0171 4
@@ -4541,6 +4670,7 @@ rn[PHE]an[CD2] rn[VAL]an[CG1] 6.86136 3
 rn[PHE]an[CD2] rn[VAL]an[CG2] 11.595 3
 rn[PHE]an[CD2] rn[VAL]an[N] 0.142413 2
 rn[PHE]an[CD2] rn[VAL]an[O] 2.80339 1
+rn[PHE]an[CD2] c[any] 272.531 142
 rn[PHE]an[CD2] c[solvent] 22.487 2
 rn[PHE]an[CE1] rn[PHE]an[CE1] 1.64892 1
 rn[PHE]an[CE1] rn[PHE]an[CE2] 2.88564 3
@@ -4569,6 +4699,7 @@ rn[PHE]an[CE1] rn[VAL]an[CG1] 28.0292 9
 rn[PHE]an[CE1] rn[VAL]an[CG2] 15.5265 8
 rn[PHE]an[CE1] rn[VAL]an[N] 1.72357 1
 rn[PHE]an[CE1] rn[VAL]an[O] 0.608909 2
+rn[PHE]an[CE1] c[any] 330.519 166
 rn[PHE]an[CE1] c[solvent] 25.726 4
 rn[PHE]an[CE2] rn[PHE]an[CE2] 2.03035 1
 rn[PHE]an[CE2] rn[PHE]an[CG] 3.52269 3
@@ -4594,6 +4725,7 @@ rn[PHE]an[CE2] rn[TYR]an[OH] 6.52396 2
 rn[PHE]an[CE2] rn[VAL]an[CB] 5.75875 2
 rn[PHE]an[CE2] rn[VAL]an[CG1] 2.94753 2
 rn[PHE]an[CE2] rn[VAL]an[CG2] 6.37381 5
+rn[PHE]an[CE2] c[any] 328.913 143
 rn[PHE]an[CE2] c[solvent] 42.5674 3
 rn[PHE]an[CG] rn[PRO]an[CB] 0.660882 1
 rn[PHE]an[CG] rn[PRO]an[CD] 1.81253 1
@@ -4603,6 +4735,7 @@ rn[PHE]an[CG] rn[VAL]an[CA] 0.00469978 1
 rn[PHE]an[CG] rn[VAL]an[CB] 0.078732 1
 rn[PHE]an[CG] rn[VAL]an[CG1] 1.37998 1
 rn[PHE]an[CG] rn[VAL]an[CG2] 1.46745 1
+rn[PHE]an[CG] c[any] 28.0583 55
 rn[PHE]an[CG] c[solvent] 2.48848 3
 rn[PHE]an[CZ] rn[PHE]an[CZ] 1.24749 1
 rn[PHE]an[CZ] rn[PHE]an[O] 0.0298259 1
@@ -4630,6 +4763,7 @@ rn[PHE]an[CZ] rn[VAL]an[CB] 3.04023 2
 rn[PHE]an[CZ] rn[VAL]an[CG1] 14.1974 5
 rn[PHE]an[CZ] rn[VAL]an[CG2] 20.5973 7
 rn[PHE]an[CZ] rn[VAL]an[O] 0.831521 1
+rn[PHE]an[CZ] c[any] 339.947 141
 rn[PHE]an[CZ] c[solvent] 44.3494 5
 rn[PHE]an[N] rn[PHE]an[N] 2.37408 1
 rn[PHE]an[N] rn[PRO]an[CD] 0.0266504 1
@@ -4644,6 +4778,7 @@ rn[PHE]an[N] rn[TYR]an[OH] 0.980032 1
 rn[PHE]an[N] rn[VAL]an[C] 0.112161 1
 rn[PHE]an[N] rn[VAL]an[CG2] 0.12466 1
 rn[PHE]an[N] rn[VAL]an[O] 5.96312 2
+rn[PHE]an[N] c[any] 250.737 104
 rn[PHE]an[N] c[solvent] 1.06136 3
 rn[PHE]an[O] rn[PHE]an[O] 0.396658 1
 rn[PHE]an[O] rn[PRO]an[CB] 0.177074 1
@@ -4668,6 +4803,7 @@ rn[PHE]an[O] rn[VAL]an[CB] 1.14538 2
 rn[PHE]an[O] rn[VAL]an[CG1] 4.14831 3
 rn[PHE]an[O] rn[VAL]an[CG2] 12.5547 3
 rn[PHE]an[O] rn[VAL]an[N] 0.132336 1
+rn[PHE]an[O] c[any] 352.097 156
 rn[PHE]an[O] c[solvent] 38.5354 9
 rn[PRO]an[C] rn[PRO]an[CD] 1.37779 1
 rn[PRO]an[C] rn[PRO]an[N] 0.665518 1
@@ -4689,6 +4825,7 @@ rn[PRO]an[C] rn[VAL]an[CG1] 3.38594 3
 rn[PRO]an[C] rn[VAL]an[CG2] 0.450081 3
 rn[PRO]an[C] rn[VAL]an[N] 15.0633 3
 rn[PRO]an[C] rn[VAL]an[O] 2.50372 2
+rn[PRO]an[C] c[any] 145.663 83
 rn[PRO]an[C] c[solvent] 0.994313 4
 rn[PRO]an[CA] rn[THR]an[C] 1.43077 1
 rn[PRO]an[CA] rn[THR]an[CG2] 0.0487389 1
@@ -4707,6 +4844,7 @@ rn[PRO]an[CA] rn[VAL]an[C] 2.89388 2
 rn[PRO]an[CA] rn[VAL]an[CG2] 5.42914 1
 rn[PRO]an[CA] rn[VAL]an[N] 7.79035 2
 rn[PRO]an[CA] rn[VAL]an[O] 6.89546 2
+rn[PRO]an[CA] c[any] 192.507 68
 rn[PRO]an[CA] c[solvent] 35.7453 6
 rn[PRO]an[CB] rn[PRO]an[CB] 0.041341 1
 rn[PRO]an[CB] rn[PRO]an[CD] 7.25502 1
@@ -4724,6 +4862,7 @@ rn[PRO]an[CB] rn[VAL]an[CB] 1.81947 1
 rn[PRO]an[CB] rn[VAL]an[CG1] 11.4941 2
 rn[PRO]an[CB] rn[VAL]an[N] 3.00327 2
 rn[PRO]an[CB] rn[VAL]an[O] 2.90422 1
+rn[PRO]an[CB] c[any] 346.939 99
 rn[PRO]an[CB] c[solvent] 137.553 9
 rn[PRO]an[CD] rn[THR]an[CA] 5.27078 2
 rn[PRO]an[CD] rn[THR]an[CB] 6.6293 2
@@ -4747,6 +4886,7 @@ rn[PRO]an[CD] rn[VAL]an[CG1] 3.41712 2
 rn[PRO]an[CD] rn[VAL]an[CG2] 1.50911 2
 rn[PRO]an[CD] rn[VAL]an[N] 1.36779 1
 rn[PRO]an[CD] rn[VAL]an[O] 6.14147 1
+rn[PRO]an[CD] c[any] 359.657 125
 rn[PRO]an[CD] c[solvent] 68.9868 7
 rn[PRO]an[CG] rn[THR]an[CA] 2.5614 1
 rn[PRO]an[CG] rn[THR]an[CB] 0.61296 1
@@ -4758,6 +4898,7 @@ rn[PRO]an[CG] rn[VAL]an[CB] 1.65628 1
 rn[PRO]an[CG] rn[VAL]an[CG1] 6.38538 2
 rn[PRO]an[CG] rn[VAL]an[CG2] 4.22493 2
 rn[PRO]an[CG] rn[VAL]an[N] 1.01909 1
+rn[PRO]an[CG] c[any] 371.411 98
 rn[PRO]an[CG] c[solvent] 154.213 9
 rn[PRO]an[N] rn[PRO]an[O] 0.259696 1
 rn[PRO]an[N] rn[THR]an[C] 6.96749 1
@@ -4778,6 +4919,7 @@ rn[PRO]an[N] rn[VAL]an[CB] 1.59031 1
 rn[PRO]an[N] rn[VAL]an[CG1] 0.838896 2
 rn[PRO]an[N] rn[VAL]an[CG2] 0.126548 1
 rn[PRO]an[N] rn[VAL]an[N] 1.61851 1
+rn[PRO]an[N] c[any] 97.227 64
 rn[PRO]an[N] c[solvent] 0.675414 3
 rn[PRO]an[O] rn[SER]an[CB] 1.85097 1
 rn[PRO]an[O] rn[SER]an[O] 4.54425 1
@@ -4802,6 +4944,7 @@ rn[PRO]an[O] rn[VAL]an[CB] 2.50464 3
 rn[PRO]an[O] rn[VAL]an[CG1] 9.49949 3
 rn[PRO]an[O] rn[VAL]an[CG2] 5.23169 3
 rn[PRO]an[O] rn[VAL]an[N] 3.62534 1
+rn[PRO]an[O] c[any] 296.677 113
 rn[PRO]an[O] c[solvent] 67.1376 7
 rn[SER]an[C] rn[THR]an[C] 0.498416 1
 rn[SER]an[C] rn[THR]an[CA] 2.15786 1
@@ -4816,6 +4959,7 @@ rn[SER]an[C] rn[VAL]an[CB] 2.19915 1
 rn[SER]an[C] rn[VAL]an[CG1] 4.54129 3
 rn[SER]an[C] rn[VAL]an[CG2] 6.04151 3
 rn[SER]an[C] rn[VAL]an[N] 14.1714 2
+rn[SER]an[C] c[any] 148.406 75
 rn[SER]an[C] c[solvent] 6.61959 5
 rn[SER]an[CA] rn[SER]an[CB] 1.17015 1
 rn[SER]an[CA] rn[SER]an[OG] 4.40138 1
@@ -4834,6 +4978,7 @@ rn[SER]an[CA] rn[VAL]an[CG1] 0.460223 2
 rn[SER]an[CA] rn[VAL]an[CG2] 1.00348 1
 rn[SER]an[CA] rn[VAL]an[N] 4.80761 2
 rn[SER]an[CA] rn[VAL]an[O] 11.2078 3
+rn[SER]an[CA] c[any] 172.829 77
 rn[SER]an[CA] c[solvent] 28.5907 4
 rn[SER]an[CB] rn[SER]an[CB] 6.18548 1
 rn[SER]an[CB] rn[SER]an[OG] 2.85631 2
@@ -4855,6 +5000,7 @@ rn[SER]an[CB] rn[VAL]an[CB] 0.175596 2
 rn[SER]an[CB] rn[VAL]an[CG1] 6.11904 3
 rn[SER]an[CB] rn[VAL]an[N] 3.95437 2
 rn[SER]an[CB] rn[VAL]an[O] 0.547944 3
+rn[SER]an[CB] c[any] 397.12 108
 rn[SER]an[CB] c[solvent] 134.035 8
 rn[SER]an[N] rn[SER]an[OG] 1.51896 2
 rn[SER]an[N] rn[THR]an[CB] 0.0200704 1
@@ -4875,6 +5021,7 @@ rn[SER]an[N] rn[VAL]an[CA] 2.49344 1
 rn[SER]an[N] rn[VAL]an[CB] 0.2116 2
 rn[SER]an[N] rn[VAL]an[CG1] 4.06955 2
 rn[SER]an[N] rn[VAL]an[O] 6.19951 2
+rn[SER]an[N] c[any] 249.856 89
 rn[SER]an[N] c[solvent] 42.0372 6
 rn[SER]an[O] rn[THR]an[C] 0.134038 1
 rn[SER]an[O] rn[THR]an[CA] 4.50872 1
@@ -4896,6 +5043,7 @@ rn[SER]an[O] rn[VAL]an[CG1] 6.53277 3
 rn[SER]an[O] rn[VAL]an[CG2] 7.31373 3
 rn[SER]an[O] rn[VAL]an[N] 5.03026 1
 rn[SER]an[O] rn[VAL]an[O] 1.06407 1
+rn[SER]an[O] c[any] 272.713 108
 rn[SER]an[O] c[solvent] 34.1278 8
 rn[SER]an[OG] rn[THR]an[C] 0.798457 1
 rn[SER]an[OG] rn[THR]an[CB] 2.26918 1
@@ -4912,6 +5060,7 @@ rn[SER]an[OG] rn[VAL]an[CG1] 19.5214 4
 rn[SER]an[OG] rn[VAL]an[CG2] 0.0400137 1
 rn[SER]an[OG] rn[VAL]an[N] 7.83654 1
 rn[SER]an[OG] rn[VAL]an[O] 6.77877 3
+rn[SER]an[OG] c[any] 360.115 99
 rn[SER]an[OG] c[solvent] 134.892 8
 rn[THR]an[C] rn[THR]an[C] 0.774099 1
 rn[THR]an[C] rn[THR]an[CA] 2.93234 2
@@ -4931,6 +5080,7 @@ rn[THR]an[C] rn[VAL]an[CG1] 1.27023 1
 rn[THR]an[C] rn[VAL]an[CG2] 0.832947 1
 rn[THR]an[C] rn[VAL]an[N] 1.34783 1
 rn[THR]an[C] rn[VAL]an[O] 1.64588 1
+rn[THR]an[C] c[any] 192.565 108
 rn[THR]an[C] c[solvent] 5.50949 4
 rn[THR]an[CA] rn[THR]an[N] 2.1554 2
 rn[THR]an[CA] rn[THR]an[O] 10.1537 2
@@ -4943,6 +5093,7 @@ rn[THR]an[CA] rn[VAL]an[CB] 0.0931394 1
 rn[THR]an[CA] rn[VAL]an[CG1] 0.870416 4
 rn[THR]an[CA] rn[VAL]an[CG2] 1.09016 1
 rn[THR]an[CA] rn[VAL]an[O] 4.61384 2
+rn[THR]an[CA] c[any] 194.508 103
 rn[THR]an[CA] c[solvent] 23.6729 7
 rn[THR]an[CB] rn[THR]an[CB] 0.0280716 1
 rn[THR]an[CB] rn[THR]an[CG2] 4.00659 2
@@ -4957,6 +5108,7 @@ rn[THR]an[CB] rn[TYR]an[OH] 3.80012 1
 rn[THR]an[CB] rn[VAL]an[C] 0.209029 1
 rn[THR]an[CB] rn[VAL]an[CG2] 6.46466 2
 rn[THR]an[CB] rn[VAL]an[O] 1.26568 1
+rn[THR]an[CB] c[any] 258.051 112
 rn[THR]an[CB] c[solvent] 60.242 9
 rn[THR]an[CG2] rn[THR]an[CG2] 3.99915 1
 rn[THR]an[CG2] rn[THR]an[O] 0.709499 1
@@ -4978,6 +5130,7 @@ rn[THR]an[CG2] rn[VAL]an[CG1] 14.4912 3
 rn[THR]an[CG2] rn[VAL]an[CG2] 20.9629 3
 rn[THR]an[CG2] rn[VAL]an[N] 2.34295 1
 rn[THR]an[CG2] rn[VAL]an[O] 1.21575 1
+rn[THR]an[CG2] c[any] 739.549 205
 rn[THR]an[CG2] c[solvent] 267.631 12
 rn[THR]an[N] rn[THR]an[N] 4.33712 2
 rn[THR]an[N] rn[THR]an[O] 0.331969 2
@@ -4995,6 +5148,7 @@ rn[THR]an[N] rn[VAL]an[CB] 2.57192 2
 rn[THR]an[N] rn[VAL]an[CG1] 4.39945 2
 rn[THR]an[N] rn[VAL]an[N] 3.02298 1
 rn[THR]an[N] rn[VAL]an[O] 5.86916 2
+rn[THR]an[N] c[any] 280.56 126
 rn[THR]an[N] c[solvent] 1.45441 7
 rn[THR]an[O] rn[THR]an[O] 0.42659 1
 rn[THR]an[O] rn[THR]an[OG1] 18.1599 3
@@ -5012,6 +5166,7 @@ rn[THR]an[O] rn[VAL]an[CG1] 0.408722 1
 rn[THR]an[O] rn[VAL]an[CG2] 3.4855 2
 rn[THR]an[O] rn[VAL]an[N] 7.01345 3
 rn[THR]an[O] rn[VAL]an[O] 0.533044 1
+rn[THR]an[O] c[any] 399.184 136
 rn[THR]an[O] c[solvent] 100.088 10
 rn[THR]an[OG1] rn[THR]an[OG1] 2.91891 2
 rn[THR]an[OG1] rn[TYR]an[CD2] 2.5847 1
@@ -5024,36 +5179,53 @@ rn[THR]an[OG1] rn[VAL]an[CG1] 1.59025 1
 rn[THR]an[OG1] rn[VAL]an[CG2] 3.64446 3
 rn[THR]an[OG1] rn[VAL]an[N] 0.318709 1
 rn[THR]an[OG1] rn[VAL]an[O] 0.730193 1
+rn[THR]an[OG1] c[any] 425.781 129
 rn[THR]an[OG1] c[solvent] 146.473 11
 rn[TRP]an[C] rn[VAL]an[CG2] 0.00263998 1
+rn[TRP]an[C] c[any] 13.5738 9
+rn[TRP]an[CA] c[any] 10.5704 8
 rn[TRP]an[CB] rn[TYR]an[CD1] 1.14591 1
 rn[TRP]an[CB] rn[TYR]an[CE1] 6.83408 1
+rn[TRP]an[CB] c[any] 22.6814 9
 rn[TRP]an[CB] c[solvent] 0.0676602 1
 rn[TRP]an[CD1] rn[TYR]an[CD1] 1.17007 1
 rn[TRP]an[CD1] rn[TYR]an[CE1] 3.5984 1
 rn[TRP]an[CD1] rn[VAL]an[O] 0.372109 1
+rn[TRP]an[CD1] c[any] 33.48 11
 rn[TRP]an[CD1] c[solvent] 12.5515 1
+rn[TRP]an[CD2] c[any] 6.29617 5
+rn[TRP]an[CE2] c[any] 4.85905 7
+rn[TRP]an[CE3] c[any] 19.2302 9
 rn[TRP]an[CG] rn[TYR]an[CE1] 0.0914982 1
+rn[TRP]an[CG] c[any] 2.49061 3
 rn[TRP]an[CH2] rn[VAL]an[CG1] 2.36987 1
 rn[TRP]an[CH2] rn[VAL]an[CG2] 3.34496 1
+rn[TRP]an[CH2] c[any] 23.6052 16
+rn[TRP]an[CZ2] c[any] 22.1813 15
 rn[TRP]an[CZ3] rn[VAL]an[CG1] 2.35248 1
 rn[TRP]an[CZ3] rn[VAL]an[CG2] 2.41701 1
+rn[TRP]an[CZ3] c[any] 23.2761 11
 rn[TRP]an[N] rn[VAL]an[O] 1.12773 1
+rn[TRP]an[N] c[any] 24.8097 8
 rn[TRP]an[N] c[solvent] 1.82402 1
+rn[TRP]an[NE1] c[any] 18.0546 10
 rn[TRP]an[O] rn[VAL]an[CG2] 2.43829 1
 rn[TRP]an[O] rn[VAL]an[N] 2.15567 1
+rn[TRP]an[O] c[any] 23.2557 13
 rn[TYR]an[C] rn[VAL]an[C] 0.884417 2
 rn[TYR]an[C] rn[VAL]an[CA] 1.94813 1
 rn[TYR]an[C] rn[VAL]an[CG1] 0.665427 2
 rn[TYR]an[C] rn[VAL]an[CG2] 0.467094 1
 rn[TYR]an[C] rn[VAL]an[N] 6.79638 1
 rn[TYR]an[C] rn[VAL]an[O] 0.207217 1
+rn[TYR]an[C] c[any] 123.784 70
 rn[TYR]an[C] c[solvent] 0.993138 3
 rn[TYR]an[CA] rn[TYR]an[CA] 0.169532 1
 rn[TYR]an[CA] rn[TYR]an[CB] 2.21702 1
 rn[TYR]an[CA] rn[VAL]an[C] 1.60409 1
 rn[TYR]an[CA] rn[VAL]an[N] 2.17287 1
 rn[TYR]an[CA] rn[VAL]an[O] 9.05339 3
+rn[TYR]an[CA] c[any] 126.272 69
 rn[TYR]an[CA] c[solvent] 4.94184 4
 rn[TYR]an[CB] rn[TYR]an[CD1] 6.04612 1
 rn[TYR]an[CB] rn[TYR]an[CD2] 6.31921e-06 1
@@ -5063,6 +5235,7 @@ rn[TYR]an[CB] rn[TYR]an[CZ] 0.0137676 1
 rn[TYR]an[CB] rn[VAL]an[C] 1.7693 1
 rn[TYR]an[CB] rn[VAL]an[N] 3.71578 2
 rn[TYR]an[CB] rn[VAL]an[O] 4.52944 2
+rn[TYR]an[CB] c[any] 239.007 90
 rn[TYR]an[CB] c[solvent] 65.7414 5
 rn[TYR]an[CD1] rn[TYR]an[CD2] 1.09215 1
 rn[TYR]an[CD1] rn[TYR]an[CE1] 0.000188753 1
@@ -5073,6 +5246,7 @@ rn[TYR]an[CD1] rn[VAL]an[CG1] 3.16181 2
 rn[TYR]an[CD1] rn[VAL]an[CG2] 4.59041 3
 rn[TYR]an[CD1] rn[VAL]an[N] 0.341796 2
 rn[TYR]an[CD1] rn[VAL]an[O] 1.66665 3
+rn[TYR]an[CD1] c[any] 199.593 87
 rn[TYR]an[CD1] c[solvent] 66.6946 5
 rn[TYR]an[CD2] rn[TYR]an[CE1] 7.8242 1
 rn[TYR]an[CD2] rn[TYR]an[OH] 0.0870023 1
@@ -5082,6 +5256,7 @@ rn[TYR]an[CD2] rn[VAL]an[CG1] 1.06914 1
 rn[TYR]an[CD2] rn[VAL]an[CG2] 0.108726 1
 rn[TYR]an[CD2] rn[VAL]an[N] 0.04946 1
 rn[TYR]an[CD2] rn[VAL]an[O] 0.182351 1
+rn[TYR]an[CD2] c[any] 204.53 92
 rn[TYR]an[CD2] c[solvent] 33.6707 6
 rn[TYR]an[CE1] rn[TYR]an[CE2] 0.889642 1
 rn[TYR]an[CE1] rn[TYR]an[CG] 1.70768 1
@@ -5089,28 +5264,33 @@ rn[TYR]an[CE1] rn[TYR]an[OH] 0.0142481 1
 rn[TYR]an[CE1] rn[VAL]an[CB] 4.02573 1
 rn[TYR]an[CE1] rn[VAL]an[CG1] 11.925 4
 rn[TYR]an[CE1] rn[VAL]an[CG2] 8.57092 3
+rn[TYR]an[CE1] c[any] 243.861 76
 rn[TYR]an[CE1] c[solvent] 72.4838 5
 rn[TYR]an[CE2] rn[TYR]an[OH] 0.788461 1
 rn[TYR]an[CE2] rn[VAL]an[C] 0.00374635 1
 rn[TYR]an[CE2] rn[VAL]an[CG1] 2.61518 1
 rn[TYR]an[CE2] rn[VAL]an[CG2] 1.35871 1
 rn[TYR]an[CE2] rn[VAL]an[N] 0.0374764 1
+rn[TYR]an[CE2] c[any] 237.019 88
 rn[TYR]an[CE2] c[solvent] 58.3524 6
 rn[TYR]an[CG] rn[TYR]an[OH] 0.00780586 1
 rn[TYR]an[CG] rn[VAL]an[C] 0.128341 1
 rn[TYR]an[CG] rn[VAL]an[CG1] 0.450248 1
 rn[TYR]an[CG] rn[VAL]an[CG2] 0.0013677 2
 rn[TYR]an[CG] rn[VAL]an[O] 0.081774 1
+rn[TYR]an[CG] c[any] 18.4901 30
 rn[TYR]an[CG] c[solvent] 4.83671 4
 rn[TYR]an[CZ] rn[TYR]an[OH] 0.230775 1
 rn[TYR]an[CZ] rn[VAL]an[CB] 1.15171 1
 rn[TYR]an[CZ] rn[VAL]an[CG1] 2.51318 2
 rn[TYR]an[CZ] rn[VAL]an[CG2] 4.55889 3
+rn[TYR]an[CZ] c[any] 69.7434 57
 rn[TYR]an[CZ] c[solvent] 14.2552 5
 rn[TYR]an[N] rn[VAL]an[C] 7.44395 1
 rn[TYR]an[N] rn[VAL]an[CA] 3.86896 1
 rn[TYR]an[N] rn[VAL]an[CG1] 2.24258 2
 rn[TYR]an[N] rn[VAL]an[O] 5.21272 1
+rn[TYR]an[N] c[any] 189.378 73
 rn[TYR]an[N] c[solvent] 11.3973 3
 rn[TYR]an[O] rn[VAL]an[C] 0.0357941 1
 rn[TYR]an[O] rn[VAL]an[CA] 8.35199 3
@@ -5119,6 +5299,7 @@ rn[TYR]an[O] rn[VAL]an[CG1] 6.29753 2
 rn[TYR]an[O] rn[VAL]an[CG2] 0.0896447 2
 rn[TYR]an[O] rn[VAL]an[N] 6.74974 2
 rn[TYR]an[O] rn[VAL]an[O] 1.32127 1
+rn[TYR]an[O] c[any] 246.675 105
 rn[TYR]an[O] c[solvent] 44.7441 6
 rn[TYR]an[OH] rn[VAL]an[C] 0.084964 1
 rn[TYR]an[OH] rn[VAL]an[CA] 3.06264 1
@@ -5127,6 +5308,7 @@ rn[TYR]an[OH] rn[VAL]an[CG1] 5.82906 3
 rn[TYR]an[OH] rn[VAL]an[CG2] 8.48907 3
 rn[TYR]an[OH] rn[VAL]an[N] 0.795264 1
 rn[TYR]an[OH] rn[VAL]an[O] 0.472719 1
+rn[TYR]an[OH] c[any] 339.34 84
 rn[TYR]an[OH] c[solvent] 154.046 6
 rn[VAL]an[C] rn[VAL]an[C] 0.347489 1
 rn[VAL]an[C] rn[VAL]an[CA] 1.85645 1
@@ -5135,24 +5317,33 @@ rn[VAL]an[C] rn[VAL]an[CG1] 1.24947 1
 rn[VAL]an[C] rn[VAL]an[CG2] 1.67606 1
 rn[VAL]an[C] rn[VAL]an[N] 7.08295 1
 rn[VAL]an[C] rn[VAL]an[O] 0.20702 1
+rn[VAL]an[C] c[any] 213.109 123
 rn[VAL]an[C] c[solvent] 2.23355 5
 rn[VAL]an[CA] rn[VAL]an[CG1] 5.48157e-05 1
 rn[VAL]an[CA] rn[VAL]an[CG2] 1.74759 1
 rn[VAL]an[CA] rn[VAL]an[N] 2.1617 1
 rn[VAL]an[CA] rn[VAL]an[O] 7.28414 2
+rn[VAL]an[CA] c[any] 226.126 127
 rn[VAL]an[CA] c[solvent] 0.628096 3
 rn[VAL]an[CB] rn[VAL]an[CG1] 6.1539 2
 rn[VAL]an[CB] rn[VAL]an[CG2] 0.540072 1
 rn[VAL]an[CB] rn[VAL]an[O] 3.07949 1
+rn[VAL]an[CB] c[any] 209.505 129
 rn[VAL]an[CB] c[solvent] 27.7454 7
 rn[VAL]an[CG1] rn[VAL]an[CG1] 19.8119 4
 rn[VAL]an[CG1] rn[VAL]an[CG2] 9.82789 3
 rn[VAL]an[CG1] rn[VAL]an[N] 2.55412 1
 rn[VAL]an[CG1] rn[VAL]an[O] 0.933571 2
+rn[VAL]an[CG1] c[any] 747.795 280
 rn[VAL]an[CG1] c[solvent] 55.2381 10
 rn[VAL]an[CG2] rn[VAL]an[CG2] 1.98604 2
 rn[VAL]an[CG2] rn[VAL]an[O] 4.17171 2
+rn[VAL]an[CG2] c[any] 787.293 276
 rn[VAL]an[CG2] c[solvent] 120.182 11
+rn[VAL]an[N] c[any] 341.274 129
 rn[VAL]an[N] c[solvent] 5.65722 6
 rn[VAL]an[O] rn[VAL]an[O] 1.09422 1
+rn[VAL]an[O] c[any] 432.059 183
 rn[VAL]an[O] c[solvent] 65.3869 9
+c[any] c[any] 26668.6 8737
+c[any] c[solvent] 9902.02 1039
