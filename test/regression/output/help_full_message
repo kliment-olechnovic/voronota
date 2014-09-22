@@ -104,6 +104,7 @@ Command 'query-contacts' options:
 --drop-adjuncts                             flag to drop all adjuncts from input
 --set-adjuncts                  string      set adjuncts instead of filtering
 --inter-residue                             flag to convert input to inter-residue contacts
+--summary-file                  string      file path to create or update summary
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script
