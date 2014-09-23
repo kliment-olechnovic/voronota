@@ -11,6 +11,23 @@ namespace
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::ContactValue ContactValue;
 
+inline bool add_contact_value_from_stream_to_map_of_total_values(std::istream& input, std::map< std::pair<CRAD, CRAD>, double >& map_of_total_values)
+{
+	std::pair<std::string, std::string> name_strings;
+	double value;
+	input >> name_strings.first >> name_strings.second >> value;
+	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
+	{
+		const std::pair<CRAD, CRAD> names(CRAD::from_str(name_strings.first).without_numbering(), CRAD::from_str(name_strings.second).without_numbering());
+		if(names.first.valid() && names.second.valid())
+		{
+			map_of_total_values[modescommon::refine_pair_by_ordering(names)]+=value;
+			return true;
+		}
+	}
+	return false;
+}
+
 }
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
@@ -20,42 +37,17 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::vector<OD> list_of_option_descriptions;
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contact files (separated by whitespace characters)\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
 			std::cerr << "stdout  ->  list of potential values (line format: 'annotation1 annotation2 value')\n";
 			return;
 		}
 	}
 
-	std::set<std::string> filenames;
-	while(std::cin.good())
-	{
-		std::string token;
-		std::cin >> token;
-		if(!token.empty())
-		{
-			filenames.insert(token);
-		}
-	}
-	if(filenames.empty())
+	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
+	auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_total_values, map_of_total_areas);
+	if(map_of_total_areas.empty())
 	{
 		throw std::runtime_error("No input.");
-	}
-
-	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
-	for(std::set<std::string>::const_iterator filename=filenames.begin();filename!=filenames.end();++filename)
-	{
-		std::map< std::pair<CRAD, CRAD>, ContactValue > map_of_contacts;
-		{
-			std::ifstream finput(filename->c_str(), std::ios::in);
-			auxiliaries::read_lines_to_container(finput, modescommon::add_contact_record_from_stream_to_map, map_of_contacts);
-		}
-		if(!map_of_contacts.empty())
-		{
-			for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-			{
-				map_of_total_areas[modescommon::refine_pair_by_ordering(std::make_pair(it->first.first.without_numbering(), it->first.second.without_numbering()))]+=(it->second.area);
-			}
-		}
 	}
 
 	std::map<CRAD, double> map_of_generalized_total_areas;
