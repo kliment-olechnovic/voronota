@@ -10,17 +10,24 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
-inline bool add_contact_value_from_stream_to_map_of_total_values(std::istream& input, std::map< std::pair<CRAD, CRAD>, double >& map_of_total_values)
+template<bool Additive>
+inline bool add_contact_value_from_stream_to_map_of_contacts_values(std::istream& input, std::map< std::pair<CRAD, CRAD>, double >& map_of_values)
 {
 	std::pair<std::string, std::string> name_strings;
 	double value;
 	input >> name_strings.first >> name_strings.second >> value;
 	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
 	{
-		const std::pair<CRAD, CRAD> names(CRAD::from_str(name_strings.first).without_numbering(), CRAD::from_str(name_strings.second).without_numbering());
+		std::pair<CRAD, CRAD> names(CRAD::from_str(name_strings.first), CRAD::from_str(name_strings.second));
+		if(Additive)
+		{
+			names.first=names.first.without_numbering();
+			names.second=names.second.without_numbering();
+		}
 		if(names.first.valid() && names.second.valid())
 		{
-			map_of_total_values[modescommon::refine_pair_by_ordering(names)]+=value;
+			double& left_value=map_of_values[modescommon::refine_pair_by_ordering(names)];
+			left_value=(Additive ? (left_value+value) : value);
 			return true;
 		}
 	}
@@ -43,7 +50,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
-	auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_total_values, map_of_total_areas);
+	auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_contacts_values<true>, map_of_total_areas);
 	if(map_of_total_areas.empty())
 	{
 		throw std::runtime_error("No input.");
