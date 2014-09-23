@@ -9,7 +9,6 @@ namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef modescommon::ContactValue ContactValue;
 
 inline bool add_contact_value_from_stream_to_map_of_total_values(std::istream& input, std::map< std::pair<CRAD, CRAD>, double >& map_of_total_values)
 {
