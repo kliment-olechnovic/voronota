@@ -25,7 +25,7 @@ struct ContactValue
 		tags.insert(v.tags.begin(), v.tags.end());
 		for(std::map<std::string, double>::const_iterator it=v.adjuncts.begin();it!=v.adjuncts.end();++it)
 		{
-			adjuncts[it->first]=it->second;
+			adjuncts[it->first]+=it->second;
 		}
 		if(!v.graphics.empty())
 		{
