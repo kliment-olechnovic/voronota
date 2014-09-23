@@ -6,14 +6,12 @@
 
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_contact.h"
-#include "modescommon/handle_contact_summary.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::ContactValue ContactValue;
-typedef modescommon::ContactSummaryValue ContactSummaryValue;
 
 unsigned int calc_string_color_integer(const std::string& str)
 {
@@ -61,7 +59,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
-		list_of_option_descriptions.push_back(OD("--summary-file", "string", "file path to create or update summary"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
@@ -101,7 +98,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const bool inter_residue=poh.contains_option("--inter-residue");
-	const std::string summary_file=poh.argument<std::string>("--summary-file", "");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
@@ -204,36 +200,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 		{
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
-		}
-	}
-
-	if(!output_map_of_contacts.empty() && !summary_file.empty())
-	{
-		std::map< std::pair<CRAD, CRAD>, ContactSummaryValue > map_of_contact_summaries;
-		{
-			std::ifstream finput(summary_file.c_str(), std::ios::in);
-			if(finput.good())
-			{
-				auxiliaries::read_lines_to_container(finput, modescommon::add_contact_summary_record_from_stream_to_map, map_of_contact_summaries);
-			}
-		}
-		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
-		{
-			const std::pair<CRAD, CRAD> crads(it->first.first.without_numbering(), it->first.second.without_numbering());
-			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.first, crads.second))].add(it->second);
-			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.first, CRAD::any()))].add(it->second);
-			if(!(crads.first==crads.second))
-			{
-				map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(crads.second, CRAD::any()))].add(it->second);
-			}
-			map_of_contact_summaries[modescommon::refine_pair_by_ordering(std::make_pair(CRAD::any(), CRAD::any()))].add(it->second);
-		}
-		{
-			std::ofstream foutput(summary_file.c_str(), std::ios::out);
-			for(std::map< std::pair<CRAD, CRAD>, ContactSummaryValue >::const_iterator it=map_of_contact_summaries.begin();it!=map_of_contact_summaries.end();++it)
-			{
-				modescommon::print_contact_summary_record(it->first, it->second, foutput);
-			}
 		}
 	}
 
