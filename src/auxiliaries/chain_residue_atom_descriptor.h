@@ -41,12 +41,6 @@ public:
 		return v;
 	}
 
-	static const ChainResidueAtomDescriptor& any()
-	{
-		static const ChainResidueAtomDescriptor v("any");
-		return v;
-	}
-
 	static std::string from_str(const std::string& input_str, ChainResidueAtomDescriptor& output_descriptor)
 	{
 		static const MarkerNaming mn;
@@ -245,7 +239,7 @@ public:
 
 	ChainResidueAtomDescriptor without_numbering() const
 	{
-		if((*this)==solvent() || (*this)==any())
+		if((*this)==solvent())
 		{
 			return (*this);
 		}
