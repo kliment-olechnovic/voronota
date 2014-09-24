@@ -51,6 +51,9 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 ($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query3
 ($TEST_SUBJECT query-balls --match 'an[OE1]' --whole-residues | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query4
 
+($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential --output-summed-areas | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_potential_areas
+($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_potential_values
+
 rm -r ./voronota_package
 
 hg status ./
