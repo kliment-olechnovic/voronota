@@ -169,6 +169,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--output-summed-areas", "", "flag to output summed areas instead of potential values"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
@@ -176,6 +177,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			return;
 		}
 	}
+
+	const bool output_summed_areas=poh.contains_option("--output-summed-areas");
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
 	auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_contacts_values<true>, map_of_total_areas);
@@ -201,12 +204,19 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
 		const double ab=it->second;
-		const double ax=map_of_generalized_total_areas[crads.first];
-		const double bx=map_of_generalized_total_areas[crads.second];
-		if(ab>0.0 && ax>0.0 && bx>0.0)
+		if(output_summed_areas)
 		{
-			const double potential_value=(ab*sum_of_all_areas)/(ax*bx);
-			std::cout << crads.first.str() << " " << crads.second.str() << potential_value << "\n";
+			std::cout << crads.first.str() << " " << crads.second.str() << ab << "\n";
+		}
+		else
+		{
+			const double ax=map_of_generalized_total_areas[crads.first];
+			const double bx=map_of_generalized_total_areas[crads.second];
+			if(ab>0.0 && ax>0.0 && bx>0.0)
+			{
+				const double potential_value=(ab*sum_of_all_areas)/(ax*bx);
+				std::cout << crads.first.str() << " " << crads.second.str() << potential_value << "\n";
+			}
 		}
 	}
 }

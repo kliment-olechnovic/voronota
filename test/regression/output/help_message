@@ -1,4 +1,4 @@
-Voronota version 1.6
+Voronota version 1.7
 
 Commands:
 
@@ -8,4 +8,6 @@ calculate-vertices-in-parallel
 calculate-contacts
 query-balls
 query-contacts
+score-contacts-potential
+score-contacts
 
