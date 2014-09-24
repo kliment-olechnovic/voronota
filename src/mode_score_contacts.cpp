@@ -87,6 +87,39 @@ inline void print_score(const std::string& name, const EnergyDescriptor& ed, con
 	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << "\n";
 }
 
+template<typename T>
+inline std::map< CRAD, std::set<CRAD> > construct_graph_from_map_of_contacts(const std::map<std::pair<CRAD, CRAD>, T>& map_of_contacts, const int depth)
+{
+	std::map< CRAD, std::set<CRAD> > graph;
+	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const std::pair<CRAD, CRAD>& crads=it->first;
+		if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
+		{
+			graph[crads.first].insert(crads.second);
+			graph[crads.second].insert(crads.first);
+		}
+	}
+	for(int i=0;i<depth;i++)
+	{
+		std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
+		for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
+		{
+			const CRAD& center=graph_it->first;
+			const std::set<CRAD>& neighbors=graph_it->second;
+			std::set<CRAD>& expandable_neighbors=expanded_graph[center];
+			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();neighbors_it++)
+			{
+				const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
+				expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+			}
+			expandable_neighbors.erase(center);
+		}
+		graph=expanded_graph;
+	}
+	return graph;
+}
+
 }
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
@@ -220,33 +253,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<CRAD, EnergyDescriptor> residue_energy_descriptors;
 	{
-		std::map< CRAD, std::set<CRAD> > residue_graph;
-		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
-		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
-			{
-				residue_graph[crads.first].insert(crads.second);
-				residue_graph[crads.second].insert(crads.first);
-			}
-		}
-		for(int i=0;i<depth;i++)
-		{
-			std::map< CRAD, std::set<CRAD> > expanded_residue_graph=residue_graph;
-			for(std::map< CRAD, std::set<CRAD> >::const_iterator residue_graph_it=residue_graph.begin();residue_graph_it!=residue_graph.end();++residue_graph_it)
-			{
-				const CRAD& center=residue_graph_it->first;
-				const std::set<CRAD>& neighbors=residue_graph_it->second;
-				std::set<CRAD>& expandable_neighbors=expanded_residue_graph[center];
-				for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();neighbors_it++)
-				{
-					const std::set<CRAD>& neighbor_neighbors=residue_graph[*neighbors_it];
-					expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
-				}
-				expandable_neighbors.erase(center);
-			}
-			residue_graph=expanded_residue_graph;
-		}
+		std::map< CRAD, std::set<CRAD> > residue_graph=construct_graph_from_map_of_contacts(inter_residue_energy_descriptors, depth);
 		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
 		{
 			const std::pair<CRAD, CRAD>& crads=it->first;
