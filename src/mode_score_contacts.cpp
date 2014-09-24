@@ -53,6 +53,51 @@ struct EnergyDescriptor
 	}
 };
 
+std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_energy_descriptors(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descrptors, const int depth)
+{
+	std::map< CRAD, std::set<CRAD> > graph;
+	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
+	{
+		const std::pair<CRAD, CRAD>& crads=it->first;
+		if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
+		{
+			graph[crads.first].insert(crads.second);
+			graph[crads.second].insert(crads.first);
+		}
+	}
+	for(int i=0;i<depth;i++)
+	{
+		std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
+		for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
+		{
+			const CRAD& center=graph_it->first;
+			const std::set<CRAD>& neighbors=graph_it->second;
+			std::set<CRAD>& expandable_neighbors=expanded_graph[center];
+			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();neighbors_it++)
+			{
+				const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
+				expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+			}
+			expandable_neighbors.erase(center);
+		}
+		graph=expanded_graph;
+	}
+	std::map<CRAD, EnergyDescriptor> map_of_single_energy_descriptors;
+	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
+	{
+		const std::pair<CRAD, CRAD>& crads=it->first;
+		const std::set<CRAD>& related_crads1=graph[crads.first];
+		const std::set<CRAD>& related_crads2=graph[crads.second];
+		std::set<CRAD> related_crads=related_crads1;
+		related_crads.insert(related_crads2.begin(), related_crads2.end());
+		for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
+		{
+			map_of_single_energy_descriptors[*jt].add(it->second);
+		}
+	}
+	return map_of_single_energy_descriptors;
+}
+
 struct EnergyScore
 {
 	double normalized_energy;
@@ -85,39 +130,6 @@ inline void print_score(const std::string& name, const EnergyDescriptor& ed, con
 	output << name << " ";
 	output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
 	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << "\n";
-}
-
-template<typename T>
-inline std::map< CRAD, std::set<CRAD> > construct_graph_from_map_of_contacts(const std::map<std::pair<CRAD, CRAD>, T>& map_of_contacts, const int depth)
-{
-	std::map< CRAD, std::set<CRAD> > graph;
-	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
-		{
-			graph[crads.first].insert(crads.second);
-			graph[crads.second].insert(crads.first);
-		}
-	}
-	for(int i=0;i<depth;i++)
-	{
-		std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
-		for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
-		{
-			const CRAD& center=graph_it->first;
-			const std::set<CRAD>& neighbors=graph_it->second;
-			std::set<CRAD>& expandable_neighbors=expanded_graph[center];
-			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();neighbors_it++)
-			{
-				const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
-				expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
-			}
-			expandable_neighbors.erase(center);
-		}
-		graph=expanded_graph;
-	}
-	return graph;
 }
 
 }
@@ -177,6 +189,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
 		list_of_option_descriptions.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
 		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
+		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
 		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
@@ -192,6 +205,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
 	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
 	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
+	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 1);
 	const double erf_mean=poh.argument<double>("--erf-mean", 0.3);
@@ -240,6 +254,17 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				ed.strange_area=ed.total_area;
 			}
 		}
+		if(!inter_atom_scores_file.empty())
+		{
+			std::ofstream foutput(inter_atom_scores_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+				{
+					print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
+				}
+			}
+		}
 	}
 
 	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_residue_energy_descriptors;
@@ -249,51 +274,35 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			inter_residue_energy_descriptors[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_atom(), crads.second.without_atom()))].add(it->second);
 		}
-	}
-
-	std::map<CRAD, EnergyDescriptor> residue_energy_descriptors;
-	{
-		std::map< CRAD, std::set<CRAD> > residue_graph=construct_graph_from_map_of_contacts(inter_residue_energy_descriptors, depth);
-		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
+		if(!inter_residue_scores_file.empty())
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			const std::set<CRAD>& related_residues1=residue_graph[crads.first];
-			const std::set<CRAD>& related_residues2=residue_graph[crads.second];
-			std::set<CRAD> related_residues=related_residues1;
-			related_residues.insert(related_residues2.begin(), related_residues2.end());
-			for(std::set<CRAD>::const_iterator jt=related_residues.begin();jt!=related_residues.end();++jt)
+			std::ofstream foutput(inter_residue_scores_file.c_str(), std::ios::out);
+			if(foutput.good())
 			{
-				residue_energy_descriptors[*jt].add(it->second);
+				for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
+				{
+					print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
+				}
 			}
 		}
 	}
 
-	if(!inter_atom_scores_file.empty())
+	if(!atom_scores_file.empty())
 	{
-		std::ofstream foutput(inter_atom_scores_file.c_str(), std::ios::out);
+		const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=construct_single_energy_descriptors_from_pair_energy_descriptors(inter_atom_energy_descriptors, depth);
+		std::ofstream foutput(residue_scores_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
 			{
-				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
-			}
-		}
-	}
-
-	if(!inter_residue_scores_file.empty())
-	{
-		std::ofstream foutput(inter_residue_scores_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
-			{
-				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
+				print_score(it->first.str(), it->second, erf_mean, erf_sd, foutput);
 			}
 		}
 	}
 
 	if(!residue_scores_file.empty())
 	{
+		const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=construct_single_energy_descriptors_from_pair_energy_descriptors(inter_residue_energy_descriptors, depth);
 		std::ofstream foutput(residue_scores_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
