@@ -206,7 +206,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		const double ab=it->second;
 		if(output_summed_areas)
 		{
-			std::cout << crads.first.str() << " " << crads.second.str() << ab << "\n";
+			std::cout << crads.first.str() << " " << crads.second.str() << " " << ab << "\n";
 		}
 		else
 		{
@@ -214,8 +214,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			const double bx=map_of_generalized_total_areas[crads.second];
 			if(ab>0.0 && ax>0.0 && bx>0.0)
 			{
-				const double potential_value=(ab*sum_of_all_areas)/(ax*bx);
-				std::cout << crads.first.str() << " " << crads.second.str() << potential_value << "\n";
+				const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
+				std::cout << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
 			}
 		}
 	}
