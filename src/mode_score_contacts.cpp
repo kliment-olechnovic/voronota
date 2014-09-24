@@ -227,7 +227,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  line of global scores (line format: straight_global average_local)\n";
+			std::cerr << "stdout  ->  line of global scores\n";
 			return;
 		}
 	}
@@ -305,5 +305,14 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!residue_scores_file.empty())
 	{
 		print_single_scores_to_file(construct_single_energy_descriptors_from_pair_energy_descriptors(inter_residue_energy_descriptors, depth), erf_mean, erf_sd, residue_scores_file);
+	}
+
+	{
+		EnergyDescriptor global_ed;
+		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+		{
+			global_ed.add(it->second);
+		}
+		print_score("global", global_ed, erf_mean, erf_sd, std::cout);
 	}
 }
