@@ -1,4 +1,4 @@
-Voronota version 1.6
+Voronota version 1.7
 
 Commands:
 
@@ -8,6 +8,8 @@ calculate-vertices-in-parallel
 calculate-contacts
 query-balls
 query-contacts
+score-contacts-potential
+score-contacts
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -116,4 +118,23 @@ Command 'query-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'score-contacts-potential' options:
+--output-summed-areas                       flag to output summed areas instead of potential values
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  list of potential values (line format: 'annotation1 annotation2 value')
+
+Command 'score-contacts' options:
+--potential-file                string   *  file path to input potential values
+--inter-atom-scores-file        string      file path to output inter-atom scores
+--inter-residue-scores-file     string      file path to output inter-residue scores
+--atom-scores-file              string      file path to output atom scores
+--residue-scores-file           string      file path to output residue scores
+--depth                         number      neighborhood normalization depth
+--erf-mean                      number      mean parameter for error function
+--erf-sd                        number      sd parameter for error function
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  line of global scores
 
