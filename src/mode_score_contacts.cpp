@@ -53,17 +53,38 @@ struct EnergyDescriptor
 	}
 };
 
-inline double calculate_score_from_energy_descriptor(const EnergyDescriptor& ed, const double erf_mean, const double erf_sd)
+struct EnergyScore
+{
+	double normalized_energy;
+	double energy_score;
+	double actuality_score;
+	double quality_score;
+
+	EnergyScore() : normalized_energy(0.0), energy_score(0.0), actuality_score(0.0), quality_score(0.0)
+	{
+	}
+};
+
+inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDescriptor& ed, const double erf_mean, const double erf_sd)
 {
 	static const double square_root_of_two=sqrt(2.0);
+	EnergyScore es;
 	if(ed.total_area>0.0)
 	{
-		const double normalized_energy=ed.energy/ed.total_area;
-		const double completeness_score=1.0-(ed.strange_area/ed.total_area);
-		const double energy_quality_score=1.0-(0.5*(1.0+erf((normalized_energy-erf_mean)/(square_root_of_two*erf_sd))));
-		return (energy_quality_score*completeness_score);
+		es.normalized_energy=ed.energy/ed.total_area;
+		es.energy_score=1.0-(0.5*(1.0+erf((es.normalized_energy-erf_mean)/(square_root_of_two*erf_sd))));
+		es.actuality_score=1.0-(ed.strange_area/ed.total_area);
+		es.quality_score=(es.energy_score*es.actuality_score);
 	}
-	return 0.0;
+	return es;
+}
+
+inline void print_score(const std::string& name, const EnergyDescriptor& ed, const double erf_mean, const double erf_sd, std::ostream& output)
+{
+	const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, erf_mean, erf_sd);
+	output << name << " ";
+	output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
+	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << "\n";
 }
 
 }
@@ -247,7 +268,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
 			{
-				foutput << it->first.first.str() << " " << it->first.second.str() << " " << calculate_score_from_energy_descriptor(it->second, erf_mean, erf_sd) << "\n";
+				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
 			}
 		}
 	}
@@ -259,7 +280,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_residue_energy_descriptors.begin();it!=inter_residue_energy_descriptors.end();++it)
 			{
-				foutput << it->first.first.str() << " " << it->first.second.str() << " " << calculate_score_from_energy_descriptor(it->second, erf_mean, erf_sd) << "\n";
+				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, erf_mean, erf_sd, foutput);
 			}
 		}
 	}
@@ -271,7 +292,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=residue_energy_descriptors.begin();it!=residue_energy_descriptors.end();++it)
 			{
-				foutput << it->first.str() << " " << calculate_score_from_energy_descriptor(it->second, erf_mean, erf_sd) << "\n";
+				print_score(it->first.str(), it->second, erf_mean, erf_sd, foutput);
 			}
 		}
 	}
