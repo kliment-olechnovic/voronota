@@ -11,30 +11,6 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
-template<bool Additive>
-inline bool add_contact_value_from_stream_to_map_of_contacts_values(std::istream& input, std::map< std::pair<CRAD, CRAD>, double >& map_of_values)
-{
-	std::pair<std::string, std::string> name_strings;
-	double value;
-	input >> name_strings.first >> name_strings.second >> value;
-	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
-	{
-		std::pair<CRAD, CRAD> names(CRAD::from_str(name_strings.first), CRAD::from_str(name_strings.second));
-		if(Additive)
-		{
-			names.first=names.first.without_numbering();
-			names.second=names.second.without_numbering();
-		}
-		if(names.first.valid() && names.second.valid())
-		{
-			double& left_value=map_of_values[modescommon::refine_pair_by_ordering(names)];
-			left_value=(Additive ? (left_value+value) : value);
-			return true;
-		}
-	}
-	return false;
-}
-
 struct EnergyDescriptor
 {
 	double total_area;
@@ -181,7 +157,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool output_summed_areas=poh.contains_option("--output-summed-areas");
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
-	auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_contacts_values<true>, map_of_total_areas);
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<true>, map_of_total_areas);
 	if(map_of_total_areas.empty())
 	{
 		throw std::runtime_error("No contacts input.");
@@ -253,7 +229,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
 	{
-		auxiliaries::read_lines_to_container(std::cin, add_contact_value_from_stream_to_map_of_contacts_values<false>, map_of_contacts);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
@@ -267,7 +243,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::ifstream finput(potential_file.c_str(), std::ios::in);
 			if(finput.good())
 			{
-				auxiliaries::read_lines_to_container(finput, add_contact_value_from_stream_to_map_of_contacts_values<false>, map_of_potential_values);
+				auxiliaries::read_lines_to_container(finput, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_potential_values);
 			}
 		}
 		if(map_of_potential_values.empty())
