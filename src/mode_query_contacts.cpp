@@ -58,6 +58,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
@@ -97,6 +99,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
+	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
+	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const bool inter_residue=poh.contains_option("--inter-residue");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
@@ -151,6 +155,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
 	}
 
+	std::map< std::pair<CRAD, CRAD>, double > map_of_external_adjunct_values;
+	if(!set_external_adjuncts.empty())
+	{
+		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_external_adjunct_values);
+	}
+
 	std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
 
 	for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
@@ -182,7 +193,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty())
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
 	{
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
@@ -191,6 +202,18 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				modescommon::update_set_of_tags(it->second.tags, set_tags);
 				modescommon::update_map_of_adjuncts(it->second.adjuncts, set_adjuncts);
+				if(!map_of_external_adjunct_values.empty())
+				{
+					std::map< std::pair<CRAD, CRAD>, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crads);
+					if(adjunct_value_it==map_of_external_adjunct_values.end())
+					{
+						adjunct_value_it=map_of_external_adjunct_values.find(modescommon::refine_pair_by_ordering(crads));
+					}
+					if(adjunct_value_it!=map_of_external_adjunct_values.end())
+					{
+						it->second.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					}
+				}
 			}
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}

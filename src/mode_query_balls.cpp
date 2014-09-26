@@ -31,6 +31,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
@@ -52,6 +54,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
+	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
+	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
 	auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, list_of_balls);
@@ -80,6 +84,13 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_set_of_crads);
+	}
+
+	std::map<CRAD, double> map_of_external_adjunct_values;
+	if(!set_external_adjuncts.empty())
+	{
+		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptor_value_from_stream_to_map<false>, map_of_external_adjunct_values);
 	}
 
 	std::set<std::size_t> output_set_of_ball_ids;
@@ -114,13 +125,26 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty())
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
 	{
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
+			const CRAD& crad=list_of_balls[*it].first;
 			BallValue& value=list_of_balls[*it].second;
 			modescommon::update_set_of_tags(value.tags, set_tags);
 			modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
+			if(!map_of_external_adjunct_values.empty())
+			{
+				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
+				if(adjunct_value_it==map_of_external_adjunct_values.end())
+				{
+					adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
+				}
+				if(adjunct_value_it!=map_of_external_adjunct_values.end())
+				{
+					value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+				}
+			}
 		}
 		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
 		{

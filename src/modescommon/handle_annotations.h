@@ -210,6 +210,29 @@ inline bool match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pa
 }
 
 template<bool Additive>
+inline bool add_chain_residue_atom_descriptor_value_from_stream_to_map(std::istream& input, std::map<auxiliaries::ChainResidueAtomDescriptor, double>& map_of_values)
+{
+	std::string name_string;
+	double value;
+	input >> name_string >> value;
+	if(!input.fail() && !name_string.empty())
+	{
+		auxiliaries::ChainResidueAtomDescriptor name=auxiliaries::ChainResidueAtomDescriptor::from_str(name_string);
+		if(Additive)
+		{
+			name=name.without_numbering();
+		}
+		if(name.valid())
+		{
+			double& left_value=map_of_values[name];
+			left_value=(Additive ? (left_value+value) : value);
+			return true;
+		}
+	}
+	return false;
+}
+
+template<bool Additive>
 inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, double >& map_of_values)
 {
 	std::pair<std::string, std::string> name_strings;
