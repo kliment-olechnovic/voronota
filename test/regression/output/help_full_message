@@ -79,6 +79,8 @@ Command 'query-balls' options:
 --set-tags                      string      set tags instead of filtering
 --drop-adjuncts                             flag to drop all adjuncts from input
 --set-adjuncts                  string      set adjuncts instead of filtering
+--set-external-adjuncts         string      file path to input external adjuncts
+--set-external-adjuncts-name    string      name for external adjuncts
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
@@ -105,6 +107,8 @@ Command 'query-contacts' options:
 --set-tags                      string      set tags instead of filtering
 --drop-adjuncts                             flag to drop all adjuncts from input
 --set-adjuncts                  string      set adjuncts instead of filtering
+--set-external-adjuncts         string      file path to input external adjuncts
+--set-external-adjuncts-name    string      name for external adjuncts
 --inter-residue                             flag to convert input to inter-residue contacts
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script

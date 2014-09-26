@@ -54,6 +54,9 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential --output-summed-areas | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_potential_areas
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_potential_values
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts --potential-file $OUTPUT_DIR/contacts4_scores_potential_values --inter-atom-scores-file $OUTPUT_DIR/contacts4_scores_inter_atom --inter-residue-scores-file $OUTPUT_DIR/contacts4_scores_inter_residue --atom-scores-file $OUTPUT_DIR/contacts4_scores_atom --residue-scores-file $OUTPUT_DIR/contacts4_scores_residue) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_global
+($TEST_SUBJECT query-contacts --match-min-seq-sep 10 | $TEST_SUBJECT query-contacts --set-external-adjuncts $OUTPUT_DIR/contacts4_scores_inter_atom | column -t) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_scores_injected
+
+($TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_DIR/contacts4_scores_atom --set-external-adjuncts-name qsa | $TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_DIR/contacts4_scores_residue --set-external-adjuncts-name qsr | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_scores1
 
 rm -r ./voronota_package
 

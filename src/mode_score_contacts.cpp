@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "modescommon/assert_options.h"
-#include "modescommon/handle_contact.h"
+#include "modescommon/handle_annotations.h"
 
 namespace
 {
