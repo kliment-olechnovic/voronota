@@ -10,6 +10,25 @@
 namespace modescommon
 {
 
+template<typename T>
+inline T refine_pair(const T& p, const bool reverse)
+{
+	if(reverse)
+	{
+		return T(p.second, p.first);
+	}
+	else
+	{
+		return p;
+	}
+}
+
+template<typename T>
+inline T refine_pair_by_ordering(const T& p)
+{
+	return refine_pair(p, p.second<p.first);
+}
+
 inline void update_set_of_tags(std::set<std::string>& tags, const std::string& str)
 {
 	if(!str.empty() && str[0]!='.')
@@ -166,7 +185,7 @@ inline bool add_chain_residue_atom_descriptors_pair_from_stream_to_set(std::istr
 		if(auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.first, crads.first).empty()
 				&& auxiliaries::ChainResidueAtomDescriptor::from_str(crad_strings.second, crads.second).empty())
 		{
-			set_of_descriptors_pairs.insert(crads.first<crads.second ? crads : std::make_pair(crads.second, crads.first));
+			set_of_descriptors_pairs.insert(refine_pair_by_ordering(crads));
 			return true;
 		}
 	}
@@ -184,6 +203,30 @@ inline bool match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pa
 		if((descriptors_pair.first.contains(it->first) && descriptors_pair.second.contains(it->second)) ||
 				(descriptors_pair.first.contains(it->second) && descriptors_pair.second.contains(it->first)))
 		{
+			return true;
+		}
+	}
+	return false;
+}
+
+template<bool Additive>
+inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, double >& map_of_values)
+{
+	std::pair<std::string, std::string> name_strings;
+	double value;
+	input >> name_strings.first >> name_strings.second >> value;
+	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
+	{
+		std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
+		if(Additive)
+		{
+			names.first=names.first.without_numbering();
+			names.second=names.second.without_numbering();
+		}
+		if(names.first.valid() && names.second.valid())
+		{
+			double& left_value=map_of_values[refine_pair_by_ordering(names)];
+			left_value=(Additive ? (left_value+value) : value);
 			return true;
 		}
 	}

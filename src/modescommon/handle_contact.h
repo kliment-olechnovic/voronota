@@ -45,25 +45,6 @@ struct ContactValue
 	}
 };
 
-template<typename T>
-inline T refine_pair(const T& p, const bool reverse)
-{
-	if(reverse)
-	{
-		return T(p.second, p.first);
-	}
-	else
-	{
-		return p;
-	}
-}
-
-template<typename T>
-inline T refine_pair_by_ordering(const T& p)
-{
-	return refine_pair(p, p.second<p.first);
-}
-
 inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
 	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
