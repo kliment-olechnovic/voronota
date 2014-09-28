@@ -3,7 +3,7 @@
 
 #include "apollota/spheres_boundary_construction.h"
 
-#include "auxiliaries/atoms_reader.h"
+#include "auxiliaries/atoms_io.h"
 #include "auxiliaries/atom_radius_assigner.h"
 
 #include "modescommon/assert_options.h"
@@ -65,9 +65,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 	const double hull_offset=poh.argument<double>("--hull-offset", -1.0);
 
-	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
-			auxiliaries::AtomsReader::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :
-			auxiliaries::AtomsReader::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, false).atom_records);
+	const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
+			auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :
+			auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, false).atom_records);
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");
@@ -97,7 +97,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
-		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
+		const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(annotated)
 		{
