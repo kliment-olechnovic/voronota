@@ -81,6 +81,8 @@ Command 'query-balls' options:
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
+--pdb-output                    string      file path to output query result in PDB format
+--pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
