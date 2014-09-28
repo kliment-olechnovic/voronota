@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <fstream>
 
+#include "auxiliaries/atoms_io.h"
+
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_ball.h"
 
@@ -10,6 +12,50 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef modescommon::BallValue BallValue;
+
+inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_record(const CRAD& crad, const BallValue& value, const std::string& temperature_factor_adjunct_name)
+{
+	auxiliaries::AtomsIO::AtomRecord atom_record=auxiliaries::AtomsIO::AtomRecord();
+	atom_record.record_name=(value.tags.count("het")>0 ? std::string("HETATM") : std::string("ATOM"));
+	if(crad.serial!=CRAD::null_num())
+	{
+		atom_record.serial=crad.serial;
+		atom_record.serial_valid=true;
+	}
+	atom_record.name=crad.name;
+	atom_record.altLoc=crad.altLoc;
+	atom_record.resName=crad.resName;
+	atom_record.chainID=crad.chainID;
+	if(crad.resSeq!=CRAD::null_num())
+	{
+		atom_record.resSeq=crad.resSeq;
+		atom_record.resSeq_valid=true;
+	}
+	atom_record.iCode=crad.iCode;
+	atom_record.x=value.x;
+	atom_record.x_valid=true;
+	atom_record.y=value.y;
+	atom_record.y_valid=true;
+	atom_record.z=value.z;
+	atom_record.z_valid=true;
+	{
+		const std::map<std::string, double>::const_iterator oc_it=value.adjuncts.find("oc");
+		if(oc_it!=value.adjuncts.end())
+		{
+			atom_record.occupancy=oc_it->second;
+			atom_record.occupancy_valid=true;
+		}
+	}
+	{
+		const std::map<std::string, double>::const_iterator tf_it=value.adjuncts.find(temperature_factor_adjunct_name);
+		if(tf_it!=value.adjuncts.end())
+		{
+			atom_record.tempFactor=tf_it->second;
+			atom_record.tempFactor_valid=true;
+		}
+	}
+	return atom_record;
+}
 
 }
 
@@ -33,6 +79,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
+		list_of_option_descriptions.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
@@ -56,6 +104,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
+	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
+	const std::string pdb_output_b_factor=poh.argument<std::string>("--pdb-output-b-factor", "tf");
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
 	auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, list_of_balls);
@@ -156,6 +206,18 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
 			modescommon::print_ball_record(list_of_balls[*it].first, list_of_balls[*it].second, std::cout);
+		}
+	}
+
+	if(!output_set_of_ball_ids.empty() && !pdb_output.empty())
+	{
+		std::ofstream foutput(pdb_output.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+			{
+				foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[*it].first, list_of_balls[*it].second, pdb_output_b_factor)) << "\n";
+			}
 		}
 	}
 }

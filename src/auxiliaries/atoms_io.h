@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vector>
 #include <map>
+#include <iomanip>
 
 namespace auxiliaries
 {
@@ -124,6 +125,92 @@ public:
 			record.element=fix_undefined_string(substring_of_columned_line(pdb_file_line, 77, 78));
 			normalize_numbered_atom_name(record.name);
 			return record;
+		}
+	};
+
+	class PDBWriter
+	{
+	public:
+		static std::string write_atom_record_in_line(const AtomRecord& atom_record)
+		{
+			std::string line(80, ' ');
+			insert_string_to_columned_line(atom_record.record_name, 1, 6, false, line);
+			if(atom_record.serial_valid)
+			{
+				insert_string_to_columned_line(convert_int_to_string(atom_record.serial), 7, 11, true, line);
+			}
+			insert_string_to_columned_line(atom_record.name, (atom_record.name.size()>3 ? 13 : 14), 16, false, line);
+			insert_string_to_columned_line(atom_record.altLoc, 17, 17, false, line);
+			insert_string_to_columned_line(atom_record.resName, 18, 20, false, line);
+			insert_string_to_columned_line(atom_record.chainID, 22, 22, false, line);
+			if(atom_record.resSeq_valid)
+			{
+				insert_string_to_columned_line(convert_int_to_string(atom_record.resSeq), 23, 26, true, line);
+			}
+			insert_string_to_columned_line(atom_record.iCode, 27, 27, false, line);
+			if(atom_record.x_valid)
+			{
+				insert_string_to_columned_line(convert_double_to_string(atom_record.x, 3), 31, 38, true, line);
+			}
+			if(atom_record.y_valid)
+			{
+				insert_string_to_columned_line(convert_double_to_string(atom_record.y, 3), 39, 46, true, line);
+			}
+			if(atom_record.z_valid)
+			{
+				insert_string_to_columned_line(convert_double_to_string(atom_record.z, 3), 47, 54, true, line);
+			}
+			if(atom_record.occupancy_valid)
+			{
+				insert_string_to_columned_line(convert_double_to_string(atom_record.occupancy, 2), 55, 60, true, line);
+			}
+			if(atom_record.tempFactor_valid)
+			{
+				insert_string_to_columned_line(convert_double_to_string(atom_record.tempFactor, 2), 61, 66, true, line);
+			}
+			insert_string_to_columned_line(atom_record.element, 77, 78, true, line);
+			return line;
+		}
+
+		static std::string write_temperature_factor_to_line(const std::string& line, const double tempFactor)
+		{
+			std::string updated_line=line;
+			if(updated_line.size()<80)
+			{
+				updated_line.resize(80, ' ');
+			}
+			insert_string_to_columned_line(convert_double_to_string(tempFactor, 2), 61, 66, true, updated_line);
+			return updated_line;
+		}
+
+	private:
+		static std::string convert_int_to_string(const int value)
+		{
+			std::ostringstream output;
+			output << value;
+			return output.str();
+		}
+
+		static std::string convert_double_to_string(const double value, const int precision)
+		{
+			std::ostringstream output;
+			output << std::fixed << std::setprecision(precision) << value;
+			return output.str();
+		}
+
+		static bool insert_string_to_columned_line(const std::string& str, const std::size_t start, const std::size_t end, const bool shift_right, std::string& line)
+		{
+			if(!str.empty() && start>=1 && start<=end && end<=line.size())
+			{
+				const std::size_t interval_length=(end-start)+1;
+				if(str.size()<=interval_length)
+				{
+					const std::string addition(interval_length-str.size(), ' ');
+					line.replace(start-1, interval_length, (shift_right ? addition+str : str+addition));
+					return true;
+				}
+			}
+			return false;
 		}
 	};
 
