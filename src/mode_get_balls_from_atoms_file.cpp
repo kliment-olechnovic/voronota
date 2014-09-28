@@ -66,8 +66,8 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const double hull_offset=poh.argument<double>("--hull-offset", -1.0);
 
 	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
-			auxiliaries::AtomsReader::MMCIFReader::read_atom_records_from_file_stream(std::cin, include_heteroatoms, include_hydrogens) :
-			auxiliaries::AtomsReader::PDBReader::read_atom_records_from_file_stream(std::cin, include_heteroatoms, include_hydrogens));
+			auxiliaries::AtomsReader::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :
+			auxiliaries::AtomsReader::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, false).atom_records);
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");

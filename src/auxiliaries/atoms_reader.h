@@ -43,35 +43,54 @@ public:
 	class PDBReader
 	{
 	public:
-		static std::vector<AtomRecord> read_atom_records_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
+		struct Data
 		{
-			std::vector<AtomRecord> records;
-			while(file_stream.good())
+			std::vector<AtomRecord> atom_records;
+			std::vector<std::string> all_lines;
+			std::vector<std::size_t> map_of_atom_records_to_all_lines;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens, const bool store_lines)
+		{
+			Data data;
+			bool model_end_reached=false;
+			while(file_stream.good() && (!model_end_reached || store_lines))
 			{
 				std::string line;
 				std::getline(file_stream, line);
-				const std::string record_name=substring_of_columned_line(line, 1, 6);
-				if(record_name=="ATOM" || record_name=="HETATM")
+				if(store_lines)
 				{
-					const AtomRecord record=read_atom_record_from_line(line);
-					if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
+					data.all_lines.push_back(line);
+				}
+				if(!model_end_reached)
+				{
+					const std::string record_name=substring_of_columned_line(line, 1, 6);
+					if(record_name=="ATOM" || record_name=="HETATM")
 					{
-						if(check_atom_record_validity(record))
+						const AtomRecord record=read_atom_record_from_line(line);
+						if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 						{
-							records.push_back(record);
-						}
-						else
-						{
-							std::cerr << "Invalid atom record in line: " << line << "\n";
+							if(check_atom_record_validity(record))
+							{
+								data.atom_records.push_back(record);
+								if(store_lines)
+								{
+									data.map_of_atom_records_to_all_lines.push_back(data.all_lines.size()>0 ? (data.all_lines.size()-1) : 0);
+								}
+							}
+							else
+							{
+								std::cerr << "Invalid atom record in line: " << line << "\n";
+							}
 						}
 					}
-				}
-				else if(record_name=="END" || record_name=="ENDMDL")
-				{
-					return records;
+					else if(record_name=="END" || record_name=="ENDMDL")
+					{
+						model_end_reached=true;
+					}
 				}
 			}
-			return records;
+			return data;
 		}
 
 	private:
@@ -111,8 +130,14 @@ public:
 	class MMCIFReader
 	{
 	public:
-		static std::vector<AtomRecord> read_atom_records_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
+		struct Data
 		{
+			std::vector<AtomRecord> atom_records;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
+		{
+			Data data;
 			while(file_stream.good())
 			{
 				std::string token;
@@ -143,8 +168,7 @@ public:
 							}
 							if(!values.empty() && ((values.size()%header.size())==0))
 							{
-								std::vector<AtomRecord> records;
-								records.reserve(values.size()/header.size());
+								data.atom_records.reserve(values.size()/header.size());
 								const std::string first_model_id=get_value_from_table_row(header_map, values.begin(), "_atom_site.pdbx_PDB_model_num");
 								for(std::size_t i=0;i<values.size();i+=header.size())
 								{
@@ -155,7 +179,7 @@ public:
 										{
 											if(check_atom_record_validity(record))
 											{
-												records.push_back(record);
+												data.atom_records.push_back(record);
 											}
 											else
 											{
@@ -169,7 +193,7 @@ public:
 										}
 									}
 								}
-								return records;
+								return data;
 							}
 							else
 							{
@@ -183,7 +207,7 @@ public:
 					}
 				}
 			}
-			return std::vector<AtomRecord>();
+			return data;
 		}
 
 	private:
