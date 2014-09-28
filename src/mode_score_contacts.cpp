@@ -62,10 +62,7 @@ std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_e
 	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
-		const std::set<CRAD>& related_crads1=graph[crads.first];
-		const std::set<CRAD>& related_crads2=graph[crads.second];
-		std::set<CRAD> related_crads=related_crads1;
-		related_crads.insert(related_crads2.begin(), related_crads2.end());
+		std::set<CRAD> related_crads;
 		if(!(crads.first==CRAD::solvent()))
 		{
 			related_crads.insert(crads.first);
@@ -73,6 +70,14 @@ std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_e
 		if(!(crads.second==CRAD::solvent()))
 		{
 			related_crads.insert(crads.second);
+		}
+		{
+			const std::set<CRAD>& related_crads1=graph[crads.first];
+			related_crads.insert(related_crads1.begin(), related_crads1.end());
+		}
+		{
+			const std::set<CRAD>& related_crads2=graph[crads.second];
+			related_crads.insert(related_crads2.begin(), related_crads2.end());
 		}
 		for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
 		{
