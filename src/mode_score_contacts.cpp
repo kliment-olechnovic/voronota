@@ -66,6 +66,14 @@ std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_e
 		const std::set<CRAD>& related_crads2=graph[crads.second];
 		std::set<CRAD> related_crads=related_crads1;
 		related_crads.insert(related_crads2.begin(), related_crads2.end());
+		if(!(crads.first==CRAD::solvent()))
+		{
+			related_crads.insert(crads.first);
+		}
+		if(!(crads.second==CRAD::solvent()))
+		{
+			related_crads.insert(crads.second);
+		}
 		for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
 		{
 			map_of_single_energy_descriptors[*jt].add(it->second);
