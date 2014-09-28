@@ -1,5 +1,5 @@
-#ifndef AUXILIARIES_ATOMS_READER_H_
-#define AUXILIARIES_ATOMS_READER_H_
+#ifndef AUXILIARIES_ATOMS_IO_H_
+#define AUXILIARIES_ATOMS_IO_H_
 
 #include <iostream>
 #include <string>
@@ -11,7 +11,7 @@
 namespace auxiliaries
 {
 
-class AtomsReader
+class AtomsIO
 {
 public:
 	struct AtomRecord
@@ -326,4 +326,4 @@ private:
 
 }
 
-#endif /* AUXILIARIES_ATOMS_READER_H_ */
+#endif /* AUXILIARIES_ATOMS_IO_H_ */
