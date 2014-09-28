@@ -30,6 +30,11 @@ public:
 	{
 	}
 
+	template<typename T>
+	ChainResidueAtomDescriptor(const T& obj, const std::string& chainID) : serial(obj.serial), chainID(chainID), resSeq(obj.resSeq), resName(obj.resName), name(obj.name), altLoc(obj.altLoc), iCode(obj.iCode)
+	{
+	}
+
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
