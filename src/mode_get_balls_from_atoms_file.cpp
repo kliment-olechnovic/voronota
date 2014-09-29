@@ -115,7 +115,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!atom.element.empty())
 				{
-					modescommon::update_set_of_tags(value.tags, atom.element);
+					modescommon::update_set_of_tags(value.tags, std::string("el=")+atom.element);
 				}
 				if(atom.occupancy_valid)
 				{
