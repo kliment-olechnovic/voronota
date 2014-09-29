@@ -47,7 +47,7 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 ($TEST_SUBJECT query-contacts --match-first 'an[O,NZ]' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_DIR/contacts4_query7 > $OUTPUT_DIR/contacts4_query9
 
 ($TEST_SUBJECT query-balls --match 'r[3:7,9]&an[CA,CB]' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query1
-($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'N|O' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query2
+($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query2
 ($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_DIR/contacts4_query2 | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query3
 ($TEST_SUBJECT query-balls --match 'an[OE1]' --whole-residues | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_query4
 

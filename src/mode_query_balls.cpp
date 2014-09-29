@@ -54,6 +54,15 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 			atom_record.tempFactor_valid=true;
 		}
 	}
+	{
+		for(std::set<std::string>::const_iterator tags_it=value.tags.begin();tags_it!=value.tags.end() && atom_record.element.empty();++tags_it)
+		{
+			if(tags_it->find("el=")!=std::string::npos)
+			{
+				atom_record.element=tags_it->substr(3, 1);
+			}
+		}
+	}
 	return atom_record;
 }
 
