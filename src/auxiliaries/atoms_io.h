@@ -49,6 +49,22 @@ public:
 			std::vector<AtomRecord> atom_records;
 			std::vector<std::string> all_lines;
 			std::vector<std::size_t> map_of_atom_records_to_all_lines;
+
+			bool valid() const
+			{
+				if(atom_records.empty() || all_lines.size()<atom_records.size() || map_of_atom_records_to_all_lines.size()!=atom_records.size())
+				{
+					return false;
+				}
+				for(std::size_t i=0;i<map_of_atom_records_to_all_lines.size();i++)
+				{
+					if(map_of_atom_records_to_all_lines[i]>=all_lines.size())
+					{
+						return false;
+					}
+				}
+				return true;
+			}
 		};
 
 		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens, const bool store_lines)
@@ -172,14 +188,14 @@ public:
 			return line;
 		}
 
-		static std::string write_temperature_factor_to_line(const std::string& line, const double tempFactor)
+		static std::string write_temperature_factor_to_line(const std::string& line, const bool tempFactor_valid, const double tempFactor)
 		{
 			std::string updated_line=line;
 			if(updated_line.size()<80)
 			{
 				updated_line.resize(80, ' ');
 			}
-			insert_string_to_columned_line(convert_double_to_string(tempFactor, 2), 61, 66, true, updated_line);
+			insert_string_to_columned_line((tempFactor_valid ? convert_double_to_string(tempFactor, 2) : std::string()), 61, 66, true, updated_line);
 			return updated_line;
 		}
 
@@ -200,7 +216,7 @@ public:
 
 		static bool insert_string_to_columned_line(const std::string& str, const std::size_t start, const std::size_t end, const bool shift_right, std::string& line)
 		{
-			if(!str.empty() && start>=1 && start<=end && end<=line.size())
+			if(start>=1 && start<=end && end<=line.size())
 			{
 				const std::size_t interval_length=(end-start)+1;
 				if(str.size()<=interval_length)

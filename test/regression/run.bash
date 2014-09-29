@@ -58,6 +58,7 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 
 ($TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_DIR/contacts4_scores_atom --set-external-adjuncts-name qsa | $TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_DIR/contacts4_scores_residue --set-external-adjuncts-name qsr | column -t) < $OUTPUT_DIR/balls4 > $OUTPUT_DIR/balls4_scores1
 $TEST_SUBJECT query-balls --pdb-output $OUTPUT_DIR/balls4_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_DIR/balls4_scores1 > /dev/null
+$TEST_SUBJECT query-balls --pdb-output $OUTPUT_DIR/balls4_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_FILE < $OUTPUT_DIR/balls4_scores1 > /dev/null
 
 rm -r ./voronota_package
 

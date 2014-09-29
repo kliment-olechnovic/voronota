@@ -81,6 +81,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
 		list_of_option_descriptions.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
+		list_of_option_descriptions.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
@@ -106,6 +107,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
 	const std::string pdb_output_b_factor=poh.argument<std::string>("--pdb-output-b-factor", "tf");
+	const std::string pdb_output_template=poh.argument<std::string>("--pdb-output-template", "");
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
 	auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, list_of_balls);
@@ -211,12 +213,58 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!output_set_of_ball_ids.empty() && !pdb_output.empty())
 	{
-		std::ofstream foutput(pdb_output.c_str(), std::ios::out);
-		if(foutput.good())
+		if(pdb_output_template.empty())
 		{
-			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+			std::ofstream foutput(pdb_output.c_str(), std::ios::out);
+			if(foutput.good())
 			{
-				foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[*it].first, list_of_balls[*it].second, pdb_output_b_factor)) << "\n";
+				for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+				{
+					foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[*it].first, list_of_balls[*it].second, pdb_output_b_factor)) << "\n";
+				}
+			}
+		}
+		else
+		{
+			auxiliaries::AtomsIO::PDBReader::Data pdb_file_data;
+			{
+				std::ifstream finput(pdb_output_template.c_str(), std::ios::in);
+				pdb_file_data=auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(finput, true, true, true);
+			}
+			if(!pdb_file_data.valid())
+			{
+				throw std::runtime_error("Invalid PDB file output template.");
+			}
+			else
+			{
+				std::ofstream foutput(pdb_output.c_str(), std::ios::out);
+				if(foutput.good())
+				{
+					std::map<CRAD, std::size_t> output_map_of_ball_ids;
+					for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+					{
+						output_map_of_ball_ids[list_of_balls[*it].first]=(*it);
+					}
+					int icount=0;
+					for(std::size_t i=0;i<pdb_file_data.atom_records.size();i++)
+					{
+						const std::map<CRAD, std::size_t>::const_iterator ball_id_it=output_map_of_ball_ids.find(CRAD(pdb_file_data.atom_records[i], pdb_file_data.atom_records[i].chainID));
+						if(ball_id_it!=output_map_of_ball_ids.end())
+						{
+							const std::map<std::string, double>& ball_adjuncts=list_of_balls[ball_id_it->second].second.adjuncts;
+							const std::map<std::string, double>::const_iterator temperature_factor_it=ball_adjuncts.find(pdb_output_b_factor);
+							std::string& ball_line=pdb_file_data.all_lines[pdb_file_data.map_of_atom_records_to_all_lines.at(i)];
+							ball_line=(temperature_factor_it!=ball_adjuncts.end()) ?
+									auxiliaries::AtomsIO::PDBWriter::write_temperature_factor_to_line(ball_line, true, temperature_factor_it->second) :
+									auxiliaries::AtomsIO::PDBWriter::write_temperature_factor_to_line(ball_line, false, 0);
+							icount++;
+						}
+					}
+					for(std::size_t i=0;i<pdb_file_data.all_lines.size();i++)
+					{
+						foutput << pdb_file_data.all_lines[i] << "\n";
+					}
+				}
 			}
 		}
 	}
