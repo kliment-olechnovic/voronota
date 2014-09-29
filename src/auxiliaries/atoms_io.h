@@ -92,7 +92,7 @@ public:
 								data.atom_records.push_back(record);
 								if(store_lines)
 								{
-									data.map_of_atom_records_to_all_lines.push_back(data.all_lines.size()>0 ? (data.all_lines.size()-1) : 0);
+									data.map_of_atom_records_to_all_lines.push_back(!data.all_lines.empty() ? (data.all_lines.size()-1) : 0);
 								}
 							}
 							else

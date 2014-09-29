@@ -49,7 +49,7 @@ std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_e
 			const CRAD& center=graph_it->first;
 			const std::set<CRAD>& neighbors=graph_it->second;
 			std::set<CRAD>& expandable_neighbors=expanded_graph[center];
-			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();neighbors_it++)
+			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
 			{
 				const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
 				expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
