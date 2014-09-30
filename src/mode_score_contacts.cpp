@@ -32,31 +32,34 @@ struct EnergyDescriptor
 std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_energy_descriptors(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descrptors, const int depth)
 {
 	std::map< CRAD, std::set<CRAD> > graph;
-	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
+	if(depth>0)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
+		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
 		{
-			graph[crads.first].insert(crads.second);
-			graph[crads.second].insert(crads.first);
-		}
-	}
-	for(int i=0;i<depth;i++)
-	{
-		std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
-		for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
-		{
-			const CRAD& center=graph_it->first;
-			const std::set<CRAD>& neighbors=graph_it->second;
-			std::set<CRAD>& expandable_neighbors=expanded_graph[center];
-			for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+			const std::pair<CRAD, CRAD>& crads=it->first;
+			if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
 			{
-				const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
-				expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+				graph[crads.first].insert(crads.second);
+				graph[crads.second].insert(crads.first);
 			}
-			expandable_neighbors.erase(center);
 		}
-		graph=expanded_graph;
+		for(int i=0;i<depth;i++)
+		{
+			std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
+			for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
+			{
+				const CRAD& center=graph_it->first;
+				const std::set<CRAD>& neighbors=graph_it->second;
+				std::set<CRAD>& expandable_neighbors=expanded_graph[center];
+				for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+				{
+					const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
+					expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+				}
+				expandable_neighbors.erase(center);
+			}
+			graph=expanded_graph;
+		}
 	}
 	std::map<CRAD, EnergyDescriptor> map_of_single_energy_descriptors;
 	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
