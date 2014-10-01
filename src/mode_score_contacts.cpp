@@ -195,10 +195,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
 		map_of_generalized_total_areas[crads.first]+=(it->second);
-		if(!(crads.first==crads.second))
-		{
-			map_of_generalized_total_areas[crads.second]+=(it->second);
-		}
+		map_of_generalized_total_areas[crads.second]+=(it->second);
 		sum_of_all_areas+=(it->second);
 	}
 
