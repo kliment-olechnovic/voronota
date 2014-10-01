@@ -2,6 +2,7 @@
 #define MODESCOMMON_HANDLE_CONTACT_H_
 
 #include "handle_annotations.h"
+#include "handle_matchings.h"
 
 namespace modescommon
 {
