@@ -5,6 +5,7 @@
 
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_annotations.h"
+#include "modescommon/handle_mappings.h"
 
 namespace
 {
@@ -28,67 +29,6 @@ struct EnergyDescriptor
 		energy+=ed.energy;
 	}
 };
-
-std::map<CRAD, EnergyDescriptor> construct_single_energy_descriptors_from_pair_energy_descriptors(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descrptors, const int depth)
-{
-	std::map< CRAD, std::set<CRAD> > graph;
-	if(depth>0)
-	{
-		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
-		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
-			{
-				graph[crads.first].insert(crads.second);
-				graph[crads.second].insert(crads.first);
-			}
-		}
-		for(int i=0;i<depth;i++)
-		{
-			std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
-			for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
-			{
-				const CRAD& center=graph_it->first;
-				const std::set<CRAD>& neighbors=graph_it->second;
-				std::set<CRAD>& expandable_neighbors=expanded_graph[center];
-				for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
-				{
-					const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
-					expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
-				}
-				expandable_neighbors.erase(center);
-			}
-			graph=expanded_graph;
-		}
-	}
-	std::map<CRAD, EnergyDescriptor> map_of_single_energy_descriptors;
-	for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descrptors.begin();it!=map_of_pair_energy_descrptors.end();++it)
-	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		std::set<CRAD> related_crads;
-		if(!(crads.first==CRAD::solvent()))
-		{
-			related_crads.insert(crads.first);
-		}
-		if(!(crads.second==CRAD::solvent()))
-		{
-			related_crads.insert(crads.second);
-		}
-		{
-			const std::set<CRAD>& related_crads1=graph[crads.first];
-			related_crads.insert(related_crads1.begin(), related_crads1.end());
-		}
-		{
-			const std::set<CRAD>& related_crads2=graph[crads.second];
-			related_crads.insert(related_crads2.begin(), related_crads2.end());
-		}
-		for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
-		{
-			map_of_single_energy_descriptors[*jt].add(it->second);
-		}
-	}
-	return map_of_single_energy_descriptors;
-}
 
 struct EnergyScore
 {
@@ -310,12 +250,12 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!atom_scores_file.empty())
 	{
-		print_single_scores_to_file(construct_single_energy_descriptors_from_pair_energy_descriptors(inter_atom_energy_descriptors, depth), escp, atom_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, depth), escp, atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		print_single_scores_to_file(construct_single_energy_descriptors_from_pair_energy_descriptors(inter_residue_energy_descriptors, depth), escp, residue_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth), escp, residue_scores_file);
 	}
 
 	{
