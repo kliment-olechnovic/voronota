@@ -60,6 +60,8 @@ cat $OUTPUT_DIR/balls4 | $TEST_SUBJECT calculate-contacts --annotated --draw | $
 $TEST_SUBJECT query-balls --set-external-adjuncts <(awk '{ print $1 " " (100-$2*100) }' < $OUTPUT_DIR/contacts4_scores_atom) --set-external-adjuncts-name qsa --pdb-output $OUTPUT_DIR/balls4_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_DIR/balls4 > /dev/null
 $TEST_SUBJECT query-balls --pdb-output $OUTPUT_DIR/balls4_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_FILE < $OUTPUT_DIR/balls4_scores1 > /dev/null
 
+($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT compare-contacts --target-contacts-file <(cat $OUTPUT_DIR/contacts4 | $TEST_SUBJECT query-contacts --match-min-seq-sep 1) --inter-atom-scores-file $OUTPUT_DIR/contacts4_comparison_inter_atom --inter-residue-scores-file $OUTPUT_DIR/contacts4_comparison_inter_residue --atom-scores-file $OUTPUT_DIR/contacts4_comparison_atom --residue-scores-file $OUTPUT_DIR/contacts4_comparison_residue) < $OUTPUT_DIR/contacts4 > $OUTPUT_DIR/contacts4_comparison_global
+
 rm -r ./voronota_package
 
 hg status ./
