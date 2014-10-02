@@ -138,10 +138,10 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
+		list_of_option_descriptions.push_back(OD("--depth", "number", "local neighborhood depth"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')\n";
 			std::cerr << "stdout  ->  two lines of global scores (atom-level and residue-level)\n";
 			return;
 		}

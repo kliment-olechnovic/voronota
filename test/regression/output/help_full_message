@@ -10,6 +10,7 @@ query-balls
 query-contacts
 score-contacts-potential
 score-contacts
+compare-contacts
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -144,4 +145,15 @@ Command 'score-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  line of global scores
+
+Command 'compare-contacts' options:
+--target-contacts-file          string   *  file path to input target contacts
+--inter-atom-scores-file        string      file path to output inter-atom scores
+--inter-residue-scores-file     string      file path to output inter-residue scores
+--atom-scores-file              string      file path to output atom scores
+--residue-scores-file           string      file path to output residue scores
+--depth                         number      local neighborhood depth
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  two lines of global scores (atom-level and residue-level)
 
