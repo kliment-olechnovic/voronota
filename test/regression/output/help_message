@@ -10,4 +10,5 @@ query-balls
 query-contacts
 score-contacts-potential
 score-contacts
+compare-contacts
 

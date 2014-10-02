@@ -17,6 +17,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts(const auxiliaries::ProgramOptionsHandler&);
+void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -46,6 +47,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts", ModeDescriptor::FunctionPtr(score_contacts)));
+	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
 	return list_of_modes;
 }
 
