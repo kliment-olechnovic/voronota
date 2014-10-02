@@ -53,6 +53,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
+		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include same chain contacts"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
@@ -95,6 +96,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
+	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
@@ -175,6 +177,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!no_solvent || !(crads.first==CRAD::solvent() || crads.second==CRAD::solvent())) &&
+				(!no_same_chain || crads.first.chainID!=crads.second.chainID) &&
 				CRAD::match_with_sequence_separation_interval(crads.first, crads.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
