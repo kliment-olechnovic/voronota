@@ -10,10 +10,9 @@ rm ./voronota_package.tar.gz
 TEST_SUBJECT=./voronota_package/voronota
 RADII_FILE=./voronota_package/radii
 
-INPUT_FILE=./input/structure.pdb
-INPUT_FILE_MMCIF=./input/structure.cif
-OUTPUT_DIR=./output/
+INPUT_DIR=./input/
 
+OUTPUT_DIR=./output/
 rm -r -f $OUTPUT_DIR
 mkdir $OUTPUT_DIR
 
@@ -25,7 +24,7 @@ $TEST_SUBJECT --help 2> $OUTPUT_DIR/help_full_message
 OUTPUT_SUBDIR=$OUTPUT_DIR/p1
 mkdir $OUTPUT_SUBDIR
 
-$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE < $INPUT_FILE > $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE < $INPUT_DIR/structure.pdb > $OUTPUT_SUBDIR/balls
 
 $TEST_SUBJECT calculate-vertices --print-log --check < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/triangulation 2> $OUTPUT_SUBDIR/log_triangulation
 
@@ -38,7 +37,7 @@ $TEST_SUBJECT calculate-contacts < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/contact
 OUTPUT_SUBDIR=$OUTPUT_DIR/p2
 mkdir $OUTPUT_SUBDIR
 
-$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --include-heteroatoms < $INPUT_FILE > $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --include-heteroatoms < $INPUT_DIR/structure.pdb > $OUTPUT_SUBDIR/balls
 
 $TEST_SUBJECT calculate-vertices --print-log --check < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/triangulation 2> $OUTPUT_SUBDIR/log_triangulation
 
@@ -51,7 +50,7 @@ $TEST_SUBJECT calculate-contacts < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/contact
 OUTPUT_SUBDIR=$OUTPUT_DIR/p3
 mkdir $OUTPUT_SUBDIR
 
-$TEST_SUBJECT get-balls-from-atoms-file < $INPUT_FILE > $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT get-balls-from-atoms-file < $INPUT_DIR/structure.pdb > $OUTPUT_SUBDIR/balls
 
 $TEST_SUBJECT calculate-vertices --print-log --check < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/triangulation 2> $OUTPUT_SUBDIR/log_triangulation
 
@@ -62,7 +61,7 @@ $TEST_SUBJECT calculate-contacts < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/contact
 OUTPUT_SUBDIR=$OUTPUT_DIR/p4
 mkdir $OUTPUT_SUBDIR
 
-$TEST_SUBJECT get-balls-from-atoms-file --mmcif --radii-file $RADII_FILE --include-heteroatoms --annotated < $INPUT_FILE_MMCIF > $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT get-balls-from-atoms-file --mmcif --radii-file $RADII_FILE --include-heteroatoms --annotated < $INPUT_DIR/structure.cif > $OUTPUT_SUBDIR/balls
 
 $TEST_SUBJECT calculate-contacts --annotated < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/contacts
 
@@ -90,7 +89,7 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 
 ($TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_atom --set-external-adjuncts-name qsa | $TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_residue --set-external-adjuncts-name qsr | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_scores1
 $TEST_SUBJECT query-balls --set-external-adjuncts <(awk '{ print $1 " " (100-$2*100) }' < $OUTPUT_SUBDIR/contacts_scores_atom) --set-external-adjuncts-name qsa --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_SUBDIR/balls > /dev/null
-$TEST_SUBJECT query-balls --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_FILE < $OUTPUT_SUBDIR/balls_scores1 > /dev/null
+$TEST_SUBJECT query-balls --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_DIR/structure.pdb < $OUTPUT_SUBDIR/balls_scores1 > /dev/null
 
 ############################
 
