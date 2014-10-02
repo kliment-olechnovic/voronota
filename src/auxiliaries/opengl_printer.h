@@ -33,6 +33,12 @@ public:
 		write_color_to_stream(Color(rgb), string_stream_);
 	}
 
+	void add_color_from_blue_white_red_gradient(const double value)
+	{
+		string_stream_ << object_typer_.color << " ";
+		write_color_to_stream(Color::from_blue_white_red_gradient(value), string_stream_);
+	}
+
 	template<typename SphereType>
 	void add_sphere(const SphereType& sphere)
 	{
@@ -344,6 +350,32 @@ private:
 
 		Color(const unsigned int rgb) : r((rgb&0xFF0000) >> 16), g((rgb&0x00FF00) >> 8), b(rgb&0x0000FF)
 		{
+		}
+
+		static Color from_blue_white_red_gradient(const double value)
+		{
+			Color color;
+			if(value<0)
+			{
+				color.b=255;
+			}
+			else if(value>1)
+			{
+				color.r=255;
+			}
+			else if(value<=0.5)
+			{
+				color.b=255;
+				color.r=static_cast<unsigned char>(255*(value/0.5));
+				color.g=color.r;
+			}
+			else if(value>0.5)
+			{
+				color.r=255;
+				color.b=static_cast<unsigned char>(255*(1-(value-0.5)/0.5));
+				color.g=color.b;
+			}
+			return color;
 		}
 	};
 

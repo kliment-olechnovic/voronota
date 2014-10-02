@@ -67,6 +67,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
+		list_of_option_descriptions.push_back(OD("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"));
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
@@ -108,6 +109,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
+	const std::string drawing_adjunct_gradient_colors=poh.argument<std::string>("--drawing-adjunct-gradient", "");
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
@@ -241,10 +243,23 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					opengl_printer.add_label(crads.first.str()+"<->"+crads.second.str());
 				}
-				if(drawing_random_colors)
+
+				if(!drawing_adjunct_gradient_colors.empty())
+				{
+					if(value.adjuncts.count(drawing_adjunct_gradient_colors)>0)
+					{
+						opengl_printer.add_color_from_blue_white_red_gradient(value.adjuncts.find(drawing_adjunct_gradient_colors)->second);
+					}
+					else
+					{
+						opengl_printer.add_color(drawing_color);
+					}
+				}
+				else if(drawing_random_colors)
 				{
 					opengl_printer.add_color(calc_two_crads_color_integer(crads.first, crads.second));
 				}
+
 				opengl_printer.add(value.graphics);
 			}
 		}
