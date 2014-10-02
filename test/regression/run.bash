@@ -10,8 +10,8 @@ rm ./voronota_package.tar.gz
 TEST_SUBJECT=./voronota_package/voronota
 RADII_FILE=./voronota_package/radii
 
-INPUT_FILE=./input.pdb
-INPUT_FILE_MMCIF=./input.cif
+INPUT_FILE=./input/structure.pdb
+INPUT_FILE_MMCIF=./input/structure.cif
 OUTPUT_DIR=./output/
 
 rm -r -f $OUTPUT_DIR
