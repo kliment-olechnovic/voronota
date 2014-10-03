@@ -39,6 +39,11 @@ struct CADDescriptor
 		constrained_differences_sum+=cadd.constrained_differences_sum;
 	}
 
+	bool scorable() const
+	{
+		return (target_area_sum>0.0);
+	}
+
 	double score() const
 	{
 		return (1.0-(constrained_differences_sum/target_area_sum));
@@ -92,8 +97,11 @@ CADDescriptor construct_global_cad_descriptor(const std::map< std::pair<CRAD, CR
 
 inline void print_score(const std::string& name, const CADDescriptor& cadd, std::ostream& output)
 {
-	output << name << " ";
-	output << cadd.score() << " " << cadd.target_area_sum << " " << cadd.model_area_sum << " " << cadd.raw_differences_sum << " " << cadd.constrained_differences_sum << "\n";
+	if(cadd.scorable())
+	{
+		output << name << " ";
+		output << cadd.score() << " " << cadd.target_area_sum << " " << cadd.model_area_sum << " " << cadd.raw_differences_sum << " " << cadd.constrained_differences_sum << "\n";
+	}
 }
 
 void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, CADDescriptor >& map_of_pair_cad_descriptors, const std::string& filename)
