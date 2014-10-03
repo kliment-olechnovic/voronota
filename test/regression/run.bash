@@ -93,6 +93,21 @@ $TEST_SUBJECT query-balls --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb2 --pdb-o
 
 ############################
 
+OUTPUT_SUBDIR=$OUTPUT_DIR/p5
+mkdir $OUTPUT_SUBDIR
+
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/complex/target.pdb | $TEST_SUBJECT calculate-contacts --annotated --draw | $TEST_SUBJECT query-contacts --no-same-chain --no-solvent --preserve-graphics > $OUTPUT_SUBDIR/target_iface
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/complex/model1.pdb | $TEST_SUBJECT calculate-contacts --annotated | $TEST_SUBJECT query-contacts --no-same-chain --no-solvent > $OUTPUT_SUBDIR/model1_iface
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/complex/model2.pdb | $TEST_SUBJECT calculate-contacts --annotated | $TEST_SUBJECT query-contacts --no-same-chain --no-solvent > $OUTPUT_SUBDIR/model2_iface
+
+$TEST_SUBJECT compare-contacts --target-contacts-file <(cat $OUTPUT_SUBDIR/target_iface) --inter-residue-scores-file $OUTPUT_SUBDIR/model1_iface_inter_residue_cadscores < $OUTPUT_SUBDIR/model1_iface > $OUTPUT_SUBDIR/model1_iface_global_cadscores
+$TEST_SUBJECT compare-contacts --target-contacts-file <(cat $OUTPUT_SUBDIR/target_iface) --inter-residue-scores-file $OUTPUT_SUBDIR/model2_iface_inter_residue_cadscores < $OUTPUT_SUBDIR/model2_iface > $OUTPUT_SUBDIR/model2_iface_global_cadscores
+
+$TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model1_iface_inter_residue_cadscores | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --preserve-graphics < $OUTPUT_SUBDIR/target_iface | $TEST_SUBJECT query-contacts --drawing-for-pymol $OUTPUT_SUBDIR/model1_iface_scores_drawing.py --drawing-name model1_iface_scores --drawing-adjunct-gradient irs > /dev/null
+$TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model2_iface_inter_residue_cadscores | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --preserve-graphics < $OUTPUT_SUBDIR/target_iface | $TEST_SUBJECT query-contacts --drawing-for-pymol $OUTPUT_SUBDIR/model2_iface_scores_drawing.py --drawing-name model2_iface_scores --drawing-adjunct-gradient irs > /dev/null
+
+############################
+
 rm -r ./voronota_package
 
 hg status ./
