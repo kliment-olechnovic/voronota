@@ -203,7 +203,12 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const std::pair<CRAD, CRAD>& crads=it->first;
-			if(output_map_of_contacts.count(crads)>0 || output_map_of_contacts.count(modescommon::refine_pair(crads, true))>0)
+			std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator output_map_it=output_map_of_contacts.find(crads);
+			if(output_map_it==output_map_of_contacts.end())
+			{
+				output_map_it=output_map_of_contacts.find(modescommon::refine_pair(crads, true));
+			}
+			if(output_map_it!=output_map_of_contacts.end())
 			{
 				modescommon::update_set_of_tags(it->second.tags, set_tags);
 				modescommon::update_map_of_adjuncts(it->second.adjuncts, set_adjuncts);
@@ -219,6 +224,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 						it->second.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
 					}
 				}
+				output_map_it->second=it->second;
 			}
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
