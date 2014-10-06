@@ -90,7 +90,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
-		list_of_option_descriptions.push_back(OD("--map-to-ref-seq", "string", "file path to input reference sequence"));
+		list_of_option_descriptions.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
 		list_of_option_descriptions.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
 		list_of_option_descriptions.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
 		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
@@ -120,7 +120,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
-	const std::string map_to_ref_seq=poh.argument<std::string>("--map-to-ref-seq", "");
+	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
 	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
 	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
@@ -180,7 +180,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptor_value_from_stream_to_map<false>, map_of_external_adjunct_values);
 	}
 
-	const std::string reference_sequence=modescommon::read_sequence_from_file(map_to_ref_seq);
+	const std::string reference_sequence=modescommon::read_sequence_from_file(set_ref_seq_num_adjunct);
 
 	std::set<std::size_t> output_set_of_ball_ids;
 

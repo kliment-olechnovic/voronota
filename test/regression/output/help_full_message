@@ -83,7 +83,7 @@ Command 'query-balls' options:
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
 --renumber-from-adjunct         string      adjunct name to use for input residue renumbering
---map-to-ref-seq                string      file path to input reference sequence
+--set-ref-seq-num-adjunct       string      file path to input reference sequence
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string
 --pdb-output                    string      file path to output query result in PDB format
