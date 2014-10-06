@@ -120,7 +120,7 @@ OUTPUT_SUBDIR=$OUTPUT_DIR/p6
 mkdir $OUTPUT_SUBDIR
 
 $TEST_SUBJECT get-balls-from-atoms-file --include-heteroatoms --annotated < $INPUT_DIR/structure.pdb | $TEST_SUBJECT query-balls --seq-output $OUTPUT_SUBDIR/sequence > $OUTPUT_SUBDIR/balls
-$TEST_SUBJECT query-balls --map-to-ref-seq <(cut -c10-100 < $OUTPUT_SUBDIR/sequence ; cut -c150-190 < $OUTPUT_SUBDIR/sequence) --ref-seq-alignment $OUTPUT_SUBDIR/alignment < $OUTPUT_SUBDIR/balls | sponge $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT query-balls --set-ref-seq-num-adjunct <(cut -c10-100 < $OUTPUT_SUBDIR/sequence ; cut -c150-190 < $OUTPUT_SUBDIR/sequence) --ref-seq-alignment $OUTPUT_SUBDIR/alignment < $OUTPUT_SUBDIR/balls | sponge $OUTPUT_SUBDIR/balls
 $TEST_SUBJECT query-balls --renumber-from-adjunct refseq < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_renumbered
 
 ############################
