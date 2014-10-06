@@ -116,6 +116,14 @@ $TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTP
 
 ############################
 
+OUTPUT_SUBDIR=$OUTPUT_DIR/p6
+mkdir $OUTPUT_SUBDIR
+
+$TEST_SUBJECT get-balls-from-atoms-file --include-heteroatoms --annotated < $INPUT_DIR/structure.pdb | $TEST_SUBJECT query-balls --seq-output $OUTPUT_SUBDIR/sequence > $OUTPUT_SUBDIR/balls
+$TEST_SUBJECT query-balls --map-to-ref-seq <(cat $OUTPUT_SUBDIR/sequence | cut -c10-100 ; cat $OUTPUT_SUBDIR/sequence | cut -c150-190 ) --ref-seq-alignment $OUTPUT_SUBDIR/alignment < $OUTPUT_SUBDIR/balls | sponge $OUTPUT_SUBDIR/balls
+
+############################
+
 rm -r ./voronota_package
 
 hg status ./
