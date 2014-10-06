@@ -89,6 +89,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
 		list_of_option_descriptions.push_back(OD("--map-to-ref-seq", "string", "file path to input reference sequence"));
 		list_of_option_descriptions.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
 		list_of_option_descriptions.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
@@ -118,6 +119,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
+	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
 	const std::string map_to_ref_seq=poh.argument<std::string>("--map-to-ref-seq", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
 	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
@@ -130,6 +132,23 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
+	}
+
+	if(!renumber_from_adjunct.empty())
+	{
+		std::vector< std::pair<CRAD, BallValue> > refined_list_of_balls;
+		refined_list_of_balls.reserve(list_of_balls.size());
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			const BallValue& value=list_of_balls[i].second;
+			if(value.adjuncts.count(renumber_from_adjunct)>0)
+			{
+				refined_list_of_balls.push_back(list_of_balls[i]);
+				refined_list_of_balls.back().first.resSeq=static_cast<int>(value.adjuncts.find(renumber_from_adjunct)->second);
+				refined_list_of_balls.back().second.adjuncts.erase(renumber_from_adjunct);
+			}
+		}
+		list_of_balls=refined_list_of_balls;
 	}
 
 	if(drop_tags || drop_adjuncts)
