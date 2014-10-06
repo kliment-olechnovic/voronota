@@ -6,6 +6,7 @@
 
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_ball.h"
+#include "modescommon/handle_sequences.h"
 
 namespace
 {
@@ -88,6 +89,9 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--map-to-ref-seq", "string", "file path to input reference sequence"));
+		list_of_option_descriptions.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
+		list_of_option_descriptions.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
 		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
 		list_of_option_descriptions.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
 		list_of_option_descriptions.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
@@ -114,6 +118,9 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
+	const std::string map_to_ref_seq=poh.argument<std::string>("--map-to-ref-seq", "");
+	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
+	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
 	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
 	const std::string pdb_output_b_factor=poh.argument<std::string>("--pdb-output-b-factor", "tf");
 	const std::string pdb_output_template=poh.argument<std::string>("--pdb-output-template", "");
@@ -154,6 +161,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptor_value_from_stream_to_map<false>, map_of_external_adjunct_values);
 	}
 
+	const std::string reference_sequence=modescommon::read_sequence_from_file(map_to_ref_seq);
+
 	std::set<std::size_t> output_set_of_ball_ids;
 
 	for(std::size_t i=0;i<list_of_balls.size();i++)
@@ -186,24 +195,55 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
+	std::vector<CRAD> residue_sequence_vector;
 	{
+		std::set<CRAD> residues_crads;
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
-			const CRAD& crad=list_of_balls[*it].first;
-			BallValue& value=list_of_balls[*it].second;
-			modescommon::update_set_of_tags(value.tags, set_tags);
-			modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
-			if(!map_of_external_adjunct_values.empty())
+			const CRAD residue_crad=list_of_balls[*it].first.without_atom();
+			if(residues_crads.count(residue_crad)==0)
 			{
-				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
-				if(adjunct_value_it==map_of_external_adjunct_values.end())
+				residue_sequence_vector.push_back(residue_crad);
+				residues_crads.insert(residue_crad);
+			}
+		}
+	}
+
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty())
+	{
+		if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+			{
+				const CRAD& crad=list_of_balls[*it].first;
+				BallValue& value=list_of_balls[*it].second;
+				modescommon::update_set_of_tags(value.tags, set_tags);
+				modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
+				if(!map_of_external_adjunct_values.empty())
 				{
-					adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
+					std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
+					if(adjunct_value_it==map_of_external_adjunct_values.end())
+					{
+						adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
+					}
+					if(adjunct_value_it!=map_of_external_adjunct_values.end())
+					{
+						value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					}
 				}
-				if(adjunct_value_it!=map_of_external_adjunct_values.end())
+			}
+		}
+		if(!reference_sequence.empty())
+		{
+			const std::map<CRAD, double> sequence_mapping=modescommon::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+			{
+				const CRAD& crad=list_of_balls[*it].first;
+				const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
+				if(sm_it!=sequence_mapping.end())
 				{
-					value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					BallValue& value=list_of_balls[*it].second;
+					value.adjuncts["refseq"]=sm_it->second;
 				}
 			}
 		}
@@ -217,6 +257,15 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
 			modescommon::print_ball_record(list_of_balls[*it].first, list_of_balls[*it].second, std::cout);
+		}
+	}
+
+	if(!output_set_of_ball_ids.empty() && !seq_output.empty())
+	{
+		std::ofstream foutput(seq_output.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			foutput << modescommon::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
 		}
 	}
 
