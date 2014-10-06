@@ -209,44 +209,46 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
+	{
+		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		{
+			const CRAD& crad=list_of_balls[*it].first;
+			BallValue& value=list_of_balls[*it].second;
+			modescommon::update_set_of_tags(value.tags, set_tags);
+			modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
+			if(!map_of_external_adjunct_values.empty())
+			{
+				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
+				if(adjunct_value_it==map_of_external_adjunct_values.end())
+				{
+					adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
+				}
+				if(adjunct_value_it!=map_of_external_adjunct_values.end())
+				{
+					value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+				}
+			}
+		}
+	}
+
+	if(!reference_sequence.empty())
+	{
+		const std::map<CRAD, double> sequence_mapping=modescommon::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		{
+			const CRAD& crad=list_of_balls[*it].first;
+			const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
+			if(sm_it!=sequence_mapping.end())
+			{
+				BallValue& value=list_of_balls[*it].second;
+				value.adjuncts["refseq"]=sm_it->second;
+			}
+		}
+	}
+
 	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty())
 	{
-		if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
-			{
-				const CRAD& crad=list_of_balls[*it].first;
-				BallValue& value=list_of_balls[*it].second;
-				modescommon::update_set_of_tags(value.tags, set_tags);
-				modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
-				if(!map_of_external_adjunct_values.empty())
-				{
-					std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
-					if(adjunct_value_it==map_of_external_adjunct_values.end())
-					{
-						adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
-					}
-					if(adjunct_value_it!=map_of_external_adjunct_values.end())
-					{
-						value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
-					}
-				}
-			}
-		}
-		if(!reference_sequence.empty())
-		{
-			const std::map<CRAD, double> sequence_mapping=modescommon::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
-			for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
-			{
-				const CRAD& crad=list_of_balls[*it].first;
-				const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
-				if(sm_it!=sequence_mapping.end())
-				{
-					BallValue& value=list_of_balls[*it].second;
-					value.adjuncts["refseq"]=sm_it->second;
-				}
-			}
-		}
 		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
 		{
 			modescommon::print_ball_record(it->first, it->second, std::cout);
