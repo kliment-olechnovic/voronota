@@ -88,6 +88,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-dssp-tags", "string", "file path to input DSSP file"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
@@ -120,6 +121,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drop_tags=poh.contains_option("--drop-tags");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
+	const std::string set_dssp_tags=poh.argument<std::string>("--set-dssp-tags", "");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
@@ -183,6 +185,13 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_set_of_crads);
+	}
+
+	auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data;
+	if(!set_dssp_tags.empty())
+	{
+		std::ifstream input_file(set_dssp_tags.c_str(), std::ios::in);
+		dssp_file_data=auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
 	}
 
 	std::map<CRAD, double> map_of_external_adjunct_values;
@@ -278,7 +287,39 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty())
+	if(!dssp_file_data.dssp_records.empty())
+	{
+		std::map<CRAD, std::size_t> map_of_dssp_records;
+		for(std::size_t i=0;i<dssp_file_data.dssp_records.size();i++)
+		{
+			const auxiliaries::AtomsIO::DSSPReader::DSSPRecord& record=dssp_file_data.dssp_records[i];
+			CRAD crad;
+			crad.chainID=record.chainID;
+			crad.resSeq=record.resSeq;
+			crad.iCode=record.iCode;
+			map_of_dssp_records.insert(std::make_pair(crad, i));
+		}
+		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
+		{
+			const CRAD& full_crad=it->first;
+			CRAD crad;
+			crad.chainID=full_crad.chainID;
+			crad.resSeq=full_crad.resSeq;
+			crad.iCode=full_crad.iCode;
+			const std::map<CRAD, std::size_t>::const_iterator drm_it=map_of_dssp_records.find(crad);
+			if(drm_it!=map_of_dssp_records.end())
+			{
+				const auxiliaries::AtomsIO::DSSPReader::DSSPRecord& dssp_record=dssp_file_data.dssp_records[drm_it->second];
+				if(!dssp_record.resSSE.empty())
+				{
+					BallValue& value=it->second;
+					value.tags.insert(std::string("dssp=")+dssp_record.resSSE);
+				}
+			}
+		}
+	}
+
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty() || !dssp_file_data.dssp_records.empty())
 	{
 		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
 		{
