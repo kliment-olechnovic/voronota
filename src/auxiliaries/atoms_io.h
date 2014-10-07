@@ -111,17 +111,6 @@ public:
 		}
 
 	private:
-		static std::string substring_of_columned_line(const std::string& line, const int start, const int end)
-		{
-			std::string extraction;
-			int line_length=static_cast<int>(line.size());
-			for(int i=start-1;i<end && i<line_length && i>=0;i++)
-			{
-				if(line[i]!=32) { extraction.push_back(line[i]); }
-			}
-			return extraction;
-		}
-
 		static AtomRecord read_atom_record_from_line(const std::string& pdb_file_line)
 		{
 			AtomRecord record=AtomRecord();
@@ -371,6 +360,76 @@ public:
 		}
 	};
 
+	class DSSPReader
+	{
+	public:
+		struct DSSPRecord
+		{
+			std::string chainID;
+			int resSeq;
+			std::string iCode;
+			std::string resNameShort;
+			std::string resSSE;
+
+			bool resSeq_valid;
+		};
+
+		struct Data
+		{
+			std::vector<DSSPRecord> dssp_records;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream)
+		{
+			Data data;
+			bool records_started=false;
+			while(file_stream.good())
+			{
+				std::string line;
+				std::getline(file_stream, line);
+				if(!line.empty())
+				{
+					if(!records_started)
+					{
+						if(line.find("  #  RESIDUE AA STRUCTURE")==0)
+						{
+							records_started=true;
+						}
+					}
+					else
+					{
+						const std::string resNameShort=fix_undefined_string(substring_of_columned_line(line, 14, 14));
+						if(!resNameShort.empty() && resNameShort!="!")
+						{
+							const DSSPRecord record=read_dssp_record_from_line(line);
+							if(record.resSeq_valid)
+							{
+								data.dssp_records.push_back(record);
+							}
+							else
+							{
+								std::cerr << "Invalid DSSP record in line: " << line << "\n";
+							}
+						}
+					}
+				}
+			}
+			return data;
+		}
+
+	private:
+		static DSSPRecord read_dssp_record_from_line(const std::string& dssp_file_line)
+		{
+			DSSPRecord record=DSSPRecord();
+			record.chainID=fix_undefined_string(substring_of_columned_line(dssp_file_line, 12, 12));
+			record.resSeq=convert_string<int>(substring_of_columned_line(dssp_file_line, 6, 10), record.resSeq_valid);
+			record.iCode=fix_undefined_string(substring_of_columned_line(dssp_file_line, 11, 11));
+			record.resNameShort=fix_undefined_string(substring_of_columned_line(dssp_file_line, 14, 14));
+			record.resSSE=fix_undefined_string(substring_of_columned_line(dssp_file_line, 17, 17));
+			return record;
+		}
+	};
+
 private:
 	static bool check_atom_record_validity(const AtomRecord& record)
 	{
@@ -424,6 +483,17 @@ private:
 				name=(name.substr(first_letter_pos)+name.substr(0, first_letter_pos));
 			}
 		}
+	}
+
+	static std::string substring_of_columned_line(const std::string& line, const int start, const int end)
+	{
+		std::string extraction;
+		int line_length=static_cast<int>(line.size());
+		for(int i=start-1;i<end && i<line_length && i>=0;i++)
+		{
+			if(line[i]!=32) { extraction.push_back(line[i]); }
+		}
+		return extraction;
 	}
 };
 

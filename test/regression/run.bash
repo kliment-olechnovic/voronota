@@ -125,6 +125,13 @@ $TEST_SUBJECT query-balls --renumber-from-adjunct refseq < $OUTPUT_SUBDIR/balls 
 
 ############################
 
+OUTPUT_SUBDIR=$OUTPUT_DIR/p7
+mkdir $OUTPUT_SUBDIR
+
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/complex/target.pdb | $TEST_SUBJECT query-balls --drop-altloc-indicators --drop-atom-serials --set-dssp-tags <(dssp $INPUT_DIR/complex/target.pdb) | column -t > $OUTPUT_SUBDIR/balls_with_dssp_info
+
+############################
+
 rm -r ./voronota_package
 
 hg status ./
