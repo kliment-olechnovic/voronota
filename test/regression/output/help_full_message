@@ -110,7 +110,9 @@ Command 'query-contacts' options:
 --match-tags-not                string      tags to not match
 --match-adjuncts                string      adjuncts intervals to match
 --match-adjuncts-not            string      adjuncts intervals to not match
---match-external-annotations    string      file path to input matchable annotation pairs
+--match-external-first          string      file path to input matchable annotations
+--match-external-second         string      file path to input matchable annotations
+--match-external-pairs          string      file path to input matchable annotation pairs
 --no-solvent                                flag to not include solvent accessible areas
 --no-same-chain                             flag to not include same chain contacts
 --invert                                    flag to invert selection
