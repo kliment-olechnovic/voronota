@@ -69,7 +69,7 @@ $TEST_SUBJECT calculate-contacts --annotated < $OUTPUT_SUBDIR/balls > $OUTPUT_SU
 ($TEST_SUBJECT query-contacts --inter-residue --match-first 'rn[THR]' --match-second 'rn[ARG]' < $OUTPUT_SUBDIR/contacts | column -t) > $OUTPUT_SUBDIR/contacts_query2
 cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw | $TEST_SUBJECT query-contacts --match-first 'rn[CRO]' --match-min-seq-sep 1 --preserve-graphics --drawing-for-pymol $OUTPUT_SUBDIR/contacts_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_SUBDIR/contacts_query3_drawing_for_jmol --drawing-for-scenejs $OUTPUT_SUBDIR/contacts_query3_drawing_for_scenejs > $OUTPUT_SUBDIR/contacts_query3
 ($TEST_SUBJECT query-contacts --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 --match-min-seq-sep 1 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query4
-($TEST_SUBJECT query-contacts --match-external-annotations $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query5
+($TEST_SUBJECT query-contacts --match-external-pairs $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query5
 ($TEST_SUBJECT query-contacts --match-first-not 'rn[VAL]' --match-second-not 'rn[VAL]' --invert | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query6
 ($TEST_SUBJECT query-contacts --match-first 'an[O]' --set-tags 'withO' | $TEST_SUBJECT query-contacts --match-first 'an[NZ]' --set-tags 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query7
 ($TEST_SUBJECT query-contacts --match-tags 'withO' --match-tags-not 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query8

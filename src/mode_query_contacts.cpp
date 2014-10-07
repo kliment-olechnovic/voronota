@@ -51,7 +51,9 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
-		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
+		list_of_option_descriptions.push_back(OD("--match-external-first", "string", "file path to input matchable annotations"));
+		list_of_option_descriptions.push_back(OD("--match-external-second", "string", "file path to input matchable annotations"));
+		list_of_option_descriptions.push_back(OD("--match-external-pairs", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
 		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include same chain contacts"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
@@ -94,7 +96,9 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
 	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
-	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
+	const std::string match_external_first=poh.argument<std::string>("--match-external-first", "");
+	const std::string match_external_second=poh.argument<std::string>("--match-external-second", "");
+	const std::string match_external_pairs=poh.argument<std::string>("--match-external-pairs", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
 	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const bool invert=poh.contains_option("--invert");
@@ -152,10 +156,24 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
-	if(!match_external_annotations.empty())
+	std::set<CRAD> matchable_external_first_set_of_crads;
+	if(!match_external_first.empty())
 	{
-		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
+		std::ifstream input_file(match_external_first.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_first_set_of_crads);
+	}
+
+	std::set<CRAD> matchable_external_second_set_of_crads;
+	if(!match_external_second.empty())
+	{
+		std::ifstream input_file(match_external_second.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_second_set_of_crads);
+	}
+
+	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
+	if(!match_external_pairs.empty())
+	{
+		std::ifstream input_file(match_external_pairs.c_str(), std::ios::in);
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
 	}
 
@@ -184,8 +202,16 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				(matchable_external_set_of_crad_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
 		)
 		{
-			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not));
-			const bool matched_second_first=(modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not));
+			const bool matched_first_second=(
+					modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) &&
+					modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not) &&
+					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_first_set_of_crads)) &&
+					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_second_set_of_crads)));
+			const bool matched_second_first=matched_first_second || (
+					modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) &&
+					modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not) &&
+					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_first_set_of_crads)) &&
+					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_second_set_of_crads)));
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
