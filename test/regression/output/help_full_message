@@ -76,9 +76,11 @@ Command 'query-balls' options:
 --match-external-annotations    string      file path to input matchable annotations
 --invert                                    flag to invert selection
 --whole-residues                            flag to select whole residues
+--drop-atom-serials                         flag to drop atom serial numbers from input
+--drop-altloc-indicators                    flag to drop alternate location indicators from input
 --drop-tags                                 flag to drop all tags from input
---set-tags                      string      set tags instead of filtering
 --drop-adjuncts                             flag to drop all adjuncts from input
+--set-tags                      string      set tags instead of filtering
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts

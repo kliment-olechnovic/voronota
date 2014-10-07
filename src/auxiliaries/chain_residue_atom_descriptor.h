@@ -229,15 +229,13 @@ public:
 	bool valid() const
 	{
 		return ((!chainID.empty() || resSeq!=null_num() || !resName.empty() || serial!=null_num() || !name.empty()) &&
-				!(resSeq==null_num() && !iCode.empty()) &&
-				!(serial==null_num() && !altLoc.empty()));
+				!(resSeq==null_num() && !iCode.empty()));
 	}
 
 	ChainResidueAtomDescriptor without_atom() const
 	{
 		ChainResidueAtomDescriptor v=(*this);
 		v.serial=null_num();
-		v.altLoc.clear();
 		v.name.clear();
 		return v;
 	}
