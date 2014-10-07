@@ -83,9 +83,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--whole-residues", "", "flag to select whole residues"));
+		list_of_option_descriptions.push_back(OD("--drop-atom-serials", "", "flag to drop atom serial numbers from input"));
+		list_of_option_descriptions.push_back(OD("--drop-altloc-indicators", "", "flag to drop alternate location indicators from input"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
@@ -113,9 +115,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
 	const bool invert=poh.contains_option("--invert");
 	const bool whole_residues=poh.contains_option("--whole-residues");
+	const bool drop_atom_serial=poh.contains_option("--drop-atom-serials");
+	const bool drop_altloc_indicators=poh.contains_option("--drop-altloc-indicators");
 	const bool drop_tags=poh.contains_option("--drop-tags");
-	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
+	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
@@ -151,10 +155,18 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_balls=refined_list_of_balls;
 	}
 
-	if(drop_tags || drop_adjuncts)
+	if(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts)
 	{
 		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
 		{
+			if(drop_atom_serial)
+			{
+				it->first.serial=CRAD::null_num();
+			}
+			if(drop_altloc_indicators)
+			{
+				it->first.altLoc.clear();
+			}
 			if(drop_tags)
 			{
 				it->second.tags.clear();
