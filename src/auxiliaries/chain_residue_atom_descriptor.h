@@ -344,8 +344,8 @@ private:
 		}
 	};
 
-	static const char vbegin='[';
-	static const char vend=']';
+	static const char vbegin='<';
+	static const char vend='>';
 
 	std::string str(const std::vector<std::string>& markers) const
 	{
