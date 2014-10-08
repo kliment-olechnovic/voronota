@@ -1,7 +1,7 @@
-c[A]r[7]a[38]rn[LEU]an[O]        c[A]r[12]a[78]rn[VAL]an[CG2]     12.0263  3.55526  .  .
-c[A]r[11]a[70]rn[VAL]an[CG1]     c[A]r[34]a[238]rn[GLU]an[OE2]    10.1866  3.48209  .  .
-c[A]r[14]a[92]rn[ILE]an[CG2]     c[A]r[16]a[108]rn[VAL]an[CG2]    10.0512  3.97187  .  .
-c[A]r[22]a[152]rn[VAL]an[CG2]    c[A]r[123]a[969]rn[LEU]an[CD2]   10.0664  3.6297   .  .
-c[A]r[118]a[931]rn[VAL]an[CG1]   c[A]r[120]a[946]rn[ARG]an[CG]    11.0516  3.66592  .  .
-c[A]r[148]a[1167]rn[VAL]an[CG1]  c[A]r[161]a[1255]rn[VAL]an[CG1]  11.2595  3.43512  .  .
-c[A]r[206]a[1609]rn[SER]an[OG]   c[A]r[217]a[1698]rn[VAL]an[CG1]  10.1569  3.3447   .  .
+c<A>r<7>a<38>rn<LEU>an<O>        c<A>r<12>a<78>rn<VAL>an<CG2>     12.0263  3.55526  .  .
+c<A>r<11>a<70>rn<VAL>an<CG1>     c<A>r<34>a<238>rn<GLU>an<OE2>    10.1866  3.48209  .  .
+c<A>r<14>a<92>rn<ILE>an<CG2>     c<A>r<16>a<108>rn<VAL>an<CG2>    10.0512  3.97187  .  .
+c<A>r<22>a<152>rn<VAL>an<CG2>    c<A>r<123>a<969>rn<LEU>an<CD2>   10.0664  3.6297   .  .
+c<A>r<118>a<931>rn<VAL>an<CG1>   c<A>r<120>a<946>rn<ARG>an<CG>    11.0516  3.66592  .  .
+c<A>r<148>a<1167>rn<VAL>an<CG1>  c<A>r<161>a<1255>rn<VAL>an<CG1>  11.2595  3.43512  .  .
+c<A>r<206>a<1609>rn<SER>an<OG>   c<A>r<217>a<1698>rn<VAL>an<CG1>  10.1569  3.3447   .  .
