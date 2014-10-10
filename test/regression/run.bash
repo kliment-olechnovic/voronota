@@ -65,15 +65,15 @@ $TEST_SUBJECT get-balls-from-atoms-file --mmcif --radii-file $RADII_FILE --inclu
 
 $TEST_SUBJECT calculate-contacts --annotated < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/contacts
 
-($TEST_SUBJECT query-contacts --match-first 'r<3:7,9>&an<CA,CB>' --match-min-seq-sep 1 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query1
-($TEST_SUBJECT query-contacts --inter-residue --match-first 'rn<THR>' --match-second 'rn<ARG>' < $OUTPUT_SUBDIR/contacts | column -t) > $OUTPUT_SUBDIR/contacts_query2
-cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw | $TEST_SUBJECT query-contacts --match-first 'rn<CRO>' --match-min-seq-sep 1 --preserve-graphics --drawing-for-pymol $OUTPUT_SUBDIR/contacts_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_SUBDIR/contacts_query3_drawing_for_jmol --drawing-for-scenejs $OUTPUT_SUBDIR/contacts_query3_drawing_for_scenejs > $OUTPUT_SUBDIR/contacts_query3
+($TEST_SUBJECT query-contacts --match-first 'r<3:7,9>&A<CA,CB>' --match-min-seq-sep 1 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query1
+($TEST_SUBJECT query-contacts --inter-residue --match-first 'R<THR>' --match-second 'R<ARG>' < $OUTPUT_SUBDIR/contacts | column -t) > $OUTPUT_SUBDIR/contacts_query2
+cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw | $TEST_SUBJECT query-contacts --match-first 'R<CRO>' --match-min-seq-sep 1 --preserve-graphics --drawing-for-pymol $OUTPUT_SUBDIR/contacts_query3_drawing_for_pymol --drawing-for-jmol $OUTPUT_SUBDIR/contacts_query3_drawing_for_jmol --drawing-for-scenejs $OUTPUT_SUBDIR/contacts_query3_drawing_for_scenejs > $OUTPUT_SUBDIR/contacts_query3
 ($TEST_SUBJECT query-contacts --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 --match-min-seq-sep 1 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query4
 ($TEST_SUBJECT query-contacts --match-external-pairs $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_query5
-($TEST_SUBJECT query-contacts --match-first-not 'rn<VAL>' --match-second-not 'rn<VAL>' --invert | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query6
-($TEST_SUBJECT query-contacts --match-first 'an<O>' --set-tags 'withO' | $TEST_SUBJECT query-contacts --match-first 'an<NZ>' --set-tags 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query7
+($TEST_SUBJECT query-contacts --match-first-not 'R<VAL>' --match-second-not 'R<VAL>' --invert | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query6
+($TEST_SUBJECT query-contacts --match-first 'A<O>' --set-tags 'withO' | $TEST_SUBJECT query-contacts --match-first 'A<NZ>' --set-tags 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query4 > $OUTPUT_SUBDIR/contacts_query7
 ($TEST_SUBJECT query-contacts --match-tags 'withO' --match-tags-not 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query8
-($TEST_SUBJECT query-contacts --match-first 'an<O,NZ>' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query9
+($TEST_SUBJECT query-contacts --match-first 'A<O,NZ>' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query9
 
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential --output-summed-areas | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_potential_areas
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_potential_values
@@ -82,10 +82,10 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT compare-contacts --target-contacts-file <(cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1) --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_residue) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_comparison_global
 
-($TEST_SUBJECT query-balls --match 'r<3:7,9>&an<CA,CB>' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query1
+($TEST_SUBJECT query-balls --match 'r<3:7,9>&A<CA,CB>' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query1
 ($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query2
 ($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query3
-($TEST_SUBJECT query-balls --match 'an<OE1>' --whole-residues | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query4
+($TEST_SUBJECT query-balls --match 'A<OE1>' --whole-residues | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query4
 
 ($TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_atom --set-external-adjuncts-name qsa | $TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_residue --set-external-adjuncts-name qsr | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_scores1
 $TEST_SUBJECT query-balls --set-external-adjuncts <(awk '{ print $1 " " (100-$2*100) }' < $OUTPUT_SUBDIR/contacts_scores_atom) --set-external-adjuncts-name qsa --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_SUBDIR/balls > /dev/null
