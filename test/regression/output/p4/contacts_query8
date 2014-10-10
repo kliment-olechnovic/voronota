@@ -1,8 +1,8 @@
-c<A>r<3>a<10>rn<LYS>an<O>       c<A>r<6>a<34>rn<GLU>an<CG>       13.7074  2.99745  withO  .
-c<A>r<7>a<38>rn<LEU>an<O>       c<A>r<12>a<78>rn<VAL>an<CG2>     12.0263  3.55526  withO  .
-c<A>r<23>a<160>rn<ASN>an<ND2>   c<A>r<128>a<1002>rn<PHE>an<O>    10.5426  2.90196  withO  .
-c<A>r<38>a<259>rn<THR>an<O>     c<A>r<71>a<533>rn<ARG>an<CD>     12.7469  3.05976  withO  .
-c<A>r<100>a<787>rn<ASP>an<O>    c<A>r<129>a<1016>rn<LYS>an<CD>   14.401   3.59545  withO  .
-c<A>r<135>a<1053>rn<LEU>an<O>   c<A>r<137>a<1069>rn<HIS>an<CD2>  11.1745  2.99011  withO  .
-c<A>r<147>a<1157>rn<ASN>an<O>   c<A>r<163>a<1269>rn<PHE>an<CB>   10.467   3.41954  withO  .
-c<A>r<152>a<1201>rn<ALA>an<CB>  c<A>r<194>a<1513>rn<PRO>an<O>    11.8825  3.23124  withO  .
+c<A>r<3>a<10>R<LYS>A<O>       c<A>r<6>a<34>R<GLU>A<CG>       13.7074  2.99745  withO  .
+c<A>r<7>a<38>R<LEU>A<O>       c<A>r<12>a<78>R<VAL>A<CG2>     12.0263  3.55526  withO  .
+c<A>r<23>a<160>R<ASN>A<ND2>   c<A>r<128>a<1002>R<PHE>A<O>    10.5426  2.90196  withO  .
+c<A>r<38>a<259>R<THR>A<O>     c<A>r<71>a<533>R<ARG>A<CD>     12.7469  3.05976  withO  .
+c<A>r<100>a<787>R<ASP>A<O>    c<A>r<129>a<1016>R<LYS>A<CD>   14.401   3.59545  withO  .
+c<A>r<135>a<1053>R<LEU>A<O>   c<A>r<137>a<1069>R<HIS>A<CD2>  11.1745  2.99011  withO  .
+c<A>r<147>a<1157>R<ASN>A<O>   c<A>r<163>a<1269>R<PHE>A<CB>   10.467   3.41954  withO  .
+c<A>r<152>a<1201>R<ALA>A<CB>  c<A>r<194>a<1513>R<PRO>A<O>    11.8825  3.23124  withO  .

@@ -325,8 +325,8 @@ private:
 			serial("a"),
 			chainID("c"),
 			resSeq("r"),
-			resName("rn"),
-			name("an"),
+			resName("R"),
+			name("A"),
 			altLoc("l"),
 			iCode("i")
 		{
