@@ -430,6 +430,103 @@ public:
 		}
 	};
 
+	class HBPlusReader
+	{
+	public:
+		struct ShortAtomDescriptor
+		{
+			std::string chainID;
+			int resSeq;
+			std::string iCode;
+			std::string resName;
+			std::string name;
+
+			bool resSeq_valid;
+		};
+
+		struct HBPlusRecord
+		{
+			std::pair<ShortAtomDescriptor, ShortAtomDescriptor> short_atom_descriptors;
+		};
+
+		struct Data
+		{
+			std::vector<HBPlusRecord> hbplus_records;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream)
+		{
+			Data data;
+			int line_number=0;
+			while(file_stream.good())
+			{
+				std::string line;
+				std::getline(file_stream, line);
+				line_number++;
+				if(line_number>=9 && !line.empty())
+				{
+					const HBPlusRecord record=read_hbplus_record_from_line(line);
+					if(record.short_atom_descriptors.first.resSeq_valid && record.short_atom_descriptors.second.resSeq_valid)
+					{
+						data.hbplus_records.push_back(record);
+					}
+					else
+					{
+						std::cerr << "Invalid HBPlus record in line: " << line << "\n";
+					}
+				}
+			}
+			return data;
+		}
+
+	private:
+		static HBPlusRecord read_hbplus_record_from_line(const std::string& hbplus_file_line)
+		{
+			HBPlusRecord record=HBPlusRecord();
+
+			record.short_atom_descriptors.first.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 1, 1)));
+			record.short_atom_descriptors.first.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 2, 5), record.short_atom_descriptors.first.resSeq_valid);
+			record.short_atom_descriptors.first.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 6, 6)));
+			record.short_atom_descriptors.first.resName=substring_of_columned_line(hbplus_file_line, 7, 9);
+			record.short_atom_descriptors.first.name=substring_of_columned_line(hbplus_file_line, 10, 14);
+
+			record.short_atom_descriptors.second.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 15, 15)));
+			record.short_atom_descriptors.second.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 16, 19), record.short_atom_descriptors.first.resSeq_valid);
+			record.short_atom_descriptors.second.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 20, 20)));
+			record.short_atom_descriptors.second.resName=substring_of_columned_line(hbplus_file_line, 21, 23);
+			record.short_atom_descriptors.second.name=substring_of_columned_line(hbplus_file_line, 24, 28);
+
+			return record;
+		}
+
+		static int convert_string_to_resSeq(const std::string& str, bool& valid)
+		{
+			std::string refined_str;
+			bool number_started=false;
+			for(std::size_t i=0;i<str.size();i++)
+			{
+				if(str[i]=='0')
+				{
+					if(number_started || i+1==str.size())
+					{
+						refined_str.push_back(str[i]);
+					}
+				}
+				else
+				{
+					number_started=true;
+					refined_str.push_back(str[i]);
+				}
+			}
+			return convert_string<int>(refined_str, valid);
+		}
+
+		static std::string fix_undefined_dash_string(const std::string& str)
+		{
+			return (str=="-" ? std::string() : str);
+		}
+	};
+
 private:
 	static bool check_atom_record_validity(const AtomRecord& record)
 	{
@@ -470,7 +567,6 @@ private:
 	static std::string fix_undefined_string(const std::string& str)
 	{
 		return ((str=="." || str=="?") ? std::string() : str);
-
 	}
 
 	static void normalize_numbered_atom_name(std::string& name)
