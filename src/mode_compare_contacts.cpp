@@ -34,7 +34,7 @@ struct CADDescriptor
 	void add(const CADDescriptor& cadd)
 	{
 		target_area_sum+=cadd.target_area_sum;
-		model_area_sum+=cadd.target_area_sum;
+		model_area_sum+=cadd.model_area_sum;
 		raw_differences_sum+=cadd.raw_differences_sum;
 		constrained_differences_sum+=cadd.constrained_differences_sum;
 	}
