@@ -380,7 +380,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					int icount=0;
 					for(std::size_t i=0;i<pdb_file_data.atom_records.size();i++)
 					{
-						const std::map<CRAD, std::size_t>::const_iterator ball_id_it=output_map_of_ball_ids.find(CRAD(pdb_file_data.atom_records[i], pdb_file_data.atom_records[i].chainID));
+						const auxiliaries::AtomsIO::AtomRecord& atom_record=pdb_file_data.atom_records[i];
+						const std::map<CRAD, std::size_t>::const_iterator ball_id_it=output_map_of_ball_ids.find(CRAD(atom_record.serial, atom_record.chainID, atom_record.resSeq, atom_record.resName, atom_record.name, atom_record.altLoc, atom_record.iCode));
 						if(ball_id_it!=output_map_of_ball_ids.end())
 						{
 							const std::map<std::string, double>& ball_adjuncts=list_of_balls[ball_id_it->second].second.adjuncts;

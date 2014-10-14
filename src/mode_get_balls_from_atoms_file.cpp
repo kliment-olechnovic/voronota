@@ -101,7 +101,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(annotated)
 		{
-			const auxiliaries::ChainResidueAtomDescriptor crad(atom, atom.chainID);
+			const auxiliaries::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
 			if(crad.valid())
 			{
 				modescommon::BallValue value;

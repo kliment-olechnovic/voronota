@@ -491,7 +491,7 @@ public:
 			record.short_atom_descriptors.first.name=substring_of_columned_line(hbplus_file_line, 10, 14);
 
 			record.short_atom_descriptors.second.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 15, 15)));
-			record.short_atom_descriptors.second.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 16, 19), record.short_atom_descriptors.first.resSeq_valid);
+			record.short_atom_descriptors.second.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 16, 19), record.short_atom_descriptors.second.resSeq_valid);
 			record.short_atom_descriptors.second.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 20, 20)));
 			record.short_atom_descriptors.second.resName=substring_of_columned_line(hbplus_file_line, 21, 23);
 			record.short_atom_descriptors.second.name=substring_of_columned_line(hbplus_file_line, 24, 28);

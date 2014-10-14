@@ -118,8 +118,9 @@ Command 'query-contacts' options:
 --no-same-chain                             flag to not include same chain contacts
 --invert                                    flag to invert selection
 --drop-tags                                 flag to drop all tags from input
---set-tags                      string      set tags instead of filtering
 --drop-adjuncts                             flag to drop all adjuncts from input
+--set-tags                      string      set tags instead of filtering
+--set-hbplus-tags               string      file path to input HBPLUS file
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
