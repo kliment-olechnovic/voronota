@@ -446,7 +446,8 @@ public:
 
 		struct HBPlusRecord
 		{
-			std::pair<ShortAtomDescriptor, ShortAtomDescriptor> short_atom_descriptors;
+			ShortAtomDescriptor first;
+			ShortAtomDescriptor second;
 		};
 
 		struct Data
@@ -466,7 +467,7 @@ public:
 				if(line_number>=9 && !line.empty())
 				{
 					const HBPlusRecord record=read_hbplus_record_from_line(line);
-					if(record.short_atom_descriptors.first.resSeq_valid && record.short_atom_descriptors.second.resSeq_valid)
+					if(record.first.resSeq_valid && record.second.resSeq_valid)
 					{
 						data.hbplus_records.push_back(record);
 					}
@@ -480,22 +481,23 @@ public:
 		}
 
 	private:
+		static ShortAtomDescriptor read_short_atom_descriptor_from_line(const std::string& hbplus_file_line, const bool second)
+		{
+			const int offset=(second ? 14 : 0);
+			ShortAtomDescriptor d=ShortAtomDescriptor();
+			d.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 1+offset, 1+offset)));
+			d.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 2+offset, 5+offset), d.resSeq_valid);
+			d.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 6+offset, 6+offset)));
+			d.resName=substring_of_columned_line(hbplus_file_line, 7+offset, 9+offset);
+			d.name=substring_of_columned_line(hbplus_file_line, 10+offset, 14+offset);
+			return d;
+		}
+
 		static HBPlusRecord read_hbplus_record_from_line(const std::string& hbplus_file_line)
 		{
 			HBPlusRecord record=HBPlusRecord();
-
-			record.short_atom_descriptors.first.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 1, 1)));
-			record.short_atom_descriptors.first.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 2, 5), record.short_atom_descriptors.first.resSeq_valid);
-			record.short_atom_descriptors.first.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 6, 6)));
-			record.short_atom_descriptors.first.resName=substring_of_columned_line(hbplus_file_line, 7, 9);
-			record.short_atom_descriptors.first.name=substring_of_columned_line(hbplus_file_line, 10, 14);
-
-			record.short_atom_descriptors.second.chainID=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 15, 15)));
-			record.short_atom_descriptors.second.resSeq=convert_string_to_resSeq(substring_of_columned_line(hbplus_file_line, 16, 19), record.short_atom_descriptors.second.resSeq_valid);
-			record.short_atom_descriptors.second.iCode=fix_undefined_string(fix_undefined_dash_string(substring_of_columned_line(hbplus_file_line, 20, 20)));
-			record.short_atom_descriptors.second.resName=substring_of_columned_line(hbplus_file_line, 21, 23);
-			record.short_atom_descriptors.second.name=substring_of_columned_line(hbplus_file_line, 24, 28);
-
+			record.first=read_short_atom_descriptor_from_line(hbplus_file_line, false);
+			record.second=read_short_atom_descriptor_from_line(hbplus_file_line, true);
 			return record;
 		}
 
