@@ -270,8 +270,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		std::set< std::pair<CRAD, CRAD> > set_of_hbplus_crad_pairs;
 		for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
 		{
-			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->short_atom_descriptors.first;
-			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->short_atom_descriptors.second;
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
 			set_of_hbplus_crad_pairs.insert(std::make_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", "")));
 		}
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
