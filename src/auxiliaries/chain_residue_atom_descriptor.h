@@ -30,8 +30,21 @@ public:
 	{
 	}
 
-	template<typename T>
-	ChainResidueAtomDescriptor(const T& obj, const std::string& chainID) : serial(obj.serial), chainID(chainID), resSeq(obj.resSeq), resName(obj.resName), name(obj.name), altLoc(obj.altLoc), iCode(obj.iCode)
+	ChainResidueAtomDescriptor(
+			const int serial,
+			const std::string& chainID,
+			const int resSeq,
+			const std::string& resName,
+			const std::string& name,
+			const std::string& altLoc,
+			const std::string& iCode) :
+				serial(serial),
+				chainID(chainID),
+				resSeq(resSeq),
+				resName(resName),
+				name(name),
+				altLoc(altLoc),
+				iCode(iCode)
 	{
 	}
 

@@ -132,6 +132,13 @@ $TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $
 
 ############################
 
+OUTPUT_SUBDIR=$OUTPUT_DIR/p8
+mkdir $OUTPUT_SUBDIR
+
+$TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/structure.pdb | $TEST_SUBJECT calculate-contacts --annotated | $TEST_SUBJECT query-contacts --set-hbplus-tags <(xhbplus $INPUT_DIR/structure.pdb 2> /dev/null) | $TEST_SUBJECT query-contacts --match-tags 'hb' | column -t > $OUTPUT_SUBDIR/contacts_with_hbplus_info
+
+############################
+
 rm -r ./voronota_package
 
 hg status ./

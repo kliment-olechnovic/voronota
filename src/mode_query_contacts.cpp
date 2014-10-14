@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 
+#include "auxiliaries/atoms_io.h"
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon/assert_options.h"
@@ -58,8 +59,9 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include same chain contacts"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-hbplus-tags", "string", "file path to input HBPLUS file"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
@@ -103,8 +105,9 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
-	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
+	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
+	const std::string set_hbplus_tags=poh.argument<std::string>("--set-hbplus-tags", "");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
@@ -184,6 +187,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_external_adjunct_values);
 	}
 
+	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;
+	if(!set_hbplus_tags.empty())
+	{
+		std::ifstream input_file(set_hbplus_tags.c_str(), std::ios::in);
+		hbplus_file_data=auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
+	}
+
 	std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
 
 	for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
@@ -252,6 +262,33 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				output_map_it->second=it->second;
 			}
+		}
+	}
+
+	if(!hbplus_file_data.hbplus_records.empty())
+	{
+		std::set< std::pair<CRAD, CRAD> > set_of_hbplus_crad_pairs;
+		for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
+		{
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->short_atom_descriptors.first;
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->short_atom_descriptors.second;
+			set_of_hbplus_crad_pairs.insert(std::make_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", "")));
+		}
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			const std::pair<CRAD, CRAD>& crads=it->first;
+			if(modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, set_of_hbplus_crad_pairs))
+			{
+				ContactValue& value=it->second;
+				value.tags.insert("hb");
+			}
+		}
+	}
+
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !hbplus_file_data.hbplus_records.empty())
+	{
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
 			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 	}
