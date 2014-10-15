@@ -3,8 +3,9 @@
 BIN_DIR=$1
 DOWNLOADS_DIR=$2
 OUTPUT_DIR=$3
-TARGETS_TARBALL_URL=$4
-MODELS_TARBALL_URL=$5
+CLEARSPACE=$4
+TARGETS_TARBALL_URL=$5
+MODELS_TARBALL_URL=$6
 
 TARGETS_TARBALL_BASENAME=$(basename $TARGETS_TARBALL_URL)
 MODELS_TARBALL_BASENAME=$(basename $MODELS_TARBALL_URL)
@@ -14,20 +15,19 @@ TARGET_NAME=$(basename $TARGET_NAME .tgz)
 mkdir -p $DOWNLOADS_DIR
 cd $DOWNLOADS_DIR
 
-if [ ! -f "$TARGET_NAME.pdb" ] || [ ! -d "$TARGET_NAME" ]
+if [ ! -f "$TARGETS_TARBALL_BASENAME" ]
 then
-	wget --timestamping $TARGETS_TARBALL_URL &> /dev/null
+	wget $TARGETS_TARBALL_URL &> /dev/null
 	tar -xzf $TARGETS_TARBALL_BASENAME
-	
-	wget --timestamping $MODELS_TARBALL_URL &> /dev/null
-	tar -xzf $MODELS_TARBALL_BASENAME
 fi
 
-mkdir -p $OUTPUT_DIR
-cd $OUTPUT_DIR
+wget --timestamping $MODELS_TARBALL_URL &> /dev/null
+tar -xzf $MODELS_TARBALL_BASENAME
 
-mkdir -p $TARGET_NAME
-cd $TARGET_NAME
+###################################################
+
+mkdir -p $OUTPUT_DIR/$TARGET_NAME
+cd $OUTPUT_DIR/$TARGET_NAME
 
 mkdir -p balls
 mkdir -p sequences
@@ -55,6 +55,11 @@ done
 (echo "target model qasr_count qasr_score qasr_normalized_energy qasr_energy_score qasr_actuality_score" ; cat qscores/* | egrep 'residue_level_summary' | sed 's/residue_level_summary //') > all_qscores_summary_residue
 (echo "target model csa_score csa_target_area_sum csa_model_area_sum csa_raw_differences_sum csa_constrained_differences_sum" ; cat cadscores/* | egrep 'atom_level_global' | sed 's/atom_level_global //') > all_cadscores_atom
 (echo "target model csr_score csr_target_area_sum csr_model_area_sum csr_raw_differences_sum csr_constrained_differences_sum" ; cat cadscores/* | egrep 'residue_level_global' | sed 's/residue_level_global //') > all_cadscores_residue
+
+if [ "$CLEARSPACE" == "yes" ]
+then
+	rm -r ./balls ./contacts $DOWNLOADS_DIR/$MODELS_TARBALL_BASENAME $DOWNLOADS_DIR/$TARGET_NAME
+fi
 
 ###################################################
 
