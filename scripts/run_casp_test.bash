@@ -9,6 +9,7 @@ MODELS_TARBALL_URL=$5
 TARGETS_TARBALL_BASENAME=$(basename $TARGETS_TARBALL_URL)
 MODELS_TARBALL_BASENAME=$(basename $MODELS_TARBALL_URL)
 TARGET_NAME=$(basename $MODELS_TARBALL_BASENAME .tar.gz)
+TARGET_NAME=$(basename $TARGET_NAME .tgz)
 
 mkdir -p $DOWNLOADS_DIR
 cd $DOWNLOADS_DIR
@@ -41,7 +42,7 @@ do
 	MODEL_NAME=$(basename $MODEL_NAME .ent)
 	if [ ! -f "balls/$MODEL_NAME" ] || [ ! -f "contacts/$MODEL_NAME" ]
 	then
-		$BIN_DIR/voronota get-balls-from-atoms-file --radii-file $BIN_DIR/radii --annotated < $MODEL_FILE | $BIN_DIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --seq-output sequences/$MODEL_NAME > balls/raw_$MODEL_NAME
+		$BIN_DIR/voronota get-balls-from-atoms-file --radii-file $BIN_DIR/radii --annotated < $MODEL_FILE | $BIN_DIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --seq-output sequences/$MODEL_NAME | sed 's/c<.>//' > balls/raw_$MODEL_NAME
 		$BIN_DIR/voronota query-balls --set-ref-seq-num-adjunct sequences/$TARGET_NAME --ref-seq-alignment alignments/$MODEL_NAME < balls/raw_$MODEL_NAME | $BIN_DIR/voronota query-balls --renumber-from-adjunct refseq > balls/$MODEL_NAME ; rm balls/raw_$MODEL_NAME
 		$BIN_DIR/voronota calculate-contacts --annotated < balls/$MODEL_NAME > contacts/$MODEL_NAME
 	fi
