@@ -29,6 +29,8 @@ mkdir -p $TARGET_NAME
 cd $TARGET_NAME
 
 mkdir -p balls
+mkdir -p sequences
+mkdir -p alignments
 mkdir -p contacts
 mkdir -p qscores
 mkdir -p cadscores
@@ -39,7 +41,8 @@ do
 	MODEL_NAME=$(basename $MODEL_NAME .ent)
 	if [ ! -f "balls/$MODEL_NAME" ] || [ ! -f "contacts/$MODEL_NAME" ]
 	then
-		$BIN_DIR/voronota get-balls-from-atoms-file --radii-file $BIN_DIR/radii --annotated < $MODEL_FILE | $BIN_DIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials > balls/$MODEL_NAME
+		$BIN_DIR/voronota get-balls-from-atoms-file --radii-file $BIN_DIR/radii --annotated < $MODEL_FILE | $BIN_DIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --seq-output sequences/$MODEL_NAME > balls/$MODEL_NAME
+		$BIN_DIR/voronota query-balls --set-ref-seq-num-adjunct sequences/$TARGET_NAME --ref-seq-alignment alignments/$MODEL_NAME < balls/$MODEL_NAME | $BIN_DIR/voronota query-balls --renumber-from-adjunct refseq | sponge balls/$MODEL_NAME
 		$BIN_DIR/voronota calculate-contacts --annotated < balls/$MODEL_NAME > contacts/$MODEL_NAME
 	fi
 	$BIN_DIR/voronota query-contacts --match-min-seq-sep 2 < contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --potential-file $BIN_DIR/potential | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
