@@ -104,6 +104,22 @@ void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_
 	}
 }
 
+void print_single_scores_summary(const std::string& name, const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const EnergyScoreCalculationParameter& escp, std::ostream& output)
+{
+	EnergyScore es_sum;
+	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
+	{
+		const EnergyDescriptor& ed=it->second;
+		const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
+		es_sum.quality_score+=es.quality_score;
+		es_sum.normalized_energy+=es.normalized_energy;
+		es_sum.energy_score+=es.energy_score;
+		es_sum.actuality_score+=es.actuality_score;
+	}
+	output << name << " " << map_of_single_energy_descriptors.size() << " ";
+	output << es_sum.quality_score << " " << es_sum.normalized_energy << " " << es_sum.energy_score << " " << es_sum.actuality_score << "\n";
+}
+
 }
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
@@ -262,4 +278,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		print_score("global", global_ed, escp, std::cout);
 	}
+
+	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, escp, std::cout);
+	print_single_scores_summary("residue_level_summary", residue_energy_descriptors, escp, std::cout);
 }
