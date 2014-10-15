@@ -46,15 +46,22 @@ do
 	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
 done
 
-(echo "target model qa_score qa_normalized_energy qa_energy_score qa_actuality_score qa_total_area qa_strange_area qa_energy" ; cat qscores/* | sed 's/global //') > all_qscores
+(echo "target model qa_score qa_normalized_energy qa_energy_score qa_actuality_score qa_total_area qa_strange_area qa_energy" ; cat qscores/* | egrep 'global' | sed 's/global //') > all_qscores_global
+(echo "target model qasa_count qasa_score qasa_normalized_energy qasa_energy_score qasa_actuality_score" ; cat qscores/* | egrep 'atom_level_summary' | sed 's/atom_level_summary //') > all_qscores_summary_atom
+(echo "target model qasr_count qasr_score qasr_normalized_energy qasr_energy_score qasr_actuality_score" ; cat qscores/* | egrep 'residue_level_summary' | sed 's/residue_level_summary //') > all_qscores_summary_residue
 (echo "target model csa_score csa_target_area_sum csa_model_area_sum csa_raw_differences_sum csa_constrained_differences_sum" ; cat cadscores/* | egrep 'atom_level_global' | sed 's/atom_level_global //') > all_cadscores_atom
 (echo "target model csr_score csr_target_area_sum csr_model_area_sum csr_raw_differences_sum csr_constrained_differences_sum" ; cat cadscores/* | egrep 'residue_level_global' | sed 's/residue_level_global //') > all_cadscores_residue
 
 R --vanilla << EOF > /dev/null
-qscores=read.table("all_qscores", header=TRUE, stringsAsFactors=FALSE);
+all_qscores_global=read.table("all_qscores_global", header=TRUE, stringsAsFactors=FALSE);
+all_qscores_summary_atom=read.table("all_qscores_summary_atom", header=TRUE, stringsAsFactors=FALSE);
+all_qscores_summary_residue=read.table("all_qscores_summary_residue", header=TRUE, stringsAsFactors=FALSE);
 all_cadscores_atom=read.table("all_cadscores_atom", header=TRUE, stringsAsFactors=FALSE);
 all_cadscores_residue=read.table("all_cadscores_residue", header=TRUE, stringsAsFactors=FALSE);
-merged_table=merge(qscores, all_cadscores_atom);
+merged_table=all_qscores_global;
+merged_table=merge(merged_table, all_qscores_summary_atom);
+merged_table=merge(merged_table, all_qscores_summary_residue);
+merged_table=merge(merged_table, all_cadscores_atom);
 merged_table=merge(merged_table, all_cadscores_residue);
 write.table(merged_table, "merged_table", quote=FALSE, row.names=FALSE);
 EOF
