@@ -182,6 +182,8 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		list_of_option_descriptions.push_back(OD("--defaulting-max-seq-sep", "number", "maximum residue sequence separation for defaulting contacts"));
+		list_of_option_descriptions.push_back(OD("--defaulting-potential-value", "number", "potential value to use for defaulting contacts"));
 		list_of_option_descriptions.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
 		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
@@ -198,6 +200,8 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
+	const int defaulting_max_seq_sep=poh.argument<int>("--defaulting-max-seq-sep", 1);
+	const double defaulting_potential_value=poh.argument<int>("--defaulting-potential-value", 0.0);
 	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
 	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
@@ -240,15 +244,22 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
 			ed.total_area=it->second;
-			std::map< std::pair<CRAD, CRAD>, double >::const_iterator potential_value_it=
-					map_of_potential_values.find(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())));
-			if(potential_value_it!=map_of_potential_values.end())
+			if(CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, defaulting_max_seq_sep, false))
 			{
-				ed.energy=ed.total_area*(potential_value_it->second);
+				ed.energy=ed.total_area*defaulting_potential_value;
 			}
 			else
 			{
-				ed.strange_area=ed.total_area;
+				std::map< std::pair<CRAD, CRAD>, double >::const_iterator potential_value_it=
+						map_of_potential_values.find(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())));
+				if(potential_value_it!=map_of_potential_values.end())
+				{
+					ed.energy=ed.total_area*(potential_value_it->second);
+				}
+				else
+				{
+					ed.strange_area=ed.total_area;
+				}
 			}
 		}
 		print_pair_scores_to_file(inter_atom_energy_descriptors, escp, inter_atom_scores_file);

@@ -147,6 +147,8 @@ stdout  ->  list of potential values (line format: 'annotation1 annotation2 valu
 
 Command 'score-contacts' options:
 --potential-file                string   *  file path to input potential values
+--defaulting-max-seq-sep        number      maximum residue sequence separation for defaulting contacts
+--defaulting-potential-value    number      potential value to use for defaulting contacts
 --inter-atom-scores-file        string      file path to output inter-atom scores
 --inter-residue-scores-file     string      file path to output inter-residue scores
 --atom-scores-file              string      file path to output atom scores
