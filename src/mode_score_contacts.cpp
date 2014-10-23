@@ -127,51 +127,69 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--output-summed-areas", "", "flag to output summed areas instead of potential values"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  list of potential values (line format: 'annotation1 annotation2 value')\n";
+			std::cerr << "stdin   <-  list of contact files\n";
+			std::cerr << "stdout  ->  list of potential values (line format: 'class annotation1 annotation2 value')\n";
 			return;
 		}
 	}
 
-	const bool output_summed_areas=poh.contains_option("--output-summed-areas");
-
-	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<true>, map_of_total_areas);
-	if(map_of_total_areas.empty())
+	std::set<std::string> input_filenames;
 	{
-		throw std::runtime_error("No contacts input.");
+		while(std::cin.good())
+		{
+			std::string token;
+			std::cin >> token;
+			if(!token.empty())
+			{
+				input_filenames.insert(token);
+			}
+		}
+		if(input_filenames.empty())
+		{
+			throw std::runtime_error("No input.");
+		}
 	}
 
+	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
 	std::map<CRAD, double> map_of_generalized_total_areas;
 	double sum_of_all_areas=0.0;
-	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_total_areas.begin();it!=map_of_total_areas.end();++it)
+
+	for(std::set<std::string>::const_iterator it=input_filenames.begin();it!=input_filenames.end();++it)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		map_of_generalized_total_areas[crads.first]+=(it->second);
-		map_of_generalized_total_areas[crads.second]+=(it->second);
-		sum_of_all_areas+=(it->second);
+		const std::string& filename=(*it);
+		std::ifstream input(filename.c_str(), std::ios::in);
+		if(input.good())
+		{
+			std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
+			auxiliaries::read_lines_to_container(input, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_contacts);
+			for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			{
+				const std::pair<CRAD, CRAD>& crads=it->first;
+				const double area=it->second;
+				const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
+				if(CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 2, CRAD::null_num(), true))
+				{
+					map_of_considered_total_areas[crads_without_numbering]+=area;
+				}
+				map_of_generalized_total_areas[crads_without_numbering.first]+=area;
+				map_of_generalized_total_areas[crads_without_numbering.second]+=area;
+				sum_of_all_areas+=(it->second);
+			}
+		}
 	}
 
-	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_total_areas.begin();it!=map_of_total_areas.end();++it)
+	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
 		const double ab=it->second;
-		if(output_summed_areas)
+		const double ax=map_of_generalized_total_areas[crads.first];
+		const double bx=map_of_generalized_total_areas[crads.second];
+		if(ab>0.0 && ax>0.0 && bx>0.0)
 		{
-			std::cout << crads.first.str() << " " << crads.second.str() << " " << ab << "\n";
-		}
-		else
-		{
-			const double ax=map_of_generalized_total_areas[crads.first];
-			const double bx=map_of_generalized_total_areas[crads.second];
-			if(ab>0.0 && ax>0.0 && bx>0.0)
-			{
-				const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
-				std::cout << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
-			}
+			const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
+			std::cout << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
 		}
 	}
 }
