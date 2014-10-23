@@ -75,7 +75,7 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 ($TEST_SUBJECT query-contacts --match-tags 'withO' --match-tags-not 'withNZ' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query8
 ($TEST_SUBJECT query-contacts --match-first 'A<O,NZ>' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query9
 
-($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_potential_values
+($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts-potential --defaulting-max-seq-sep 0 | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_potential_values
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT score-contacts --defaulting-max-seq-sep 0 --potential-file $OUTPUT_SUBDIR/contacts_scores_potential_values --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_scores_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_scores_residue) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_global
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 10 | $TEST_SUBJECT query-contacts --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_inter_atom | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_injected
 

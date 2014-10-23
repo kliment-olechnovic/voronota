@@ -127,6 +127,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--defaulting-max-seq-sep", "number", "maximum residue sequence separation for defaulting contacts"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
@@ -135,24 +136,34 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_total_areas;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<true>, map_of_total_areas);
-	if(map_of_total_areas.empty())
+	const int defaulting_max_seq_sep=poh.argument<int>("--defaulting-max-seq-sep", 1);
+
+	std::list< std::pair<std::pair<CRAD, CRAD>, double> > list_of_contacts;
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_list, list_of_contacts);
+	if(list_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
+	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
 	std::map<CRAD, double> map_of_generalized_total_areas;
 	double sum_of_all_areas=0.0;
-	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_total_areas.begin();it!=map_of_total_areas.end();++it)
+
+	for(std::list< std::pair<std::pair<CRAD, CRAD>, double> >::iterator it=list_of_contacts.begin();it!=list_of_contacts.end();++it)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
-		map_of_generalized_total_areas[crads.first]+=(it->second);
-		map_of_generalized_total_areas[crads.second]+=(it->second);
+		const double area=it->second;
+		const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
+		if(!CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, defaulting_max_seq_sep, false))
+		{
+			map_of_considered_total_areas[crads_without_numbering]+=area;
+		}
+		map_of_generalized_total_areas[crads_without_numbering.first]+=area;
+		map_of_generalized_total_areas[crads_without_numbering.second]+=area;
 		sum_of_all_areas+=(it->second);
 	}
 
-	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_total_areas.begin();it!=map_of_total_areas.end();++it)
+	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
 	{
 		const std::pair<CRAD, CRAD>& crads=it->first;
 		const double ab=it->second;
