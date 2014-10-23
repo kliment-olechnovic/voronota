@@ -140,7 +140,6 @@ stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distanc
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
 Command 'score-contacts-potential' options:
---output-summed-areas                       flag to output summed areas instead of potential values
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  list of potential values (line format: 'annotation1 annotation2 value')
