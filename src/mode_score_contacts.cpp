@@ -127,15 +127,16 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values", true));
 		list_of_option_descriptions.push_back(OD("--defaulting-max-seq-sep", "number", "maximum residue sequence separation for defaulting contacts"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  list of potential values (line format: 'annotation1 annotation2 value')\n";
 			return;
 		}
 	}
 
+	const std::string potential_file=poh.argument<std::string>("--potential-file");
 	const int defaulting_max_seq_sep=poh.argument<int>("--defaulting-max-seq-sep", 1);
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
@@ -173,16 +174,20 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
+	std::ofstream foutput(potential_file.c_str(), std::ios::out);
+	if(foutput.good())
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		const double ab=it->second;
-		const double ax=map_of_generalized_total_areas[crads.first];
-		const double bx=map_of_generalized_total_areas[crads.second];
-		if(ab>0.0 && ax>0.0 && bx>0.0)
+		for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
 		{
-			const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
-			std::cout << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
+			const std::pair<CRAD, CRAD>& crads=it->first;
+			const double ab=it->second;
+			const double ax=map_of_generalized_total_areas[crads.first];
+			const double bx=map_of_generalized_total_areas[crads.second];
+			if(ab>0.0 && ax>0.0 && bx>0.0)
+			{
+				const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
+				foutput << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
+			}
 		}
 	}
 }
