@@ -110,23 +110,6 @@ inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_map(std
 	return false;
 }
 
-inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_list(std::istream& input, std::list< std::pair<std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, double> >& list_of_values)
-{
-	std::pair<std::string, std::string> name_strings;
-	double value;
-	input >> name_strings.first >> name_strings.second >> value;
-	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
-	{
-		std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
-		if(names.first.valid() && names.second.valid())
-		{
-			list_of_values.push_back(std::make_pair(refine_pair_by_ordering(names), value));
-			return true;
-		}
-	}
-	return false;
-}
-
 }
 
 #endif /* MODESCOMMON_HANDLE_ANNOTATIONS_H_ */
