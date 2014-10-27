@@ -63,7 +63,6 @@ inline bool add_chain_residue_atom_descriptors_pair_from_stream_to_set(std::istr
 	return false;
 }
 
-template<bool Additive>
 inline bool add_chain_residue_atom_descriptor_value_from_stream_to_map(std::istream& input, std::map<auxiliaries::ChainResidueAtomDescriptor, double>& map_of_values)
 {
 	std::string name_string;
@@ -72,21 +71,15 @@ inline bool add_chain_residue_atom_descriptor_value_from_stream_to_map(std::istr
 	if(!input.fail() && !name_string.empty())
 	{
 		auxiliaries::ChainResidueAtomDescriptor name=auxiliaries::ChainResidueAtomDescriptor::from_str(name_string);
-		if(Additive)
-		{
-			name=name.without_numbering();
-		}
 		if(name.valid())
 		{
-			double& left_value=map_of_values[name];
-			left_value=(Additive ? (left_value+value) : value);
+			map_of_values[name]=value;
 			return true;
 		}
 	}
 	return false;
 }
 
-template<bool Additive>
 inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, double >& map_of_values)
 {
 	std::pair<std::string, std::string> name_strings;
@@ -95,15 +88,9 @@ inline bool add_chain_residue_atom_descriptors_pair_value_from_stream_to_map(std
 	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
 	{
 		std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
-		if(Additive)
-		{
-			names.first=names.first.without_numbering();
-			names.second=names.second.without_numbering();
-		}
 		if(names.first.valid() && names.second.valid())
 		{
-			double& left_value=map_of_values[refine_pair_by_ordering(names)];
-			left_value=(Additive ? (left_value+value) : value);
+			map_of_values[refine_pair_by_ordering(names)]=value;
 			return true;
 		}
 	}
