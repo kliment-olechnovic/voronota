@@ -184,7 +184,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!set_external_adjuncts.empty())
 	{
 		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
-		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_external_adjunct_values);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_external_adjunct_values);
 	}
 
 	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;

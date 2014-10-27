@@ -237,7 +237,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_contacts);
+		auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
@@ -251,7 +251,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			std::ifstream finput(potential_file.c_str(), std::ios::in);
 			if(finput.good())
 			{
-				auxiliaries::read_lines_to_container(finput, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map<false>, map_of_potential_values);
+				auxiliaries::read_lines_to_container(finput, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_potential_values);
 			}
 		}
 		if(map_of_potential_values.empty())
