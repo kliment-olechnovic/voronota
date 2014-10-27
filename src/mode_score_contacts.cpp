@@ -17,8 +17,9 @@ struct EnergyDescriptor
 	double total_area;
 	double strange_area;
 	double energy;
+	double contacts_count;
 
-	EnergyDescriptor() : total_area(0), strange_area(0), energy(0)
+	EnergyDescriptor() : total_area(0), strange_area(0), energy(0), contacts_count(0)
 	{
 	}
 
@@ -27,6 +28,7 @@ struct EnergyDescriptor
 		total_area+=ed.total_area;
 		strange_area+=ed.strange_area;
 		energy+=ed.energy;
+		contacts_count+=ed.contacts_count;
 	}
 };
 
@@ -44,10 +46,11 @@ struct EnergyScore
 
 struct EnergyScoreCalculationParameter
 {
+	double contact_mean_area;
 	double erf_mean;
 	double erf_sd;
 
-	EnergyScoreCalculationParameter(const double erf_mean, const double erf_sd) : erf_mean(erf_mean), erf_sd(erf_sd)
+	EnergyScoreCalculationParameter(const double erf_mean, const double erf_sd) : contact_mean_area(3.8), erf_mean(erf_mean), erf_sd(erf_sd)
 	{
 	}
 };
@@ -58,7 +61,7 @@ inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDes
 	EnergyScore es;
 	if(ed.total_area>0.0)
 	{
-		es.normalized_energy=ed.energy/ed.total_area;
+		es.normalized_energy=ed.energy/(ed.contacts_count*escp.contact_mean_area);
 		es.energy_score=1.0-(0.5*(1.0+erf((es.normalized_energy-escp.erf_mean)/(square_root_of_two*escp.erf_sd))));
 		es.actuality_score=1.0-(ed.strange_area/ed.total_area);
 		es.quality_score=(es.energy_score*es.actuality_score);
@@ -267,6 +270,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
 			ed.total_area=it->second;
+			ed.contacts_count=1.0;
 			if(CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, defaulting_max_seq_sep, false))
 			{
 				ed.energy=ed.total_area*defaulting_potential_value;
