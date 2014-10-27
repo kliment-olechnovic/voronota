@@ -174,20 +174,27 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	std::map< std::pair<CRAD, CRAD>, std::pair<double, double> > result;
+	for(std::map< std::pair<CRAD, CRAD>, double >::const_iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
+	{
+		const std::pair<CRAD, CRAD>& crads=it->first;
+		const double ab=it->second;
+		const double ax=map_of_generalized_total_areas[crads.first];
+		const double bx=map_of_generalized_total_areas[crads.second];
+		if(ab>0.0 && ax>0.0 && bx>0.0)
+		{
+			const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
+			result[crads]=std::make_pair(potential_value, ab);
+		}
+	}
+
 	std::ofstream foutput(potential_file.c_str(), std::ios::out);
 	if(foutput.good())
 	{
-		for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
+		for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 		{
 			const std::pair<CRAD, CRAD>& crads=it->first;
-			const double ab=it->second;
-			const double ax=map_of_generalized_total_areas[crads.first];
-			const double bx=map_of_generalized_total_areas[crads.second];
-			if(ab>0.0 && ax>0.0 && bx>0.0)
-			{
-				const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
-				foutput << crads.first.str() << " " << crads.second.str() << " " << potential_value << "\n";
-			}
+			foutput << crads.first.str() << " " << crads.second.str() << " " << it->second.first << "\n";
 		}
 	}
 }
