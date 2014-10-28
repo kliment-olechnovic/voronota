@@ -18,8 +18,9 @@ struct EnergyDescriptor
 	double strange_area;
 	double energy;
 	double contacts_count;
+	double covered_count;
 
-	EnergyDescriptor() : total_area(0), strange_area(0), energy(0), contacts_count(0)
+	EnergyDescriptor() : total_area(0), strange_area(0), energy(0), contacts_count(0), covered_count(0)
 	{
 	}
 
@@ -74,7 +75,7 @@ inline void print_score(const std::string& name, const EnergyDescriptor& ed, con
 	const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
 	output << name << " ";
 	output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
-	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << " " << ed.covered_count << "\n";
 }
 
 void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const std::string& filename)
@@ -305,11 +306,11 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::map< CRAD, std::set<CRAD> > atom_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, depth);
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, atom_graph);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=modescommon::inject_descriptors_with_covered_counts(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, atom_graph), modescommon::count_neighbors_from_graph(atom_graph, false));
 	print_single_scores_to_file(atom_energy_descriptors, escp, atom_scores_file);
 
 	const std::map< CRAD, std::set<CRAD> > residue_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth);
-	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph);
+	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::inject_descriptors_with_covered_counts(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph), modescommon::count_neighbors_from_graph(atom_graph, true));
 	print_single_scores_to_file(residue_energy_descriptors, escp, residue_scores_file);
 
 	{
@@ -318,6 +319,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			global_ed.add(it->second);
 		}
+		global_ed.covered_count=atom_energy_descriptors.size();
 		print_score("global", global_ed, escp, std::cout);
 	}
 
