@@ -192,12 +192,12 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!atom_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_atom_cad_descriptors, depth), atom_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_pair_mapping_of_descriptors(map_of_inter_atom_cad_descriptors, depth)), atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_residue_cad_descriptors, depth), residue_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_pair_mapping_of_descriptors(map_of_inter_residue_cad_descriptors, depth)), residue_scores_file);
 	}
 
 	print_score("atom_level_global", construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors), std::cout);
