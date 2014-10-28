@@ -64,7 +64,7 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_s
 			related_crads.insert(crads.second);
 		}
 		{
-			std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.first);
+			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.first);
 			if(graph_it!=graph.end())
 			{
 				const std::set<CRAD>& related_crads1=graph_it->second;
@@ -72,7 +72,7 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_s
 			}
 		}
 		{
-			std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.second);
+			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.second);
 			if(graph_it!=graph.end())
 			{
 				const std::set<CRAD>& related_crads2=graph_it->second;
@@ -85,6 +85,30 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_s
 		}
 	}
 	return map_of_single_descriptors;
+}
+
+inline std::map<auxiliaries::ChainResidueAtomDescriptor, std::size_t> count_neighbors_from_graph(const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph, const bool residue_level)
+{
+	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+	std::map<CRAD, std::size_t> result;
+	for(std::map< CRAD, std::set<CRAD> >::const_iterator it=graph.begin();it!=graph.end();++it)
+	{
+		result[residue_level ? it->first.without_atom() : it->first]+=it->second.size();
+	}
+	return result;
+}
+
+template<typename Descriptor>
+inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> inject_descriptors_with_covered_counts(const std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor>& descriptors, const std::map<auxiliaries::ChainResidueAtomDescriptor, std::size_t>& map_of_neighbor_counts)
+{
+	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+	std::map<CRAD, Descriptor> result=descriptors;
+	for(typename std::map<CRAD, Descriptor>::iterator it=result.begin();it!=result.end();++it)
+	{
+		std::map<CRAD, std::size_t>::const_iterator jt=map_of_neighbor_counts.find(it->first);
+		it->second.covered_count=1.0+(jt==map_of_neighbor_counts.end() ? 0.0 : static_cast<double>(jt->second));
+	}
+	return result;
 }
 
 }
