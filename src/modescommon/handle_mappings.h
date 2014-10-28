@@ -87,14 +87,46 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_s
 	return map_of_single_descriptors;
 }
 
-inline std::map<auxiliaries::ChainResidueAtomDescriptor, std::size_t> count_neighbors_from_graph(const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph, const bool residue_level)
+inline std::map<auxiliaries::ChainResidueAtomDescriptor, std::size_t> calculate_covered_counts_from_atom_graph(const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph)
 {
 	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 	std::map<CRAD, std::size_t> result;
 	for(std::map< CRAD, std::set<CRAD> >::const_iterator it=graph.begin();it!=graph.end();++it)
 	{
-		result[residue_level ? it->first.without_atom() : it->first]+=it->second.size();
+		result[it->first]=(it->second.size()+1);
 	}
+	return result;
+}
+
+template<typename Descriptor>
+inline std::map<auxiliaries::ChainResidueAtomDescriptor, std::size_t> calculate_covered_counts_from_residue_graph(const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph, const std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor>& atom_descriptors)
+{
+	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+
+	std::map< CRAD, std::set<CRAD> > residue_atoms_map;
+	for(typename std::map<CRAD, Descriptor>::const_iterator it=atom_descriptors.begin();it!=atom_descriptors.end();++it)
+	{
+		residue_atoms_map[it->first.without_atom()].insert(it->first);
+	}
+
+	std::map< CRAD, std::set<CRAD> > residue_covered_map=residue_atoms_map;
+	for(std::map< CRAD, std::set<CRAD> >::const_iterator it=graph.begin();it!=graph.end();++it)
+	{
+		std::set<CRAD>& set=residue_covered_map[it->first];
+		const std::set<CRAD>& residue_neighbors=it->second;
+		for(std::set<CRAD>::const_iterator jt=residue_neighbors.begin();jt!=residue_neighbors.end();++jt)
+		{
+			const std::set<CRAD>& atom_neighbors=residue_atoms_map[*jt];
+			set.insert(atom_neighbors.begin(), atom_neighbors.end());
+		}
+	}
+
+	std::map<CRAD, std::size_t> result;
+	for(std::map< CRAD, std::set<CRAD> >::const_iterator it=residue_covered_map.begin();it!=residue_covered_map.end();++it)
+	{
+		result[it->first]=it->second.size();
+	}
+
 	return result;
 }
 
@@ -106,7 +138,7 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> inject_desc
 	for(typename std::map<CRAD, Descriptor>::iterator it=result.begin();it!=result.end();++it)
 	{
 		std::map<CRAD, std::size_t>::const_iterator jt=map_of_neighbor_counts.find(it->first);
-		it->second.covered_count=1.0+(jt==map_of_neighbor_counts.end() ? 0.0 : static_cast<double>(jt->second));
+		it->second.covered_count=(jt==map_of_neighbor_counts.end() ? 1.0 : static_cast<double>(jt->second));
 	}
 	return result;
 }
