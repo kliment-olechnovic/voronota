@@ -46,7 +46,7 @@ do
 		$BIN_DIR/voronota query-balls --set-ref-seq-num-adjunct sequences/$TARGET_NAME --ref-seq-alignment alignments/$MODEL_NAME < balls/raw_$MODEL_NAME | $BIN_DIR/voronota query-balls --renumber-from-adjunct refseq > balls/$MODEL_NAME ; rm balls/raw_$MODEL_NAME
 		$BIN_DIR/voronota calculate-contacts --annotated < balls/$MODEL_NAME > contacts/$MODEL_NAME
 	fi
-	$BIN_DIR/voronota query-contacts --match-min-seq-sep 2 < contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --potential-file $BIN_DIR/potential --erf-mean 0.4 --erf-sd 0.2 | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
+	$BIN_DIR/voronota query-contacts --match-min-seq-sep 2 < contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --potential-file $BIN_DIR/potential --erf-mean 0.6 --erf-sd 0.2 | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
 	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
 done
 
@@ -88,38 +88,41 @@ st=t[which(t$target!=t$model),];
 st=st[which(st$qasa_count/tt$qasa_count>0.97),];
 st=st[which(st$qasr_count/tt$qasr_count>0.97),];
 
+png("csr_score__vs__qa_energy.png", height=4, width=4.5, units="in", res=100);
+plot(x=c(st$csr_score, tt$csr_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="red", xlab="csr_score", ylab="qa_energy", main=paste(tt$target[1], "cor =", cor(st$csr_score, st$qa_energy)));
+dev.off();
+
+png("csa_score__vs__qa_energy.png", height=4, width=4.5, units="in", res=100);
+plot(x=c(st$csa_score, tt$csa_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="purple", xlab="csa_score", ylab="qa_energy", main=paste("cor =", cor(st$csa_score, st$qa_energy)));
+dev.off();
+
 png("csr_score__vs__qa_score.png", height=4, width=4.5, units="in", res=100);
 plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qa_score", main=paste("cor =", cor(st$csr_score, st$qa_score)));
-points(st$csr_score, st$qa_score);
-points(tt$csr_score, tt$qa_score);
+points(st$csr_score, st$qa_score, col="black");
+points(tt$csr_score, tt$qa_score, col="black");
 dev.off();
 
 png("csa_score__vs__qa_score.png", height=4, width=4.5, units="in", res=100);
 plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qa_score", main=paste("cor =", cor(st$csa_score, st$qa_score)));
-points(st$csa_score, st$qa_score);
-points(tt$csa_score, tt$qa_score);
+points(st$csa_score, st$qa_score, col="brown");
+points(tt$csa_score, tt$qa_score, col="brown");
 dev.off();
 
 png("csr_score__vs__qasr_normalized_score.png", height=4, width=4.5, units="in", res=100);
 plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qasr_normalized_score", main=paste("cor =", cor(st$csr_score, st$qasr_normalized_score)));
-points(st$csr_score, st$qasr_normalized_score);
-points(tt$csr_score, tt$qasr_normalized_score);
-dev.off();
-
-png("csr_score__vs__qasa_normalized_score.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qasa_normalized_score", main=paste("cor =", cor(st$csr_score, st$qasa_normalized_score)));
-points(st$csr_score, st$qasa_normalized_score);
-points(tt$csr_score, tt$qasa_normalized_score);
+points(st$csr_score, st$qasr_normalized_score, col="blue");
+points(tt$csr_score, tt$qasr_normalized_score, col="blue");
 dev.off();
 
 png("csa_score__vs__qasa_normalized_score.png", height=4, width=4.5, units="in", res=100);
 plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qasa_normalized_score", main=paste("cor =", cor(st$csa_score, st$qasa_normalized_score)));
-points(st$csa_score, st$qasa_normalized_score);
-points(tt$csa_score, tt$qasa_normalized_score);
+points(st$csa_score, st$qasa_normalized_score, col="green");
+points(tt$csa_score, tt$qasa_normalized_score, col="green");
 dev.off();
 
-write(x=c(cor(st$csr_score, st$qa_score), cor(st$csa_score, st$qa_score), cor(st$csr_score, st$qasr_normalized_score), cor(st$csr_score, st$qasa_normalized_score), cor(st$csa_score, st$qasa_normalized_score)), file="cors", ncolumns=100);
+write(x=c(cor(st$csr_score, st$qa_energy), cor(st$csa_score, st$qa_energy), cor(st$csr_score, st$qa_score), cor(st$csa_score, st$qa_score), cor(st$csr_score, st$qasr_normalized_score), cor(st$csr_score, st$qasa_normalized_score), cor(st$csa_score, st$qasa_normalized_score)), file="cors", ncolumns=100);
 
 EOF
 
 echo `cat cors | sed "s/^/$TARGET_NAME /"` > cors
+cat cors >> cors_history
