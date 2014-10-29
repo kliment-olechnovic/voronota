@@ -136,15 +136,16 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values", true));
+		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 area')\n";
 			return;
 		}
 	}
 
-	const std::string potential_file=poh.argument<std::string>("--potential-file");
+	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
 	std::map<CRAD, double> map_of_generalized_total_areas;
@@ -192,14 +193,23 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	std::ofstream foutput(potential_file.c_str(), std::ios::out);
-	if(foutput.good())
+	if(!potential_file.empty())
 	{
-		for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+		std::ofstream foutput(potential_file.c_str(), std::ios::out);
+		if(foutput.good())
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			foutput << crads.first.str() << " " << crads.second.str() << " " << it->second.first << "\n";
+			for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+			{
+				const std::pair<CRAD, CRAD>& crads=it->first;
+				foutput << crads.first.str() << " " << crads.second.str() << " " << it->second.first << "\n";
+			}
 		}
+	}
+
+	for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+	{
+		const std::pair<CRAD, CRAD>& crads=it->first;
+		std::cout << crads.first.str() << " " << crads.second.str() << " " << it->second.second << "\n";
 	}
 }
 

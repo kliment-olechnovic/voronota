@@ -140,9 +140,10 @@ stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distanc
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
 Command 'score-contacts-potential' options:
---potential-file                string   *  file path to output potential values
+--potential-file                string      file path to output potential values
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 area')
 
 Command 'score-contacts' options:
 --potential-file                string   *  file path to input potential values
