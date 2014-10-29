@@ -17,7 +17,7 @@ struct EnergyDescriptor
 	double total_area;
 	double strange_area;
 	double energy;
-	double contacts_count;
+	int contacts_count;
 
 	EnergyDescriptor() : total_area(0), strange_area(0), energy(0), contacts_count(0)
 	{
@@ -134,7 +134,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values", true));
-		list_of_option_descriptions.push_back(OD("--defaulting-max-seq-sep", "number", "maximum residue sequence separation for defaulting contacts"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
@@ -143,7 +142,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
-	const int defaulting_max_seq_sep=poh.argument<int>("--defaulting-max-seq-sep", 1);
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
 	std::map<CRAD, double> map_of_generalized_total_areas;
@@ -167,10 +165,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 					if(crads.first.valid() && crads.second.valid())
 					{
 						const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
-						if(!CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, defaulting_max_seq_sep, false))
-						{
-							map_of_considered_total_areas[crads_without_numbering]+=area;
-						}
+						map_of_considered_total_areas[crads_without_numbering]+=area;
 						map_of_generalized_total_areas[crads_without_numbering.first]+=area;
 						map_of_generalized_total_areas[crads_without_numbering.second]+=area;
 						sum_of_all_areas+=area;
@@ -211,8 +206,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
-		list_of_option_descriptions.push_back(OD("--defaulting-max-seq-sep", "number", "maximum residue sequence separation for defaulting contacts"));
-		list_of_option_descriptions.push_back(OD("--defaulting-potential-value", "number", "potential value to use for defaulting contacts"));
+		list_of_option_descriptions.push_back(OD("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"));
 		list_of_option_descriptions.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
 		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
@@ -229,8 +223,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
-	const int defaulting_max_seq_sep=poh.argument<int>("--defaulting-max-seq-sep", 1);
-	const double defaulting_potential_value=poh.argument<int>("--defaulting-potential-value", 0.0);
+	const int ignorable_max_seq_sep=poh.argument<int>("--ignorable-max-seq-sep", 1);
 	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
 	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
@@ -272,14 +265,10 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-			ed.total_area=it->second;
-			ed.contacts_count=1.0;
-			if(CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, defaulting_max_seq_sep, false))
+			if(!CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, ignorable_max_seq_sep, false))
 			{
-				ed.energy=ed.total_area*defaulting_potential_value;
-			}
-			else
-			{
+				ed.total_area=it->second;
+				ed.contacts_count=1;
 				std::map< std::pair<CRAD, CRAD>, double >::const_iterator potential_value_it=
 						map_of_potential_values.find(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())));
 				if(potential_value_it!=map_of_potential_values.end())
