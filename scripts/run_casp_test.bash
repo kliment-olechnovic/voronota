@@ -89,33 +89,33 @@ st=st[which(st$qasa_count/tt$qasa_count>0.97),];
 st=st[which(st$qasr_count/tt$qasr_count>0.97),];
 
 png("csr_score__vs__qa_energy.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(st$csr_score, tt$csr_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="red", xlab="csr_score", ylab="qa_energy", main=paste(tt$target[1], "cor =", cor(st$csr_score, st$qa_energy)));
+plot(x=c(st$csr_score, tt$csr_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="red", xlab="csr_score", ylab="qa_energy", main=paste(tt$target[1], "corP =", format(cor(st$csr_score, st$qa_energy), digits=3), "corS =", format(cor(st$csr_score, st$qa_energy, method="spearman"), digits=3)));
 dev.off();
 
 png("csa_score__vs__qa_energy.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(st$csa_score, tt$csa_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="purple", xlab="csa_score", ylab="qa_energy", main=paste("cor =", cor(st$csa_score, st$qa_energy)));
+plot(x=c(st$csa_score, tt$csa_score), y=c(st$qa_energy, tt$qa_energy), xlim=c(0, 1), col="purple", xlab="csa_score", ylab="qa_energy", main=paste(tt$target[1], "corP =", format(cor(st$csa_score, st$qa_energy), digits=3), "corS =", format(cor(st$csa_score, st$qa_energy, method="spearman"), digits=3)));
 dev.off();
 
 png("csr_score__vs__qa_score.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qa_score", main=paste("cor =", cor(st$csr_score, st$qa_score)));
+plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qa_score", main=paste(tt$target[1], "corP =", format(cor(st$csr_score, st$qa_score), digits=3), "corS =", format(cor(st$csr_score, st$qa_score, method="spearman"), digits=3)));
 points(st$csr_score, st$qa_score, col="black");
 points(tt$csr_score, tt$qa_score, col="black");
 dev.off();
 
 png("csa_score__vs__qa_score.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qa_score", main=paste("cor =", cor(st$csa_score, st$qa_score)));
+plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qa_score", main=paste(tt$target[1], "corP =", format(cor(st$csa_score, st$qa_score), digits=3), "corS =", format(cor(st$csa_score, st$qa_score, method="spearman"), digits=3)));
 points(st$csa_score, st$qa_score, col="brown");
 points(tt$csa_score, tt$qa_score, col="brown");
 dev.off();
 
 png("csr_score__vs__qasr_normalized_score.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qasr_normalized_score", main=paste("cor =", cor(st$csr_score, st$qasr_normalized_score)));
+plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csr_score", ylab="qasr_normalized_score", main=paste(tt$target[1], "corP =", format(cor(st$csr_score, st$qasr_normalized_score), digits=3), "corS =", format(cor(st$csr_score, st$qasr_normalized_score, method="spearman"), digits=3)));
 points(st$csr_score, st$qasr_normalized_score, col="blue");
 points(tt$csr_score, tt$qasr_normalized_score, col="blue");
 dev.off();
 
 png("csa_score__vs__qasa_normalized_score.png", height=4, width=4.5, units="in", res=100);
-plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qasa_normalized_score", main=paste("cor =", cor(st$csa_score, st$qasa_normalized_score)));
+plot(x=c(0, 1), y=c(0, 1), type="l", xlab="csa_score", ylab="qasa_normalized_score", main=paste(tt$target[1], "corP =", format(cor(st$csa_score, st$qasa_normalized_score), digits=3), "corS =", format(cor(st$csa_score, st$qasa_normalized_score, method="spearman"), digits=3)));
 points(st$csa_score, st$qasa_normalized_score, col="green");
 points(tt$csa_score, tt$qasa_normalized_score, col="green");
 dev.off();
