@@ -155,7 +155,6 @@ Command 'score-contacts' options:
 --residue-scores-file           string      file path to output residue scores
 --depth                         number      neighborhood normalization depth
 --contact-mean-area             number      average area per contact to use for normalization
---atom-mean-area                number      average area per atom to use for normalization
 --erf-mean                      number      mean parameter for error function
 --erf-sd                        number      sd parameter for error function
 --help                                      flag to print usage help to stderr and exit
