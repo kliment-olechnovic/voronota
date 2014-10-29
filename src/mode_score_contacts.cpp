@@ -74,10 +74,13 @@ inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDes
 
 inline void print_score(const std::string& name, const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp, std::ostream& output)
 {
-	const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
-	output << name << " ";
-	output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
-	output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+	if(ed.contacts_count>0)
+	{
+		const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
+		output << name << " ";
+		output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
+		output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+	}
 }
 
 void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const std::string& filename)
