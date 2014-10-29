@@ -46,15 +46,12 @@ struct EnergyScore
 
 struct EnergyScoreCalculationParameter
 {
-	double contact_mean_area;
 	double erf_mean;
 	double erf_sd;
 
 	EnergyScoreCalculationParameter(
-			const double contact_mean_area,
 			const double erf_mean,
 			const double erf_sd) :
-				contact_mean_area(contact_mean_area),
 				erf_mean(erf_mean),
 				erf_sd(erf_sd)
 	{
@@ -67,7 +64,7 @@ inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDes
 	EnergyScore es;
 	if(ed.total_area>0.0)
 	{
-		es.normalized_energy=ed.energy/(ed.contacts_count*escp.contact_mean_area);
+		es.normalized_energy=ed.energy/ed.total_area;
 		es.energy_score=1.0-(0.5*(1.0+erf((es.normalized_energy-escp.erf_mean)/(square_root_of_two*escp.erf_sd))));
 		es.actuality_score=1.0-(ed.strange_area/ed.total_area);
 		es.quality_score=(es.energy_score*es.actuality_score);
@@ -221,7 +218,6 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
-		list_of_option_descriptions.push_back(OD("--contact-mean-area", "number", "average area per contact to use for normalization"));
 		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
 		list_of_option_descriptions.push_back(OD("--erf-sd", "number", "sd parameter for error function"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
@@ -240,11 +236,10 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 1);
-	const double contact_mean_area=poh.argument<double>("--contact-mean-area", 3.8);
 	const double erf_mean=poh.argument<double>("--erf-mean", 0.3);
 	const double erf_sd=poh.argument<double>("--erf-sd", 0.2);
 
-	const EnergyScoreCalculationParameter escp(contact_mean_area, erf_mean, erf_sd);
+	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
 	{
