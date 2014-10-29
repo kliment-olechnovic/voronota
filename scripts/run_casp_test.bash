@@ -50,7 +50,7 @@ do
 	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
 done
 
-(echo "target model qa_score qa_normalized_energy qa_energy_score qa_actuality_score qa_total_area qa_strange_area qa_energy qa_contacts_count qa_atoms_count" ; cat qscores/* | egrep 'global' | sed 's/global //') > all_qscores_global
+(echo "target model qa_score qa_normalized_energy qa_energy_score qa_actuality_score qa_total_area qa_strange_area qa_energy qa_contacts_count" ; cat qscores/* | egrep 'global' | sed 's/global //') > all_qscores_global
 (echo "target model qasa_count qasa_score qasa_normalized_energy qasa_energy_score qasa_actuality_score" ; cat qscores/* | egrep 'atom_level_summary' | sed 's/atom_level_summary //') > all_qscores_summary_atom
 (echo "target model qasr_count qasr_score qasr_normalized_energy qasr_energy_score qasr_actuality_score" ; cat qscores/* | egrep 'residue_level_summary' | sed 's/residue_level_summary //') > all_qscores_summary_residue
 (echo "target model csa_score csa_target_area_sum csa_model_area_sum csa_raw_differences_sum csa_constrained_differences_sum" ; cat cadscores/* | egrep 'atom_level_global' | sed 's/atom_level_global //') > all_cadscores_atom
