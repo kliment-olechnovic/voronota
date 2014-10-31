@@ -141,6 +141,7 @@ stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distanc
 
 Command 'score-contacts-potential' options:
 --potential-file                string      file path to output potential values
+--solvent-factor                number      solvent factor value
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 area')
