@@ -137,6 +137,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
+		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
@@ -146,6 +147,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
+	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
 	std::map<CRAD, double> map_of_generalized_total_areas;
@@ -176,6 +178,17 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
+		}
+	}
+
+	if(solvent_factor>0.0)
+	{
+		std::map<CRAD, double>::iterator it=map_of_generalized_total_areas.find(CRAD::solvent());
+		if(it!=map_of_generalized_total_areas.end())
+		{
+			const double additional_area=solvent_factor*(it->second);
+			it->second+=additional_area;
+			sum_of_all_areas+=additional_area;
 		}
 	}
 
