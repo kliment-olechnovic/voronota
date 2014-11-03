@@ -29,3 +29,6 @@ cat $OUTPUTDIR/balls \
 cat $OUTPUTDIR/balls \
 | $BINDIR/voronota query-balls --set-external-adjuncts $OUTPUTDIR/residue_errors --set-external-adjuncts-name re --pdb-output-b-factor re \
 --pdb-output-template $INPUTFILE --pdb-output $OUTPUTDIR/residue_errors.pdb > /dev/null
+
+cat $OUTPUTDIR/global_scores | head -1 | awk '{print $1 " " $2}'
+cat $OUTPUTDIR/global_scores | tail -2 | awk '{print $1 " " $3/$2}'
