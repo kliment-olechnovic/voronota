@@ -255,8 +255,8 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 1);
-	const double erf_mean=poh.argument<double>("--erf-mean", 0.3);
-	const double erf_sd=poh.argument<double>("--erf-sd", 0.2);
+	const double erf_mean=poh.argument<double>("--erf-mean", 0.5);
+	const double erf_sd=poh.argument<double>("--erf-sd", 0.25);
 
 	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
 
