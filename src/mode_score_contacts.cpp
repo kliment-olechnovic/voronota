@@ -243,7 +243,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  line of global scores\n";
+			std::cerr << "stdout  ->  global scores\n";
 			return;
 		}
 	}
