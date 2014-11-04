@@ -125,6 +125,7 @@ Command 'query-contacts' options:
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
 --inter-residue                             flag to convert input to inter-residue contacts
+--summarize                                 flag to output only summary of contacts
 --preserve-graphics                         flag to preserve graphics in output
 --drawing-for-pymol             string      file path to output drawing as pymol script
 --drawing-for-jmol              string      file path to output drawing as jmol script

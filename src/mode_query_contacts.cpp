@@ -66,6 +66,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--summarize", "", "flag to output only summary of contacts"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
@@ -112,6 +113,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const bool inter_residue=poh.contains_option("--inter-residue");
+	const bool summarize=poh.contains_option("--summarize");
 	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
@@ -285,18 +287,15 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !hbplus_file_data.hbplus_records.empty())
 	{
-		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		const std::map< std::pair<CRAD, CRAD>, ContactValue >& printable_map=((!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !hbplus_file_data.hbplus_records.empty()) ? map_of_contacts : output_map_of_contacts);
+		if(summarize)
 		{
-			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+			modescommon::print_summary_of_contact_records_map(printable_map, preserve_graphics, std::cout);
 		}
-	}
-	else
-	{
-		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		else
 		{
-			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+			modescommon::print_contact_records_map(printable_map, preserve_graphics, std::cout);
 		}
 	}
 
