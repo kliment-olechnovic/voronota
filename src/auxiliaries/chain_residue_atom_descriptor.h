@@ -26,15 +26,36 @@ public:
 	{
 	}
 
+	ChainResidueAtomDescriptor(const std::string& chainID) : serial(null_num()), chainID(chainID), resSeq(null_num())
+	{
+	}
+
+	ChainResidueAtomDescriptor(
+			const int serial,
+			const std::string& chainID,
+			const int resSeq,
+			const std::string& resName,
+			const std::string& name,
+			const std::string& altLoc,
+			const std::string& iCode) :
+				serial(serial),
+				chainID(chainID),
+				resSeq(resSeq),
+				resName(resName),
+				name(name),
+				altLoc(altLoc),
+				iCode(iCode)
+	{
+	}
+
 	static int null_num()
 	{
 		return std::numeric_limits<int>::min();
 	}
 
-	static ChainResidueAtomDescriptor solvent()
+	static const ChainResidueAtomDescriptor& solvent()
 	{
-		ChainResidueAtomDescriptor v;
-		v.chainID="solvent";
+		static const ChainResidueAtomDescriptor v("solvent");
 		return v;
 	}
 
@@ -221,17 +242,30 @@ public:
 	bool valid() const
 	{
 		return ((!chainID.empty() || resSeq!=null_num() || !resName.empty() || serial!=null_num() || !name.empty()) &&
-				!(resSeq==null_num() && !iCode.empty()) &&
-				!(serial==null_num() && !altLoc.empty()));
+				!(resSeq==null_num() && !iCode.empty()));
 	}
 
 	ChainResidueAtomDescriptor without_atom() const
 	{
 		ChainResidueAtomDescriptor v=(*this);
 		v.serial=null_num();
-		v.altLoc.clear();
 		v.name.clear();
 		return v;
+	}
+
+	ChainResidueAtomDescriptor without_numbering() const
+	{
+		if((*this)==solvent())
+		{
+			return (*this);
+		}
+		else
+		{
+			ChainResidueAtomDescriptor v;
+			v.resName=resName;
+			v.name=name;
+			return v;
+		}
 	}
 
 	bool contains(const ChainResidueAtomDescriptor& v) const
@@ -304,8 +338,8 @@ private:
 			serial("a"),
 			chainID("c"),
 			resSeq("r"),
-			resName("rn"),
-			name("an"),
+			resName("R"),
+			name("A"),
 			altLoc("l"),
 			iCode("i")
 		{
@@ -323,8 +357,8 @@ private:
 		}
 	};
 
-	static const char vbegin='[';
-	static const char vend=']';
+	static const char vbegin='<';
+	static const char vend='>';
 
 	std::string str(const std::vector<std::string>& markers) const
 	{

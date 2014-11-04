@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 
+#include "auxiliaries/atoms_io.h"
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon/assert_options.h"
@@ -51,20 +52,28 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
 		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
-		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotation pairs"));
+		list_of_option_descriptions.push_back(OD("--match-external-first", "string", "file path to input matchable annotations"));
+		list_of_option_descriptions.push_back(OD("--match-external-second", "string", "file path to input matchable annotations"));
+		list_of_option_descriptions.push_back(OD("--match-external-pairs", "string", "file path to input matchable annotation pairs"));
 		list_of_option_descriptions.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
+		list_of_option_descriptions.push_back(OD("--no-same-chain", "", "flag to not include same chain contacts"));
 		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
 		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-hbplus-tags", "string", "file path to input HBPLUS file"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
+		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
+		list_of_option_descriptions.push_back(OD("--summarize", "", "flag to output only summary of contacts"));
 		list_of_option_descriptions.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
 		list_of_option_descriptions.push_back(OD("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"));
 		list_of_option_descriptions.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
+		list_of_option_descriptions.push_back(OD("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"));
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
@@ -90,26 +99,34 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
 	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
 	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
-	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
+	const std::string match_external_first=poh.argument<std::string>("--match-external-first", "");
+	const std::string match_external_second=poh.argument<std::string>("--match-external-second", "");
+	const std::string match_external_pairs=poh.argument<std::string>("--match-external-pairs", "");
 	const bool no_solvent=poh.contains_option("--no-solvent");
+	const bool no_same_chain=poh.contains_option("--no-same-chain");
 	const bool invert=poh.contains_option("--invert");
 	const bool drop_tags=poh.contains_option("--drop-tags");
-	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
+	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
+	const std::string set_hbplus_tags=poh.argument<std::string>("--set-hbplus-tags", "");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
+	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
+	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const bool inter_residue=poh.contains_option("--inter-residue");
+	const bool summarize=poh.contains_option("--summarize");
+	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
 	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
 	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
 	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
+	const std::string drawing_adjunct_gradient_colors=poh.argument<std::string>("--drawing-adjunct-gradient", "");
 	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
 	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
-	const bool preserve_graphics=poh.contains_option("--preserve-graphics");
 
 	std::map< std::pair<CRAD, CRAD>, ContactValue > map_of_contacts;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_contacts_record_from_stream_to_map<CRAD>, map_of_contacts);
+	auxiliaries::read_lines_to_container(std::cin, modescommon::add_contact_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -144,11 +161,39 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
-	if(!match_external_annotations.empty())
+	std::set<CRAD> matchable_external_first_set_of_crads;
+	if(!match_external_first.empty())
 	{
-		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
+		std::ifstream input_file(match_external_first.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_first_set_of_crads);
+	}
+
+	std::set<CRAD> matchable_external_second_set_of_crads;
+	if(!match_external_second.empty())
+	{
+		std::ifstream input_file(match_external_second.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_second_set_of_crads);
+	}
+
+	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
+	if(!match_external_pairs.empty())
+	{
+		std::ifstream input_file(match_external_pairs.c_str(), std::ios::in);
 		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
+	}
+
+	std::map< std::pair<CRAD, CRAD>, double > map_of_external_adjunct_values;
+	if(!set_external_adjuncts.empty())
+	{
+		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
+		auxiliaries::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_external_adjunct_values);
+	}
+
+	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;
+	if(!set_hbplus_tags.empty())
+	{
+		std::ifstream input_file(set_hbplus_tags.c_str(), std::ios::in);
+		hbplus_file_data=auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
 	}
 
 	std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
@@ -162,14 +207,23 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				value.area>=match_min_area && value.area<=match_max_area &&
 				value.dist>=match_min_dist && value.dist<=match_max_dist &&
 				(!no_solvent || !(crads.first==CRAD::solvent() || crads.second==CRAD::solvent())) &&
+				(!no_same_chain || crads.first.chainID!=crads.second.chainID) &&
 				CRAD::match_with_sequence_separation_interval(crads.first, crads.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
 				(matchable_external_set_of_crad_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
 		)
 		{
-			const bool matched_first_second=(modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not));
-			const bool matched_second_first=(modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) && modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not));
+			const bool matched_first_second=(
+					modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) &&
+					modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not) &&
+					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_first_set_of_crads)) &&
+					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_second_set_of_crads)));
+			const bool matched_second_first=matched_first_second || (
+					modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) &&
+					modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not) &&
+					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_first_set_of_crads)) &&
+					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_second_set_of_crads)));
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
@@ -182,24 +236,66 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty())
+	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
 	{
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const std::pair<CRAD, CRAD>& crads=it->first;
-			if(output_map_of_contacts.count(crads)>0 || output_map_of_contacts.count(modescommon::refine_pair(crads, true))>0)
+			std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator output_map_it=output_map_of_contacts.find(crads);
+			if(output_map_it==output_map_of_contacts.end())
+			{
+				output_map_it=output_map_of_contacts.find(modescommon::refine_pair(crads, true));
+			}
+			if(output_map_it!=output_map_of_contacts.end())
 			{
 				modescommon::update_set_of_tags(it->second.tags, set_tags);
 				modescommon::update_map_of_adjuncts(it->second.adjuncts, set_adjuncts);
+				if(!map_of_external_adjunct_values.empty())
+				{
+					std::map< std::pair<CRAD, CRAD>, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crads);
+					if(adjunct_value_it==map_of_external_adjunct_values.end())
+					{
+						adjunct_value_it=map_of_external_adjunct_values.find(modescommon::refine_pair_by_ordering(crads));
+					}
+					if(adjunct_value_it!=map_of_external_adjunct_values.end())
+					{
+						it->second.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					}
+				}
+				output_map_it->second=it->second;
 			}
-			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
 		}
 	}
-	else
+
+	if(!hbplus_file_data.hbplus_records.empty())
 	{
-		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		std::set< std::pair<CRAD, CRAD> > set_of_hbplus_crad_pairs;
+		for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
 		{
-			modescommon::print_contact_record(it->first, it->second, preserve_graphics, std::cout);
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
+			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
+			set_of_hbplus_crad_pairs.insert(std::make_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", "")));
+		}
+		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			const std::pair<CRAD, CRAD>& crads=it->first;
+			if(modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, set_of_hbplus_crad_pairs))
+			{
+				ContactValue& value=it->second;
+				value.tags.insert("hb");
+			}
+		}
+	}
+
+	{
+		const std::map< std::pair<CRAD, CRAD>, ContactValue >& printable_map=((!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !hbplus_file_data.hbplus_records.empty()) ? map_of_contacts : output_map_of_contacts);
+		if(summarize)
+		{
+			modescommon::print_summary_of_contact_records_map(printable_map, preserve_graphics, std::cout);
+		}
+		else
+		{
+			modescommon::print_contact_records_map(printable_map, preserve_graphics, std::cout);
 		}
 	}
 
@@ -218,10 +314,23 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					opengl_printer.add_label(crads.first.str()+"<->"+crads.second.str());
 				}
-				if(drawing_random_colors)
+
+				if(!drawing_adjunct_gradient_colors.empty())
+				{
+					if(value.adjuncts.count(drawing_adjunct_gradient_colors)>0)
+					{
+						opengl_printer.add_color_from_blue_white_red_gradient(value.adjuncts.find(drawing_adjunct_gradient_colors)->second);
+					}
+					else
+					{
+						opengl_printer.add_color(drawing_color);
+					}
+				}
+				else if(drawing_random_colors)
 				{
 					opengl_printer.add_color(calc_two_crads_color_integer(crads.first, crads.second));
 				}
+
 				opengl_printer.add(value.graphics);
 			}
 		}
