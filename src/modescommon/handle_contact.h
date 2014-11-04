@@ -60,6 +60,28 @@ inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDe
 	output << "\n";
 }
 
+inline void print_contact_records_map(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
+{
+	for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
+	{
+		modescommon::print_contact_record(it->first, it->second, preserve_graphics, output);
+	}
+}
+
+inline void print_summary_of_contact_records_map(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
+{
+	ContactValue summary;
+	for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
+	{
+		summary.add(it->second);
+		if(!preserve_graphics)
+		{
+			summary.graphics.clear();
+		}
+	}
+	print_contact_record(std::make_pair(auxiliaries::ChainResidueAtomDescriptor("any"), auxiliaries::ChainResidueAtomDescriptor("any")), summary, preserve_graphics, output);
+}
+
 inline bool add_contact_record_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> name_strings;

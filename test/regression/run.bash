@@ -90,6 +90,8 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 $TEST_SUBJECT query-balls --set-external-adjuncts <(awk '{ print $1 " " (100-$2*100) }' < $OUTPUT_SUBDIR/contacts_scores_atom) --set-external-adjuncts-name qsa --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_SUBDIR/balls > /dev/null
 $TEST_SUBJECT query-balls --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_DIR/structure.pdb < $OUTPUT_SUBDIR/balls_scores1 > /dev/null
 
+$TEST_SUBJECT query-contacts --match-min-seq-sep 2 --no-solvent --summarize < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_summary
+
 ############################
 
 OUTPUT_SUBDIR=$OUTPUT_DIR/p5
