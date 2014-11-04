@@ -3,7 +3,7 @@
 
 #include "apollota/spheres_boundary_construction.h"
 
-#include "auxiliaries/atoms_reader.h"
+#include "auxiliaries/atoms_io.h"
 #include "auxiliaries/atom_radius_assigner.h"
 
 #include "modescommon/assert_options.h"
@@ -26,7 +26,7 @@ bool add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream&
 	return false;
 }
 
-std::string refine_string(const std::string& x)
+std::string refine_empty_string(const std::string& x)
 {
 	return (x.empty() ? std::string(".") : x);
 }
@@ -65,9 +65,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
 	const double hull_offset=poh.argument<double>("--hull-offset", -1.0);
 
-	const std::vector<auxiliaries::AtomsReader::AtomRecord> atoms=(mmcif ?
-			auxiliaries::AtomsReader::read_atom_records_from_mmcif_file_stream(std::cin, include_heteroatoms, include_hydrogens) :
-			auxiliaries::AtomsReader::read_atom_records_from_pdb_file_stream(std::cin, include_heteroatoms, include_hydrogens));
+	const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
+			auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :
+			auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, false).atom_records);
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");
@@ -97,58 +97,42 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
-		const auxiliaries::AtomsReader::AtomRecord& atom=atoms[i];
+		const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-		std::ostringstream crad_output;
-		crad_output << refine_string(atom.serial) << " " << refine_string(atom.chainID) << " " << refine_string(atom.resSeq) << " "
-				<< refine_string(atom.resName) << " " << refine_string(atom.name) << " " << refine_string(atom.altLoc) << " " << refine_string(atom.iCode);
 		if(annotated)
 		{
-			std::istringstream crad_input(crad_output.str());
-			auxiliaries::ChainResidueAtomDescriptor crad;
-			crad_input >> crad.serial >> crad.chainID >> crad.resSeq >> crad.resName >> crad.name >> crad.altLoc >> crad.iCode;
-			if(!crad_input.fail())
+			const auxiliaries::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
+			if(crad.valid())
 			{
-				if(crad.altLoc.find_first_of(".?")==0)
+				modescommon::BallValue value;
+				value.x=atom.x;
+				value.y=atom.y;
+				value.z=atom.z;
+				value.r=radius;
+				if(atom.record_name=="HETATM")
 				{
-					crad.altLoc.clear();
+					modescommon::update_set_of_tags(value.tags, "het");
 				}
-				if(crad.iCode.find_first_of(".?")==0)
+				if(!atom.element.empty())
 				{
-					crad.iCode.clear();
+					modescommon::update_set_of_tags(value.tags, std::string("el=")+atom.element);
 				}
-				if(crad.valid())
+				if(atom.occupancy_valid)
 				{
-					modescommon::BallValue value;
-					value.x=atom.x;
-					value.y=atom.y;
-					value.z=atom.z;
-					value.r=radius;
-					if(atom.record_name=="HETATM")
-					{
-						modescommon::update_set_of_tags(value.tags, "het");
-					}
-					if(!atom.element.empty())
-					{
-						modescommon::update_set_of_tags(value.tags, atom.element);
-					}
-					if(!atom.occupancy.empty())
-					{
-						modescommon::update_map_of_adjuncts(value.adjuncts, std::string("oc=")+atom.occupancy);
-					}
-					if(!atom.tempFactor.empty())
-					{
-						modescommon::update_map_of_adjuncts(value.adjuncts, std::string("tf=")+atom.tempFactor);
-					}
-					modescommon::print_ball_record(crad, value, std::cout);
-					all_spheres.push_back(apollota::SimpleSphere(value));
+					value.adjuncts["oc"]=atom.occupancy;
 				}
+				if(atom.tempFactor_valid)
+				{
+					value.adjuncts["tf"]=atom.tempFactor;
+				}
+				modescommon::print_ball_record(crad, value, std::cout);
+				all_spheres.push_back(apollota::SimpleSphere(value));
 			}
 		}
 		else
 		{
 			std::cout << atom.x << " " << atom.y << " " << atom.z << " " << radius;
-			std::cout << " # " << crad_output.str() << "\n";
+			std::cout << " # " << atom.serial << " " << refine_empty_string(atom.chainID) << " " << atom.resSeq << " " << refine_empty_string(atom.resName) << " " << refine_empty_string(atom.name) << " " << refine_empty_string(atom.altLoc) << " " << refine_empty_string(atom.iCode) << "\n";
 			all_spheres.push_back(apollota::SimpleSphere(atom, radius));
 		}
 	}

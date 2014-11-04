@@ -2,6 +2,7 @@
 #define MODESCOMMON_HANDLE_CONTACT_H_
 
 #include "handle_annotations.h"
+#include "handle_matchings.h"
 
 namespace modescommon
 {
@@ -25,7 +26,7 @@ struct ContactValue
 		tags.insert(v.tags.begin(), v.tags.end());
 		for(std::map<std::string, double>::const_iterator it=v.adjuncts.begin();it!=v.adjuncts.end();++it)
 		{
-			adjuncts[it->first]=it->second;
+			adjuncts[it->first]+=it->second;
 		}
 		if(!v.graphics.empty())
 		{
@@ -45,27 +46,7 @@ struct ContactValue
 	}
 };
 
-template<typename T>
-inline T refine_pair(const T& p, const bool reverse)
-{
-	if(reverse)
-	{
-		return T(p.second, p.first);
-	}
-	else
-	{
-		return p;
-	}
-}
-
-template<typename T>
-inline T refine_pair_by_ordering(const T& p)
-{
-	return refine_pair(p, p.second<p.first);
-}
-
-template<typename T>
-inline void print_contact_record(const std::pair<T, T>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
+inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
 	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
 	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
@@ -79,8 +60,29 @@ inline void print_contact_record(const std::pair<T, T>& names, const ContactValu
 	output << "\n";
 }
 
-template<typename T>
-inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map< std::pair<T, T>, ContactValue >& map_of_records)
+inline void print_contact_records_map(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
+{
+	for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
+	{
+		modescommon::print_contact_record(it->first, it->second, preserve_graphics, output);
+	}
+}
+
+inline void print_summary_of_contact_records_map(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records, const bool preserve_graphics, std::ostream& output)
+{
+	ContactValue summary;
+	for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >::const_iterator it=map_of_records.begin();it!=map_of_records.end();++it)
+	{
+		summary.add(it->second);
+		if(!preserve_graphics)
+		{
+			summary.graphics.clear();
+		}
+	}
+	print_contact_record(std::make_pair(auxiliaries::ChainResidueAtomDescriptor("any"), auxiliaries::ChainResidueAtomDescriptor("any")), summary, preserve_graphics, output);
+}
+
+inline bool add_contact_record_from_stream_to_map(std::istream& input, std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >& map_of_records)
 {
 	std::pair<std::string, std::string> name_strings;
 	ContactValue value;
@@ -102,7 +104,7 @@ inline bool add_contacts_record_from_stream_to_map(std::istream& input, std::map
 	}
 	if(!input.fail() && !name_strings.first.empty() && !name_strings.second.empty())
 	{
-		const std::pair<T, T> names(T::from_str(name_strings.first), T::from_str(name_strings.second));
+		const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor> names(auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.first), auxiliaries::ChainResidueAtomDescriptor::from_str(name_strings.second));
 		if(names.first.valid() && names.second.valid())
 		{
 			map_of_records[refine_pair_by_ordering(names)]=value;
