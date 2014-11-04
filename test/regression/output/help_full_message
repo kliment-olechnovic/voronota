@@ -158,7 +158,7 @@ Command 'score-contacts' options:
 --erf-sd                        number      sd parameter for error function
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
-stdout  ->  line of global scores
+stdout  ->  global scores
 
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
