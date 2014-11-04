@@ -51,8 +51,27 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	return list_of_modes;
 }
 
+std::string version()
+{
+	static const std::string str="Voronota version 1.7";
+	return str;
+}
+
+void print_error_message(const std::string& mode, const std::string& message)
+{
+	std::cerr << version();
+	if(!mode.empty())
+	{
+		std::cerr << " command '" << mode << "'";
+	}
+	std::cerr << " exit error: " << message;
+	std::cerr << std::endl;
+}
+
 int main(const int argc, const char** argv)
 {
+	const std::string mode=(argc>1 ? std::string(argv[1]) : std::string());
+
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
 	std::ios_base::sync_with_stdio(false);
@@ -62,7 +81,6 @@ int main(const int argc, const char** argv)
 		const std::vector<ModeDescriptor> list_of_modes=get_list_of_modes();
 
 		const auxiliaries::ProgramOptionsHandler poh(argc, argv);
-		const std::string mode=(poh.original_arg(1));
 		const bool help=poh.contains_option("--help");
 
 		if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
@@ -79,7 +97,7 @@ int main(const int argc, const char** argv)
 		}
 		else
 		{
-			std::cerr << "Voronota version 1.7\n\n";
+			std::cerr << version() << "\n\n";
 			std::cerr << "Commands:\n\n";
 			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 			{
@@ -101,18 +119,15 @@ int main(const int argc, const char** argv)
 	}
 	catch(const auxiliaries::ProgramOptionsHandler::Exception& e)
 	{
-		std::cerr << "\nInvalid parameters: " << (e.what()) << "\n";
-		std::cerr << std::endl;
+		print_error_message(mode, e.what());
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << "\nException caught: " << (e.what()) << "\n";
-		std::cerr << std::endl;
+		print_error_message(mode, e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "\nUnknown exception caught.\n";
-		std::cerr << std::endl;
+		print_error_message(mode, "Unknown exception caught.");
 	}
 
 	return 2;
