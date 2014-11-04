@@ -39,7 +39,7 @@ mkdir -p contacts
 mkdir -p qscores
 mkdir -p cadscores
 
-(echo $DOWNLOADS_DIR/$TARGET_NAME.pdb ; find $DOWNLOADS_DIR/$TARGET_NAME -type f) | egrep -v '_2|_3|_4|_5' | while read MODEL_FILE
+(echo $DOWNLOADS_DIR/$TARGET_NAME.pdb ; find $DOWNLOADS_DIR/$TARGET_NAME -type f) | while read MODEL_FILE
 do
 	MODEL_NAME=$(basename $MODEL_FILE .pdb)
 	MODEL_NAME=$(basename $MODEL_NAME .ent)
