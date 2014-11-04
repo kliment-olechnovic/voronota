@@ -312,7 +312,10 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(drawing_labels)
 				{
-					opengl_printer.add_label(crads.first.str()+"<->"+crads.second.str());
+					std::string label=("("+crads.first.str()+")&("+crads.second.str()+")");
+					std::replace(label.begin(), label.end(), '<', '[');
+					std::replace(label.begin(), label.end(), '>', ']');
+					opengl_printer.add_label(label);
 				}
 
 				if(!drawing_adjunct_gradient_colors.empty())
