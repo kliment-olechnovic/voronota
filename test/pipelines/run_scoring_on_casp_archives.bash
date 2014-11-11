@@ -3,9 +3,10 @@
 BIN_DIR=$1
 DOWNLOADS_DIR=$2
 OUTPUT_DIR=$3
-CLEARSPACE=$4
-TARGETS_TARBALL_URL=$5
-MODELS_TARBALL_URL=$6
+CLEARINPUT=$4
+CLEARDETAILEDOUTPUT=$5
+TARGETS_TARBALL_URL=$6
+MODELS_TARBALL_URL=$7
 
 TARGETS_TARBALL_BASENAME=$(basename $TARGETS_TARBALL_URL)
 MODELS_TARBALL_BASENAME=$(basename $MODELS_TARBALL_URL)
@@ -61,9 +62,14 @@ done
 (echo "target model csa_score csa_target_area_sum csa_model_area_sum csa_raw_differences_sum csa_constrained_differences_sum" ; cat cadscores/* | egrep 'atom_level_global' | sed 's/atom_level_global //') > all_cadscores_atom
 (echo "target model csr_score csr_target_area_sum csr_model_area_sum csr_raw_differences_sum csr_constrained_differences_sum" ; cat cadscores/* | egrep 'residue_level_global' | sed 's/residue_level_global //') > all_cadscores_residue
 
-if [ "$CLEARSPACE" == "yes" ]
+if [ "$CLEARINPUT" == "yes" ]
 then
 	rm -r ./balls ./contacts $DOWNLOADS_DIR/$MODELS_TARBALL_BASENAME $DOWNLOADS_DIR/$TARGET_NAME
+fi
+
+if [ "$CLEARDETAILEDOUTPUT" == "yes" ]
+then
+	rm -r ./qscores_atom ./qscores_residue
 fi
 
 ###################################################
