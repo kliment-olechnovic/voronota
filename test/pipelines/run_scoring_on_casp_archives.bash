@@ -52,7 +52,7 @@ do
 		$BIN_DIR/voronota query-balls --set-ref-seq-num-adjunct sequences/$TARGET_NAME --ref-seq-alignment alignments/$MODEL_NAME < balls/raw_$MODEL_NAME | $BIN_DIR/voronota query-balls --renumber-from-adjunct refseq > balls/$MODEL_NAME ; rm balls/raw_$MODEL_NAME
 		$BIN_DIR/voronota calculate-contacts --annotated < balls/$MODEL_NAME > contacts/$MODEL_NAME
 	fi
-	cat contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --erf-mean 0.4 --erf-sd 0.2 --potential-file $BIN_DIR/potential --atom-scores-file qscores_atom/$MODEL_NAME --residue-scores-file qscores_residue/$MODEL_NAME | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
+	cat contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --potential-file $BIN_DIR/potential --atom-scores-file qscores_atom/$MODEL_NAME --residue-scores-file qscores_residue/$MODEL_NAME | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
 	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
 done
 
