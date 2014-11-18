@@ -22,6 +22,7 @@ cp README.markdown $PACKAGE_NAME/README.txt
 cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp resources/radii $PACKAGE_NAME/radii
+cp resources/potential $PACKAGE_NAME/potential
 cp Release/voronota $PACKAGE_NAME/voronota
 pandoc README.markdown -f markdown -t html -s -o $PACKAGE_NAME/README.html
 
