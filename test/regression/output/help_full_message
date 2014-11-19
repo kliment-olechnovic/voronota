@@ -157,6 +157,7 @@ Command 'score-contacts' options:
 --depth                         number      neighborhood normalization depth
 --erf-mean                      number      mean parameter for error function
 --erf-sd                        number      sd parameter for error function
+--detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  global scores

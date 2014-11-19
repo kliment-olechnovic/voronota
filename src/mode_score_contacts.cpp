@@ -72,18 +72,22 @@ inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDes
 	return es;
 }
 
-inline void print_score(const std::string& name, const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp, std::ostream& output)
+inline void print_score(const std::string& name, const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
 {
 	if(ed.contacts_count>0)
 	{
 		const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
-		output << name << " ";
-		output << es.quality_score << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
-		output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+		output << name << " " << es.quality_score;
+		if(detailed)
+		{
+			output << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
+			output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count;
+		}
+		output << "\n";
 	}
 }
 
-void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const std::string& filename)
+void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, const std::string& filename)
 {
 	if(!filename.empty())
 	{
@@ -92,13 +96,13 @@ void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDesc
 		{
 			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descriptors.begin();it!=map_of_pair_energy_descriptors.end();++it)
 			{
-				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, escp, foutput);
+				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, escp, detailed, foutput);
 			}
 		}
 	}
 }
 
-void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const EnergyScoreCalculationParameter& escp, const std::string& filename)
+void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, const std::string& filename)
 {
 	if(!filename.empty())
 	{
@@ -107,7 +111,7 @@ void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_
 		{
 			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
 			{
-				print_score(it->first.str(), it->second, escp, foutput);
+				print_score(it->first.str(), it->second, escp, detailed, foutput);
 			}
 		}
 	}
@@ -240,6 +244,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
 		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
 		list_of_option_descriptions.push_back(OD("--erf-sd", "number", "sd parameter for error function"));
+		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
@@ -257,6 +262,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int depth=poh.argument<int>("--depth", 1);
 	const double erf_mean=poh.argument<double>("--erf-mean", 0.4);
 	const double erf_sd=poh.argument<double>("--erf-sd", 0.3);
+	const bool detailed_output=poh.contains_option("--detailed-output");
 
 	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
 
@@ -307,7 +313,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_pair_scores_to_file(inter_atom_energy_descriptors, escp, inter_atom_scores_file);
+		print_pair_scores_to_file(inter_atom_energy_descriptors, escp, detailed_output, inter_atom_scores_file);
 	}
 
 	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_residue_energy_descriptors;
@@ -317,16 +323,16 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			inter_residue_energy_descriptors[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_atom(), crads.second.without_atom()))].add(it->second);
 		}
-		print_pair_scores_to_file(inter_residue_energy_descriptors, escp, inter_residue_scores_file);
+		print_pair_scores_to_file(inter_residue_energy_descriptors, escp, detailed_output, inter_residue_scores_file);
 	}
 
 	const std::map< CRAD, std::set<CRAD> > atom_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, depth);
 	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, atom_graph);
-	print_single_scores_to_file(atom_energy_descriptors, escp, atom_scores_file);
+	print_single_scores_to_file(atom_energy_descriptors, escp, detailed_output, atom_scores_file);
 
 	const std::map< CRAD, std::set<CRAD> > residue_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth);
 	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph);
-	print_single_scores_to_file(residue_energy_descriptors, escp, residue_scores_file);
+	print_single_scores_to_file(residue_energy_descriptors, escp, detailed_output, residue_scores_file);
 
 	{
 		EnergyDescriptor global_ed;
@@ -334,7 +340,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			global_ed.add(it->second);
 		}
-		print_score("global", global_ed, escp, std::cout);
+		print_score("global", global_ed, escp, detailed_output, std::cout);
 	}
 
 	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, escp, std::cout);
