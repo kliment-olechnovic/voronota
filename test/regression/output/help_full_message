@@ -169,6 +169,7 @@ Command 'compare-contacts' options:
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
 --depth                         number      local neighborhood depth
+--detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  two lines of global scores (atom-level and residue-level)
