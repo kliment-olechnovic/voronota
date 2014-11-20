@@ -7,6 +7,7 @@
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 #include "../auxiliaries/residue_letters_coding.h"
 #include "../auxiliaries/pairwise_sequence_alignment.h"
+#include "../auxiliaries/residue_atoms_reference.h"
 
 namespace modescommon
 {
@@ -79,6 +80,16 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, double> construct_seque
 		}
 	}
 	return result;
+}
+
+inline std::size_t count_atoms_from_sequence(const std::string& sequence)
+{
+	std::size_t n=0;
+	for(std::size_t i=0;i<sequence.size();i++)
+	{
+		n+=auxiliaries::ResidueAtomsReference::get_residue_atoms_count(auxiliaries::ResidueLettersCoding::convert_residue_code_small_to_big(std::string(1, sequence[i])));
+	}
+	return n;
 }
 
 }

@@ -6,6 +6,7 @@
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_annotations.h"
 #include "modescommon/handle_mappings.h"
+#include "modescommon/handle_sequences.h"
 
 namespace
 {
@@ -117,7 +118,7 @@ void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_
 	}
 }
 
-void print_single_scores_summary(const std::string& name, const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
+void print_single_scores_summary(const std::string& name, const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const std::size_t reference_size, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
 {
 	EnergyScore es_sum;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
@@ -129,10 +130,10 @@ void print_single_scores_summary(const std::string& name, const std::map<CRAD, E
 		es_sum.energy_score+=es.energy_score;
 		es_sum.actuality_score+=es.actuality_score;
 	}
-	output << name << " " << (es_sum.quality_score/static_cast<double>(map_of_single_energy_descriptors.size()));
+	output << name << " " << (es_sum.quality_score/static_cast<double>(std::max(reference_size, map_of_single_energy_descriptors.size())));
 	if(detailed)
 	{
-		output << " " << map_of_single_energy_descriptors.size() << " " << es_sum.quality_score << " " << es_sum.normalized_energy << " " << es_sum.energy_score << " " << es_sum.actuality_score;
+		output << " " << reference_size << " " << map_of_single_energy_descriptors.size() << " " << es_sum.quality_score << " " << es_sum.normalized_energy << " " << es_sum.energy_score << " " << es_sum.actuality_score;
 	}
 	output << "\n";
 }
@@ -249,6 +250,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
 		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
 		list_of_option_descriptions.push_back(OD("--erf-sd", "number", "sd parameter for error function"));
+		list_of_option_descriptions.push_back(OD("--reference-sequence-file", "string", "file path to input reference sequence for normalization"));
 		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -268,6 +270,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int depth=poh.argument<int>("--depth", 1);
 	const double erf_mean=poh.argument<double>("--erf-mean", 0.4);
 	const double erf_sd=poh.argument<double>("--erf-sd", 0.3);
+	const std::string reference_sequence_file=poh.argument<std::string>("--reference-sequence-file", "");
 	const bool detailed_output=poh.contains_option("--detailed-output");
 
 	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
@@ -372,6 +375,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		print_score("global", global_ed, escp, detailed_output, std::cout);
 	}
 
-	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, escp, detailed_output, std::cout);
-	print_single_scores_summary("residue_level_summary", residue_energy_descriptors, escp, detailed_output, std::cout);
+	const std::string reference_sequence=modescommon::read_sequence_from_file(reference_sequence_file);
+	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, modescommon::count_atoms_from_sequence(reference_sequence), escp, detailed_output, std::cout);
+	print_single_scores_summary("residue_level_summary", residue_energy_descriptors, reference_sequence.size(), escp, detailed_output, std::cout);
 }
