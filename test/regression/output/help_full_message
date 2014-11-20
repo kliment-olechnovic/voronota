@@ -158,6 +158,7 @@ Command 'score-contacts' options:
 --depth                         number      neighborhood normalization depth
 --erf-mean                      number      mean parameter for error function
 --erf-sd                        number      sd parameter for error function
+--reference-sequence-file       string      file path to input reference sequence for normalization
 --detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
