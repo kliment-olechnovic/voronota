@@ -75,17 +75,14 @@ inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDes
 
 inline void print_score(const std::string& name, const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
 {
-	if(ed.contacts_count>0)
+	const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
+	output << name << " " << es.quality_score;
+	if(detailed)
 	{
-		const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
-		output << name << " " << es.quality_score;
-		if(detailed)
-		{
-			output << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
-			output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count;
-		}
-		output << "\n";
+		output << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
+		output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count;
 	}
+	output << "\n";
 }
 
 void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, const std::string& filename)
@@ -136,6 +133,31 @@ void print_single_scores_summary(const std::string& name, const std::map<CRAD, E
 		output << " " << reference_size << " " << map_of_single_energy_descriptors.size() << " " << es_sum.quality_score << " " << es_sum.normalized_energy << " " << es_sum.energy_score << " " << es_sum.actuality_score;
 	}
 	output << "\n";
+}
+
+template<typename T>
+std::map< CRAD, T > inject_residue_scores_into_target_sequence(const std::string& target_sequence, const std::map< CRAD, T >& residue_scores)
+{
+	std::map< CRAD, T > result;
+	for(std::size_t i=0;i<target_sequence.size();i++)
+	{
+		CRAD crad;
+		crad.resSeq=static_cast<int>(i+1);
+		crad.resName=auxiliaries::ResidueLettersCoding::convert_residue_code_small_to_big(std::string(1, target_sequence[i]));
+		result[crad]=T();
+	}
+	for(typename std::map< CRAD, T >::const_iterator it=residue_scores.begin();it!=residue_scores.end();++it)
+	{
+		CRAD crad;
+		crad.resSeq=it->first.resSeq;
+		crad.resName=it->first.resName;
+		typename std::map< CRAD, T >::iterator jt=result.find(crad);
+		if(jt!=result.end())
+		{
+			jt->second=it->second;
+		}
+	}
+	return result;
 }
 
 }
@@ -251,6 +273,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
 		list_of_option_descriptions.push_back(OD("--erf-sd", "number", "sd parameter for error function"));
 		list_of_option_descriptions.push_back(OD("--reference-sequence-file", "string", "file path to input reference sequence for normalization"));
+		list_of_option_descriptions.push_back(OD("--residue-scores-to-ref-seq", "", "flag to align residue scores to reference sequence"));
 		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
@@ -271,6 +294,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const double erf_mean=poh.argument<double>("--erf-mean", 0.4);
 	const double erf_sd=poh.argument<double>("--erf-sd", 0.3);
 	const std::string reference_sequence_file=poh.argument<std::string>("--reference-sequence-file", "");
+	const bool residue_scores_to_ref_seq=poh.contains_option("--residue-scores-to-ref-seq");
 	const bool detailed_output=poh.contains_option("--detailed-output");
 
 	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
@@ -299,6 +323,8 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			throw std::runtime_error("No potential values input.");
 		}
 	}
+
+	const std::string reference_sequence=modescommon::read_sequence_from_file(reference_sequence_file);
 
 	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_atom_energy_descriptors;
 	{
@@ -341,7 +367,14 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::map< CRAD, std::set<CRAD> > residue_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth);
 	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph);
-	print_single_scores_to_file(residue_energy_descriptors, escp, detailed_output, residue_scores_file);
+	if(residue_scores_to_ref_seq && !reference_sequence.empty())
+	{
+		print_single_scores_to_file(inject_residue_scores_into_target_sequence(reference_sequence, residue_energy_descriptors), escp, detailed_output, residue_scores_file);
+	}
+	else
+	{
+		print_single_scores_to_file(residue_energy_descriptors, escp, detailed_output, residue_scores_file);
+	}
 
 	if(!residue_atomic_scores_file.empty())
 	{
@@ -355,13 +388,14 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				residue_value.first++;
 				residue_value.second+=calculate_energy_score_from_energy_descriptor(it->second, escp).quality_score;
 			}
+			if(residue_scores_to_ref_seq && !reference_sequence.empty())
+			{
+				residue_atom_summed_scores=inject_residue_scores_into_target_sequence(reference_sequence, residue_atom_summed_scores);
+			}
 			for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
 			{
 				const std::pair<int, double>& residue_value=it->second;
-				if(residue_value.first>0)
-				{
-					foutput << it->first.str() << " " << (residue_value.second/residue_value.first) << "\n";
-				}
+				foutput << it->first.str() << " " << ((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0) << "\n";
 			}
 		}
 	}
@@ -375,7 +409,6 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		print_score("global", global_ed, escp, detailed_output, std::cout);
 	}
 
-	const std::string reference_sequence=modescommon::read_sequence_from_file(reference_sequence_file);
 	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, modescommon::count_atoms_from_sequence(reference_sequence), escp, detailed_output, std::cout);
 	print_single_scores_summary("residue_level_summary", residue_energy_descriptors, reference_sequence.size(), escp, detailed_output, std::cout);
 }
