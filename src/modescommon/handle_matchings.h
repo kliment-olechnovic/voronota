@@ -101,7 +101,7 @@ struct functor_match_map_of_adjuncts_with_single_value
 					double a=0.0;
 					double b=0.0;
 					input >> name >> a >> b;
-					if(!input.fail() && !name.empty() && a<b)
+					if(!input.fail() && !name.empty() && a<=b)
 					{
 						std::map<std::string, double>::const_iterator it=adjuncts.find(name);
 						return (it!=adjuncts.end() && it->second>=a && it->second<=b);
