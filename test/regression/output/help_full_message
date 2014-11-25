@@ -133,6 +133,7 @@ Command 'query-contacts' options:
 --drawing-name                  string      graphics object name for drawing output
 --drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
 --drawing-adjunct-gradient      string      adjunct name to use for gradient-based coloring
+--drawing-reverse-gradient                  flag to use reversed gradient for drawing
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
