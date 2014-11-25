@@ -255,7 +255,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					std::map< std::pair<CRAD, CRAD>, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crads);
 					if(adjunct_value_it==map_of_external_adjunct_values.end())
 					{
-						adjunct_value_it=map_of_external_adjunct_values.find(modescommon::refine_pair_by_ordering(crads));
+						adjunct_value_it=map_of_external_adjunct_values.find(modescommon::refine_pair(crads, true));
 					}
 					if(adjunct_value_it!=map_of_external_adjunct_values.end())
 					{
