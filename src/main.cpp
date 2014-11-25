@@ -80,7 +80,18 @@ int main(const int argc, const char** argv)
 	{
 		const std::vector<ModeDescriptor> list_of_modes=get_list_of_modes();
 
-		const auxiliaries::ProgramOptionsHandler poh(argc, argv);
+		auxiliaries::ProgramOptionsHandler poh(argc, argv);
+
+		{
+			const std::string output_precision_option_name="--stdout-precision";
+			if(poh.contains_option_with_argument(output_precision_option_name))
+			{
+				std::cout << std::fixed;
+				std::cout.precision(poh.argument<int>(output_precision_option_name));
+				poh.remove_option(output_precision_option_name);
+			}
+		}
+
 		const bool help=poh.contains_option("--help");
 
 		if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
