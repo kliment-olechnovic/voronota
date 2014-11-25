@@ -73,14 +73,12 @@ inline std::set<T> read_set_from_string(const std::string& input_str, const std:
 }
 
 template<typename T>
-inline std::string print_set_to_string(const std::set<T>& set, const std::string& sep)
+inline void print_set_to_stream(const std::set<T>& set, const std::string& sep, std::ostream& output)
 {
-	std::ostringstream output;
 	for(typename std::set<T>::const_iterator it=set.begin();it!=set.end();++it)
 	{
 		output << (it==set.begin() ? std::string() : sep) << (*it);
 	}
-	return output.str();
 }
 
 template<typename A, typename B>
@@ -112,14 +110,12 @@ inline std::map<A, B> read_map_from_string(const std::string& input_str, const s
 }
 
 template<typename A, typename B>
-inline std::string print_map_to_string(const std::map<A, B>& map, const std::string& sep)
+inline void print_map_to_stream(const std::map<A, B>& map, const std::string& sep, std::ostream& output)
 {
-	std::ostringstream output;
 	for(typename std::map<A, B>::const_iterator it=map.begin();it!=map.end();++it)
 	{
 		output << (it==map.begin() ? std::string() : sep) << it->first << "=" << it->second;
 	}
-	return output.str();
 }
 
 }

@@ -49,8 +49,10 @@ struct ContactValue
 inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& names, const ContactValue& value, const bool preserve_graphics, std::ostream& output)
 {
 	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
-	output << " " << (value.tags.empty() ? std::string(".") : auxiliaries::print_set_to_string(value.tags, ";"));
-	output << " " << (value.adjuncts.empty() ? std::string(".") : auxiliaries::print_map_to_string(value.adjuncts, ";"));
+	output << (value.tags.empty() ? " ." : " ");
+	auxiliaries::print_set_to_stream(value.tags, ";", output);
+	output << (value.adjuncts.empty() ? " ." : " ");
+	auxiliaries::print_map_to_stream(value.adjuncts, ";", output);
 	if(preserve_graphics && !value.graphics.empty())
 	{
 		output << " \"";
