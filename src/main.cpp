@@ -85,14 +85,10 @@ int main(const int argc, const char** argv)
 
 		if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
 		{
+			std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 			if(!help)
 			{
-				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 				return 0;
-			}
-			else
-			{
-				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
 			}
 		}
 		else
