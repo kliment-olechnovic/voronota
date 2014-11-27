@@ -40,7 +40,13 @@ mkdir -p contacts
 mkdir -p qscores
 mkdir -p qscores_atom
 mkdir -p qscores_residue
+mkdir -p qscores_residue_atomic
 mkdir -p cadscores
+mkdir -p cadscores_residue
+
+true > ./qscores_residue_table
+true > ./qscores_residue_atomic_table
+true > ./cadscores_residue_table
 
 (echo $DOWNLOADS_DIR/$TARGET_NAME.pdb ; find $DOWNLOADS_DIR/$TARGET_NAME -type f) | while read MODEL_FILE
 do
@@ -52,13 +58,16 @@ do
 		$BIN_DIR/voronota query-balls --set-ref-seq-num-adjunct sequences/$TARGET_NAME --ref-seq-alignment alignments/$MODEL_NAME < balls/raw_$MODEL_NAME | $BIN_DIR/voronota query-balls --renumber-from-adjunct refseq > balls/$MODEL_NAME ; rm balls/raw_$MODEL_NAME
 		$BIN_DIR/voronota calculate-contacts --annotated < balls/$MODEL_NAME > contacts/$MODEL_NAME
 	fi
-	cat contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --detailed-output --potential-file $BIN_DIR/potential --atom-scores-file qscores_atom/$MODEL_NAME --residue-scores-file qscores_residue/$MODEL_NAME | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
-	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --detailed-output --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
+	cat contacts/$MODEL_NAME | $BIN_DIR/voronota score-contacts --detailed-output --potential-file $BIN_DIR/potential --atom-scores-file qscores_atom/$MODEL_NAME --residue-scores-file qscores_residue/$MODEL_NAME --residue-atomic-scores-file qscores_residue_atomic/$MODEL_NAME | sed "s/^/$TARGET_NAME $MODEL_NAME /" > qscores/$MODEL_NAME
+	$BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$MODEL_NAME | $BIN_DIR/voronota compare-contacts --detailed-output --residue-scores-file cadscores_residue/$MODEL_NAME --target-contacts-file <($BIN_DIR/voronota query-contacts --match-min-seq-sep 1 --no-solvent < contacts/$TARGET_NAME) | sed "s/^/$TARGET_NAME $MODEL_NAME /" > cadscores/$MODEL_NAME
+	cat qscores_residue/$MODEL_NAME | awk '{print $1 " " $2}' | sed "s/^/$TARGET_NAME $MODEL_NAME /" >> ./qscores_residue_table
+	cat qscores_residue_atomic/$MODEL_NAME | awk '{print $1 " " $2}' | sed "s/^/$TARGET_NAME $MODEL_NAME /" >> ./qscores_residue_atomic_table
+	cat cadscores_residue/$MODEL_NAME | awk '{print $1 " " $2}' | sed "s/^/$TARGET_NAME $MODEL_NAME /" >> ./cadscores_residue_table
 done
 
 (echo "target model qa_score qa_normalized_energy qa_energy_score qa_actuality_score qa_total_area qa_strange_area qa_energy qa_contacts_count" ; cat qscores/* | egrep 'global' | sed 's/global //') > all_qscores_global
-(echo "target model qasa_score qasa_reference_count qasa_count qasa_quality_score qasa_normalized_energy qasa_energy_score qasa_actuality_score" ; cat qscores/* | egrep 'atom_level_summary' | sed 's/atom_level_summary //') > all_qscores_summary_atom
-(echo "target model qasr_score qasr_reference_count qasr_count qasr_quality_score qasr_normalized_energy qasr_energy_score qasr_actuality_score" ; cat qscores/* | egrep 'residue_level_summary' | sed 's/residue_level_summary //') > all_qscores_summary_residue
+(echo "target model qasa_quality_score qasa_reference_count qasa_count qasa_score qasa_normalized_energy qasa_energy_score qasa_actuality_score" ; cat qscores/* | egrep 'atom_level_summary' | sed 's/atom_level_summary //') > all_qscores_summary_atom
+(echo "target model qasr_quality_score qasr_reference_count qasr_count qasr_score qasr_normalized_energy qasr_energy_score qasr_actuality_score" ; cat qscores/* | egrep 'residue_level_summary' | sed 's/residue_level_summary //') > all_qscores_summary_residue
 (echo "target model csa_score csa_target_area_sum csa_model_area_sum csa_raw_differences_sum csa_constrained_differences_sum" ; cat cadscores/* | egrep 'atom_level_global' | sed 's/atom_level_global //') > all_cadscores_atom
 (echo "target model csr_score csr_target_area_sum csr_model_area_sum csr_raw_differences_sum csr_constrained_differences_sum" ; cat cadscores/* | egrep 'residue_level_global' | sed 's/residue_level_global //') > all_cadscores_residue
 
@@ -69,7 +78,7 @@ fi
 
 if [ "$CLEARDETAILEDOUTPUT" == "yes" ]
 then
-	rm -r ./qscores_atom ./qscores_residue
+	rm -r ./qscores_atom ./qscores_residue ./qscores_residue_atomic ./cadscores_residue
 fi
 
 ###################################################
