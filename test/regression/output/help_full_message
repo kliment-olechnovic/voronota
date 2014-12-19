@@ -156,6 +156,7 @@ Command 'score-contacts' options:
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
 --residue-atomic-scores-file    string      file path to output residue atom average scores
+--smoothing-window              number      window to smooth residue atom average scores along sequence
 --depth                         number      neighborhood normalization depth
 --erf-mean                      number      mean parameter for error function
 --erf-sd                        number      sd parameter for error function
