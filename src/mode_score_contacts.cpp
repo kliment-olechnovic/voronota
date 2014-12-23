@@ -234,6 +234,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
@@ -244,6 +245,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
 
@@ -252,7 +254,27 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<std::string, double> map_of_conditions_total_areas;
 	double sum_of_all_areas=0.0;
 
-	read_map_of_interactions_areas(std::cin, true, map_of_interactions_total_areas);
+	if(input_file_list)
+	{
+		while(std::cin.good())
+		{
+			std::string file_path;
+			std::cin >> file_path;
+			if(!file_path.empty())
+			{
+				std::ifstream finput(file_path.c_str(), std::ios::in);
+				if(finput.good())
+				{
+					read_map_of_interactions_areas(finput, true, map_of_interactions_total_areas);
+				}
+			}
+		}
+	}
+	else
+	{
+		read_map_of_interactions_areas(std::cin, true, map_of_interactions_total_areas);
+	}
+
 	for(std::map<Interaction, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
 		const Interaction& interaction=it->first;
