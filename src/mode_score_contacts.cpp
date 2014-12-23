@@ -13,6 +13,8 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
+typedef std::pair<std::pair<CRAD, CRAD>, std::string> Interaction;
+
 struct EnergyDescriptor
 {
 	double total_area;
@@ -189,6 +191,42 @@ std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD,
 	return std::map<CRAD, double>(sv.begin(), sv.end());
 }
 
+void read_map_of_interactions_areas(std::istream& input, const bool accumulating, std::map<Interaction, double>& map_of_interactions_areas)
+{
+	while(input.good())
+	{
+		std::string line;
+		std::getline(input, line);
+		if(!line.empty())
+		{
+			std::istringstream line_input(line);
+			if(line_input.good())
+			{
+				std::pair<std::string, std::string> crads_strings;
+				std::string conditions;
+				double area=0.0;
+				line_input >> crads_strings.first >> crads_strings.second >> conditions >> area;
+				if(!line_input.fail() && !crads_strings.first.empty() && !crads_strings.second.empty() && !conditions.empty())
+				{
+					const std::pair<CRAD, CRAD> crads(CRAD::from_str(crads_strings.first), CRAD::from_str(crads_strings.second));
+					if(crads.first.valid() && crads.second.valid())
+					{
+						if(accumulating)
+						{
+							const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
+							map_of_interactions_areas[Interaction(crads_without_numbering, conditions)]+=area;
+						}
+						else
+						{
+							map_of_interactions_areas[Interaction(crads, conditions)]=area;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 }
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
@@ -200,8 +238,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
+			std::cerr << "stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')\n";
 			return;
 		}
 	}
@@ -209,60 +247,46 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_considered_total_areas;
-	std::map<CRAD, double> map_of_generalized_total_areas;
+	std::map<Interaction, double> map_of_interactions_total_areas;
+	std::map<CRAD, double> map_of_crads_total_areas;
+	std::map<std::string, double> map_of_conditions_total_areas;
 	double sum_of_all_areas=0.0;
 
-	while(std::cin.good())
+	read_map_of_interactions_areas(std::cin, true, map_of_interactions_total_areas);
+	for(std::map<Interaction, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
-		std::string line;
-		std::getline(std::cin, line);
-		if(!line.empty())
-		{
-			std::istringstream input(line);
-			if(input.good())
-			{
-				std::pair<std::string, std::string> crads_strings;
-				double area=0.0;
-				input >> crads_strings.first >> crads_strings.second >> area;
-				if(!input.fail() && !crads_strings.first.empty() && !crads_strings.second.empty())
-				{
-					const std::pair<CRAD, CRAD> crads(CRAD::from_str(crads_strings.first), CRAD::from_str(crads_strings.second));
-					if(crads.first.valid() && crads.second.valid())
-					{
-						const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
-						map_of_considered_total_areas[crads_without_numbering]+=area;
-						map_of_generalized_total_areas[crads_without_numbering.first]+=area;
-						map_of_generalized_total_areas[crads_without_numbering.second]+=area;
-						sum_of_all_areas+=area;
-					}
-				}
-			}
-		}
+		const Interaction& interaction=it->first;
+		const double area=it->second;
+		map_of_crads_total_areas[interaction.first.first]+=area;
+		map_of_crads_total_areas[interaction.first.second]+=area;
+		map_of_conditions_total_areas[interaction.second]+=area;
+		sum_of_all_areas+=area;
 	}
 
 	if(solvent_factor>0.0)
 	{
-		std::map<CRAD, double>::iterator it=map_of_generalized_total_areas.find(CRAD::solvent());
-		if(it!=map_of_generalized_total_areas.end())
+		std::map<CRAD, double>::iterator it=map_of_crads_total_areas.find(CRAD::solvent());
+		if(it!=map_of_crads_total_areas.end())
 		{
 			const double additional_area=solvent_factor*(it->second);
 			it->second+=additional_area;
+			map_of_conditions_total_areas["."]+=additional_area;
 			sum_of_all_areas+=additional_area;
 		}
 	}
 
-	std::map< std::pair<CRAD, CRAD>, std::pair<double, double> > result;
-	for(std::map< std::pair<CRAD, CRAD>, double >::const_iterator it=map_of_considered_total_areas.begin();it!=map_of_considered_total_areas.end();++it)
+	std::map< Interaction, std::pair<double, double> > result;
+	for(std::map<Interaction, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		const double ab=it->second;
-		const double ax=map_of_generalized_total_areas[crads.first];
-		const double bx=map_of_generalized_total_areas[crads.second];
-		if(ab>0.0 && ax>0.0 && bx>0.0)
+		const Interaction& interaction=it->first;
+		const double abc=it->second;
+		const double ax=map_of_crads_total_areas[interaction.first.first];
+		const double bx=map_of_crads_total_areas[interaction.first.second];
+		const double cx=map_of_conditions_total_areas[interaction.second];
+		if(abc>0.0 && ax>0.0 && bx>0.0 && cx>0.0)
 		{
-			const double potential_value=(0.0-log((ab*sum_of_all_areas)/(ax*bx)));
-			result[crads]=std::make_pair(potential_value, ab);
+			const double potential_value=(0.0-log((abc*sum_of_all_areas*sum_of_all_areas)/(ax*bx*cx)));
+			result[interaction]=std::make_pair(potential_value, abc);
 		}
 	}
 
@@ -271,18 +295,18 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(potential_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+			for(std::map< Interaction, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 			{
-				const std::pair<CRAD, CRAD>& crads=it->first;
-				foutput << crads.first.str() << " " << crads.second.str() << " " << it->second.first << "\n";
+				const Interaction& interaction=it->first;
+				foutput << interaction.first.first.str() << " " << interaction.first.second.str() << " " << interaction.second << " "<< it->second.first << "\n";
 			}
 		}
 	}
 
-	for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+	for(std::map< Interaction, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		std::cout << crads.first.str() << " " << crads.second.str() << " " << it->second.second << "\n";
+		const Interaction& interaction=it->first;
+		std::cout << interaction.first.first.str() << " " << interaction.first.second.str() << " " << interaction.second << " "<< it->second.second << "\n";
 	}
 }
 
@@ -307,7 +331,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')\n";
+			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
 			std::cerr << "stdout  ->  global scores\n";
 			return;
 		}
@@ -330,23 +354,23 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
+	std::map<Interaction, double> map_of_contacts;
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_contacts);
+		read_map_of_interactions_areas(std::cin, false, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
 		}
 	}
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_potential_values;
+	std::map<Interaction, double> map_of_potential_values;
 	{
 		if(!potential_file.empty())
 		{
 			std::ifstream finput(potential_file.c_str(), std::ios::in);
 			if(finput.good())
 			{
-				auxiliaries::read_lines_to_container(finput, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_potential_values);
+				read_map_of_interactions_areas(finput, false, map_of_potential_values);
 			}
 		}
 		if(map_of_potential_values.empty())
@@ -357,18 +381,18 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::string reference_sequence=modescommon::read_sequence_from_file(reference_sequence_file);
 
-	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_atom_energy_descriptors;
+	std::map<std::pair<CRAD, CRAD>, EnergyDescriptor> inter_atom_energy_descriptors;
 	{
-		for(std::map< std::pair<CRAD, CRAD>, double >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map<Interaction, double>::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
+			const std::pair<CRAD, CRAD>& crads=it->first.first;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
 			if(!CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, ignorable_max_seq_sep, false))
 			{
 				ed.total_area=it->second;
 				ed.contacts_count=1;
-				std::map< std::pair<CRAD, CRAD>, double >::const_iterator potential_value_it=
-						map_of_potential_values.find(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())));
+				std::map<Interaction, double>::const_iterator potential_value_it=
+						map_of_potential_values.find(Interaction(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())), it->first.second));
 				if(potential_value_it!=map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);
