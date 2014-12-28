@@ -32,7 +32,6 @@ cat $TMP_DIR/ia_contacts \
 | $BIN_DIR/voronota query-contacts --match-external-first $TMP_DIR/helix_atom_ids --match-external-second $TMP_DIR/helix_atom_ids --set-tags 'HH' \
 | $BIN_DIR/voronota query-contacts --match-external-first $TMP_DIR/sheet_atom_ids --match-external-second $TMP_DIR/sheet_atom_ids --set-tags 'SS' \
 | $BIN_DIR/voronota query-contacts --match-external-pairs $TMP_DIR/hbond_contact_ids --set-tags 'rhb' \
-| awk '{print $1 " " $2 " " $5 " " $3}' \
 > $OUTPUT_DIR/$(basename $INPUT_FILE)
 
 rm -r $TMP_DIR
