@@ -28,4 +28,4 @@ cat $OUTPUT_DIR/summary__rh_sd \
 cat $OUTPUT_DIR/summary__rh_sd \
 | awk '{print $1 " " $2 " . " $4}' \
 | $BIN_DIR/voronota score-contacts-potential --potential-file $OUTPUT_DIR/potential__simple \
-> $OUTPUT_DIR/global_summary_simple
+> $OUTPUT_DIR/summary__simple
