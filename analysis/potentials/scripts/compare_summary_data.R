@@ -5,15 +5,50 @@ args=commandArgs(TRUE);
 t1=read.table(args[1], header=FALSE, stringsAsFactors=FALSE);
 s1=args[2];
 t2=read.table(args[3], header=FALSE, stringsAsFactors=FALSE);
-flag=args[4];
+flags=args[grep("flag_", args)];
 
 xylims=c(min(t1$V4, t2$V4), max(t1$V4, t2$V4));
 
 st1=t1[which(t1$V3==s1),];
-if(flag=="solvent")
+
+wholesel=1:length(st1$V1);
+finalsel=c();
+if(length(flags)==0)
 {
-	st1=st1[which(st1$V2=="c<solvent>"),];
+	finalsel=wholesel;
+} else {
+	mcsel1=c();
+	mcsel1=union(mcsel1, grep("A<C>", st1$V1));
+	mcsel1=union(mcsel1, grep("A<CA>", st1$V1));
+	mcsel1=union(mcsel1, grep("A<N>", st1$V1));
+	mcsel1=union(mcsel1, grep("A<O>", st1$V1));
+	mcsel2=c();
+	mcsel2=union(mcsel2, grep("A<C>", st1$V2));
+	mcsel2=union(mcsel2, grep("A<CA>", st1$V2));
+	mcsel2=union(mcsel2, grep("A<N>", st1$V2));
+	mcsel2=union(mcsel2, grep("A<O>", st1$V2));
+	mcsel=intersect(mcsel1, mcsel2);
+	scsel=intersect(setdiff(wholesel, mcsel1), setdiff(wholesel, mcsel2));
+	mixsel=intersect(setdiff(wholesel, mcsel), setdiff(wholesel, scsel));
+	if(is.element("flag_solvent", flags))
+	{
+		finalsel=union(finalsel, which(st1$V2=="c<solvent>"));
+	}
+	if(is.element("flag_mainchain", flags))
+	{
+		finalsel=union(finalsel, mcsel);
+	}
+	if(is.element("flag_sidechain", flags))
+	{
+		finalsel=union(finalsel, scsel);
+	}
+	if(is.element("flag_mixchain", flags))
+	{
+		finalsel=union(finalsel, mixsel);
+	}
 }
+st1=st1[finalsel,];
+
 df1=data.frame(a=st1$V1, b=st1$V2, c1=st1$V4);
 
 sset2=union(t2$V3, t2$V3);
