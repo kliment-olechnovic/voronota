@@ -22,7 +22,6 @@ s1;
 sset2;
 
 colorid=1;
-
 png("plot.png", width=900, height=900);
 plot(x=xylims, y=xylims, type="l", col="black", xlab="v1", ylab="v2", main="");
 for(s2 in sset2)
@@ -34,3 +33,14 @@ for(s2 in sset2)
 	colorid=min(length(scolors), colorid+1);
 }
 dev.off();
+
+colorid=1;
+for(s2 in sset2)
+{
+	st2=t2[which(t2$V3==s2),];
+	df2=data.frame(a=st2$V1, b=st2$V2, c2=st2$V4);
+	df=merge(df1, df2);
+	plot(x=xylims, y=xylims, type="l", col="black", xlab="v1", ylab="v2", main=paste(s1, "vs", s2));
+	points(df$c1, df$c2, col=scolors[colorid], cex=0.3);
+	colorid=min(length(scolors), colorid+1);
+}
