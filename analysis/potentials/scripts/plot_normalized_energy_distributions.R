@@ -43,9 +43,9 @@ scores_hetero=scores_homo;
 for(name in names)
 {
 	sel=which(t$V1==name);
-	scores_homo[sel]=(1-pnorm(t$V2[sel], mean=(mean_homo+mean_addition), sd=sd_homo));
+	scores_homo[sel]=(1-pnorm((t$V2[sel]-(mean_homo+mean_addition))/sd_homo, mean=0, sd=1));
 	mt_hetero=mt[which(mt$names==name),];
-	scores_hetero[sel]=(1-pnorm(t$V2[sel], mean=(mt_hetero$means[1]+mean_addition), sd=mt_hetero$sds[1]));
+	scores_hetero[sel]=(1-pnorm((t$V2[sel]-(mt_hetero$means[1]+mean_addition))/mt_hetero$sds[1], mean=0, sd=1));
 }
 
 quantile(scores_homo);
@@ -55,5 +55,5 @@ histbreaks=seq(min(c(scores_homo, scores_hetero))-0.05, max(c(scores_homo, score
 hist(scores_hetero, breaks=histbreaks, col=rgb(0, 0, 1, 0.5), freq=FALSE);
 hist(scores_homo, breaks=histbreaks, col=rgb(1, 0, 0, 0.5), freq=FALSE, add=TRUE);
 
-sample_sel=sample(1:length(scores_homo), 10000);
+sample_sel=sample(1:length(scores_homo), 30000);
 plot(x=scores_homo[sample_sel], y=scores_hetero[sample_sel], cex=0.2, xlim=c(0, 1), ylim=c(0, 1));
