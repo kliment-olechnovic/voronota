@@ -1,7 +1,9 @@
 #!/bin/bash
 
+readonly BINDIR=/scratch/lustre/home/kliment/voronota_esp/extbin
+
 readonly OUTPUTDIR=$1
 readonly INPUTFILE=$2
 
 mkdir -p $OUTPUTDIR/dssp
-/scratch/lustre/home/kliment/voronota_esp/extbin/dssp $INPUTFILE > $OUTPUTDIR/dssp/$(basename $INPUTFILE)
+$BINDIR/dssp $INPUTFILE > $OUTPUTDIR/dssp/$(basename $INPUTFILE)
