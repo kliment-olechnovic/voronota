@@ -1,0 +1,119 @@
+# default radii
+
+*    *    1.80
+*    C*   1.80
+*    CL*  1.80
+*    F*   1.80
+*    FE*  1.80
+*    N*   1.60
+*    O*   1.50
+*    P*   1.90
+*    S*   1.90
+*    ZN*  1.70
+*    H*   1.30
+
+
+# protein main chain radii
+
+*    C    1.75
+*    CA   1.90
+*    N    1.70
+*    O    1.49
+
+
+# protein side chain radii
+
+ALA  CB   1.92
+
+ARG  CB   1.91
+ARG  CD*  1.88
+ARG  CG*  1.92
+ARG  NE*  1.62
+ARG  NH1  1.62
+ARG  NH2  1.67
+
+ASN  CB   1.91
+ASN  CG*  1.81
+ASN  ND2  1.62
+ASN  OD1  1.52
+
+ASP  CB   1.91
+ASP  CG*  1.76
+ASP  OD1  1.49
+ASP  OD2  1.49
+
+CYS  CB   1.91
+CYS  S*   1.88
+
+GLN  CB   1.91
+GLN  CD*  1.81
+GLN  NE2  1.62
+GLN  OE1  1.52
+
+GLU  CB   1.91
+GLU  CD*  1.76
+GLU  CG*  1.88
+GLU  OE1  1.49
+GLU  OE2  1.49
+
+HIS  CB   1.91
+HIS  CD*  1.74
+HIS  CE*  1.74
+HIS  ND2  1.65
+HIS  NE1  1.65
+
+ILE  CB   2.01
+ILE  CD1  1.92
+ILE  CG1  1.92
+ILE  CG2  1.92
+
+LEU  CB   1.91
+LEU  CD1  1.92
+LEU  CD2  1.92
+LEU  CG*  2.01
+
+LYS  CB   1.91
+LYS  CD*  1.92
+LYS  CE*  1.88
+LYS  CG*  1.92
+LYS  NZ*  1.67
+
+MET  CB   1.91
+MET  CG*  1.92
+MET  S*   1.94
+
+PHE  CB   1.91
+PHE  CD*  1.82
+PHE  CE*  1.82
+PHE  CG*  1.74
+PHE  CZ*  1.82
+
+PRO  CB   1.91
+PRO  CD*  1.92
+PRO  CG*  1.92
+
+SER  CB   1.91
+SER  OG*  1.54
+
+THR  CB   2.01
+THR  CG2  1.92
+THR  OG*  1.54
+
+TRP  CB   1.91
+TRP  CD*  1.82
+TRP  CE*  1.82
+TRP  CE2  1.74
+TRP  CG*  1.74
+TRP  CH*  1.82
+TRP  CZ*  1.82
+TRP  NE1  1.66
+
+TYR  CB   1.91
+TYR  CD*  1.82
+TYR  CE*  1.82
+TYR  CG*  1.74
+TYR  OH*  1.54
+
+VAL  CB   2.01
+VAL  CG1  1.92
+VAL  CG2  1.92
