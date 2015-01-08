@@ -1,0 +1,9 @@
+#!/bin/bash
+
+readonly XCOMMAND=$1
+readonly OUTPUTDIR=$2
+
+for INPUTFILE in ${@:3}
+do
+	$XCOMMAND $OUTPUTDIR $INPUTFILE
+done
