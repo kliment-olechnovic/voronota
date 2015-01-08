@@ -1,0 +1,7 @@
+#!/bin/bash
+
+readonly OUTPUTDIR=$1
+readonly INPUTFILE=$2
+
+mkdir -p $OUTPUTDIR
+/scratch/lustre/home/kliment/voronota_esp/extbin/dssp $INPUTFILE > $OUTPUTDIR/$(basename $INPUTFILE)
