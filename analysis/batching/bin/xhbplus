@@ -11,7 +11,7 @@ cd $TMPDIR
 
 /scratch/lustre/home/kliment/voronota_esp/extbin/hbplus ./struct.pdb > /dev/null 2> /dev/null
 
-mkdir -p $OUTPUTDIR
-mv ./struct.hb2 $OUTPUTDIR/$(basename $INPUTFILE)
+mkdir -p $OUTPUTDIR/hbplus
+mv ./struct.hb2 $OUTPUTDIR/hbplus/$(basename $INPUTFILE)
 
 rm -r $TMPDIR
