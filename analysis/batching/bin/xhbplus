@@ -1,9 +1,8 @@
 #!/bin/bash
 
-readonly BINDIR=/scratch/lustre/home/kliment/voronota_esp/extbin
-
-readonly OUTPUTDIR=$1
-readonly INPUTFILE=$2
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly INPUTFILE=$3
 
 readonly TMPDIR=$(mktemp -d)
 

@@ -1,16 +1,13 @@
 #!/bin/bash
 
-readonly BINDIR=/scratch/lustre/home/kliment/voronota_esp/extbin
-
-readonly OUTPUTDIR=$1
-readonly INPUTFILE=$2
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly INPUTFILE=$3
 
 readonly INPUTBASENAME=$(basename $INPUTFILE)
 
 mkdir -p $OUTPUTDIR/vballs
 mkdir -p $OUTPUTDIR/vcontacts
-
-/scratch/lustre/home/kliment/voronota_esp/extbin/voronota $INPUTFILE > $OUTPUTDIR/dssp/$(basename $INPUTFILE)
 
 cat $INPUTFILE \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \

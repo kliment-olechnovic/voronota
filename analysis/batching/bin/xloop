@@ -1,9 +1,10 @@
 #!/bin/bash
 
 readonly XCOMMAND=$1
-readonly OUTPUTDIR=$2
+readonly BINDIR=$2
+readonly OUTPUTDIR=$3
 
-for INPUTFILE in ${@:3}
+for INPUTFILE in ${@:4}
 do
-	$XCOMMAND $OUTPUTDIR $INPUTFILE
+	$XCOMMAND $BINDIR $OUTPUTDIR $INPUTFILE
 done
