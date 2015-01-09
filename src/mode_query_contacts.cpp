@@ -213,19 +213,19 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				CRAD::match_with_sequence_separation_interval(crads.first, crads.second, match_min_sequence_separation, match_max_sequence_separation, true) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(matchable_external_set_of_crad_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
+				(match_external_pairs.empty() || modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, matchable_external_set_of_crad_pairs))
 		)
 		{
 			const bool matched_first_second=(
 					modescommon::match_chain_residue_atom_descriptor(crads.first, match_first, match_first_not) &&
 					modescommon::match_chain_residue_atom_descriptor(crads.second, match_second, match_second_not) &&
-					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_first_set_of_crads)) &&
-					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_second_set_of_crads)));
+					(match_external_first.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_first_set_of_crads)) &&
+					(match_external_second.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_second_set_of_crads)));
 			const bool matched_second_first=matched_first_second || (
 					modescommon::match_chain_residue_atom_descriptor(crads.second, match_first, match_first_not) &&
 					modescommon::match_chain_residue_atom_descriptor(crads.first, match_second, match_second_not) &&
-					(matchable_external_first_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_first_set_of_crads)) &&
-					(matchable_external_second_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_second_set_of_crads)));
+					(match_external_first.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.second, matchable_external_first_set_of_crads)) &&
+					(match_external_second.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crads.first, matchable_external_second_set_of_crads)));
 			passed=(matched_first_second || matched_second_first);
 			if(passed && !invert)
 			{
