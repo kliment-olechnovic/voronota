@@ -1,0 +1,29 @@
+#!/bin/bash
+
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly INPUTFILE=$3
+
+readonly INPUTBASENAME=$(basename $INPUTFILE)
+
+readonly VCONTACTSFILE=$OUTPUTDIR/vcontacts/$INPUTBASENAME
+
+if [ ! -s "$VCONTACTSFILE" ]
+then
+	exit 1
+fi
+
+mkdir -p $OUTPUTDIR/vrhbonds
+mkdir -p $OUTPUTDIR/vsummary
+
+cat $VCONTACTSFILE \
+| $BINDIR/voronota query-contacts --set-hbplus-tags $OUTPUTDIR/hbplus/$INPUTBASENAME \
+| $BINDIR/voronota query-contacts --inter-residue --match-tags 'hb' \
+| awk '{print $1 " " $2}' \
+> $OUTPUTDIR/vrhbonds/$INPUTBASENAME
+
+cat $VCONTACTSFILE \
+| $BINDIR/voronota query-contacts --match-external-pairs $OUTPUTDIR/vrhbonds/$INPUTBASENAME --set-tags 'rhb' \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| $BINDIR/voronota score-contacts-potential \
+> $OUTPUTDIR/vsummary/$INPUTBASENAME
