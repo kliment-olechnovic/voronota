@@ -11,7 +11,7 @@ mkdir -p $OUTPUTDIR/vcontacts
 
 cat $INPUTFILE \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
-| $BINDIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials \
+| $BINDIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --drop-adjuncts --drop-tags \
 | sed 's/A<OXT>/A<O>/g' \
 | tee $OUTPUTDIR/vballs/$INPUTBASENAME \
 | $BINDIR/voronota calculate-contacts --annotated \
