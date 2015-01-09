@@ -1,0 +1,25 @@
+#!/bin/bash
+
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly RMODE=$3
+
+if [ "$RMODE" == "slave" ]
+then
+	mkdir -p $OUTPUTDIR/potential/slaves
+	SLAVEDIR=$(mktemp --tmpdir=$OUTPUTDIR/potential/slaves -d)
+	for INPUTFILE in ${@:4}
+	do
+		INPUTBASENAME=$(basename $INPUTFILE)
+		INPUTSIZE=$(cat $OUTPUTDIR/vballs/$INPUTBASENAME | egrep 'A<CA>' | wc -l)
+		if [ "$INPUTSIZE" -gt 50 ]
+		then
+			echo $OUTPUTDIR/vsummary/$INPUTBASENAME >> $SLAVEDIR/input
+		fi
+	done
+	cat $SLAVEDIR/input | $BINDIR/voronota score-contacts-potential --input-file-list > $SLAVEDIR/output
+else
+	mkdir -p $OUTPUTDIR/potential/master
+	find $OUTPUTDIR/potential/slaves -type f -name "output" | $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_rhb > $OUTPUTDIR/potential/master/summary_rhb
+	cat $OUTPUTDIR/potential/master/summary_rhb | awk '{print $1 " " $2 " . " $4}' | $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_simple > $OUTPUTDIR/potential/master/summary_simple
+fi
