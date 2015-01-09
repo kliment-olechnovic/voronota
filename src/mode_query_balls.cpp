@@ -212,7 +212,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		const bool passed=(modescommon::match_chain_residue_atom_descriptor(crad, match, match_not) &&
 				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
 				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(matchable_external_set_of_crads.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crad, matchable_external_set_of_crads)));
+				(match_external_annotations.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crad, matchable_external_set_of_crads)));
 		if((passed && !invert) || (!passed && invert))
 		{
 			output_set_of_ball_ids.insert(i);
