@@ -23,6 +23,7 @@ cat $VCONTACTSFILE \
 > $OUTPUTDIR/vrhbonds/$INPUTBASENAME
 
 cat $VCONTACTSFILE \
+| $BINDIR/voronota query-contacts --match-min-seq-sep 2 \
 | $BINDIR/voronota query-contacts --match-external-pairs $OUTPUTDIR/vrhbonds/$INPUTBASENAME --set-tags 'rhb' \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
 | $BINDIR/voronota score-contacts-potential \
