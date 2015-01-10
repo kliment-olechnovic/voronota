@@ -27,7 +27,18 @@ else
 	mkdir -p $OUTPUTDIR/potential/master
 	
 	find $OUTPUTDIR/potential/slaves -type f -name "output" \
-	| $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_enhanced \
+	| $BINDIR/voronota score-contacts-potential --input-file-list \
+	> $OUTPUTDIR/potential/master/summary_unfiltered
+	
+	( cat $OUTPUTDIR/potential/master/summary_unfiltered | awk '{print $1}' ; cat $OUTPUTDIR/potential/master/summary_unfiltered | awk '{print $2}' ) \
+	| grep -v -f $BINDIR/standard_atom_names \
+	| sort \
+	| uniq \
+	> $OUTPUTDIR/potential/master/nonstandard_atom_names
+	
+	cat $OUTPUTDIR/potential/master/summary_unfiltered \
+	| grep -v -f $OUTPUTDIR/potential/master/nonstandard_atom_names \
+	| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential/master/potential_enhanced \
 	> $OUTPUTDIR/potential/master/summary_enhanced
 	
 	cat $OUTPUTDIR/potential/master/summary_enhanced \
