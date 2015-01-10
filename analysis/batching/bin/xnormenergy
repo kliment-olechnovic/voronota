@@ -1,0 +1,54 @@
+#!/bin/bash
+
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly INPUTFILE=$3
+
+readonly INPUTBASENAME=$(basename $INPUTFILE)
+
+readonly VCONTACTSFILE=$OUTPUTDIR/vcontacts/$INPUTBASENAME
+
+if [ ! -s "$VCONTACTSFILE" ]
+then
+	exit 1
+fi
+
+readonly TMPDIR=$(mktemp -d)
+
+cat $VCONTACTSFILE \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| $BINDIR/voronota score-contacts --detailed-output --potential-file $OUTPUTDIR/potential/master/potential_simple --atom-scores-file $TMPDIR/scores_simple \
+> /dev/null
+
+cat $TMPDIR/scores_simple | awk '{print $1 " " $3}' > $TMPDIR/scores_ne_simple
+
+cat $VCONTACTSFILE \
+| $BINDIR/voronota query-contacts --match-external-pairs $OUTPUTDIR/vrhbonds/$INPUTBASENAME --set-tags 'rhb' \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| $BINDIR/voronota score-contacts --detailed-output --potential-file $OUTPUTDIR/potential/master/potential_enhanced --atom-scores-file $TMPDIR/scores_enhanced \
+> /dev/null
+
+cat $TMPDIR/scores_enhanced | awk '{print $1 " " $3}' > $TMPDIR/scores_ne_enhanced
+
+mkdir -p $OUTPUTDIR/normenergy
+
+cat $OUTPUTDIR/vballs/$INPUTBASENAME \
+| $BINDIR/voronota query-balls --set-dssp-tags $OUTPUTDIR/dssp/$INPUTBASENAME \
+| $BINDIR/voronota query-balls --set-external-adjuncts $TMPDIR/scores_ne_simple --set-external-adjuncts-name aval \
+| $BINDIR/voronota query-balls --set-external-adjuncts $TMPDIR/scores_ne_enhanced --set-external-adjuncts-name bval \
+| awk '{print $1 " " $6 " " $7}' \
+| grep aval \
+| grep bval \
+| sed 's/.*\(R<.*>A<.*>\)/\1/' \
+| sed 's/ dssp=H / H /' \
+| sed 's/ dssp=G / H /' \
+| sed 's/ dssp=I / H /' \
+| sed 's/ dssp=B / B /' \
+| sed 's/ dssp=E / B /' \
+| sed 's/ dssp=T / . /' \
+| sed 's/ dssp=S / . /' \
+| sed 's/ aval=/ /' \
+| sed 's/;bval=/ /' \
+> $OUTPUTDIR/normenergy/$INPUTBASENAME
+
+rm -r $TMPDIR
