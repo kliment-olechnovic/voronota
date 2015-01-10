@@ -12,14 +12,26 @@ then
 	do
 		INPUTBASENAME=$(basename $INPUTFILE)
 		INPUTSIZE=$(cat $OUTPUTDIR/vballs/$INPUTBASENAME | egrep 'A<CA>' | wc -l)
-		if [ "$INPUTSIZE" -gt 50 ]
+		if [ "$INPUTSIZE" -gt 100 ]
 		then
-			echo $OUTPUTDIR/vsummary/$INPUTBASENAME >> $SLAVEDIR/input
+			echo $OUTPUTDIR/vsummary/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_accepted
+		else
+			echo $OUTPUTDIR/vsummary/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_rejected
 		fi
 	done
-	cat $SLAVEDIR/input | $BINDIR/voronota score-contacts-potential --input-file-list > $SLAVEDIR/output
+	if [ -s "$SLAVEDIR/input_accepted" ]
+	then
+		cat $SLAVEDIR/input_accepted | awk '{print $1}' | sort | uniq | $BINDIR/voronota score-contacts-potential --input-file-list > $SLAVEDIR/output
+	fi
 else
 	mkdir -p $OUTPUTDIR/potential/master
-	find $OUTPUTDIR/potential/slaves -type f -name "output" | $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_rhb > $OUTPUTDIR/potential/master/summary_rhb
-	cat $OUTPUTDIR/potential/master/summary_rhb | awk '{print $1 " " $2 " . " $4}' | $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_simple > $OUTPUTDIR/potential/master/summary_simple
+	
+	find $OUTPUTDIR/potential/slaves -type f -name "output" \
+	| $BINDIR/voronota score-contacts-potential --input-file-list --potential-file $OUTPUTDIR/potential/master/potential_enhanced \
+	> $OUTPUTDIR/potential/master/summary_enhanced
+	
+	cat $OUTPUTDIR/potential/master/summary_enhanced \
+	| awk '{print $1 " " $2 " . " $4}' \
+	| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential/master/potential_simple \
+	> $OUTPUTDIR/potential/master/summary_simple
 fi
