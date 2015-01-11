@@ -2,39 +2,65 @@
 
 readonly BINDIR=$1
 readonly OUTPUTDIR=$2
-readonly RMODE=$3
+readonly NVMODE=$3
 
-if [ "$RMODE" == "slave" ]
-then
-	mkdir -p $OUTPUTDIR/normenergystat/slaves
-	SLAVEDIR=$(mktemp --tmpdir=$OUTPUTDIR/normenergystat/slaves -d)
-	for INPUTFILE in ${@:4}
-	do
-		INPUTBASENAME=$(basename $INPUTFILE)
-		INPUTSIZE=$(cat $OUTPUTDIR/vballs/$INPUTBASENAME | egrep 'A<CA>' | wc -l)
-		if [ "$INPUTSIZE" -gt 100 ]
-		then
-			echo $OUTPUTDIR/normenergy/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_accepted
-		else
-			echo $OUTPUTDIR/normenergy/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_rejected
-		fi
-	done
-	if [ -s "$SLAVEDIR/input_accepted" ]
+WORKDIR=$OUTPUTDIR/normenergystat/$NVMODE
+mkdir -p $WORKDIR
+
+find $OUTPUTDIR/normenergy/ -type f | while read INPUTFILE
+do
+	INPUTBASENAME=$(basename $INPUTFILE)
+	INPUTSIZE=$(cat $OUTPUTDIR/vballs/$INPUTBASENAME | egrep 'A<CA>' | wc -l)
+	if [ "$INPUTSIZE" -gt 100 ]
 	then
-		mkdir -p $SLAVEDIR/output
-		cat $(cat $SLAVEDIR/input_accepted | awk '{print $1}') | while read ANAME SNAME SIMPLEVAL ENHANCEDVAL
-		do
-			echo $SIMPLEVAL >> "$SLAVEDIR/output/simple_${ANAME}"
-			echo $SIMPLEVAL >> "$SLAVEDIR/output/simple_${ANAME}_${SNAME}"
-			echo $ENHANCEDVAL >> "$SLAVEDIR/output/enhanced_${ANAME}"
-			echo $ENHANCEDVAL >> "$SLAVEDIR/output/enhanced_${ANAME}_${SNAME}"
-		done
+		if [ "$NVMODE" == "00" ]
+		then
+			cat $INPUTFILE | awk '{print $1 " " $3}' >> $WORKDIR/table
+		fi
+
+		if [ "$NVMODE" == "10" ]
+		then
+			cat $INPUTFILE | awk '{print $1 "_" $2 " " $3}' >> $WORKDIR/table
+		fi
+
+		if [ "$NVMODE" == "01" ]
+		then
+			cat $INPUTFILE | awk '{print $1 " " $4}' >> $WORKDIR/table
+		fi
+
+		if [ "$NVMODE" == "11" ]
+		then
+			cat $INPUTFILE | awk '{print $1 "_" $2 " " $4}' >> $WORKDIR/table
+		fi
+
+		echo $INPUTBASENAME >> $WORKDIR/input_accepted
+	else
+		echo $INPUTBASENAME >> $WORKDIR/input_rejected
 	fi
-else
-	mkdir -p $OUTPUTDIR/normenergystat/master/input
-	find $OUTPUTDIR/normenergystat/slaves/ -type f -path "*/output/*" | while read ONAME
-	do
-		OBASENAME=$(basename "$ONAME")
-		cat "$ONAME" >> "$OUTPUTDIR/normenergystat/master/input/$OBASENAME"
-	done
-fi
+done
+
+cd $WORKDIR
+
+R --vanilla << 'EOF' > /dev/null
+
+t=read.table("table", header=FALSE, stringsAsFactors=FALSE);
+names=sort(union(t$V1, t$V1));
+
+histbreaks=seq(min(t$V2)-0.05, max(t$V2)+0.05, 0.01);
+hist(t$V2, breaks=histbreaks, col=rgb(1, 0, 0, 0.5), freq=FALSE, main="All atoms");
+
+means=c();
+sds=c();
+for(name in names)
+{
+	st=t[which(t$V1==name),];
+	means=c(means, mean(st$V2));
+	sds=c(sds, sd(st$V2));
+	hist(st$V2, breaks=histbreaks, col=rgb(0, 0, 1, 0.5), freq=FALSE, main=name);
+}
+
+mt=data.frame(names=names, means=means, sds=sds);
+mt=mt[order(mt$means),];
+write.table(mt, "means_and_sds", col.names=FALSE, row.names=FALSE, quote=FALSE);
+
+EOF
