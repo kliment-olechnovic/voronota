@@ -1,0 +1,40 @@
+#!/bin/bash
+
+readonly BINDIR=$1
+readonly OUTPUTDIR=$2
+readonly RMODE=$3
+
+if [ "$RMODE" == "slave" ]
+then
+	mkdir -p $OUTPUTDIR/normenergystat/slaves
+	SLAVEDIR=$(mktemp --tmpdir=$OUTPUTDIR/normenergystat/slaves -d)
+	for INPUTFILE in ${@:4}
+	do
+		INPUTBASENAME=$(basename $INPUTFILE)
+		INPUTSIZE=$(cat $OUTPUTDIR/vballs/$INPUTBASENAME | egrep 'A<CA>' | wc -l)
+		if [ "$INPUTSIZE" -gt 100 ]
+		then
+			echo $OUTPUTDIR/normenergy/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_accepted
+		else
+			echo $OUTPUTDIR/normenergy/$INPUTBASENAME $INPUTSIZE >> $SLAVEDIR/input_rejected
+		fi
+	done
+	if [ -s "$SLAVEDIR/input_accepted" ]
+	then
+		mkdir -p $SLAVEDIR/output
+		cat $(cat $SLAVEDIR/input_accepted | awk '{print $1}') | while read ANAME SNAME SIMPLEVAL ENHANCEDVAL
+		do
+			echo $SIMPLEVAL >> "$SLAVEDIR/output/simple_${ANAME}"
+			echo $SIMPLEVAL >> "$SLAVEDIR/output/simple_${ANAME}_${SNAME}"
+			echo $ENHANCEDVAL >> "$SLAVEDIR/output/enhanced_${ANAME}"
+			echo $ENHANCEDVAL >> "$SLAVEDIR/output/enhanced_${ANAME}_${SNAME}"
+		done
+	fi
+else
+	mkdir -p $OUTPUTDIR/normenergystat/master/input
+	find $OUTPUTDIR/normenergystat/slaves/ -type f -path "*/output/*" | while read ONAME
+	do
+		OBASENAME=$(basename "$ONAME")
+		cat "$ONAME" >> "$OUTPUTDIR/normenergystat/master/input/$OBASENAME"
+	done
+fi
