@@ -2,4 +2,11 @@
 
 readonly INPUTFILE=$1
 
-paste <(cat $INPUTFILE | awk '{print $1 " " $2 " " $3}') <(cat $INPUTFILE | awk '{print $4}' | shuf) | column -t
+readonly TMPDIR=$(mktemp -d)
+
+cat $INPUTFILE | awk '{print $1 " " $2 " " $3}' > $TMPDIR/names
+cat $INPUTFILE | awk '{print $4}' | shuf > $TMPDIR/values
+
+paste $TMPDIR/names $TMPDIR/values | column -t
+
+rm -r $TMPDIR
