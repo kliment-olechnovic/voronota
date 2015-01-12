@@ -64,3 +64,28 @@ mt=mt[order(mt$means),];
 write.table(mt, "means_and_sds", col.names=FALSE, row.names=FALSE, quote=FALSE);
 
 EOF
+
+
+if [ "$NVMODE" == "00" ]
+then
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | sort > ../means_and_sds_noss_simple
+fi
+
+if [ "$NVMODE" == "10" ]
+then
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_\.' | sed 's/_.//' | sort > ../means_and_sds_loop_simple
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_B' | sed 's/_B//' | sort > ../means_and_sds_sheet_simple
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_H' | sed 's/_H//' | sort > ../means_and_sds_helix_simple
+fi
+
+if [ "$NVMODE" == "01" ]
+then
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | sort > ../means_and_sds_noss_enhanced
+fi
+
+if [ "$NVMODE" == "11" ]
+then
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_\.' | sed 's/_.//' | sort > ../means_and_sds_loop_enhanced
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_B' | sed 's/_B//' | sort > ../means_and_sds_sheet_enhanced
+	cat ./means_and_sds | grep -f $BINDIR/standard_atom_names | grep '_H' | sed 's/_H//' | sort > ../means_and_sds_helix_enhanced
+fi
