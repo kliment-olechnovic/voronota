@@ -1,0 +1,5 @@
+#!/bin/bash
+
+readonly INPUTFILE=$1
+
+paste <(cat $INPUTFILE | awk '{print $1 " " $2 " " $3}') <(cat $INPUTFILE | awk '{print $4}' | shuf) | column -t
