@@ -35,162 +35,6 @@ struct EnergyDescriptor
 	}
 };
 
-struct EnergyScore
-{
-	double normalized_energy;
-	double energy_score;
-	double actuality_score;
-	double quality_score;
-
-	EnergyScore() : normalized_energy(0.0), energy_score(0.0), actuality_score(0.0), quality_score(0.0)
-	{
-	}
-};
-
-struct EnergyScoreCalculationParameter
-{
-	double erf_mean;
-	double erf_sd;
-
-	EnergyScoreCalculationParameter(
-			const double erf_mean,
-			const double erf_sd) :
-				erf_mean(erf_mean),
-				erf_sd(erf_sd)
-	{
-	}
-};
-
-inline EnergyScore calculate_energy_score_from_energy_descriptor(const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp)
-{
-	static const double square_root_of_two=sqrt(2.0);
-	EnergyScore es;
-	if(ed.total_area>0.0)
-	{
-		es.normalized_energy=ed.energy/ed.total_area;
-		es.energy_score=1.0-(0.5*(1.0+erf((es.normalized_energy-escp.erf_mean)/(square_root_of_two*escp.erf_sd))));
-		es.actuality_score=1.0-(ed.strange_area/ed.total_area);
-		es.quality_score=(es.energy_score*es.actuality_score);
-	}
-	return es;
-}
-
-inline void print_score(const std::string& name, const EnergyDescriptor& ed, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
-{
-	const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
-	output << name << " " << es.quality_score;
-	if(detailed)
-	{
-		output << " " << es.normalized_energy << " " << es.energy_score << " " << es.actuality_score << " ";
-		output << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count;
-	}
-	output << "\n";
-}
-
-void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, const std::string& filename)
-{
-	if(!filename.empty())
-	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descriptors.begin();it!=map_of_pair_energy_descriptors.end();++it)
-			{
-				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, escp, detailed, foutput);
-			}
-		}
-	}
-}
-
-void print_single_scores_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const EnergyScoreCalculationParameter& escp, const bool detailed, const std::string& filename)
-{
-	if(!filename.empty())
-	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
-			{
-				print_score(it->first.str(), it->second, escp, detailed, foutput);
-			}
-		}
-	}
-}
-
-void print_single_scores_summary(const std::string& name, const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const std::size_t reference_size, const EnergyScoreCalculationParameter& escp, const bool detailed, std::ostream& output)
-{
-	EnergyScore es_sum;
-	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
-	{
-		const EnergyDescriptor& ed=it->second;
-		const EnergyScore es=calculate_energy_score_from_energy_descriptor(ed, escp);
-		es_sum.quality_score+=es.quality_score;
-		es_sum.normalized_energy+=es.normalized_energy;
-		es_sum.energy_score+=es.energy_score;
-		es_sum.actuality_score+=es.actuality_score;
-	}
-	output << name << " " << (es_sum.quality_score/static_cast<double>(std::max(reference_size, map_of_single_energy_descriptors.size())));
-	if(detailed)
-	{
-		output << " " << reference_size << " " << map_of_single_energy_descriptors.size() << " " << es_sum.quality_score << " " << es_sum.normalized_energy << " " << es_sum.energy_score << " " << es_sum.actuality_score;
-	}
-	output << "\n";
-}
-
-template<typename T>
-std::map< CRAD, T > inject_residue_scores_into_target_sequence(const std::string& target_sequence, const std::map< CRAD, T >& residue_scores)
-{
-	std::map< CRAD, T > result;
-	for(std::size_t i=0;i<target_sequence.size();i++)
-	{
-		CRAD crad;
-		crad.resSeq=static_cast<int>(i+1);
-		crad.resName=auxiliaries::ResidueLettersCoding::convert_residue_code_small_to_big(std::string(1, target_sequence[i]));
-		result[crad]=T();
-	}
-	for(typename std::map< CRAD, T >::const_iterator it=residue_scores.begin();it!=residue_scores.end();++it)
-	{
-		CRAD crad;
-		crad.resSeq=it->first.resSeq;
-		crad.resName=it->first.resName;
-		typename std::map< CRAD, T >::iterator jt=result.find(crad);
-		if(jt!=result.end())
-		{
-			jt->second=it->second;
-		}
-	}
-	return result;
-}
-
-std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD, double>& raw_scores, const unsigned int window)
-{
-	std::vector< std::pair<CRAD, double> > v(raw_scores.size());
-	std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
-	std::vector< std::pair<CRAD, double> > sv=v;
-	for(std::size_t i=0;i<v.size();i++)
-	{
-		const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
-		const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
-		double sum_of_weighted_values=0.0;
-		double sum_of_weights=0.0;
-		for(int j=start;j<=end;j++)
-		{
-			if(v[i].first.chainID==v[j].first.chainID)
-			{
-				double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
-				double weight=(1.0-(ndist*ndist));
-				sum_of_weights+=weight;
-				sum_of_weighted_values+=v[j].second*weight;
-			}
-		}
-		if(sum_of_weights>0.0)
-		{
-			sv[i].second=(sum_of_weighted_values/sum_of_weights);
-		}
-	}
-	return std::map<CRAD, double>(sv.begin(), sv.end());
-}
-
 void read_map_of_interactions_areas(std::istream& input, const bool accumulating, std::map<Interaction, double>& map_of_interactions_areas)
 {
 	while(input.good())
@@ -222,6 +66,41 @@ void read_map_of_interactions_areas(std::istream& input, const bool accumulating
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+inline void print_energy_descriptor(const std::string& name, const EnergyDescriptor& ed, std::ostream& output)
+{
+	output << name << " " << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+}
+
+void print_pair_energy_descriptors_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const std::string& filename)
+{
+	if(!filename.empty())
+	{
+		std::ofstream foutput(filename.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descriptors.begin();it!=map_of_pair_energy_descriptors.end();++it)
+			{
+				print_energy_descriptor(it->first.first.str()+" "+it->first.second.str(), it->second, foutput);
+			}
+		}
+	}
+}
+
+void print_single_energy_descriptors_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const std::string& filename)
+{
+	if(!filename.empty())
+	{
+		std::ofstream foutput(filename.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
+			{
+				print_energy_descriptor(it->first.str(), it->second, foutput);
 			}
 		}
 	}
@@ -343,14 +222,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		list_of_option_descriptions.push_back(OD("--residue-atomic-scores-file", "string", "file path to output residue atom average scores"));
-		list_of_option_descriptions.push_back(OD("--smoothing-window", "number", "window to smooth residue atom average scores along sequence"));
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
-		list_of_option_descriptions.push_back(OD("--erf-mean", "number", "mean parameter for error function"));
-		list_of_option_descriptions.push_back(OD("--erf-sd", "number", "sd parameter for error function"));
-		list_of_option_descriptions.push_back(OD("--reference-sequence-file", "string", "file path to input reference sequence for normalization"));
-		list_of_option_descriptions.push_back(OD("--residue-scores-to-ref-seq", "", "flag to align residue scores to reference sequence"));
-		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
@@ -365,16 +237,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
-	const std::string residue_atomic_scores_file=poh.argument<std::string>("--residue-atomic-scores-file", "");
-	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
 	const int depth=poh.argument<int>("--depth", 1);
-	const double erf_mean=poh.argument<double>("--erf-mean", 0.4);
-	const double erf_sd=poh.argument<double>("--erf-sd", 0.3);
-	const std::string reference_sequence_file=poh.argument<std::string>("--reference-sequence-file", "");
-	const bool residue_scores_to_ref_seq=poh.contains_option("--residue-scores-to-ref-seq");
-	const bool detailed_output=poh.contains_option("--detailed-output");
-
-	const EnergyScoreCalculationParameter escp(erf_mean, erf_sd);
 
 	std::map<Interaction, double> map_of_contacts;
 	{
@@ -401,8 +264,6 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const std::string reference_sequence=modescommon::read_sequence_from_file(reference_sequence_file);
-
 	std::map<std::pair<CRAD, CRAD>, EnergyDescriptor> inter_atom_energy_descriptors;
 	{
 		for(std::map<Interaction, double>::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
@@ -425,7 +286,7 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_pair_scores_to_file(inter_atom_energy_descriptors, escp, detailed_output, inter_atom_scores_file);
+		print_pair_energy_descriptors_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
 	}
 
 	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_residue_energy_descriptors;
@@ -435,56 +296,16 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::pair<CRAD, CRAD>& crads=it->first;
 			inter_residue_energy_descriptors[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_atom(), crads.second.without_atom()))].add(it->second);
 		}
-		print_pair_scores_to_file(inter_residue_energy_descriptors, escp, detailed_output, inter_residue_scores_file);
+		print_pair_energy_descriptors_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
 	}
 
 	const std::map< CRAD, std::set<CRAD> > atom_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, depth);
 	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, atom_graph);
-	print_single_scores_to_file(atom_energy_descriptors, escp, detailed_output, atom_scores_file);
+	print_single_energy_descriptors_to_file(atom_energy_descriptors, atom_scores_file);
 
 	const std::map< CRAD, std::set<CRAD> > residue_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth);
 	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph);
-	if(residue_scores_to_ref_seq && !reference_sequence.empty())
-	{
-		print_single_scores_to_file(inject_residue_scores_into_target_sequence(reference_sequence, residue_energy_descriptors), escp, detailed_output, residue_scores_file);
-	}
-	else
-	{
-		print_single_scores_to_file(residue_energy_descriptors, escp, detailed_output, residue_scores_file);
-	}
-
-	if(!residue_atomic_scores_file.empty())
-	{
-		std::ofstream foutput(residue_atomic_scores_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
-			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
-			{
-				std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
-				residue_value.first++;
-				residue_value.second+=calculate_energy_score_from_energy_descriptor(it->second, escp).quality_score;
-			}
-			if(residue_scores_to_ref_seq && !reference_sequence.empty())
-			{
-				residue_atom_summed_scores=inject_residue_scores_into_target_sequence(reference_sequence, residue_atom_summed_scores);
-			}
-			std::map<CRAD, double> residue_atomic_scores;
-			for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
-			{
-				const std::pair<int, double>& residue_value=it->second;
-				residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
-			}
-			if(smoothing_window>0)
-			{
-				residue_atomic_scores=smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window);
-			}
-			for(std::map<CRAD, double>::const_iterator it=residue_atomic_scores.begin();it!=residue_atomic_scores.end();++it)
-			{
-				foutput << it->first.str() << " " << it->second << "\n";
-			}
-		}
-	}
+	print_single_energy_descriptors_to_file(residue_energy_descriptors, residue_scores_file);
 
 	{
 		EnergyDescriptor global_ed;
@@ -492,9 +313,6 @@ void score_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			global_ed.add(it->second);
 		}
-		print_score("global", global_ed, escp, detailed_output, std::cout);
+		print_energy_descriptor("global", global_ed, std::cout);
 	}
-
-	print_single_scores_summary("atom_level_summary", atom_energy_descriptors, modescommon::count_atoms_from_sequence(reference_sequence), escp, detailed_output, std::cout);
-	print_single_scores_summary("residue_level_summary", residue_energy_descriptors, reference_sequence.size(), escp, detailed_output, std::cout);
 }

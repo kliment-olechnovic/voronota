@@ -77,8 +77,6 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 ($TEST_SUBJECT query-contacts --match-first 'A<O,NZ>' --set-adjuncts 'b=10.0;a=1.0' | column -t) < $OUTPUT_SUBDIR/contacts_query7 > $OUTPUT_SUBDIR/contacts_query9
 
 cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1 | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts-potential --potential-file $OUTPUT_SUBDIR/contacts_scores_potential_values > $OUTPUT_SUBDIR/contacts_scores_potential_summaries
-cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1 | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts --detailed-output --ignorable-max-seq-sep 0 --potential-file $POTENTIAL_FILE --erf-mean 0.3 --erf-sd 0.2 --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_scores_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_scores_residue --residue-atomic-scores-file $OUTPUT_SUBDIR/contacts_scores_residue_atomic > $OUTPUT_SUBDIR/contacts_scores_global
-($TEST_SUBJECT query-contacts --match-min-seq-sep 10 | $TEST_SUBJECT query-contacts --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_inter_atom | column -t) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_scores_injected
 
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT compare-contacts --detailed-output --target-contacts-file <(cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1) --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_residue) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_comparison_global
 
@@ -86,10 +84,6 @@ cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1
 ($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query2
 ($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query3
 ($TEST_SUBJECT query-balls --match 'A<OE1>' --whole-residues | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query4
-
-($TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_atom --set-external-adjuncts-name qsa | $TEST_SUBJECT query-balls --set-external-adjuncts $OUTPUT_SUBDIR/contacts_scores_residue --set-external-adjuncts-name qsr | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_scores1
-$TEST_SUBJECT query-balls --set-external-adjuncts <(awk '{ print $1 " " (100-$2*100) }' < $OUTPUT_SUBDIR/contacts_scores_atom) --set-external-adjuncts-name qsa --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb1 --pdb-output-b-factor qsa < $OUTPUT_SUBDIR/balls > /dev/null
-$TEST_SUBJECT query-balls --pdb-output $OUTPUT_SUBDIR/balls_scores1_pdb2 --pdb-output-b-factor qsa --pdb-output-template $INPUT_DIR/structure.pdb < $OUTPUT_SUBDIR/balls_scores1 > /dev/null
 
 $TEST_SUBJECT query-contacts --match-min-seq-sep 2 --no-solvent --summarize < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_summary
 
@@ -107,14 +101,6 @@ $TEST_SUBJECT compare-contacts --detailed-output --target-contacts-file <(cat $O
 
 $TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model1_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --drawing-for-pymol $OUTPUT_SUBDIR/model1_iface_cad_score_inter_residue_drawing.py --drawing-name model1_iface_cad_score --drawing-adjunct-gradient irs < $OUTPUT_SUBDIR/target_iface > /dev/null
 $TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model2_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --drawing-for-pymol $OUTPUT_SUBDIR/model2_iface_cad_score_inter_residue_drawing.py --drawing-name model2_iface_cad_score --drawing-adjunct-gradient irs < $OUTPUT_SUBDIR/target_iface > /dev/null
-
-cat $OUTPUT_SUBDIR/target_iface | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts --detailed-output --potential-file $POTENTIAL_FILE --depth 0 --erf-mean 0.3 --erf-sd 0.2 --inter-residue-scores-file $OUTPUT_SUBDIR/target_iface_quality_score_inter_residue > $OUTPUT_SUBDIR/target_iface_quality_score_global
-cat $OUTPUT_SUBDIR/model1_iface | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts --detailed-output --potential-file $POTENTIAL_FILE --depth 0 --erf-mean 0.3 --erf-sd 0.2 --inter-residue-scores-file $OUTPUT_SUBDIR/model1_iface_quality_score_inter_residue > $OUTPUT_SUBDIR/model1_iface_quality_score_global
-cat $OUTPUT_SUBDIR/model2_iface | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts --detailed-output --potential-file $POTENTIAL_FILE --depth 0 --erf-mean 0.3 --erf-sd 0.2 --inter-residue-scores-file $OUTPUT_SUBDIR/model2_iface_quality_score_inter_residue > $OUTPUT_SUBDIR/model2_iface_quality_score_global
-
-$TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/target_iface_quality_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --drawing-for-pymol $OUTPUT_SUBDIR/target_iface_quality_score_inter_residue_drawing.py --drawing-name target_iface_quality_score --drawing-adjunct-gradient irs < $OUTPUT_SUBDIR/target_iface > /dev/null
-$TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model1_iface_quality_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --drawing-for-pymol $OUTPUT_SUBDIR/model1_iface_quality_score_inter_residue_drawing.py --drawing-name model1_iface_quality_score --drawing-adjunct-gradient irs < $OUTPUT_SUBDIR/model1_iface > /dev/null
-$TEST_SUBJECT query-contacts --inter-residue --set-external-adjuncts <(cat $OUTPUT_SUBDIR/model2_iface_quality_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') --set-external-adjuncts-name irs --drawing-for-pymol $OUTPUT_SUBDIR/model2_iface_quality_score_inter_residue_drawing.py --drawing-name model2_iface_quality_score --drawing-adjunct-gradient irs < $OUTPUT_SUBDIR/model2_iface > /dev/null
 
 ############################
 

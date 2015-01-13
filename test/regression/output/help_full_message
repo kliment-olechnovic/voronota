@@ -156,14 +156,7 @@ Command 'score-contacts' options:
 --inter-residue-scores-file     string      file path to output inter-residue scores
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
---residue-atomic-scores-file    string      file path to output residue atom average scores
---smoothing-window              number      window to smooth residue atom average scores along sequence
 --depth                         number      neighborhood normalization depth
---erf-mean                      number      mean parameter for error function
---erf-sd                        number      sd parameter for error function
---reference-sequence-file       string      file path to input reference sequence for normalization
---residue-scores-to-ref-seq                 flag to align residue scores to reference sequence
---detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  global scores
