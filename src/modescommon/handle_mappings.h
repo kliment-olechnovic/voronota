@@ -25,7 +25,7 @@ inline std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::
 				graph[crads.second].insert(crads.first);
 			}
 		}
-		for(int i=0;i<depth;i++)
+		for(int i=1;i<depth;i++)
 		{
 			std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
 			for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
