@@ -17,18 +17,18 @@ readonly TMPDIR=$(mktemp -d)
 
 cat $VCONTACTSFILE \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
-| $BINDIR/voronota score-contacts --detailed-output --potential-file $OUTPUTDIR/potential/master/potential_simple --atom-scores-file $TMPDIR/scores_simple \
+| $BINDIR/voronota score-contacts --potential-file $OUTPUTDIR/potential/master/potential_simple --atom-scores-file $TMPDIR/scores_simple \
 > /dev/null
 
-cat $TMPDIR/scores_simple | awk '{print $1 " " $3}' > $TMPDIR/scores_ne_simple
+cat $TMPDIR/scores_simple | awk '{print $1 " " ($4/$2)}' > $TMPDIR/scores_ne_simple
 
 cat $VCONTACTSFILE \
 | $BINDIR/voronota query-contacts --match-external-pairs $OUTPUTDIR/vrhbonds/$INPUTBASENAME --set-tags 'rhb' \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
-| $BINDIR/voronota score-contacts --detailed-output --potential-file $OUTPUTDIR/potential/master/potential_enhanced --atom-scores-file $TMPDIR/scores_enhanced \
+| $BINDIR/voronota score-contacts --potential-file $OUTPUTDIR/potential/master/potential_enhanced --atom-scores-file $TMPDIR/scores_enhanced \
 > /dev/null
 
-cat $TMPDIR/scores_enhanced | awk '{print $1 " " $3}' > $TMPDIR/scores_ne_enhanced
+cat $TMPDIR/scores_enhanced | awk '{print $1 " " ($4/$2)}' > $TMPDIR/scores_ne_enhanced
 
 mkdir -p $OUTPUTDIR/normenergy
 
