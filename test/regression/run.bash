@@ -78,6 +78,17 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 
 cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1 | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts-potential --potential-file $OUTPUT_SUBDIR/contacts_scores_potential_values > $OUTPUT_SUBDIR/contacts_scores_potential_summaries
 
+cat $OUTPUT_SUBDIR/contacts \
+| $TEST_SUBJECT query-contacts --match-min-seq-sep 1 \
+| awk '{print $1 " " $2 " . " $3}' \
+| $TEST_SUBJECT score-contacts \
+  --potential-file $POTENTIAL_FILE \
+  --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_atom \
+  --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_residue \
+  --atom-scores-file $OUTPUT_SUBDIR/contacts_scores_atom \
+  --residue-scores-file $OUTPUT_SUBDIR/contacts_scores_residue \
+> $OUTPUT_SUBDIR/contacts_scores_global
+
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT compare-contacts --detailed-output --target-contacts-file <(cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1) --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_residue) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_comparison_global
 
 ($TEST_SUBJECT query-balls --match 'r<3:7,9>&A<CA,CB>' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query1
