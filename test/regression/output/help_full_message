@@ -9,7 +9,8 @@ calculate-contacts
 query-balls
 query-contacts
 score-contacts-potential
-score-contacts
+score-contacts-energy
+score-contacts-quality
 compare-contacts
 
 Command 'get-balls-from-atoms-file' options:
@@ -149,7 +150,7 @@ Command 'score-contacts-potential' options:
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
 
-Command 'score-contacts' options:
+Command 'score-contacts-energy' options:
 --potential-file                string   *  file path to input potential values
 --ignorable-max-seq-sep         number      maximum residue sequence separation for ignorable contacts
 --inter-atom-scores-file        string      file path to output inter-atom scores
@@ -160,6 +161,17 @@ Command 'score-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  global scores
+
+Command 'score-contacts-quality' options:
+--default-mean                  number      default mean parameter
+--default-sd                    number      default standard deviation parameter
+--means-and-sds-file            string      file path to input atomic mean and sd parameters
+--mean-shift                    number      mean shift in standard deviations
+--smoothing-window              number      window to smooth residue quality scores along sequence
+--atom-scores-file              string      file path to output atom scores
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of atom energy descriptors
+stdout  ->  list of residue quality scores
 
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
