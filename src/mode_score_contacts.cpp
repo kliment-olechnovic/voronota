@@ -6,7 +6,6 @@
 #include "modescommon/assert_options.h"
 #include "modescommon/handle_annotations.h"
 #include "modescommon/handle_mappings.h"
-#include "modescommon/handle_sequences.h"
 
 namespace
 {
