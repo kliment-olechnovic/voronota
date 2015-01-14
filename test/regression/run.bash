@@ -82,7 +82,6 @@ cat $OUTPUT_SUBDIR/contacts \
 | $TEST_SUBJECT query-contacts --match-min-seq-sep 1 \
 | awk '{print $1 " " $2 " . " $3}' \
 | $TEST_SUBJECT score-contacts-energy \
-  --depth 1 \
   --potential-file $POTENTIAL_FILE \
   --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_atom \
   --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_residue \
