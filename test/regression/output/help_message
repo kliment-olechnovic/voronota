@@ -9,6 +9,7 @@ calculate-contacts
 query-balls
 query-contacts
 score-contacts-potential
-score-contacts
+score-contacts-energy
+score-contacts-quality
 compare-contacts
 
