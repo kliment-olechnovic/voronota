@@ -10,6 +10,7 @@ rm ./voronota_package.tar.gz
 TEST_SUBJECT=./voronota_package/voronota
 RADII_FILE=./voronota_package/radii
 POTENTIAL_FILE=./voronota_package/potential
+MEANS_AND_SDS_FILE=./voronota_package/means_and_sds
 
 INPUT_DIR=./input/
 
@@ -88,6 +89,16 @@ cat $OUTPUT_SUBDIR/contacts \
   --atom-scores-file $OUTPUT_SUBDIR/contacts_scores_atom \
   --residue-scores-file $OUTPUT_SUBDIR/contacts_scores_residue \
 > $OUTPUT_SUBDIR/contacts_scores_global
+
+cat $OUTPUT_SUBDIR/contacts_scores_atom \
+| $TEST_SUBJECT score-contacts-quality \
+  --default-mean 0.32 \
+  --default-sd 0.15 \
+  --means-and-sds-file $MEANS_AND_SDS_FILE \
+  --mean-shift 1 \
+  --smoothing-window 5 \
+  --atom-scores-file $OUTPUT_SUBDIR/contacts_quality_scores_atom \
+> $OUTPUT_SUBDIR/contacts_quality_scores_residue
 
 ($TEST_SUBJECT query-contacts --match-min-seq-sep 1 | $TEST_SUBJECT compare-contacts --detailed-output --target-contacts-file <(cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1) --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_atom --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_inter_residue --atom-scores-file $OUTPUT_SUBDIR/contacts_comparison_atom --residue-scores-file $OUTPUT_SUBDIR/contacts_comparison_residue) < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_comparison_global
 
