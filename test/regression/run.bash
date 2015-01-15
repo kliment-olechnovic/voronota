@@ -80,7 +80,6 @@ cat $OUTPUT_SUBDIR/balls | $TEST_SUBJECT calculate-contacts --annotated --draw |
 cat $OUTPUT_SUBDIR/contacts | $TEST_SUBJECT query-contacts --match-min-seq-sep 1 | awk '{print $1 " " $2 " . " $3}' | $TEST_SUBJECT score-contacts-potential --potential-file $OUTPUT_SUBDIR/contacts_scores_potential_values > $OUTPUT_SUBDIR/contacts_scores_potential_summaries
 
 cat $OUTPUT_SUBDIR/contacts \
-| $TEST_SUBJECT query-contacts --match-min-seq-sep 1 \
 | awk '{print $1 " " $2 " . " $3}' \
 | $TEST_SUBJECT score-contacts-energy \
   --potential-file $POTENTIAL_FILE \
