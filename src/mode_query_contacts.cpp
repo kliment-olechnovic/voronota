@@ -62,6 +62,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-hbplus-tags", "string", "file path to input HBPLUS file"));
+		list_of_option_descriptions.push_back(OD("--inter-residue-hbplus-tags", "", "flag to set inter-residue H-bond tags"));
 		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
@@ -110,6 +111,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const std::string set_hbplus_tags=poh.argument<std::string>("--set-hbplus-tags", "");
+	const bool inter_residue_hbplus_tags=poh.contains_option("--inter-residue-hbplus-tags");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
@@ -276,7 +278,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
 			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
-			set_of_hbplus_crad_pairs.insert(std::make_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", "")));
+			const std::pair<CRAD, CRAD> crads_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", ""));
+			set_of_hbplus_crad_pairs.insert(inter_residue_hbplus_tags ? std::make_pair(crads_pair.first.without_atom(), crads_pair.second.without_atom()) : crads_pair);
 		}
 		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
@@ -284,7 +287,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			if(modescommon::match_chain_residue_atom_descriptors_pair_with_set_of_descriptors_pairs(crads, set_of_hbplus_crad_pairs))
 			{
 				ContactValue& value=it->second;
-				value.tags.insert("hb");
+				value.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
 			}
 		}
 	}
