@@ -11,6 +11,8 @@ TEST_SUBJECT=./voronota_package/voronota
 RADII_FILE=./voronota_package/radii
 POTENTIAL_FILE=./voronota_package/potential
 MEANS_AND_SDS_FILE=./voronota_package/means_and_sds
+POTENTIAL_ENHANCED_FILE=./voronota_package/potential_enhanced
+MEANS_AND_SDS_ENHANCED_FILE=./voronota_package/means_and_sds_enhanced
 
 INPUT_DIR=./input/
 
@@ -145,6 +147,35 @@ OUTPUT_SUBDIR=$OUTPUT_DIR/p8
 mkdir $OUTPUT_SUBDIR
 
 $TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated < $INPUT_DIR/structure.pdb | $TEST_SUBJECT calculate-contacts --annotated | $TEST_SUBJECT query-contacts --set-hbplus-tags <(xhbplus $INPUT_DIR/structure.pdb 2> /dev/null) | $TEST_SUBJECT query-contacts --match-tags 'hb' --stdout-precision 2 | column -t > $OUTPUT_SUBDIR/contacts_with_hbplus_info
+
+############################
+
+OUTPUT_SUBDIR=$OUTPUT_DIR/p9
+mkdir $OUTPUT_SUBDIR
+
+cat $INPUT_DIR/structure.pdb \
+| $TEST_SUBJECT get-balls-from-atoms-file --radii-file $RADII_FILE --annotated \
+| $TEST_SUBJECT calculate-contacts --annotated \
+| $TEST_SUBJECT query-contacts --set-hbplus-tags <(xhbplus $INPUT_DIR/structure.pdb 2> /dev/null) --inter-residue-hbplus-tags \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| tee $OUTPUT_SUBDIR/contacts_scores_input \
+| $TEST_SUBJECT score-contacts-energy \
+  --potential-file $POTENTIAL_ENHANCED_FILE \
+  --inter-atom-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_atom \
+  --inter-residue-scores-file $OUTPUT_SUBDIR/contacts_scores_inter_residue \
+  --atom-scores-file $OUTPUT_SUBDIR/contacts_scores_atom \
+  --residue-scores-file $OUTPUT_SUBDIR/contacts_scores_residue \
+> $OUTPUT_SUBDIR/contacts_scores_global
+
+cat $OUTPUT_SUBDIR/contacts_scores_atom \
+| $TEST_SUBJECT score-contacts-quality \
+  --default-mean 0.14 \
+  --default-sd 0.19 \
+  --means-and-sds-file $MEANS_AND_SDS_ENHANCED_FILE \
+  --mean-shift 1 \
+  --smoothing-window 5 \
+  --atom-scores-file $OUTPUT_SUBDIR/contacts_quality_scores_atom \
+> $OUTPUT_SUBDIR/contacts_quality_scores_residue
 
 ############################
 
