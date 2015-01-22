@@ -489,7 +489,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			sum+=it->second;
 		}
-		std::cout << sum/static_cast<double>(atom_quality_scores.size()) << "\n";
+		std::cout << (sum/static_cast<double>(atom_quality_scores.size())) << "\n";
 	}
 	else
 	{
