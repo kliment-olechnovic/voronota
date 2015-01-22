@@ -356,10 +356,11 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--mean-shift", "number", "mean shift in standard deviations"));
 		list_of_option_descriptions.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
+		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
 		{
 			std::cerr << "stdin   <-  list of atom energy descriptors\n";
-			std::cerr << "stdout  ->  list of residue quality scores\n";
+			std::cerr << "stdout  ->  average local score\n";
 			return;
 		}
 	}
@@ -370,6 +371,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const double mean_shift=poh.argument<double>("--mean-shift", 0.0);
 	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
+	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 
 	std::map<CRAD, EnergyDescriptor> atom_energy_descriptors;
 	while(std::cin.good())
@@ -451,27 +453,46 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	if(!residue_scores_file.empty())
 	{
-		std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
+		std::ofstream foutput(residue_scores_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
+			for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
+			{
+				std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
+				residue_value.first++;
+				residue_value.second+=it->second;
+			}
+			std::map<CRAD, double> residue_atomic_scores;
+			for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
+			{
+				const std::pair<int, double>& residue_value=it->second;
+				residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
+			}
+			if(smoothing_window>0)
+			{
+				residue_atomic_scores=smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window);
+			}
+			for(std::map<CRAD, double>::const_iterator it=residue_atomic_scores.begin();it!=residue_atomic_scores.end();++it)
+			{
+				foutput << it->first.str() << " " << it->second << "\n";
+			}
+		}
+	}
+
+	if(!atom_quality_scores.empty())
+	{
+		double sum=0.0;
 		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
 		{
-			std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
-			residue_value.first++;
-			residue_value.second+=it->second;
+			sum+=it->second;
 		}
-		std::map<CRAD, double> residue_atomic_scores;
-		for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
-		{
-			const std::pair<int, double>& residue_value=it->second;
-			residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
-		}
-		if(smoothing_window>0)
-		{
-			residue_atomic_scores=smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window);
-		}
-		for(std::map<CRAD, double>::const_iterator it=residue_atomic_scores.begin();it!=residue_atomic_scores.end();++it)
-		{
-			std::cout << it->first.str() << " " << it->second << "\n";
-		}
+		std::cout << sum/static_cast<double>(atom_quality_scores.size()) << "\n";
+	}
+	else
+	{
+		std::cout << "0\n";
 	}
 }

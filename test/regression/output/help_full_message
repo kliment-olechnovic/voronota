@@ -170,9 +170,10 @@ Command 'score-contacts-quality' options:
 --mean-shift                    number      mean shift in standard deviations
 --smoothing-window              number      window to smooth residue quality scores along sequence
 --atom-scores-file              string      file path to output atom scores
+--residue-scores-file           string      file path to output residue scores
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of atom energy descriptors
-stdout  ->  list of residue quality scores
+stdout  ->  average local score
 
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
