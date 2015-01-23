@@ -2,10 +2,10 @@
 #include <stdexcept>
 #include <fstream>
 
+#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon/assert_options.h"
 #include "modescommon/handle_contact.h"
 
 namespace
@@ -79,7 +79,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
 		list_of_option_descriptions.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
 		list_of_option_descriptions.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";
 			std::cerr << "stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";

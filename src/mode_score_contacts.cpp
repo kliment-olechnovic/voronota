@@ -3,7 +3,8 @@
 #include <fstream>
 #include <cmath>
 
-#include "modescommon/assert_options.h"
+#include "auxiliaries/program_options_handler.h"
+
 #include "modescommon/handle_annotations.h"
 #include "modescommon/handle_mappings.h"
 
@@ -144,7 +145,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
 			std::cerr << "stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')\n";
@@ -251,7 +252,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
 			std::cerr << "stdout  ->  global scores\n";
@@ -357,7 +358,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
 		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of atom energy descriptors\n";
 			std::cerr << "stdout  ->  average local score\n";
