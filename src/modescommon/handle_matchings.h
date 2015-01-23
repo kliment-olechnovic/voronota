@@ -6,6 +6,8 @@
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 
+#include "tmpfuncs.h"
+
 namespace modescommon
 {
 

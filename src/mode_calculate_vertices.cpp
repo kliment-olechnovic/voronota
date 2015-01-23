@@ -3,8 +3,9 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
+#include "auxiliaries/io_utilities.h"
+
 #include "modescommon/assert_options.h"
-#include "modescommon/read_sphere.h"
 
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -42,7 +43,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

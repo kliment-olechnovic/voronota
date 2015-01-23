@@ -9,8 +9,9 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
+#include "auxiliaries/io_utilities.h"
+
 #include "modescommon/assert_options.h"
-#include "modescommon/read_sphere.h"
 
 namespace
 {
@@ -38,7 +39,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -66,7 +67,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -145,7 +146,7 @@ public:
 				int spheres_plain_vector_length=0;
 				if(mpi_handle.rank()==0)
 				{
-					auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+					auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
 					fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 					spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 				}
