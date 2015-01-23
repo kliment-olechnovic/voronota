@@ -7,7 +7,6 @@
 #include "auxiliaries/opengl_printer.h"
 
 #include "modescommon/assert_options.h"
-#include "modescommon/read_sphere.h"
 #include "modescommon/handle_ball.h"
 #include "modescommon/handle_contact.h"
 
@@ -126,7 +125,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
 	}
 	if(spheres.size()<4)
 	{

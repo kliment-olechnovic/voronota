@@ -131,7 +131,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		else
 		{
-			std::cout << atom.x << " " << atom.y << " " << atom.z << " " << radius;
+			std::cout << apollota::SimpleSphere(atom, radius);
 			std::cout << " # " << atom.serial << " " << refine_empty_string(atom.chainID) << " " << atom.resSeq << " " << refine_empty_string(atom.resName) << " " << refine_empty_string(atom.name) << " " << refine_empty_string(atom.altLoc) << " " << refine_empty_string(atom.iCode) << "\n";
 			all_spheres.push_back(apollota::SimpleSphere(atom, radius));
 		}
@@ -156,7 +156,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			else
 			{
-				std::cout << s.x << " " << s.y << " " << s.z << " " << s.r << " # artificial hull ball\n";
+				std::cout << s << " # artificial hull ball\n";
 			}
 		}
 	}
