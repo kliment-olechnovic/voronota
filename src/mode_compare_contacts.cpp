@@ -3,7 +3,8 @@
 #include <fstream>
 #include <cmath>
 
-#include "modescommon/assert_options.h"
+#include "auxiliaries/program_options_handler.h"
+
 #include "modescommon/handle_annotations.h"
 #include "modescommon/handle_mappings.h"
 
@@ -152,7 +153,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		list_of_option_descriptions.push_back(OD("--depth", "number", "local neighborhood depth"));
 		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')\n";
 			std::cerr << "stdout  ->  two lines of global scores (atom-level and residue-level)\n";

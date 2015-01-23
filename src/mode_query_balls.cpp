@@ -2,9 +2,9 @@
 #include <stdexcept>
 #include <fstream>
 
+#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 
-#include "modescommon/assert_options.h"
 #include "modescommon/handle_ball.h"
 #include "modescommon/handle_sequences.h"
 
@@ -99,7 +99,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
 		list_of_option_descriptions.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
 		list_of_option_descriptions.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
 			std::cerr << "stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')\n";

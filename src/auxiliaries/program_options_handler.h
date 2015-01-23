@@ -192,6 +192,39 @@ public:
 		options_.erase(name);
 	}
 
+	bool assert(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized_options) const
+	{
+		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions;
+		basic_list_of_option_descriptions.push_back(auxiliaries::ProgramOptionsHandler::OptionDescription("--help", "", "flag to print usage help to stderr and exit"));
+		if(contains_option("--help"))
+		{
+			if(!basic_list_of_option_descriptions.empty())
+			{
+				auxiliaries::ProgramOptionsHandler::print_list_of_option_descriptions("", basic_list_of_option_descriptions, std::cerr);
+			}
+			return false;
+		}
+		else
+		{
+			compare_with_list_of_option_descriptions(basic_list_of_option_descriptions, allow_unrecognized_options);
+			return true;
+		}
+	}
+
+	template<typename T>
+	static T convert_hex_string_to_integer(const std::string& str)
+	{
+		std::istringstream input(str);
+		T value=0;
+		input >> std::hex >> value;
+		if(input.fail())
+		{
+			throw Exception(std::string("Invalid hex string '")+str+"'.");
+		}
+		return value;
+	}
+
+private:
 	void compare_with_list_of_option_descriptions(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized) const
 	{
 		for(std::map<std::string, std::string>::const_iterator it=options_.begin();it!=options_.end();++it)
@@ -234,20 +267,6 @@ public:
 		}
 	}
 
-	template<typename T>
-	static T convert_hex_string_to_integer(const std::string& str)
-	{
-		std::istringstream input(str);
-		T value=0;
-		input >> std::hex >> value;
-		if(input.fail())
-		{
-			throw Exception(std::string("Invalid hex string '")+str+"'.");
-		}
-		return value;
-	}
-
-private:
 	static std::vector<std::string> split_string(const std::string& str, const char delimiter)
 	{
 		std::vector<std::string> result;

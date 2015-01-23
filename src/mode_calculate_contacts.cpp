@@ -4,9 +4,9 @@
 #include "apollota/constrained_contacts_construction.h"
 #include "apollota/spheres_boundary_construction.h"
 
+#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon/assert_options.h"
 #include "modescommon/handle_ball.h"
 #include "modescommon/handle_contact.h"
 
@@ -95,7 +95,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
 		list_of_option_descriptions.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of balls\n";
 			std::cerr << "              (default mode line format: 'x y z r')\n";

@@ -9,9 +9,8 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
+#include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
-
-#include "modescommon/assert_options.h"
 
 namespace
 {
@@ -380,7 +379,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
 		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
 		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
+		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
 			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
