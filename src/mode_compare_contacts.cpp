@@ -41,16 +41,27 @@ struct CADDescriptor
 		constrained_differences_sum+=cadd.constrained_differences_sum;
 	}
 
-	bool scorable() const
-	{
-		return (target_area_sum>0.0);
-	}
-
 	double score() const
 	{
-		return (1.0-(constrained_differences_sum/target_area_sum));
+		return ((target_area_sum>0.0) ? (1.0-(constrained_differences_sum/target_area_sum)) : 0.0);
 	}
 };
+
+inline bool& detailed_output_of_CADDescriptor()
+{
+	static bool detailed_output=false;
+	return detailed_output;
+}
+
+inline std::ostream& operator<<(std::ostream& output, const CADDescriptor& cadd)
+{
+	output << cadd.score();
+	if(detailed_output_of_CADDescriptor())
+	{
+		output << " " << cadd.target_area_sum << " " << cadd.model_area_sum << " " << cadd.raw_differences_sum << " " << cadd.constrained_differences_sum;
+	}
+	return output;
+}
 
 std::map< CRADsPair, double > summarize_pair_mapping_of_values(const std::map< CRADsPair, double >& map)
 {
@@ -97,49 +108,6 @@ CADDescriptor construct_global_cad_descriptor(const std::map< CRADsPair, CADDesc
 	return result;
 }
 
-inline void print_score(const std::string& name, const CADDescriptor& cadd, const bool detailed, std::ostream& output)
-{
-	if(cadd.scorable())
-	{
-		output << name << " " << cadd.score();
-		if(detailed)
-		{
-			output << " " << cadd.target_area_sum << " " << cadd.model_area_sum << " " << cadd.raw_differences_sum << " " << cadd.constrained_differences_sum;
-		}
-		output << "\n";
-	}
-}
-
-void print_pair_scores_to_file(const std::map< CRADsPair, CADDescriptor >& map_of_pair_cad_descriptors, const bool detailed, const std::string& filename)
-{
-	if(!filename.empty())
-	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map< CRADsPair, CADDescriptor >::const_iterator it=map_of_pair_cad_descriptors.begin();it!=map_of_pair_cad_descriptors.end();++it)
-			{
-				print_score(it->first.a.str()+" "+it->first.b.str(), it->second, detailed, foutput);
-			}
-		}
-	}
-}
-
-void print_single_scores_to_file(const std::map<CRAD, CADDescriptor>& map_of_single_cad_descriptors, const bool detailed, const std::string& filename)
-{
-	if(!filename.empty())
-	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map<CRAD, CADDescriptor>::const_iterator it=map_of_single_cad_descriptors.begin();it!=map_of_single_cad_descriptors.end();++it)
-			{
-				print_score(it->first.str(), it->second, detailed, foutput);
-			}
-		}
-	}
-}
-
 }
 
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -168,7 +136,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 0);
-	const bool detailed_output=poh.contains_option("--detailed-output");
+	detailed_output_of_CADDescriptor()=poh.contains_option("--detailed-output");
 
 	std::map< CRADsPair, double > map_of_contacts;
 	{
@@ -189,21 +157,21 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
-	print_pair_scores_to_file(map_of_inter_atom_cad_descriptors, detailed_output, inter_atom_scores_file);
+	auxiliaries::write_map_container_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
 
 	const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
-	print_pair_scores_to_file(map_of_inter_residue_cad_descriptors, detailed_output, inter_residue_scores_file);
+	auxiliaries::write_map_container_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
 
 	if(!atom_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, depth)), detailed_output, atom_scores_file);
+		auxiliaries::write_map_container_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, depth)), atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, depth)), detailed_output, residue_scores_file);
+		auxiliaries::write_map_container_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, depth)), residue_scores_file);
 	}
 
-	print_score("atom_level_global", construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors), detailed_output, std::cout);
-	print_score("residue_level_global", construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors), detailed_output, std::cout);
+	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
+	std::cout << "residue_level_global " << construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors) << "\n";
 }

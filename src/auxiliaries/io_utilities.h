@@ -58,6 +58,34 @@ inline void read_file_lines_to_container(
 	}
 }
 
+template<typename Container, typename ElementWriter>
+inline void write_container(
+		const Container& container,
+		ElementWriter element_writer,
+		std::ostream& output)
+{
+	for(typename Container::const_iterator it=container.begin();it!=container.end() && output.good();++it)
+	{
+		element_writer(*it, output);
+	}
+}
+
+template<typename Container, typename ElementWriter>
+inline void write_container_to_file(
+		const Container& container,
+		ElementWriter element_writer,
+		const std::string& filename)
+{
+	if(!filename.empty())
+	{
+		std::ofstream foutput(filename.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			write_container(container, element_writer, foutput);
+		}
+	}
+}
+
 template<typename Container>
 inline bool read_line_to_sequential_container(std::istream& input, Container& container)
 {
@@ -84,6 +112,24 @@ inline void read_file_lines_to_sequential_container(const std::string& filename,
 }
 
 template<typename Container>
+inline void write_sequential_container_element(const typename Container::value_type& value, std::ostream& output)
+{
+	output << value << "\n";
+}
+
+template<typename Container>
+inline void write_sequential_container(const Container& container, std::ostream& output)
+{
+	write_container(container, write_sequential_container_element<Container>, output);
+}
+
+template<typename Container>
+inline void write_sequential_container_to_file(const Container& container, const std::string& filename)
+{
+	write_container_to_file(container, write_sequential_container_element<Container>, filename);
+}
+
+template<typename Container>
 inline bool read_line_to_map_container(std::istream& input, Container& container)
 {
 	typename Container::key_type key;
@@ -107,6 +153,24 @@ template<typename Container>
 inline void read_file_lines_to_map_container(const std::string& filename, Container& container)
 {
 	read_file_lines_to_container(filename, read_line_to_map_container<Container>, container);
+}
+
+template<typename Container>
+inline void write_map_container_element(const typename Container::value_type& value, std::ostream& output)
+{
+	output << value.first << " " << value.second << "\n";
+}
+
+template<typename Container>
+inline void write_map_container(const Container& container, std::ostream& output)
+{
+	write_container(container, write_map_container_element<Container>, output);
+}
+
+template<typename Container>
+inline void write_map_container_to_file(const Container& container, const std::string& filename)
+{
+	write_container_to_file(container, write_map_container_element<Container>, filename);
 }
 
 }
