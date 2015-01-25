@@ -181,11 +181,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< CRADsPair, double > map_of_target_contacts;
 	{
-		if(!target_contacts_file.empty())
-		{
-			std::ifstream finput(target_contacts_file.c_str(), std::ios::in);
-			auxiliaries::read_lines_to_map_container(finput, map_of_target_contacts);
-		}
+		auxiliaries::read_file_lines_to_map_container(target_contacts_file, map_of_target_contacts);
 		if(map_of_target_contacts.empty())
 		{
 			throw std::runtime_error("No target contacts input.");

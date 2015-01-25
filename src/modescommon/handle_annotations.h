@@ -1,6 +1,8 @@
 #ifndef MODESCOMMON_HANDLE_ANNOTATIONS_H_
 #define MODESCOMMON_HANDLE_ANNOTATIONS_H_
 
+#include <set>
+
 #include "../auxiliaries/io_utilities.h"
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 

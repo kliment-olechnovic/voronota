@@ -3,9 +3,7 @@
 
 #include <iostream>
 #include <sstream>
-#include <list>
-#include <set>
-#include <map>
+#include <fstream>
 #include <stdexcept>
 
 namespace auxiliaries
@@ -44,6 +42,22 @@ inline void read_lines_to_container(
 	}
 }
 
+template<typename LineReader, typename Container>
+inline void read_file_lines_to_container(
+		const std::string& filename,
+		LineReader line_reader,
+		Container& container)
+{
+	if(!filename.empty())
+	{
+		std::ifstream finput(filename.c_str(), std::ios::in);
+		if(finput.good())
+		{
+			read_lines_to_container(finput, line_reader, container);
+		}
+	}
+}
+
 template<typename Container>
 inline bool read_line_to_sequential_container(std::istream& input, Container& container)
 {
@@ -64,6 +78,12 @@ inline void read_lines_to_sequential_container(std::istream& input, Container& c
 }
 
 template<typename Container>
+inline void read_file_lines_to_sequential_container(const std::string& filename, Container& container)
+{
+	read_file_lines_to_container(filename, read_line_to_sequential_container<Container>, container);
+}
+
+template<typename Container>
 inline bool read_line_to_map_container(std::istream& input, Container& container)
 {
 	typename Container::key_type key;
@@ -81,6 +101,12 @@ template<typename Container>
 inline void read_lines_to_map_container(std::istream& input, Container& container)
 {
 	read_lines_to_container(input, read_line_to_map_container<Container>, container);
+}
+
+template<typename Container>
+inline void read_file_lines_to_map_container(const std::string& filename, Container& container)
+{
+	read_file_lines_to_container(filename, read_line_to_map_container<Container>, container);
 }
 
 }
