@@ -420,8 +420,9 @@ inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptor&
 	return input;
 }
 
-struct ChainResidueAtomDescriptorsPair
+class ChainResidueAtomDescriptorsPair
 {
+public:
 	ChainResidueAtomDescriptor a;
 	ChainResidueAtomDescriptor b;
 	bool reversed_display;
@@ -433,7 +434,6 @@ struct ChainResidueAtomDescriptorsPair
 	ChainResidueAtomDescriptorsPair(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b) : a(a<b ? a : b), b(a<b ? b : a), reversed_display(false)
 	{
 	}
-
 
 	bool operator==(const ChainResidueAtomDescriptorsPair& v) const
 	{

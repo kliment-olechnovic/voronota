@@ -42,7 +42,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
+	auxiliaries::IOUtilities::read_lines_to_sequential_container(std::cin, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

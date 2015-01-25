@@ -120,12 +120,12 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector< std::pair<CRAD, modescommon::BallValue> > input_ball_records;
 	if(annotated)
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, input_ball_records);
+		auxiliaries::IOUtilities::read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, input_ball_records);
 		modescommon::collect_spheres_from_vector_of_ball_records(input_ball_records, spheres);
 	}
 	else
 	{
-		auxiliaries::read_lines_to_sequential_container(std::cin, spheres);
+		auxiliaries::IOUtilities::read_lines_to_sequential_container(std::cin, spheres);
 	}
 	if(spheres.size()<4)
 	{
