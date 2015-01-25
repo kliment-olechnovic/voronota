@@ -400,6 +400,72 @@ private:
 	}
 };
 
+inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptor& descriptor)
+{
+	output << descriptor.str();
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptor& descriptor)
+{
+	std::string str;
+	input >> str;
+	descriptor=ChainResidueAtomDescriptor::from_str(str);
+	if(!descriptor.valid())
+	{
+		input.setstate(std::ios::failbit);
+	}
+	return input;
+}
+
+struct ChainResidueAtomDescriptorsPair
+{
+	ChainResidueAtomDescriptor a;
+	ChainResidueAtomDescriptor b;
+	bool reversed_display;
+
+	ChainResidueAtomDescriptorsPair() : reversed_display(false)
+	{
+	}
+
+	ChainResidueAtomDescriptorsPair(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b) : a(a<b ? a : b), b(a<b ? b : a), reversed_display(false)
+	{
+	}
+
+
+	bool operator==(const ChainResidueAtomDescriptorsPair& v) const
+	{
+		return (a==v.a && b==v.b);
+	}
+
+	bool operator<(const ChainResidueAtomDescriptorsPair& v) const
+	{
+		return ((a<v.a) || (a==v.a && b<v.b));
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)
+{
+	if(descriptors_pair.reversed_display)
+	{
+		output << descriptors_pair.b << " " << descriptors_pair.a;
+	}
+	else
+	{
+		output << descriptors_pair.a << " " << descriptors_pair.b;
+	}
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptorsPair& descriptors_pair)
+{
+	ChainResidueAtomDescriptor a;
+	ChainResidueAtomDescriptor b;
+	input >> a >> b;
+	descriptors_pair=ChainResidueAtomDescriptorsPair(a, b);
+	return input;
+}
+
 }
 
 #endif /* AUXILIARIES_CHAIN_RESIDUE_ATOM_DESCRIPTOR_H_ */

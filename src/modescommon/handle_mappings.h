@@ -10,19 +10,20 @@ namespace modescommon
 {
 
 template<typename Descriptor>
-inline std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> > construct_graph_from_pair_mapping_of_descriptors(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, Descriptor >& map_of_pair_descriptors, const int depth)
+inline std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> > construct_graph_from_mapping_of_descriptors_pairs(const std::map< auxiliaries::ChainResidueAtomDescriptorsPair, Descriptor >& map_of_pair_descriptors, const int depth)
 {
 	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+	typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 	std::map< CRAD, std::set<CRAD> > graph;
 	if(depth>0)
 	{
-		for(typename std::map< std::pair<CRAD, CRAD>, Descriptor >::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+		for(typename std::map< CRADsPair, Descriptor >::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			if(!(crads.first==crads.second || crads.first==CRAD::solvent() || crads.second==CRAD::solvent()))
+			const CRADsPair& crads=it->first;
+			if(!(crads.a==crads.b || crads.a==CRAD::solvent() || crads.b==CRAD::solvent()))
 			{
-				graph[crads.first].insert(crads.second);
-				graph[crads.second].insert(crads.first);
+				graph[crads.a].insert(crads.b);
+				graph[crads.b].insert(crads.a);
 			}
 		}
 		for(int i=1;i<depth;i++)
@@ -47,24 +48,25 @@ inline std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::
 }
 
 template<typename Descriptor>
-inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(const std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, Descriptor >& map_of_pair_descriptors, const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph)
+inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(const std::map< auxiliaries::ChainResidueAtomDescriptorsPair, Descriptor >& map_of_pair_descriptors, const std::map< auxiliaries::ChainResidueAtomDescriptor, std::set<auxiliaries::ChainResidueAtomDescriptor> >& graph)
 {
 	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+	typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 	std::map<CRAD, Descriptor> map_of_single_descriptors;
-	for(typename std::map< std::pair<CRAD, CRAD>, Descriptor >::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+	for(typename std::map< CRADsPair, Descriptor >::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
+		const CRADsPair& crads=it->first;
 		std::set<CRAD> related_crads;
-		if(!(crads.first==CRAD::solvent()))
+		if(!(crads.a==CRAD::solvent()))
 		{
-			related_crads.insert(crads.first);
+			related_crads.insert(crads.a);
 		}
-		if(!(crads.second==CRAD::solvent()))
+		if(!(crads.b==CRAD::solvent()))
 		{
-			related_crads.insert(crads.second);
+			related_crads.insert(crads.b);
 		}
 		{
-			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.first);
+			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.a);
 			if(graph_it!=graph.end())
 			{
 				const std::set<CRAD>& related_crads1=graph_it->second;
@@ -72,7 +74,7 @@ inline std::map<auxiliaries::ChainResidueAtomDescriptor, Descriptor> construct_s
 			}
 		}
 		{
-			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.second);
+			const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.b);
 			if(graph_it!=graph.end())
 			{
 				const std::set<CRAD>& related_crads2=graph_it->second;
