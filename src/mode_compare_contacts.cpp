@@ -4,9 +4,8 @@
 #include <cmath>
 
 #include "auxiliaries/program_options_handler.h"
-
-#include "modescommon/handle_annotations.h"
-#include "modescommon/handle_mappings.h"
+#include "auxiliaries/io_utilities.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 
 namespace
 {
@@ -164,12 +163,12 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!atom_scores_file.empty())
 	{
-		auxiliaries::write_map_container_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, depth)), atom_scores_file);
+		auxiliaries::write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth), atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		auxiliaries::write_map_container_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, depth)), residue_scores_file);
+		auxiliaries::write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth), residue_scores_file);
 	}
 
 	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
