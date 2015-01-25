@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
+#include <set>
+#include <map>
 
 namespace auxiliaries
 {
@@ -465,6 +467,101 @@ inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptors
 	descriptors_pair=ChainResidueAtomDescriptorsPair(a, b);
 	return input;
 }
+
+class ChainResidueAtomDescriptorsGraphOperations
+{
+public:
+	template<typename T>
+	static std::map<ChainResidueAtomDescriptor, T> accumulate_mapped_values_by_graph_neighbors(
+			const std::map< ChainResidueAtomDescriptorsPair, T >& map_of_pair_descriptors,
+			const int depth)
+	{
+		return construct_map_of_single_descriptors(map_of_pair_descriptors, construct_graph(map_of_pair_descriptors, depth));
+	}
+
+private:
+	template<typename T>
+	static std::map< ChainResidueAtomDescriptor, std::set<ChainResidueAtomDescriptor> > construct_graph(
+			const std::map<ChainResidueAtomDescriptorsPair, T>& map_of_pair_descriptors,
+			const int depth)
+	{
+		typedef ChainResidueAtomDescriptor CRAD;
+		std::map< CRAD, std::set<CRAD> > graph;
+		if(depth>0)
+		{
+			for(typename std::map<ChainResidueAtomDescriptorsPair, T>::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+			{
+				const ChainResidueAtomDescriptorsPair& crads=it->first;
+				if(!(crads.a==crads.b || crads.a==CRAD::solvent() || crads.b==CRAD::solvent()))
+				{
+					graph[crads.a].insert(crads.b);
+					graph[crads.b].insert(crads.a);
+				}
+			}
+			for(int i=1;i<depth;i++)
+			{
+				std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
+				for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
+				{
+					const CRAD& center=graph_it->first;
+					const std::set<CRAD>& neighbors=graph_it->second;
+					std::set<CRAD>& expandable_neighbors=expanded_graph[center];
+					for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+					{
+						const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
+						expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+					}
+					expandable_neighbors.erase(center);
+				}
+				graph=expanded_graph;
+			}
+		}
+		return graph;
+	}
+
+	template<typename T>
+	static std::map<ChainResidueAtomDescriptor, T> construct_map_of_single_descriptors(
+			const std::map< ChainResidueAtomDescriptorsPair, T >& map_of_pair_descriptors,
+			const std::map< ChainResidueAtomDescriptor, std::set<ChainResidueAtomDescriptor> >& graph)
+	{
+		typedef ChainResidueAtomDescriptor CRAD;
+		std::map<CRAD, T> map_of_single_descriptors;
+		for(typename std::map<ChainResidueAtomDescriptorsPair, T>::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+		{
+			const ChainResidueAtomDescriptorsPair& crads=it->first;
+			std::set<CRAD> related_crads;
+			if(!(crads.a==CRAD::solvent()))
+			{
+				related_crads.insert(crads.a);
+			}
+			if(!(crads.b==CRAD::solvent()))
+			{
+				related_crads.insert(crads.b);
+			}
+			{
+				const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.a);
+				if(graph_it!=graph.end())
+				{
+					const std::set<CRAD>& related_crads1=graph_it->second;
+					related_crads.insert(related_crads1.begin(), related_crads1.end());
+				}
+			}
+			{
+				const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.b);
+				if(graph_it!=graph.end())
+				{
+					const std::set<CRAD>& related_crads2=graph_it->second;
+					related_crads.insert(related_crads2.begin(), related_crads2.end());
+				}
+			}
+			for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
+			{
+				map_of_single_descriptors[*jt].add(it->second);
+			}
+		}
+		return map_of_single_descriptors;
+	}
+};
 
 }
 
