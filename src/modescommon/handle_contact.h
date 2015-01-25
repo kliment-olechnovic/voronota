@@ -50,9 +50,9 @@ inline void print_contact_record(const std::pair<auxiliaries::ChainResidueAtomDe
 {
 	output << names.first.str() << " " << names.second.str() << " " << value.area << " " << value.dist;
 	output << (value.tags.empty() ? " ." : " ");
-	auxiliaries::print_set_to_stream(value.tags, ";", output);
+	auxiliaries::print_set_to_stream(value.tags, ';', output);
 	output << (value.adjuncts.empty() ? " ." : " ");
-	auxiliaries::print_map_to_stream(value.adjuncts, ";", output);
+	auxiliaries::print_map_to_stream(value.adjuncts, ';', output);
 	if(preserve_graphics && !value.graphics.empty())
 	{
 		output << " \"";
