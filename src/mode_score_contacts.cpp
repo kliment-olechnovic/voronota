@@ -6,7 +6,7 @@
 #include "auxiliaries/program_options_handler.h"
 
 #include "modescommon/handle_annotations.h"
-#include "modescommon/handle_mappings.h"
+#include "modescommon/tmpfuncs.h"
 
 namespace
 {

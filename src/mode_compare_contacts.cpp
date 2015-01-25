@@ -12,6 +12,7 @@ namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 struct CADDescriptor
 {
@@ -51,45 +52,45 @@ struct CADDescriptor
 	}
 };
 
-std::map< std::pair<CRAD, CRAD>, double > summarize_pair_mapping_of_values(const std::map< std::pair<CRAD, CRAD>, double >& map)
+std::map< CRADsPair, double > summarize_pair_mapping_of_values(const std::map< CRADsPair, double >& map)
 {
-	std::map< std::pair<CRAD, CRAD>, double > result;
-	for(std::map< std::pair<CRAD, CRAD>, double >::const_iterator it=map.begin();it!=map.end();++it)
+	std::map< CRADsPair, double > result;
+	for(std::map< CRADsPair, double >::const_iterator it=map.begin();it!=map.end();++it)
 	{
-		const std::pair<CRAD, CRAD>& crads=it->first;
-		result[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_atom(), crads.second.without_atom()))]+=it->second;
+		const CRADsPair& crads=it->first;
+		result[CRADsPair(crads.a.without_atom(), crads.b.without_atom())]+=it->second;
 	}
 	return result;
 }
 
-std::map< std::pair<CRAD, CRAD>, std::pair<double, double> > combine_two_pair_mappings_of_values(const std::map< std::pair<CRAD, CRAD>, double >& map1, const std::map< std::pair<CRAD, CRAD>, double >& map2)
+std::map< CRADsPair, std::pair<double, double> > combine_two_pair_mappings_of_values(const std::map< CRADsPair, double >& map1, const std::map< CRADsPair, double >& map2)
 {
-	std::map< std::pair<CRAD, CRAD>, std::pair<double, double> > result;
-	for(std::map< std::pair<CRAD, CRAD>, double >::const_iterator it=map1.begin();it!=map1.end();++it)
+	std::map< CRADsPair, std::pair<double, double> > result;
+	for(std::map< CRADsPair, double >::const_iterator it=map1.begin();it!=map1.end();++it)
 	{
 		result[it->first].first=it->second;
 	}
-	for(std::map< std::pair<CRAD, CRAD>, double >::const_iterator it=map2.begin();it!=map2.end();++it)
+	for(std::map< CRADsPair, double >::const_iterator it=map2.begin();it!=map2.end();++it)
 	{
 		result[it->first].second=it->second;
 	}
 	return result;
 }
 
-std::map< std::pair<CRAD, CRAD>, CADDescriptor > construct_map_of_cad_descriptors(const std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >& map_of_value_pairs)
+std::map< CRADsPair, CADDescriptor > construct_map_of_cad_descriptors(const std::map< CRADsPair, std::pair<double, double> >& map_of_value_pairs)
 {
-	std::map< std::pair<CRAD, CRAD>, CADDescriptor > result;
-	for(std::map< std::pair<CRAD, CRAD>, std::pair<double, double> >::const_iterator it=map_of_value_pairs.begin();it!=map_of_value_pairs.end();++it)
+	std::map< CRADsPair, CADDescriptor > result;
+	for(std::map< CRADsPair, std::pair<double, double> >::const_iterator it=map_of_value_pairs.begin();it!=map_of_value_pairs.end();++it)
 	{
 		result[it->first].add(it->second.first, it->second.second);
 	}
 	return result;
 }
 
-CADDescriptor construct_global_cad_descriptor(const std::map< std::pair<CRAD, CRAD>, CADDescriptor >& map_of_descriptors)
+CADDescriptor construct_global_cad_descriptor(const std::map< CRADsPair, CADDescriptor >& map_of_descriptors)
 {
 	CADDescriptor result;
-	for(std::map< std::pair<CRAD, CRAD>, CADDescriptor >::const_iterator it=map_of_descriptors.begin();it!=map_of_descriptors.end();++it)
+	for(std::map< CRADsPair, CADDescriptor >::const_iterator it=map_of_descriptors.begin();it!=map_of_descriptors.end();++it)
 	{
 		result.add(it->second);
 	}
@@ -109,16 +110,16 @@ inline void print_score(const std::string& name, const CADDescriptor& cadd, cons
 	}
 }
 
-void print_pair_scores_to_file(const std::map< std::pair<CRAD, CRAD>, CADDescriptor >& map_of_pair_cad_descriptors, const bool detailed, const std::string& filename)
+void print_pair_scores_to_file(const std::map< CRADsPair, CADDescriptor >& map_of_pair_cad_descriptors, const bool detailed, const std::string& filename)
 {
 	if(!filename.empty())
 	{
 		std::ofstream foutput(filename.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			for(std::map< std::pair<CRAD, CRAD>, CADDescriptor >::const_iterator it=map_of_pair_cad_descriptors.begin();it!=map_of_pair_cad_descriptors.end();++it)
+			for(std::map< CRADsPair, CADDescriptor >::const_iterator it=map_of_pair_cad_descriptors.begin();it!=map_of_pair_cad_descriptors.end();++it)
 			{
-				print_score(it->first.first.str()+" "+it->first.second.str(), it->second, detailed, foutput);
+				print_score(it->first.a.str()+" "+it->first.b.str(), it->second, detailed, foutput);
 			}
 		}
 	}
@@ -169,21 +170,21 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int depth=poh.argument<int>("--depth", 0);
 	const bool detailed_output=poh.contains_option("--detailed-output");
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_contacts;
+	std::map< CRADsPair, double > map_of_contacts;
 	{
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_contacts);
+		auxiliaries::read_lines_to_map_container(std::cin, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
 		}
 	}
 
-	std::map< std::pair<CRAD, CRAD>, double > map_of_target_contacts;
+	std::map< CRADsPair, double > map_of_target_contacts;
 	{
 		if(!target_contacts_file.empty())
 		{
 			std::ifstream finput(target_contacts_file.c_str(), std::ios::in);
-			auxiliaries::read_lines_to_container(finput, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_target_contacts);
+			auxiliaries::read_lines_to_map_container(finput, map_of_target_contacts);
 		}
 		if(map_of_target_contacts.empty())
 		{
@@ -191,20 +192,20 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const std::map< std::pair<CRAD, CRAD>, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
+	const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
 	print_pair_scores_to_file(map_of_inter_atom_cad_descriptors, detailed_output, inter_atom_scores_file);
 
-	const std::map< std::pair<CRAD, CRAD>, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
+	const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
 	print_pair_scores_to_file(map_of_inter_residue_cad_descriptors, detailed_output, inter_residue_scores_file);
 
 	if(!atom_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_pair_mapping_of_descriptors(map_of_inter_atom_cad_descriptors, depth)), detailed_output, atom_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_atom_cad_descriptors, depth)), detailed_output, atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_pair_mapping_of_descriptors(map_of_inter_residue_cad_descriptors, depth)), detailed_output, residue_scores_file);
+		print_single_scores_to_file(modescommon::construct_single_mapping_of_descriptors_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, modescommon::construct_graph_from_mapping_of_descriptors_pairs(map_of_inter_residue_cad_descriptors, depth)), detailed_output, residue_scores_file);
 	}
 
 	print_score("atom_level_global", construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors), detailed_output, std::cout);

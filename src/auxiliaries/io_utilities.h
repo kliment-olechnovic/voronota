@@ -45,9 +45,7 @@ inline void read_lines_to_container(
 }
 
 template<typename Container>
-inline bool read_line_to_sequential_container(
-		std::istream& input,
-		Container& container)
+inline bool read_line_to_sequential_container(std::istream& input, Container& container)
 {
 	typename Container::value_type value;
 	input >> value;
@@ -60,11 +58,29 @@ inline bool read_line_to_sequential_container(
 }
 
 template<typename Container>
-inline void read_lines_to_sequential_container(
-		std::istream& input,
-		Container& container)
+inline void read_lines_to_sequential_container(std::istream& input, Container& container)
 {
 	read_lines_to_container(input, read_line_to_sequential_container<Container>, container);
+}
+
+template<typename Container>
+inline bool read_line_to_map_container(std::istream& input, Container& container)
+{
+	typename Container::key_type key;
+	typename Container::mapped_type value;
+	input >> key >> value;
+	if(input.fail())
+	{
+		return false;
+	}
+	container[key]=value;
+	return true;
+}
+
+template<typename Container>
+inline void read_lines_to_map_container(std::istream& input, Container& container)
+{
+	read_lines_to_container(input, read_line_to_map_container<Container>, container);
 }
 
 }
