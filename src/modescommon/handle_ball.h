@@ -25,9 +25,9 @@ inline void print_ball_record(const auxiliaries::ChainResidueAtomDescriptor& nam
 {
 	output << name.str() << " " << value.x << " " << value.y << " " << value.z << " " << value.r;
 	output << (value.tags.empty() ? " ." : " ");
-	auxiliaries::print_set_to_stream(value.tags, ";", output);
+	auxiliaries::print_set_to_stream(value.tags, ';', output);
 	output << (value.adjuncts.empty() ? " ." : " ");
-	auxiliaries::print_map_to_stream(value.adjuncts, ";", output);
+	auxiliaries::print_map_to_stream(value.adjuncts, ';', output);
 	output << "\n";
 }
 

@@ -61,6 +61,19 @@ public:
 		}
 	}
 
+	template<typename LineReader, typename Container>
+	static void read_string_lines_to_container(
+			const std::string& str,
+			LineReader line_reader,
+			Container& container)
+	{
+		if(!str.empty())
+		{
+			std::istringstream input(str);
+			read_lines_to_container(input, line_reader, container);
+		}
+	}
+
 	template<typename Container, typename ElementWriter>
 	static void write_container(
 			const Container& container,
@@ -89,6 +102,16 @@ public:
 		}
 	}
 
+	template<typename Container, typename ElementWriter>
+	static std::string write_container_to_string(
+			const Container& container,
+			ElementWriter element_writer)
+	{
+		std::ostringstream output;
+		write_container(container, element_writer, output);
+		return output.str();
+	}
+
 	template<typename Container>
 	static void read_lines_to_sequential_container(std::istream& input, Container& container)
 	{
@@ -99,6 +122,12 @@ public:
 	static void read_file_lines_to_sequential_container(const std::string& filename, Container& container)
 	{
 		read_file_lines_to_container(filename, read_line_to_sequential_container<Container>, container);
+	}
+
+	template<typename Container>
+	static void read_string_lines_to_sequential_container(const std::string& str, Container& container)
+	{
+		read_string_lines_to_container(str, read_line_to_sequential_container<Container>, container);
 	}
 
 	template<typename Container>
@@ -114,6 +143,12 @@ public:
 	}
 
 	template<typename Container>
+	static std::string write_sequential_container_to_string(const Container& container)
+	{
+		return write_container_to_string(container, write_sequential_container_element<Container>);
+	}
+
+	template<typename Container>
 	static void read_lines_to_map_container(std::istream& input, Container& container)
 	{
 		read_lines_to_container(input, read_line_to_map_container<Container>, container);
@@ -126,6 +161,12 @@ public:
 	}
 
 	template<typename Container>
+	static void read_string_lines_to_map_container(const std::string& str, Container& container)
+	{
+		read_string_lines_to_container(str, read_line_to_map_container<Container>, container);
+	}
+
+	template<typename Container>
 	static void write_map_container(const Container& container, std::ostream& output)
 	{
 		write_container(container, write_map_container_element<Container>, output);
@@ -135,6 +176,45 @@ public:
 	static void write_map_container_to_file(const Container& container, const std::string& filename)
 	{
 		write_container_to_file(container, write_map_container_element<Container>, filename);
+	}
+
+	template<typename Container>
+	static std::string write_map_container_to_string(const Container& container)
+	{
+		return write_container_to_string(container, write_map_container_element<Container>);
+	}
+
+	static void replace(std::string& str, const std::string& as, const char b)
+	{
+		for(std::size_t i=0;i<str.size();i++)
+		{
+			if(as.find(str[i])!=std::string::npos)
+			{
+				str[i]=b;
+			}
+		}
+	}
+
+	static std::string get_replaced(const std::string& str, const std::string& as, const char b)
+	{
+		std::string result=str;
+		replace(result, as, b);
+		return result;
+	}
+
+	static void trim(std::string& str, const std::string& cs)
+	{
+		while(!str.empty() && cs.find(str[str.size()-1])!=std::string::npos)
+		{
+			str.erase(str.size()-1, 1);
+		}
+	}
+
+	static std::string get_trimmed(const std::string& str, const std::string& cs)
+	{
+		std::string result=str;
+		trim(result, cs);
+		return result;
 	}
 
 private:
