@@ -83,44 +83,35 @@ inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 	return input;
 }
 
-struct read_to_map_of_interactions_areas
+struct NormalDistributionParameters
 {
-	bool accumulating;
+	double mean;
+	double sd;
 
-	read_to_map_of_interactions_areas(const bool accumulating) : accumulating(accumulating)
+	NormalDistributionParameters() : mean(0.0), sd(1.0)
 	{
 	}
 
-	inline bool operator()(std::istream& input, std::map<Interaction, double>& map_of_interactions_areas)
+	NormalDistributionParameters(const double mean, const double sd) : mean(mean), sd(sd)
 	{
-		Interaction interaction;
-		double area;
-		input >> interaction >> area;
-		if(!input.fail())
-		{
-			if(accumulating)
-			{
-				const CRADsPair crads_without_numbering(interaction.crads.a.without_numbering(), interaction.crads.b.without_numbering());
-				map_of_interactions_areas[Interaction(crads_without_numbering, interaction.tag)]+=area;
-			}
-			else
-			{
-				map_of_interactions_areas[interaction]=area;
-			}
-			return true;
-		}
-		return false;
 	}
 };
 
-inline bool read_to_map_of_crads_values_pairs(std::istream& input, std::map<CRAD, std::pair<double, double> >& map_of_crads_values_pairs)
+inline std::istream& operator>>(std::istream& input, NormalDistributionParameters& v)
 {
-	CRAD crad;
-	std::pair<double, double> vp;
-	input >> crad >> vp.first >> vp.second;
+	input >> v.mean >> v.sd;
+	return input;
+}
+
+inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input, std::map<Interaction, double>& map_of_interactions_areas)
+{
+	Interaction interaction;
+	double area;
+	input >> interaction >> area;
 	if(!input.fail())
 	{
-		map_of_crads_values_pairs[crad]=vp;
+		const CRADsPair crads_without_numbering(interaction.crads.a.without_numbering(), interaction.crads.b.without_numbering());
+		map_of_interactions_areas[Interaction(crads_without_numbering, interaction.tag)]+=area;
 		return true;
 	}
 	return false;
@@ -188,12 +179,12 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::string file_path;
 			std::cin >> file_path;
-			auxiliaries::IOUtilities().read_file_lines_to_container(file_path, read_to_map_of_interactions_areas(true), map_of_interactions_total_areas);
+			auxiliaries::IOUtilities().read_file_lines_to_container(file_path, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 		}
 	}
 	else
 	{
-		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_to_map_of_interactions_areas(true), map_of_interactions_total_areas);
+		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 	}
 
 	for(std::map<Interaction, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
@@ -283,7 +274,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<Interaction, double> map_of_contacts;
 	{
-		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_to_map_of_interactions_areas(false), map_of_contacts);
+		auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
@@ -292,7 +283,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<Interaction, double> map_of_potential_values;
 	{
-		auxiliaries::IOUtilities().read_file_lines_to_container(potential_file, read_to_map_of_interactions_areas(false), map_of_potential_values);
+		auxiliaries::IOUtilities().read_file_lines_to_map_container(potential_file, map_of_potential_values);
 		if(map_of_potential_values.empty())
 		{
 			throw std::runtime_error("No potential values input.");
@@ -385,8 +376,8 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No input.");
 	}
 
-	std::map<CRAD, std::pair<double, double> > means_and_sds;
-	auxiliaries::IOUtilities().read_file_lines_to_container(mean_and_sds_file, read_to_map_of_crads_values_pairs, means_and_sds);
+	std::map<CRAD, NormalDistributionParameters> means_and_sds;
+	auxiliaries::IOUtilities().read_file_lines_to_map_container(mean_and_sds_file, means_and_sds);
 
 	std::map<CRAD, double> atom_quality_scores;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
@@ -398,8 +389,8 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			const double actuality_score=(1.0-(ed.strange_area/ed.total_area));
 			const double normalized_energy=(ed.energy/ed.total_area);
 			const bool detailed_mean_and_sd=(means_and_sds.count(crad.without_numbering())>0);
-			const double mean=(detailed_mean_and_sd ? means_and_sds[crad.without_numbering()].first : default_mean);
-			const double sd=(detailed_mean_and_sd ? means_and_sds[crad.without_numbering()].second : default_sd);
+			const double mean=(detailed_mean_and_sd ? means_and_sds[crad.without_numbering()].mean : default_mean);
+			const double sd=(detailed_mean_and_sd ? means_and_sds[crad.without_numbering()].sd : default_sd);
 			const double adjusted_normalized_energy=((normalized_energy-mean)/sd);
 			const double energy_score=(1.0-(0.5*(1.0+erf((adjusted_normalized_energy-mean_shift)/sqrt(2.0)))));
 			atom_quality_scores[crad]=(energy_score*actuality_score);
