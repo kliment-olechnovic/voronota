@@ -106,7 +106,7 @@ cat $OUTPUT_SUBDIR/contacts_scores_atom \
 
 ($TEST_SUBJECT query-balls --match 'r<3:7,9>&A<CA,CB>' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query1
 ($TEST_SUBJECT query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query2
-($TEST_SUBJECT query-balls --match-external-annotations $OUTPUT_SUBDIR/contacts_query2 | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query3
+($TEST_SUBJECT query-balls --match-external-annotations <(cat $OUTPUT_SUBDIR/contacts_query2 | awk '{print $1 " " $2}' | tr ' ' '\n') | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query3
 ($TEST_SUBJECT query-balls --match 'A<OE1>' --whole-residues | column -t) < $OUTPUT_SUBDIR/balls > $OUTPUT_SUBDIR/balls_query4
 
 $TEST_SUBJECT query-contacts --match-min-seq-sep 2 --no-solvent --summarize < $OUTPUT_SUBDIR/contacts > $OUTPUT_SUBDIR/contacts_summary

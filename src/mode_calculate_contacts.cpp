@@ -5,16 +5,17 @@
 #include "apollota/spheres_boundary_construction.h"
 
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon/handle_ball.h"
-#include "modescommon/handle_contact.h"
+#include "modescommon/ball_value.h"
+#include "modescommon/contact_value.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef modescommon::ContactValue ContactValue;
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 std::string draw_inter_atom_contact(
 		const std::vector<apollota::SimpleSphere>& spheres,
@@ -117,11 +118,15 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector< std::pair<CRAD, modescommon::BallValue> > input_ball_records;
+	std::vector< std::pair<CRAD, BallValue> > input_ball_records;
 	if(annotated)
 	{
-		auxiliaries::IOUtilities().read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, input_ball_records);
-		modescommon::collect_spheres_from_vector_of_ball_records(input_ball_records, spheres);
+		auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, input_ball_records);
+		spheres.reserve(input_ball_records.size());
+		for(std::size_t i=0;i<input_ball_records.size();i++)
+		{
+			spheres.push_back(apollota::SimpleSphere(input_ball_records[i].second));
+		}
 	}
 	else
 	{
@@ -166,7 +171,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 
-		std::map< std::pair<CRAD, CRAD>, ContactValue > output_map_of_contacts;
+		std::map< CRADsPair, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -174,8 +179,8 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				const std::pair<CRAD, CRAD> crads(input_ball_records[a_id].first, (a_id==b_id ? CRAD::solvent() : input_ball_records[b_id].first));
-				ContactValue& value=output_map_of_contacts[modescommon::refine_pair_by_ordering(crads)];
+				const CRADsPair crads(input_ball_records[a_id].first, (a_id==b_id ? CRAD::solvent() : input_ball_records[b_id].first));
+				ContactValue& value=output_map_of_contacts[crads];
 				value.area=area;
 				if(a_id!=b_id)
 				{
@@ -193,10 +198,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		for(std::map< std::pair<CRAD, CRAD>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
-		{
-			modescommon::print_contact_record(it->first, it->second, true, std::cout);
-		}
+		auxiliaries::IOUtilities().write_map_container(output_map_of_contacts, std::cout);
 	}
 	else
 	{

@@ -6,8 +6,9 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 #include "auxiliaries/atom_radius_assigner.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/handle_ball.h"
+#include "modescommon/ball_value.h"
 
 namespace
 {
@@ -104,28 +105,28 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			const auxiliaries::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
 			if(crad.valid())
 			{
-				modescommon::BallValue value;
+				BallValue value;
 				value.x=atom.x;
 				value.y=atom.y;
 				value.z=atom.z;
 				value.r=radius;
 				if(atom.record_name=="HETATM")
 				{
-					modescommon::update_set_of_tags(value.tags, "het");
+					value.props.tags.insert("het");
 				}
 				if(!atom.element.empty())
 				{
-					modescommon::update_set_of_tags(value.tags, std::string("el=")+atom.element);
+					value.props.tags.insert(std::string("el=")+atom.element);
 				}
 				if(atom.occupancy_valid)
 				{
-					value.adjuncts["oc"]=atom.occupancy;
+					value.props.adjuncts["oc"]=atom.occupancy;
 				}
 				if(atom.tempFactor_valid)
 				{
-					value.adjuncts["tf"]=atom.tempFactor;
+					value.props.adjuncts["tf"]=atom.tempFactor;
 				}
-				modescommon::print_ball_record(crad, value, std::cout);
+				std::cout << crad << " " << value << "\n";
 				all_spheres.push_back(apollota::SimpleSphere(value));
 			}
 		}
@@ -147,12 +148,12 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				auxiliaries::ChainResidueAtomDescriptor crad;
 				crad.chainID="hull";
-				modescommon::BallValue value;
+				BallValue value;
 				value.x=s.x;
 				value.y=s.y;
 				value.z=s.z;
 				value.r=s.r;
-				modescommon::print_ball_record(crad, value, std::cout);
+				std::cout << crad << " " << value << "\n";
 			}
 			else
 			{
