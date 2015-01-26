@@ -117,31 +117,38 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 
 std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD, double>& raw_scores, const unsigned int window)
 {
-	std::vector< std::pair<CRAD, double> > v(raw_scores.size());
-	std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
-	std::vector< std::pair<CRAD, double> > sv=v;
-	for(std::size_t i=0;i<v.size();i++)
+	if(window>0)
 	{
-		const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
-		const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
-		double sum_of_weighted_values=0.0;
-		double sum_of_weights=0.0;
-		for(int j=start;j<=end;j++)
+		std::vector< std::pair<CRAD, double> > v(raw_scores.size());
+		std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
+		std::vector< std::pair<CRAD, double> > sv=v;
+		for(std::size_t i=0;i<v.size();i++)
 		{
-			if(v[i].first.chainID==v[j].first.chainID)
+			const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
+			const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
+			double sum_of_weighted_values=0.0;
+			double sum_of_weights=0.0;
+			for(int j=start;j<=end;j++)
 			{
-				double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
-				double weight=(1.0-(ndist*ndist));
-				sum_of_weights+=weight;
-				sum_of_weighted_values+=v[j].second*weight;
+				if(v[i].first.chainID==v[j].first.chainID)
+				{
+					double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
+					double weight=(1.0-(ndist*ndist));
+					sum_of_weights+=weight;
+					sum_of_weighted_values+=v[j].second*weight;
+				}
+			}
+			if(sum_of_weights>0.0)
+			{
+				sv[i].second=(sum_of_weighted_values/sum_of_weights);
 			}
 		}
-		if(sum_of_weights>0.0)
-		{
-			sv[i].second=(sum_of_weighted_values/sum_of_weights);
-		}
+		return std::map<CRAD, double>(sv.begin(), sv.end());
 	}
-	return std::map<CRAD, double>(sv.begin(), sv.end());
+	else
+	{
+		return raw_scores;
+	}
 }
 
 }
@@ -399,45 +406,24 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!atom_scores_file.empty())
-	{
-		std::ofstream foutput(atom_scores_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
-			{
-				foutput << it->first.str() << " " <<  it->second << "\n";
-			}
-		}
-	}
+	auxiliaries::IOUtilities().write_map_container_to_file(atom_quality_scores, atom_scores_file);
 
 	if(!residue_scores_file.empty())
 	{
-		std::ofstream foutput(residue_scores_file.c_str(), std::ios::out);
-		if(foutput.good())
+		std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
+		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
 		{
-			std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
-			for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
-			{
-				std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
-				residue_value.first++;
-				residue_value.second+=it->second;
-			}
-			std::map<CRAD, double> residue_atomic_scores;
-			for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
-			{
-				const std::pair<int, double>& residue_value=it->second;
-				residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
-			}
-			if(smoothing_window>0)
-			{
-				residue_atomic_scores=smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window);
-			}
-			for(std::map<CRAD, double>::const_iterator it=residue_atomic_scores.begin();it!=residue_atomic_scores.end();++it)
-			{
-				foutput << it->first.str() << " " << it->second << "\n";
-			}
+			std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
+			residue_value.first++;
+			residue_value.second+=it->second;
 		}
+		std::map<CRAD, double> residue_atomic_scores;
+		for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
+		{
+			const std::pair<int, double>& residue_value=it->second;
+			residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
+		}
+		auxiliaries::IOUtilities().write_map_container_to_file(smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window), residue_scores_file);
 	}
 
 	if(!atom_quality_scores.empty())
