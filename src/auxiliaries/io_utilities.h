@@ -75,6 +75,16 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
+	Container read_lines_to_container(
+			std::istream& input,
+			LineReader line_reader) const
+	{
+		Container container;
+		read_lines_to_container(input, line_reader, container);
+		return container;
+	}
+
+	template<typename LineReader, typename Container>
 	void read_file_lines_to_container(
 			const std::string& filename,
 			LineReader line_reader,
@@ -91,6 +101,16 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
+	Container read_file_lines_to_container(
+			const std::string& filename,
+			LineReader line_reader) const
+	{
+		Container container;
+		read_file_lines_to_container(filename, line_reader, container);
+		return container;
+	}
+
+	template<typename LineReader, typename Container>
 	void read_string_lines_to_container(
 			const std::string& str,
 			LineReader line_reader,
@@ -101,6 +121,16 @@ public:
 			std::istringstream input(str);
 			read_lines_to_container(input, line_reader, container);
 		}
+	}
+
+	template<typename LineReader, typename Container>
+	Container read_string_lines_to_container(
+			const std::string& str,
+			LineReader line_reader) const
+	{
+		Container container;
+		read_string_lines_to_container(str, line_reader, container);
+		return container;
 	}
 
 	template<typename Container, typename ElementWriter>
@@ -156,15 +186,39 @@ public:
 	}
 
 	template<typename Container>
+	Container read_lines_to_sequential_container(std::istream& input) const
+	{
+		Container container;
+		read_lines_to_sequential_container(input, container);
+		return container;
+	}
+
+	template<typename Container>
 	void read_file_lines_to_sequential_container(const std::string& filename, Container& container) const
 	{
 		read_file_lines_to_container(filename, read_line_to_sequential_container<Container>, container);
 	}
 
 	template<typename Container>
+	Container read_file_lines_to_sequential_container(const std::string& filename) const
+	{
+		Container container;
+		read_file_lines_to_sequential_container(filename, container);
+		return container;
+	}
+
+	template<typename Container>
 	void read_string_lines_to_sequential_container(const std::string& str, Container& container) const
 	{
 		read_string_lines_to_container(str, read_line_to_sequential_container<Container>, container);
+	}
+
+	template<typename Container>
+	Container read_string_lines_to_sequential_container(const std::string& str) const
+	{
+		Container container;
+		read_string_lines_to_sequential_container(str, container);
+		return container;
 	}
 
 	template<typename Container>
@@ -192,9 +246,25 @@ public:
 	}
 
 	template<typename Container>
+	Container read_lines_to_map_container(std::istream& input) const
+	{
+		Container container;
+		read_lines_to_map_container(input, container);
+		return container;
+	}
+
+	template<typename Container>
 	void read_file_lines_to_map_container(const std::string& filename, Container& container) const
 	{
 		read_file_lines_to_container(filename, read_line_to_map_container<Container>, container);
+	}
+
+	template<typename Container>
+	Container read_file_lines_to_map_container(const std::string& filename) const
+	{
+		Container container;
+		read_file_lines_to_map_container(filename, container);
+		return container;
 	}
 
 	template<typename Container>
@@ -202,6 +272,15 @@ public:
 	{
 		read_string_lines_to_container(str, read_line_to_map_container<Container>, container);
 	}
+
+	template<typename Container>
+	Container read_string_lines_to_map_container(const std::string& str) const
+	{
+		Container container;
+		read_string_lines_to_map_container(str, container);
+		return container;
+	}
+
 
 	template<typename Container>
 	void write_map_container(const Container& container, std::ostream& output) const

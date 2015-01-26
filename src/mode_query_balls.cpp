@@ -180,12 +180,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	std::set<CRAD> matchable_external_set_of_crads;
-	if(!match_external_annotations.empty())
-	{
-		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_sequential_container(input_file, matchable_external_set_of_crads);
-	}
+	const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRAD> >(match_external_annotations);
 
 	auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data;
 	if(!set_dssp_tags.empty())
@@ -194,12 +189,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		dssp_file_data=auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
 	}
 
-	std::map<CRAD, double> map_of_external_adjunct_values;
-	if(!set_external_adjuncts.empty())
-	{
-		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_map_container(input_file, map_of_external_adjunct_values);
-	}
+	const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<CRAD, double> >(set_external_adjuncts);
 
 	const std::string reference_sequence=SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
 

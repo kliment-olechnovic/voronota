@@ -137,22 +137,16 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int depth=poh.argument<int>("--depth", 0);
 	detailed_output_of_CADDescriptor()=poh.contains_option("--detailed-output");
 
-	std::map< CRADsPair, double > map_of_contacts;
+	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map_container< std::map<CRADsPair, double> >(std::cin);
+	if(map_of_contacts.empty())
 	{
-		auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, map_of_contacts);
-		if(map_of_contacts.empty())
-		{
-			throw std::runtime_error("No contacts input.");
-		}
+		throw std::runtime_error("No contacts input.");
 	}
 
-	std::map< CRADsPair, double > map_of_target_contacts;
+	const std::map<CRADsPair, double> map_of_target_contacts=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<CRADsPair, double> >(target_contacts_file);
+	if(map_of_target_contacts.empty())
 	{
-		auxiliaries::IOUtilities().read_file_lines_to_map_container(target_contacts_file, map_of_target_contacts);
-		if(map_of_target_contacts.empty())
-		{
-			throw std::runtime_error("No target contacts input.");
-		}
+		throw std::runtime_error("No target contacts input.");
 	}
 
 	const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
