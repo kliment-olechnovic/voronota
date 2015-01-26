@@ -435,6 +435,10 @@ public:
 	{
 	}
 
+	ChainResidueAtomDescriptorsPair(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b, const bool reversed_display) : a(a<b ? a : b), b(a<b ? b : a), reversed_display(reversed_display)
+	{
+	}
+
 	bool operator==(const ChainResidueAtomDescriptorsPair& v) const
 	{
 		return (a==v.a && b==v.b);

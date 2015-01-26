@@ -5,19 +5,19 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 
-#include "modescommon/handle_ball.h"
-#include "modescommon/handle_sequences.h"
+#include "modescommon/ball_value.h"
+#include "modescommon/sequence_utilities.h"
+#include "modescommon/matching_utilities.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef modescommon::BallValue BallValue;
 
 inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_record(const CRAD& crad, const BallValue& value, const std::string& temperature_factor_adjunct_name)
 {
 	auxiliaries::AtomsIO::AtomRecord atom_record=auxiliaries::AtomsIO::AtomRecord();
-	atom_record.record_name=(value.tags.count("het")>0 ? std::string("HETATM") : std::string("ATOM"));
+	atom_record.record_name=(value.props.tags.count("het")>0 ? std::string("HETATM") : std::string("ATOM"));
 	if(crad.serial!=CRAD::null_num())
 	{
 		atom_record.serial=crad.serial;
@@ -40,23 +40,23 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 	atom_record.z=value.z;
 	atom_record.z_valid=true;
 	{
-		const std::map<std::string, double>::const_iterator oc_it=value.adjuncts.find("oc");
-		if(oc_it!=value.adjuncts.end())
+		const std::map<std::string, double>::const_iterator oc_it=value.props.adjuncts.find("oc");
+		if(oc_it!=value.props.adjuncts.end())
 		{
 			atom_record.occupancy=oc_it->second;
 			atom_record.occupancy_valid=true;
 		}
 	}
 	{
-		const std::map<std::string, double>::const_iterator tf_it=value.adjuncts.find(temperature_factor_adjunct_name);
-		if(tf_it!=value.adjuncts.end())
+		const std::map<std::string, double>::const_iterator tf_it=value.props.adjuncts.find(temperature_factor_adjunct_name);
+		if(tf_it!=value.props.adjuncts.end())
 		{
 			atom_record.tempFactor=tf_it->second;
 			atom_record.tempFactor_valid=true;
 		}
 	}
 	{
-		for(std::set<std::string>::const_iterator tags_it=value.tags.begin();tags_it!=value.tags.end() && atom_record.element.empty();++tags_it)
+		for(std::set<std::string>::const_iterator tags_it=value.props.tags.begin();tags_it!=value.props.tags.end() && atom_record.element.empty();++tags_it)
 		{
 			if(tags_it->find("el=")!=std::string::npos)
 			{
@@ -134,7 +134,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string pdb_output_template=poh.argument<std::string>("--pdb-output-template", "");
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_container(std::cin, modescommon::add_ball_record_from_stream_to_vector, list_of_balls);
+	auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -147,11 +147,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const BallValue& value=list_of_balls[i].second;
-			if(value.adjuncts.count(renumber_from_adjunct)>0)
+			if(value.props.adjuncts.count(renumber_from_adjunct)>0)
 			{
 				refined_list_of_balls.push_back(list_of_balls[i]);
-				refined_list_of_balls.back().first.resSeq=static_cast<int>(value.adjuncts.find(renumber_from_adjunct)->second);
-				refined_list_of_balls.back().second.adjuncts.erase(renumber_from_adjunct);
+				refined_list_of_balls.back().first.resSeq=static_cast<int>(value.props.adjuncts.find(renumber_from_adjunct)->second);
+				refined_list_of_balls.back().second.props.adjuncts.erase(renumber_from_adjunct);
 			}
 		}
 		list_of_balls=refined_list_of_balls;
@@ -171,11 +171,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(drop_tags)
 			{
-				it->second.tags.clear();
+				it->second.props.tags.clear();
 			}
 			if(drop_adjuncts)
 			{
-				it->second.adjuncts.clear();
+				it->second.props.adjuncts.clear();
 			}
 		}
 	}
@@ -184,7 +184,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!match_external_annotations.empty())
 	{
 		std::ifstream input_file(match_external_annotations.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_set_of_crads);
+		auxiliaries::IOUtilities().read_lines_to_sequential_container(input_file, matchable_external_set_of_crads);
 	}
 
 	auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data;
@@ -198,10 +198,10 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!set_external_adjuncts.empty())
 	{
 		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptor_value_from_stream_to_map, map_of_external_adjunct_values);
+		auxiliaries::IOUtilities().read_lines_to_map_container(input_file, map_of_external_adjunct_values);
 	}
 
-	const std::string reference_sequence=modescommon::read_sequence_from_file(set_ref_seq_num_adjunct);
+	const std::string reference_sequence=SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
 
 	std::set<std::size_t> output_set_of_ball_ids;
 
@@ -209,10 +209,10 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const CRAD& crad=list_of_balls[i].first;
 		const BallValue& value=list_of_balls[i].second;
-		const bool passed=(modescommon::match_chain_residue_atom_descriptor(crad, match, match_not) &&
-				modescommon::match_set_of_tags(value.tags, match_tags, match_tags_not) &&
-				modescommon::match_map_of_adjuncts(value.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(match_external_annotations.empty() || modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(crad, matchable_external_set_of_crads)));
+		const bool passed=(MatchingUtilities::match_crad(crad, match, match_not) &&
+				MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+				MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+				(match_external_annotations.empty() || MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
 		if((passed && !invert) || (!passed && invert))
 		{
 			output_set_of_ball_ids.insert(i);
@@ -228,7 +228,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			if(modescommon::match_chain_residue_atom_descriptor_with_set_of_descriptors(list_of_balls[i].first, residues_crads))
+			if(MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
 			{
 				output_set_of_ball_ids.insert(i);
 			}
@@ -255,8 +255,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRAD& crad=list_of_balls[*it].first;
 			BallValue& value=list_of_balls[*it].second;
-			modescommon::update_set_of_tags(value.tags, set_tags);
-			modescommon::update_map_of_adjuncts(value.adjuncts, set_adjuncts);
+			value.props.update_tags(set_tags);
+			value.props.update_adjuncts(set_adjuncts);
 			if(!map_of_external_adjunct_values.empty())
 			{
 				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
@@ -266,7 +266,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(adjunct_value_it!=map_of_external_adjunct_values.end())
 				{
-					value.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
 				}
 			}
 		}
@@ -274,7 +274,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!reference_sequence.empty())
 	{
-		const std::map<CRAD, double> sequence_mapping=modescommon::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+		const std::map<CRAD, double> sequence_mapping=SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
 			const CRAD& crad=list_of_balls[*it].first;
@@ -282,7 +282,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			if(sm_it!=sequence_mapping.end())
 			{
 				BallValue& value=list_of_balls[*it].second;
-				value.adjuncts["refseq"]=sm_it->second;
+				value.props.adjuncts["refseq"]=sm_it->second;
 			}
 		}
 	}
@@ -313,7 +313,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				if(!dssp_record.resSSE.empty())
 				{
 					BallValue& value=it->second;
-					value.tags.insert(std::string("dssp=")+dssp_record.resSSE);
+					value.props.tags.insert(std::string("dssp=")+dssp_record.resSSE);
 				}
 			}
 		}
@@ -321,16 +321,13 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty() || !dssp_file_data.dssp_records.empty())
 	{
-		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
-		{
-			modescommon::print_ball_record(it->first, it->second, std::cout);
-		}
+		auxiliaries::IOUtilities().write_map_container(list_of_balls, std::cout);
 	}
 	else
 	{
 		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
 		{
-			modescommon::print_ball_record(list_of_balls[*it].first, list_of_balls[*it].second, std::cout);
+			std::cout << list_of_balls[*it].first << " " << list_of_balls[*it].second << "\n";
 		}
 	}
 
@@ -339,7 +336,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(seq_output.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			foutput << modescommon::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
+			foutput << SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
 		}
 	}
 
@@ -384,7 +381,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 						const std::map<CRAD, std::size_t>::const_iterator ball_id_it=output_map_of_ball_ids.find(CRAD(atom_record.serial, atom_record.chainID, atom_record.resSeq, atom_record.resName, atom_record.name, atom_record.altLoc, atom_record.iCode));
 						if(ball_id_it!=output_map_of_ball_ids.end())
 						{
-							const std::map<std::string, double>& ball_adjuncts=list_of_balls[ball_id_it->second].second.adjuncts;
+							const std::map<std::string, double>& ball_adjuncts=list_of_balls[ball_id_it->second].second.props.adjuncts;
 							const std::map<std::string, double>::const_iterator temperature_factor_it=ball_adjuncts.find(pdb_output_b_factor);
 							std::string& ball_line=pdb_file_data.all_lines[pdb_file_data.map_of_atom_records_to_all_lines.at(i)];
 							ball_line=(temperature_factor_it!=ball_adjuncts.end()) ?

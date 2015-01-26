@@ -4,16 +4,52 @@
 #include <cmath>
 
 #include "auxiliaries/program_options_handler.h"
-
-#include "modescommon/handle_annotations.h"
-#include "modescommon/tmpfuncs.h"
+#include "auxiliaries/chain_residue_atom_descriptor.h"
+#include "auxiliaries/io_utilities.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
-typedef std::pair<std::pair<CRAD, CRAD>, std::string> Interaction;
+typedef std::pair<CRADsPair, std::string> Interaction0;
+
+struct Interaction
+{
+	CRADsPair crads;
+	std::string tag;
+
+	Interaction()
+	{
+	}
+
+	Interaction(const CRADsPair& crads, const std::string& tag) : crads(crads), tag(tag)
+	{
+	}
+
+	bool operator==(const Interaction& v) const
+	{
+		return (crads==v.crads && tag==v.tag);
+	}
+
+	bool operator<(const Interaction& v) const
+	{
+		return ((crads<v.crads) || (crads==v.crads && tag<v.tag));
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& output, const Interaction& v)
+{
+	output << v.crads << " " << v.tag;
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, Interaction& v)
+{
+	input >> v.crads >> v.tag;
+	return input;
+}
 
 struct EnergyDescriptor
 {
@@ -35,75 +71,59 @@ struct EnergyDescriptor
 	}
 };
 
-void read_map_of_interactions_areas(std::istream& input, const bool accumulating, std::map<Interaction, double>& map_of_interactions_areas)
+inline std::ostream& operator<<(std::ostream& output, const EnergyDescriptor& v)
 {
-	while(input.good())
-	{
-		std::string line;
-		std::getline(input, line);
-		if(!line.empty())
-		{
-			std::istringstream line_input(line);
-			if(line_input.good())
-			{
-				std::pair<std::string, std::string> crads_strings;
-				std::string conditions;
-				double area=0.0;
-				line_input >> crads_strings.first >> crads_strings.second >> conditions >> area;
-				if(!line_input.fail() && !crads_strings.first.empty() && !crads_strings.second.empty() && !conditions.empty())
-				{
-					const std::pair<CRAD, CRAD> crads(CRAD::from_str(crads_strings.first), CRAD::from_str(crads_strings.second));
-					if(crads.first.valid() && crads.second.valid())
-					{
-						if(accumulating)
-						{
-							const std::pair<CRAD, CRAD> crads_without_numbering=modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering()));
-							map_of_interactions_areas[Interaction(crads_without_numbering, conditions)]+=area;
-						}
-						else
-						{
-							map_of_interactions_areas[Interaction(crads, conditions)]=area;
-						}
-					}
-				}
-			}
-		}
-	}
+	output << v.total_area << " " << v.strange_area << " " << v.energy << " " << v.contacts_count;
+	return output;
 }
 
-inline void print_energy_descriptor(const std::string& name, const EnergyDescriptor& ed, std::ostream& output)
+inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 {
-	output << name << " " << ed.total_area << " " << ed.strange_area << " " << ed.energy << " " << ed.contacts_count << "\n";
+	input >> v.total_area >> v.strange_area >> v.energy >> v.contacts_count;
+	return input;
 }
 
-void print_pair_energy_descriptors_to_file(const std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >& map_of_pair_energy_descriptors, const std::string& filename)
+struct read_to_map_of_interactions_areas
 {
-	if(!filename.empty())
-	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=map_of_pair_energy_descriptors.begin();it!=map_of_pair_energy_descriptors.end();++it)
-			{
-				print_energy_descriptor(it->first.first.str()+" "+it->first.second.str(), it->second, foutput);
-			}
-		}
-	}
-}
+	bool accumulating;
 
-void print_single_energy_descriptors_to_file(const std::map<CRAD, EnergyDescriptor>& map_of_single_energy_descriptors, const std::string& filename)
-{
-	if(!filename.empty())
+	read_to_map_of_interactions_areas(const bool accumulating) : accumulating(accumulating)
 	{
-		std::ofstream foutput(filename.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map<CRAD, EnergyDescriptor>::const_iterator it=map_of_single_energy_descriptors.begin();it!=map_of_single_energy_descriptors.end();++it)
-			{
-				print_energy_descriptor(it->first.str(), it->second, foutput);
-			}
-		}
 	}
+
+	inline bool operator()(std::istream& input, std::map<Interaction, double>& map_of_interactions_areas)
+	{
+		Interaction interaction;
+		double area;
+		input >> interaction >> area;
+		if(!input.fail())
+		{
+			if(accumulating)
+			{
+				const CRADsPair crads_without_numbering(interaction.crads.a.without_numbering(), interaction.crads.b.without_numbering());
+				map_of_interactions_areas[Interaction(crads_without_numbering, interaction.tag)]+=area;
+			}
+			else
+			{
+				map_of_interactions_areas[interaction]=area;
+			}
+			return true;
+		}
+		return false;
+	}
+};
+
+inline bool read_to_map_of_crads_values_pairs(std::istream& input, std::map<CRAD, std::pair<double, double> >& map_of_crads_values_pairs)
+{
+	CRAD crad;
+	std::pair<double, double> vp;
+	input >> crad >> vp.first >> vp.second;
+	if(!input.fail())
+	{
+		map_of_crads_values_pairs[crad]=vp;
+		return true;
+	}
+	return false;
 }
 
 std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD, double>& raw_scores, const unsigned int window)
@@ -168,28 +188,21 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::string file_path;
 			std::cin >> file_path;
-			if(!file_path.empty())
-			{
-				std::ifstream finput(file_path.c_str(), std::ios::in);
-				if(finput.good())
-				{
-					read_map_of_interactions_areas(finput, true, map_of_interactions_total_areas);
-				}
-			}
+			auxiliaries::IOUtilities().read_file_lines_to_container(file_path, read_to_map_of_interactions_areas(true), map_of_interactions_total_areas);
 		}
 	}
 	else
 	{
-		read_map_of_interactions_areas(std::cin, true, map_of_interactions_total_areas);
+		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_to_map_of_interactions_areas(true), map_of_interactions_total_areas);
 	}
 
 	for(std::map<Interaction, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
 		const Interaction& interaction=it->first;
 		const double area=it->second;
-		map_of_crads_total_areas[interaction.first.first]+=area;
-		map_of_crads_total_areas[interaction.first.second]+=area;
-		map_of_conditions_total_areas[interaction.second]+=area;
+		map_of_crads_total_areas[interaction.crads.a]+=area;
+		map_of_crads_total_areas[interaction.crads.b]+=area;
+		map_of_conditions_total_areas[interaction.tag]+=area;
 		sum_of_all_areas+=area;
 	}
 
@@ -210,9 +223,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const Interaction& interaction=it->first;
 		const double abc=it->second;
-		const double ax=map_of_crads_total_areas[interaction.first.first];
-		const double bx=map_of_crads_total_areas[interaction.first.second];
-		const double cx=map_of_conditions_total_areas[interaction.second];
+		const double ax=map_of_crads_total_areas[interaction.crads.a];
+		const double bx=map_of_crads_total_areas[interaction.crads.b];
+		const double cx=map_of_conditions_total_areas[interaction.tag];
 		if(abc>0.0 && ax>0.0 && bx>0.0 && cx>0.0)
 		{
 			const double potential_value=(0.0-log((abc*sum_of_all_areas*sum_of_all_areas)/(ax*bx*cx)));
@@ -228,7 +241,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			for(std::map< Interaction, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 			{
 				const Interaction& interaction=it->first;
-				foutput << interaction.first.first.str() << " " << interaction.first.second.str() << " " << interaction.second << " "<< it->second.first << "\n";
+				foutput << interaction << " " << it->second.first << "\n";
 			}
 		}
 	}
@@ -236,7 +249,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< Interaction, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
 		const Interaction& interaction=it->first;
-		std::cout << interaction.first.first.str() << " " << interaction.first.second.str() << " " << interaction.second << " "<< it->second.second << "\n";
+		std::cout << interaction << " " << it->second.second << "\n";
 	}
 }
 
@@ -270,7 +283,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<Interaction, double> map_of_contacts;
 	{
-		read_map_of_interactions_areas(std::cin, false, map_of_contacts);
+		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_to_map_of_interactions_areas(false), map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
@@ -279,32 +292,25 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<Interaction, double> map_of_potential_values;
 	{
-		if(!potential_file.empty())
-		{
-			std::ifstream finput(potential_file.c_str(), std::ios::in);
-			if(finput.good())
-			{
-				read_map_of_interactions_areas(finput, false, map_of_potential_values);
-			}
-		}
+		auxiliaries::IOUtilities().read_file_lines_to_container(potential_file, read_to_map_of_interactions_areas(false), map_of_potential_values);
 		if(map_of_potential_values.empty())
 		{
 			throw std::runtime_error("No potential values input.");
 		}
 	}
 
-	std::map<std::pair<CRAD, CRAD>, EnergyDescriptor> inter_atom_energy_descriptors;
+	std::map<CRADsPair, EnergyDescriptor> inter_atom_energy_descriptors;
 	{
 		for(std::map<Interaction, double>::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first.first;
+			const CRADsPair& crads=it->first.crads;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.first, crads.second, 0, ignorable_max_seq_sep, false))
+			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false))
 			{
 				ed.total_area=it->second;
 				ed.contacts_count=1;
 				std::map<Interaction, double>::const_iterator potential_value_it=
-						map_of_potential_values.find(Interaction(modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_numbering(), crads.second.without_numbering())), it->first.second));
+						map_of_potential_values.find(Interaction(CRADsPair(crads.a.without_numbering(), crads.b.without_numbering()), it->first.tag));
 				if(potential_value_it!=map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);
@@ -315,34 +321,32 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		print_pair_energy_descriptors_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
+		auxiliaries::IOUtilities().write_map_container_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
 	}
 
-	std::map< std::pair<CRAD, CRAD>, EnergyDescriptor > inter_residue_energy_descriptors;
+	std::map< CRADsPair, EnergyDescriptor > inter_residue_energy_descriptors;
 	{
-		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+		for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
 		{
-			const std::pair<CRAD, CRAD>& crads=it->first;
-			inter_residue_energy_descriptors[modescommon::refine_pair_by_ordering(std::make_pair(crads.first.without_atom(), crads.second.without_atom()))].add(it->second);
+			const CRADsPair& crads=it->first;
+			inter_residue_energy_descriptors[CRADsPair(crads.a.without_atom(), crads.b.without_atom())].add(it->second);
 		}
-		print_pair_energy_descriptors_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
+		auxiliaries::IOUtilities().write_map_container_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
 	}
 
-	const std::map< CRAD, std::set<CRAD> > atom_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, depth);
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_atom_energy_descriptors, atom_graph);
-	print_single_energy_descriptors_to_file(atom_energy_descriptors, atom_scores_file);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
+	auxiliaries::IOUtilities().write_map_container_to_file(atom_energy_descriptors, atom_scores_file);
 
-	const std::map< CRAD, std::set<CRAD> > residue_graph=modescommon::construct_graph_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, depth);
-	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=modescommon::construct_single_mapping_of_descriptors_from_pair_mapping_of_descriptors(inter_residue_energy_descriptors, residue_graph);
-	print_single_energy_descriptors_to_file(residue_energy_descriptors, residue_scores_file);
+	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_residue_energy_descriptors, depth);
+	auxiliaries::IOUtilities().write_map_container_to_file(residue_energy_descriptors, residue_scores_file);
 
 	{
 		EnergyDescriptor global_ed;
-		for(std::map< std::pair<CRAD, CRAD>, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+		for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
 		{
 			global_ed.add(it->second);
 		}
-		print_energy_descriptor("global", global_ed, std::cout);
+		std::cout << "global " << global_ed << "\n";
 	}
 }
 
@@ -375,50 +379,14 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 
 	std::map<CRAD, EnergyDescriptor> atom_energy_descriptors;
-	while(std::cin.good())
-	{
-		std::string line;
-		std::getline(std::cin, line);
-		if(!line.empty())
-		{
-			std::istringstream line_input(line);
-			std::string crad_string;
-			EnergyDescriptor ed;
-			line_input >> crad_string >> ed.total_area >> ed.strange_area >> ed.energy >> ed.contacts_count;
-			const CRAD crad=CRAD::from_str(crad_string);
-			if(crad.valid() && !line_input.fail())
-			{
-				atom_energy_descriptors[crad]=ed;
-			}
-		}
-	}
+	auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, atom_energy_descriptors);
 	if(atom_energy_descriptors.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
 	std::map<CRAD, std::pair<double, double> > means_and_sds;
-	if(!mean_and_sds_file.empty())
-	{
-		std::ifstream finput(mean_and_sds_file.c_str(), std::ios::in);
-		while(finput.good())
-		{
-			std::string line;
-			std::getline(finput, line);
-			if(!line.empty())
-			{
-				std::istringstream line_input(line);
-				std::string crad_string;
-				std::pair<double, double> values;
-				line_input >> crad_string >> values.first >> values.second;
-				const CRAD crad=CRAD::from_str(crad_string);
-				if(crad.valid() && !line_input.fail())
-				{
-					means_and_sds[crad]=values;
-				}
-			}
-		}
-	}
+	auxiliaries::IOUtilities().read_file_lines_to_container(mean_and_sds_file, read_to_map_of_crads_values_pairs, means_and_sds);
 
 	std::map<CRAD, double> atom_quality_scores;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
