@@ -115,6 +115,24 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	return false;
 }
 
+std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, double>& atom_scores)
+{
+	std::map<CRAD, std::pair<int, double> > summed_scores;
+	for(std::map<CRAD, double>::const_iterator it=atom_scores.begin();it!=atom_scores.end();++it)
+	{
+		std::pair<int, double>& value=summed_scores[it->first.without_atom()];
+		value.first++;
+		value.second+=it->second;
+	}
+	std::map<CRAD, double> average_scores;
+	for(std::map<CRAD, std::pair<int, double> >::const_iterator it=summed_scores.begin();it!=summed_scores.end();++it)
+	{
+		const std::pair<int, double>& value=it->second;
+		average_scores[it->first]=((value.first>0) ? (value.second/static_cast<double>(value.first)) : 0.0);
+	}
+	return average_scores;
+}
+
 std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD, double>& raw_scores, const unsigned int window)
 {
 	if(window>0)
@@ -410,20 +428,9 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!residue_scores_file.empty())
 	{
-		std::map<CRAD, std::pair<int, double> > residue_atom_summed_scores;
-		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
-		{
-			std::pair<int, double>& residue_value=residue_atom_summed_scores[it->first.without_atom()];
-			residue_value.first++;
-			residue_value.second+=it->second;
-		}
-		std::map<CRAD, double> residue_atomic_scores;
-		for(std::map<CRAD, std::pair<int, double> >::const_iterator it=residue_atom_summed_scores.begin();it!=residue_atom_summed_scores.end();++it)
-		{
-			const std::pair<int, double>& residue_value=it->second;
-			residue_atomic_scores[it->first]=((residue_value.first>0) ? (residue_value.second/static_cast<double>(residue_value.first)) : 0.0);
-		}
-		auxiliaries::IOUtilities().write_map_container_to_file(smooth_residue_scores_along_sequence(residue_atomic_scores, smoothing_window), residue_scores_file);
+		auxiliaries::IOUtilities().write_map_container_to_file(
+				smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window),
+				residue_scores_file);
 	}
 
 	if(!atom_quality_scores.empty())
