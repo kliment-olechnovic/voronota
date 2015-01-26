@@ -249,7 +249,7 @@ private:
 		{
 			return false;
 		}
-		container[key]=value;
+		container.insert(container.end(), std::make_pair(key, value));
 		return true;
 	}
 
