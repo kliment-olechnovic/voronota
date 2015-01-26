@@ -139,7 +139,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< CRADsPair, double > map_of_contacts;
 	{
-		auxiliaries::IOUtilities::read_lines_to_map_container(std::cin, map_of_contacts);
+		auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, map_of_contacts);
 		if(map_of_contacts.empty())
 		{
 			throw std::runtime_error("No contacts input.");
@@ -148,7 +148,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< CRADsPair, double > map_of_target_contacts;
 	{
-		auxiliaries::IOUtilities::read_file_lines_to_map_container(target_contacts_file, map_of_target_contacts);
+		auxiliaries::IOUtilities().read_file_lines_to_map_container(target_contacts_file, map_of_target_contacts);
 		if(map_of_target_contacts.empty())
 		{
 			throw std::runtime_error("No target contacts input.");
@@ -156,19 +156,19 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
-	auxiliaries::IOUtilities::write_map_container_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
+	auxiliaries::IOUtilities().write_map_container_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
 
 	const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
-	auxiliaries::IOUtilities::write_map_container_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
+	auxiliaries::IOUtilities().write_map_container_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
 
 	if(!atom_scores_file.empty())
 	{
-		auxiliaries::IOUtilities::write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth), atom_scores_file);
+		auxiliaries::IOUtilities().write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth), atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		auxiliaries::IOUtilities::write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth), residue_scores_file);
+		auxiliaries::IOUtilities().write_map_container_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth), residue_scores_file);
 	}
 
 	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";

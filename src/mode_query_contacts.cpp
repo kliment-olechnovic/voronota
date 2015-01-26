@@ -130,7 +130,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drawing_labels=poh.contains_option("--drawing-labels");
 
 	std::map< std::pair<CRAD, CRAD>, ContactValue > map_of_contacts;
-	auxiliaries::IOUtilities::read_lines_to_container(std::cin, modescommon::add_contact_record_from_stream_to_map, map_of_contacts);
+	auxiliaries::IOUtilities().read_lines_to_container(std::cin, modescommon::add_contact_record_from_stream_to_map, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -169,28 +169,28 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!match_external_first.empty())
 	{
 		std::ifstream input_file(match_external_first.c_str(), std::ios::in);
-		auxiliaries::IOUtilities::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_first_set_of_crads);
+		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_first_set_of_crads);
 	}
 
 	std::set<CRAD> matchable_external_second_set_of_crads;
 	if(!match_external_second.empty())
 	{
 		std::ifstream input_file(match_external_second.c_str(), std::ios::in);
-		auxiliaries::IOUtilities::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_second_set_of_crads);
+		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_from_stream_to_set, matchable_external_second_set_of_crads);
 	}
 
 	std::set< std::pair<CRAD, CRAD> > matchable_external_set_of_crad_pairs;
 	if(!match_external_pairs.empty())
 	{
 		std::ifstream input_file(match_external_pairs.c_str(), std::ios::in);
-		auxiliaries::IOUtilities::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
+		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_from_stream_to_set, matchable_external_set_of_crad_pairs);
 	}
 
 	std::map< std::pair<CRAD, CRAD>, double > map_of_external_adjunct_values;
 	if(!set_external_adjuncts.empty())
 	{
 		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
-		auxiliaries::IOUtilities::read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_external_adjunct_values);
+		auxiliaries::IOUtilities().read_lines_to_container(input_file, modescommon::add_chain_residue_atom_descriptors_pair_value_from_stream_to_map, map_of_external_adjunct_values);
 	}
 
 	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;

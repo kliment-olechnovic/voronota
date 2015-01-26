@@ -88,7 +88,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::IOUtilities::read_lines_to_container(radii_file_stream, add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 

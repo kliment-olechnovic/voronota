@@ -15,7 +15,7 @@ inline void update_set_of_tags(std::set<std::string>& tags, const std::string& s
 {
 	if(!str.empty() && str[0]!='.')
 	{
-		const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ";,");
+		const std::set<std::string> input_tags=auxiliaries::read_set_from_string<std::string>(str, ';');
 		if(!input_tags.empty())
 		{
 			tags.insert(input_tags.begin(), input_tags.end());
@@ -27,7 +27,7 @@ inline void update_map_of_adjuncts(std::map<std::string, double>& adjuncts, cons
 {
 	if(!str.empty() && str[0]!='.')
 	{
-		const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ";,");
+		const std::map<std::string, double> input_adjuncts=auxiliaries::read_map_from_string<std::string, double>(str, ';');
 		for(std::map<std::string, double>::const_iterator it=input_adjuncts.begin();it!=input_adjuncts.end();++it)
 		{
 			adjuncts[it->first]=it->second;
@@ -38,10 +38,10 @@ inline void update_map_of_adjuncts(std::map<std::string, double>& adjuncts, cons
 template<typename T, typename F>
 inline bool match_container_with_multiple_values(const T& container, const F& matcher, const std::string& values)
 {
-	const std::set<std::string> or_set=auxiliaries::read_set_from_string<std::string>(values, "|");
+	const std::set<std::string> or_set=auxiliaries::read_set_from_string<std::string>(values, '|');
 	for(std::set<std::string>::const_iterator it=or_set.begin();it!=or_set.end();++it)
 	{
-		const std::set<std::string> and_set=auxiliaries::read_set_from_string<std::string>(*it, "&");
+		const std::set<std::string> and_set=auxiliaries::read_set_from_string<std::string>(*it, '&');
 		bool and_result=true;
 		for(std::set<std::string>::const_iterator jt=and_set.begin();and_result && jt!=and_set.end();++jt)
 		{
