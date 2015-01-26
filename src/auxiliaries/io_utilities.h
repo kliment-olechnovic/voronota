@@ -180,129 +180,129 @@ public:
 	}
 
 	template<typename Container>
-	void read_lines_to_sequential_container(std::istream& input, Container& container) const
+	void read_lines_to_set(std::istream& input, Container& container) const
 	{
-		read_lines_to_container(input, read_line_to_sequential_container<Container>, container);
+		read_lines_to_container(input, read_line_to_set<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_lines_to_sequential_container(std::istream& input) const
+	Container read_lines_to_set(std::istream& input) const
 	{
 		Container container;
-		read_lines_to_sequential_container(input, container);
+		read_lines_to_set(input, container);
 		return container;
 	}
 
 	template<typename Container>
-	void read_file_lines_to_sequential_container(const std::string& filename, Container& container) const
+	void read_file_lines_to_set(const std::string& filename, Container& container) const
 	{
-		read_file_lines_to_container(filename, read_line_to_sequential_container<Container>, container);
+		read_file_lines_to_container(filename, read_line_to_set<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_file_lines_to_sequential_container(const std::string& filename) const
+	Container read_file_lines_to_set(const std::string& filename) const
 	{
 		Container container;
-		read_file_lines_to_sequential_container(filename, container);
+		read_file_lines_to_set(filename, container);
 		return container;
 	}
 
 	template<typename Container>
-	void read_string_lines_to_sequential_container(const std::string& str, Container& container) const
+	void read_string_lines_to_set(const std::string& str, Container& container) const
 	{
-		read_string_lines_to_container(str, read_line_to_sequential_container<Container>, container);
+		read_string_lines_to_container(str, read_line_to_set<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_string_lines_to_sequential_container(const std::string& str) const
+	Container read_string_lines_to_set(const std::string& str) const
 	{
 		Container container;
-		read_string_lines_to_sequential_container(str, container);
+		read_string_lines_to_set(str, container);
 		return container;
 	}
 
 	template<typename Container>
-	void write_sequential_container(const Container& container, std::ostream& output) const
+	void write_set(const Container& container, std::ostream& output) const
 	{
-		write_container(container, write_sequential_container_element<Container>, output);
+		write_container(container, write_set_element<Container>, output);
 	}
 
 	template<typename Container>
-	void write_sequential_container_to_file(const Container& container, const std::string& filename) const
+	void write_set_to_file(const Container& container, const std::string& filename) const
 	{
-		write_container_to_file(container, write_sequential_container_element<Container>, filename);
+		write_container_to_file(container, write_set_element<Container>, filename);
 	}
 
 	template<typename Container>
-	std::string write_sequential_container_to_string(const Container& container) const
+	std::string write_set_to_string(const Container& container) const
 	{
-		return write_container_to_string(container, write_sequential_container_element<Container>);
+		return write_container_to_string(container, write_set_element<Container>);
 	}
 
 	template<typename Container>
-	void read_lines_to_map_container(std::istream& input, Container& container) const
+	void read_lines_to_map(std::istream& input, Container& container) const
 	{
-		read_lines_to_container(input, read_line_to_map_container<Container>, container);
+		read_lines_to_container(input, read_line_to_map<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_lines_to_map_container(std::istream& input) const
+	Container read_lines_to_map(std::istream& input) const
 	{
 		Container container;
-		read_lines_to_map_container(input, container);
+		read_lines_to_map(input, container);
 		return container;
 	}
 
 	template<typename Container>
-	void read_file_lines_to_map_container(const std::string& filename, Container& container) const
+	void read_file_lines_to_map(const std::string& filename, Container& container) const
 	{
-		read_file_lines_to_container(filename, read_line_to_map_container<Container>, container);
+		read_file_lines_to_container(filename, read_line_to_map<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_file_lines_to_map_container(const std::string& filename) const
+	Container read_file_lines_to_map(const std::string& filename) const
 	{
 		Container container;
-		read_file_lines_to_map_container(filename, container);
+		read_file_lines_to_map(filename, container);
 		return container;
 	}
 
 	template<typename Container>
-	void read_string_lines_to_map_container(const std::string& str, Container& container) const
+	void read_string_lines_to_map(const std::string& str, Container& container) const
 	{
-		read_string_lines_to_container(str, read_line_to_map_container<Container>, container);
+		read_string_lines_to_container(str, read_line_to_map<Container>, container);
 	}
 
 	template<typename Container>
-	Container read_string_lines_to_map_container(const std::string& str) const
+	Container read_string_lines_to_map(const std::string& str) const
 	{
 		Container container;
-		read_string_lines_to_map_container(str, container);
+		read_string_lines_to_map(str, container);
 		return container;
 	}
 
 
 	template<typename Container>
-	void write_map_container(const Container& container, std::ostream& output) const
+	void write_map(const Container& container, std::ostream& output) const
 	{
-		write_container(container, write_map_container_element<Container>(internal_separator), output);
+		write_container(container, write_map_element<Container>(internal_separator), output);
 	}
 
 	template<typename Container>
-	void write_map_container_to_file(const Container& container, const std::string& filename) const
+	void write_map_to_file(const Container& container, const std::string& filename) const
 	{
-		write_container_to_file(container, write_map_container_element<Container>(internal_separator), filename);
+		write_container_to_file(container, write_map_element<Container>(internal_separator), filename);
 	}
 
 	template<typename Container>
-	std::string write_map_container_to_string(const Container& container) const
+	std::string write_map_to_string(const Container& container) const
 	{
-		return write_container_to_string(container, write_map_container_element<Container>(internal_separator));
+		return write_container_to_string(container, write_map_element<Container>(internal_separator));
 	}
 
 private:
 	template<typename Container>
-	static inline bool read_line_to_sequential_container(std::istream& input, Container& container)
+	static inline bool read_line_to_set(std::istream& input, Container& container)
 	{
 		typename Container::value_type value;
 		input >> value;
@@ -315,13 +315,13 @@ private:
 	}
 
 	template<typename Container>
-	static inline void write_sequential_container_element(const typename Container::value_type& value, std::ostream& output)
+	static inline void write_set_element(const typename Container::value_type& value, std::ostream& output)
 	{
 		output << value;
 	}
 
 	template<typename Container>
-	static inline bool read_line_to_map_container(std::istream& input, Container& container)
+	static inline bool read_line_to_map(std::istream& input, Container& container)
 	{
 		typename std::tr1::remove_const<typename Container::value_type::first_type>::type key;
 		typename Container::value_type::second_type value;
@@ -335,11 +335,11 @@ private:
 	}
 
 	template<typename Container>
-	struct write_map_container_element
+	struct write_map_element
 	{
 		char pair_separator;
 
-		write_map_container_element(const char pair_separator) : pair_separator(pair_separator)
+		write_map_element(const char pair_separator) : pair_separator(pair_separator)
 		{
 		}
 

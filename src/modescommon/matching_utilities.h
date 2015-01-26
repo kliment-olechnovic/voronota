@@ -68,11 +68,11 @@ private:
 	static bool match_container_with_multiple_values(const T& container, const F& matcher, const std::string& values)
 	{
 		std::set<std::string> or_set;
-		auxiliaries::IOUtilities('|').read_string_lines_to_sequential_container(values, or_set);
+		auxiliaries::IOUtilities('|').read_string_lines_to_set(values, or_set);
 		for(std::set<std::string>::const_iterator it=or_set.begin();it!=or_set.end();++it)
 		{
 			std::set<std::string> and_set;
-			auxiliaries::IOUtilities('&').read_string_lines_to_sequential_container(*it, and_set);
+			auxiliaries::IOUtilities('&').read_string_lines_to_set(*it, and_set);
 			bool and_result=true;
 			for(std::set<std::string>::const_iterator jt=and_set.begin();and_result && jt!=and_set.end();++jt)
 			{
