@@ -121,7 +121,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector< std::pair<CRAD, BallValue> > input_ball_records;
 	if(annotated)
 	{
-		auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, input_ball_records);
+		auxiliaries::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
 		spheres.reserve(input_ball_records.size());
 		for(std::size_t i=0;i<input_ball_records.size();i++)
 		{
@@ -130,7 +130,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		auxiliaries::IOUtilities().read_lines_to_sequential_container(std::cin, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 	}
 	if(spheres.size()<4)
 	{
@@ -198,7 +198,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		auxiliaries::IOUtilities().write_map_container(output_map_of_contacts, std::cout);
+		auxiliaries::IOUtilities().write_map(output_map_of_contacts, std::cout);
 	}
 	else
 	{

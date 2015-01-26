@@ -132,7 +132,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	enabled_output_of_ContactValue_graphics()=poh.contains_option("--preserve-graphics");
 
 	std::map<CRADsPair, ContactValue> map_of_contacts;
-	auxiliaries::IOUtilities().read_lines_to_map_container(std::cin, map_of_contacts);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -167,13 +167,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRAD> >(match_external_first);
+	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
 
-	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRAD> >(match_external_second);
+	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
 
-	const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRADsPair> >(match_external_pairs);
+	const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
 
-	const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<CRADsPair, double> >(set_external_adjuncts);
+	const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
 
 	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;
 	if(!set_hbplus_tags.empty())
@@ -280,7 +280,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		else
 		{
-			auxiliaries::IOUtilities().write_map_container(printable_map, std::cout);
+			auxiliaries::IOUtilities().write_map(printable_map, std::cout);
 		}
 	}
 

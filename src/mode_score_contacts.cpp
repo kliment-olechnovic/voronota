@@ -295,13 +295,13 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 2);
 
-	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map_container< std::map<InteractionName, double> >(std::cin);
+	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<InteractionName, double> >(potential_file);
+	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
 	if(map_of_potential_values.empty())
 	{
 		throw std::runtime_error("No potential values input.");
@@ -329,7 +329,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		auxiliaries::IOUtilities().write_map_container_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
+		auxiliaries::IOUtilities().write_map_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
 	}
 
 	std::map< CRADsPair, EnergyDescriptor > inter_residue_energy_descriptors;
@@ -339,14 +339,14 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 			const CRADsPair& crads=it->first;
 			inter_residue_energy_descriptors[CRADsPair(crads.a.without_atom(), crads.b.without_atom())].add(it->second);
 		}
-		auxiliaries::IOUtilities().write_map_container_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
+		auxiliaries::IOUtilities().write_map_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
 	}
 
 	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
-	auxiliaries::IOUtilities().write_map_container_to_file(atom_energy_descriptors, atom_scores_file);
+	auxiliaries::IOUtilities().write_map_to_file(atom_energy_descriptors, atom_scores_file);
 
 	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_residue_energy_descriptors, depth);
-	auxiliaries::IOUtilities().write_map_container_to_file(residue_energy_descriptors, residue_scores_file);
+	auxiliaries::IOUtilities().write_map_to_file(residue_energy_descriptors, residue_scores_file);
 
 	{
 		EnergyDescriptor global_ed;
@@ -386,13 +386,13 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::IOUtilities().read_lines_to_map_container< std::map<CRAD, EnergyDescriptor> >(std::cin);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
 	if(atom_energy_descriptors.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
+	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
 
 	std::map<CRAD, double> atom_quality_scores;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
@@ -416,11 +416,11 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map_container_to_file(atom_quality_scores, atom_scores_file);
+	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
 
 	if(!residue_scores_file.empty())
 	{
-		auxiliaries::IOUtilities().write_map_container_to_file(
+		auxiliaries::IOUtilities().write_map_to_file(
 				smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window),
 				residue_scores_file);
 	}
