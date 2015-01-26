@@ -8,31 +8,31 @@ namespace auxiliaries
 {
 
 template<typename T>
-inline std::set<T> read_set_from_string(const std::string& input_str, const std::string& separators)
+inline std::set<T> read_set_from_string(const std::string& input_str, const char sep)
 {
 	std::set<T> result;
-	IOUtilities::read_string_lines_to_sequential_container(IOUtilities::get_replaced(input_str, separators, '\n'), result);
+	IOUtilities(sep).read_string_lines_to_sequential_container(input_str, result);
 	return result;
 }
 
 template<typename T>
 inline void print_set_to_stream(const std::set<T>& set, const char sep, std::ostream& output)
 {
-	output << IOUtilities::get_replaced(IOUtilities::get_trimmed(IOUtilities::write_sequential_container_to_string(set), "\n"), "\n", sep);
+	IOUtilities(sep).write_sequential_container(set, output);
 }
 
 template<typename A, typename B>
-inline std::map<A, B> read_map_from_string(const std::string& input_str, const std::string& separators)
+inline std::map<A, B> read_map_from_string(const std::string& input_str, const char sep)
 {
 	std::map<A, B> result;
-	IOUtilities::read_string_lines_to_map_container(IOUtilities::get_replaced(IOUtilities::get_replaced(input_str, "=", ' '), separators, '\n'), result);
+	IOUtilities(sep, '=').read_string_lines_to_map_container(input_str, result);
 	return result;
 }
 
 template<typename A, typename B>
 inline void print_map_to_stream(const std::map<A, B>& map, const char sep, std::ostream& output)
 {
-	output << IOUtilities::get_replaced(IOUtilities::get_replaced(IOUtilities::get_trimmed(IOUtilities::write_map_container_to_string(map), "\n"), " ", '='), "\n", sep);
+	IOUtilities(sep, '=').write_map_container(map, output);
 }
 
 }

@@ -12,17 +12,37 @@ namespace auxiliaries
 class IOUtilities
 {
 public:
+	bool tail_line_delimiter;
+	char line_delimiter;
+	char internal_separator;
+
+	IOUtilities() : tail_line_delimiter(true), line_delimiter('\n'), internal_separator(' ')
+	{
+	}
+
+	IOUtilities(const char line_delimiter) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(' ')
+	{
+	}
+
+	IOUtilities(const char line_delimiter, const char internal_separator) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(internal_separator)
+	{
+	}
+
+	IOUtilities(const bool tail_line_delimiter, const char line_delimiter, const char internal_separator) : tail_line_delimiter(tail_line_delimiter), line_delimiter(line_delimiter), internal_separator(internal_separator)
+	{
+	}
+
 	template<typename LineReader, typename Container>
-	static void read_lines_to_container(
+	void read_lines_to_container(
 			std::istream& input,
 			LineReader line_reader,
-			Container& container)
+			Container& container) const
 	{
 		std::size_t line_num=0;
 		while(input.good())
 		{
 			std::string line;
-			std::getline(input, line);
+			std::getline(input, line, line_delimiter);
 			if(!line.empty())
 			{
 				{
@@ -34,6 +54,13 @@ public:
 				}
 				if(!line.empty())
 				{
+					for(std::size_t i=0;i<line.size();i++)
+					{
+						if(line[i]==internal_separator)
+						{
+							line[i]=' ';
+						}
+					}
 					std::istringstream line_input(line);
 					if(!line_reader(line_input, container))
 					{
@@ -46,10 +73,10 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
-	static void read_file_lines_to_container(
+	void read_file_lines_to_container(
 			const std::string& filename,
 			LineReader line_reader,
-			Container& container)
+			Container& container) const
 	{
 		if(!filename.empty())
 		{
@@ -62,10 +89,10 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
-	static void read_string_lines_to_container(
+	void read_string_lines_to_container(
 			const std::string& str,
 			LineReader line_reader,
-			Container& container)
+			Container& container) const
 	{
 		if(!str.empty())
 		{
@@ -75,22 +102,30 @@ public:
 	}
 
 	template<typename Container, typename ElementWriter>
-	static void write_container(
+	void write_container(
 			const Container& container,
 			ElementWriter element_writer,
-			std::ostream& output)
+			std::ostream& output) const
 	{
 		for(typename Container::const_iterator it=container.begin();it!=container.end() && output.good();++it)
 		{
+			if(it!=container.begin())
+			{
+				output << line_delimiter;
+			}
 			element_writer(*it, output);
+		}
+		if(tail_line_delimiter && !container.empty())
+		{
+			output << line_delimiter;
 		}
 	}
 
 	template<typename Container, typename ElementWriter>
-	static void write_container_to_file(
+	void write_container_to_file(
 			const Container& container,
 			ElementWriter element_writer,
-			const std::string& filename)
+			const std::string& filename) const
 	{
 		if(!filename.empty())
 		{
@@ -103,9 +138,9 @@ public:
 	}
 
 	template<typename Container, typename ElementWriter>
-	static std::string write_container_to_string(
+	std::string write_container_to_string(
 			const Container& container,
-			ElementWriter element_writer)
+			ElementWriter element_writer) const
 	{
 		std::ostringstream output;
 		write_container(container, element_writer, output);
@@ -113,108 +148,75 @@ public:
 	}
 
 	template<typename Container>
-	static void read_lines_to_sequential_container(std::istream& input, Container& container)
+	void read_lines_to_sequential_container(std::istream& input, Container& container) const
 	{
 		read_lines_to_container(input, read_line_to_sequential_container<Container>, container);
 	}
 
 	template<typename Container>
-	static void read_file_lines_to_sequential_container(const std::string& filename, Container& container)
+	void read_file_lines_to_sequential_container(const std::string& filename, Container& container) const
 	{
 		read_file_lines_to_container(filename, read_line_to_sequential_container<Container>, container);
 	}
 
 	template<typename Container>
-	static void read_string_lines_to_sequential_container(const std::string& str, Container& container)
+	void read_string_lines_to_sequential_container(const std::string& str, Container& container) const
 	{
 		read_string_lines_to_container(str, read_line_to_sequential_container<Container>, container);
 	}
 
 	template<typename Container>
-	inline void write_sequential_container(const Container& container, std::ostream& output)
+	void write_sequential_container(const Container& container, std::ostream& output) const
 	{
 		write_container(container, write_sequential_container_element<Container>, output);
 	}
 
 	template<typename Container>
-	static void write_sequential_container_to_file(const Container& container, const std::string& filename)
+	void write_sequential_container_to_file(const Container& container, const std::string& filename) const
 	{
 		write_container_to_file(container, write_sequential_container_element<Container>, filename);
 	}
 
 	template<typename Container>
-	static std::string write_sequential_container_to_string(const Container& container)
+	std::string write_sequential_container_to_string(const Container& container) const
 	{
 		return write_container_to_string(container, write_sequential_container_element<Container>);
 	}
 
 	template<typename Container>
-	static void read_lines_to_map_container(std::istream& input, Container& container)
+	void read_lines_to_map_container(std::istream& input, Container& container) const
 	{
 		read_lines_to_container(input, read_line_to_map_container<Container>, container);
 	}
 
 	template<typename Container>
-	static void read_file_lines_to_map_container(const std::string& filename, Container& container)
+	void read_file_lines_to_map_container(const std::string& filename, Container& container) const
 	{
 		read_file_lines_to_container(filename, read_line_to_map_container<Container>, container);
 	}
 
 	template<typename Container>
-	static void read_string_lines_to_map_container(const std::string& str, Container& container)
+	void read_string_lines_to_map_container(const std::string& str, Container& container) const
 	{
 		read_string_lines_to_container(str, read_line_to_map_container<Container>, container);
 	}
 
 	template<typename Container>
-	static void write_map_container(const Container& container, std::ostream& output)
+	void write_map_container(const Container& container, std::ostream& output) const
 	{
-		write_container(container, write_map_container_element<Container>, output);
+		write_container(container, write_map_container_element<Container>(internal_separator), output);
 	}
 
 	template<typename Container>
-	static void write_map_container_to_file(const Container& container, const std::string& filename)
+	void write_map_container_to_file(const Container& container, const std::string& filename) const
 	{
-		write_container_to_file(container, write_map_container_element<Container>, filename);
+		write_container_to_file(container, write_map_container_element<Container>(internal_separator), filename);
 	}
 
 	template<typename Container>
-	static std::string write_map_container_to_string(const Container& container)
+	std::string write_map_container_to_string(const Container& container) const
 	{
-		return write_container_to_string(container, write_map_container_element<Container>);
-	}
-
-	static void replace(std::string& str, const std::string& as, const char b)
-	{
-		for(std::size_t i=0;i<str.size();i++)
-		{
-			if(as.find(str[i])!=std::string::npos)
-			{
-				str[i]=b;
-			}
-		}
-	}
-
-	static std::string get_replaced(const std::string& str, const std::string& as, const char b)
-	{
-		std::string result=str;
-		replace(result, as, b);
-		return result;
-	}
-
-	static void trim(std::string& str, const std::string& cs)
-	{
-		while(!str.empty() && cs.find(str[str.size()-1])!=std::string::npos)
-		{
-			str.erase(str.size()-1, 1);
-		}
-	}
-
-	static std::string get_trimmed(const std::string& str, const std::string& cs)
-	{
-		std::string result=str;
-		trim(result, cs);
-		return result;
+		return write_container_to_string(container, write_map_container_element<Container>(internal_separator));
 	}
 
 private:
@@ -234,7 +236,7 @@ private:
 	template<typename Container>
 	static inline void write_sequential_container_element(const typename Container::value_type& value, std::ostream& output)
 	{
-		output << value << "\n";
+		output << value;
 	}
 
 	template<typename Container>
@@ -252,10 +254,19 @@ private:
 	}
 
 	template<typename Container>
-	static inline void write_map_container_element(const typename Container::value_type& value, std::ostream& output)
+	struct write_map_container_element
 	{
-		output << value.first << " " << value.second << "\n";
-	}
+		char pair_separator;
+
+		write_map_container_element(const char pair_separator) : pair_separator(pair_separator)
+		{
+		}
+
+		inline void operator()(const typename Container::value_type& value, std::ostream& output)
+		{
+			output << value.first << pair_separator << value.second;
+		}
+	};
 };
 
 }
