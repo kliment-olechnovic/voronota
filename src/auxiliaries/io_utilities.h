@@ -6,6 +6,8 @@
 #include <fstream>
 #include <stdexcept>
 
+#include <tr1/type_traits>
+
 namespace auxiliaries
 {
 
@@ -242,8 +244,8 @@ private:
 	template<typename Container>
 	static inline bool read_line_to_map_container(std::istream& input, Container& container)
 	{
-		typename Container::key_type key;
-		typename Container::mapped_type value;
+		typename std::tr1::remove_const<typename Container::value_type::first_type>::type key;
+		typename Container::value_type::second_type value;
 		input >> key >> value;
 		if(input.fail())
 		{
