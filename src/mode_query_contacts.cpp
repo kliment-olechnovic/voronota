@@ -167,33 +167,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	std::set<CRAD> matchable_external_first_set_of_crads;
-	if(!match_external_first.empty())
-	{
-		std::ifstream input_file(match_external_first.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_sequential_container(input_file, matchable_external_first_set_of_crads);
-	}
+	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRAD> >(match_external_first);
 
-	std::set<CRAD> matchable_external_second_set_of_crads;
-	if(!match_external_second.empty())
-	{
-		std::ifstream input_file(match_external_second.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_sequential_container(input_file, matchable_external_second_set_of_crads);
-	}
+	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRAD> >(match_external_second);
 
-	std::set< CRADsPair > matchable_external_set_of_crad_pairs;
-	if(!match_external_pairs.empty())
-	{
-		std::ifstream input_file(match_external_pairs.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_sequential_container(input_file, matchable_external_set_of_crad_pairs);
-	}
+	const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_sequential_container< std::set<CRADsPair> >(match_external_pairs);
 
-	std::map< CRADsPair, double > map_of_external_adjunct_values;
-	if(!set_external_adjuncts.empty())
-	{
-		std::ifstream input_file(set_external_adjuncts.c_str(), std::ios::in);
-		auxiliaries::IOUtilities().read_lines_to_map_container(input_file, map_of_external_adjunct_values);
-	}
+	const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map_container< std::map<CRADsPair, double> >(set_external_adjuncts);
 
 	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;
 	if(!set_hbplus_tags.empty())

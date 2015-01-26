@@ -41,8 +41,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::IOUtilities().read_lines_to_sequential_container(std::cin, spheres);
+	const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_sequential_container< std::vector<apollota::SimpleSphere> >(std::cin);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
