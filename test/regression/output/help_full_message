@@ -12,6 +12,7 @@ score-contacts-potential
 score-contacts-energy
 score-contacts-quality
 compare-contacts
+score-scores
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -186,4 +187,13 @@ Command 'compare-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  two lines of global scores (atom-level and residue-level)
+
+Command 'score-scores' options:
+--reference-threshold           number      reference scores classification threshold
+--testable-step                 number      testable scores threshold step
+--ROC-curve-file                string      file path to output ROC curve
+--PR-curve-file                 string      file path to output PR curve
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  pairs of reference and testable scores files
+stdout  ->  global results
 
