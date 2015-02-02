@@ -77,7 +77,18 @@ struct ClassificationResults
 	{
 		return TPR();
 	}
+
+	double accuracy() const
+	{
+		return ((TP+TN+FP+FN)>0 ? static_cast<double>(TP+TN)/static_cast<double>(TP+TN+FP+FN) : 0.0);
+	}
 };
+
+inline std::ostream& operator<<(std::ostream& output, const ClassificationResults& v)
+{
+	output << v.TP << " " << v.TN << " " << v.FP << " " << v.FN;
+	return output;
+}
 
 MapOfNamedValuesPairs merge_two_maps(const MapOfNamedValues& a, const MapOfNamedValues& b)
 {
@@ -177,6 +188,19 @@ double calc_AUC(const std::set< std::pair<double, double> >& curve)
 	return result;
 }
 
+std::pair<double, double> calc_best_accuracy(const std::map<double, ClassificationResults>& classification_results_map)
+{
+	std::pair<double, double> result(0.0, 0.0);
+	for(std::map<double, ClassificationResults>::const_iterator it=classification_results_map.begin();it!=classification_results_map.end();++it)
+	{
+		if(it==classification_results_map.begin() || it->second.accuracy()>result.second)
+		{
+			result=std::make_pair(it->first, it->second.accuracy());
+		}
+	}
+	return result;
+}
+
 }
 
 void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
@@ -186,6 +210,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--reference-threshold", "number", "reference scores classification threshold"));
 		list_of_option_descriptions.push_back(OD("--testable-step", "number", "testable scores threshold step"));
+		list_of_option_descriptions.push_back(OD("--outcomes-file", "string", "file path to output lines of 'threshold TP TN FP FN'"));
 		list_of_option_descriptions.push_back(OD("--ROC-curve-file", "string", "file path to output ROC curve"));
 		list_of_option_descriptions.push_back(OD("--PR-curve-file", "string", "file path to output PR curve"));
 		if(!poh.assert(list_of_option_descriptions, false))
@@ -198,6 +223,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const double reference_threshold=poh.argument<double>("--reference-threshold", 0.5);
 	const double testable_step=poh.argument<double>("--testable-step", 0.02);
+	const std::string outcomes_file=poh.argument<std::string>("--outcomes-file", "");
 	const std::string ROC_curve_file=poh.argument<std::string>("--ROC-curve-file", "");
 	const std::string PR_curve_file=poh.argument<std::string>("--PR-curve-file", "");
 
@@ -222,9 +248,14 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::set< std::pair<double, double> > ROC_curve_coordinates=calc_ROC_curve_coordinates(classification_results_map);
 	const std::set< std::pair<double, double> > PR_curve_coordinates=calc_PR_curve_coordinates(classification_results_map);
 
+	const std::pair<double, double> best_accuracy=calc_best_accuracy(classification_results_map);
+
+	auxiliaries::IOUtilities().write_map_to_file(classification_results_map, outcomes_file);
 	auxiliaries::IOUtilities().write_map_to_file(ROC_curve_coordinates, ROC_curve_file);
 	auxiliaries::IOUtilities().write_map_to_file(PR_curve_coordinates, PR_curve_file);
 
 	std::cout << "ROC_AUC " << calc_AUC(ROC_curve_coordinates) << "\n";
 	std::cout << "PR_AUC " << calc_AUC(PR_curve_coordinates) << "\n";
+	std::cout << "best_accuracy_threshold " << best_accuracy.first << "\n";
+	std::cout << "best_accuracy_value " << best_accuracy.second << "\n";
 }
