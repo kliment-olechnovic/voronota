@@ -492,7 +492,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 						const double d=(it->second.first-it->second.second);
 						sum+=(d*d);
 					}
-					replacements_scores[CRADsPair(it1->first, it2->first)]=(sum/static_cast<double>(merged_map.size()));
+					replacements_scores[CRADsPair(it1->first, it2->first)]=sqrt(sum/static_cast<double>(merged_map.size()));
 				}
 			}
 		}
