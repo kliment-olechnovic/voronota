@@ -80,7 +80,25 @@ struct ClassificationResults
 
 	double accuracy() const
 	{
-		return ((TP+TN+FP+FN)>0 ? static_cast<double>(TP+TN)/static_cast<double>(TP+TN+FP+FN) : 0.0);
+		unsigned long d=(TP+TN+FP+FN);
+		return (d>0 ? static_cast<double>(TP+TN)/static_cast<double>(d) : 0.0);
+	}
+
+	double MCC() const
+	{
+		unsigned long c=((TP*TN)-(FP*FN));
+		unsigned long d1=(TP+FP);
+		unsigned long d2=(TP+FN);
+		unsigned long d3=(TN+FP);
+		unsigned long d4=(TN+FN);
+		if(d1>0 && d2>0 && d3>0 && d4>0)
+		{
+			return (c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
+		}
+		else
+		{
+			return 0.0;
+		}
 	}
 };
 
@@ -201,6 +219,19 @@ std::pair<double, double> calc_best_accuracy(const std::map<double, Classificati
 	return result;
 }
 
+std::pair<double, double> calc_best_MCC(const std::map<double, ClassificationResults>& classification_results_map)
+{
+	std::pair<double, double> result(0.0, 0.0);
+	for(std::map<double, ClassificationResults>::const_iterator it=classification_results_map.begin();it!=classification_results_map.end();++it)
+	{
+		if(it==classification_results_map.begin() || it->second.MCC()>result.second)
+		{
+			result=std::make_pair(it->first, it->second.MCC());
+		}
+	}
+	return result;
+}
+
 }
 
 void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
@@ -249,6 +280,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::set< std::pair<double, double> > PR_curve_coordinates=calc_PR_curve_coordinates(classification_results_map);
 
 	const std::pair<double, double> best_accuracy=calc_best_accuracy(classification_results_map);
+	const std::pair<double, double> best_MCC=calc_best_MCC(classification_results_map);
 
 	auxiliaries::IOUtilities().write_map_to_file(classification_results_map, outcomes_file);
 	auxiliaries::IOUtilities().write_map_to_file(ROC_curve_coordinates, ROC_curve_file);
@@ -257,5 +289,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "ROC_AUC " << calc_AUC(ROC_curve_coordinates) << "\n";
 	std::cout << "PR_AUC " << calc_AUC(PR_curve_coordinates) << "\n";
 	std::cout << "best_accuracy_threshold " << best_accuracy.first << "\n";
-	std::cout << "best_accuracy_value " << best_accuracy.second << "\n";
+	std::cout << "best_accuracy " << best_accuracy.second << "\n";
+	std::cout << "best_MCC_threshold " << best_MCC.first << "\n";
+	std::cout << "best_MCC " << best_MCC.second << "\n";
 }
