@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <set>
+#include <cmath>
 
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
@@ -59,17 +60,17 @@ struct ClassificationResults
 
 	double TPR() const
 	{
-		return (TP>0 ? static_cast<double>(TP)/static_cast<double>(TP+FN) : 0.0);
+		return ((TP+FN)>0 ? static_cast<double>(TP)/static_cast<double>(TP+FN) : 0.0);
 	}
 
 	double FPR() const
 	{
-		return (FP>0 ? static_cast<double>(FP)/static_cast<double>(FP+TN) : 0.0);
+		return ((FP+TN)>0 ? static_cast<double>(FP)/static_cast<double>(FP+TN) : 0.0);
 	}
 
 	double precision() const
 	{
-		return (TP>0 ? static_cast<double>(TP)/static_cast<double>(TP+FP) : 0.0);
+		return ((TP+FP)>0 ? static_cast<double>(TP)/static_cast<double>(TP+FP) : 1.0);
 	}
 
 	double recall() const
@@ -121,8 +122,22 @@ void update_classification_results_map(
 		const double testable_step,
 		std::map<double, ClassificationResults>& classification_results_map)
 {
-	for(double testable_threshold=0.0;testable_threshold<=1.0;testable_threshold+=testable_step)
+	std::pair<double, double> min_max_testable_value(0.0, 0.0);
+	for(MapOfNamedValuesPairs::const_iterator it=map_of_pairs.begin();it!=map_of_pairs.end();++it)
 	{
+		if(it==map_of_pairs.begin() || it->second.second<min_max_testable_value.first)
+		{
+			min_max_testable_value.first=it->second.second;
+		}
+		if(it==map_of_pairs.begin() || it->second.second>min_max_testable_value.second)
+		{
+			min_max_testable_value.second=it->second.second;
+		}
+	}
+	std::pair<long, long> min_max_integers(static_cast<long>(floor(min_max_testable_value.first/testable_step)), static_cast<long>(ceil(min_max_testable_value.second/testable_step)));
+	for(long i=min_max_integers.first;i<=min_max_integers.second;i++)
+	{
+		const double testable_threshold=static_cast<double>(i)*testable_step;
 		classification_results_map[testable_threshold].add(calc_classification_results(map_of_pairs, reference_threshold, testable_threshold));
 	}
 }
