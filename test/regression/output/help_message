@@ -11,6 +11,7 @@ query-contacts
 score-contacts-potential
 score-contacts-energy
 score-contacts-quality
+score-contacts-replacements
 compare-contacts
 score-scores
 

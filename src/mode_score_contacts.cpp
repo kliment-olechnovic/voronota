@@ -7,6 +7,8 @@
 #include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/io_utilities.h"
 
+#include "modescommon/generic_utilities.h"
+
 namespace
 {
 
@@ -438,4 +440,63 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::cout << "0\n";
 	}
+}
+
+void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	typedef std::map< std::pair<CRAD, std::string>, double> NamedValuesMap;
+	typedef std::map< std::pair<CRAD, std::string>, std::pair<double, double> > NamedValuesPairsMap;
+	typedef std::map<CRAD, NamedValuesMap> CRADsGraph;
+
+	{
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> list_of_option_descriptions;
+		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		if(!poh.assert(list_of_option_descriptions, false))
+		{
+			std::cerr << "stdout  ->  replacements scores\n";
+			return;
+		}
+	}
+
+	const std::string potential_file=poh.argument<std::string>("--potential-file");
+
+	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+	if(map_of_potential_values.empty())
+	{
+		throw std::runtime_error("No potential values input.");
+	}
+
+	CRADsGraph crads_graph;
+	for(std::map<InteractionName, double>::const_iterator it=map_of_potential_values.begin();it!=map_of_potential_values.end();++it)
+	{
+		const InteractionName& iname=it->first;
+		const double ival=it->second;
+		crads_graph[iname.crads.a][std::make_pair(iname.crads.b, iname.tag)]=ival;
+		crads_graph[iname.crads.b][std::make_pair(iname.crads.a, iname.tag)]=ival;
+	}
+
+	std::map<CRADsPair, double> replacements_scores;
+	for(CRADsGraph::const_iterator it1=crads_graph.begin();it1!=crads_graph.end();++it1)
+	{
+		for(CRADsGraph::const_iterator it2=it1;it2!=crads_graph.end();++it2)
+		{
+			if(it1!=it2)
+			{
+				NamedValuesPairsMap merged_map=GenericUtilities::merge_two_maps(it1->second, it2->second);
+				if(!merged_map.empty())
+				{
+					double sum=0.0;
+					for(NamedValuesPairsMap::const_iterator it=merged_map.begin();it!=merged_map.end();++it)
+					{
+						const double d=(it->second.first-it->second.second);
+						sum+=(d*d);
+					}
+					replacements_scores[CRADsPair(it1->first, it2->first)]=(sum/static_cast<double>(merged_map.size()));
+				}
+			}
+		}
+	}
+
+	auxiliaries::IOUtilities().write_map(replacements_scores, std::cout);
 }
