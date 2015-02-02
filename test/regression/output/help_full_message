@@ -191,6 +191,7 @@ stdout  ->  two lines of global scores (atom-level and residue-level)
 Command 'score-scores' options:
 --reference-threshold           number      reference scores classification threshold
 --testable-step                 number      testable scores threshold step
+--outcomes-file                 string      file path to output lines of 'threshold TP TN FP FN'
 --ROC-curve-file                string      file path to output ROC curve
 --PR-curve-file                 string      file path to output PR curve
 --help                                      flag to print usage help to stderr and exit
