@@ -179,6 +179,9 @@ cat $OUTPUT_SUBDIR/contacts_scores_atom \
   --residue-scores-file $OUTPUT_SUBDIR/contacts_quality_scores_residue \
 > $OUTPUT_SUBDIR/contacts_quality_scores_average
 
+$TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_FILE > $OUTPUT_SUBDIR/contacts_replacements
+$TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_ENHANCED_FILE > $OUTPUT_SUBDIR/contacts_enhanced_replacements
+
 ############################
 
 rm -r ./voronota_package
