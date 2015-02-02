@@ -6,6 +6,8 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
+#include "modescommon/generic_utilities.h"
+
 namespace
 {
 
@@ -106,31 +108,6 @@ inline std::ostream& operator<<(std::ostream& output, const ClassificationResult
 {
 	output << v.TP << " " << v.TN << " " << v.FP << " " << v.FN;
 	return output;
-}
-
-MapOfNamedValuesPairs merge_two_maps(const MapOfNamedValues& a, const MapOfNamedValues& b)
-{
-	MapOfNamedValuesPairs result;
-	typename MapOfNamedValues::const_iterator a_it=a.begin();
-	typename MapOfNamedValues::const_iterator b_it=b.begin();
-	while(a_it!=a.end() && b_it!=b.end())
-	{
-		if(a_it->first==b_it->first)
-		{
-			result.insert(result.end(), std::make_pair(a_it->first, std::make_pair(a_it->second, b_it->second)));
-			++a_it;
-			++b_it;
-		}
-		else if(a_it->first<b_it->first)
-		{
-			++a_it;
-		}
-		else if(b_it->first<a_it->first)
-		{
-			++b_it;
-		}
-	}
-	return result;
 }
 
 ClassificationResults calc_classification_results(const MapOfNamedValuesPairs& map_of_pairs, const double reference_threshold, const double testable_threshold)
@@ -269,7 +246,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const MapOfNamedValues reference_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->first);
 		const MapOfNamedValues testable_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->second);
-		const MapOfNamedValuesPairs merged_scores_map=merge_two_maps(reference_scores_map, testable_scores_map);
+		const MapOfNamedValuesPairs merged_scores_map=GenericUtilities::merge_two_maps(reference_scores_map, testable_scores_map);
 		if(!merged_scores_map.empty())
 		{
 			update_classification_results_map(merged_scores_map, reference_threshold, testable_step, classification_results_map);
