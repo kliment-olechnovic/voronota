@@ -452,6 +452,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		list_of_option_descriptions.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdout  ->  replacements scores\n";
@@ -460,6 +461,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
+	const bool output_as_matrix=poh.contains_option("--output-as-matrix");
 
 	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
 	if(map_of_potential_values.empty())
@@ -498,5 +500,36 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(replacements_scores, std::cout);
+	if(output_as_matrix)
+	{
+		std::map< CRAD, std::map<CRAD, double> > matrix;
+		for(std::map<CRADsPair, double>::const_iterator it=replacements_scores.begin();it!=replacements_scores.end();++it)
+		{
+			matrix[it->first.a][it->first.b]=it->second;
+			matrix[it->first.b][it->first.a]=it->second;
+			matrix[it->first.a][it->first.a]=0.0;
+			matrix[it->first.b][it->first.b]=0.0;
+		}
+		for(std::map< CRAD, std::map<CRAD, double> >::const_iterator it=matrix.begin();it!=matrix.end();++it)
+		{
+			const std::map<CRAD, double>& line=it->second;
+			if(it==matrix.begin())
+			{
+				for(std::map<CRAD, double>::const_iterator jt=line.begin();jt!=line.end();++jt)
+				{
+					std::cout << (jt==line.begin() ? "" : " ") << jt->first;
+				}
+				std::cout << "\n";
+			}
+			for(std::map<CRAD, double>::const_iterator jt=line.begin();jt!=line.end();++jt)
+			{
+				std::cout << (jt==line.begin() ? "" : " ") << jt->second;
+			}
+			std::cout << "\n";
+		}
+	}
+	else
+	{
+		auxiliaries::IOUtilities().write_map(replacements_scores, std::cout);
+	}
 }

@@ -179,6 +179,7 @@ stdout  ->  average local score
 
 Command 'score-contacts-replacements' options:
 --potential-file                string   *  file path to input potential values
+--output-as-matrix                       *  flag to output results as distance matrix
 --help                                      flag to print usage help to stderr and exit
 stdout  ->  replacements scores
 
