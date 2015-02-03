@@ -287,6 +287,11 @@ public:
 		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
 	}
 
+	bool operator!=(const ChainResidueAtomDescriptor& v) const
+	{
+		return (!((*this)==v));
+	}
+
 	bool operator<(const ChainResidueAtomDescriptor& v) const
 	{
 		if(chainID<v.chainID) { return true; }
