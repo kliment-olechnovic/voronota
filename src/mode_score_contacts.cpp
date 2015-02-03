@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <cmath>
+#include <numeric>
 
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/chain_residue_atom_descriptor.h"
@@ -452,6 +453,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> list_of_option_descriptions;
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		list_of_option_descriptions.push_back(OD("--residue-level", "", "flag to operate on residue level", true));
 		list_of_option_descriptions.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
@@ -461,6 +463,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
+	const bool residue_level=poh.contains_option("--residue-level");
 	const bool output_as_matrix=poh.contains_option("--output-as-matrix");
 
 	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
@@ -497,6 +500,21 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 					replacements_scores[CRADsPair(it1->first, it2->first)]=sqrt(sum/static_cast<double>(merged_map.size()));
 				}
 			}
+		}
+	}
+
+	if(residue_level)
+	{
+		std::map<CRADsPair, std::vector<double> > residue_atoms_replacements_scores;
+		for(std::map<CRADsPair, double>::const_iterator it=replacements_scores.begin();it!=replacements_scores.end();++it)
+		{
+			residue_atoms_replacements_scores[CRADsPair(it->first.a.without_atom(), it->first.b.without_atom())].push_back(it->second);
+		}
+		replacements_scores.clear();
+		for(std::map<CRADsPair, std::vector<double> >::const_iterator it=residue_atoms_replacements_scores.begin();it!=residue_atoms_replacements_scores.end();++it)
+		{
+			const std::vector<double>& atoms_differences=it->second;
+			replacements_scores[it->first]=(std::accumulate(atoms_differences.begin(), atoms_differences.end(), 0.0)/static_cast<double>(atoms_differences.size()));
 		}
 	}
 

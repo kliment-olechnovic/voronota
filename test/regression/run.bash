@@ -182,6 +182,7 @@ cat $OUTPUT_SUBDIR/contacts_scores_atom \
 $TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_FILE > $OUTPUT_SUBDIR/contacts_replacements
 $TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_ENHANCED_FILE > $OUTPUT_SUBDIR/contacts_enhanced_replacements
 $TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_ENHANCED_FILE --output-as-matrix > $OUTPUT_SUBDIR/contacts_enhanced_replacements_matrix
+$TEST_SUBJECT score-contacts-replacements --potential-file $POTENTIAL_ENHANCED_FILE --residue-level --output-as-matrix > $OUTPUT_SUBDIR/contacts_enhanced_residue_replacements_matrix
 
 ############################
 
