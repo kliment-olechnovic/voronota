@@ -477,8 +477,14 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const InteractionName& iname=it->first;
 		const double ival=it->second;
-		crads_graph[iname.crads.a][std::make_pair(iname.crads.b, iname.tag)]=ival;
-		crads_graph[iname.crads.b][std::make_pair(iname.crads.a, iname.tag)]=ival;
+		if(iname.crads.a!=CRAD::solvent())
+		{
+			crads_graph[iname.crads.a][std::make_pair(iname.crads.b, iname.tag)]=ival;
+		}
+		if(iname.crads.b!=CRAD::solvent() && iname.crads.b!=iname.crads.a)
+		{
+			crads_graph[iname.crads.b][std::make_pair(iname.crads.a, iname.tag)]=ival;
+		}
 	}
 
 	std::map<CRADsPair, double> replacements_scores;
