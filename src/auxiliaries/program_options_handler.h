@@ -194,13 +194,13 @@ public:
 
 	bool assert(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized_options) const
 	{
-		std::vector<auxiliaries::ProgramOptionsHandler::OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions;
-		basic_list_of_option_descriptions.push_back(auxiliaries::ProgramOptionsHandler::OptionDescription("--help", "", "flag to print usage help to stderr and exit"));
+		std::vector<OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions;
+		basic_list_of_option_descriptions.push_back(OptionDescription("--help", "", "flag to print usage help to stderr and exit"));
 		if(contains_option("--help"))
 		{
 			if(!basic_list_of_option_descriptions.empty())
 			{
-				auxiliaries::ProgramOptionsHandler::print_list_of_option_descriptions("", basic_list_of_option_descriptions, std::cerr);
+				print_list_of_option_descriptions("", basic_list_of_option_descriptions, std::cerr);
 			}
 			return false;
 		}
