@@ -104,6 +104,48 @@ inline std::istream& operator>>(std::istream& input, NormalDistributionParameter
 	return input;
 }
 
+inline CRAD generalize_crad(const CRAD& input_crad)
+{
+	CRAD crad=input_crad.without_numbering();
+	if(crad.resName=="ARG" && (crad.name=="NH1" || crad.name=="NH2"))
+	{
+		crad.name="NH1";
+	}
+	else if(crad.resName=="ASP" && (crad.name=="OD1" || crad.name=="OD2"))
+	{
+		crad.name="OD1";
+	}
+	else if(crad.resName=="GLU" && (crad.name=="OE1" || crad.name=="OE2"))
+	{
+		crad.name="OE1";
+	}
+	else if(crad.resName=="LEU" && (crad.name=="CD1" || crad.name=="CD2"))
+	{
+		crad.name="CD1";
+	}
+	else if(crad.resName=="PHE" && (crad.name=="CD1" || crad.name=="CD2"))
+	{
+		crad.name="CD1";
+	}
+	else if(crad.resName=="PHE" && (crad.name=="CE1" || crad.name=="CE2"))
+	{
+		crad.name="CE1";
+	}
+	else if(crad.resName=="TYR" && (crad.name=="CD1" || crad.name=="CD2"))
+	{
+		crad.name="CD1";
+	}
+	else if(crad.resName=="TYR" && (crad.name=="CE1" || crad.name=="CE2"))
+	{
+		crad.name="CE1";
+	}
+	else if(crad.resName=="VAL" && (crad.name=="CG1" || crad.name=="CG2"))
+	{
+		crad.name="CG1";
+	}
+	return crad;
+}
+
 inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input, std::map<InteractionName, double>& map_of_interactions_areas)
 {
 	InteractionName interaction;
@@ -111,8 +153,8 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	input >> interaction >> area;
 	if(!input.fail())
 	{
-		const CRADsPair crads_without_numbering(interaction.crads.a.without_numbering(), interaction.crads.b.without_numbering());
-		map_of_interactions_areas[InteractionName(crads_without_numbering, interaction.tag)]+=area;
+		const CRADsPair generalized_crads(generalize_crad(interaction.crads.a), generalize_crad(interaction.crads.b));
+		map_of_interactions_areas[InteractionName(generalized_crads, interaction.tag)]+=area;
 		return true;
 	}
 	return false;
@@ -321,7 +363,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 				ed.total_area=it->second;
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
-						map_of_potential_values.find(InteractionName(CRADsPair(crads.a.without_numbering(), crads.b.without_numbering()), it->first.tag));
+						map_of_potential_values.find(InteractionName(CRADsPair(generalize_crad(crads.a), generalize_crad(crads.b)), it->first.tag));
 				if(potential_value_it!=map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);
@@ -406,7 +448,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const double actuality_score=(1.0-(ed.strange_area/ed.total_area));
 			const double normalized_energy=(ed.energy/ed.total_area);
-			std::map<CRAD, NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(crad.without_numbering());
+			std::map<CRAD, NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(generalize_crad(crad));
 			const double mean=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.mean : default_mean);
 			const double sd=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.sd : default_sd);
 			const double adjusted_normalized_energy=((normalized_energy-mean)/sd);
