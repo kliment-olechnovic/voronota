@@ -507,17 +507,46 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	CRADsGraph crads_graph;
-	for(std::map<InteractionName, double>::const_iterator it=map_of_potential_values.begin();it!=map_of_potential_values.end();++it)
+	if(!residue_level)
 	{
-		const InteractionName& iname=it->first;
-		const double ival=it->second;
-		if(iname.crads.a!=CRAD::solvent())
+		for(std::map<InteractionName, double>::const_iterator it=map_of_potential_values.begin();it!=map_of_potential_values.end();++it)
 		{
-			crads_graph[iname.crads.a][std::make_pair(iname.crads.b, iname.tag)]=ival;
+			const InteractionName& iname=it->first;
+			const double ival=it->second;
+			if(iname.crads.a!=CRAD::solvent())
+			{
+				crads_graph[iname.crads.a][std::make_pair(iname.crads.b, iname.tag)]=ival;
+			}
+			if(iname.crads.b!=CRAD::solvent() && iname.crads.b!=iname.crads.a)
+			{
+				crads_graph[iname.crads.b][std::make_pair(iname.crads.a, iname.tag)]=ival;
+			}
 		}
-		if(iname.crads.b!=CRAD::solvent() && iname.crads.b!=iname.crads.a)
+	}
+	else
+	{
+		CRADsGraph crads_graph_sums;
+		CRADsGraph crads_graph_counts;
+		for(std::map<InteractionName, double>::const_iterator it=map_of_potential_values.begin();it!=map_of_potential_values.end();++it)
 		{
-			crads_graph[iname.crads.b][std::make_pair(iname.crads.a, iname.tag)]=ival;
+			const InteractionName& iname=it->first;
+			const double ival=it->second;
+			if(iname.crads.a!=CRAD::solvent())
+			{
+				double& sum=crads_graph_sums[iname.crads.a.without_atom()][std::make_pair(iname.crads.b, iname.tag)];
+				double& count=crads_graph_counts[iname.crads.a.without_atom()][std::make_pair(iname.crads.b, iname.tag)];
+				sum+=ival;
+				count+=1.0;
+				crads_graph[iname.crads.a.without_atom()][std::make_pair(iname.crads.b, iname.tag)]=sum/count;
+			}
+			if(iname.crads.b!=CRAD::solvent() && iname.crads.b.without_atom()!=iname.crads.a.without_atom())
+			{
+				double& sum=crads_graph_sums[iname.crads.b.without_atom()][std::make_pair(iname.crads.a, iname.tag)];
+				double& count=crads_graph_counts[iname.crads.b.without_atom()][std::make_pair(iname.crads.a, iname.tag)];
+				sum+=ival;
+				count+=1.0;
+				crads_graph[iname.crads.b.without_atom()][std::make_pair(iname.crads.a, iname.tag)]=sum/count;
+			}
 		}
 	}
 
@@ -540,21 +569,6 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 					replacements_scores[CRADsPair(it1->first, it2->first)]=sqrt(sum/static_cast<double>(merged_map.size()));
 				}
 			}
-		}
-	}
-
-	if(residue_level)
-	{
-		std::map<CRADsPair, std::vector<double> > residue_atoms_replacements_scores;
-		for(std::map<CRADsPair, double>::const_iterator it=replacements_scores.begin();it!=replacements_scores.end();++it)
-		{
-			residue_atoms_replacements_scores[CRADsPair(it->first.a.without_atom(), it->first.b.without_atom())].push_back(it->second);
-		}
-		replacements_scores.clear();
-		for(std::map<CRADsPair, std::vector<double> >::const_iterator it=residue_atoms_replacements_scores.begin();it!=residue_atoms_replacements_scores.end();++it)
-		{
-			const std::vector<double>& atoms_differences=it->second;
-			replacements_scores[it->first]=(std::accumulate(atoms_differences.begin(), atoms_differences.end(), 0.0)/static_cast<double>(atoms_differences.size()));
 		}
 	}
 
