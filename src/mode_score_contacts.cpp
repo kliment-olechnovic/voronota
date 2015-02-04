@@ -119,10 +119,6 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	{
 		crad.name="OE1";
 	}
-	else if(crad.resName=="LEU" && (crad.name=="CD1" || crad.name=="CD2"))
-	{
-		crad.name="CD1";
-	}
 	else if(crad.resName=="PHE" && (crad.name=="CD1" || crad.name=="CD2"))
 	{
 		crad.name="CD1";
@@ -138,10 +134,6 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	else if(crad.resName=="TYR" && (crad.name=="CE1" || crad.name=="CE2"))
 	{
 		crad.name="CE1";
-	}
-	else if(crad.resName=="VAL" && (crad.name=="CG1" || crad.name=="CG2"))
-	{
-		crad.name="CG1";
 	}
 	return crad;
 }
