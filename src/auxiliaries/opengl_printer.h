@@ -71,6 +71,35 @@ public:
 	}
 
 	template<typename PointType>
+	void add_line_strip(const std::vector<PointType>& vertices)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << object_typer_.lstrip << " ";
+			write_points_vector_to_stream(vertices, string_stream_);
+		}
+	}
+
+	template<typename PointType>
+	void add_line_strip(const PointType& a, const PointType& b)
+	{
+		std::vector<PointType> vertices(2);
+		vertices[0]=a;
+		vertices[1]=b;
+		add_line_strip(vertices);
+	}
+
+	template<typename PointType>
+	void add_line_loop(const std::vector<PointType>& vertices)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << object_typer_.lloop << " ";
+			write_points_vector_to_stream(vertices, string_stream_);
+		}
+	}
+
+	template<typename PointType>
 	void add_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
 	{
 		if(!vertices.empty())
@@ -92,7 +121,7 @@ public:
 		return string_stream_.str();
 	}
 
-	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output)
+	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -133,6 +162,19 @@ public:
 					output << "END, ";
 				}
 			}
+			else if(type.lstrip || type.lloop)
+			{
+				const std::vector<PlainPoint> vertices=read_points_vector_from_stream(input);
+				if(!vertices.empty())
+				{
+					output << (type.lstrip ? "BEGIN, LINE_STRIP, " : "BEGIN, LINE_LOOP, ");
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+					}
+					output << "END, ";
+				}
+			}
 			else if(type.sphere)
 			{
 				const PlainPoint c=read_point_from_stream(input);
@@ -147,7 +189,7 @@ public:
 		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
 	}
 
-	void print_jmol_script(const std::string& obj_name, std::ostream& output)
+	void print_jmol_script(const std::string& obj_name, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -194,7 +236,7 @@ public:
 		print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 	}
 
-	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output)
+	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -272,6 +314,8 @@ private:
 		std::string tstrip;
 		std::string tfan;
 		std::string tfanc;
+		std::string lstrip;
+		std::string lloop;
 		std::string sphere;
 
 		ObjectTyper() :
@@ -281,6 +325,8 @@ private:
 			tstrip("_tstrip"),
 			tfan("_tfan"),
 			tfanc("_tfanc"),
+			lstrip("_lstrip"),
+			lloop("_lloop"),
 			sphere("_sphere")
 		{
 		}
@@ -294,6 +340,8 @@ private:
 		bool tstrip;
 		bool tfan;
 		bool tfanc;
+		bool lstrip;
+		bool lloop;
 		bool sphere;
 
 		ObjectTypeMarker(const std::string& type_str, const ObjectTyper& object_typer) :
@@ -303,6 +351,8 @@ private:
 			tstrip(type_str==object_typer.tstrip),
 			tfan(type_str==object_typer.tfan),
 			tfanc(type_str==object_typer.tfanc),
+			lstrip(type_str==object_typer.lstrip),
+			lloop(type_str==object_typer.lloop),
 			sphere(type_str==object_typer.sphere)
 		{
 		}
