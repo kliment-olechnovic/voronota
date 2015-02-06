@@ -216,6 +216,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
+		list_of_option_descriptions.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
 			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
@@ -227,6 +228,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
+	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 	std::map<CRAD, double> map_of_crads_total_areas;
@@ -296,6 +298,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 	}
+
+	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
