@@ -14,9 +14,6 @@
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
-
 std::string draw_inter_atom_contact(
 		const std::vector<apollota::SimpleSphere>& spheres,
 		const apollota::Triangulation::VerticesVector& vertices_vector,
@@ -116,7 +113,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option("--draw");
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector< std::pair<CRAD, BallValue> > input_ball_records;
+	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, BallValue> > input_ball_records;
 	if(annotated)
 	{
 		auxiliaries::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
@@ -169,7 +166,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 
-		std::map< CRADsPair, ContactValue > output_map_of_contacts;
+		std::map< auxiliaries::ChainResidueAtomDescriptorsPair, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -177,7 +174,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				const CRADsPair crads(input_ball_records[a_id].first, (a_id==b_id ? CRAD::solvent() : input_ball_records[b_id].first));
+				const auxiliaries::ChainResidueAtomDescriptorsPair crads(input_ball_records[a_id].first, (a_id==b_id ? auxiliaries::ChainResidueAtomDescriptor::solvent() : input_ball_records[b_id].first));
 				ContactValue& value=output_map_of_contacts[crads];
 				value.area=area;
 				if(a_id!=b_id)
