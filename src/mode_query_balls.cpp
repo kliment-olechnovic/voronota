@@ -191,7 +191,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					(match_external_annotations.empty() || MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
 			if((passed && !invert) || (!passed && invert))
 			{
-				selected_set_of_ball_ids.insert(i);
+				selected_set_of_ball_ids.insert(selected_set_of_ball_ids.end(), i);
 			}
 		}
 
