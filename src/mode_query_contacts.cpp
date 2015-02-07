@@ -167,129 +167,127 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_contacts=map_of_reduced_contacts;
 	}
 
-	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
+	if(!set_external_adjuncts.empty())
+	{
+		const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
+		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			std::map< CRADsPair, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(it->first);
+			if(adjunct_value_it!=map_of_external_adjunct_values.end())
+			{
+				it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+			}
+		}
+	}
 
-	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
-
-	const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
-
-	const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
-
-	auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data;
 	if(!set_hbplus_tags.empty())
 	{
 		std::ifstream input_file(set_hbplus_tags.c_str(), std::ios::in);
-		hbplus_file_data=auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
-	}
-
-	std::map< CRADsPair, ContactValue > output_map_of_contacts;
-
-	for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-	{
-		const CRADsPair& crads=it->first;
-		const ContactValue& value=it->second;
-		bool passed=false;
-		if(
-				value.area>=match_min_area && value.area<=match_max_area &&
-				value.dist>=match_min_dist && value.dist<=match_max_dist &&
-				(!no_solvent || !(crads.a==CRAD::solvent() || crads.b==CRAD::solvent())) &&
-				(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
-				CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
-				MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
-				MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(match_external_pairs.empty() || MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(crads, matchable_external_set_of_crad_pairs))
-		)
+		auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data=auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
+		if(!hbplus_file_data.hbplus_records.empty())
 		{
-			const bool matched_first_second=(
-					MatchingUtilities::match_crad(crads.a, match_first, match_first_not) &&
-					MatchingUtilities::match_crad(crads.b, match_second, match_second_not) &&
-					(match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_first_set_of_crads)) &&
-					(match_external_second.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_second_set_of_crads)));
-			const bool matched_second_first=matched_first_second || (
-					MatchingUtilities::match_crad(crads.b, match_first, match_first_not) &&
-					MatchingUtilities::match_crad(crads.a, match_second, match_second_not) &&
-					(match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_first_set_of_crads)) &&
-					(match_external_second.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_second_set_of_crads)));
-			passed=(matched_first_second || matched_second_first);
-			if(passed && !invert)
+			std::set< CRADsPair > set_of_hbplus_crad_pairs;
+			for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
 			{
-				output_map_of_contacts[CRADsPair(crads.a, crads.b, !matched_first_second)]=value;
+				const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
+				const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
+				const CRADsPair crads_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", ""));
+				set_of_hbplus_crad_pairs.insert(inter_residue_hbplus_tags ? CRADsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()) : crads_pair);
 			}
-		}
-		if(!passed && invert)
-		{
-			output_map_of_contacts[crads]=value;
-		}
-	}
-
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
-	{
-		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-		{
-			const CRADsPair& crads=it->first;
-			std::map< CRADsPair, ContactValue >::iterator output_map_it=output_map_of_contacts.find(crads);
-			if(output_map_it!=output_map_of_contacts.end())
+			for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
-				it->second.props.update_tags(set_tags);
-				it->second.props.update_adjuncts(set_adjuncts);
-				if(!map_of_external_adjunct_values.empty())
+				const CRADsPair& crads=it->first;
+				if(MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(crads, set_of_hbplus_crad_pairs))
 				{
-					std::map< CRADsPair, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crads);
-					if(adjunct_value_it!=map_of_external_adjunct_values.end())
-					{
-						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
-					}
+					ContactValue& value=it->second;
+					value.props.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
 				}
-				output_map_it->second=it->second;
 			}
 		}
 	}
 
-	if(!hbplus_file_data.hbplus_records.empty())
+	std::map< CRADsPair, ContactValue > selected_map_of_contacts;
 	{
-		std::set< CRADsPair > set_of_hbplus_crad_pairs;
-		for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
-		{
-			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
-			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
-			const CRADsPair crads_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", ""));
-			set_of_hbplus_crad_pairs.insert(inter_residue_hbplus_tags ? CRADsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()) : crads_pair);
-		}
-		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
+		const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
+		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
+
+		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			if(MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(crads, set_of_hbplus_crad_pairs))
+			const ContactValue& value=it->second;
+			bool passed=false;
+			if(
+					value.area>=match_min_area && value.area<=match_max_area &&
+					value.dist>=match_min_dist && value.dist<=match_max_dist &&
+					(!no_solvent || !(crads.a==CRAD::solvent() || crads.b==CRAD::solvent())) &&
+					(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
+					CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
+					MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+					MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+					(match_external_pairs.empty() || MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(crads, matchable_external_set_of_crad_pairs))
+			)
 			{
-				ContactValue& value=it->second;
-				value.props.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
+				const bool matched_first_second=(
+						MatchingUtilities::match_crad(crads.a, match_first, match_first_not) &&
+						MatchingUtilities::match_crad(crads.b, match_second, match_second_not) &&
+						(match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_second_set_of_crads)));
+				const bool matched_second_first=matched_first_second || (
+						MatchingUtilities::match_crad(crads.b, match_first, match_first_not) &&
+						MatchingUtilities::match_crad(crads.a, match_second, match_second_not) &&
+						(match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_second_set_of_crads)));
+				passed=(matched_first_second || matched_second_first);
+				if(passed && !invert)
+				{
+					selected_map_of_contacts[CRADsPair(crads.a, crads.b, !matched_first_second)]=value;
+				}
+			}
+			if(!passed && invert)
+			{
+				selected_map_of_contacts[crads]=value;
 			}
 		}
 	}
 
+	if(summarize)
 	{
-		const std::map< CRADsPair, ContactValue >& printable_map=((!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !hbplus_file_data.hbplus_records.empty()) ? map_of_contacts : output_map_of_contacts);
-		if(summarize)
+		ContactValue summary;
+		for(std::map<CRADsPair, ContactValue>::const_iterator it=selected_map_of_contacts.begin();it!=selected_map_of_contacts.end();++it)
 		{
-			ContactValue summary;
-			for(std::map<CRADsPair, ContactValue>::const_iterator it=printable_map.begin();it!=printable_map.end();++it)
+			summary.add(it->second);
+			summary.graphics.clear();
+		}
+		std::cout << CRADsPair(CRAD("any"), CRAD("any")) << " " << summary << "\n";
+	}
+	else
+	{
+		const bool update_mode=(!set_tags.empty() || !set_adjuncts.empty());
+
+		if(!selected_map_of_contacts.empty() && update_mode)
+		{
+			for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
-				summary.add(it->second);
-				summary.graphics.clear();
+				std::map< CRADsPair, ContactValue >::iterator selected_map_it=selected_map_of_contacts.find(it->first);
+				if(selected_map_it!=selected_map_of_contacts.end())
+				{
+					it->second.props.update_tags(set_tags);
+					it->second.props.update_adjuncts(set_adjuncts);
+					selected_map_it->second=it->second;
+				}
 			}
-			std::cout << CRADsPair(CRAD("any"), CRAD("any")) << " " << summary << "\n";
 		}
-		else
-		{
-			auxiliaries::IOUtilities().write_map(printable_map, std::cout);
-		}
+
+		auxiliaries::IOUtilities().write_map((update_mode ? map_of_contacts : selected_map_of_contacts), std::cout);
 	}
 
-	if(!output_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
+	if(!selected_map_of_contacts.empty() && !(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_color);
 		opengl_printer.add_alpha(drawing_alpha);
-		for(std::map< CRADsPair, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+		for(std::map< CRADsPair, ContactValue >::const_iterator it=selected_map_of_contacts.begin();it!=selected_map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
 			const ContactValue& value=it->second;
