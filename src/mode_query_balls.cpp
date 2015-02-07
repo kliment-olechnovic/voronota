@@ -67,6 +67,26 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 	return atom_record;
 }
 
+std::map<CRAD, std::string> init_map_of_dssp_records(const std::string& dssp_file_name)
+{
+	std::map<CRAD, std::string> map_of_dssp_records;
+	if(!dssp_file_name.empty())
+	{
+		std::ifstream input_file(dssp_file_name.c_str(), std::ios::in);
+		const auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data=auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
+		for(std::size_t i=0;i<dssp_file_data.dssp_records.size();i++)
+		{
+			const auxiliaries::AtomsIO::DSSPReader::DSSPRecord& record=dssp_file_data.dssp_records[i];
+			CRAD crad;
+			crad.chainID=record.chainID;
+			crad.resSeq=record.resSeq;
+			crad.iCode=record.iCode;
+			map_of_dssp_records.insert(std::make_pair(crad, record.resSSE));
+		}
+	}
+	return map_of_dssp_records;
+}
+
 }
 
 void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
@@ -157,70 +177,37 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_balls=refined_list_of_balls;
 	}
 
-	if(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts)
+	std::set<std::size_t> selected_set_of_ball_ids;
 	{
-		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
-		{
-			if(drop_atom_serial)
-			{
-				it->first.serial=CRAD::null_num();
-			}
-			if(drop_altloc_indicators)
-			{
-				it->first.altLoc.clear();
-			}
-			if(drop_tags)
-			{
-				it->second.props.tags.clear();
-			}
-			if(drop_adjuncts)
-			{
-				it->second.props.adjuncts.clear();
-			}
-		}
-	}
+		const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
 
-	const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
-
-	auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data;
-	if(!set_dssp_tags.empty())
-	{
-		std::ifstream input_file(set_dssp_tags.c_str(), std::ios::in);
-		dssp_file_data=auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
-	}
-
-	const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
-
-	const std::string reference_sequence=SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
-
-	std::set<std::size_t> output_set_of_ball_ids;
-
-	for(std::size_t i=0;i<list_of_balls.size();i++)
-	{
-		const CRAD& crad=list_of_balls[i].first;
-		const BallValue& value=list_of_balls[i].second;
-		const bool passed=(MatchingUtilities::match_crad(crad, match, match_not) &&
-				MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
-				MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-				(match_external_annotations.empty() || MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
-		if((passed && !invert) || (!passed && invert))
-		{
-			output_set_of_ball_ids.insert(i);
-		}
-	}
-
-	if(whole_residues)
-	{
-		std::set<CRAD> residues_crads;
-		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
-		{
-			residues_crads.insert(list_of_balls[*it].first.without_atom());
-		}
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			if(MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
+			const CRAD& crad=list_of_balls[i].first;
+			const BallValue& value=list_of_balls[i].second;
+			const bool passed=(MatchingUtilities::match_crad(crad, match, match_not) &&
+					MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+					MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+					(match_external_annotations.empty() || MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
+			if((passed && !invert) || (!passed && invert))
 			{
-				output_set_of_ball_ids.insert(i);
+				selected_set_of_ball_ids.insert(i);
+			}
+		}
+
+		if(whole_residues)
+		{
+			std::set<CRAD> residues_crads;
+			for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
+			{
+				residues_crads.insert(list_of_balls[*it].first.without_atom());
+			}
+			for(std::size_t i=0;i<list_of_balls.size();i++)
+			{
+				if(MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
+				{
+					selected_set_of_ball_ids.insert(i);
+				}
 			}
 		}
 	}
@@ -228,7 +215,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<CRAD> residue_sequence_vector;
 	{
 		std::set<CRAD> residues_crads;
-		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
 			const CRAD residue_crad=list_of_balls[*it].first.without_atom();
 			if(residues_crads.count(residue_crad)==0)
@@ -239,14 +226,42 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty())
+	const bool update_mode=(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_dssp_tags.empty() || !set_ref_seq_num_adjunct.empty());
+	if(update_mode && !selected_set_of_ball_ids.empty())
 	{
-		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
+		const std::map<CRAD, std::string> map_of_dssp_records=init_map_of_dssp_records(set_dssp_tags);
+		const std::string reference_sequence=SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
+		const std::map<CRAD, double> sequence_mapping=SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+
+		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
-			const CRAD& crad=list_of_balls[*it].first;
+			CRAD& crad=list_of_balls[*it].first;
 			BallValue& value=list_of_balls[*it].second;
-			value.props.update_tags(set_tags);
-			value.props.update_adjuncts(set_adjuncts);
+			if(drop_atom_serial)
+			{
+				crad.serial=CRAD::null_num();
+			}
+			if(drop_altloc_indicators)
+			{
+				crad.altLoc.clear();
+			}
+			if(drop_tags)
+			{
+				value.props.tags.clear();
+			}
+			if(drop_adjuncts)
+			{
+				value.props.adjuncts.clear();
+			}
+			if(!set_tags.empty())
+			{
+				value.props.update_tags(set_tags);
+			}
+			if(!set_adjuncts.empty())
+			{
+				value.props.update_adjuncts(set_adjuncts);
+			}
 			if(!map_of_external_adjunct_values.empty())
 			{
 				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
@@ -259,69 +274,42 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
 				}
 			}
-		}
-	}
-
-	if(!reference_sequence.empty())
-	{
-		const std::map<CRAD, double> sequence_mapping=SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
-		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
-		{
-			const CRAD& crad=list_of_balls[*it].first;
-			const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
-			if(sm_it!=sequence_mapping.end())
+			if(!map_of_dssp_records.empty())
 			{
-				BallValue& value=list_of_balls[*it].second;
-				value.props.adjuncts["refseq"]=sm_it->second;
-			}
-		}
-	}
-
-	if(!dssp_file_data.dssp_records.empty())
-	{
-		std::map<CRAD, std::size_t> map_of_dssp_records;
-		for(std::size_t i=0;i<dssp_file_data.dssp_records.size();i++)
-		{
-			const auxiliaries::AtomsIO::DSSPReader::DSSPRecord& record=dssp_file_data.dssp_records[i];
-			CRAD crad;
-			crad.chainID=record.chainID;
-			crad.resSeq=record.resSeq;
-			crad.iCode=record.iCode;
-			map_of_dssp_records.insert(std::make_pair(crad, i));
-		}
-		for(std::vector< std::pair<CRAD, BallValue> >::iterator it=list_of_balls.begin();it!=list_of_balls.end();++it)
-		{
-			const CRAD& full_crad=it->first;
-			CRAD crad;
-			crad.chainID=full_crad.chainID;
-			crad.resSeq=full_crad.resSeq;
-			crad.iCode=full_crad.iCode;
-			const std::map<CRAD, std::size_t>::const_iterator drm_it=map_of_dssp_records.find(crad);
-			if(drm_it!=map_of_dssp_records.end())
-			{
-				const auxiliaries::AtomsIO::DSSPReader::DSSPRecord& dssp_record=dssp_file_data.dssp_records[drm_it->second];
-				if(!dssp_record.resSSE.empty())
+				CRAD simplified_crad;
+				simplified_crad.chainID=crad.chainID;
+				simplified_crad.resSeq=crad.resSeq;
+				simplified_crad.iCode=crad.iCode;
+				const std::map<CRAD, std::string>::const_iterator map_of_dssp_records_it=map_of_dssp_records.find(simplified_crad);
+				if(map_of_dssp_records_it!=map_of_dssp_records.end() && !map_of_dssp_records_it->second.empty())
 				{
-					BallValue& value=it->second;
-					value.props.tags.insert(std::string("dssp=")+dssp_record.resSSE);
+					value.props.tags.insert(std::string("dssp=")+map_of_dssp_records_it->second);
+				}
+			}
+			if(!sequence_mapping.empty())
+			{
+				const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
+				if(sm_it!=sequence_mapping.end())
+				{
+					value.props.adjuncts["refseq"]=sm_it->second;
 				}
 			}
 		}
 	}
 
-	if(!set_tags.empty() || !set_adjuncts.empty() || !map_of_external_adjunct_values.empty() || !reference_sequence.empty() || !dssp_file_data.dssp_records.empty())
+	if(update_mode)
 	{
 		auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 	}
 	else
 	{
-		for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
 			std::cout << list_of_balls[*it].first << " " << list_of_balls[*it].second << "\n";
 		}
 	}
 
-	if(!output_set_of_ball_ids.empty() && !seq_output.empty())
+	if(!residue_sequence_vector.empty() && !seq_output.empty())
 	{
 		std::ofstream foutput(seq_output.c_str(), std::ios::out);
 		if(foutput.good())
@@ -330,14 +318,14 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	if(!output_set_of_ball_ids.empty() && !pdb_output.empty())
+	if(!selected_set_of_ball_ids.empty() && !pdb_output.empty())
 	{
 		if(pdb_output_template.empty())
 		{
 			std::ofstream foutput(pdb_output.c_str(), std::ios::out);
 			if(foutput.good())
 			{
-				for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+				for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 				{
 					foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[*it].first, list_of_balls[*it].second, pdb_output_b_factor)) << "\n";
 				}
@@ -360,7 +348,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				if(foutput.good())
 				{
 					std::map<CRAD, std::size_t> output_map_of_ball_ids;
-					for(std::set<std::size_t>::const_iterator it=output_set_of_ball_ids.begin();it!=output_set_of_ball_ids.end();++it)
+					for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 					{
 						output_map_of_ball_ids[list_of_balls[*it].first]=(*it);
 					}
