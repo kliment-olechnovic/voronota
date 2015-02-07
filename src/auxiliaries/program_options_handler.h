@@ -224,6 +224,44 @@ public:
 		return value;
 	}
 
+	static void print_io_description(const std::string& name, const bool from, const bool to, const std::string& description)
+	{
+		if(!name.empty() && !description.empty() && (from || to))
+		{
+			std::ostream& output=std::cerr;
+			const std::size_t max_name_length=std::max(static_cast<std::size_t>(7), name.size());
+			output << name << std::string(max_name_length+1-name.size(), ' ');
+			if(from && to)
+			{
+				output << "<->";
+			}
+			else if(from)
+			{
+				output << "<- ";
+			}
+			else if(to)
+			{
+				output << "-> ";
+			}
+			std::istringstream strstream(description);
+			int linescount=0;
+			while(strstream.good())
+			{
+				std::string line;
+				std::getline(strstream, line);
+				if(!line.empty())
+				{
+					if(linescount>0)
+					{
+						output << std::string(max_name_length+6, ' ');
+					}
+					output << " " << line << "\n";
+					linescount++;
+				}
+			}
+		}
+	}
+
 private:
 	void compare_with_list_of_option_descriptions(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized) const
 	{

@@ -123,8 +123,8 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')\n";
-			std::cerr << "stdout  ->  two lines of global scores (atom-level and residue-level)\n";
+			poh.print_io_description("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
+			poh.print_io_description("stdout", false, true, "two lines of global scores (atom-level and residue-level)");
 			return;
 		}
 	}

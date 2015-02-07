@@ -381,8 +381,8 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
-			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
+			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
+			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
 			return;
 		}
 	}

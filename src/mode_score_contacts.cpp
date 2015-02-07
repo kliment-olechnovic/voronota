@@ -219,8 +219,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
-			std::cerr << "stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')\n";
+			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
+			poh.print_io_description("stdout", false, true, "line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')");
 			return;
 		}
 	}
@@ -322,8 +322,8 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')\n";
-			std::cerr << "stdout  ->  global scores\n";
+			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
+			poh.print_io_description("stdout", false, true, "global scores");
 			return;
 		}
 	}
@@ -413,8 +413,8 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of atom energy descriptors\n";
-			std::cerr << "stdout  ->  average local score\n";
+			poh.print_io_description("stdin", true, false, "list of atom energy descriptors");
+			poh.print_io_description("stdout", false, true, "average local score");
 			return;
 		}
 	}
@@ -495,7 +495,7 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdout  ->  replacements scores\n";
+			poh.print_io_description("stdout", false, true, "replacements scores");
 			return;
 		}
 	}

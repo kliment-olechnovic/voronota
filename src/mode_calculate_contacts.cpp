@@ -98,12 +98,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of balls\n";
-			std::cerr << "              (default mode line format: 'x y z r')\n";
-			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
-			std::cerr << "stdout  ->  list of contacts\n";
-			std::cerr << "              (default mode line format: 'b1 b2 area')\n";
-			std::cerr << "              (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')\n";
+			poh.print_io_description("stdin", true, false,
+					"list of balls\n(default mode line format: 'x y z r')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
+			poh.print_io_description("stdout", false, true,
+					"list of contacts\n(default mode line format: 'b1 b2 area')\n(annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 			return;
 		}
 	}
