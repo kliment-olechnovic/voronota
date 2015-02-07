@@ -215,13 +215,13 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--reference-threshold", "number", "reference scores classification threshold"));
-		list_of_option_descriptions.push_back(OD("--testable-step", "number", "testable scores threshold step"));
-		list_of_option_descriptions.push_back(OD("--outcomes-file", "string", "file path to output lines of 'threshold TP TN FP FN'"));
-		list_of_option_descriptions.push_back(OD("--ROC-curve-file", "string", "file path to output ROC curve"));
-		list_of_option_descriptions.push_back(OD("--PR-curve-file", "string", "file path to output PR curve"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--reference-threshold", "number", "reference scores classification threshold"));
+		ods.push_back(OD("--testable-step", "number", "testable scores threshold step"));
+		ods.push_back(OD("--outcomes-file", "string", "file path to output lines of 'threshold TP TN FP FN'"));
+		ods.push_back(OD("--ROC-curve-file", "string", "file path to output ROC curve"));
+		ods.push_back(OD("--PR-curve-file", "string", "file path to output PR curve"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "pairs of reference and testable scores files");
 			poh.print_io_description("stdout", false, true, "global results");

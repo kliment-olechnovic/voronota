@@ -113,15 +113,15 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--target-contacts-file", "string", "file path to input target contacts", true));
-		list_of_option_descriptions.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
-		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
-		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		list_of_option_descriptions.push_back(OD("--depth", "number", "local neighborhood depth"));
-		list_of_option_descriptions.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--target-contacts-file", "string", "file path to input target contacts", true));
+		ods.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
+		ods.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
+		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
+		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
+		ods.push_back(OD("--depth", "number", "local neighborhood depth"));
+		ods.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
 			poh.print_io_description("stdout", false, true, "two lines of global scores (atom-level and residue-level)");
