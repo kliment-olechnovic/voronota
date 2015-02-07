@@ -6,8 +6,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		if(!poh.assert(ods, false))
 		{
 			return;
 		}

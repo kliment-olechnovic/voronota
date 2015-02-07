@@ -10,14 +10,14 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
-		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		list_of_option_descriptions.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--print-log", "", "flag to print log of calculations"));
+		ods.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+		ods.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+		ods.push_back(OD("--link", "", "flag to output links between vertices"));
+		ods.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
+		ods.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
 			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");

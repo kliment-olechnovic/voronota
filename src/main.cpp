@@ -5,8 +5,6 @@
 #include <vector>
 #include <algorithm>
 
-#include "apollota/safer_comparison_of_numbers.h"
-
 #include "auxiliaries/program_options_handler.h"
 
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);

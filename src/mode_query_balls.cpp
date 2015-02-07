@@ -73,33 +73,33 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--match", "string", "selection"));
-		list_of_option_descriptions.push_back(OD("--match-not", "string", "negative selection"));
-		list_of_option_descriptions.push_back(OD("--match-tags", "string", "tags to match"));
-		list_of_option_descriptions.push_back(OD("--match-tags-not", "string", "tags to not match"));
-		list_of_option_descriptions.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
-		list_of_option_descriptions.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
-		list_of_option_descriptions.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
-		list_of_option_descriptions.push_back(OD("--invert", "", "flag to invert selection"));
-		list_of_option_descriptions.push_back(OD("--whole-residues", "", "flag to select whole residues"));
-		list_of_option_descriptions.push_back(OD("--drop-atom-serials", "", "flag to drop atom serial numbers from input"));
-		list_of_option_descriptions.push_back(OD("--drop-altloc-indicators", "", "flag to drop alternate location indicators from input"));
-		list_of_option_descriptions.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		list_of_option_descriptions.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
-		list_of_option_descriptions.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
-		list_of_option_descriptions.push_back(OD("--set-dssp-tags", "string", "file path to input DSSP file"));
-		list_of_option_descriptions.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
-		list_of_option_descriptions.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
-		list_of_option_descriptions.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
-		list_of_option_descriptions.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
-		list_of_option_descriptions.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
-		list_of_option_descriptions.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
-		list_of_option_descriptions.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
-		list_of_option_descriptions.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
-		list_of_option_descriptions.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
-		list_of_option_descriptions.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--match", "string", "selection"));
+		ods.push_back(OD("--match-not", "string", "negative selection"));
+		ods.push_back(OD("--match-tags", "string", "tags to match"));
+		ods.push_back(OD("--match-tags-not", "string", "tags to not match"));
+		ods.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
+		ods.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
+		ods.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
+		ods.push_back(OD("--invert", "", "flag to invert selection"));
+		ods.push_back(OD("--whole-residues", "", "flag to select whole residues"));
+		ods.push_back(OD("--drop-atom-serials", "", "flag to drop atom serial numbers from input"));
+		ods.push_back(OD("--drop-altloc-indicators", "", "flag to drop alternate location indicators from input"));
+		ods.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
+		ods.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+		ods.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
+		ods.push_back(OD("--set-dssp-tags", "string", "file path to input DSSP file"));
+		ods.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
+		ods.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
+		ods.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
+		ods.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
+		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
+		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
+		ods.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
+		ods.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
+		ods.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
+		ods.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 			poh.print_io_description("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");

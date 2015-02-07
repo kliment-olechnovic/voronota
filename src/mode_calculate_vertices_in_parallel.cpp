@@ -372,14 +372,14 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true));
-		list_of_option_descriptions.push_back(OD("--parts", "number", "number of parts for splitting, must be power of 2", true));
-		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
-		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true));
+		ods.push_back(OD("--parts", "number", "number of parts for splitting, must be power of 2", true));
+		ods.push_back(OD("--print-log", "", "flag to print log of calculations"));
+		ods.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+		ods.push_back(OD("--link", "", "flag to output links between vertices"));
+		ods.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
 			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");

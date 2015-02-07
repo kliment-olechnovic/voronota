@@ -38,16 +38,16 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--annotated", "", "flag to enable annotated mode"));
-		list_of_option_descriptions.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
-		list_of_option_descriptions.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
-		list_of_option_descriptions.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
-		list_of_option_descriptions.push_back(OD("--radii-file", "string", "path to radii configuration file"));
-		list_of_option_descriptions.push_back(OD("--default-radius", "number", "default atomic radius"));
-		list_of_option_descriptions.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
-		list_of_option_descriptions.push_back(OD("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--annotated", "", "flag to enable annotated mode"));
+		ods.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
+		ods.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
+		ods.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
+		ods.push_back(OD("--radii-file", "string", "path to radii configuration file"));
+		ods.push_back(OD("--default-radius", "number", "default atomic radius"));
+		ods.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
+		ods.push_back(OD("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "file in PDB or mmCIF format");
 			poh.print_io_description("stdout", false, true,

@@ -212,12 +212,12 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
-		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to output potential values"));
-		list_of_option_descriptions.push_back(OD("--solvent-factor", "number", "solvent factor value"));
-		list_of_option_descriptions.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
+		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
+		ods.push_back(OD("--solvent-factor", "number", "solvent factor value"));
+		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
 			poh.print_io_description("stdout", false, true, "line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')");
@@ -312,15 +312,15 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
-		list_of_option_descriptions.push_back(OD("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"));
-		list_of_option_descriptions.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
-		list_of_option_descriptions.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
-		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		list_of_option_descriptions.push_back(OD("--depth", "number", "neighborhood normalization depth"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		ods.push_back(OD("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"));
+		ods.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
+		ods.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
+		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
+		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
+		ods.push_back(OD("--depth", "number", "neighborhood normalization depth"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
 			poh.print_io_description("stdout", false, true, "global scores");
@@ -403,15 +403,15 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--default-mean", "number", "default mean parameter"));
-		list_of_option_descriptions.push_back(OD("--default-sd", "number", "default standard deviation parameter"));
-		list_of_option_descriptions.push_back(OD("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"));
-		list_of_option_descriptions.push_back(OD("--mean-shift", "number", "mean shift in standard deviations"));
-		list_of_option_descriptions.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
-		list_of_option_descriptions.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		list_of_option_descriptions.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--default-mean", "number", "default mean parameter"));
+		ods.push_back(OD("--default-sd", "number", "default standard deviation parameter"));
+		ods.push_back(OD("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"));
+		ods.push_back(OD("--mean-shift", "number", "mean shift in standard deviations"));
+		ods.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
+		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
+		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of atom energy descriptors");
 			poh.print_io_description("stdout", false, true, "average local score");
@@ -489,11 +489,11 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--potential-file", "string", "file path to input potential values", true));
-		list_of_option_descriptions.push_back(OD("--residue-level", "", "flag to operate on residue level", true));
-		list_of_option_descriptions.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--potential-file", "string", "file path to input potential values", true));
+		ods.push_back(OD("--residue-level", "", "flag to operate on residue level", true));
+		ods.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdout", false, true, "replacements scores");
 			return;

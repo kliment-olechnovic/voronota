@@ -87,16 +87,16 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--annotated", "", "flag to enable annotated mode"));
-		list_of_option_descriptions.push_back(OD("--probe", "number", "probe radius"));
-		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		list_of_option_descriptions.push_back(OD("--step", "number", "curve step length"));
-		list_of_option_descriptions.push_back(OD("--projections", "number", "curve optimization depth"));
-		list_of_option_descriptions.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
-		list_of_option_descriptions.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
-		list_of_option_descriptions.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
-		if(!poh.assert(list_of_option_descriptions, false))
+		std::vector<OD> ods;
+		ods.push_back(OD("--annotated", "", "flag to enable annotated mode"));
+		ods.push_back(OD("--probe", "number", "probe radius"));
+		ods.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+		ods.push_back(OD("--step", "number", "curve step length"));
+		ods.push_back(OD("--projections", "number", "curve optimization depth"));
+		ods.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
+		ods.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
+		ods.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
+		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false,
 					"list of balls\n(default mode line format: 'x y z r')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
