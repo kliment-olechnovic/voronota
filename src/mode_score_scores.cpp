@@ -223,8 +223,8 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--PR-curve-file", "string", "file path to output PR curve"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  pairs of reference and testable scores files\n";
-			std::cerr << "stdout  ->  global results\n";
+			poh.print_io_description("stdin", true, false, "pairs of reference and testable scores files");
+			poh.print_io_description("stdout", false, true, "global results");
 			return;
 		}
 	}

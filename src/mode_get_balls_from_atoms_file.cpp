@@ -49,10 +49,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  file in PDB or mmCIF format\n";
-			std::cerr << "stdout  ->  list of balls\n";
-			std::cerr << "              (default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')\n";
-			std::cerr << "              (annotated mode line format: 'annotation x y z r tags adjuncts')\n";
+			poh.print_io_description("stdin", true, false, "file in PDB or mmCIF format");
+			poh.print_io_description("stdout", false, true,
+					"list of balls\n(default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
 			return;
 		}
 	}

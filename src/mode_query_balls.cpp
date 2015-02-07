@@ -101,8 +101,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
-			std::cerr << "stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')\n";
+			poh.print_io_description("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
+			poh.print_io_description("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 			return;
 		}
 	}

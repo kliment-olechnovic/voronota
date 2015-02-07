@@ -19,8 +19,8 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 		list_of_option_descriptions.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
 		if(!poh.assert(list_of_option_descriptions, false))
 		{
-			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
-			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
+			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
+			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
 			return;
 		}
 	}
