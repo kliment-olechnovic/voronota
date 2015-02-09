@@ -10,9 +10,10 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
-inline bool read_and_accumulate_to_map_of_counts(std::istream& input, std::map<CRAD, long>& map_of_counts)
+template<typename T>
+inline bool read_and_accumulate_to_map_of_counts(std::istream& input, std::map<T, long>& map_of_counts)
 {
-	CRAD crad;
+	T crad;
 	long count;
 	input >> crad >> count;
 	if(!input.fail())
@@ -49,7 +50,7 @@ void count_residue_types(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(input_pre_counted)
 	{
-		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_counts, result);
+		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_counts<CRAD>, result);
 	}
 	else if(input_sequence)
 	{
