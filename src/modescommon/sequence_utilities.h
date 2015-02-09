@@ -15,32 +15,41 @@ namespace
 class SequenceUtilities
 {
 public:
-	static std::string read_sequence_from_file(const std::string& filename)
+	static std::string read_sequence_from_stream(std::istream& input)
 	{
 		std::string result;
-		if(!filename.empty())
+		while(input.good())
 		{
-			std::ifstream finput(filename.c_str(), std::ios::in);
-			while(finput.good())
+			std::string line;
+			std::getline(input, line);
+			if(!line.empty() && line[0]!='>')
 			{
-				std::string line;
-				std::getline(finput, line);
-				if(!line.empty() && line[0]!='>')
+				std::istringstream sinput(line);
+				while(sinput.good())
 				{
-					std::istringstream sinput(line);
-					while(sinput.good())
+					std::string token;
+					sinput >> token;
+					if(!token.empty())
 					{
-						std::string token;
-						sinput >> token;
-						if(!token.empty())
-						{
-							result+=token;
-						}
+						result+=token;
 					}
 				}
 			}
 		}
 		return result;
+	}
+
+	static std::string read_sequence_from_file(const std::string& filename)
+	{
+		if(!filename.empty())
+		{
+			std::ifstream finput(filename.c_str(), std::ios::in);
+			return read_sequence_from_stream(finput);
+		}
+		else
+		{
+			return std::string();
+		}
 	}
 
 	template<typename T>
