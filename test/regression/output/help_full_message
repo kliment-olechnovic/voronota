@@ -8,8 +8,6 @@ calculate-vertices-in-parallel
 calculate-contacts
 query-balls
 query-contacts
-count-residue-types
-count-residue-types-coefficients
 score-contacts-potential
 score-contacts-energy
 score-contacts-quality
@@ -148,27 +146,10 @@ Command 'query-contacts' options:
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
-Command 'count-residue-types' options:
---input-pre-counted                         flag to input types with counts
---input-sequence                            flag to input sequences
---help                                      flag to print usage help to stderr and exit
-stdin   <-  list of ids, or list of types with counts, or sequence
-              (default mode line format: 'id')
-              (pre-counted mode line format: 'type count')
-              (sequence mode format: plain or FASTA)
-stdout  ->  list of types with counts (line format: 'type count')
-
-Command 'count-residue-types-coefficients' options:
---first-counts-file             string   *  file to input first set of counts of residue types
---second-counts-file            string   *  file to input second set of counts of residue types
---help                                      flag to print usage help to stderr and exit
-stdout  ->  list of types with coefficients (line format: 'type coefficient')
-
 Command 'score-contacts-potential' options:
 --input-file-list                           flag to read file list from stdin
 --potential-file                string      file path to output potential values
 --solvent-factor                number      solvent factor value
---counts-transform-file         string      file path to input residue counts coefficients
 --single-areas-file             string      file path to output single type total areas
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')

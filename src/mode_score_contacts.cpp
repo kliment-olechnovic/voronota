@@ -216,7 +216,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--solvent-factor", "number", "solvent factor value"));
-		ods.push_back(OD("--counts-transform-file", "string", "file path to input residue counts coefficients"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		if(!poh.assert(ods, false))
 		{
@@ -229,10 +228,12 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
-	const std::string counts_transform_file=poh.argument<std::string>("--counts-transform-file", "");
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
+	std::map<CRAD, double> map_of_crads_total_areas;
+	std::map<std::string, double> map_of_conditions_total_areas;
+	double sum_of_all_areas=0.0;
 
 	if(input_file_list)
 	{
@@ -247,39 +248,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 	}
-
-	if(!counts_transform_file.empty())
-	{
-		std::map<CRAD, double> counts_transform_coefficients;
-		auxiliaries::IOUtilities().read_file_lines_to_map(counts_transform_file, counts_transform_coefficients);
-		if(!counts_transform_coefficients.empty())
-		{
-			counts_transform_coefficients[CRAD::solvent()]=1;
-			std::map<InteractionName, double> transformed_map;
-			for(std::map<InteractionName, double>::iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
-			{
-				const CRADsPair& crads=it->first.crads;
-				CRAD residue_type1;
-				residue_type1.resName=crads.a.resName;
-				CRAD residue_type2;
-				residue_type2.resName=crads.b.resName;
-				if(counts_transform_coefficients.count(residue_type1)>0 && counts_transform_coefficients.count(residue_type2)>0)
-				{
-					const double coef1=counts_transform_coefficients[residue_type1];
-					const double coef2=counts_transform_coefficients[residue_type2];
-					if(coef1>0.0 && coef2>0.0)
-					{
-						transformed_map[it->first]=(it->second*coef1*coef2);
-					}
-				}
-			}
-			map_of_interactions_total_areas=transformed_map;
-		}
-	}
-
-	std::map<CRAD, double> map_of_crads_total_areas;
-	std::map<std::string, double> map_of_conditions_total_areas;
-	double sum_of_all_areas=0.0;
 
 	for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
