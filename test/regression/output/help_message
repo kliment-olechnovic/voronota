@@ -9,6 +9,7 @@ calculate-contacts
 query-balls
 query-contacts
 count-residue-types
+count-residue-types-coefficients
 score-contacts-potential
 score-contacts-energy
 score-contacts-quality
