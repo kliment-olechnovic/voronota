@@ -6,6 +6,10 @@ t=merge(t1, t2, by=c("V1", "V2", "V3"));
 tp=merge(t1[which(t1$V3=="."),], t2[which(t2$V3=="."),], by=c("V1", "V2", "V3"));
 tw=merge(t1[which(t1$V2=="c<solvent>"),], t2[which(t2$V2=="c<solvent>"),], by=c("V1", "V2", "V3"));
 
+cor(t$V4.x, t$V4.y);
+cor(tp$V4.x, tp$V4.y);
+cor(tw$V4.x, tw$V4.y);
+
 png(args[3],  height=10, width=10, units="in", res=300);
 
 plot(t$V4.x, t$V4.y);
