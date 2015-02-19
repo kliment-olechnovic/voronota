@@ -10,4 +10,6 @@ area=sum(t$V4.x);
 energy
 area
 
+sum(t$V4.x[which(t$V2=="c<solvent>")])/area;
+
 energy/area;
