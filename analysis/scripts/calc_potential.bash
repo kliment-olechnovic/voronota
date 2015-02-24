@@ -2,7 +2,7 @@
 
 set +e
 
-TMPDIR=$(mktemp -d)
+readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
 BINDIR=""
@@ -83,10 +83,18 @@ mkdir -p "$OUTPUTDIR"
 if [ ! -d "$OUTPUTDIR" ]
 then
 	echo "Could not find or create output directory." 1>&2
+	exit 1
 fi
 
 if $RANDOMIZE
 then
+	RANDOMDIR=$(mktemp --tmpdir=$OUTPUTDIR -d)
+	if [ ! -d "$RANDOMDIR" ]
+	then
+		echo "Could not create random output directory." 1>&2
+		exit 1
+	fi
+	OUTPUTDIR=$RANDOMDIR
 	cat $INPUT_FILE_LIST | shuf > $TMPDIR/list
 else
 	cp $INPUT_FILE_LIST $TMPDIR/list
@@ -94,11 +102,11 @@ fi
 
 if [ -z "$INPUT_SIZE" ]
 then
-	mv $TMPDIR/list $OUTPUTDIR/list_in
+	cat $TMPDIR/list | sort > $OUTPUTDIR/list_in
 	true > $OUTPUTDIR/list_not_in
 else
-	cat $TMPDIR/list | head -n $INPUT_SIZE > $OUTPUTDIR/list_in
-	cat $TMPDIR/list | tail -n "+$(($INPUT_SIZE+1))" > $OUTPUTDIR/list_in
+	cat $TMPDIR/list | head -n $INPUT_SIZE | sort > $OUTPUTDIR/list_in
+	cat $TMPDIR/list | tail -n "+$(($INPUT_SIZE+1))" | sort > $OUTPUTDIR/list_in
 fi
 
 if [ ! -s "$OUTPUTDIR/list_in" ]

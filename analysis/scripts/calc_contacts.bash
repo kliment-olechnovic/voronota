@@ -2,7 +2,7 @@
 
 set +e
 
-TMPDIR=$(mktemp -d)
+readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
 BINDIR=""
@@ -87,6 +87,7 @@ mkdir -p "$OUTPUTDIR"
 if [ ! -d "$OUTPUTDIR" ]
 then
 	echo "Could not find or create output directory." 1>&2
+	exit 1
 fi
 
 cat $TMPDIR/input.pdb \
