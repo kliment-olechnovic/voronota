@@ -10,9 +10,10 @@ INPUT_FILE_PATH=""
 INPUT_URL=false
 INPUT_PRINT_COMMAND="cat"
 OUTPUTDIR=""
+USE_BASENAME=false
 RUN_HBPLUS=false
 
-while getopts "b:i:uzo:p" OPTION
+while getopts "b:i:uzo:np" OPTION
 do
 	case $OPTION in
 	h)
@@ -33,6 +34,9 @@ do
 		;;
     o)
 		OUTPUTDIR=$OPTARG
+		;;
+	n)
+		USE_BASENAME=true
 		;;
 	p)
 		RUN_HBPLUS=true
@@ -80,6 +84,11 @@ if [ ! -s "$TMPDIR/input.pdb" ]
 then
 	echo "Failed to extract input file." 1>&2
 	exit 1
+fi
+
+if $USE_BASENAME
+then
+	OUTPUTDIR=$OUTPUTDIR/$(basename $INPUT_FILE_PATH)
 fi
 
 mkdir -p "$OUTPUTDIR"
