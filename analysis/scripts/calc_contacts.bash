@@ -11,9 +11,8 @@ INPUT_URL=false
 INPUT_PRINT_COMMAND="cat"
 OUTPUTDIR=""
 RUN_HBPLUS=false
-CREATE_SUMMARIES=false
 
-while getopts "b:i:uzo:ps" OPTION
+while getopts "b:i:uzo:p" OPTION
 do
 	case $OPTION in
 	h)
@@ -37,9 +36,6 @@ do
 		;;
 	p)
 		RUN_HBPLUS=true
-		;;
-	s)
-		CREATE_SUMMARIES=true
 		;;
 	?)
 		echo "Unrecognized option." 1>&2
@@ -124,30 +120,4 @@ then
 	> $OUTPUTDIR/contacts_whb
 
 	mv $OUTPUTDIR/contacts_whb $OUTPUTDIR/contacts
-fi
-
-if $CREATE_SUMMARIES
-then
-	mkdir -p $OUTPUTDIR/contacts_summaries
-	
-	for SEQSEP in {1..10}
-	do
-		cat $OUTPUTDIR/contacts \
-		| $BINDIR/voronota query-contacts --no-solvent --match-min-seq-sep $SEQSEP --match-max-seq-sep $SEQSEP \
-		| awk '{print $1 " " $2 " " $5 " " $3}' \
-		| $BINDIR/voronota score-contacts-potential \
-		> "$OUTPUTDIR/contacts_summaries/seqsep_$SEQSEP"
-	done
-	
-	cat $OUTPUTDIR/contacts \
-	| $BINDIR/voronota query-contacts --no-solvent --match-min-seq-sep 11 \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| $BINDIR/voronota score-contacts-potential \
-	> "$OUTPUTDIR/contacts_summaries/seqsep_11"
-	
-	cat $OUTPUTDIR/contacts \
-	| $BINDIR/voronota query-contacts --match-second "c<solvent>" \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| $BINDIR/voronota score-contacts-potential \
-	> "$OUTPUTDIR/contacts_summaries/solvent"
 fi
