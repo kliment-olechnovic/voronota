@@ -74,7 +74,7 @@ fi
 
 if $INPUT_URL
 then
-	wget -O $TMPDIR/download "$INPUT_FILE_PATH"
+	wget -O $TMPDIR/download "$INPUT_FILE_PATH" &> /dev/null
 	$INPUT_PRINT_COMMAND $TMPDIR/download > $TMPDIR/input.pdb
 else
 	$INPUT_PRINT_COMMAND $INPUT_FILE_PATH > $TMPDIR/input.pdb
@@ -112,21 +112,24 @@ cat $OUTPUTDIR/balls \
 
 if $RUN_HBPLUS
 then
+	cp $BINDIR/hbplus $TMPDIR/hbplus
 	cd $TMPDIR
-	$BINDIR/hbplus ./input.pdb > /dev/null 2> /dev/null
-	cd -
+	./hbplus ./input.pdb > /dev/null 2> /dev/null
+	cd - &> /dev/null
+	
+	cp $TMPDIR/input.hb2 $OUTPUTDIR/hbplus_output
 
 	cat $OUTPUTDIR/contacts \
-	| $BINDIR/voronota query-contacts --set-hbplus-tags $TMPDIR/input.hb2 --inter-residue-hbplus-tags \
+	| $BINDIR/voronota query-contacts --set-hbplus-tags $OUTPUTDIR/hbplus_output --inter-residue-hbplus-tags \
 	> $OUTPUTDIR/contacts_whb
 
 	mv $OUTPUTDIR/contacts_whb $OUTPUTDIR/contacts
 fi
 
-mkdir -p $OUTPUTDIR/contacts_summaries
-
 if $CREATE_SUMMARIES
 then
+	mkdir -p $OUTPUTDIR/contacts_summaries
+	
 	for SEQSEP in {1..10}
 	do
 		cat $OUTPUTDIR/contacts \
