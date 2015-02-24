@@ -106,7 +106,7 @@ then
 	true > $OUTPUTDIR/list_not_in
 else
 	cat $TMPDIR/list | head -n $INPUT_SIZE | sort > $OUTPUTDIR/list_in
-	cat $TMPDIR/list | tail -n "+$(($INPUT_SIZE+1))" | sort > $OUTPUTDIR/list_in
+	cat $TMPDIR/list | tail -n "+$(($INPUT_SIZE+1))" | sort > $OUTPUTDIR/list_not_in
 fi
 
 if [ ! -s "$OUTPUTDIR/list_in" ]
