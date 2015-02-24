@@ -128,8 +128,10 @@ done \
 cat $OUTPUTDIR/summary \
 | awk '{print $1 " " $2 " . " $4}' \
 | $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_without_tags --solvent-factor 2 --input-fixed-types $BINDIR/standard_atom_names \
-> /dev/null
+> $OUTPUTDIR/summary_without_tags
 
 cat $OUTPUTDIR/summary \
 | $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_with_tags --solvent-factor 2 --input-fixed-types $BINDIR/standard_atom_names --input-fixed-tags "rhb" \
-> /dev/null
+> $OUTPUTDIR/summary_with_tags
+
+rm $OUTPUTDIR/summary
