@@ -67,11 +67,17 @@ public:
 			}
 		};
 
-		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens, const bool store_lines)
+		static Data read_data_from_file_stream(
+				std::istream& file_stream,
+				const bool include_heteroatoms,
+				const bool include_hydrogens,
+				const bool handle_multiple_models,
+				const bool store_lines)
 		{
 			Data data;
-			bool model_end_reached=false;
-			while(file_stream.good() && (!model_end_reached || store_lines))
+			int model_num=1;
+			bool end_reached=false;
+			while(file_stream.good() && (!end_reached || store_lines))
 			{
 				std::string line;
 				std::getline(file_stream, line);
@@ -79,16 +85,22 @@ public:
 				{
 					data.all_lines.push_back(line);
 				}
-				if(!model_end_reached)
+				if(!end_reached)
 				{
 					const std::string record_name=substring_of_columned_line(line, 1, 6);
 					if(record_name=="ATOM" || record_name=="HETATM")
 					{
-						const AtomRecord record=read_atom_record_from_line(line);
+						AtomRecord record=read_atom_record_from_line(line);
 						if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 						{
 							if(check_atom_record_validity(record))
 							{
+								if(handle_multiple_models && model_num>1)
+								{
+									std::ostringstream chainID_output;
+									chainID_output << record.chainID << model_num;
+									record.chainID=chainID_output.str();
+								}
 								data.atom_records.push_back(record);
 								if(store_lines)
 								{
@@ -101,9 +113,17 @@ public:
 							}
 						}
 					}
-					else if(record_name=="END" || record_name=="ENDMDL")
+					else if(record_name=="ENDMDL")
 					{
-						model_end_reached=true;
+						model_num++;
+						if(!handle_multiple_models)
+						{
+							end_reached=true;
+						}
+					}
+					else if(record_name=="END")
+					{
+						end_reached=true;
 					}
 				}
 			}

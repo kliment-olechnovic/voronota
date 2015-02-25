@@ -20,6 +20,7 @@ Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
 --include-heteroatoms                       flag to include heteroatoms
 --include-hydrogens                         flag to include hydrogen atoms
+--multimodel-chains                         flag to read multiple models in PDB format and rename chains accordingly
 --mmcif                                     flag to input in mmCIF format
 --radii-file                    string      path to radii configuration file
 --default-radius                number      default atomic radius
