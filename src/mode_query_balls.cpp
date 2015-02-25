@@ -336,7 +336,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			auxiliaries::AtomsIO::PDBReader::Data pdb_file_data;
 			{
 				std::ifstream finput(pdb_output_template.c_str(), std::ios::in);
-				pdb_file_data=auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(finput, true, true, true);
+				pdb_file_data=auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(finput, true, true, true, true);
 			}
 			if(!pdb_file_data.valid())
 			{

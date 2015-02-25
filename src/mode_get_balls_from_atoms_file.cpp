@@ -42,6 +42,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--annotated", "", "flag to enable annotated mode"));
 		ods.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
 		ods.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
+		ods.push_back(OD("--multimodel-chains", "", "flag to read multiple models in PDB format and rename chains accordingly"));
 		ods.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
 		ods.push_back(OD("--radii-file", "string", "path to radii configuration file"));
 		ods.push_back(OD("--default-radius", "number", "default atomic radius"));
@@ -60,6 +61,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool mmcif=poh.contains_option("--mmcif");
 	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
 	const bool include_hydrogens=poh.contains_option("--include-hydrogens");
+	const bool multimodel_chains=poh.contains_option("--multimodel-chains");
 	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
 	const double default_radius=poh.argument<double>("--default-radius", 1.70);
 	const bool only_default_radius=poh.contains_option("--only-default-radius");
@@ -67,7 +69,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
 			auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :
-			auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, false).atom_records);
+			auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");
