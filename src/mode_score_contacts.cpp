@@ -320,7 +320,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				for(std::set<std::string>::const_iterator it3=fixed_tags.begin();it3!=fixed_tags.end();++it3)
 				{
-					InteractionName iname(CRADsPair(*it1, *it2), *it3);
+					InteractionName iname(CRADsPair(generalize_crad(*it1), generalize_crad(*it2)), *it3);
 					if(iname.crads.a!=CRAD::solvent() && (iname.crads.b!=CRAD::solvent() || iname.tag==default_tag))
 					{
 						std::map< InteractionName, std::pair<double, double> >::const_iterator result_it=result.find(iname);
