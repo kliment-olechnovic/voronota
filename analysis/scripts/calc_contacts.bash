@@ -9,11 +9,12 @@ BINDIR=""
 INPUT_FILE_PATH=""
 INPUT_URL=false
 INPUT_PRINT_COMMAND="cat"
+MULTIMODEL_CHAINS_OPTION=""
 OUTPUTDIR=""
 USE_BASENAME=false
 RUN_HBPLUS=false
 
-while getopts "b:i:uzo:np" OPTION
+while getopts "b:i:uzmo:np" OPTION
 do
 	case $OPTION in
 	h)
@@ -31,6 +32,9 @@ do
 		;;
 	z)
 		INPUT_PRINT_COMMAND="zcat"
+		;;
+	m)
+		MULTIMODEL_CHAINS_OPTION="--multimodel-chains"
 		;;
     o)
 		OUTPUTDIR=$OPTARG
@@ -100,10 +104,11 @@ then
 fi
 
 cat $TMPDIR/input.pdb \
-| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
+| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated $MULTIMODEL_CHAINS_OPTION \
 | $BINDIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --drop-adjuncts --drop-tags \
 | sed 's/A<OXT>/A<O>/g' \
 | grep -f $BINDIR/standard_atom_names \
+| $BINDIR/voronota query-balls --chains-summary-output $OUTPUTDIR/chains_counts \
 > $OUTPUTDIR/balls
 
 if [ ! -s "$OUTPUTDIR/balls" ]
