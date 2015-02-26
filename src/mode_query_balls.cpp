@@ -116,6 +116,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
 		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
 		ods.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
+		ods.push_back(OD("--chains-summary-output", "string", "file path to output chains summary"));
+		ods.push_back(OD("--chains-seq-identity", "number", "sequence identity threshold for chains summary"));
 		ods.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
 		ods.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
 		ods.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
@@ -149,6 +151,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
 	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
+	const std::string chains_summary_output=poh.argument<std::string>("--chains-summary-output", "");
+	const double chains_seq_identity=poh.argument<double>("--chains-seq-identity", 0.9);
 	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
 	const std::string pdb_output_b_factor=poh.argument<std::string>("--pdb-output-b-factor", "tf");
 	const std::string pdb_output_template=poh.argument<std::string>("--pdb-output-template", "");
@@ -315,6 +319,41 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		if(foutput.good())
 		{
 			foutput << SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
+		}
+	}
+
+	if(!residue_sequence_vector.empty() && !chains_summary_output.empty())
+	{
+		std::ofstream foutput(chains_summary_output.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			std::map< std::string, std::vector<CRAD> > map_of_chains;
+			for(std::size_t i=0;i<residue_sequence_vector.size();i++)
+			{
+				map_of_chains[residue_sequence_vector[i].chainID].push_back(residue_sequence_vector[i]);
+			}
+			std::map<std::string, std::string> map_of_chains_sequences;
+			for(std::map< std::string, std::vector<CRAD> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
+			{
+				map_of_chains_sequences[it->first]=SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
+			}
+			std::set<std::string> repeated_chains;
+			for(std::map<std::string, std::string>::const_iterator it1=map_of_chains_sequences.begin();it1!=map_of_chains_sequences.end();++it1)
+			{
+				if(repeated_chains.count(it1->first)==0)
+				{
+					std::map<std::string, std::string>::const_iterator it2=it1;
+					++it2;
+					for(;it2!=map_of_chains_sequences.end();++it2)
+					{
+						if(SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=chains_seq_identity)
+						{
+							repeated_chains.insert(it2->first);
+						}
+					}
+				}
+			}
+			foutput << map_of_chains_sequences.size() << " " << (map_of_chains_sequences.size()-repeated_chains.size()) << "\n";
 		}
 	}
 
