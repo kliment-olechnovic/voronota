@@ -221,6 +221,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--solvent-factor", "number", "solvent factor value"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
+		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
 		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
@@ -235,6 +236,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
+	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 	std::map<CRAD, double> map_of_crads_total_areas;
@@ -350,7 +352,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
 		const InteractionName& interaction=it->first;
-		std::cout << interaction << " " << it->second.second << "\n";
+		std::cout << interaction << " " << (multiply_areas>0.0 ? (it->second.second*multiply_areas) : it->second.second) << "\n";
 	}
 }
 
