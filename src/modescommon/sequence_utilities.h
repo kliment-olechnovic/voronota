@@ -93,6 +93,26 @@ public:
 		}
 		return result;
 	}
+
+	static double calculate_sequence_identity(const std::string& seq_a, const std::string& seq_b)
+	{
+		const std::size_t max_seq_size=std::max(seq_a.size(), seq_b.size());
+		if(max_seq_size>0)
+		{
+			int matches=0.0;
+			const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(seq_a, seq_b, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1));
+			for(std::size_t i=0;i<alignment.size();i++)
+			{
+				const std::pair<int, int>& p=alignment[i];
+				if(p.first>=0 && p.first<static_cast<int>(seq_a.size()) && p.second>=0 && p.second<static_cast<int>(seq_b.size()) && seq_a[p.first]==seq_b[p.second])
+				{
+					matches++;
+				}
+			}
+			return (static_cast<double>(matches)/static_cast<double>(max_seq_size));
+		}
+		return 0.0;
+	}
 };
 
 }

@@ -94,6 +94,8 @@ Command 'query-balls' options:
 --set-ref-seq-num-adjunct       string      file path to input reference sequence
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string
+--chains-summary-output         string      file path to output chains summary
+--chains-seq-identity           number      sequence identity threshold for chains summary
 --pdb-output                    string      file path to output query result in PDB format
 --pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
 --pdb-output-template           string      file path to input template for B-factor insertions
