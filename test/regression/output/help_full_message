@@ -156,6 +156,7 @@ Command 'score-contacts-potential' options:
 --potential-file                string      file path to output potential values
 --solvent-factor                number      solvent factor value
 --single-areas-file             string      file path to output single type total areas
+--multiply-areas                number      coefficient to multiply output areas
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
