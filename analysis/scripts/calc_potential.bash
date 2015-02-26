@@ -10,10 +10,8 @@ INPUT_FILE_LIST=""
 RANDOMIZE=false
 INPUT_SIZE=""
 OUTPUTDIR=""
-MIN_SEQSEP_OPTION=""
-MAX_SEQSEP_OPTION=""
 
-while getopts "b:i:rs:o:x:y:" OPTION
+while getopts "b:i:rs:o:" OPTION
 do
 	case $OPTION in
 	h)
@@ -34,12 +32,6 @@ do
 		;;
     o)
 		OUTPUTDIR=$OPTARG
-		;;
-	x)
-		MIN_SEQSEP_OPTION="--match-min-seq-sep $OPTARG"
-		;;
-	y)
-		MAX_SEQSEP_OPTION="--match-max-seq-sep $OPTARG"
 		;;
 	?)
 		echo "Unrecognized option." 1>&2
@@ -115,14 +107,8 @@ then
 	exit 1
 fi
 
-cat $OUTPUTDIR/list_in | while read IFILE
-do
-	cat $IFILE \
-	| $BINDIR/voronota query-contacts $MIN_SEQSEP_OPTION $MAX_SEQSEP_OPTION \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| $BINDIR/voronota score-contacts-potential
-done \
-| $BINDIR/voronota score-contacts-potential \
+cat $OUTPUTDIR/list_in \
+| $BINDIR/voronota score-contacts-potential --input-file-list \
 > $OUTPUTDIR/summary
 
 cat $OUTPUTDIR/summary \
