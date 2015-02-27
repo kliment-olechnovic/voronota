@@ -114,6 +114,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
 		ods.push_back(OD("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
 		ods.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
+		ods.push_back(OD("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
 		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
 		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
 		ods.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
@@ -150,6 +151,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
 	const bool rename_chains=poh.contains_option("--rename-chains");
 	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
+	const bool renumber_positively=poh.contains_option("--renumber-positively");
 	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
 	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
@@ -179,7 +181,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				current_chain_names.push_back(chainID);
 			}
 		}
-		if(current_chain_names.size()>(static_cast<std::size_t>('Z'-'A')+1))
+		if(!current_chain_names.empty() && current_chain_names.size()>(static_cast<std::size_t>('Z'-'A')+1))
 		{
 			throw std::runtime_error("Too many chains to rename to be in interval from 'A' to 'Z'.");
 		}
@@ -213,6 +215,30 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 		list_of_balls=refined_list_of_balls;
+	}
+
+	if(renumber_positively)
+	{
+		int min_resSeq=CRAD::null_num();
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			const CRAD& crad=list_of_balls[i].first;
+			if(crad.resSeq!=CRAD::null_num() && (min_resSeq==CRAD::null_num() || crad.resSeq<min_resSeq))
+			{
+				min_resSeq=crad.resSeq;
+			}
+		}
+		if(min_resSeq<=0)
+		{
+			for(std::size_t i=0;i<list_of_balls.size();i++)
+			{
+				CRAD& crad=list_of_balls[i].first;
+				if(crad.resSeq!=CRAD::null_num())
+				{
+					crad.resSeq=(crad.resSeq-min_resSeq+1);
+				}
+			}
+		}
 	}
 
 	std::set<std::size_t> selected_set_of_ball_ids;
