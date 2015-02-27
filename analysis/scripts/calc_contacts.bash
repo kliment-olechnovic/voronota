@@ -10,11 +10,12 @@ INPUT_FILE_PATH=""
 INPUT_URL=false
 INPUT_PRINT_COMMAND="cat"
 MULTIMODEL_CHAINS_OPTION=""
+REFINEMENT_OPTIONS=""
 OUTPUTDIR=""
 USE_BASENAME=false
 RUN_HBPLUS=false
 
-while getopts "b:i:uzmo:np" OPTION
+while getopts "b:i:uzmco:np" OPTION
 do
 	case $OPTION in
 	h)
@@ -35,6 +36,9 @@ do
 		;;
 	m)
 		MULTIMODEL_CHAINS_OPTION="--multimodel-chains"
+		;;
+	c)
+		REFINEMENT_OPTIONS="--rename-chains"
 		;;
     o)
 		OUTPUTDIR=$OPTARG
@@ -105,7 +109,7 @@ fi
 
 cat $TMPDIR/input.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated $MULTIMODEL_CHAINS_OPTION \
-| $BINDIR/voronota query-balls --drop-altloc-indicators --drop-atom-serials --drop-adjuncts --drop-tags \
+| $BINDIR/voronota query-balls $REFINEMENT_OPTIONS --drop-altloc-indicators \
 | sed 's/A<OXT>/A<O>/g' \
 | grep -f $BINDIR/standard_atom_names \
 | $BINDIR/voronota query-balls --chains-summary-output $OUTPUTDIR/chains_counts \
@@ -123,12 +127,15 @@ cat $OUTPUTDIR/balls \
 
 if $RUN_HBPLUS
 then
+	cat $OUTPUTDIR/balls \
+	| $BINDIR/voronota query-balls --pdb-output $TMPDIR/refined.pdb \
+	> /dev/null
+
 	cp $BINDIR/hbplus $TMPDIR/hbplus
 	cd $TMPDIR
-	./hbplus ./input.pdb > /dev/null 2> /dev/null
+	./hbplus ./refined.pdb > /dev/null 2> /dev/null
 	cd - &> /dev/null
-	
-	cp $TMPDIR/input.hb2 $OUTPUTDIR/hbplus_output
+	cp $TMPDIR/refined.hb2 $OUTPUTDIR/hbplus_output
 
 	cat $OUTPUTDIR/contacts \
 	| $BINDIR/voronota query-contacts --set-hbplus-tags $OUTPUTDIR/hbplus_output --inter-residue-hbplus-tags \
