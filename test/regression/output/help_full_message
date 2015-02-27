@@ -90,8 +90,9 @@ Command 'query-balls' options:
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
---rename-chains                             flag to rename chains to be in interval from 'A' to 'Z'
+--rename-chains                             flag to rename input chains to be in interval from 'A' to 'Z'
 --renumber-from-adjunct         string      adjunct name to use for input residue renumbering
+--renumber-positively                       flag to increment residue numbers to make them positive
 --set-ref-seq-num-adjunct       string      file path to input reference sequence
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string
