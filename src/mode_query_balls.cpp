@@ -112,6 +112,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		ods.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
 		ods.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
+		ods.push_back(OD("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
 		ods.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
 		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
 		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
@@ -147,6 +148,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
+	const bool rename_chains=poh.contains_option("--rename-chains");
 	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
 	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
@@ -162,6 +164,38 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
+	}
+
+	if(rename_chains)
+	{
+		std::set<std::string> current_chain_names_set;
+		std::vector<std::string> current_chain_names;
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			const std::string& chainID=list_of_balls[i].first.chainID;
+			if(current_chain_names_set.count(chainID)==0)
+			{
+				current_chain_names_set.insert(chainID);
+				current_chain_names.push_back(chainID);
+			}
+		}
+		if(current_chain_names.size()>(static_cast<std::size_t>('Z'-'A')+1))
+		{
+			throw std::runtime_error("Too many chains to rename to be in interval from 'A' to 'Z'.");
+		}
+		else
+		{
+			std::map<std::string, std::string> renaming_map;
+			for(std::vector<std::string>::const_iterator it=current_chain_names.begin();it!=current_chain_names.end();++it)
+			{
+				char index_symbol='A'+static_cast<char>(renaming_map.size());
+				renaming_map[*it]=std::string(1, index_symbol);
+			}
+			for(std::size_t i=0;i<list_of_balls.size();i++)
+			{
+				list_of_balls[i].first.chainID=renaming_map[list_of_balls[i].first.chainID];
+			}
+		}
 	}
 
 	if(!renumber_from_adjunct.empty())
