@@ -109,10 +109,9 @@ fi
 
 cat $TMPDIR/input.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated $MULTIMODEL_CHAINS_OPTION \
-| $BINDIR/voronota query-balls $REFINEMENT_OPTIONS --drop-altloc-indicators \
 | sed 's/A<OXT>/A<O>/g' \
 | grep -f $BINDIR/standard_atom_names \
-| $BINDIR/voronota query-balls --chains-summary-output $OUTPUTDIR/chains_counts \
+| $BINDIR/voronota query-balls $REFINEMENT_OPTIONS --drop-altloc-indicators --chains-summary-output $OUTPUTDIR/chains_counts \
 > $OUTPUTDIR/balls
 
 if [ ! -s "$OUTPUTDIR/balls" ]
@@ -133,13 +132,19 @@ then
 
 	cp $BINDIR/hbplus $TMPDIR/hbplus
 	cd $TMPDIR
-	./hbplus ./refined.pdb > /dev/null 2> /dev/null
+	./hbplus ./refined.pdb > $TMPDIR/hbplus_log
 	cd - &> /dev/null
-	cp $TMPDIR/refined.hb2 $OUTPUTDIR/hbplus_output
-
-	cat $OUTPUTDIR/contacts \
-	| $BINDIR/voronota query-contacts --set-hbplus-tags $OUTPUTDIR/hbplus_output --inter-residue-hbplus-tags \
-	> $OUTPUTDIR/contacts_whb
-
-	mv $OUTPUTDIR/contacts_whb $OUTPUTDIR/contacts
+	
+	mv $TMPDIR/hbplus_log $OUTPUTDIR/hbplus_log
+	
+	if [ -s "$TMPDIR/refined.hb2" ] && [ "$(cat $TMPDIR/refined.hb2 | wc -l)" -gt "8" ]
+	then
+		cp $TMPDIR/refined.hb2 $OUTPUTDIR/hbplus_output
+	
+		cat $OUTPUTDIR/contacts \
+		| $BINDIR/voronota query-contacts --set-hbplus-tags $OUTPUTDIR/hbplus_output --inter-residue-hbplus-tags \
+		> $OUTPUTDIR/contacts_whb
+	
+		mv $OUTPUTDIR/contacts_whb $OUTPUTDIR/contacts
+	fi
 fi
