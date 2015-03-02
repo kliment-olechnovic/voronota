@@ -38,7 +38,7 @@ do
 		MULTIMODEL_CHAINS_OPTION="--multimodel-chains"
 		;;
 	c)
-		REFINEMENT_OPTIONS="--rename-chains --renumber-positively"
+		REFINEMENT_OPTIONS="--rename-chains --renumber-positively --reset-serials"
 		;;
     o)
 		OUTPUTDIR=$OPTARG

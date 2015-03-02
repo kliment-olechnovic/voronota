@@ -93,6 +93,7 @@ Command 'query-balls' options:
 --rename-chains                             flag to rename input chains to be in interval from 'A' to 'Z'
 --renumber-from-adjunct         string      adjunct name to use for input residue renumbering
 --renumber-positively                       flag to increment residue numbers to make them positive
+--reset-serials                             flag to reset atom serial numbers
 --set-ref-seq-num-adjunct       string      file path to input reference sequence
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string

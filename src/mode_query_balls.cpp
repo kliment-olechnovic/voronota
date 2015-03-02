@@ -115,6 +115,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
 		ods.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
 		ods.push_back(OD("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
+		ods.push_back(OD("--reset-serials", "", "flag to reset atom serial numbers"));
 		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
 		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
 		ods.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
@@ -152,6 +153,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool rename_chains=poh.contains_option("--rename-chains");
 	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
 	const bool renumber_positively=poh.contains_option("--renumber-positively");
+	const bool reset_serials=poh.contains_option("--reset-serials");
 	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
 	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
 	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
@@ -238,6 +240,14 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					crad.resSeq=(crad.resSeq-min_resSeq+1);
 				}
 			}
+		}
+	}
+
+	if(reset_serials)
+	{
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			list_of_balls[i].first.serial=static_cast<int>(i+1);
 		}
 	}
 
