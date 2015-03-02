@@ -316,9 +316,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::map< InteractionName, std::pair<double, double> > fixed_result;
 		for(std::set<CRAD>::const_iterator it1=fixed_types.begin();it1!=fixed_types.end();++it1)
 		{
-			std::set<CRAD>::const_iterator it2=it1;
-			++it2;
-			for(;it2!=fixed_types.end();++it2)
+			for(std::set<CRAD>::const_iterator it2=it1;it2!=fixed_types.end();++it2)
 			{
 				for(std::set<std::string>::const_iterator it3=fixed_tags.begin();it3!=fixed_tags.end();++it3)
 				{
