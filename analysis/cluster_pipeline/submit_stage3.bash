@@ -1,18 +1,11 @@
 #!/bin/bash
 
-find /scratch/lustre/kliment/voromqa/output/complexes/contacts/ -type f -name summary -not -empty \
-> /scratch/lustre/kliment/voromqa/output/complexes/contacts_summaries_list
-
-sbatch /scratch/lustre/kliment/voromqa/bin/calc_potential.bash \
--b /scratch/lustre/kliment/voromqa/bin \
--i /scratch/lustre/kliment/voromqa/output/complexes/contacts_summaries_list \
--o /scratch/lustre/kliment/voromqa/output/complexes/potential/full
-
-for i in {1..1000}
+find /scratch/lustre/kliment/voromqa/output/complexes/contacts/ -type f -name hbplus_output -not -empty | while read FNAME
 do
-	sbatch /scratch/lustre/kliment/voromqa/bin/calc_potential.bash \
-	-b /scratch/lustre/kliment/voromqa/bin \
-	-i /scratch/lustre/kliment/voromqa/output/complexes/contacts_summaries_list \
-	-o /scratch/lustre/kliment/voromqa/output/complexes/potential/half \
-	-r -s 7000
-done
+	echo $(dirname $FNAME)
+done > /scratch/lustre/kliment/voromqa/output/complexes/contacts_list
+
+cat ./output/complexes/contacts_list \
+| xargs -L 200 -P 1 \
+sbatch /scratch/lustre/kliment/voromqa/bin/run_args_loop.bash \
+"/scratch/lustre/kliment/voromqa/bin/calc_contacts_summary.bash -b /scratch/lustre/kliment/voromqa/bin -x 6 -w -d"

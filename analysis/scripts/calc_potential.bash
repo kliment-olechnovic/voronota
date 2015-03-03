@@ -10,8 +10,10 @@ INPUT_FILE_LIST=""
 RANDOMIZE=false
 INPUT_SIZE=""
 OUTPUTDIR=""
+FIXED_TYPES_WITHOUT_TAGS_OPTION=""
+FIXED_TYPES_WITH_TAGS_OPTION=""
 
-while getopts "b:i:rs:o:" OPTION
+while getopts "b:i:rs:o:t" OPTION
 do
 	case $OPTION in
 	h)
@@ -32,6 +34,10 @@ do
 		;;
     o)
 		OUTPUTDIR=$OPTARG
+		;;
+	t)
+		FIXED_TYPES_WITHOUT_TAGS_OPTION="--input-fixed-types $BINDIR/standard_interactions_without_tags"
+		FIXED_TYPES_WITH_TAGS_OPTION="--input-fixed-types $BINDIR/standard_interactions_with_tags"
 		;;
 	?)
 		echo "Unrecognized option." 1>&2
@@ -113,11 +119,11 @@ cat $OUTPUTDIR/list_in \
 
 cat $OUTPUTDIR/summary \
 | awk '{print $1 " " $2 " . " $4}' \
-| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_without_tags --solvent-factor 2 --input-fixed-types $BINDIR/standard_atom_names \
+| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_without_tags --solvent-factor 2 $FIXED_TYPES_WITHOUT_TAGS_OPTION \
 > $OUTPUTDIR/summary_without_tags
 
 cat $OUTPUTDIR/summary \
-| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_with_tags --solvent-factor 2 --input-fixed-types $BINDIR/standard_atom_names --input-fixed-tags "rhb" \
+| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_with_tags --solvent-factor 2 $FIXED_TYPES_WITH_TAGS_OPTION \
 > $OUTPUTDIR/summary_with_tags
 
 rm $OUTPUTDIR/summary
