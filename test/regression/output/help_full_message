@@ -155,7 +155,6 @@ stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distanc
 Command 'score-contacts-potential' options:
 --input-file-list                           flag to read file list from stdin
 --input-fixed-types             string      file path to input fixed types
---input-fixed-tags              string      comma-separated list of fixed tags
 --potential-file                string      file path to output potential values
 --solvent-factor                number      solvent factor value
 --single-areas-file             string      file path to output single type total areas

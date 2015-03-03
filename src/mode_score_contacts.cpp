@@ -217,7 +217,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::vector<OD> ods;
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
-		ods.push_back(OD("--input-fixed-tags", "string", "comma-separated list of fixed tags"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--solvent-factor", "number", "solvent factor value"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
@@ -232,7 +231,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
-	const std::vector<std::string> input_fixed_tags=poh.argument_strings_vector("--input-fixed-tags", ',');
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const double solvent_factor=poh.argument<double>("--solvent-factor", 1.0);
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
@@ -296,16 +294,12 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!input_fixed_types.empty())
 	{
-		std::set<CRAD> fixed_types;
+		std::set<InteractionName> fixed_types;
 		auxiliaries::IOUtilities().read_file_lines_to_set(input_fixed_types, fixed_types);
-		fixed_types.insert(CRAD::solvent());
 		if(fixed_types.empty())
 		{
 			throw std::runtime_error("No valid fixed types input.");
 		}
-
-		std::set<std::string> fixed_tags(input_fixed_tags.begin(), input_fixed_tags.end());
-		fixed_tags.insert(default_tag);
 
 		double max_potential_value=0.0;
 		for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
@@ -314,20 +308,11 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		std::map< InteractionName, std::pair<double, double> > fixed_result;
-		for(std::set<CRAD>::const_iterator it1=fixed_types.begin();it1!=fixed_types.end();++it1)
+		for(std::set<InteractionName>::const_iterator it=fixed_types.begin();it!=fixed_types.end();++it)
 		{
-			for(std::set<CRAD>::const_iterator it2=it1;it2!=fixed_types.end();++it2)
-			{
-				for(std::set<std::string>::const_iterator it3=fixed_tags.begin();it3!=fixed_tags.end();++it3)
-				{
-					InteractionName iname(CRADsPair(generalize_crad(*it1), generalize_crad(*it2)), *it3);
-					if(iname.crads.a!=CRAD::solvent() && (iname.crads.b!=CRAD::solvent() || iname.tag==default_tag))
-					{
-						std::map< InteractionName, std::pair<double, double> >::const_iterator result_it=result.find(iname);
-						fixed_result[iname]=(result_it!=result.end() ? result_it->second : std::make_pair(max_potential_value, 0.0));
-					}
-				}
-			}
+			const InteractionName& iname=(*it);
+			std::map< InteractionName, std::pair<double, double> >::const_iterator result_it=result.find(iname);
+			fixed_result[iname]=(result_it!=result.end() ? result_it->second : std::make_pair(max_potential_value, 0.0));
 		}
 		result=fixed_result;
 	}
