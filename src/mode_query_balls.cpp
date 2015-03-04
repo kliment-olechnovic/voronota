@@ -407,11 +407,13 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				map_of_chains_sequences[it->first]=SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
 			}
+			std::set<std::string> representative_chains;
 			std::set<std::string> repeated_chains;
 			for(std::map<std::string, std::string>::const_iterator it1=map_of_chains_sequences.begin();it1!=map_of_chains_sequences.end();++it1)
 			{
 				if(repeated_chains.count(it1->first)==0)
 				{
+					representative_chains.insert(it1->first);
 					std::map<std::string, std::string>::const_iterator it2=it1;
 					++it2;
 					for(;it2!=map_of_chains_sequences.end();++it2)
@@ -423,7 +425,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
-			foutput << map_of_chains_sequences.size() << " " << (map_of_chains_sequences.size()-repeated_chains.size()) << "\n";
+			foutput << map_of_chains_sequences.size() << " " << representative_chains.size() << "\n";
+			auxiliaries::IOUtilities().write_set(representative_chains, foutput);
 		}
 	}
 
