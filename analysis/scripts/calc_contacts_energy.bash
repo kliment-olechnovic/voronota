@@ -105,8 +105,8 @@ cat $TMPDIR/contacts \
 
 if $STATISTICAL
 then
-	cat $WORKDIR/balls | $BINDIR/voronota query-balls --chains-summary-output $WORKDIR/chains_counts > /dev/null
-	cat $WORKDIR/chains_counts | tail -n +2 | awk '{print "c<" $1 ">"}' > $TMPDIR/representative_chains
+	cat $WORKDIR/balls | $BINDIR/voronota query-balls --chains-summary-output $TMPDIR/chains_counts > /dev/null
+	cat $TMPDIR/chains_counts | tail -n +2 | awk '{print "c<" $1 ">"}' > $TMPDIR/representative_chains
 	
 	cat $WORKDIR/$OUTPUT_NAME"_atoms" \
 	| grep -f $TMPDIR/representative_chains \
