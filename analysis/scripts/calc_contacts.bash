@@ -107,7 +107,7 @@ cat $TMPDIR/input.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated $MULTIMODEL_CHAINS_OPTION \
 | sed 's/A<OXT>/A<O>/g' \
 | grep -f $BINDIR/standard_atom_names \
-| $BINDIR/voronota query-balls $REFINEMENT_OPTIONS --drop-altloc-indicators --chains-summary-output $OUTPUTDIR/chains_counts \
+| $BINDIR/voronota query-balls $REFINEMENT_OPTIONS --drop-altloc-indicators \
 > $OUTPUTDIR/balls
 
 if [ ! -s "$OUTPUTDIR/balls" ]
