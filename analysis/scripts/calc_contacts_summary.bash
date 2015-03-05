@@ -71,8 +71,8 @@ fi
 MULTCOEFF="24.0"
 if $WEIGHTED
 then
-	cat $WORKDIR/balls | $BINDIR/voronota query-balls --chains-summary-output $WORKDIR/chains_counts > /dev/null
-	MULTCOEFF=$(cat $WORKDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}')
+	cat $WORKDIR/balls | $BINDIR/voronota query-balls --chains-summary-output $TMPDIR/chains_counts > /dev/null
+	MULTCOEFF=$(cat $TMPDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}')
 fi
 
 cat $WORKDIR/contacts \
