@@ -25,4 +25,4 @@ done
 
 mkdir -p $(dirname $OUTFILE)
 
-cat $(cat $LISTFILE | awk -v ending="$ENDING" '{print $1 $ending}') > $OUTFILE
+cat $(cat $LISTFILE | sed "s/\(.*\)/\1\/$ENDING/") > $OUTFILE
