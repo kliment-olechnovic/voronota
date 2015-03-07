@@ -33,6 +33,8 @@ done
 
 mkdir -p $OUTDIR/$PNAME
 
+cat `find $INDIR/half -type f -name list_in` | sort | uniq -c > $OUTDIR/$PNAME/inclusion_counts
+
 paste $TMPDIR/* > $OUTDIR/$PNAME/vectors
 
 R --vanilla --args $INDIR/full/$PNAME $OUTDIR/$PNAME/vectors $OUTDIR/$PNAME/means_and_sds $OUTDIR/$PNAME/means_and_sds.png <<'EOF'
@@ -74,7 +76,12 @@ segments(x, y-sds, x, y+sds);
 points(c(-100, 100), c(-100, 100), type="l", col="yellow");
 points(c(-100, 100), c(0, 0), type="l", col="yellow");
 points(c(0, 0), c(-100, 100), type="l", col="yellow");
-points(x, y, col="red");
+sel=which(p[,3]==".");
+points(x[sel], y[sel], col="green");
+sel=which(p[,3]!=".");
+points(x[sel], y[sel], col="blue");
+sel=which(p[,2]=="c<solvent>");
+points(x[sel], y[sel], col="red");
 dev.off();
 
 EOF
