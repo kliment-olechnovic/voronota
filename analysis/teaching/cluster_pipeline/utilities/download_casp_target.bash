@@ -99,8 +99,9 @@ mkdir -p $OUTDIR/models
 
 cat $TMPDIR/$TARGETNAME.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
-| sed 's/A<OXT>/A<O>/g' | grep -f $BINDIR/standard_atom_names \
-| $BINDIR/voronota query-balls --rename-chains --reset-serials --drop-altloc-indicators \
+| grep -f $BINDIR/standard_atom_names \
+| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
+| sort -V | $BINDIR/voronota query-balls --reset-serials \
 > $OUTDIR/target
 
 cat $OUTDIR/target | $BINDIR/voronota query-balls --drop-atom-serials | awk '{print $1}' > $TMPDIR/filter
@@ -109,10 +110,10 @@ find $TMPDIR/$TARGETNAME -type f -not -empty | while read MODEL
 do
 	cat $MODEL \
 	| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
-	| sed 's/A<OXT>/A<O>/g' | grep -f $BINDIR/standard_atom_names \
-	| $BINDIR/voronota query-balls --rename-chains --drop-altloc-indicators \
+	| grep -f $BINDIR/standard_atom_names \
+	| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
 	| $BINDIR/voronota query-balls --match-external-annotations $TMPDIR/filter \
-	| $BINDIR/voronota query-balls --reset-serials \
+	| sort -V | $BINDIR/voronota query-balls --reset-serials \
 	> $TMPDIR/filtered
 	
 	if [ -s "$TMPDIR/filtered" ] && [ "$(cat $OUTDIR/target | wc -l)" -eq "$(cat $TMPDIR/filtered | wc -l)" ]
