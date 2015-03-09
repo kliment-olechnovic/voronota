@@ -95,6 +95,7 @@ fi
 cd - &> /dev/null
 
 OUTDIR=$OUTDIR/$CASPNAME$STAGENUM/$TARGETNAME
+mkdir -p $OUTDIR/target
 mkdir -p $OUTDIR/models
 
 cat $TMPDIR/$TARGETNAME.pdb \
@@ -102,9 +103,11 @@ cat $TMPDIR/$TARGETNAME.pdb \
 | grep -f $BINDIR/standard_atom_names \
 | $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
 | sort -V | $BINDIR/voronota query-balls --reset-serials \
-> $OUTDIR/target
+> $OUTDIR/target/balls
 
-cat $OUTDIR/target | $BINDIR/voronota query-balls --drop-atom-serials | awk '{print $1}' > $TMPDIR/filter
+cat $OUTDIR/target/balls | $BINDIR/voronota calculate-contacts --annotated > $OUTDIR/target/contacts
+
+cat $OUTDIR/target/balls | $BINDIR/voronota query-balls --drop-atom-serials | awk '{print $1}' > $TMPDIR/filter
 
 find $TMPDIR/$TARGETNAME -type f -not -empty | while read MODEL
 do
@@ -116,8 +119,11 @@ do
 	| sort -V | $BINDIR/voronota query-balls --reset-serials \
 	> $TMPDIR/filtered
 	
-	if [ -s "$TMPDIR/filtered" ] && [ "$(cat $OUTDIR/target | wc -l)" -eq "$(cat $TMPDIR/filtered | wc -l)" ]
+	if [ -s "$TMPDIR/filtered" ] && [ "$(cat $OUTDIR/target/balls | wc -l)" -eq "$(cat $TMPDIR/filtered | wc -l)" ]
 	then
-		mv $TMPDIR/filtered $OUTDIR/models/$(basename $MODEL)
+		MODELNAME=$(basename $MODEL)
+		mkdir -p $OUTDIR/models/$MODELNAME
+		mv $TMPDIR/filtered $OUTDIR/models/$MODELNAME/balls
+		cat $OUTDIR/models/$MODELNAME/balls | $BINDIR/voronota calculate-contacts --annotated > $OUTDIR/models/$MODELNAME/contacts
 	fi
 done
