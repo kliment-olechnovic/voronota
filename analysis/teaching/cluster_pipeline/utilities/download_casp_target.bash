@@ -3,14 +3,18 @@
 readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
+BINDIR=""
 CASPNAME=""
 TARGETNAME=""
 STAGENUM=""
 OUTDIR=""
 
-while getopts "c:t:s:o:" OPTION
+while getopts "b:c:t:s:o:" OPTION
 do
 	case $OPTION in
+	b)
+		BINDIR=$OPTARG
+		;;
 	c)
 		CASPNAME="CASP$OPTARG"
 		;;
@@ -30,9 +34,15 @@ do
 	esac
 done
 
-if [ -z "$CASPNAME" ] || [ -z "$TARGETNAME" ] || [ -z "$OUTDIR" ] 
+if [ -z "$BINDIR" ] || [ -z "$CASPNAME" ] || [ -z "$TARGETNAME" ] || [ -z "$OUTDIR" ] 
 then
 	echo "Missing arguments." 1>&2
+	exit 1
+fi
+
+if [ ! -s "$BINDIR/voronota" ]
+then
+	echo "Invalid binaries directory." 1>&2
 	exit 1
 fi
 
@@ -82,10 +92,31 @@ then
 	exit 1
 fi
 
-cd -
+cd - &> /dev/null
 
-OUTDIR=$OUTDIR/$CASPNAME$STAGENUM
-mkdir -p $OUTDIR
+OUTDIR=$OUTDIR/$CASPNAME$STAGENUM/$TARGETNAME
+mkdir -p $OUTDIR/models
 
-mv $TMPDIR/$TARGETNAME $OUTDIR/$TARGETNAME
-mv $TMPDIR/$TARGETNAME.pdb $OUTDIR/$TARGETNAME/$TARGETNAME.pdb
+cat $TMPDIR/$TARGETNAME.pdb \
+| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
+| sed 's/A<OXT>/A<O>/g' | grep -f $BINDIR/standard_atom_names \
+| $BINDIR/voronota query-balls --rename-chains --reset-serials --drop-altloc-indicators \
+> $OUTDIR/target
+
+cat $OUTDIR/target | $BINDIR/voronota query-balls --drop-atom-serials | awk '{print $1}' > $TMPDIR/filter
+
+find $TMPDIR/$TARGETNAME -type f -not -empty | while read MODEL
+do
+	cat $MODEL \
+	| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
+	| sed 's/A<OXT>/A<O>/g' | grep -f $BINDIR/standard_atom_names \
+	| $BINDIR/voronota query-balls --rename-chains --drop-altloc-indicators \
+	| $BINDIR/voronota query-balls --match-external-annotations $TMPDIR/filter \
+	| $BINDIR/voronota query-balls --reset-serials \
+	> $TMPDIR/filtered
+	
+	if [ -s "$TMPDIR/filtered" ] && [ "$(cat $OUTDIR/target | wc -l)" -eq "$(cat $TMPDIR/filtered | wc -l)" ]
+	then
+		mv $TMPDIR/filtered $OUTDIR/models/$(basename $MODEL)
+	fi
+done
