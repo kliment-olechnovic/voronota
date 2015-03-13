@@ -9,8 +9,9 @@ BINDIR=""
 WORKDIR=""
 TAG_HBONDS=false
 TAG_SSBONDS=false
+TAG_SEQSEP=false
 
-while getopts "b:d:ps" OPTION
+while getopts "b:d:psl" OPTION
 do
 	case $OPTION in
 	h)
@@ -28,6 +29,9 @@ do
 		;;
 	s)
 		TAG_SSBONDS=true
+		;;
+	l)
+		TAG_SEQSEP=true
 		;;	
 	?)
 		echo "Unrecognized option." 1>&2
@@ -65,6 +69,19 @@ cat $WORKDIR/contacts \
 > $WORKDIR/contacts_nt
 
 mv $WORKDIR/contacts_nt $WORKDIR/contacts
+
+if $TAG_SEQSEP
+then
+	cat $WORKDIR/contacts \
+	| $BINDIR/voronota query-contacts --match-min-seq-sep 1 --match-max-seq-sep 1 --no-solvent --set-tags 'sep1' \
+	| $BINDIR/voronota query-contacts --match-min-seq-sep 2 --match-max-seq-sep 2 --no-solvent --set-tags 'sep2' \
+	| $BINDIR/voronota query-contacts --match-min-seq-sep 3 --match-max-seq-sep 3 --no-solvent --set-tags 'sep3' \
+	| $BINDIR/voronota query-contacts --match-min-seq-sep 4 --match-max-seq-sep 4 --no-solvent --set-tags 'sep4' \
+	| $BINDIR/voronota query-contacts --no-same-chain --drop-tags \
+	> $WORKDIR/contacts_wss
+	
+	mv $WORKDIR/contacts_wss $WORKDIR/contacts
+fi
 
 if $TAG_HBONDS
 then
