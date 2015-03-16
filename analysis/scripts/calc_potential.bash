@@ -119,11 +119,11 @@ cat $OUTPUTDIR/list_in \
 
 cat $OUTPUTDIR/summary \
 | awk '{print $1 " " $2 " . " $4}' \
-| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_without_tags --solvent-factor 2 $FIXED_TYPES_WITHOUT_TAGS_OPTION \
+| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_without_tags $FIXED_TYPES_WITHOUT_TAGS_OPTION \
 > $OUTPUTDIR/summary_without_tags
 
 cat $OUTPUTDIR/summary \
-| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_with_tags --solvent-factor 2 $FIXED_TYPES_WITH_TAGS_OPTION \
+| $BINDIR/voronota score-contacts-potential --potential-file $OUTPUTDIR/potential_with_tags $FIXED_TYPES_WITH_TAGS_OPTION \
 > $OUTPUTDIR/summary_with_tags
 
 rm $OUTPUTDIR/summary

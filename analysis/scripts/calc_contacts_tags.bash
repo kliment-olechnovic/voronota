@@ -11,7 +11,7 @@ TAG_HBONDS=false
 TAG_SSBONDS=false
 TAG_SEQSEP=false
 
-while getopts "b:d:psl" OPTION
+while getopts "b:d:lps" OPTION
 do
 	case $OPTION in
 	h)
@@ -24,15 +24,15 @@ do
 	d)
 		WORKDIR=$OPTARG
 		;;
+	l)
+		TAG_SEQSEP=true
+		;;
 	p)
 		TAG_HBONDS=true
 		;;
 	s)
 		TAG_SSBONDS=true
 		;;
-	l)
-		TAG_SEQSEP=true
-		;;	
 	?)
 		echo "Unrecognized option." 1>&2
 		exit 1

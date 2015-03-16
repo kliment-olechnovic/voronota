@@ -8,4 +8,4 @@ done > /scratch/lustre/kliment/voromqa/output/complexes/contacts_list
 cat ./output/complexes/contacts_list \
 | xargs -L 200 -P 1 \
 sbatch /scratch/lustre/kliment/voromqa/bin/run_args_loop.bash \
-"/scratch/lustre/kliment/voromqa/bin/calc_contacts_tags.bash -b /scratch/lustre/kliment/voromqa/bin -p -s -d"
+"/scratch/lustre/kliment/voromqa/bin/calc_contacts_tags.bash -b /scratch/lustre/kliment/voromqa/bin -l -p -s -d"
