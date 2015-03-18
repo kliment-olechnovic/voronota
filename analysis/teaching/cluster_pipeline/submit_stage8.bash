@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..6}
+for i in {0..5}
 do
 	sbatch /scratch/lustre/kliment/voromqa/bin/cat_list_of_files.bash \
 	-l /scratch/lustre/kliment/voromqa/output/complexes/contacts_list \

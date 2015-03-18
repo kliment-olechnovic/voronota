@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..6}
+for i in {0..5}
 do
 	cat /scratch/lustre/kliment/voromqa/output/complexes/contacts_list \
 	| xargs -L 200 -P 1 \
