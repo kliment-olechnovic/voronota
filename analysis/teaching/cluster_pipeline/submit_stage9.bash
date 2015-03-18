@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {1..6}
+for i in {0..5}
 do
 	sbatch /scratch/lustre/kliment/voromqa/bin/estimate_distributions.bash \
 	-i /scratch/lustre/kliment/voromqa/output/complexes/energy/energy_without_tags_iss${i}_atoms \
