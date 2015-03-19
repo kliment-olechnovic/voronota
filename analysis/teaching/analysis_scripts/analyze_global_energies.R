@@ -10,6 +10,8 @@ targets=sort(union(names$V2, names$V2));
 sizes=c();
 jumpers=c();
 jumpernames=c();
+solidtargetnames=c();
+jumpertargetnames=c();
 
 for(target in targets)
 {
@@ -25,6 +27,15 @@ for(target in targets)
 		jumpers=c(jumpers, length(jumpersel));
 		jumpernames=c(jumpernames, sn[jumpersel]);
 		
+		if(length(jumpersel)==0)
+		{
+			solidtargetnames=c(solidtargetnames, target);
+		}
+		else
+		{
+			jumpertargetnames=c(jumpertargetnames, target);
+		}
+		
 		cols=rep("black", length(sel));
 		cols[stargetsel]="blue";
 		cols[jumpersel]="red";
@@ -33,7 +44,9 @@ for(target in targets)
 	}
 }
 
-table(jumpernames);
+solidtargetnames
+
+jumpertargetnames;
 
 length(which(jumpers>0));
 mean(jumpers/sizes);
