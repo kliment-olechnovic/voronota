@@ -55,6 +55,12 @@ cat $TARGETDIR/$TARGETNAME.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
 | grep -f $BINDIR/standard_atom_names \
 | $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
+| $BINDIR/voronota query-balls --seq-output $TMPDIR/sequence \
+> $TMPDIR/balls
+
+cat $TMPDIR/balls \
+| $BINDIR/voronota query-balls --set-ref-seq-num-adjunct $TMPDIR/sequence \
+| $BINDIR/voronota query-balls --renumber-from-adjunct refseq \
 | sort -V | $BINDIR/voronota query-balls --reset-serials \
 > $OUTDIR/target/balls
 
@@ -68,6 +74,8 @@ do
 	| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
 	| grep -f $BINDIR/standard_atom_names \
 	| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
+	| $BINDIR/voronota query-balls --set-ref-seq-num-adjunct $TMPDIR/sequence \
+	| $BINDIR/voronota query-balls --renumber-from-adjunct refseq \
 	| $BINDIR/voronota query-balls --match-external-annotations $TMPDIR/filter \
 	| sort -V | $BINDIR/voronota query-balls --reset-serials \
 	> $TMPDIR/filtered
