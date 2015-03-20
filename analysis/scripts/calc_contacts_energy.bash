@@ -12,9 +12,10 @@ POTENTIAL=""
 IGNORABLE_MAX_SEQSEP="1"
 DEPTH="2"
 OUTPUT_NAME="energy"
+QUALITY_PARAMS=""
 STATISTICAL=false
 
-while getopts "b:d:tp:y:e:n:s" OPTION
+while getopts "b:d:tp:y:e:n:q:s" OPTION
 do
 	case $OPTION in
 	h)
@@ -41,6 +42,9 @@ do
 		;;
 	n)
 		OUTPUT_NAME=$OPTARG
+		;;
+	q)
+		QUALITY_PARAMS=$OPTARG
 		;;
 	s)
 		STATISTICAL=true
@@ -103,6 +107,16 @@ cat $TMPDIR/contacts \
 --atom-scores-file $WORKDIR/$OUTPUT_NAME"_atoms" \
 > $WORKDIR/$OUTPUT_NAME"_global"
 
+if [ -n "$QUALITY_PARAMS" ]
+then
+	cat $WORKDIR/$OUTPUT_NAME"_atoms" \
+	| $BINDIR/voronota score-contacts-quality \
+	--means-and-sds-file $QUALITY_PARAMS \
+	--smoothing-window 5 \
+	--residue-scores-file $WORKDIR/$OUTPUT_NAME"_residues_quality" \
+	> $WORKDIR/$OUTPUT_NAME"_global_quality"
+fi
+
 if $STATISTICAL
 then
 	cat $WORKDIR/balls | $BINDIR/voronota query-balls --chains-summary-output $TMPDIR/chains_counts > /dev/null
@@ -115,4 +129,13 @@ then
 	> $TMPDIR/normalized_energy_atoms
 	
 	mv $TMPDIR/normalized_energy_atoms $WORKDIR/$OUTPUT_NAME"_atoms"
+	
+	if [ -n "$QUALITY_PARAMS" ]
+	then
+		cat $WORKDIR/$OUTPUT_NAME"_residues_quality" \
+		| sed 's/.*\(R<.*>\)/\1/' \
+		> $TMPDIR/unnumbered_residues_quality
+		
+		mv $TMPDIR/unnumbered_residues_quality $WORKDIR/$OUTPUT_NAME"_residues_quality"
+	fi
 fi

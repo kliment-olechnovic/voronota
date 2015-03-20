@@ -11,6 +11,11 @@ do
 	-o /scratch/lustre/kliment/voromqa/output/casp/energy/energy_with_tags_iss${i}_global
 	
 	sbatch /scratch/lustre/kliment/voromqa/bin/cat_list_of_files.bash \
+	-l /scratch/lustre/kliment/voromqa/output/casp/contacts_list \
+	-e energy_with_tags_iss${i}_global_quality \
+	-o /scratch/lustre/kliment/voromqa/output/casp/energy/energy_with_tags_iss${i}_global_quality
+	
+	sbatch /scratch/lustre/kliment/voromqa/bin/cat_list_of_files.bash \
 	-l /scratch/lustre/kliment/voromqa/output/casp/contacts_list_models \
 	-e energy_with_tags_iss${i}_atoms \
 	-o /scratch/lustre/kliment/voromqa/output/casp/energy/models/energy_with_tags_iss${i}_atoms
