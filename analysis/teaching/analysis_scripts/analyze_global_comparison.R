@@ -22,6 +22,8 @@ plot(cadscores, qscores, xlim=c(0, 1), ylim=c(0, 1));
 targets=sort(union(names$V2, names$V2));
 
 cors=c();
+max_cadscores=c();
+sd_cadscores=c();
 
 for(target in targets)
 {
@@ -30,8 +32,13 @@ for(target in targets)
 	{
 		plot(cadscores[sel], qscores[sel], xlim=c(0, 1), ylim=c(0, 1), main=target);
 		cors=c(cors, cor(cadscores[sel], qscores[sel]));
+		max_cadscores=c(max_cadscores, max(cadscores[sel])[1]);
+		sd_cadscores=c(sd_cadscores, sd(cadscores[sel]));
 	}
 }
+
+plot(max_cadscores, cors, ylim=c(0, 1));
+plot(sd_cadscores, cors, ylim=c(0, 1));
 
 cor(cadscores, qscores);
 
