@@ -530,8 +530,8 @@ void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> ods;
 		ods.push_back(OD("--potential-file", "string", "file path to input potential values", true));
-		ods.push_back(OD("--residue-level", "", "flag to operate on residue level", true));
-		ods.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix", true));
+		ods.push_back(OD("--residue-level", "", "flag to operate on residue level"));
+		ods.push_back(OD("--output-as-matrix", "", "flag to output results as distance matrix"));
 		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdout", false, true, "replacements scores");
