@@ -104,6 +104,12 @@ inline std::istream& operator>>(std::istream& input, NormalDistributionParameter
 	return input;
 }
 
+inline bool check_for_peptide_bond(const CRADsPair& crads)
+{
+	return (((crads.a.name=="C" && crads.b.name=="N") || (crads.a.name=="N" && crads.b.name=="C"))
+			&& CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
+}
+
 inline CRAD generalize_crad(const CRAD& input_crad)
 {
 	CRAD crad=input_crad.without_numbering();
@@ -434,7 +440,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRADsPair& crads=it->first.crads;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false))
+			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_for_peptide_bond(crads))
 			{
 				ed.total_area=it->second;
 				ed.contacts_count=1;
