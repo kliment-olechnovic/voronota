@@ -216,7 +216,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
-		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
+		ods.push_back(OD("--generic-potential-file", "string", "file path to output generic potential values"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
 		ods.push_back(OD("--shift-solvent", "", "flag to make all solvent values non-negative"));
 		if(!poh.assert(ods, false))
@@ -230,7 +230,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
-	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
+	const std::string generic_potential_file=poh.argument<std::string>("--generic-potential-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 	const bool shift_solvent=poh.contains_option("--shift-solvent");
 
@@ -338,7 +338,48 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
+	if(!generic_potential_file.empty())
+	{
+		std::map<InteractionName, double> generic_interactions;
+		std::map<CRAD, double> solvent_sums;
+		for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+		{
+			const InteractionName& interaction=it->first;
+			if(interaction.crads.b!=CRAD::solvent())
+			{
+				generic_interactions[InteractionName(CRADsPair(interaction.crads.a, CRAD("nonsolvent")), interaction.tag)]+=it->second.second;
+				generic_interactions[InteractionName(CRADsPair(interaction.crads.b, CRAD("nonsolvent")), interaction.tag)]+=it->second.second;
+			}
+			else
+			{
+				solvent_sums[interaction.crads.a]+=it->second.second;
+			}
+		}
+
+		std::map< InteractionName, std::pair<double, double> > generic_result;
+		for(std::map<InteractionName, double>::const_iterator it=generic_interactions.begin();it!=generic_interactions.end();++it)
+		{
+			const InteractionName& interaction=it->first;
+			const double abc=it->second;
+			const double ax=map_of_crads_total_areas[interaction.crads.a];
+			const double bx=(sum_of_all_areas-solvent_sums[interaction.crads.a]);
+			const double cx=map_of_conditions_total_areas[interaction.tag];
+			if(abc>0.0 && ax>0.0 && bx>0.0 && cx>0.0)
+			{
+				const double potential_value=(0.0-log((abc*sum_of_all_areas*sum_of_all_areas)/(ax*bx*cx)));
+				generic_result[interaction]=std::make_pair(potential_value, abc);
+			}
+		}
+
+		std::ofstream foutput(generic_potential_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=generic_result.begin();it!=generic_result.end();++it)
+			{
+				foutput << it->first << " " << it->second.first << "\n";
+			}
+		}
+	}
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
