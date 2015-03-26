@@ -77,6 +77,7 @@ fi
 
 cat $WORKDIR/contacts \
 | $BINDIR/voronota query-contacts $MIN_SEQSEP_OPTION $MAX_SEQSEP_OPTION \
+| $BINDIR/voronota query-contacts --match-first 'A<C>' --match-second 'A<N>' --match-max-seq-sep 1 --invert \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
 | $BINDIR/voronota score-contacts-potential --multiply-areas $MULTCOEFF \
 > $WORKDIR/$SUMMARY_NAME
