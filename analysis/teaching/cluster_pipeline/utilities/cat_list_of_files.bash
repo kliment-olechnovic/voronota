@@ -25,4 +25,4 @@ done
 
 mkdir -p $(dirname $OUTFILE)
 
-cat $(cat $LISTFILE | sed "s/\(.*\)/\1\/$ENDING/") > $OUTFILE
+(cat $LISTFILE | sed "s/\(.*\)/\1\/$ENDING/" | xargs -L 100 -P 1 cat) > $OUTFILE
