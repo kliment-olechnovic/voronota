@@ -21,26 +21,29 @@ for(target in targets)
 		sn=names$V3[sel];
 		sv=v[sel];
 		stargetsel=which(sn=="target");
-		jumpersel=which(sv>sv[stargetsel]);
-		
-		sizes=c(sizes, length(sv));
-		jumpers=c(jumpers, length(jumpersel));
-		jumpernames=c(jumpernames, sn[jumpersel]);
-		
-		if(length(jumpersel)==0)
+		if(length(stargetsel)>0)
 		{
-			solidtargetnames=c(solidtargetnames, target);
+			jumpersel=which(sv>sv[stargetsel]);
+			
+			sizes=c(sizes, length(sv));
+			jumpers=c(jumpers, length(jumpersel));
+			jumpernames=c(jumpernames, sn[jumpersel]);
+			
+			if(length(jumpersel)==0)
+			{
+				solidtargetnames=c(solidtargetnames, target);
+			}
+			else
+			{
+				jumpertargetnames=c(jumpertargetnames, target);
+			}
+			
+			cols=rep("black", length(sel));
+			cols[stargetsel]="blue";
+			cols[jumpersel]="red";
+			ordering=order(sv);
+			plot(sv[ordering], col=cols[ordering], main=target);
 		}
-		else
-		{
-			jumpertargetnames=c(jumpertargetnames, target);
-		}
-		
-		cols=rep("black", length(sel));
-		cols[stargetsel]="blue";
-		cols[jumpersel]="red";
-		ordering=order(sv);
-		plot(sv[ordering], col=cols[ordering], main=target);
 	}
 }
 
