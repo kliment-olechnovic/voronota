@@ -223,6 +223,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--generic-potential-file", "string", "file path to output generic potential values"));
+		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
 		ods.push_back(OD("--shift-solvent", "", "flag to make all solvent values non-negative"));
 		if(!poh.assert(ods, false))
@@ -237,6 +238,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const std::string generic_potential_file=poh.argument<std::string>("--generic-potential-file", "");
+	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 	const bool shift_solvent=poh.contains_option("--shift-solvent");
 
@@ -386,6 +388,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 	}
+
+	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
