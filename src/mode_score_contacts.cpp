@@ -222,6 +222,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
+		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
 		ods.push_back(OD("--generic-potential-file", "string", "file path to output generic potential values"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
@@ -237,6 +238,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
+	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
 	const std::string generic_potential_file=poh.argument<std::string>("--generic-potential-file", "");
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
@@ -246,6 +248,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<CRAD, double> map_of_crads_total_areas;
 	std::map<std::string, double> map_of_conditions_total_areas;
 	double sum_of_all_areas=0.0;
+	double sum_of_solvent_areas=0.0;
+	double sum_of_nonsolvent_areas=0.0;
 
 	if(input_file_list)
 	{
@@ -267,25 +271,50 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		const double area=it->second;
 		map_of_crads_total_areas[interaction.crads.a]+=area;
 		map_of_crads_total_areas[interaction.crads.b]+=area;
-		if(interaction.crads.b!=CRAD::solvent())
+		if(interaction.crads.b==CRAD::solvent())
 		{
+			sum_of_solvent_areas+=area;
+		}
+		else
+		{
+			sum_of_nonsolvent_areas+=area;
 			map_of_conditions_total_areas[interaction.tag]+=area;
 		}
 		sum_of_all_areas+=area;
 	}
 
 	std::map< InteractionName, std::pair<double, double> > result;
+	std::map< InteractionName, std::pair<double, double> > probabilities;
 	for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
 		const InteractionName& interaction=it->first;
 		const double abc=it->second;
 		const double ax=map_of_crads_total_areas[interaction.crads.a];
-		const double bx=map_of_crads_total_areas[interaction.crads.b];
-		const double cx=(interaction.crads.b==CRAD::solvent() ? sum_of_all_areas : map_of_conditions_total_areas[interaction.tag]);
-		if(abc>0.0 && ax>0.0 && bx>0.0 && cx>0.0)
+		if(abc>0.0 && ax>0.0)
 		{
-			const double potential_value=(0.0-log((abc*sum_of_all_areas*sum_of_all_areas)/(ax*bx*cx)));
-			result[interaction]=std::make_pair(potential_value, abc);
+			if(interaction.crads.b==CRAD::solvent())
+			{
+				const double p_obs=(abc/sum_of_all_areas);
+				const double p_exp1=(ax/sum_of_all_areas);
+				const double p_exp2=(sum_of_solvent_areas/sum_of_all_areas);
+				result[interaction]=std::make_pair(log(p_exp1*p_exp2/p_obs), abc);
+				probabilities[interaction]=std::make_pair(p_obs, p_exp1*p_exp2);
+			}
+			else
+			{
+				const double bx=map_of_crads_total_areas[interaction.crads.b];
+				const double cx=map_of_conditions_total_areas[interaction.tag];
+				if(bx>0.0 && cx>0.0)
+				{
+					const double p_obs=(abc/sum_of_all_areas);
+					const double p_exp1=(ax/sum_of_all_areas);
+					const double p_exp2=(bx/sum_of_all_areas);
+					const double p_exp3=(cx/sum_of_all_areas);
+					const double p_exp4=(sum_of_nonsolvent_areas/sum_of_all_areas);
+					result[interaction]=std::make_pair(log(p_exp1*p_exp2*p_exp3*p_exp4/p_obs), abc);
+					probabilities[interaction]=std::make_pair(p_obs, p_exp1*p_exp2*p_exp3*p_exp4);
+				}
+			}
 		}
 	}
 
@@ -342,6 +371,19 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const InteractionName& interaction=it->first;
 				foutput << interaction << " " << it->second.first << "\n";
+			}
+		}
+	}
+
+	if(!probabilities_file.empty())
+	{
+		std::ofstream foutput(probabilities_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=probabilities.begin();it!=probabilities.end();++it)
+			{
+				const InteractionName& interaction=it->first;
+				foutput << interaction << " " << it->second.first <<  " " << it->second.second << "\n";
 			}
 		}
 	}
