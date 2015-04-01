@@ -292,11 +292,10 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		const double ax=map_of_crads_total_areas[interaction.crads.a];
 		if(abc>0.0 && ax>0.0)
 		{
-			double p_obs=0.0;
+			const double p_obs=(abc/sum_of_all_areas);
 			double p_exp=0.0;
 			if(interaction.crads.b==CRAD::solvent())
 			{
-				p_obs=(abc/sum_of_all_areas);
 				p_exp=(ax/sum_of_all_areas)*(sum_of_solvent_areas/sum_of_all_areas);
 			}
 			else
@@ -305,11 +304,10 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 				const double cx=map_of_conditions_total_areas[interaction.tag];
 				if(bx>0.0 && cx>0.0)
 				{
-					p_obs=(abc/sum_of_all_areas);
 					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_all_areas)*(sum_of_nonsolvent_areas/sum_of_all_areas);
 				}
 			}
-			if(p_obs>0.0 && p_exp>0.0)
+			if(p_exp>0.0)
 			{
 				result[interaction]=std::make_pair(log(p_exp/p_obs), abc);
 				probabilities[interaction]=std::make_pair(p_obs, p_exp);
