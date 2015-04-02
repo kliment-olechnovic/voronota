@@ -457,7 +457,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
 			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_for_peptide_bond(crads))
 			{
-				ed.total_area=it->second;
+				ed.total_area=(it->second)*(crads.b==CRAD::solvent() ? 1.0 : 2.0);
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
 						map_of_potential_values.find(InteractionName(CRADsPair(generalize_crad(crads.a), generalize_crad(crads.b)), it->first.tag));
