@@ -539,11 +539,11 @@ private:
 		{
 			const ChainResidueAtomDescriptorsPair& crads=it->first;
 			std::set<CRAD> related_crads;
-			if(!(crads.a==CRAD::solvent()))
+			if(crads.a!=CRAD::solvent())
 			{
 				related_crads.insert(crads.a);
 			}
-			if(!(crads.b==CRAD::solvent()))
+			if(crads.b!=CRAD::solvent())
 			{
 				related_crads.insert(crads.b);
 			}
