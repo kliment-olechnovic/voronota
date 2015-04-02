@@ -223,7 +223,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
-		ods.push_back(OD("--generic-potential-file", "string", "file path to output generic potential values"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
 		ods.push_back(OD("--shift-solvent", "", "flag to make all solvent values non-negative"));
@@ -239,7 +238,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
-	const std::string generic_potential_file=poh.argument<std::string>("--generic-potential-file", "");
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 	const bool shift_solvent=poh.contains_option("--shift-solvent");
@@ -274,13 +272,14 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		if(interaction.crads.b==CRAD::solvent())
 		{
 			sum_of_solvent_areas+=area;
+			sum_of_all_areas+=area;
 		}
 		else
 		{
-			sum_of_nonsolvent_areas+=area;
-			map_of_conditions_total_areas[interaction.tag]+=area;
+			sum_of_nonsolvent_areas+=area*2;
+			sum_of_all_areas+=area*2;
+			map_of_conditions_total_areas[interaction.tag]+=area*2;
 		}
-		sum_of_all_areas+=area;
 	}
 
 	std::map< InteractionName, std::pair<double, double> > result;
@@ -292,10 +291,11 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		const double ax=map_of_crads_total_areas[interaction.crads.a];
 		if(abc>0.0 && ax>0.0)
 		{
-			const double p_obs=(abc/sum_of_all_areas);
+			double p_obs=0.0;
 			double p_exp=0.0;
 			if(interaction.crads.b==CRAD::solvent())
 			{
+				p_obs=(abc/sum_of_all_areas);
 				p_exp=(ax/sum_of_all_areas)*(sum_of_solvent_areas/sum_of_all_areas);
 			}
 			else
@@ -304,7 +304,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 				const double cx=map_of_conditions_total_areas[interaction.tag];
 				if(bx>0.0 && cx>0.0)
 				{
-					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_all_areas)*(sum_of_nonsolvent_areas/sum_of_all_areas);
+					const double symmetry_coef=(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
+					p_obs=(abc*2.0/sum_of_all_areas);
+					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_all_areas)*symmetry_coef;
 				}
 			}
 			if(p_exp>0.0)
@@ -377,54 +379,28 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(probabilities_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
+			double sum_obs_nonsolvent=0.0;
+			double sum_obs_solvent=0.0;
+			double sum_exp_nonsolvent=0.0;
+			double sum_exp_solvent=0.0;
 			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=probabilities.begin();it!=probabilities.end();++it)
 			{
 				const InteractionName& interaction=it->first;
 				foutput << interaction << " " << it->second.first <<  " " << it->second.second << "\n";
+				if(interaction.crads.b==CRAD::solvent())
+				{
+					sum_obs_solvent+=it->second.first;
+					sum_exp_solvent+=it->second.second;
+				}
+				else
+				{
+					sum_obs_nonsolvent+=it->second.first;
+					sum_exp_nonsolvent+=it->second.second;
+				}
 			}
-		}
-	}
-
-	if(!generic_potential_file.empty())
-	{
-		std::map<InteractionName, double> generic_interactions;
-		std::map<CRAD, double> solvent_sums;
-		for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
-		{
-			const InteractionName& interaction=it->first;
-			if(interaction.crads.b!=CRAD::solvent())
-			{
-				generic_interactions[InteractionName(CRADsPair(interaction.crads.a, CRAD("nonsolvent")), interaction.tag)]+=it->second.second;
-				generic_interactions[InteractionName(CRADsPair(interaction.crads.b, CRAD("nonsolvent")), interaction.tag)]+=it->second.second;
-			}
-			else
-			{
-				solvent_sums[interaction.crads.a]+=it->second.second;
-			}
-		}
-
-		std::map< InteractionName, std::pair<double, double> > generic_result;
-		for(std::map<InteractionName, double>::const_iterator it=generic_interactions.begin();it!=generic_interactions.end();++it)
-		{
-			const InteractionName& interaction=it->first;
-			const double abc=it->second;
-			const double ax=map_of_crads_total_areas[interaction.crads.a];
-			const double bx=(sum_of_all_areas-solvent_sums[interaction.crads.a]);
-			const double cx=map_of_conditions_total_areas[interaction.tag];
-			if(abc>0.0 && ax>0.0 && bx>0.0 && cx>0.0)
-			{
-				const double potential_value=(0.0-log((abc*sum_of_all_areas*sum_of_all_areas)/(ax*bx*cx)));
-				generic_result[interaction]=std::make_pair(potential_value, abc);
-			}
-		}
-
-		std::ofstream foutput(generic_potential_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=generic_result.begin();it!=generic_result.end();++it)
-			{
-				foutput << it->first << " " << it->second.first << "\n";
-			}
+			foutput << InteractionName(CRADsPair(CRAD("nonsolvent"), CRAD("nonsolvent")), ".") << " " << sum_obs_nonsolvent << " " << sum_exp_nonsolvent << "\n";
+			foutput << InteractionName(CRADsPair(CRAD("nonsolvent"), CRAD::solvent()), ".") << " " << sum_obs_solvent << " " << sum_exp_solvent << "\n";
+			foutput << InteractionName(CRADsPair(CRAD("any"), CRAD("any")), ".") << " " << (sum_obs_nonsolvent+sum_obs_solvent) << " " << (sum_exp_nonsolvent+sum_exp_solvent) << "\n";
 		}
 	}
 
