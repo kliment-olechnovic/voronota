@@ -421,9 +421,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--potential-file", "string", "file path to input potential values", true));
 		ods.push_back(OD("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"));
 		ods.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
-		ods.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
 		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		ods.push_back(OD("--depth", "number", "neighborhood normalization depth"));
 		if(!poh.assert(ods, false))
 		{
@@ -436,9 +434,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string potential_file=poh.argument<std::string>("--potential-file");
 	const int ignorable_max_seq_sep=poh.argument<int>("--ignorable-max-seq-sep", 1);
 	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
-	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
-	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 2);
 
 	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
@@ -478,21 +474,8 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::IOUtilities().write_map_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
 	}
 
-	std::map< CRADsPair, EnergyDescriptor > inter_residue_energy_descriptors;
-	{
-		for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
-		{
-			const CRADsPair& crads=it->first;
-			inter_residue_energy_descriptors[CRADsPair(crads.a.without_atom(), crads.b.without_atom())].add(it->second);
-		}
-		auxiliaries::IOUtilities().write_map_to_file(inter_residue_energy_descriptors, inter_residue_scores_file);
-	}
-
 	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
 	auxiliaries::IOUtilities().write_map_to_file(atom_energy_descriptors, atom_scores_file);
-
-	const std::map<CRAD, EnergyDescriptor> residue_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_residue_energy_descriptors, depth);
-	auxiliaries::IOUtilities().write_map_to_file(residue_energy_descriptors, residue_scores_file);
 
 	{
 		EnergyDescriptor global_ed;
