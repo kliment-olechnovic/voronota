@@ -16,7 +16,7 @@ cols[which(t$V2=="c<solvent>")]="red";
 
 png(args[3],  height=10, width=10, units="in", res=300);
 
-plot(t$V4.x, t$V4.y, col=cols);
+plot(t$V4.x, t$V4.y, col=cols, cex=0.5);
 points(c(-100, 100), c(-100, 100), type="l", col="yellow");
 points(c(-100, 100), c(0, 0), type="l", col="yellow");
 points(c(0, 0), c(-100, 100), type="l", col="yellow");
