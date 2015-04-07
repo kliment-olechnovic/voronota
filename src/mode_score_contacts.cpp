@@ -245,7 +245,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 	std::map<CRAD, double> map_of_crads_total_areas;
 	std::map<std::string, double> map_of_conditions_total_areas;
-	double sum_of_all_areas=0.0;
 	double sum_of_solvent_areas=0.0;
 	double sum_of_nonsolvent_areas=0.0;
 
@@ -272,15 +271,16 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		if(interaction.crads.b==CRAD::solvent())
 		{
 			sum_of_solvent_areas+=area;
-			sum_of_all_areas+=area;
 		}
 		else
 		{
-			sum_of_nonsolvent_areas+=area*2;
-			sum_of_all_areas+=area*2;
-			map_of_conditions_total_areas[interaction.tag]+=area*2;
+			sum_of_nonsolvent_areas+=area;
+			map_of_conditions_total_areas[interaction.tag]+=area;
 		}
 	}
+
+	const double sum_of_all_areas=(sum_of_solvent_areas+sum_of_nonsolvent_areas*2.0);
+	const double sum_of_contact_areas=(sum_of_solvent_areas+sum_of_nonsolvent_areas);
 
 	std::map< InteractionName, std::pair<double, double> > result;
 	std::map< InteractionName, std::pair<double, double> > probabilities;
@@ -295,8 +295,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			double p_exp=0.0;
 			if(interaction.crads.b==CRAD::solvent())
 			{
-				p_obs=(abc/sum_of_all_areas);
-				p_exp=(ax/sum_of_all_areas)*(sum_of_solvent_areas/sum_of_all_areas);
+				p_obs=(abc/sum_of_contact_areas);
+				p_exp=(ax/sum_of_all_areas)*(sum_of_solvent_areas/sum_of_contact_areas);
 			}
 			else
 			{
@@ -304,9 +304,8 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 				const double cx=map_of_conditions_total_areas[interaction.tag];
 				if(bx>0.0 && cx>0.0)
 				{
-					const double symmetry_coef=(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
-					p_obs=(abc*2.0/sum_of_all_areas);
-					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_all_areas)*symmetry_coef;
+					p_obs=(abc/sum_of_contact_areas);
+					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_contact_areas)*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
 				}
 			}
 			if(p_exp>0.0)
@@ -457,7 +456,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
 			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_for_peptide_bond(crads))
 			{
-				ed.total_area=(it->second)*(crads.b==CRAD::solvent() ? 1.0 : 2.0);
+				ed.total_area=(it->second);
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
 						map_of_potential_values.find(InteractionName(CRADsPair(generalize_crad(crads.a), generalize_crad(crads.b)), it->first.tag));
