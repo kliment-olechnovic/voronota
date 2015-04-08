@@ -243,10 +243,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
-	std::map<CRAD, double> map_of_crads_total_areas;
-	std::map<std::string, double> map_of_conditions_total_areas;
-	double sum_of_solvent_areas=0.0;
-	double sum_of_nonsolvent_areas=0.0;
 
 	if(input_file_list)
 	{
@@ -261,6 +257,11 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 	}
+
+	std::map<CRAD, double> map_of_crads_total_areas;
+	std::map<std::string, double> map_of_conditions_total_areas;
+	double sum_of_solvent_areas=0.0;
+	double sum_of_nonsolvent_areas=0.0;
 
 	for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 	{
@@ -389,19 +390,11 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(contributions_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			std::map<InteractionName, double> contributions;
-			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
-			{
-				const InteractionName& interaction=it->first;
-				const double area=it->second.second;
-				contributions[InteractionName(
-						CRADsPair(CRAD("nonsolvent"), (interaction.crads.b==CRAD::solvent() ? CRAD::solvent() : CRAD("nonsolvent"))),
-						interaction.tag)]+=area;
-			}
-			for(std::map<InteractionName, double>::const_iterator it=contributions.begin();it!=contributions.end();++it)
+			for(std::map<std::string, double>::const_iterator it=map_of_conditions_total_areas.begin();it!=map_of_conditions_total_areas.end();++it)
 			{
 				foutput << it->first << " " << (it->second/sum_of_contact_areas) << "\n";
 			}
+			foutput << "solvent " << (sum_of_solvent_areas/sum_of_contact_areas) << "\n";
 		}
 	}
 

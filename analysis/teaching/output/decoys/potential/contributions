@@ -1,15 +1,15 @@
-c<nonsolvent> c<nonsolvent> . 0.176367
-c<nonsolvent> c<nonsolvent> ds 0.00024012
-c<nonsolvent> c<nonsolvent> ds;sep2 1.5866e-06
-c<nonsolvent> c<nonsolvent> ds;sep3 9.96037e-05
-c<nonsolvent> c<nonsolvent> ds;sep4 3.54484e-05
-c<nonsolvent> c<nonsolvent> hb 0.00372993
-c<nonsolvent> c<nonsolvent> hb;sep1 0.00107142
-c<nonsolvent> c<nonsolvent> hb;sep2 0.00133983
-c<nonsolvent> c<nonsolvent> hb;sep3 0.00318481
-c<nonsolvent> c<nonsolvent> hb;sep4 0.00430023
-c<nonsolvent> c<nonsolvent> sep1 0.140122
-c<nonsolvent> c<nonsolvent> sep2 0.0403571
-c<nonsolvent> c<nonsolvent> sep3 0.0568169
-c<nonsolvent> c<nonsolvent> sep4 0.0416302
-c<nonsolvent> c<solvent> . 0.530703
+. 0.176367
+ds 0.00024012
+ds;sep2 1.5866e-06
+ds;sep3 9.96037e-05
+ds;sep4 3.54484e-05
+hb 0.00372993
+hb;sep1 0.00107142
+hb;sep2 0.00133983
+hb;sep3 0.00318481
+hb;sep4 0.00430023
+sep1 0.140122
+sep2 0.0403571
+sep3 0.0568169
+sep4 0.0416302
+solvent 0.530703
