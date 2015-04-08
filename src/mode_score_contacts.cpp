@@ -224,6 +224,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
+		ods.push_back(OD("--contributions-file", "string", "file path to output contact types contributions"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
 		ods.push_back(OD("--shift-solvent", "", "flag to make all solvent values non-negative"));
 		if(!poh.assert(ods, false))
@@ -239,6 +240,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
+	const std::string contributions_file=poh.argument<std::string>("--contributions-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 	const bool shift_solvent=poh.contains_option("--shift-solvent");
 
@@ -402,6 +404,35 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
+
+	if(!contributions_file.empty())
+	{
+		std::ofstream foutput(contributions_file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			std::map< InteractionName, std::pair<double, double> > contributions;
+			std::pair<double, double> sum;
+			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
+			{
+				const InteractionName& interaction=it->first;
+				const double potential_value=it->second.first;
+				const double area=it->second.second;
+				std::pair<double, double>& contribution=contributions[InteractionName(
+						CRADsPair(CRAD("nonsolvent"), (interaction.crads.b==CRAD::solvent() ? CRAD::solvent() : CRAD("nonsolvent"))),
+						interaction.tag)];
+				contribution.first+=area;
+				contribution.second+=(area*potential_value);
+				sum.first+=area;
+				sum.second+=(area*potential_value);
+			}
+			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=contributions.begin();it!=contributions.end();++it)
+			{
+				foutput << it->first << " ";
+				foutput << it->second.first << " " << (it->second.first/sum.first) << " ";
+				foutput << it->second.second << "\n";
+			}
+		}
+	}
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
