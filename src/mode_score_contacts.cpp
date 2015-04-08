@@ -389,26 +389,18 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(contributions_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			std::map< InteractionName, std::pair<double, double> > contributions;
-			std::pair<double, double> sum;
+			std::map<InteractionName, double> contributions;
 			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 			{
 				const InteractionName& interaction=it->first;
-				const double potential_value=it->second.first;
 				const double area=it->second.second;
-				std::pair<double, double>& contribution=contributions[InteractionName(
+				contributions[InteractionName(
 						CRADsPair(CRAD("nonsolvent"), (interaction.crads.b==CRAD::solvent() ? CRAD::solvent() : CRAD("nonsolvent"))),
-						interaction.tag)];
-				contribution.first+=area;
-				contribution.second+=(area*potential_value);
-				sum.first+=area;
-				sum.second+=(area*potential_value);
+						interaction.tag)]+=area;
 			}
-			for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=contributions.begin();it!=contributions.end();++it)
+			for(std::map<InteractionName, double>::const_iterator it=contributions.begin();it!=contributions.end();++it)
 			{
-				foutput << it->first << " ";
-				foutput << it->second.first << " " << (it->second.first/sum.first) << " ";
-				foutput << it->second.second << "\n";
+				foutput << it->first << " " << (it->second/sum_of_contact_areas) << "\n";
 			}
 		}
 	}

@@ -1,15 +1,15 @@
-c<nonsolvent> c<nonsolvent> . 2.07839e+09 0.228654 -4.01571e+08
-c<nonsolvent> c<nonsolvent> ds 148286 1.63136e-05 -1.70482e+06
-c<nonsolvent> c<nonsolvent> ds;sep2 1000.39 1.10058e-07 -11501.3
-c<nonsolvent> c<nonsolvent> ds;sep3 606.849 6.67623e-08 -6976.84
-c<nonsolvent> c<nonsolvent> ds;sep4 2007.1 2.20811e-07 -23075.3
-c<nonsolvent> c<nonsolvent> hb 1.06162e+08 0.0116794 -2.9057e+08
-c<nonsolvent> c<nonsolvent> hb;sep1 9.80743e+06 0.00107896 -3.04946e+07
-c<nonsolvent> c<nonsolvent> hb;sep2 1.71073e+07 0.00188205 -4.66921e+07
-c<nonsolvent> c<nonsolvent> hb;sep3 3.32191e+07 0.00365459 -9.98505e+07
-c<nonsolvent> c<nonsolvent> hb;sep4 6.62018e+07 0.00728318 -2.23281e+08
-c<nonsolvent> c<nonsolvent> sep1 1.41399e+09 0.15556 -1.57855e+09
-c<nonsolvent> c<nonsolvent> sep2 4.24593e+08 0.0467114 -2.06228e+08
-c<nonsolvent> c<nonsolvent> sep3 4.19905e+08 0.0461957 -1.98706e+08
-c<nonsolvent> c<nonsolvent> sep4 2.86607e+08 0.031531 -1.32744e+08
-c<nonsolvent> c<solvent> . 4.23356e+09 0.465754 -6.27229e+08
+c<nonsolvent> c<nonsolvent> . 0.228654
+c<nonsolvent> c<nonsolvent> ds 1.63136e-05
+c<nonsolvent> c<nonsolvent> ds;sep2 1.10058e-07
+c<nonsolvent> c<nonsolvent> ds;sep3 6.67623e-08
+c<nonsolvent> c<nonsolvent> ds;sep4 2.20811e-07
+c<nonsolvent> c<nonsolvent> hb 0.0116794
+c<nonsolvent> c<nonsolvent> hb;sep1 0.00107896
+c<nonsolvent> c<nonsolvent> hb;sep2 0.00188205
+c<nonsolvent> c<nonsolvent> hb;sep3 0.00365459
+c<nonsolvent> c<nonsolvent> hb;sep4 0.00728318
+c<nonsolvent> c<nonsolvent> sep1 0.15556
+c<nonsolvent> c<nonsolvent> sep2 0.0467114
+c<nonsolvent> c<nonsolvent> sep3 0.0461957
+c<nonsolvent> c<nonsolvent> sep4 0.031531
+c<nonsolvent> c<solvent> . 0.465754
