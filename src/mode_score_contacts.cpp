@@ -226,7 +226,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		ods.push_back(OD("--contributions-file", "string", "file path to output contact types contributions"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
-		ods.push_back(OD("--shift-solvent", "", "flag to make all solvent values non-negative"));
 		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
@@ -242,7 +241,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 	const std::string contributions_file=poh.argument<std::string>("--contributions-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
-	const bool shift_solvent=poh.contains_option("--shift-solvent");
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 	std::map<CRAD, double> map_of_crads_total_areas;
@@ -339,25 +337,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			fixed_result[iname]=(result_it!=result.end() ? result_it->second : std::make_pair(max_potential_value, 0.0));
 		}
 		result=fixed_result;
-	}
-
-	if(shift_solvent)
-	{
-		double shift_negative_value=0.0;
-		for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
-		{
-			if(it->first.crads.b==CRAD::solvent())
-			{
-				shift_negative_value=std::min(shift_negative_value, it->second.first);
-			}
-		}
-		for(std::map< InteractionName, std::pair<double, double> >::iterator it=result.begin();it!=result.end();++it)
-		{
-			if(it->first.crads.b==CRAD::solvent())
-			{
-				it->second.first-=shift_negative_value;
-			}
-		}
 	}
 
 	if(!potential_file.empty())
