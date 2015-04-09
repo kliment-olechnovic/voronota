@@ -311,7 +311,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 					const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
 					for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 					{
-						p_exp*=map_of_conditions_total_areas[*subtags_it]/sum_of_nonsolvent_areas;
+						p_exp*=(map_of_conditions_total_areas[*subtags_it]/sum_of_nonsolvent_areas);
 					}
 				}
 			}
