@@ -276,7 +276,11 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			sum_of_nonsolvent_areas+=area;
-			map_of_conditions_total_areas[interaction.tag]+=area;
+			const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+			for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
+			{
+				map_of_conditions_total_areas[*subtags_it]+=area;
+			}
 		}
 	}
 
@@ -301,10 +305,14 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			else
 			{
 				const double bx=map_of_crads_total_areas[interaction.crads.b];
-				const double cx=map_of_conditions_total_areas[interaction.tag];
-				if(bx>0.0 && cx>0.0)
+				if(bx>0.0)
 				{
-					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(cx/sum_of_contact_areas)*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
+					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(sum_of_nonsolvent_areas/sum_of_contact_areas)*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
+					const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+					for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
+					{
+						p_exp*=map_of_conditions_total_areas[*subtags_it]/sum_of_nonsolvent_areas;
+					}
 				}
 			}
 			if(p_exp>0.0)
