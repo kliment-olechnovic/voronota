@@ -242,6 +242,10 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string contributions_file=poh.argument<std::string>("--contributions-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
 
+	std::set<std::string> toggling_subtags;
+	toggling_subtags.insert("hb");
+	toggling_subtags.insert("ds");
+
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 
 	if(input_file_list)
@@ -259,7 +263,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map<CRAD, double> map_of_crads_total_areas;
-	std::map<std::string, double> map_of_conditions_total_areas;
+	std::map< CRADsPair, std::set<std::string> > map_of_crads_possible_subtags;
+	std::map<std::string, double> map_of_subtags_total_areas;
+	std::map<std::string, double> map_of_subtags_possible_areas;
 	double sum_of_solvent_areas=0.0;
 	double sum_of_nonsolvent_areas=0.0;
 
@@ -277,10 +283,30 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			sum_of_nonsolvent_areas+=area;
 			const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+			map_of_crads_possible_subtags[interaction.crads].insert(subtags.begin(), subtags.end());
 			for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 			{
-				map_of_conditions_total_areas[*subtags_it]+=area;
+				map_of_subtags_total_areas[*subtags_it]+=area;
 			}
+		}
+	}
+
+	for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
+	{
+		const InteractionName& interaction=it->first;
+		const double area=it->second;
+		const std::set<std::string>& subtags=map_of_crads_possible_subtags[interaction.crads];
+		for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
+		{
+			map_of_subtags_possible_areas[*subtags_it]+=area;
+		}
+	}
+
+	for(std::map<std::string, double>::iterator it=map_of_subtags_possible_areas.begin();it!=map_of_subtags_possible_areas.end();++it)
+	{
+		if(toggling_subtags.count(it->first)==0)
+		{
+			it->second=sum_of_nonsolvent_areas;
 		}
 	}
 
@@ -311,7 +337,14 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 					const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
 					for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 					{
-						p_exp*=(map_of_conditions_total_areas[*subtags_it]/sum_of_nonsolvent_areas);
+						p_exp*=(map_of_subtags_total_areas[*subtags_it]/map_of_subtags_possible_areas[*subtags_it]);
+					}
+					for(std::set<std::string>::const_iterator toggling_subtags_it=toggling_subtags.begin();toggling_subtags_it!=toggling_subtags.end();++toggling_subtags_it)
+					{
+						if(map_of_crads_possible_subtags[interaction.crads].count(*toggling_subtags_it)>0 && subtags.count(*toggling_subtags_it)==0)
+						{
+							p_exp*=(1.0-(map_of_subtags_total_areas[*toggling_subtags_it]/map_of_subtags_possible_areas[*toggling_subtags_it]));
+						}
 					}
 				}
 			}
@@ -398,9 +431,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(contributions_file.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			for(std::map<std::string, double>::const_iterator it=map_of_conditions_total_areas.begin();it!=map_of_conditions_total_areas.end();++it)
+			for(std::map<std::string, double>::const_iterator it=map_of_subtags_total_areas.begin();it!=map_of_subtags_total_areas.end();++it)
 			{
-				foutput << it->first << " " << (it->second/sum_of_contact_areas) << "\n";
+				foutput << it->first << " " << (it->second/map_of_subtags_possible_areas[it->first]) << "\n";
 			}
 			foutput << "solvent " << (sum_of_solvent_areas/sum_of_contact_areas) << "\n";
 		}
