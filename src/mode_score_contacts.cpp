@@ -265,7 +265,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<CRAD, double> map_of_crads_total_areas;
 	std::map< CRADsPair, std::set<std::string> > map_of_crads_possible_subtags;
 	std::map<std::string, double> map_of_subtags_total_areas;
-	std::map<std::string, double> map_of_subtags_possible_areas;
 	double sum_of_solvent_areas=0.0;
 	double sum_of_nonsolvent_areas=0.0;
 
@@ -291,27 +290,39 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
-	{
-		const InteractionName& interaction=it->first;
-		const double area=it->second;
-		const std::set<std::string>& subtags=map_of_crads_possible_subtags[interaction.crads];
-		for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
-		{
-			map_of_subtags_possible_areas[*subtags_it]+=area;
-		}
-	}
-
-	for(std::map<std::string, double>::iterator it=map_of_subtags_possible_areas.begin();it!=map_of_subtags_possible_areas.end();++it)
-	{
-		if(toggling_subtags.count(it->first)==0)
-		{
-			it->second=sum_of_nonsolvent_areas;
-		}
-	}
-
 	const double sum_of_all_areas=(sum_of_solvent_areas+sum_of_nonsolvent_areas*2.0);
 	const double sum_of_contact_areas=(sum_of_solvent_areas+sum_of_nonsolvent_areas);
+
+	std::map<std::string, double> map_of_subtags_contributions;
+	{
+		std::map<std::string, double> map_of_subtags_possible_areas;
+
+		for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
+		{
+			const InteractionName& interaction=it->first;
+			const double area=it->second;
+			const std::set<std::string>& subtags=map_of_crads_possible_subtags[interaction.crads];
+			for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
+			{
+				map_of_subtags_possible_areas[*subtags_it]+=area;
+			}
+		}
+
+		for(std::map<std::string, double>::iterator it=map_of_subtags_possible_areas.begin();it!=map_of_subtags_possible_areas.end();++it)
+		{
+			if(toggling_subtags.count(it->first)==0)
+			{
+				it->second=sum_of_nonsolvent_areas;
+			}
+		}
+
+		for(std::map<std::string, double>::const_iterator it=map_of_subtags_total_areas.begin();it!=map_of_subtags_total_areas.end();++it)
+		{
+			map_of_subtags_contributions[it->first]=(it->second/map_of_subtags_possible_areas[it->first]);
+		}
+
+		map_of_subtags_contributions["solvent"]=(sum_of_solvent_areas/sum_of_contact_areas);
+	}
 
 	std::map< InteractionName, std::pair<double, double> > result;
 	std::map< InteractionName, std::pair<double, double> > probabilities;
@@ -320,31 +331,27 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		const InteractionName& interaction=it->first;
 		const double abc=it->second;
 		const double ax=map_of_crads_total_areas[interaction.crads.a];
-		if(abc>0.0 && ax>0.0)
+		if(abc>0.0)
 		{
 			const double p_obs=(abc/sum_of_contact_areas);
 			double p_exp=0.0;
 			if(interaction.crads.b==CRAD::solvent())
 			{
-				p_exp=(ax/sum_of_all_areas)*(sum_of_solvent_areas/sum_of_contact_areas);
+				p_exp=(ax/sum_of_all_areas)*(map_of_subtags_contributions["solvent"]);
 			}
 			else
 			{
-				const double bx=map_of_crads_total_areas[interaction.crads.b];
-				if(bx>0.0)
+				p_exp=(ax/sum_of_all_areas)*(map_of_crads_total_areas[interaction.crads.b]/sum_of_all_areas)*(1.0-map_of_subtags_contributions["solvent"])*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
+				const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+				for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 				{
-					p_exp=(ax/sum_of_all_areas)*(bx/sum_of_all_areas)*(sum_of_nonsolvent_areas/sum_of_contact_areas)*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
-					const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
-					for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
+					p_exp*=map_of_subtags_contributions[*subtags_it];
+				}
+				for(std::set<std::string>::const_iterator toggling_subtags_it=toggling_subtags.begin();toggling_subtags_it!=toggling_subtags.end();++toggling_subtags_it)
+				{
+					if(map_of_crads_possible_subtags[interaction.crads].count(*toggling_subtags_it)>0 && subtags.count(*toggling_subtags_it)==0)
 					{
-						p_exp*=(map_of_subtags_total_areas[*subtags_it]/map_of_subtags_possible_areas[*subtags_it]);
-					}
-					for(std::set<std::string>::const_iterator toggling_subtags_it=toggling_subtags.begin();toggling_subtags_it!=toggling_subtags.end();++toggling_subtags_it)
-					{
-						if(map_of_crads_possible_subtags[interaction.crads].count(*toggling_subtags_it)>0 && subtags.count(*toggling_subtags_it)==0)
-						{
-							p_exp*=(1.0-(map_of_subtags_total_areas[*toggling_subtags_it]/map_of_subtags_possible_areas[*toggling_subtags_it]));
-						}
+						p_exp*=(1.0-map_of_subtags_contributions[*toggling_subtags_it]);
 					}
 				}
 			}
@@ -426,18 +433,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 
 	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
 
-	if(!contributions_file.empty())
-	{
-		std::ofstream foutput(contributions_file.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			for(std::map<std::string, double>::const_iterator it=map_of_subtags_total_areas.begin();it!=map_of_subtags_total_areas.end();++it)
-			{
-				foutput << it->first << " " << (it->second/map_of_subtags_possible_areas[it->first]) << "\n";
-			}
-			foutput << "solvent " << (sum_of_solvent_areas/sum_of_contact_areas) << "\n";
-		}
-	}
+	auxiliaries::IOUtilities().write_map_to_file(map_of_subtags_contributions, contributions_file);
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{
