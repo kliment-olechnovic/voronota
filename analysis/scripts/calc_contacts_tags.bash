@@ -78,6 +78,8 @@ then
 	| $BINDIR/voronota query-contacts --match-min-seq-sep 3 --match-max-seq-sep 3 --no-solvent --set-tags 'sep3' \
 	| $BINDIR/voronota query-contacts --match-min-seq-sep 4 --match-max-seq-sep 4 --no-solvent --set-tags 'sep4' \
 	| $BINDIR/voronota query-contacts --no-same-chain --drop-tags \
+	| $BINDIR/voronota query-contacts --match-min-seq-sep 5 --no-solvent --set-tags 'sep5' \
+	| $BINDIR/voronota query-contacts --no-same-chain --no-solvent --set-tags 'sep5' \
 	> $WORKDIR/contacts_wss
 	
 	mv $WORKDIR/contacts_wss $WORKDIR/contacts
