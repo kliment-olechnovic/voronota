@@ -220,6 +220,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> ods;
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
+		ods.push_back(OD("--input-contributions", "string", "file path to input contact types contributions"));
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
@@ -235,6 +236,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool input_file_list=poh.contains_option("--input-file-list");
+	const std::string input_contributions=poh.argument<std::string>("--input-contributions", "");
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
@@ -294,6 +296,15 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const double sum_of_contact_areas=(sum_of_solvent_areas+sum_of_nonsolvent_areas);
 
 	std::map<std::string, double> map_of_subtags_contributions;
+	if(!input_contributions.empty())
+	{
+		auxiliaries::IOUtilities().read_file_lines_to_map(input_contributions, map_of_subtags_contributions);
+		if(map_of_subtags_contributions.empty())
+		{
+			throw std::runtime_error("No valid contributions input.");
+		}
+	}
+	else
 	{
 		std::map<std::string, double> map_of_subtags_possible_areas;
 
