@@ -9,6 +9,11 @@ length(t0[,1]);
 length(t1[,1]);
 length(t[,1]);
 
+if(length(args)>3)
+{
+	t=t[which(t$V3==args[4]),];
+}
+
 cols=rep("black", length(t[,1]));
 cols[which(t$V3=="hb")]="blue";
 cols[which(t$V3=="ds")]="purple";
