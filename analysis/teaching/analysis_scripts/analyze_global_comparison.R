@@ -17,6 +17,11 @@ values=values[sel,];
 qscores=values;
 cadscores=refs$V2;
 
+sel=grep("RBO", names$V3, invert=TRUE);
+names=names[sel,];
+qscores=qscores[sel];
+cadscores=cadscores[sel];
+
 plot(cadscores, qscores, xlim=c(0, 1), ylim=c(0, 1));
 
 targets=sort(union(names$V2, names$V2));
@@ -24,6 +29,7 @@ targets=sort(union(names$V2, names$V2));
 cors=c();
 max_cadscores=c();
 sd_cadscores=c();
+selected_models=c();
 
 for(target in targets)
 {
@@ -34,6 +40,7 @@ for(target in targets)
 		cors=c(cors, cor(cadscores[sel], qscores[sel]));
 		max_cadscores=c(max_cadscores, max(cadscores[sel])[1]);
 		sd_cadscores=c(sd_cadscores, sd(cadscores[sel]));
+		selected_models=c(selected_models, names$V3[sel][which(qscores[sel]==max(qscores[sel]))[1]]);
 	}
 }
 
@@ -45,3 +52,5 @@ cor(cadscores, qscores);
 quantile(cors);
 
 mean(cors);
+
+data.frame(targets=targets, selected_models=selected_models);
