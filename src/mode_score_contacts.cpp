@@ -244,6 +244,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
 		ods.push_back(OD("--contributions-file", "string", "file path to output contact types contributions"));
 		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
+		ods.push_back(OD("--toggling-list", "string", "list of toggling subtags"));
 		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
@@ -260,10 +261,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
 	const std::string contributions_file=poh.argument<std::string>("--contributions-file", "");
 	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
+	const std::string toggling_list=poh.argument<std::string>("--toggling-list", "");
 
-	std::set<std::string> toggling_subtags;
-	toggling_subtags.insert("hb");
-	toggling_subtags.insert("ds");
+	const std::set<std::string> toggling_subtags=(toggling_list.empty() ? std::set<std::string>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(toggling_list));
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 
