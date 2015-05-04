@@ -238,6 +238,10 @@ public:
 			}
 			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
 		}
+		else if(max_sep!=null_num() && a.chainID!=b.chainID)
+		{
+			return false;
+		}
 		return uncheckable_result;
 	}
 
