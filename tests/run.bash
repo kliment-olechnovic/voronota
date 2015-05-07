@@ -21,3 +21,4 @@ mkdir $OUTPUTDIR
 
 ./scripts/do_basic_triangulation_and_contacts.bash
 ./scripts/do_interface_contacts_comparison_and_drawing.bash
+./scripts/do_balls_querying.bash
