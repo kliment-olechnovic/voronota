@@ -1,9 +1,9 @@
-var contacts={type:"scale",x:0.139,y:0.139,z:0.139,
+var CRO_contacts={type:"scale",x:0.139,y:0.139,z:0.139,
 nodes:[{type:"translate",x:-27.880,y:-27.597,z:-38.066,
 nodes:[
-{type:"name",name:"contacts",
+{type:"name",name:"CRO_contacts",
 nodes:[{type:"material",
-color:{r:1.000,g:1.000,b:1.000},
+color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
 positions:[
 22.533,24.185,34.637,
