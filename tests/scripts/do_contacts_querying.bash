@@ -61,6 +61,14 @@ cat $SUBDIR/balls \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_for_pymol.py \
   --drawing-for-jmol $SUBDIR/drawing_matched_residue_for_jmol \
   --drawing-for-scenejs $SUBDIR/drawing_matched_residue_for_scenejs \
+  --drawing-name 'CRO_contacts' \
+  --drawing-color 0xFFFF00 \
+  --drawing-alpha 0.75 \
+| $VORONOTA query-contacts \
+  --inter-residue \
+  --drawing-for-pymol $SUBDIR/drawing_matched_residue_randomly_colored_for_pymol.py \
+  --drawing-name 'CRO_contacts_random_colors' \
+  --drawing-random-colors \
 > /dev/null
 
 cat $SUBDIR/balls \
