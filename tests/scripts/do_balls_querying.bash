@@ -2,8 +2,7 @@
 
 set +e
 
-SUBDIR=$OUTPUTDIR/do_balls_querying.bash
-
+SUBDIR=$OUTPUTDIR/balls_querying
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/single/structure.pdb \
@@ -12,15 +11,18 @@ cat $INPUTDIR/single/structure.pdb \
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match 'r<3:7,9>&A<CA,CB>' \
-| column -t > $SUBDIR/match_basic
+| column -t \
+> $SUBDIR/match_basic
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' \
-| column -t > $SUBDIR/match_adjuncts_and_tags
+| column -t \
+> $SUBDIR/match_adjuncts_and_tags
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match 'A<OE1>&r<1:32>' --whole-residues \
-| column -t > $SUBDIR/match_whole_residues
+| column -t \
+> $SUBDIR/match_whole_residues
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --seq-output $SUBDIR/sequence \
