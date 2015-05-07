@@ -3,7 +3,6 @@
 set +e
 
 SUBDIR=$OUTPUTDIR/interface_contacts_comparison_and_drawing
-
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/complex/target.pdb \
