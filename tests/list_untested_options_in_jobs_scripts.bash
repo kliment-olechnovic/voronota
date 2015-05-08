@@ -22,8 +22,8 @@ done | sort | uniq > $TMPDIR/all_options
 
 MODE="unknown"
 cat ./jobs_scripts/* \
-| sed 's/$VORONOTA\s*\([[:alpha:]]\S*\)/mode-\1 /g' \
-| sed 's/$VORONOTA\s*\(\S*\)//g' \
+| sed 's/$VORONOTA\s\+\([[:alpha:]]\S*\)/mode-\1 /g' \
+| sed 's/$VORONOTA\s\+\(\S*\)//g' \
 | tr ' ' '\n' | tr '\t' '\n' \
 | egrep '^mode-|^--' \
 | while read TOKEN
