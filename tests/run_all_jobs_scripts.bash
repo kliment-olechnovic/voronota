@@ -14,7 +14,7 @@ trap "rm -r ./voronota_package" EXIT
 export VORONOTA=./voronota_package/voronota
 export VORONOTADIR=./voronota_package/
 export INPUTDIR=./input
-export OUTPUTDIR=./output
+export OUTPUTDIR=./jobs_output
 
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
