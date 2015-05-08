@@ -12,7 +12,10 @@ cat $INPUTDIR/single/structure.pdb \
 > $SUBDIR/contacts
 
 cat $SUBDIR/contacts \
-| $VORONOTA query-contacts --match-first 'r<3:7,9>&A<CA,CB>' --match-min-seq-sep 1 \
+| $VORONOTA query-contacts \
+  --match-first 'r<3:7,9>&A<CA,CB>' \
+  --match-min-seq-sep 1 \
+  --match-max-seq-sep 20 \
 | column -t \
 > $SUBDIR/match_first_and_seqsep
 
@@ -22,7 +25,13 @@ cat $SUBDIR/contacts \
 > $SUBDIR/match_first_and_second_resnames
 
 cat $SUBDIR/contacts \
-| $VORONOTA query-contacts --no-solvent --match-min-area 10.0 --match-min-dist 1.5 --match-max-dist 4.0 --match-min-seq-sep 1 \
+| $VORONOTA query-contacts \
+  --no-solvent \
+  --match-min-area 10.0 \
+  --match-max-area 13.0 \
+  --match-min-dist 1.5 \
+  --match-max-dist 4.0 \
+  --match-min-seq-sep 1 \
 | column -t \
 > $SUBDIR/match_nosolvent_minarea_maxdist_seqsep
 
