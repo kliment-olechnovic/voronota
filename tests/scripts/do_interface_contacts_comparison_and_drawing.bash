@@ -31,6 +31,7 @@ cat $SUBDIR/model1_iface \
   --detailed-output \
   --target-contacts-file <(cat $SUBDIR/target_iface) \
   --inter-residue-scores-file $SUBDIR/model1_iface_cad_score_inter_residue \
+  --inter-atom-scores-file $SUBDIR/model1_iface_cad_score_inter_atom \
 > $SUBDIR/model1_iface_cad_score_global
 
 cat $SUBDIR/model2_iface \
@@ -38,6 +39,7 @@ cat $SUBDIR/model2_iface \
   --detailed-output \
   --target-contacts-file <(cat $SUBDIR/target_iface) \
   --inter-residue-scores-file $SUBDIR/model2_iface_cad_score_inter_residue \
+  --inter-atom-scores-file $SUBDIR/model2_iface_cad_score_inter_atom \
 > $SUBDIR/model2_iface_cad_score_global
 
 cat $SUBDIR/target_iface \
