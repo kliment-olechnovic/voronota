@@ -64,6 +64,7 @@ cat $SUBDIR/balls \
   --drawing-name 'CRO_contacts' \
   --drawing-color 0xFFFF00 \
   --drawing-alpha 0.75 \
+  --drawing-labels \
 | $VORONOTA query-contacts \
   --inter-residue \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_randomly_colored_for_pymol.py \
