@@ -40,6 +40,7 @@ cat $TMPDIR/all_options | grep -v -f $TMPDIR/tested_options > $TMPDIR/untested_o
 
 (cat $TMPDIR/tested_options | awk '{print $1 " " $2 " tested"}' ; cat $TMPDIR/untested_options | awk '{print $1 " " $2 " untested"}') \
 | sed 's/^mode-//' \
+| grep -v 'help' \
 | sort \
 | awk '{print $3 " " $1 " " $2}' \
 | column -t
