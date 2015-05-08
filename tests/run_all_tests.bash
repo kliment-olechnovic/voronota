@@ -19,7 +19,4 @@ export OUTPUTDIR=./output
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
 
-for SCRIPT in ./scripts/*
-do
-	$SCRIPT
-done
+find ./scripts/ -type f -name "*.bash" | xargs -L 1 -P 4 bash
