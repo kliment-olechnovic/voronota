@@ -1,8 +1,8 @@
-balls 1771
-quadruples 11658
-tangent_spheres 11664
-processed_triples 23376
-loose_triples 12
+balls 1779
+quadruples 11818
+tangent_spheres 11824
+processed_triples 23642
+loose_triples 6
 first_iterations 18
 surplus_tangent_spheres 0
 excluded_hidden_balls 0
