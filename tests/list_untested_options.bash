@@ -36,4 +36,10 @@ do
 	fi
 done | sort | uniq > $TMPDIR/tested_options
 
-cat $TMPDIR/all_options | grep -v -f $TMPDIR/tested_options | sed 's/^mode-//'
+cat $TMPDIR/all_options | grep -v -f $TMPDIR/tested_options > $TMPDIR/untested_options
+
+(cat $TMPDIR/tested_options | awk '{print $1 " " $2 " tested"}' ; cat $TMPDIR/untested_options | awk '{print $1 " " $2 " untested"}') \
+| sed 's/^mode-//' \
+| sort \
+| awk '{print $3 " " $1 " " $2}' \
+| column -t
