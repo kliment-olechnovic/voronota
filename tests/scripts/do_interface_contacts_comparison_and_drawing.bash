@@ -6,21 +6,21 @@ SUBDIR=$OUTPUTDIR/interface_contacts_comparison_and_drawing
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/complex/target.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTA_RADII_FILE --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --annotated \
 | $VORONOTA query-balls --drop-altloc-indicators --drop-atom-serials \
 | $VORONOTA calculate-contacts --annotated --draw \
 | $VORONOTA query-contacts --no-same-chain --no-solvent --preserve-graphics \
 > $SUBDIR/target_iface
 
 cat $INPUTDIR/complex/model1.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTA_RADII_FILE --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --annotated \
 | $VORONOTA query-balls --drop-altloc-indicators --drop-atom-serials \
 | $VORONOTA calculate-contacts --annotated --draw \
 | $VORONOTA query-contacts --no-same-chain --no-solvent --preserve-graphics \
 > $SUBDIR/model1_iface
 
 cat $INPUTDIR/complex/model2.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTA_RADII_FILE --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --annotated \
 | $VORONOTA query-balls --drop-altloc-indicators --drop-atom-serials \
 | $VORONOTA calculate-contacts --annotated --draw \
 | $VORONOTA query-contacts --no-same-chain --no-solvent --preserve-graphics \
