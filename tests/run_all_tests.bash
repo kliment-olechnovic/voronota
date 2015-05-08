@@ -12,7 +12,7 @@ rm ./voronota_package.tar.gz
 trap "rm -r ./voronota_package" EXIT
 
 export VORONOTA=./voronota_package/voronota
-export VORONOTA_RADII_FILE=./voronota_package/radii
+export VORONOTADIR=./voronota_package/
 export INPUTDIR=./input
 export OUTPUTDIR=./output
 

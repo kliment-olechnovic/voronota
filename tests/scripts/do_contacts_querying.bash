@@ -6,7 +6,7 @@ SUBDIR=$OUTPUTDIR/contacts_querying
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/single/structure.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTA_RADII_FILE --include-heteroatoms --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms --annotated \
 | tee $SUBDIR/balls \
 | $VORONOTA calculate-contacts --annotated \
 > $SUBDIR/contacts
