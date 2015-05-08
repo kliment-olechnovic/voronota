@@ -19,8 +19,7 @@ export OUTPUTDIR=./output
 rm -r -f $OUTPUTDIR
 mkdir $OUTPUTDIR
 
-./scripts/do_help_printing.bash
-./scripts/do_basic_triangulation_and_contacts.bash
-./scripts/do_balls_querying.bash
-./scripts/do_contacts_querying.bash
-./scripts/do_interface_contacts_comparison_and_drawing.bash
+for SCRIPT in ./scripts/*
+do
+	$SCRIPT
+done
