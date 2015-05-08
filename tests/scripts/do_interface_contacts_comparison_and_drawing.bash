@@ -44,18 +44,20 @@ cat $SUBDIR/model2_iface \
 
 cat $SUBDIR/target_iface \
 | $VORONOTA query-contacts --inter-residue \
-  --set-external-adjuncts <(cat $SUBDIR/model1_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') \
+  --set-external-adjuncts <(cat $SUBDIR/model1_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " $3}') \
   --set-external-adjuncts-name irs \
   --drawing-for-pymol $SUBDIR/model1_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model1_iface_cad_score \
   --drawing-adjunct-gradient irs \
+  --drawing-reverse-gradient \
 > /dev/null
 
 cat $SUBDIR/target_iface \
 | $VORONOTA query-contacts --inter-residue \
-  --set-external-adjuncts <(cat $SUBDIR/model2_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " (1-$3)}') \
+  --set-external-adjuncts <(cat $SUBDIR/model2_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " $3}') \
   --set-external-adjuncts-name irs \
   --drawing-for-pymol $SUBDIR/model2_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model2_iface_cad_score \
   --drawing-adjunct-gradient irs \
+  --drawing-reverse-gradient \
 > /dev/null
