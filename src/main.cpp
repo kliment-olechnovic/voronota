@@ -16,7 +16,6 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_replacements(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
 void generate_demo(const auxiliaries::ProgramOptionsHandler&);
@@ -50,7 +49,6 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
-	list_of_modes.push_back(ModeDescriptor("score-contacts-replacements", ModeDescriptor::FunctionPtr(score_contacts_replacements)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
 	list_of_modes.push_back(ModeDescriptor("generate-demo", ModeDescriptor::FunctionPtr(generate_demo)));
