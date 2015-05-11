@@ -11,7 +11,6 @@ query-contacts
 score-contacts-potential
 score-contacts-energy
 score-contacts-quality
-score-contacts-replacements
 compare-contacts
 score-scores
 generate-demo
@@ -187,13 +186,6 @@ Command 'score-contacts-quality' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of atom energy descriptors
 stdout  ->  average local score
-
-Command 'score-contacts-replacements' options:
---potential-file                string   *  file path to input potential values
---residue-level                             flag to operate on residue level
---output-as-matrix                          flag to output results as distance matrix
---help                                      flag to print usage help to stderr and exit
-stdout  ->  replacements scores
 
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
