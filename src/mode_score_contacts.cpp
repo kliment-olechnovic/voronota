@@ -324,7 +324,6 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	else
 	{
 		std::map<InteractionName, double> map_of_subtags_possible_areas;
-
 		for(std::map<InteractionName, double>::const_iterator it=map_of_interactions_total_areas.begin();it!=map_of_interactions_total_areas.end();++it)
 		{
 			const InteractionName& interaction=it->first;
@@ -338,7 +337,14 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 
 		for(std::map<InteractionName, double>::const_iterator it=map_of_subtags_total_areas.begin();it!=map_of_subtags_total_areas.end();++it)
 		{
-			map_of_subtags_contributions[it->first]=(it->second/map_of_subtags_possible_areas[it->first]);
+			if(toggling_subtags.count(it->first.tag)>0)
+			{
+				map_of_subtags_contributions[it->first]=(it->second/map_of_subtags_possible_areas[it->first]);
+			}
+			else
+			{
+				map_of_subtags_contributions[it->first]=(it->second/sum_of_nonsolvent_areas);
+			}
 		}
 
 		map_of_subtags_contributions[InteractionName(CRADsPair(CRAD("any"), CRAD::solvent()), "solvent")]=(sum_of_solvent_areas/sum_of_contact_areas);
