@@ -92,3 +92,13 @@ do
 	  --depth 0 \
 	> $SUBDIR/$INFILEBASENAME.globalcadscore
 done
+
+$VORONOTA score-scores \
+  --reference-threshold 0.5 \
+  --testable-step 0.02 \
+  --outcomes-file $SUBDIR/localclassification \
+  --ROC-curve-file $SUBDIR/roccurve \
+  --PR-curve-file $SUBDIR/prcurve \
+> $SUBDIR/scorescoringsummary << EOF
+$SUBDIR/model1.residuecadscores $SUBDIR/model1.residueqscores
+$SUBDIR/model2.residuecadscores $SUBDIR/model2.residueqscores
