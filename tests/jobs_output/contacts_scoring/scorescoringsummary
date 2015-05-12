@@ -1,6 +1,6 @@
-ROC_AUC 0.662735
-PR_AUC 0.645077
-best_accuracy_threshold 0.4
-best_accuracy 0.639216
-best_MCC_threshold 0.66
-best_MCC 6.75858e+15
+ROC_AUC 0.693715
+PR_AUC 0.789192
+best_accuracy_threshold 0.29
+best_accuracy 0.688235
+best_MCC_threshold 0.41
+best_MCC 0.314651

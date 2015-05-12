@@ -95,7 +95,8 @@ struct ClassificationResults
 		unsigned long d4=(TN+FN);
 		if(d1>0 && d2>0 && d3>0 && d4>0)
 		{
-			return (c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
+			const double ratio=(c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
+			return (fabs(ratio)<=1.0 ? ratio : 0.0);
 		}
 		else
 		{
