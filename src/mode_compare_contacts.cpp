@@ -42,7 +42,7 @@ struct CADDescriptor
 
 	double score() const
 	{
-		return ((target_area_sum>0.0) ? (1.0-(constrained_differences_sum/target_area_sum)) : 0.0);
+		return ((target_area_sum>0.0) ? (1.0-(constrained_differences_sum/target_area_sum)) : -1.0);
 	}
 };
 

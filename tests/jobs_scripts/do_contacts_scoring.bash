@@ -77,3 +77,19 @@ do
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residueqscores \
 	> $SUBDIR/$INFILEBASENAME.globalqscore
 done
+
+for INFILE in $SUBDIR/model*.contacts
+do
+	INFILEBASENAME=$(basename $INFILE .contacts)
+	cat $INFILE \
+	| awk '{print $1 " " $2 " " $4}' | sed 's/a<\S*>R</R</g' \
+	| $VORONOTA compare-contacts \
+	  --target-contacts-file <(cat $SUBDIR/target.contacts | awk '{print $1 " " $2 " " $4}' | sed 's/a<\S*>R</R</g') \
+	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomcadscores \
+	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residuecadscores \
+	  --depth 0 \
+	> $SUBDIR/$INFILEBASENAME.globalcadscore
+	
+	cat $SUBDIR/$INFILEBASENAME.atomcadscores | grep -v ' \-1' | sponge $SUBDIR/$INFILEBASENAME.atomcadscores
+	cat $SUBDIR/$INFILEBASENAME.residuecadscores | grep -v ' \-1' | sponge $SUBDIR/$INFILEBASENAME.residuecadscores
+done
