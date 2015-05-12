@@ -107,6 +107,19 @@ CADDescriptor construct_global_cad_descriptor(const std::map< CRADsPair, CADDesc
 	return result;
 }
 
+std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(const std::map<CRAD, CADDescriptor>& input_map)
+{
+	std::map<CRAD, CADDescriptor> result;
+	for(std::map<CRAD, CADDescriptor>::const_iterator it=input_map.begin();it!=input_map.end();++it)
+	{
+		if(it->second.target_area_sum>0.0)
+		{
+			result[it->first]=it->second;
+		}
+	}
+	return result;
+}
+
 }
 
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -157,12 +170,16 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!atom_scores_file.empty())
 	{
-		auxiliaries::IOUtilities().write_map_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth), atom_scores_file);
+		auxiliaries::IOUtilities().write_map_to_file(
+				filter_map_of_cad_descriptors_by_target_presence(
+						auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth)), atom_scores_file);
 	}
 
 	if(!residue_scores_file.empty())
 	{
-		auxiliaries::IOUtilities().write_map_to_file(auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth), residue_scores_file);
+		auxiliaries::IOUtilities().write_map_to_file(
+				filter_map_of_cad_descriptors_by_target_presence(
+						auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth)), residue_scores_file);
 	}
 
 	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
