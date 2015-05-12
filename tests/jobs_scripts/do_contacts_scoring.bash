@@ -95,8 +95,8 @@ do
 done
 
 $VORONOTA score-scores \
-  --reference-threshold 0.5 \
-  --testable-step 0.02 \
+  --reference-threshold 0.4 \
+  --testable-step 0.01 \
   --outcomes-file $SUBDIR/localclassification \
   --ROC-curve-file $SUBDIR/roccurve \
   --PR-curve-file $SUBDIR/prcurve \
