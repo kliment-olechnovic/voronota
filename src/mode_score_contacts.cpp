@@ -141,6 +141,10 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	{
 		crad.name="CE1";
 	}
+	else if(crad.name=="OXT")
+	{
+		crad.name="O";
+	}
 	return crad;
 }
 

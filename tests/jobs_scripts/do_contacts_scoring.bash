@@ -14,7 +14,6 @@ do
 	  --include-heteroatoms \
 	  --annotated \
 	  --multimodel-chains \
-	| sed 's/A<OXT>/A<O>/g' \
 	| $VORONOTA query-balls \
 	  --rename-chains \
 	  --renumber-positively \
