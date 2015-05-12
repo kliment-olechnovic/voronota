@@ -91,7 +91,4 @@ do
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residuecadscores \
 	  --depth 0 \
 	> $SUBDIR/$INFILEBASENAME.globalcadscore
-	
-	cat $SUBDIR/$INFILEBASENAME.atomcadscores | grep -v ' \-1' | sponge $SUBDIR/$INFILEBASENAME.atomcadscores
-	cat $SUBDIR/$INFILEBASENAME.residuecadscores | grep -v ' \-1' | sponge $SUBDIR/$INFILEBASENAME.residuecadscores
 done
