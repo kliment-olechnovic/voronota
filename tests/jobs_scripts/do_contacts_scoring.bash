@@ -62,7 +62,7 @@ do
 	INFILEBASENAME=$(basename $INFILE .contacts)
 	cat $INFILE \
 	| $VORONOTA score-contacts-energy \
-	  --potential-file $SUBDIR/potential \
+	  --potential-file $VORONOTADIR/energy_potential \
 	  --ignorable-max-seq-sep 1 \
 	  --depth 2 \
 	  --inter-atom-scores-file $SUBDIR/$INFILEBASENAME.interatomenergies \
@@ -71,9 +71,10 @@ do
 	
 	cat $SUBDIR/$INFILEBASENAME.atomenergies \
 	| $VORONOTA score-contacts-quality \
-	  --default-mean -0.5 \
-	  --default-sd 0.5 \
+	  --default-mean -0.32 \
+	  --default-sd 0.17 \
 	  --mean-shift 0.0 \
+	  --means-and-sds-file $VORONOTADIR/energy_means_and_sds \
 	  --smoothing-window 5 \
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomqscores \
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residueqscores \
