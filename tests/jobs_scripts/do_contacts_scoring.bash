@@ -102,3 +102,4 @@ $VORONOTA score-scores \
 > $SUBDIR/scorescoringsummary << EOF
 $SUBDIR/model1.residuecadscores $SUBDIR/model1.residueqscores
 $SUBDIR/model2.residuecadscores $SUBDIR/model2.residueqscores
+EOF
