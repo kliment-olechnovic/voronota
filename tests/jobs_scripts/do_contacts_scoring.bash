@@ -19,6 +19,9 @@ do
 	  --renumber-positively \
 	  --reset-serials \
 	| $VORONOTA query-balls \
+	  --drop-atom-serials \
+	  --drop-altloc-indicators \
+	| $VORONOTA query-balls \
 	  --chains-summary-output $SUBDIR/$INFILEBASENAME.chaincount \
 	| $VORONOTA calculate-contacts \
 	  --annotated \
@@ -81,9 +84,9 @@ for INFILE in $SUBDIR/model*.contacts
 do
 	INFILEBASENAME=$(basename $INFILE .contacts)
 	cat $INFILE \
-	| awk '{print $1 " " $2 " " $4}' | sed 's/a<\S*>R</R</g' \
+	| awk '{print $1 " " $2 " " $4}' \
 	| $VORONOTA compare-contacts \
-	  --target-contacts-file <(cat $SUBDIR/target.contacts | awk '{print $1 " " $2 " " $4}' | sed 's/a<\S*>R</R</g') \
+	  --target-contacts-file <(cat $SUBDIR/target.contacts | awk '{print $1 " " $2 " " $4}') \
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomcadscores \
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residuecadscores \
 	  --depth 0 \
