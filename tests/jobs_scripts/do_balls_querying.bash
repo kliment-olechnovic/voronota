@@ -15,6 +15,11 @@ cat $SUBDIR/balls \
 > $SUBDIR/match_basic
 
 cat $SUBDIR/balls \
+| $VORONOTA query-balls --match-not 'r<3:7,9>&A<CA,CB>' --invert \
+| column -t \
+> $SUBDIR/match_basic_not_and_invert
+
+cat $SUBDIR/balls \
 | $VORONOTA query-balls --match-adjuncts 'tf=45.0:50.0' --match-tags 'el=N|el=O' \
 | column -t \
 > $SUBDIR/match_adjuncts_and_tags
