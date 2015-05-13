@@ -52,6 +52,10 @@ cat $SUBDIR/contacts \
 > $SUBDIR/match_first_and_set_tags
 
 cat $SUBDIR/match_first_and_set_tags \
+| $VORONOTA query-contacts --summarize \
+> $SUBDIR/match_first_and_set_tags_summary
+
+cat $SUBDIR/match_first_and_set_tags \
 | $VORONOTA query-contacts --match-tags 'withO' --match-tags-not 'withNZ' \
 | column -t \
 > $SUBDIR/match_tags
@@ -60,6 +64,12 @@ cat $SUBDIR/contacts \
 | $VORONOTA query-contacts --match-first 'A<O,NZ>' --set-adjuncts 'b=10.0;a=1.0' \
 | column -t \
 > $SUBDIR/match_first_and_set_adjuncts
+
+cat $SUBDIR/match_first_and_set_adjuncts \
+| $VORONOTA query-contacts --match-adjuncts 'a=0:2' --match-adjuncts-not 'b=0:2' --drop-tags --set-tags 'ta;tb' \
+| $VORONOTA query-contacts --drop-adjuncts \
+| column -t \
+> $SUBDIR/match_adjuncts_and_drop_adjuncts
 
 cat $SUBDIR/balls \
 | $VORONOTA calculate-contacts --annotated --draw \
