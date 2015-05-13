@@ -71,6 +71,13 @@ cat $SUBDIR/match_first_and_set_adjuncts \
 | column -t \
 > $SUBDIR/match_adjuncts_and_drop_adjuncts
 
+cat $SUBDIR/contacts \
+| column -t \
+| $VORONOTA query-contacts \
+  --match-external-first <(head -30 $SUBDIR/balls | awk '{print $1}') \
+  --match-external-second <(head -30 $SUBDIR/balls | awk '{print $1}') \
+> $SUBDIR/match_external_first_and_second
+
 cat $SUBDIR/balls \
 | $VORONOTA calculate-contacts --annotated --draw \
 | $VORONOTA query-contacts \
