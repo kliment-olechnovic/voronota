@@ -20,6 +20,12 @@ cat $SUBDIR/balls \
 > $SUBDIR/match_adjuncts_and_tags
 
 cat $SUBDIR/balls \
+| $VORONOTA query-balls --match-adjuncts-not 'tf=45.0:50.0' --invert \
+| $VORONOTA query-balls --match-tags-not 'el=N|el=O' --invert \
+| column -t \
+> $SUBDIR/match_adjuncts_not_and_tags_not_and_invert
+
+cat $SUBDIR/balls \
 | $VORONOTA query-balls --match 'A<OE1>&r<1:32>' --whole-residues \
 | column -t \
 > $SUBDIR/match_whole_residues
