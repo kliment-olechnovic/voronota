@@ -47,5 +47,14 @@ cat $SUBDIR/balls \
 > $SUBDIR/balls_renumbered_by_alignment
 
 cat $SUBDIR/balls \
-| $VORONOTA query-balls --drop-altloc-indicators --drop-atom-serials --set-dssp-tags <(dssp $INPUTDIR/single/structure.pdb) \
+| $VORONOTA query-balls --set-dssp-tags <(dssp $INPUTDIR/single/structure.pdb) \
+| $VORONOTA query-balls --match-tags 'dssp=H|dssp=G|dssp=I' --set-tags 'helix' \
+| $VORONOTA query-balls --match-tags 'dssp=B|dssp=E' --set-tags 'sheet' \
+| $VORONOTA query-balls --set-adjuncts 'ssc=100' \
+| $VORONOTA query-balls --match-tags 'helix' --set-adjuncts 'ssc=50' \
+| $VORONOTA query-balls --match-tags 'sheet' --set-adjuncts 'ssc=0' \
+| $VORONOTA query-balls \
+  --pdb-output $SUBDIR/balls_with_dssp_info.pdb \
+  --pdb-output-b-factor ssc \
+  --pdb-output-template $INPUTDIR/single/structure.pdb \
 > $SUBDIR/balls_with_dssp_info
