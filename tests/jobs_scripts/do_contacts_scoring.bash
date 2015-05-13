@@ -18,11 +18,13 @@ do
 	  --rename-chains \
 	  --renumber-positively \
 	  --reset-serials \
+	  --drop-adjuncts \
+	  --drop-tags \
 	| $VORONOTA query-balls \
 	  --drop-atom-serials \
 	  --drop-altloc-indicators \
-	| $VORONOTA query-balls \
 	  --chains-summary-output $SUBDIR/$INFILEBASENAME.chaincount \
+	| tee $SUBDIR/$INFILEBASENAME.balls \
 	| $VORONOTA calculate-contacts \
 	  --annotated \
 	| $VORONOTA query-contacts --match-min-seq-sep 1 \
@@ -104,3 +106,38 @@ $VORONOTA score-scores \
 $SUBDIR/model1.residuecadscores $SUBDIR/model1.residueqscores
 $SUBDIR/model2.residuecadscores $SUBDIR/model2.residueqscores
 EOF
+
+for INFILE in $SUBDIR/*.balls
+do
+	INFILEBASENAME=$(basename $INFILE .balls)
+	
+	cat $INFILE \
+	| $VORONOTA query-balls \
+	  --set-external-adjuncts $SUBDIR/$INFILEBASENAME.residueqscores \
+	  --set-external-adjuncts-name rqscore \
+	| $VORONOTA query-balls \
+	  --set-external-adjuncts $SUBDIR/$INFILEBASENAME.atomqscores \
+	  --set-external-adjuncts-name aqscore \
+	| $VORONOTA query-balls \
+	  --pdb-output $SUBDIR/$INFILEBASENAME.residueqscores.pdb \
+	  --pdb-output-b-factor rqscore \
+	| $VORONOTA query-balls \
+	  --pdb-output $SUBDIR/$INFILEBASENAME.atomqscores.pdb \
+	  --pdb-output-b-factor aqscore \
+	> /dev/null
+done
+
+cat $SUBDIR/target.balls \
+| $VORONOTA query-balls \
+  --set-external-adjuncts $SUBDIR/model1.residuecadscores \
+  --set-external-adjuncts-name m1rcadscores \
+| $VORONOTA query-balls \
+  --set-external-adjuncts $SUBDIR/model2.residuecadscores \
+  --set-external-adjuncts-name m2rcadscores \
+| $VORONOTA query-balls \
+  --pdb-output $SUBDIR/target.m1residuecadscores.pdb \
+  --pdb-output-b-factor m1rcadscores \
+| $VORONOTA query-balls \
+  --pdb-output $SUBDIR/target.m2residuecadscores.pdb \
+  --pdb-output-b-factor m2rcadscores \
+> /dev/null
