@@ -20,6 +20,7 @@ do
 	  --drop-atom-serials \
 	  --drop-altloc-indicators \
 	  --chains-summary-output $SUBDIR/$INFILEBASENAME.chaincount \
+	  --chains-seq-identity 0.9 \
 	| tee $SUBDIR/$INFILEBASENAME.balls \
 	| $VORONOTA calculate-contacts \
 	  --annotated \
@@ -46,7 +47,7 @@ do
 done
 
 find $SUBDIR/ -type f -name "*.summary" \
-|$VORONOTA score-contacts-potential \
+| $VORONOTA score-contacts-potential \
   --input-file-list \
   --contributions-file $SUBDIR/contributions \
   --potential-file $SUBDIR/potential \
@@ -54,6 +55,13 @@ find $SUBDIR/ -type f -name "*.summary" \
   --single-areas-file $SUBDIR/singleareas \
   --toggling-list 'hb;ds' \
 > $SUBDIR/summary
+
+cat $SUBDIR/summary \
+| $VORONOTA score-contacts-potential \
+  --input-contributions $SUBDIR/contributions \
+  --input-fixed-types <(cat $SUBDIR/potential | awk '{print $1 " " $2 " " $3}') \
+  --potential-file $SUBDIR/potentialfromsummary \
+> /dev/null
 
 for INFILE in $SUBDIR/*.contacts
 do
