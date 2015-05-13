@@ -15,12 +15,8 @@ do
 	  --annotated \
 	  --multimodel-chains \
 	| $VORONOTA query-balls \
-	  --rename-chains \
-	  --renumber-positively \
-	  --reset-serials \
 	  --drop-adjuncts \
 	  --drop-tags \
-	| $VORONOTA query-balls \
 	  --drop-atom-serials \
 	  --drop-altloc-indicators \
 	  --chains-summary-output $SUBDIR/$INFILEBASENAME.chaincount \
