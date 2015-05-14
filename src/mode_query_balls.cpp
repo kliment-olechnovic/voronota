@@ -221,24 +221,21 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(renumber_positively)
 	{
-		int min_resSeq=CRAD::null_num();
+		std::map<std::string, int> min_resSeq;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			if(crad.resSeq!=CRAD::null_num() && (min_resSeq==CRAD::null_num() || crad.resSeq<min_resSeq))
+			if(crad.resSeq!=CRAD::null_num() && (min_resSeq.count(crad.chainID)==0 || crad.resSeq<min_resSeq[crad.chainID]))
 			{
-				min_resSeq=crad.resSeq;
+				min_resSeq[crad.chainID]=crad.resSeq;
 			}
 		}
-		if(min_resSeq<=0)
+		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			for(std::size_t i=0;i<list_of_balls.size();i++)
+			CRAD& crad=list_of_balls[i].first;
+			if(crad.resSeq!=CRAD::null_num() && min_resSeq.count(crad.chainID)>0 && min_resSeq[crad.chainID]<=0)
 			{
-				CRAD& crad=list_of_balls[i].first;
-				if(crad.resSeq!=CRAD::null_num())
-				{
-					crad.resSeq=(crad.resSeq-min_resSeq+1);
-				}
+				crad.resSeq=(crad.resSeq-min_resSeq[crad.chainID]+1);
 			}
 		}
 	}
