@@ -148,6 +148,11 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	return crad;
 }
 
+inline CRADsPair generalize_crads_pair(const CRADsPair& input_crads)
+{
+	return CRADsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
+}
+
 inline CRAD simplify_crad(const CRAD& input_crad)
 {
 	if(input_crad==CRAD::solvent())
@@ -172,7 +177,7 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	input >> interaction >> area;
 	if(!input.fail())
 	{
-		const CRADsPair generalized_crads(generalize_crad(interaction.crads.a), generalize_crad(interaction.crads.b));
+		const CRADsPair generalized_crads=generalize_crads_pair(interaction.crads);
 		map_of_interactions_areas[InteractionName(generalized_crads, interaction.tag)]+=area;
 		return true;
 	}
@@ -520,7 +525,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 				ed.total_area=(it->second);
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
-						map_of_potential_values.find(InteractionName(CRADsPair(generalize_crad(crads.a), generalize_crad(crads.b)), it->first.tag));
+						map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
 				if(potential_value_it!=map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);
