@@ -58,3 +58,16 @@ cat $SUBDIR/balls \
   --pdb-output-b-factor ssc \
   --pdb-output-template $INPUTDIR/single/structure.pdb \
 > $SUBDIR/balls_with_dssp_info
+
+$VORONOTA query-balls --rename-chains --renumber-positively --reset-serials \
+> $SUBDIR/normalize_naming << EOF
+c<U>r<5>a<1>R<SER>A<N> 28.888 9.409 52.301 1.7 . .
+c<U>r<6>a<2>R<SER>A<CA> 27.638 10.125 52.516 1.9 . .
+c<U>r<7>a<3>R<SER>A<C> 26.499 9.639 51.644 1.75 . .
+c<U>r<8>a<4>R<SER>A<O> 26.606 8.656 50.915 1.49 . .
+c<E>r<-2>a<1764>R<ILE>A<N> 42.803 22.231 49.842 1.7 . .
+c<E>r<-1>a<1765>R<ILE>A<CA> 43.006 21.375 50.998 1.9 . .
+c<E>r<0>a<1766>R<ILE>A<C> 44.016 20.291 50.633 1.75 . .
+c<E>r<1>a<1767>R<ILE>A<O> 45.09 20.176 51.246 1.49 . .
+EOF
+
