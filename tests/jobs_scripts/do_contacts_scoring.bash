@@ -87,6 +87,10 @@ do
 	> $SUBDIR/$INFILEBASENAME.globalqscore
 done
 
+cat $SUBDIR/*.atomenergies \
+| $VORONOTA score-contacts-energy-stats \
+> $SUBDIR/means_and_sds
+
 for INFILE in $SUBDIR/model*.contacts
 do
 	INFILEBASENAME=$(basename $INFILE .contacts)

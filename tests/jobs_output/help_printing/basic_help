@@ -10,6 +10,7 @@ query-balls
 query-contacts
 score-contacts-potential
 score-contacts-energy
+score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
 score-scores
