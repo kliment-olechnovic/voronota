@@ -75,16 +75,6 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
-	Container read_lines_to_container(
-			std::istream& input,
-			LineReader line_reader) const
-	{
-		Container container;
-		read_lines_to_container(input, line_reader, container);
-		return container;
-	}
-
-	template<typename LineReader, typename Container>
 	void read_file_lines_to_container(
 			const std::string& filename,
 			LineReader line_reader,
@@ -101,16 +91,6 @@ public:
 	}
 
 	template<typename LineReader, typename Container>
-	Container read_file_lines_to_container(
-			const std::string& filename,
-			LineReader line_reader) const
-	{
-		Container container;
-		read_file_lines_to_container(filename, line_reader, container);
-		return container;
-	}
-
-	template<typename LineReader, typename Container>
 	void read_string_lines_to_container(
 			const std::string& str,
 			LineReader line_reader,
@@ -121,16 +101,6 @@ public:
 			std::istringstream input(str);
 			read_lines_to_container(input, line_reader, container);
 		}
-	}
-
-	template<typename LineReader, typename Container>
-	Container read_string_lines_to_container(
-			const std::string& str,
-			LineReader line_reader) const
-	{
-		Container container;
-		read_string_lines_to_container(str, line_reader, container);
-		return container;
 	}
 
 	template<typename Container, typename ElementWriter>
