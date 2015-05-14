@@ -10,6 +10,7 @@ query-balls
 query-contacts
 score-contacts-potential
 score-contacts-energy
+score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
 score-scores
@@ -174,6 +175,11 @@ Command 'score-contacts-energy' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  global scores
+
+Command 'score-contacts-energy-stats' options:
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of atom energy descriptors
+stdout  ->  list of normalized energy mean and sd values per atom type
 
 Command 'score-contacts-quality' options:
 --default-mean                  number      default mean parameter

@@ -84,6 +84,34 @@ inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 	return input;
 }
 
+struct ValueStat
+{
+	double sum;
+	double sum_of_squares;
+	unsigned long count;
+
+	ValueStat() : sum(0.0), sum_of_squares(0.0), count(0)
+	{
+	}
+
+	void add(const double value)
+	{
+		sum+=value;
+		sum_of_squares+=(value*value);
+		count++;
+	}
+
+	double mean() const
+	{
+		return (sum/static_cast<double>(count));
+	}
+
+	double sd() const
+	{
+		return sqrt((sum_of_squares/static_cast<double>(count))-(mean()*mean()));
+	}
+};
+
 struct NormalDistributionParameters
 {
 	double mean;
@@ -97,6 +125,12 @@ struct NormalDistributionParameters
 	{
 	}
 };
+
+inline std::ostream& operator<<(std::ostream& output, const NormalDistributionParameters& v)
+{
+	output << v.mean << " " << v.sd;
+	return output;
+}
 
 inline std::istream& operator>>(std::istream& input, NormalDistributionParameters& v)
 {
@@ -177,8 +211,23 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	input >> interaction >> area;
 	if(!input.fail())
 	{
-		const CRADsPair generalized_crads=generalize_crads_pair(interaction.crads);
-		map_of_interactions_areas[InteractionName(generalized_crads, interaction.tag)]+=area;
+		map_of_interactions_areas[InteractionName(generalize_crads_pair(interaction.crads), interaction.tag)]+=area;
+		return true;
+	}
+	return false;
+}
+
+inline bool read_energy_descriptors_and_accumulate_to_map_of_value_stats(std::istream& input, std::map<CRAD, ValueStat>& map_of_value_stats)
+{
+	CRAD crad;
+	EnergyDescriptor ed;
+	input >> crad >> ed;
+	if(!input.fail())
+	{
+		if(ed.total_area>0.0)
+		{
+			map_of_value_stats[generalize_crad(crad)].add(ed.energy/ed.total_area);
+		}
 		return true;
 	}
 	return false;
@@ -550,6 +599,31 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		std::cout << "global " << global_ed << "\n";
 	}
+}
+
+void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	{
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> ods;
+		if(!poh.assert(ods, false))
+		{
+			poh.print_io_description("stdin", true, false, "list of atom energy descriptors");
+			poh.print_io_description("stdout", false, true, "list of normalized energy mean and sd values per atom type");
+			return;
+		}
+	}
+
+	std::map<CRAD, ValueStat> map_of_value_stats;
+	auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_energy_descriptors_and_accumulate_to_map_of_value_stats, map_of_value_stats);
+
+	std::map<CRAD, NormalDistributionParameters> means_and_sds;
+	for(std::map<CRAD, ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
+	{
+		means_and_sds[it->first]=NormalDistributionParameters(it->second.mean(), it->second.sd());
+	}
+
+	auxiliaries::IOUtilities().write_map(means_and_sds, std::cout);
 }
 
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
