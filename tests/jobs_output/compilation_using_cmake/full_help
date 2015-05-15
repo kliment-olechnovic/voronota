@@ -8,6 +8,7 @@ calculate-vertices-in-parallel
 calculate-contacts
 query-balls
 query-contacts
+plot-contacts
 score-contacts-potential
 score-contacts-energy
 score-contacts-energy-stats
@@ -151,6 +152,14 @@ Command 'query-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'plot-contacts' options:
+--background-color              string      color string in SVG-acceptable format
+--default-color                 string      color string in SVG-acceptable format
+--adjuncts-rgb                              flag to use RGB color values from adjuncts
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
+stdout  ->  plot of contacts in SVG format
 
 Command 'score-contacts-potential' options:
 --input-file-list                           flag to read file list from stdin
