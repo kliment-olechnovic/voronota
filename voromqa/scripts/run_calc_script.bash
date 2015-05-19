@@ -3,7 +3,9 @@
 export BINDIR=$1
 COMMANDBUNDLE=$2
 
-for ARGVALUE in ${@:3}
+$COMMANDBUNDLE $3
+
+for ARGVALUE in ${@:4}
 do
 	$COMMANDBUNDLE $ARGVALUE
 done
