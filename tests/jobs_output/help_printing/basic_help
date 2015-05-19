@@ -10,6 +10,7 @@ query-balls
 query-contacts
 plot-contacts
 score-contacts-potential
+score-contacts-potentials-stats
 score-contacts-energy
 score-contacts-energy-stats
 score-contacts-quality

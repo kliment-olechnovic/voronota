@@ -15,6 +15,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
@@ -50,6 +51,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	list_of_modes.push_back(ModeDescriptor("plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-potentials-stats", ModeDescriptor::FunctionPtr(score_contacts_potentials_stats)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy-stats", ModeDescriptor::FunctionPtr(score_contacts_energy_stats)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));

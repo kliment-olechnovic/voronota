@@ -10,6 +10,7 @@ query-balls
 query-contacts
 plot-contacts
 score-contacts-potential
+score-contacts-potentials-stats
 score-contacts-energy
 score-contacts-energy-stats
 score-contacts-quality
@@ -174,6 +175,11 @@ Command 'score-contacts-potential' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
+
+Command 'score-contacts-potentials-stats' options:
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of potential files
+stdout  ->  list of normalized energy mean and sd values per interaction type
 
 Command 'score-contacts-energy' options:
 --potential-file                string   *  file path to input potential values
