@@ -25,15 +25,13 @@ do
 	esac
 done
 
+mkdir -p $OUTPUTDIR
+
 if [ -n "$RANDOMIZE" ]
 then
-	OUTPUTDIR=$OUTPUTDIR/rand
-	mkdir -p $OUTPUTDIR
 	OUTPUTDIR=$(mktemp --tmpdir=$OUTPUTDIR -d)
 	cat $INPUT_FILE_LIST | shuf | head -n $RANDOMIZE | sort > $OUTPUTDIR/list
 else
-	OUTPUTDIR=$OUTPUTDIR/full
-	mkdir -p $OUTPUTDIR
 	cat $INPUT_FILE_LIST | sort > $OUTPUTDIR/list
 fi
 

@@ -527,6 +527,40 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
+void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	{
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> ods;
+		if(!poh.assert(ods, false))
+		{
+			poh.print_io_description("stdin", true, false, "list of potential files");
+			poh.print_io_description("stdout", false, true, "list of normalized energy mean and sd values per interaction type");
+			return;
+		}
+	}
+
+	std::map<InteractionName, ValueStat> map_of_value_stats;
+	while(std::cin.good())
+	{
+		std::string potential_file;
+		std::cin >> potential_file;
+		const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+		for(std::map<InteractionName, double>::const_iterator it=map_of_potential_values.begin();it!=map_of_potential_values.end();++it)
+		{
+			map_of_value_stats[it->first].add(it->second);
+		}
+	}
+
+	std::map<InteractionName, NormalDistributionParameters> means_and_sds;
+	for(std::map<InteractionName, ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
+	{
+		means_and_sds[it->first]=NormalDistributionParameters(it->second.mean(), it->second.sd());
+	}
+
+	auxiliaries::IOUtilities().write_map(means_and_sds, std::cout);
+}
+
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
