@@ -63,6 +63,10 @@ cat $SUBDIR/summary \
   --potential-file $SUBDIR/potentialfromsummary \
 > /dev/null
 
+echo "$SUBDIR/potential $SUBDIR/potentialfromsummary" \
+| $VORONOTA score-contacts-potentials-stats \
+> $SUBDIR/potentials_stats
+
 for INFILE in $SUBDIR/*.contacts
 do
 	INFILEBASENAME=$(basename $INFILE .contacts)
