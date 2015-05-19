@@ -67,7 +67,7 @@ then
 	find $OUTPUTDIR/entries/ -type f -name summary -not -empty > $OUTPUTDIR/list_of_summaries
 	INCOUNT=$(cat $OUTPUTDIR/list_of_summaries | wc -l)
 	
-	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/list_of_summaries"
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/list_of_summaries -c $BINDIR/contributions_from_casp_models"
 	
 	exit 0
 fi
@@ -100,7 +100,7 @@ then
 	
 	yes $(echo "$INCOUNT/2" | bc) | head -n $PARTIAL_POTENTIALS \
 	| xargs -L $(echo "$PARTIAL_POTENTIALS/$CPUCOUNT" | bc) \
-	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/list_of_summaries -r"
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/list_of_summaries -c $BINDIR/contributions_from_casp_models -r"
 	
 	exit 0
 fi
