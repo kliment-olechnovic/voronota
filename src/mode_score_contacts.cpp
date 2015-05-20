@@ -717,14 +717,12 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			atom_quality_scores[crad]=0.0;
 		}
 	}
-
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
 
+	const std::map<CRAD, double> residue_quality_scores=smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
 	if(!residue_scores_file.empty())
 	{
-		auxiliaries::IOUtilities().write_map_to_file(
-				smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window),
-				residue_scores_file);
+		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
 	}
 
 	if(!atom_quality_scores.empty())
@@ -734,10 +732,25 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			sum+=it->second;
 		}
-		std::cout << (sum/static_cast<double>(atom_quality_scores.size())) << "\n";
+		std::cout << (sum/static_cast<double>(atom_quality_scores.size()));
 	}
 	else
 	{
-		std::cout << "0\n";
+		std::cout << "0";
 	}
+	std::cout << " ";
+	if(!residue_quality_scores.empty())
+	{
+		double sum=0.0;
+		for(std::map<CRAD, double>::const_iterator it=residue_quality_scores.begin();it!=residue_quality_scores.end();++it)
+		{
+			sum+=it->second;
+		}
+		std::cout << (sum/static_cast<double>(residue_quality_scores.size()));
+	}
+	else
+	{
+		std::cout << "0";
+	}
+	std::cout << "\n";
 }
