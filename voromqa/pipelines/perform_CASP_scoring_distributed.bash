@@ -68,3 +68,15 @@ then
 	
 	exit 0
 fi
+
+if [[ $STEPNAMES == *"[quality_scores]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty | sed 's/atom_energies$//' > $OUTPUTDIR/list_of_entries_with_atom_energies
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_atom_energies | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_atom_energies \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d"
+	
+	exit 0
+fi
