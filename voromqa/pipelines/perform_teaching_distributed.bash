@@ -57,7 +57,7 @@ then
 	
 	cat $OUTPUTDIR/list_of_entries_with_raw_contacts \
 	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
-	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d"
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m -d"
 	
 	exit 0
 fi

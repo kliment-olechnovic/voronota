@@ -52,7 +52,7 @@ mkdir -p $WORKDIR
 cat $TMPDIR/input.pdb \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated $MULTIMODEL_CHAINS_OPTION \
 | grep -f $BINDIR/standard_names \
-| $BINDIR/voronota query-balls --drop-altloc-indicators --chains-summary-output $WORKDIR/chains_counts \
+| $BINDIR/voronota query-balls --drop-altloc-indicators \
 > $WORKDIR/balls
 
 cat $WORKDIR/balls \
