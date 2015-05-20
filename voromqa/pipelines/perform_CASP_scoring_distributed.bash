@@ -80,3 +80,15 @@ then
 	
 	exit 0
 fi
+
+if [[ $STEPNAMES == *"[cad_scores]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | grep -v '/target/contacts$' | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_models_contacts
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_models_contacts | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_models_contacts \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_cad_scores_from_model_and_target_contacts.bash -d"
+	
+	exit 0
+fi
