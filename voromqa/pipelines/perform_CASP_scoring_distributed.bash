@@ -92,3 +92,24 @@ then
 	
 	exit 0
 fi
+
+if [[ $STEPNAMES == *"[scores_list]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name global_quality_score -not -empty | sed 's/global_quality_score$//' > $OUTPUTDIR/list_of_entries_with_global_quality_score
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_global_quality_score | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_global_quality_score \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/collect_scores_list_from_working_directory.bash -d"
+	
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[concatenated_scores_lists]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name scores_list -not -empty > $OUTPUTDIR/list_of_scores_lists
+
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_scores_lists $OUTPUTDIR/concatenated_scores_lists"
+	
+	exit 0
+fi
