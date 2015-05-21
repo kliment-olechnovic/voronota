@@ -41,7 +41,7 @@ cor(t$cadscore_residue, t$qscore_atom);
 
 r[which(r$target_qscore<=r$model_best_qscore),];
 
-plot(c(0, 1), c(0, 1), type="l", xlab="Target quality score", ylab="Highest model quality score", main=""); points(r$target_qscore, r$model_qscore);
+plot(c(0, 1), c(0, 1), type="l", xlab="Target quality score", ylab="Highest model quality score", main=""); points(r$target_qscore, r$model_best_qscore);
 
 plot(c(0, 1), c(0, 1), type="l", xlab="Best CAD-score", ylab="CAD-score corresponding to the best quality score", main=""); points(r$model_best_cadscore, r$model_cadscore_of_best_qscore);
 
