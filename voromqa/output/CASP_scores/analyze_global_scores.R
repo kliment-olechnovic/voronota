@@ -88,6 +88,14 @@ cor(t$cadscore_residue, t$dfire);
 
 ################################
 
+cor(t$qscore_atom, t$goap);
+
+cor(t$qscore_atom, t$dfire);
+
+cor(t$goap, t$dfire);
+
+################################
+
 plot(c(0, 1), c(0, 1), type="l", xlab="Target quality score", ylab="Highest model quality score", main="");
 points(r$target_qscore, r$model_best_qscore);
 
@@ -120,3 +128,11 @@ plot(t$cadscore_residue, t$qscore_atom, xlab="CAD-score", ylab="Quality score", 
 plot(t$cadscore_residue, t$goap, xlab="CAD-score", ylab="GOAP score", main="");
 
 plot(t$cadscore_residue, t$dfire, xlab="CAD-score", ylab="DFIRE score", main="");
+
+################################
+
+plot(t$qscore_atom, t$goap, xlab="Quality score", ylab="GOAP score", main="");
+
+plot(t$qscore_atom, t$dfire, xlab="Quality score", ylab="DFIRE score", main="");
+
+plot(t$goap, t$dfire, xlab="GOAP score", ylab="DFIRE score", main="");
