@@ -11,10 +11,13 @@ do
 	esac
 done
 
-QSCORE1="NA"
-QSCORE2="NA"
-CADSCORE1="NA"
-CADSCORE2="NA"
+QSCORE1="QSCORE1_NA"
+QSCORE2="QSCORE2_NA"
+CADSCORE1="CADSCORE1_NA"
+CADSCORE2="CADSCORE2_NA"
+GOAPSCORE1="GOAPSCORE1_NA"
+GOAPSCORE2="GOAPSCORE2_NA"
+GOAPSCORE3="GOAPSCORE3_NA"
 
 if [ -s "$WORKDIR/global_quality_score" ]
 then
@@ -28,4 +31,11 @@ then
 	CADSCORE2=$(cat $WORKDIR/global_cad_score | grep residue | awk '{print $2}')
 fi
 
-echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2" > $WORKDIR/scores_list
+if [ -s "$WORKDIR/goap_scores" ]
+then
+	GOAPSCORE1=$(cat $WORKDIR/goap_scores | awk '{print $3}')
+	GOAPSCORE2=$(cat $WORKDIR/goap_scores | awk '{print $4}')
+	GOAPSCORE3=$(cat $WORKDIR/goap_scores | awk '{print $5}')
+fi
+
+echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3" > $WORKDIR/scores_list

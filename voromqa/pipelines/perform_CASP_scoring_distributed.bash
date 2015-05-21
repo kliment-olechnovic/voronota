@@ -81,6 +81,18 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[goap_scores]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_balls | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_balls \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_goap_scores_from_atoms.bash -d"
+	
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[cad_scores]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | grep -v '/target/contacts$' | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_models_contacts
