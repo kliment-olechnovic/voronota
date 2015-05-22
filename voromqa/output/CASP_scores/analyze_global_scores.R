@@ -6,15 +6,15 @@ invert_test_score=FALSE;
 
 for(i in 1:length(args))
 {
-	if(args[i]=="_testscore_name")
+	if(args[i]=="V-testscore-name")
 	{
 		testscore_name=args[i+1];
 	}
-	else if(args[i]=="_refscore_name")
+	else if(args[i]=="V-refscore-name")
 	{
 		refscore_name=args[i+1];
 	}
-	else if(args[i]=="_invert_test_score")
+	else if(args[i]=="F-invert-testscore")
 	{
 		invert_test_score=TRUE;
 	}
