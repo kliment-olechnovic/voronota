@@ -4,3 +4,4 @@ best_accuracy_threshold 0.29
 best_accuracy 0.688235
 best_MCC_threshold 0.41
 best_MCC 0.314651
+input_file_pairs_count 2
