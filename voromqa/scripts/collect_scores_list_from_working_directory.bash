@@ -18,6 +18,7 @@ CADSCORE2="CADSCORE2_NA"
 GOAPSCORE1="GOAPSCORE1_NA"
 GOAPSCORE2="GOAPSCORE2_NA"
 GOAPSCORE3="GOAPSCORE3_NA"
+TMSCORE="TMSCORE_NA"
 
 if [ -s "$WORKDIR/global_quality_score" ]
 then
@@ -38,4 +39,9 @@ then
 	GOAPSCORE3=$(cat $WORKDIR/goap_scores | awk '{print $5}')
 fi
 
-echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3" > $WORKDIR/scores_list
+if [ -s "$WORKDIR/tmscore_output" ]
+then
+	TMSCORE=$(cat $WORKDIR/tmscore_output | egrep '^TM-score' | awk '{print $3}')
+fi
+
+echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE" > $WORKDIR/scores_list

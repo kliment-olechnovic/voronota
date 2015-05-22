@@ -117,6 +117,18 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[tmscore]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | grep -v '/target/atoms.pdb$' | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_models_atoms
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_models_atoms | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_models_atoms \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_tmscore_from_model_and_target_atoms.bash -d"
+	
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[scores_list]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name global_quality_score -not -empty | sed 's/global_quality_score$//' > $OUTPUTDIR/list_of_entries_with_global_quality_score
