@@ -19,6 +19,10 @@ GOAPSCORE1="GOAPSCORE1_NA"
 GOAPSCORE2="GOAPSCORE2_NA"
 GOAPSCORE3="GOAPSCORE3_NA"
 TMSCORE="TMSCORE_NA"
+ATOMSCOUNT="ATOMSCOUNT_NS"
+QAREA="QAREA_NA"
+QENERGY="QENERGY_NA"
+QSAS="QSAS_NA"
 
 if [ -s "$WORKDIR/global_quality_score" ]
 then
@@ -44,4 +48,20 @@ then
 	TMSCORE=$(cat $WORKDIR/tmscore_output | egrep '^TM-score' | awk '{print $3}')
 fi
 
-echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE" > $WORKDIR/scores_list
+if [ -s "$WORKDIR/balls" ]
+then
+	ATOMSCOUNT=$(cat $WORKDIR/balls | wc -l)
+fi
+
+if [ -s "$WORKDIR/global_energy" ]
+then
+	QAREA=$(cat $WORKDIR/global_energy | awk '{print $2}')
+	QENERGY=$(cat $WORKDIR/global_energy | awk '{print $4}')
+fi
+
+if [ -s "$WORKDIR/single_areas" ]
+then
+	QSAS=$(cat $WORKDIR/single_areas | grep solvent | awk '{print $2}')
+fi
+
+echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE $ATOMSCOUNT $QAREA $QENERGY $QSAS" > $WORKDIR/scores_list
