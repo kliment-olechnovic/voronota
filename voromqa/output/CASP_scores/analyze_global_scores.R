@@ -1,4 +1,15 @@
+args=commandArgs(TRUE);
+
+testscore_name=args[1];
+refscore_name=args[2];
+invert_test_score=args[3];
+
 t=read.table("table_of_global_scores", header=TRUE, stringsAsFactors=FALSE);
+
+t$testscore=t[,testscore_name];
+t$refscore=t[,refscore_name];
+
+if (invert_test_score=="yes") { t$testscore=(0-t$testscore); }
 
 targets=sort(union(t$target, t$target));
 
@@ -11,72 +22,24 @@ for(target in targets)
 	sel_models=which(st$model!="target");
 	if(length(sel_target)==1 & length(sel_models)>1)
 	{
-		model_best_qscore=max(st$qscore_atom[sel_models]);
-		sel_model_with_best_qscore=sel_models[which(st$qscore_atom[sel_models]==model_best_qscore)][1];
+		model_best_testscore=max(st$testscore[sel_models]);
+		sel_model_with_best_testscore=sel_models[which(st$testscore[sel_models]==model_best_testscore)][1];
 		
-		model_best_cadscore=max(st$cadscore_residue[sel_models]);
-		sel_model_with_best_cadscore=sel_models[which(st$cadscore_residue[sel_models]==model_best_cadscore)][1];
+		model_best_refscore=max(st$refscore[sel_models]);
+		sel_model_with_best_refscore=sel_models[which(st$refscore[sel_models]==model_best_refscore)][1];
 		
-		model_best_tmscore=max(st$tmscore[sel_models]);
-		sel_model_with_best_tmscore=sel_models[which(st$tmscore[sel_models]==model_best_tmscore)][1];
-		
-		model_best_goap=min(st$goap[sel_models]);
-		sel_model_with_best_goap=sel_models[which(st$goap[sel_models]==model_best_goap)][1];
-		
-		model_best_dfire=min(st$dfire[sel_models]);
-		sel_model_with_best_dfire=sel_models[which(st$dfire[sel_models]==model_best_dfire)][1];
-		
-		model_best_goap_ag=min(st$goap_ag[sel_models]);
-		sel_model_with_best_goap_ag=sel_models[which(st$goap_ag[sel_models]==model_best_goap_ag)][1];
-		
-		cor_qscore_vs_cadscore=cor(st$qscore_atom[sel_models], st$cadscore_residue[sel_models]);
-		cor_goap_vs_cadscore=cor(st$goap[sel_models], st$cadscore_residue[sel_models]);
-		cor_dfire_vs_cadscore=cor(st$dfire[sel_models], st$cadscore_residue[sel_models]);
-		cor_goap_ag_vs_cadscore=cor(st$goap_ag[sel_models], st$cadscore_residue[sel_models]);
-		
-		cor_qscore_vs_tmscore=cor(st$qscore_atom[sel_models], st$tmscore[sel_models]);
-		cor_goap_vs_tmscore=cor(st$goap[sel_models], st$tmscore[sel_models]);
-		cor_dfire_vs_tmscore=cor(st$dfire[sel_models], st$tmscore[sel_models]);
-		cor_goap_ag_vs_tmscore=cor(st$goap_ag[sel_models], st$tmscore[sel_models]);
+		cor_testscore_vs_refscore=cor(st$testscore[sel_models], st$refscore[sel_models]);
 		
 		sr=data.frame(
 				target=target,
-				target_qscore=st$qscore_atom[sel_target],
-				target_qscore_rank=length(which(st$qscore_atom>=st$qscore_atom[sel_target])),
-				target_goap=st$goap[sel_target],
-				target_goap_rank=length(which(st$goap<=st$goap[sel_target])),
-				target_dfire=st$dfire[sel_target],
-				target_dfire_rank=length(which(st$dfire<=st$dfire[sel_target])),
-				target_goap_ag=st$goap_ag[sel_target],
-				target_goap_ag_rank=length(which(st$goap_ag<=st$goap_ag[sel_target])),
-				model_with_best_qscore=st$model[sel_model_with_best_qscore],
-				model_best_qscore=model_best_qscore,
-				model_with_best_goap=st$model[sel_model_with_best_goap],
-				model_best_goap=model_best_goap,
-				model_with_best_dfire=st$model[sel_model_with_best_dfire],
-				model_best_dfire=model_best_dfire,
-				model_with_best_goap_ag=st$model[sel_model_with_best_goap_ag],
-				model_best_goap_ag=model_best_goap_ag,
-				model_with_best_cadscore=st$model[sel_model_with_best_cadscore],
-				model_best_cadscore=model_best_cadscore,
-				model_with_best_tmscore=st$model[sel_model_with_best_tmscore],
-				model_best_tmscore=model_best_tmscore,
-				cor_qscore_vs_cadscore=cor_qscore_vs_cadscore,
-				cor_goap_vs_cadscore=cor_goap_vs_cadscore,
-				cor_dfire_vs_cadscore=cor_dfire_vs_cadscore,
-				cor_goap_ag_vs_cadscore=cor_goap_ag_vs_cadscore,
-				cor_qscore_vs_tmscore=cor_qscore_vs_tmscore,
-				cor_goap_vs_tmscore=cor_goap_vs_tmscore,
-				cor_dfire_vs_tmscore=cor_dfire_vs_tmscore,
-				cor_goap_ag_vs_tmscore=cor_goap_ag_vs_tmscore,
-				model_cadscore_of_best_qscore=st$cadscore_residue[sel_model_with_best_qscore],
-				model_cadscore_of_best_goap=st$cadscore_residue[sel_model_with_best_goap],
-				model_cadscore_of_best_dfire=st$cadscore_residue[sel_model_with_best_dfire],
-				model_cadscore_of_best_goap_ag=st$cadscore_residue[sel_model_with_best_goap_ag],
-				model_tmscore_of_best_qscore=st$tmscore[sel_model_with_best_qscore],
-				model_tmscore_of_best_goap=st$tmscore[sel_model_with_best_goap],
-				model_tmscore_of_best_dfire=st$tmscore[sel_model_with_best_dfire],
-				model_tmscore_of_best_goap_ag=st$tmscore[sel_model_with_best_goap_ag]);
+				target_testscore=st$testscore[sel_target],
+				target_testscore_rank=length(which(st$testscore>=st$testscore[sel_target])),
+				model_with_best_testscore=st$model[sel_model_with_best_testscore],
+				model_best_testscore=model_best_testscore,
+				model_with_best_refscore=st$model[sel_model_with_best_refscore],
+				model_best_refscore=model_best_refscore,
+				cor_testscore_vs_refscore=cor_testscore_vs_refscore,
+				model_refscore_of_best_testscore=st$refscore[sel_model_with_best_testscore]);
 		if(length(r)>0) { r=rbind(r, sr); } else { r=sr; }
 	}
 }
@@ -85,110 +48,34 @@ for(target in targets)
 
 length(r$target);
 
-length(which(r$target_qscore<=r$model_best_qscore));
-r$target[which(r$target_qscore<=r$model_best_qscore)];
-r$target_qscore_rank[which(r$target_qscore<=r$model_best_qscore)];
-
-length(which(r$target_goap>=r$model_best_goap));
-r$target[which(r$target_goap>=r$model_best_goap)];
-r$target_goap_rank[which(r$target_goap>=r$model_best_goap)];
-
-length(which(r$target_dfire>=r$model_best_dfire));
-r$target[which(r$target_dfire>=r$model_best_dfire)];
-r$target_dfire_rank[which(r$target_dfire>=r$model_best_dfire)];
+failures=which(r$target_testscore<=r$model_best_testscore);
+length(failures);
+r$target[failures];
+r$target_testscore_rank[failures];
 
 ################################
 
-quantile(r$cor_qscore_vs_cadscore);
-mean(r$cor_qscore_vs_cadscore);
-cor(t$cadscore_residue, t$qscore_atom);
-
-quantile(r$cor_goap_vs_cadscore);
-mean(r$cor_goap_vs_cadscore);
-cor(t$cadscore_residue, t$goap);
-
-quantile(r$cor_dfire_vs_cadscore);
-mean(r$cor_dfire_vs_cadscore);
-cor(t$cadscore_residue, t$dfire);
+quantile(r$cor_testscore_vs_refscore);
+mean(r$cor_testscore_vs_refscore);
+cor(t$refscore, t$testscore);
 
 ################################
-
-quantile(r$cor_qscore_vs_tmscore);
-mean(r$cor_qscore_vs_tmscore);
-cor(t$tmscore, t$qscore_atom);
-
-quantile(r$cor_goap_vs_tmscore);
-mean(r$cor_goap_vs_tmscore);
-cor(t$tmscore, t$goap);
-
-quantile(r$cor_dfire_vs_tmscore);
-mean(r$cor_dfire_vs_tmscore);
-cor(t$tmscore, t$dfire);
-
-################################
-
-cor(t$qscore_atom, t$goap);
-
-cor(t$qscore_atom, t$dfire);
-
-cor(t$goap, t$dfire);
-
-################################
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Target quality score", ylab="Highest model quality score", main="");
-points(r$target_qscore, r$model_best_qscore);
 
 plot(
-		c(min(c(r$target_goap, r$model_best_goap)), max(c(r$target_goap, r$model_best_goap))),
-		c(min(c(r$target_goap, r$model_best_goap)), max(c(r$target_goap, r$model_best_goap))),
-		type="l", xlab="Target GOAP score", ylab="Highest model GOAP score", main=""
+		x=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore))),
+		y=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore))),
+		type="l", xlab="Target test score", ylab="Highest model test score", main=""
 );
-points(r$target_goap, r$model_best_goap);
+points(r$target_testscore, r$model_best_testscore);
+
+################################
 
 plot(
-		c(min(c(r$target_dfire, r$model_best_dfire)), max(c(r$target_dfire, r$model_best_dfire))),
-		c(min(c(r$target_dfire, r$model_best_dfire)), max(c(r$target_dfire, r$model_best_dfire))),
-		type="l", xlab="Target DFIRE score", ylab="Highest model DFIRE score", main=""
-);
-points(r$target_dfire, r$model_best_dfire);
+		c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore)), max(c(r$model_best_refscore, r$model_refscore_of_best_testscore))),
+		c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore)), max(c(r$model_best_refscore, r$model_refscore_of_best_testscore))),
+		type="l", xlab="Best reference score", ylab="Reference score corresponding to the best test score", main="");
+points(r$model_best_refscore, r$model_refscore_of_best_testscore);
 
 ################################
 
-plot(c(0, 1), c(0, 1), type="l", xlab="Best CAD-score", ylab="CAD-score corresponding to the best quality score", main=""); points(r$model_best_cadscore, r$model_cadscore_of_best_qscore);
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Best CAD-score", ylab="CAD-score corresponding to the best GOAP score", main=""); points(r$model_best_cadscore, r$model_cadscore_of_best_goap);
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Best CAD-score", ylab="CAD-score corresponding to the best DFIRE score", main=""); points(r$model_best_cadscore, r$model_cadscore_of_best_dfire);
-
-################################
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Best TM-score", ylab="TM-score corresponding to the best quality score", main=""); points(r$model_best_tmscore, r$model_tmscore_of_best_qscore);
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Best TM-score", ylab="TM-score corresponding to the best GOAP score", main=""); points(r$model_best_tmscore, r$model_tmscore_of_best_goap);
-
-plot(c(0, 1), c(0, 1), type="l", xlab="Best TM-score", ylab="TM-score corresponding to the best DFIRE score", main=""); points(r$model_best_tmscore, r$model_tmscore_of_best_dfire);
-
-################################
-
-
-plot(t$cadscore_residue, t$qscore_atom, xlab="CAD-score", ylab="Quality score", main="");
-
-plot(t$cadscore_residue, t$goap, xlab="CAD-score", ylab="GOAP score", main="");
-
-plot(t$cadscore_residue, t$dfire, xlab="CAD-score", ylab="DFIRE score", main="");
-
-################################
-
-plot(t$tmscore, t$qscore_atom, xlab="TM-score", ylab="Quality score", main="");
-
-plot(t$tmscore, t$goap, xlab="TM-score", ylab="GOAP score", main="");
-
-plot(t$tmscore, t$dfire, xlab="TM-score", ylab="DFIRE score", main="");
-
-################################
-
-plot(t$qscore_atom, t$goap, xlab="Quality score", ylab="GOAP score", main="");
-
-plot(t$qscore_atom, t$dfire, xlab="Quality score", ylab="DFIRE score", main="");
-
-plot(t$goap, t$dfire, xlab="GOAP score", ylab="DFIRE score", main="");
+plot(t$refscore, t$testscore, xlab="Reference score", ylab="Test score", main="");
