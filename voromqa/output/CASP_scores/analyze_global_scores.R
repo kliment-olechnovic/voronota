@@ -3,6 +3,7 @@ args=commandArgs(TRUE);
 testscore_name="qscore_atom";
 refscore_name="cadscore_residue";
 invert_test_score=FALSE;
+normalize_test_score=FALSE;
 
 for(i in 1:length(args))
 {
@@ -18,6 +19,10 @@ for(i in 1:length(args))
 	{
 		invert_test_score=TRUE;
 	}
+	else if(args[i]=="F-normalize-testscore")
+	{
+		normalize_test_score=TRUE;
+	}
 }
 
 t=read.table("table_of_global_scores", header=TRUE, stringsAsFactors=FALSE);
@@ -26,6 +31,7 @@ t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
 
 if (invert_test_score) { t$testscore=(0-t$testscore); }
+if (normalize_test_score) { t$testscore=(t$testscore/t$atomscount); }
 
 targets=sort(union(t$target, t$target));
 
