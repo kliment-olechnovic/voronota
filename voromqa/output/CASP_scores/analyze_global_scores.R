@@ -34,9 +34,13 @@ for(target in targets)
 		sr=data.frame(
 				target=target,
 				target_qscore=st$qscore_atom[sel_target],
+				target_qscore_rank=length(which(st$qscore_atom>=st$qscore_atom[sel_target])),
 				target_goap=st$goap[sel_target],
+				target_goap_rank=length(which(st$goap<=st$goap[sel_target])),
 				target_dfire=st$dfire[sel_target],
+				target_dfire_rank=length(which(st$dfire<=st$dfire[sel_target])),
 				target_goap_ag=st$goap_ag[sel_target],
+				target_goap_ag_rank=length(which(st$goap_ag<=st$goap_ag[sel_target])),
 				model_with_best_qscore=st$model[sel_model_with_best_qscore],
 				model_best_qscore=model_best_qscore,
 				model_with_best_goap=st$model[sel_model_with_best_goap],
@@ -65,12 +69,15 @@ length(r$target);
 
 length(which(r$target_qscore<=r$model_best_qscore));
 r$target[which(r$target_qscore<=r$model_best_qscore)];
+r$target_qscore_rank[which(r$target_qscore<=r$model_best_qscore)];
 
 length(which(r$target_goap>=r$model_best_goap));
 r$target[which(r$target_goap>=r$model_best_goap)];
+r$target_goap_rank[which(r$target_goap>=r$model_best_goap)];
 
 length(which(r$target_dfire>=r$model_best_dfire));
 r$target[which(r$target_dfire>=r$model_best_dfire)];
+r$target_dfire_rank[which(r$target_dfire>=r$model_best_dfire)];
 
 ################################
 
