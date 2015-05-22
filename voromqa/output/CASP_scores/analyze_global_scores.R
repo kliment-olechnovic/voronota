@@ -1,15 +1,31 @@
 args=commandArgs(TRUE);
 
-testscore_name=args[1];
-refscore_name=args[2];
-invert_test_score=args[3];
+testscore_name="qscore_atom";
+refscore_name="cadscore_residue";
+invert_test_score=FALSE;
+
+for(i in 1:length(args))
+{
+	if(args[i]=="_testscore_name")
+	{
+		testscore_name=args[i+1];
+	}
+	else if(args[i]=="_refscore_name")
+	{
+		refscore_name=args[i+1];
+	}
+	else if(args[i]=="_invert_test_score")
+	{
+		invert_test_score=TRUE;
+	}
+}
 
 t=read.table("table_of_global_scores", header=TRUE, stringsAsFactors=FALSE);
 
 t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
 
-if (invert_test_score=="yes") { t$testscore=(0-t$testscore); }
+if (invert_test_score) { t$testscore=(0-t$testscore); }
 
 targets=sort(union(t$target, t$target));
 
