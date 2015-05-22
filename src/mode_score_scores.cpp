@@ -270,4 +270,5 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "best_accuracy " << best_accuracy.second << "\n";
 	std::cout << "best_MCC_threshold " << best_MCC.first << "\n";
 	std::cout << "best_MCC " << best_MCC.second << "\n";
+	std::cout << "input_file_pairs_count " << input_file_pairs.size() << "\n";
 }
