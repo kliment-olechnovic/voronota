@@ -149,3 +149,26 @@ then
 	
 	exit 0
 fi
+
+if [[ $STEPNAMES == *"[local_scores_evaluation]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type d -name target | sed 's/target$//' > $OUTPUTDIR/list_of_target_directories
+	INCOUNT=$(cat $OUTPUTDIR/list_of_target_directories | wc -l)
+	
+	cat $OUTPUTDIR/list_of_target_directories \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d"
+	
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d $OUTPUTDIR/entries"
+	
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[concatenated_local_scores_evaluations]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name local_scores_evaluation -not -empty > $OUTPUTDIR/list_of_local_scores_evaluations
+
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_local_scores_evaluations $OUTPUTDIR/concatenated_local_scores_evaluations"
+	
+	exit 0
+fi
