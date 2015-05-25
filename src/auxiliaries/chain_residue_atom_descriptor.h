@@ -9,6 +9,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <cmath>
 
 namespace auxiliaries
 {
@@ -573,6 +574,46 @@ private:
 			}
 		}
 		return map_of_single_descriptors;
+	}
+};
+
+class ChainResidueAtomDescriptorsSequenceOperations
+{
+public:
+	static std::map<ChainResidueAtomDescriptor, double> smooth_residue_scores_along_sequence(const std::map<ChainResidueAtomDescriptor, double>& raw_scores, const unsigned int window)
+	{
+		if(window>0)
+		{
+			std::vector< std::pair<ChainResidueAtomDescriptor, double> > v(raw_scores.size());
+			std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
+			std::vector< std::pair<ChainResidueAtomDescriptor, double> > sv=v;
+			for(std::size_t i=0;i<v.size();i++)
+			{
+				const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
+				const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
+				double sum_of_weighted_values=0.0;
+				double sum_of_weights=0.0;
+				for(int j=start;j<=end;j++)
+				{
+					if(v[i].first.chainID==v[j].first.chainID)
+					{
+						double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
+						double weight=(1.0-(ndist*ndist));
+						sum_of_weights+=weight;
+						sum_of_weighted_values+=v[j].second*weight;
+					}
+				}
+				if(sum_of_weights>0.0)
+				{
+					sv[i].second=(sum_of_weighted_values/sum_of_weights);
+				}
+			}
+			return std::map<ChainResidueAtomDescriptor, double>(sv.begin(), sv.end());
+		}
+		else
+		{
+			return raw_scores;
+		}
 	}
 };
 

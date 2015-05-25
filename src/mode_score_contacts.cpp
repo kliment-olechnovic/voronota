@@ -251,42 +251,6 @@ std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, doubl
 	return average_scores;
 }
 
-std::map<CRAD, double> smooth_residue_scores_along_sequence(const std::map<CRAD, double>& raw_scores, const unsigned int window)
-{
-	if(window>0)
-	{
-		std::vector< std::pair<CRAD, double> > v(raw_scores.size());
-		std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
-		std::vector< std::pair<CRAD, double> > sv=v;
-		for(std::size_t i=0;i<v.size();i++)
-		{
-			const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
-			const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
-			double sum_of_weighted_values=0.0;
-			double sum_of_weights=0.0;
-			for(int j=start;j<=end;j++)
-			{
-				if(v[i].first.chainID==v[j].first.chainID)
-				{
-					double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
-					double weight=(1.0-(ndist*ndist));
-					sum_of_weights+=weight;
-					sum_of_weighted_values+=v[j].second*weight;
-				}
-			}
-			if(sum_of_weights>0.0)
-			{
-				sv[i].second=(sum_of_weighted_values/sum_of_weights);
-			}
-		}
-		return std::map<CRAD, double>(sv.begin(), sv.end());
-	}
-	else
-	{
-		return raw_scores;
-	}
-}
-
 }
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
@@ -719,7 +683,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
 
-	const std::map<CRAD, double> residue_quality_scores=smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
+	const std::map<CRAD, double> residue_quality_scores=auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
 	if(!residue_scores_file.empty())
 	{
 		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
