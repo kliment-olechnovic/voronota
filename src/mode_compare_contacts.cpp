@@ -120,6 +120,26 @@ std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(c
 	return result;
 }
 
+double calculate_average_score_from_map_of_cad_descriptors(const std::map<CRAD, CADDescriptor>& input_map)
+{
+	double sum=0.0;
+	for(std::map<CRAD, CADDescriptor>::const_iterator it=input_map.begin();it!=input_map.end();++it)
+	{
+		sum+=it->second.score();
+	}
+	return (sum/static_cast<double>(input_map.size()));
+}
+
+std::map<CRAD, double> collect_scores_from_map_of_cad_descriptors(const std::map<CRAD, CADDescriptor>& input_map)
+{
+	std::map<CRAD, double> result;
+	for(std::map<CRAD, CADDescriptor>::const_iterator it=input_map.begin();it!=input_map.end();++it)
+	{
+		result[it->first]=it->second.score();
+	}
+	return result;
+}
+
 }
 
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -133,6 +153,8 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
 		ods.push_back(OD("--depth", "number", "local neighborhood depth"));
+		ods.push_back(OD("--smoothing-window", "number", "window to smooth residue scores along sequence"));
+		ods.push_back(OD("--smoothed-scores-file", "string", "file path to output smoothed residue scores"));
 		ods.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
 		if(!poh.assert(ods, false))
 		{
@@ -148,6 +170,8 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
 	const int depth=poh.argument<int>("--depth", 0);
+	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
+	const std::string smoothed_scores_file=poh.argument<std::string>("--smoothed-scores-file", "");
 	detailed_output_of_CADDescriptor()=poh.contains_option("--detailed-output");
 
 	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
@@ -178,6 +202,15 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth));
 	auxiliaries::IOUtilities().write_map_to_file(map_of_residue_cad_descriptors, residue_scores_file);
 
+	if(!smoothed_scores_file.empty())
+	{
+		auxiliaries::IOUtilities().write_map_to_file(
+				auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
+						collect_scores_from_map_of_cad_descriptors(map_of_residue_cad_descriptors), smoothing_window), smoothed_scores_file);
+	}
+
 	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
 	std::cout << "residue_level_global " << construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors) << "\n";
+	std::cout << "atom_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_atom_cad_descriptors) << "\n";
+	std::cout << "residue_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_residue_cad_descriptors) << "\n";
 }
