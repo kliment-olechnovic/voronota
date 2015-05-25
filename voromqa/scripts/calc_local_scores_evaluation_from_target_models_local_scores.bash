@@ -6,7 +6,7 @@ readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
 ROOTDIR=""
-REFERENCE_THRESHOLD="0.4"
+REFERENCE_THRESHOLD="0.5"
 
 while getopts "d:t:" OPTION
 do
