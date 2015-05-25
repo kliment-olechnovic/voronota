@@ -78,6 +78,40 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
+bool check_inter_atom_contact_centrality(
+		const std::vector<apollota::SimpleSphere>& spheres,
+		const apollota::TriangulationQueries::PairsMap& pairs_neighbors,
+		const std::size_t a_id,
+		const std::size_t b_id)
+{
+	if(a_id<spheres.size() && b_id<spheres.size())
+	{
+		apollota::TriangulationQueries::PairsMap::const_iterator pairs_neighbors_it=pairs_neighbors.find(apollota::Pair(a_id, b_id));
+		if(pairs_neighbors_it!=pairs_neighbors.end())
+		{
+			const std::set<std::size_t>& neighbors=pairs_neighbors_it->second;
+			if(!neighbors.empty())
+			{
+				const apollota::SimplePoint pa(spheres[a_id]);
+				const apollota::SimplePoint pb(spheres[b_id]);
+				const double ra=spheres[a_id].r;
+				const double rb=spheres[b_id].r;
+				const double distance_to_a_or_b=((apollota::distance_from_point_to_point(pa, pb)-ra-rb)*0.5);
+				const apollota::SimplePoint p=(pa+((pb-pa).unit()*(ra+distance_to_a_or_b)));
+				for(std::set<std::size_t>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+				{
+					const std::size_t c_id=(*neighbors_it);
+					if(c_id<spheres.size() && apollota::minimal_distance_from_point_to_sphere(p, spheres[c_id])<distance_to_a_or_b)
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
+
 }
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -93,6 +127,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
 		ods.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 		ods.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
+		ods.push_back(OD("--tag-centrality", "", "flag to tag contacts centrality"));
 		if(!poh.assert(ods, false))
 		{
 			poh.print_io_description("stdin", true, false,
@@ -111,6 +146,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
 	const bool add_mirrored=poh.contains_option("--add-mirrored");
 	const bool draw=poh.contains_option("--draw");
+	const bool tag_centrality=poh.contains_option("--tag-centrality");
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, BallValue> > input_ball_records;
@@ -165,6 +201,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::TriangulationQueries::PairsMap pairs_vertices=(draw ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
+		const apollota::TriangulationQueries::PairsMap pairs_neighbors=(tag_centrality ? apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map) : apollota::TriangulationQueries::PairsMap());
 
 		std::map< auxiliaries::ChainResidueAtomDescriptorsPair, ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
@@ -190,6 +227,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					value.graphics=(a_id==b_id ?
 							draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 							draw_inter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
+				}
+				if(tag_centrality && a_id!=b_id && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
+				{
+					value.props.tags.insert("central");
 				}
 			}
 		}

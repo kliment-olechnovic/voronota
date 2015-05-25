@@ -65,6 +65,7 @@ Command 'calculate-contacts' options:
 --sih-depth                     number      spherical surface optimization depth
 --add-mirrored                              flag to add mirrored contacts to non-annnotated output
 --draw                                      flag to output graphics for annotated contacts
+--tag-centrality                            flag to tag contacts centrality
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls
               (default mode line format: 'x y z r')
