@@ -20,9 +20,9 @@ do
 	esac
 done
 
-find $ROOTDIR -type f -name residue_cad_scores -not -empty \
-| sed "s/residue_cad_scores$//" \
-| awk '{print $1 "residue_cad_scores " $1 "residue_quality_scores"}' \
+find $ROOTDIR -type f -name smoothed_residue_cad_scores -not -empty \
+| sed "s/smoothed_residue_cad_scores$//" \
+| awk '{print $1 "smoothed_residue_cad_scores " $1 "residue_quality_scores"}' \
 | $BINDIR/voronota score-scores \
   --reference-threshold $REFERENCE_THRESHOLD \
 > $TMPDIR/local_scores_evaluation
