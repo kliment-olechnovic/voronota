@@ -37,7 +37,7 @@ do
 	esac
 done
 
-if [[ $STEPNAMES == *"[raw_contacts]"* ]]
+if [[ $STEPNAMES == *"[balls]"* ]]
 then
 	mkdir -p $OUTPUTDIR
 	
@@ -45,7 +45,19 @@ then
 	
 	cat $URLS_LIST_FILE \
 	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
-	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_raw_contacts_from_atoms.bash -u -z -m -o $OUTPUTDIR/entries -i"
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i"
+	
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[raw_contacts]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_balls | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_balls \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_raw_contacts_from_balls.bash -c -d"
 	
 	exit 0
 fi

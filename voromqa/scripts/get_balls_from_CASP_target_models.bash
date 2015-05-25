@@ -91,8 +91,6 @@ cat $TMPDIR/$TARGETNAME.pdb \
 | sort -V \
 > $OUTDIR/target/balls
 
-cat $OUTDIR/target/balls | $BINDIR/voronota calculate-contacts --annotated > $OUTDIR/target/raw_contacts
-
 cat $OUTDIR/target/balls | awk '{print $1}' > $TMPDIR/filter
 
 find $TMPDIR/$TARGETNAME -type f -not -empty | while read MODEL
@@ -110,6 +108,5 @@ do
 		MODELNAME=$(basename $MODEL)
 		mkdir -p $OUTDIR/models/$MODELNAME
 		mv $TMPDIR/filtered $OUTDIR/models/$MODELNAME/balls
-		cat $OUTDIR/models/$MODELNAME/balls | $BINDIR/voronota calculate-contacts --annotated > $OUTDIR/models/$MODELNAME/raw_contacts
 	fi
 done
