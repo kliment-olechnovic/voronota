@@ -101,3 +101,10 @@ cat $SUBDIR/balls \
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match-external-annotations <(cat $SUBDIR/match_first_and_second_resnames | awk '{print $1 " " $2}' | tr ' ' '\n') \
 > $SUBDIR/balls_matched_by_external_annotations
+
+cat $SUBDIR/balls \
+| $VORONOTA calculate-contacts --annotated --tag-centrality \
+| $VORONOTA query-contacts \
+  --match-min-seq-sep 7 \
+  --match-tags 'central' \
+> $SUBDIR/match_far_central_contacts
