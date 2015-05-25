@@ -15,6 +15,8 @@ QSCORE1="QSCORE1_NA"
 QSCORE2="QSCORE2_NA"
 CADSCORE1="CADSCORE1_NA"
 CADSCORE2="CADSCORE2_NA"
+CADSCORE3="CADSCORE3_NA"
+CADSCORE4="CADSCORE4_NA"
 GOAPSCORE1="GOAPSCORE1_NA"
 GOAPSCORE2="GOAPSCORE2_NA"
 GOAPSCORE3="GOAPSCORE3_NA"
@@ -32,8 +34,10 @@ fi
 
 if [ -s "$WORKDIR/global_cad_score" ]
 then
-	CADSCORE1=$(cat $WORKDIR/global_cad_score | grep atom | awk '{print $2}')
-	CADSCORE2=$(cat $WORKDIR/global_cad_score | grep residue | awk '{print $2}')
+	CADSCORE1=$(cat $WORKDIR/global_cad_score | grep atom_level_global | awk '{print $2}')
+	CADSCORE2=$(cat $WORKDIR/global_cad_score | grep residue_level_global | awk '{print $2}')
+	CADSCORE3=$(cat $WORKDIR/global_cad_score | grep atom_average_local | awk '{print $2}')
+	CADSCORE4=$(cat $WORKDIR/global_cad_score | grep residue_average_local | awk '{print $2}')
 fi
 
 if [ -s "$WORKDIR/goap_scores" ]
@@ -64,4 +68,4 @@ then
 	QSAS=$(cat $WORKDIR/single_areas | grep solvent | awk '{print $2}')
 fi
 
-echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE $ATOMSCOUNT $QAREA $QENERGY $QSAS" > $WORKDIR/scores_list
+echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $CADSCORE3 $CADSCORE4 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE $ATOMSCOUNT $QAREA $QENERGY $QSAS" > $WORKDIR/scores_list
