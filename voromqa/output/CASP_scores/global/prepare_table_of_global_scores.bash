@@ -7,8 +7,7 @@
 	| sed 's|^.*/entries/\(.*\)|\1|' \
 	| sed 's|models/||' \
 	| sed 's|/| |g' \
-	| sed 's|CADSCORE1_NA|1|g' \
-	| sed 's|CADSCORE2_NA|1|g' \
+	| sed 's|CADSCORE._NA|1|g' \
 	| sed 's|TMSCORE_NA|1|g' \
 	| sort
 } | column -t
