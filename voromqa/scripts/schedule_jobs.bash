@@ -1,0 +1,19 @@
+#!/bin/bash
+
+BINDIR=$1
+SCHEDULER=$2
+CPUCOUNT=$3
+COMMANDBUNDLE=$4
+ARGLIST=$5
+
+INCOUNT=$(cat $ARGLIST | wc -l)
+CHUNKSIZE=$(echo "$INCOUNT/$CPUCOUNT" | bc)
+
+if [ "$CHUNKSIZE" -le "0" ]
+then
+	CHUNKSIZE="1"
+fi
+
+cat $ARGLIST \
+| xargs -L $CHUNKSIZE \
+$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
