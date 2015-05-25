@@ -28,7 +28,6 @@ fi
 
 cat $WORKDIR/raw_contacts \
 | $BINDIR/voronota query-contacts --match-min-seq-sep 1 \
-| $BINDIR/voronota query-contacts --drop-tags \
 | $BINDIR/voronota query-contacts \
   --match-first 'A<C>' \
   --match-second 'A<N>' \
