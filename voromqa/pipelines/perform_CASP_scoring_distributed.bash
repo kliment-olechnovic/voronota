@@ -33,14 +33,26 @@ do
 	esac
 done
 
-if [[ $STEPNAMES == *"[raw_contacts]"* ]]
+if [[ $STEPNAMES == *"[balls]"* ]]
 then
 	mkdir -p $OUTPUTDIR
 	
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
 	do
-		$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_raw_contacts_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
+		$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
 	done
+	
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[raw_contacts]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
+	INCOUNT=$(cat $OUTPUTDIR/list_of_entries_with_balls | wc -l)
+	
+	cat $OUTPUTDIR/list_of_entries_with_balls \
+	| xargs -L $(echo "$INCOUNT/$CPUCOUNT" | bc) \
+	$SCHEDULER $BINDIR/run_calc_script.bash $BINDIR "$BINDIR/calc_raw_contacts_from_balls.bash -c -d"
 	
 	exit 0
 fi

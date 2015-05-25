@@ -54,7 +54,3 @@ cat $TMPDIR/input.pdb \
 | grep -f $BINDIR/standard_names \
 | $BINDIR/voronota query-balls --drop-altloc-indicators \
 > $WORKDIR/balls
-
-cat $WORKDIR/balls \
-| $BINDIR/voronota calculate-contacts --annotated \
-> $WORKDIR/raw_contacts
