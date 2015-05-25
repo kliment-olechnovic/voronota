@@ -1,2 +1,4 @@
 atom_level_global 0.290501 1052.61 982.91 1232.44 746.826
 residue_level_global 0.513984 1052.61 982.91 726.34 511.587
+atom_average_local 0.233574
+residue_average_local 0.441668

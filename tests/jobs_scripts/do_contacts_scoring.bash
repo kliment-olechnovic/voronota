@@ -104,6 +104,8 @@ do
 	  --target-contacts-file <(cat $SUBDIR/target.contacts | awk '{print $1 " " $2 " " $4}') \
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomcadscores \
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residuecadscores \
+	  --smoothing-window 3 \
+	  --smoothed-scores-file $SUBDIR/$INFILEBASENAME.smoothedresiduecadscores \
 	  --depth 0 \
 	> $SUBDIR/$INFILEBASENAME.globalcadscore
 done

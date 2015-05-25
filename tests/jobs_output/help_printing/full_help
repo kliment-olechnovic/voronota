@@ -215,6 +215,8 @@ Command 'compare-contacts' options:
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
 --depth                         number      local neighborhood depth
+--smoothing-window              number      window to smooth residue scores along sequence
+--smoothed-scores-file          string      file path to output smoothed residue scores
 --detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
