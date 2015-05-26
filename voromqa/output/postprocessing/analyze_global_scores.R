@@ -1,5 +1,6 @@
 args=commandArgs(TRUE);
 
+input_file="table_of_global_scores";
 testscore_name="qscore_atom";
 refscore_name="cadscore_residue";
 cor_method="pearson";
@@ -9,7 +10,11 @@ plot_per_target=FALSE;
 
 for(i in 1:length(args))
 {
-	if(args[i]=="V-testscore-name")
+	if(args[i]=="V-input")
+	{
+		input_file=args[i+1];
+	}
+	else if(args[i]=="V-testscore-name")
 	{
 		testscore_name=args[i+1];
 	}
@@ -35,7 +40,7 @@ for(i in 1:length(args))
 	}
 }
 
-t=read.table("table_of_global_scores", header=TRUE, stringsAsFactors=FALSE);
+t=read.table(input_file, header=TRUE, stringsAsFactors=FALSE);
 
 t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
