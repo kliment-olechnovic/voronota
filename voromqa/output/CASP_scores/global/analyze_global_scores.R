@@ -5,6 +5,7 @@ refscore_name="cadscore_residue";
 cor_method="pearson";
 invert_test_score=FALSE;
 normalize_test_score=FALSE;
+plot_per_target=FALSE;
 
 for(i in 1:length(args))
 {
@@ -27,6 +28,10 @@ for(i in 1:length(args))
 	else if(args[i]=="F-normalize-testscore")
 	{
 		normalize_test_score=TRUE;
+	}
+	else if(args[i]=="F-plot-per-target")
+	{
+		plot_per_target=TRUE;
 	}
 }
 
@@ -68,6 +73,8 @@ for(target in targets)
 				cor_testscore_vs_refscore=cor_testscore_vs_refscore,
 				model_refscore_of_best_testscore=st$refscore[sel_model_with_best_testscore]);
 		if(length(r)>0) { r=rbind(r, sr); } else { r=sr; }
+		
+		if(plot_per_target) { plot(x=st$refscore, y=st$testscore, xlab="Reference score", ylab="Test score", main=target); }
 	}
 }
 
