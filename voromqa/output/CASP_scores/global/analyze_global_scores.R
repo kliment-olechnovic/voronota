@@ -78,7 +78,11 @@ for(target in targets)
 				model_refscore_of_best_testscore=st$refscore[sel_model_with_best_testscore]);
 		if(length(r)>0) { r=rbind(r, sr); } else { r=sr; }
 		
-		if(plot_per_target) { plot(x=st$refscore, y=st$testscore, xlim=refscore_limits, ylim=testscore_limits, xlab="Reference score", ylab="Test score", main=target); }
+		if(plot_per_target)
+		{
+			plot(x=st$refscore, y=st$testscore, xlim=refscore_limits, ylim=testscore_limits,
+					xlab="Reference score", ylab="Test score", main=paste(target, "       cor=", format(cor_testscore_vs_refscore, digits=2), sep=""));
+		}
 	}
 }
 
