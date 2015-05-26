@@ -68,6 +68,7 @@ for(target in targets)
 		sr=data.frame(
 				target=target,
 				target_testscore=st$testscore[sel_target],
+				target_testscore_zscore=((st$testscore[sel_target]-mean(st$testscore[sel_models]))/sd(st$testscore[sel_models])),
 				target_testscore_rank=length(which(st$testscore>=st$testscore[sel_target])),
 				model_with_best_testscore=st$model[sel_model_with_best_testscore],
 				model_best_testscore=model_best_testscore,
@@ -89,6 +90,11 @@ failures=which(r$target_testscore<=r$model_best_testscore);
 length(failures);
 r$target[failures];
 r$target_testscore_rank[failures];
+
+################################
+
+quantile(r$target_testscore_zscore);
+mean(r$target_testscore_zscore);
 
 ################################
 
