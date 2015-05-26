@@ -11,4 +11,4 @@ WORKDIR=$1
 	| sed 's|CADSCORE._NA|1|g' \
 	| sed 's|TMSCORE_NA|1|g' \
 	| sort
-} | grep -v "T0759" | column -t > $WORKDIR/table_of_global_scores
+} | column -t > $WORKDIR/table_of_global_scores
