@@ -43,6 +43,9 @@ t$refscore=t[,refscore_name];
 if (invert_test_score) { t$testscore=(0-t$testscore); }
 if (normalize_test_score) { t$testscore=(t$testscore/t$atomscount); }
 
+testscore_limits=c(min(t$testscore), max(t$testscore));
+refscore_limits=c(min(t$refscore), max(t$refscore));
+
 targets=sort(union(t$target, t$target));
 
 r=c();
@@ -74,7 +77,7 @@ for(target in targets)
 				model_refscore_of_best_testscore=st$refscore[sel_model_with_best_testscore]);
 		if(length(r)>0) { r=rbind(r, sr); } else { r=sr; }
 		
-		if(plot_per_target) { plot(x=st$refscore, y=st$testscore, xlab="Reference score", ylab="Test score", main=target); }
+		if(plot_per_target) { plot(x=st$refscore, y=st$testscore, xlim=refscore_limits, ylim=testscore_limits, xlab="Reference score", ylab="Test score", main=target); }
 	}
 }
 
