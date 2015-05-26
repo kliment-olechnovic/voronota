@@ -10,10 +10,10 @@ mkdir -p $OUTDIR
 R --vanilla --args $POTENTIAL_FILE $TAG1 $TAG2 $OUTDIR/plot_tags_${TAG1}_and_${TAG2}.png << 'EOF'
 
 args=commandArgs(TRUE);
-tag1=args[2];
-tag2=args[3];
 
 t=read.table(args[1], header=FALSE, stringsAsFactors=FALSE);
+tag1=args[2];
+tag2=args[3];
 
 t1=t[which(t$V3==tag1),];
 t2=t[which(t$V3==tag2),];
