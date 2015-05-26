@@ -2,6 +2,7 @@ args=commandArgs(TRUE);
 
 testscore_name="qscore_atom";
 refscore_name="cadscore_residue";
+cor_method="pearson";
 invert_test_score=FALSE;
 normalize_test_score=FALSE;
 
@@ -14,6 +15,10 @@ for(i in 1:length(args))
 	else if(args[i]=="V-refscore-name")
 	{
 		refscore_name=args[i+1];
+	}
+	else if(args[i]=="V-cor-method")
+	{
+		cor_method=args[i+1];
 	}
 	else if(args[i]=="F-invert-testscore")
 	{
@@ -50,7 +55,7 @@ for(target in targets)
 		model_best_refscore=max(st$refscore[sel_models]);
 		sel_model_with_best_refscore=sel_models[which(st$refscore[sel_models]==model_best_refscore)][1];
 		
-		cor_testscore_vs_refscore=cor(st$testscore[sel_models], st$refscore[sel_models]);
+		cor_testscore_vs_refscore=cor(st$testscore[sel_models], st$refscore[sel_models], method=cor_method);
 		
 		sr=data.frame(
 				target=target,
@@ -79,7 +84,7 @@ r$target_testscore_rank[failures];
 
 quantile(r$cor_testscore_vs_refscore);
 mean(r$cor_testscore_vs_refscore);
-cor(t$refscore, t$testscore);
+cor(t$refscore, t$testscore, method=cor_method);
 
 ################################
 
