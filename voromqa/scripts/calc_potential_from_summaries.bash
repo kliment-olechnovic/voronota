@@ -44,7 +44,8 @@ cat $OUTPUTDIR/list \
   --input-file-list \
   --contributions-file $OUTPUTDIR/contributions \
   --single-areas-file $OUTPUTDIR/single_areas \
+| tee $OUTPUTDIR/summary \
 | $BINDIR/voronota score-contacts-potential $INPUT_CONTRIBUTIONS $FIXED_TYPES_OPTION \
   --potential-file $OUTPUTDIR/potential \
   --probabilities-file $OUTPUTDIR/probabilities \
-> $OUTPUTDIR/summary
+> /dev/null
