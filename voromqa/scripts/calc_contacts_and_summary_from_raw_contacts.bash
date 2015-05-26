@@ -43,6 +43,7 @@ cat $WORKDIR/raw_contacts \
   --no-solvent \
   --set-tags 'sep2' \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
+| tr ';' '_' \
 | tee $WORKDIR/contacts \
 | $BINDIR/voronota score-contacts-potential $MULTAREAS_OPTION \
   --contributions-file $WORKDIR/contributions \
