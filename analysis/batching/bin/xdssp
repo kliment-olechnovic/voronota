@@ -1,8 +1,0 @@
-#!/bin/bash
-
-readonly BINDIR=$1
-readonly OUTPUTDIR=$2
-readonly INPUTFILE=$3
-
-mkdir -p $OUTPUTDIR/dssp
-$BINDIR/dssp $INPUTFILE > $OUTPUTDIR/dssp/$(basename $INPUTFILE)
