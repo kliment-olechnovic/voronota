@@ -8,6 +8,7 @@ filter_file="";
 pdf_output_file="";
 invert_test_score=FALSE;
 normalize_test_score=FALSE;
+normalize_test_score_by_area=FALSE;
 plot_per_target=FALSE;
 
 for(i in 1:length(args))
@@ -44,6 +45,10 @@ for(i in 1:length(args))
 	{
 		normalize_test_score=TRUE;
 	}
+	else if(args[i]=="F-normalize-testscore-by-area")
+	{
+		normalize_test_score_by_area=TRUE;
+	}
 	else if(args[i]=="F-plot-per-target")
 	{
 		plot_per_target=TRUE;
@@ -68,6 +73,7 @@ t$refscore=t[,refscore_name];
 
 if (invert_test_score) { t$testscore=(0-t$testscore); }
 if (normalize_test_score) { t$testscore=(t$testscore/t$atomscount); }
+if (normalize_test_score_by_area) { t$testscore=(t$testscore/t$qarea); }
 
 testscore_limits=c(min(t$testscore), max(t$testscore));
 refscore_limits=c(min(t$refscore), max(t$refscore));

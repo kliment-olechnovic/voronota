@@ -80,7 +80,7 @@ SUBDIR=$OUTDIR/qenergy_vs_cadscore
 mkdir -p $SUBDIR
 R --vanilla --args \
   V-input $INFILE \
-  V-testscore-name qenergy F-invert-testscore F-normalize-testscore \
+  V-testscore-name qenergy F-invert-testscore F-normalize-testscore-by-area \
   V-refscore-name cadscore_residue \
   V-pdf-output $SUBDIR/plots.pdf \
   F-plot-per-target \
@@ -92,7 +92,7 @@ SUBDIR=$OUTDIR/qenergy_vs_tmscore
 mkdir -p $SUBDIR
 R --vanilla --args \
   V-input $INFILE \
-  V-testscore-name qenergy F-invert-testscore F-normalize-testscore \
+  V-testscore-name qenergy F-invert-testscore F-normalize-testscore-by-area \
   V-refscore-name tmscore \
   V-pdf-output $SUBDIR/plots.pdf \
   F-plot-per-target \
@@ -128,7 +128,7 @@ SUBDIR=$OUTDIR/qenergy_vs_qscore
 mkdir -p $SUBDIR
 R --vanilla --args \
   V-input $INFILE \
-  V-testscore-name qenergy F-invert-testscore F-normalize-testscore \
+  V-testscore-name qenergy F-invert-testscore F-normalize-testscore-by-area \
   V-refscore-name qscore_atom \
   V-pdf-output $SUBDIR/plots.pdf \
   F-plot-per-target \
