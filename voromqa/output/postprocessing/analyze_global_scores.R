@@ -4,6 +4,7 @@ input_file="table_of_global_scores";
 testscore_name="qscore_atom";
 refscore_name="cadscore_residue";
 cor_method="pearson";
+filter_file="";
 invert_test_score=FALSE;
 normalize_test_score=FALSE;
 plot_per_target=FALSE;
@@ -26,6 +27,10 @@ for(i in 1:length(args))
 	{
 		cor_method=args[i+1];
 	}
+	else if(args[i]=="V-filter")
+	{
+		filter_file=args[i+1];
+	}
 	else if(args[i]=="F-invert-testscore")
 	{
 		invert_test_score=TRUE;
@@ -41,6 +46,12 @@ for(i in 1:length(args))
 }
 
 t=read.table(input_file, header=TRUE, stringsAsFactors=FALSE);
+
+if(filter_file!="")
+{
+	filter_t=read.table(filter_file, header=TRUE, stringsAsFactors=FALSE);
+	t=merge(t, filter_t);
+}
 
 t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
