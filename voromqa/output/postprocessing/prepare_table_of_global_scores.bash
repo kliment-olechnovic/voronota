@@ -10,5 +10,6 @@ WORKDIR=$1
 	| sed 's|/| |g' \
 	| sed 's|CADSCORE._NA|1|g' \
 	| sed 's|TMSCORE_NA|1|g' \
+	| egrep -v 'GOAPSCORE._NA' \
 	| sort
 } | column -t > $WORKDIR/table_of_global_scores
