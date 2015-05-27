@@ -35,6 +35,18 @@ fi
 TARGETSURL=""
 MODELSURL=""
 
+if [ "$CASPNAME" == "CASP8" ]
+then
+	TARGETSURL="http://predictioncenter.org/download_area/CASP8/targets/casp8.targ_unsplit.tar.gz"
+	MODELSURL="http://predictioncenter.org/download_area/CASP8/server_predictions/$TARGETNAME$STAGENUM.3D.srv.tar.gz"
+fi
+
+if [ "$CASPNAME" == "CASP9" ]
+then
+	TARGETSURL="http://predictioncenter.org/download_area/CASP9/targets/casp9.targ_unsplit.tgz"
+	MODELSURL="http://predictioncenter.org/download_area/CASP9/server_predictions/$TARGETNAME$STAGENUM.3D.srv.tar.gz"
+fi
+
 if [ "$CASPNAME" == "CASP10" ]
 then
 	TARGETSURL="http://predictioncenter.org/download_area/CASP10/targets/casp10.targets_unsplitted.noT0695T0739.tgz"
