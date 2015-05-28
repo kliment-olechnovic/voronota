@@ -9,8 +9,10 @@ CPUCOUNT="4"
 PARTIAL_POTENTIALS="10"
 STEPNAMES=""
 SCHEDULER="sbatch"
+FILTER_FILE=""
+FILTER_NAME=""
 
-while getopts "b:i:o:p:r:s:c:" OPTION
+while getopts "b:i:o:p:r:s:c:f:n:" OPTION
 do
 	case $OPTION in
 	b)
@@ -33,7 +35,13 @@ do
 		;;
 	c)
 		SCHEDULER=$OPTARG
-	;;
+		;;
+	f)
+		FILTER_FILE=$OPTARG
+		;;
+	n)
+		FILTER_NAME=$OPTARG
+		;;
 	esac
 done
 
@@ -65,6 +73,13 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[potential_filtered]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name summary -not -empty | grep -f $FILTER_FILE > $OUTPUTDIR/list_of_summaries_filtered_$FILTER_NAME
+	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential_filtered_$FILTER_NAME -i $OUTPUTDIR/list_of_summaries_filtered_$FILTER_NAME -c $BINDIR/contributions_from_casp_models"
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[energies]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_contacts
@@ -76,6 +91,13 @@ if [[ $STEPNAMES == *"[energies_stats]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty > $OUTPUTDIR/list_of_atom_energies
 	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_energies_stats_from_energies.bash -o $OUTPUTDIR/energies_stats -i $OUTPUTDIR/list_of_atom_energies"
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[energies_stats_filtered]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty  | grep -f $FILTER_FILE > $OUTPUTDIR/list_of_atom_energies_filtered_$FILTER_NAME
+	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_energies_stats_from_energies.bash -o $OUTPUTDIR/energies_stats_filtered_$FILTER_NAME -i $OUTPUTDIR/list_of_atom_energies_filtered_$FILTER_NAME"
 	exit 0
 fi
 
