@@ -59,6 +59,13 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[potential]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name summary -not -empty > $OUTPUTDIR/list_of_summaries
+	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/list_of_summaries"
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[energies]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_contacts
