@@ -16,6 +16,7 @@ file1=args[1];
 file2=args[2];
 tag1=args[3];
 tag2=args[4];
+output_image=args[5];
 
 t1=read.table(file1, header=FALSE, stringsAsFactors=FALSE);
 t2=read.table(file2, header=FALSE, stringsAsFactors=FALSE);
@@ -29,7 +30,7 @@ y=t$V4.y;
 sds=c();
 if(is.element("V5", colnames(t))) { sds=t$V5; }
 
-png(args[5], height=10, width=10, units="in", res=300);
+png(output_image, height=10, width=10, units="in", res=300);
 plot(x, y, type="n", xlab=tag1, ylab=tag2, main=paste(tag1, " vs ", tag2, sep=""));
 if(length(sds)>0) { segments(x, y-sds, x, y+sds, col="red"); }
 points(x, y, col="black");
