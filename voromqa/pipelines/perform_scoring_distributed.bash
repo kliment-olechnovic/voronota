@@ -33,13 +33,25 @@ do
 	esac
 done
 
-if [[ $STEPNAMES == *"[balls]"* ]]
+if [[ $STEPNAMES == *"[balls_CASP]"* ]]
 then
 	mkdir -p $OUTPUTDIR
 	
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
+	done
+	
+	exit 0
+fi
+
+if [[ $STEPNAMES == *"[balls_decoys99]"* ]]
+then
+	mkdir -p $OUTPUTDIR
+	
+	cat $INPUT_LIST_FILE | while read INPUTFILE
+	do
+		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
 	done
 	
 	exit 0
