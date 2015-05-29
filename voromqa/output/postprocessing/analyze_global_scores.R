@@ -5,7 +5,7 @@ testscore_name="qscore_atom";
 refscore_name="cadscore_residue";
 cor_method="pearson";
 filter_file="";
-pdf_output_file="";
+output_prefix="";
 invert_testscore=FALSE;
 normalize_testscore=FALSE;
 normalize_testscore_by_area=FALSE;
@@ -36,9 +36,9 @@ for(i in 1:length(args))
 	{
 		filter_file=args[i+1];
 	}
-	else if(args[i]=="V-pdf-output")
+	else if(args[i]=="V-output-prefix")
 	{
-		pdf_output_file=args[i+1];
+		output_prefix=args[i+1];
 	}
 	else if(args[i]=="F-invert-testscore")
 	{
@@ -78,11 +78,6 @@ if(filter_file!="")
 	t=merge(t, filter_t);
 }
 
-if(pdf_output_file!="")
-{
-	pdf(pdf_output_file);
-}
-
 t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
 
@@ -97,6 +92,12 @@ testscore_limits=c(min(t$testscore), max(t$testscore));
 refscore_limits=c(min(t$refscore), max(t$refscore));
 
 targets=sort(union(t$target, t$target));
+
+
+if(plot_per_target)
+{
+	pdf(paste(output_prefix, "plots_per_target.pdf", sep=""));
+}
 
 r=c();
 
@@ -136,37 +137,27 @@ for(target in targets)
 	}
 }
 
+write.table(r, file=paste(output_prefix, "results_table", sep=""), row.names=FALSE, quote=FALSE);
 
-plot(
-		x=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore))),
-		y=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore))),
-		type="l", xlab="Target test score", ylab="Highest model test score", main=""
-);
+r_summary=data.frame(
+		test_score=testscore_name,
+		reference_score=refscore_name,
+		targets_count=length(r$target),
+		failures_count=length(which(r$target_testscore<=r$model_best_testscore)),
+		mean_target_testscore_zscore=mean(r$target_testscore_zscore),
+		mean_cor_testscore_vs_refscore=mean(r$cor_testscore_vs_refscore));
+
+write.table(r_summary, file=paste(output_prefix, "results_summary", sep=""), row.names=FALSE, quote=FALSE);
+
+
+pdf(paste(output_prefix, "plots_summary.pdf", sep=""));
+
+testscore_range=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore)));
+plot(x=testscore_range, y=testscore_range, type="l", xlab="Target test score", ylab="Highest model test score", main="");
 points(r$target_testscore, r$model_best_testscore);
 
-plot(
-		c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore)), max(c(r$model_best_refscore, r$model_refscore_of_best_testscore))),
-		c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore)), max(c(r$model_best_refscore, r$model_refscore_of_best_testscore))),
-		type="l", xlab="Best reference score", ylab="Reference score corresponding to the best test score", main="");
+refscore_range=c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore)), max(c(r$model_best_refscore, r$model_refscore_of_best_testscore)));
+plot(x=refscore_range, y=refscore_range, type="l", xlab="Best reference score", ylab="Reference score corresponding to the best test score", main="");
 points(r$model_best_refscore, r$model_refscore_of_best_testscore);
 
 plot(t$refscore, t$testscore, xlab="Reference score", ylab="Test score", main="");
-
-
-### Results statistics output ###
-
-
-length(r$target);
-failures=which(r$target_testscore<=r$model_best_testscore);
-length(failures);
-r$target[failures];
-r$target_testscore_rank[failures];
-
-
-quantile(r$target_testscore_zscore);
-mean(r$target_testscore_zscore);
-
-
-quantile(r$cor_testscore_vs_refscore);
-mean(r$cor_testscore_vs_refscore);
-cor(t$refscore, t$testscore, method=cor_method);
