@@ -47,5 +47,10 @@ analyze "rwplus" "tmscore" "F-invert-testscore F-normalize-testscore"
 
 {
 	find $OUTDIR -type f -name results_summary | head -1 | xargs -L 1 head -1
-	find $OUTDIR -type f -name results_summary | xargs -L 1 tail -1 | sort
-} | column -t > $OUTDIR/results_summaries
+	find $OUTDIR -type f -name results_summary | xargs -L 1 tail -1 | grep cadscore_residue | sort
+} | column -t > $OUTDIR/results_summaries_for_cadscore_residue
+
+{
+	find $OUTDIR -type f -name results_summary | head -1 | xargs -L 1 head -1
+	find $OUTDIR -type f -name results_summary | xargs -L 1 tail -1 | grep tmscore | sort
+} | column -t > $OUTDIR/results_summaries_for_tmscore
