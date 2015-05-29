@@ -2,6 +2,10 @@ args=commandArgs(TRUE);
 
 input1="table1";
 input2="table2";
+filter1_name="";
+filter1_value="";
+filter2_name="";
+filter2_value="";
 column1="V1";
 column2="V1";
 sds_column="";
@@ -20,6 +24,16 @@ for(i in 1:length(args))
 	else if(args[i]=="V-input2")
 	{
 		input2=args[i+1];
+	}
+	else if(args[i]=="V-filter1")
+	{
+		filter1_name=args[i+1];
+		filter1_value=args[i+2];
+	}
+	else if(args[i]=="V-filter2")
+	{
+		filter2_name=args[i+1];
+		filter2_value=args[i+2];
 	}
 	else if(args[i]=="V-column1")
 	{
@@ -58,7 +72,16 @@ for(i in 1:length(args))
 mergings=c(mergingA, mergingB, mergingC);
 
 t1=read.table(input1, header=table_header, stringsAsFactors=FALSE);
+if(filter1_name!="")
+{
+	t1=t1[which(t1[, filter1_name]==filter1_value),];
+}
+
 t2=read.table(input2, header=table_header, stringsAsFactors=FALSE);
+if(filter2_name!="")
+{
+	t2=t2[which(t2[, filter2_name]==filter2_value),];
+}
 
 x=c();
 y=c();
@@ -68,14 +91,14 @@ if(length(mergings)>0)
 	t=merge(t1, t2, by=mergings);
 	x=t[, column1];
 	y=t[, column2];
-	if(sds_column!="")
+	if(sds_column!="" & is.element(sds_column, colnames(t)))
 	{
 		sds=t[, sds_column];
 	}
 } else {
 	x=t1[, column1];
 	y=t2[, column2];
-	if(sds_column!="")
+	if(sds_column!="" & is.element(sds_column, colnames(t2)))
 	{
 		sds=t2[, sds_column];
 	}
