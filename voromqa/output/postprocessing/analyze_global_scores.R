@@ -6,9 +6,12 @@ refscore_name="cadscore_residue";
 cor_method="pearson";
 filter_file="";
 pdf_output_file="";
-invert_test_score=FALSE;
-normalize_test_score=FALSE;
-normalize_test_score_by_area=FALSE;
+invert_testscore=FALSE;
+normalize_testscore=FALSE;
+normalize_testscore_by_area=FALSE;
+invert_refscore=FALSE;
+normalize_refscore=FALSE;
+normalize_refscore_by_area=FALSE;
 plot_per_target=FALSE;
 
 for(i in 1:length(args))
@@ -39,15 +42,27 @@ for(i in 1:length(args))
 	}
 	else if(args[i]=="F-invert-testscore")
 	{
-		invert_test_score=TRUE;
+		invert_testscore=TRUE;
 	}
 	else if(args[i]=="F-normalize-testscore")
 	{
-		normalize_test_score=TRUE;
+		normalize_testscore=TRUE;
 	}
 	else if(args[i]=="F-normalize-testscore-by-area")
 	{
-		normalize_test_score_by_area=TRUE;
+		normalize_testscore_by_area=TRUE;
+	}
+	else if(args[i]=="F-invert-refscore")
+	{
+		invert_refscore=TRUE;
+	}
+	else if(args[i]=="F-normalize-refscore")
+	{
+		normalize_refscore=TRUE;
+	}
+	else if(args[i]=="F-normalize-refscore-by-area")
+	{
+		normalize_refscore_by_area=TRUE;
 	}
 	else if(args[i]=="F-plot-per-target")
 	{
@@ -71,9 +86,12 @@ if(pdf_output_file!="")
 t$testscore=t[,testscore_name];
 t$refscore=t[,refscore_name];
 
-if (invert_test_score) { t$testscore=(0-t$testscore); }
-if (normalize_test_score) { t$testscore=(t$testscore/t$atomscount); }
-if (normalize_test_score_by_area) { t$testscore=(t$testscore/t$qarea); }
+if (invert_testscore) { t$testscore=(0-t$testscore); }
+if (normalize_testscore) { t$testscore=(t$testscore/t$atomscount); }
+if (normalize_testscore_by_area) { t$testscore=(t$testscore/t$qarea); }
+if (invert_refscore) { t$refscore=(0-t$refscore); }
+if (normalize_refscore) { t$refscore=(t$refscore/t$atomscount); }
+if (normalize_refscore_by_area) { t$refscore=(t$refscore/t$qarea); }
 
 testscore_limits=c(min(t$testscore), max(t$testscore));
 refscore_limits=c(min(t$refscore), max(t$refscore));
