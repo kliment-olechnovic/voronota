@@ -15,11 +15,12 @@ function analyze
 	  V-input $INFILE $FLAGS \
 	  V-testscore-name $TESTSCORE \
 	  V-refscore-name $REFSCORE \
-	  V-pdf-output $SUBDIR/plots.pdf \
+	  V-output-prefix $SUBDIR/ \
 	  F-plot-per-target \
 	< $SCRIPTDIR/analyze_global_scores.R \
-	| grep 'Results statistics output' -A 9999 \
 	> $SUBDIR/log
+	cat $SUBDIR/results_table | column -t | sponge $SUBDIR/results_table
+	cat $SUBDIR/results_summary | column -t | sponge $SUBDIR/results_summary
 }
 
 analyze "qscore_atom" "cadscore_residue"
@@ -43,3 +44,8 @@ analyze "goap_ag" "tmscore" "F-invert-testscore F-normalize-testscore"
 
 analyze "rwplus" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
 analyze "rwplus" "tmscore" "F-invert-testscore F-normalize-testscore"
+
+{
+	find $OUTDIR -type f -name results_summary | head -1 | xargs -L 1 head -1
+	find $OUTDIR -type f -name results_summary | xargs -L 1 tail -1 | sort
+} | column -t > $OUTDIR/results_summaries
