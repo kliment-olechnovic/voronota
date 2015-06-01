@@ -23,4 +23,4 @@ INPUTBASENAME=$(basename $INPUTFILE .pdb)
 
 find $INPUTDIR -type f -name "${INPUTBASENAME}*.pdb" -not -empty | grep -v $INPUTFILE > $TMPDIR/models_list
 
-$BINDIR/get_balls_from_target_and_models_list.bash -t $INPUTFILE -m $TMPDIR/models_list -o $OUTDIR/$INPUTBASENAME
+$BINDIR/get_balls_from_target_and_models_list.bash -t $INPUTFILE -m $TMPDIR/models_list -o $OUTDIR/RosettaDecoys/$INPUTBASENAME

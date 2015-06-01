@@ -34,4 +34,4 @@ fi
 
 find $TMPDIR/$INPUTBASENAME/ -type f -name min.*.pdb -not -empty > $TMPDIR/models_list
 
-$BINDIR/get_balls_from_target_and_models_list.bash -t $TMPDIR/$INPUTBASENAME/nat.pdb -m $TMPDIR/models_list -o $OUTDIR/$INPUTBASENAME
+$BINDIR/get_balls_from_target_and_models_list.bash -t $TMPDIR/$INPUTBASENAME/nat.pdb -m $TMPDIR/models_list -o $OUTDIR/decoys99/$INPUTBASENAME
