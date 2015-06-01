@@ -85,6 +85,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
 		ods.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
 		ods.push_back(OD("--set-hbplus-tags", "string", "file path to input HBPLUS file"));
+		ods.push_back(OD("--set-distance-bins-tags", "string", "list of distance thresholds"));
 		ods.push_back(OD("--inter-residue-hbplus-tags", "", "flag to set inter-residue H-bond tags"));
 		ods.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
 		ods.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
@@ -134,6 +135,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
 	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
 	const std::string set_hbplus_tags=poh.argument<std::string>("--set-hbplus-tags", "");
+	const std::string set_distance_bins_tags=poh.argument<std::string>("--set-distance-bins-tags", "");
 	const bool inter_residue_hbplus_tags=poh.contains_option("--inter-residue-hbplus-tags");
 	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
 	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
@@ -218,11 +220,12 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_hbplus_tags.empty());
+	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_hbplus_tags.empty() || !set_distance_bins_tags.empty());
 	if(update_mode && !selected_contacts.empty())
 	{
 		const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
 		const std::set<CRADsPair> set_of_hbplus_crad_pairs=init_set_of_hbplus_crad_pairs(set_hbplus_tags, inter_residue_hbplus_tags);
+		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
 
 		for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
 		{
@@ -259,6 +262,30 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						it->second.props.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
 					}
+				}
+				if(!distance_thresholds_for_bins.empty())
+				{
+					std::string bin_tag="d0";
+					std::set<double>::const_iterator it_a=distance_thresholds_for_bins.begin();
+					if(it->second.dist>=(*it_a))
+					{
+						bool found=false;
+						int bin=1;
+						while(it_a!=distance_thresholds_for_bins.end() && !found)
+						{
+							std::set<double>::const_iterator it_b=it_a; ++it_b;
+							if(it->second.dist>=(*it_a) && (it_b==distance_thresholds_for_bins.end() || it->second.dist<(*it_b)))
+							{
+								std::ostringstream bin_tag_output;
+								bin_tag_output << "d" << bin;
+								bin_tag=bin_tag_output.str();
+								found=true;
+							}
+							++it_a;
+							bin++;
+						}
+					}
+					it->second.props.tags.insert(bin_tag);
 				}
 			}
 		}
