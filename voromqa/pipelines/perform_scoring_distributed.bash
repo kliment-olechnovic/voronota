@@ -125,6 +125,13 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[doop_score]"* ]]
+then
+	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_atoms
+	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_doop_score_from_atoms.bash" $OUTPUTDIR/list_of_entries_with_atoms
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[cad_scores]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | grep -v '/target/contacts$' | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_models_contacts
