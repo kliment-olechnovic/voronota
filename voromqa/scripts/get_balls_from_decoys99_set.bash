@@ -32,33 +32,6 @@ then
 	exit 1
 fi
 
-OUTDIR=$OUTDIR/$INPUTBASENAME
-mkdir -p $OUTDIR/target
-mkdir -p $OUTDIR/models
+find $TMPDIR/$INPUTBASENAME/ -type f -name min.*.pdb -not -empty > $TMPDIR/models_list
 
-cat $TMPDIR/$INPUTBASENAME/nat.pdb \
-| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
-| grep -f $BINDIR/standard_names \
-| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
-| sort -V \
-> $OUTDIR/target/balls
-
-cat $OUTDIR/target/balls | awk '{print $1}' > $TMPDIR/filter
-
-find $TMPDIR/$INPUTBASENAME/ -type f -name min.*.pdb -not -empty | while read MODEL
-do
-	cat $MODEL \
-	| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
-	| grep -f $BINDIR/standard_names \
-	| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
-	| $BINDIR/voronota query-balls --match-external-annotations $TMPDIR/filter \
-	| sort -V \
-	> $TMPDIR/filtered
-	
-	if [ -s "$TMPDIR/filtered" ] && [ "$(cat $OUTDIR/target/balls | wc -l)" -eq "$(cat $TMPDIR/filtered | wc -l)" ]
-	then
-		MODELNAME=$(basename $MODEL)
-		mkdir -p $OUTDIR/models/$MODELNAME
-		mv $TMPDIR/filtered $OUTDIR/models/$MODELNAME/balls
-	fi
-done
+$BINDIR/get_balls_from_target_and_models_list.bash -t $TMPDIR/$INPUTBASENAME/nat.pdb -m $TMPDIR/models_list -o $OUTDIR/$INPUTBASENAME
