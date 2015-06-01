@@ -29,6 +29,7 @@ analyze "qscore_atom" "goap" "F-invert-refscore F-normalize-refscore"
 analyze "qscore_atom" "dfire" "F-invert-refscore F-normalize-refscore"
 analyze "qscore_atom" "goap_ag" "F-invert-refscore F-normalize-refscore"
 analyze "qscore_atom" "rwplus" "F-invert-refscore F-normalize-refscore"
+analyze "qscore_atom" "doop" "F-invert-refscore F-normalize-refscore"
 
 analyze "qenergy" "cadscore_residue" "F-invert-testscore F-normalize-testscore-by-area"
 analyze "qenergy" "tmscore" "F-invert-testscore F-normalize-testscore-by-area"
@@ -50,6 +51,9 @@ analyze "goap_ag" "tmscore" "F-invert-testscore F-normalize-testscore"
 
 analyze "rwplus" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
 analyze "rwplus" "tmscore" "F-invert-testscore F-normalize-testscore"
+
+analyze "doop" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
+analyze "doop" "tmscore" "F-invert-testscore F-normalize-testscore"
 
 {
 	find $OUTDIR -type f -name results_summary | head -1 | xargs -L 1 head -1
