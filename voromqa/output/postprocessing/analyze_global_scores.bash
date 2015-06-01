@@ -33,6 +33,12 @@ analyze "qscore_atom" "rwplus" "F-invert-refscore F-normalize-refscore"
 analyze "qenergy" "cadscore_residue" "F-invert-testscore F-normalize-testscore-by-area"
 analyze "qenergy" "tmscore" "F-invert-testscore F-normalize-testscore-by-area"
 
+analyze "qarea" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
+analyze "qarea" "tmscore" "F-invert-testscore F-normalize-testscore"
+
+analyze "qsas" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
+analyze "qsas" "tmscore" "F-invert-testscore F-normalize-testscore"
+
 analyze "goap" "cadscore_residue" "F-invert-testscore F-normalize-testscore"
 analyze "goap" "tmscore" "F-invert-testscore F-normalize-testscore"
 
