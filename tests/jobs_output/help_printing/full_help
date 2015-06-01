@@ -134,6 +134,7 @@ Command 'query-contacts' options:
 --drop-adjuncts                             flag to drop all adjuncts from input
 --set-tags                      string      set tags instead of filtering
 --set-hbplus-tags               string      file path to input HBPLUS file
+--set-distance-bins-tags        string      list of distance thresholds
 --inter-residue-hbplus-tags                 flag to set inter-residue H-bond tags
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts

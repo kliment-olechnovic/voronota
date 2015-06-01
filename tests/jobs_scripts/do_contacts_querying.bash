@@ -107,4 +107,6 @@ cat $SUBDIR/balls \
 | $VORONOTA query-contacts \
   --match-min-seq-sep 7 \
   --match-tags 'central' \
+| $VORONOTA query-contacts \
+  --set-distance-bins-tags '2.4;2.6;2.8;3.0;3.2;3.4;3.6;3.8;4.0;4.5;5.0;5.5;6.0' \
 > $SUBDIR/match_far_central_contacts
