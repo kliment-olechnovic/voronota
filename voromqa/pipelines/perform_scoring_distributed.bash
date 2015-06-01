@@ -57,6 +57,18 @@ then
 	exit 0
 fi
 
+if [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
+then
+	mkdir -p $OUTPUTDIR
+	
+	cat $INPUT_LIST_FILE | while read INPUTFILE
+	do
+		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
+	done
+	
+	exit 0
+fi
+
 if [[ $STEPNAMES == *"[raw_contacts]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
@@ -155,3 +167,6 @@ then
 	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_local_scores_evaluations $OUTPUTDIR/concatenated_local_scores_evaluations"
 	exit 0
 fi
+
+echo "Invalid step name" 1>&2
+exit 1
