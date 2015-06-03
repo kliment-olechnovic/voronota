@@ -1,10 +1,37 @@
 #!/bin/bash
 
-BINDIR=$1
-SCHEDULER=$2
-CPUCOUNT=$3
-COMMANDBUNDLE=$4
-ARGLIST=$5
+BINDIR=""
+SCHEDULER=""
+CPUCOUNT=""
+COMMANDBUNDLE=""
+ARGLIST=""
+
+while getopts "b:s:p:c:a:" OPTION
+do
+	case $OPTION in
+	b)
+		BINDIR=$OPTARG
+		;;
+	s)
+		SCHEDULER=$OPTARG
+		;;
+	p)
+		CPUCOUNT=$OPTARG
+		;;
+	c)
+		COMMANDBUNDLE=$OPTARG
+		;;
+	a)
+		ARGLIST=$OPTARG
+		;;
+	esac
+done
+
+if [ -z "$BINDIR" ] || [ -z "$SCHEDULER" ] || [ -z "$CPUCOUNT" ] || [ -z "$COMMANDBUNDLE" ] || [ -z "$ARGLIST" ]
+then
+	echo "Missing required scheduling parameters." 1>&2
+	exit 1
+fi
 
 INCOUNT=$(cat $ARGLIST | wc -l)
 CHUNKSIZE=$(echo "$INCOUNT/$CPUCOUNT" | bc)

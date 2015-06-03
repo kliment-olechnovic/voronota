@@ -77,21 +77,21 @@ then
 		exit 1
 	fi
 	mkdir -p $OUTPUTDIR
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" $INPUT_LIST_FILE
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" -a $INPUT_LIST_FILE
 	exit 0
 fi
 
 if [[ $STEPNAMES == *"[raw_contacts]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" $OUTPUTDIR/list_of_entries_with_balls
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" -a $OUTPUTDIR/list_of_entries_with_balls
 	exit 0
 fi
 
 if [[ $STEPNAMES == *"[contacts_and_summary]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name raw_contacts -not -empty | sed 's/raw_contacts$//' > $OUTPUTDIR/list_of_entries_with_raw_contacts
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m -d" $OUTPUTDIR/list_of_entries_with_raw_contacts
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m -d" -a $OUTPUTDIR/list_of_entries_with_raw_contacts
 	exit 0
 fi
 
@@ -117,7 +117,7 @@ fi
 if [[ $STEPNAMES == *"[energies]"* ]]
 then
 	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_contacts
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $OUTPUTDIR/potential/potential -d" $OUTPUTDIR/list_of_entries_with_contacts
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $OUTPUTDIR/potential/potential -d" -a $OUTPUTDIR/list_of_entries_with_contacts
 	exit 0
 fi
 
@@ -149,7 +149,7 @@ then
 	fi
 	find $OUTPUTDIR/entries/ -type f -name summary -not -empty > $OUTPUTDIR/list_of_summaries
 	yes $(echo "$(cat $OUTPUTDIR/list_of_summaries | wc -l)/2" | bc) | head -n $PARTIAL_POTENTIALS > $OUTPUTDIR/list_of_partial_potentials_input_sizes
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/list_of_summaries -c $BINDIR/contributions_from_casp_models -r" $OUTPUTDIR/list_of_partial_potentials_input_sizes
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/list_of_summaries -c $BINDIR/contributions_from_casp_models -r" -a $OUTPUTDIR/list_of_partial_potentials_input_sizes
 	exit 0
 fi
 
