@@ -243,7 +243,7 @@ if [[ $STEPNAMES == *"[concatenated_scores_lists]"* ]]
 then
 	submit_step scores_list concatenated_scores_lists \
 	  "find $OUTPUTDIR/entries/ -type f -name scores_list -not -empty" \
-	  "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/concatenated_scores_lists" yes
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -s -t -o $OUTPUTDIR/concatenated_scores_lists -i" yes
 fi
 
 if [[ $STEPNAMES == *"[local_scores_evaluation]"* ]]
@@ -257,5 +257,5 @@ if [[ $STEPNAMES == *"[concatenated_local_scores_evaluations]"* ]]
 then
 	submit_step local_scores_evaluation concatenated_local_scores_evaluations \
 	  "find $OUTPUTDIR/entries/ -type f -name local_scores_evaluation -not -empty" \
-	  "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/concatenated_local_scores_evaluations" yes
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -h target -s -t -o $OUTPUTDIR/concatenated_local_scores_evaluations -i" yes
 fi
