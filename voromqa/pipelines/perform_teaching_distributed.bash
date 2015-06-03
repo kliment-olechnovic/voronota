@@ -69,6 +69,8 @@ then
 	exit 1
 fi
 
+mkdir -p $OUTPUTDIR
+
 if [[ $STEPNAMES == *"[balls]"* ]]
 then
 	if [ -z "$INPUT_LIST_FILE" ]
@@ -76,7 +78,6 @@ then
 		echo "Missing input list file parameter." 1>&2
 		exit 1
 	fi
-	mkdir -p $OUTPUTDIR
 	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT -c "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" -a $INPUT_LIST_FILE
 	exit 0
 fi
