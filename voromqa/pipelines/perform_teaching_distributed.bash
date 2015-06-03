@@ -2,13 +2,13 @@
 
 set +e
 
-BINDIR="./bin"
-URLS_LIST_FILE="./input"
-OUTPUTDIR="./output/teaching"
-CPUCOUNT="4"
-PARTIAL_POTENTIALS="10"
+BINDIR=""
+INPUT_LIST_FILE=""
+OUTPUTDIR=""
+CPUCOUNT=""
+PARTIAL_POTENTIALS=""
 STEPNAMES=""
-SCHEDULER="sbatch"
+SCHEDULER=""
 FILTER_FILE=""
 FILTER_NAME=""
 
@@ -19,7 +19,7 @@ do
 		BINDIR=$OPTARG
 		;;
 	i)
-		URLS_LIST_FILE=$OPTARG
+		INPUT_LIST_FILE=$OPTARG
 		;;
 	o)
 		OUTPUTDIR=$OPTARG
@@ -45,10 +45,39 @@ do
 	esac
 done
 
+if [ -z "$BINDIR" ]
+then
+	echo "Missing executables directory parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$OUTPUTDIR" ]
+then
+	echo "Missing output directory parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$SCHEDULER" ]
+then
+	echo "Missing scheduler parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$CPUCOUNT" ]
+then
+	echo "Missing CPU count parameter." 1>&2
+	exit 1
+fi
+
 if [[ $STEPNAMES == *"[balls]"* ]]
 then
+	if [ -z "$INPUT_LIST_FILE" ]
+	then
+		echo "Missing input list file parameter." 1>&2
+		exit 1
+	fi
 	mkdir -p $OUTPUTDIR
-	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" $URLS_LIST_FILE
+	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" $INPUT_LIST_FILE
 	exit 0
 fi
 
@@ -75,6 +104,11 @@ fi
 
 if [[ $STEPNAMES == *"[potential_filtered]"* ]]
 then
+	if [ -z "$FILTER_FILE" ] || [ -z "$FILTER_NAME" ]
+	then
+		echo "Missing filtering parameters." 1>&2
+		exit 1
+	fi
 	find $OUTPUTDIR/entries/ -type f -name summary -not -empty | grep -f $FILTER_FILE > $OUTPUTDIR/list_of_summaries_filtered_$FILTER_NAME
 	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential_filtered_$FILTER_NAME -i $OUTPUTDIR/list_of_summaries_filtered_$FILTER_NAME -c $BINDIR/contributions_from_casp_models"
 	exit 0
@@ -96,6 +130,11 @@ fi
 
 if [[ $STEPNAMES == *"[energies_stats_filtered]"* ]]
 then
+	if [ -z "$FILTER_FILE" ] || [ -z "$FILTER_NAME" ]
+	then
+		echo "Missing filtering parameters." 1>&2
+		exit 1
+	fi
 	find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty  | grep -f $FILTER_FILE > $OUTPUTDIR/list_of_atom_energies_filtered_$FILTER_NAME
 	$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/calc_energies_stats_from_energies.bash -o $OUTPUTDIR/energies_stats_filtered_$FILTER_NAME -i $OUTPUTDIR/list_of_atom_energies_filtered_$FILTER_NAME"
 	exit 0
@@ -103,6 +142,11 @@ fi
 
 if [[ $STEPNAMES == *"[partial_potentials]"* ]]
 then
+	if [ -z "$PARTIAL_POTENTIALS" ]
+	then
+		echo "Missing partial potentials count parameter." 1>&2
+		exit 1
+	fi
 	find $OUTPUTDIR/entries/ -type f -name summary -not -empty > $OUTPUTDIR/list_of_summaries
 	yes $(echo "$(cat $OUTPUTDIR/list_of_summaries | wc -l)/2" | bc) | head -n $PARTIAL_POTENTIALS > $OUTPUTDIR/list_of_partial_potentials_input_sizes
 	$BINDIR/schedule_jobs.bash $BINDIR $SCHEDULER $CPUCOUNT "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/list_of_summaries -c $BINDIR/contributions_from_casp_models -r" $OUTPUTDIR/list_of_partial_potentials_input_sizes

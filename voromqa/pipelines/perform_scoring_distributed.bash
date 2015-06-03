@@ -2,12 +2,12 @@
 
 set +e
 
-BINDIR="./bin"
-INPUT_LIST_FILE="./input"
-OUTPUTDIR="./output/CASP_scoring"
-CPUCOUNT="4"
+BINDIR=""
+INPUT_LIST_FILE=""
+OUTPUTDIR=""
+CPUCOUNT=""
 STEPNAMES=""
-SCHEDULER="sbatch"
+SCHEDULER=""
 
 while getopts "b:i:o:p:s:c:" OPTION
 do
@@ -33,22 +33,53 @@ do
 	esac
 done
 
+if [ -z "$BINDIR" ]
+then
+	echo "Missing executables directory parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$OUTPUTDIR" ]
+then
+	echo "Missing output directory parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$SCHEDULER" ]
+then
+	echo "Missing scheduler parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$CPUCOUNT" ]
+then
+	echo "Missing CPU count parameter." 1>&2
+	exit 1
+fi
+
 if [[ $STEPNAMES == *"[balls_CASP]"* ]]
 then
+	if [ -z "$INPUT_LIST_FILE" ]
+	then
+		echo "Missing input list file parameter." 1>&2
+		exit 1
+	fi
 	mkdir -p $OUTPUTDIR
-	
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
 	done
-	
 	exit 0
 fi
 
 if [[ $STEPNAMES == *"[balls_decoys99]"* ]]
 then
+	if [ -z "$INPUT_LIST_FILE" ]
+	then
+		echo "Missing input list file parameter." 1>&2
+		exit 1
+	fi
 	mkdir -p $OUTPUTDIR
-	
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
@@ -59,13 +90,16 @@ fi
 
 if [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
 then
+	if [ -z "$INPUT_LIST_FILE" ]
+	then
+		echo "Missing input list file parameter." 1>&2
+		exit 1
+	fi
 	mkdir -p $OUTPUTDIR
-	
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
 	done
-	
 	exit 0
 fi
 
