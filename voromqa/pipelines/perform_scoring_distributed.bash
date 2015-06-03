@@ -57,6 +57,8 @@ then
 	exit 1
 fi
 
+mkdir -p $OUTPUTDIR
+
 if [[ $STEPNAMES == *"[balls_CASP]"* ]]
 then
 	if [ -z "$INPUT_LIST_FILE" ]
@@ -64,7 +66,6 @@ then
 		echo "Missing input list file parameter." 1>&2
 		exit 1
 	fi
-	mkdir -p $OUTPUTDIR
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
@@ -79,12 +80,10 @@ then
 		echo "Missing input list file parameter." 1>&2
 		exit 1
 	fi
-	mkdir -p $OUTPUTDIR
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
 	done
-	
 	exit 0
 fi
 
@@ -95,7 +94,6 @@ then
 		echo "Missing input list file parameter." 1>&2
 		exit 1
 	fi
-	mkdir -p $OUTPUTDIR
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
 		$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
