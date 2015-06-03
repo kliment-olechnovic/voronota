@@ -5,8 +5,9 @@ SCHEDULER=""
 CPUCOUNT=""
 COMMANDBUNDLE=""
 ARGLIST=""
+DEPENDENCIES_FILE=""
 
-while getopts "b:s:p:c:a:" OPTION
+while getopts "b:s:p:c:a:d:" OPTION
 do
 	case $OPTION in
 	b)
@@ -24,23 +25,41 @@ do
 	a)
 		ARGLIST=$OPTARG
 		;;
+	d)
+		DEPENDENCIES_FILE=$OPTARG
+		;;
 	esac
 done
 
-if [ -z "$BINDIR" ] || [ -z "$SCHEDULER" ] || [ -z "$CPUCOUNT" ] || [ -z "$COMMANDBUNDLE" ] || [ -z "$ARGLIST" ]
+if [ -z "$BINDIR" ] || [ -z "$SCHEDULER" ] || [ -z "$CPUCOUNT" ] || [ -z "$COMMANDBUNDLE" ]
 then
 	echo "Missing required scheduling parameters." 1>&2
 	exit 1
 fi
 
-INCOUNT=$(cat $ARGLIST | wc -l)
-CHUNKSIZE=$(echo "$INCOUNT/$CPUCOUNT" | bc)
-
-if [ "$CHUNKSIZE" -le "0" ]
+DEPENDENCIES_OPTION=""
+if [ -n "$DEPENDENCIES_FILE" ] && [ -s "$DEPENDENCIES_FILE" ] && [ "$SCHEDULER" != "bash" ]
 then
-	CHUNKSIZE="1"
+	DEPENDENCIES_STRING=$(cat $DEPENDENCIES_FILE | egrep "^Submitted batch job" | awk '{print $4}' | tr '\n' ':' | sed 's/:$//')
+	if [ -n "$DEPENDENCIES_STRING" ]
+	then
+		DEPENDENCIES_OPTION="--dependency=afterok:<$DEPENDENCIES_STRING>"
+	fi
 fi
 
-cat $ARGLIST \
-| xargs -L $CHUNKSIZE \
-$SCHEDULER $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
+if [ -z "$ARGLIST" ]
+then
+	$SCHEDULER $DEPENDENCIES_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
+else
+	INCOUNT=$(cat $ARGLIST | wc -l)
+	CHUNKSIZE=$(echo "$INCOUNT/$CPUCOUNT" | bc)
+	
+	if [ "$CHUNKSIZE" -le "0" ]
+	then
+		CHUNKSIZE="1"
+	fi
+	
+	cat $ARGLIST \
+	| xargs -L $CHUNKSIZE \
+	$SCHEDULER $DEPENDENCIES_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
+fi
