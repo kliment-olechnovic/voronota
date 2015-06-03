@@ -7,8 +7,9 @@ COMMANDBUNDLE=""
 ARGLIST=""
 DEPENDENCIES_FILE=""
 LOG_OUTPUT_DIR=""
+WRAP_COMMANDBUNDLE=false
 
-while getopts "b:s:p:c:a:d:l:" OPTION
+while getopts "b:s:p:c:a:d:l:w" OPTION
 do
 	case $OPTION in
 	b)
@@ -31,6 +32,9 @@ do
 		;;
 	l)
 		LOG_OUTPUT_DIR=$OPTARG
+		;;
+	w)
+		WRAP_COMMANDBUNDLE=true
 		;;
 	esac
 done
@@ -56,6 +60,15 @@ if [ -n "$LOG_OUTPUT_DIR" ] && [ "$SCHEDULER" != "bash" ]
 then
 	mkdir -p $LOG_OUTPUT_DIR
 	LOG_OUTPUT_OPTION="--output=$LOG_OUTPUT_DIR/log_%j"
+fi
+
+if $WRAP_COMMANDBUNDLE
+then
+$SCHEDULER $DEPENDENCIES_OPTION $LOG_OUTPUT_OPTION <<EOF
+#!/bin/bash
+$COMMANDBUNDLE
+EOF
+exit
 fi
 
 if [ -z "$ARGLIST" ]

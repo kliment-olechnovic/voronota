@@ -110,173 +110,152 @@ then
 	done > $OUTPUTDIR/scheduling/scheduled__balls_RosettaDecoys
 fi
 
-cat $OUTPUTDIR/scheduling/scheduled__balls_* > $OUTPUTDIR/scheduling/scheduled__all_balls
+for STEP in balls_CASP balls_decoys99 balls_RosettaDecoys
+do
+	if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
+	then
+		cat $OUTPUTDIR/scheduling/scheduled__$STEP
+	fi
+done > $OUTPUTDIR/scheduling/scheduled__all_balls
+
+function submit_step
+{
+	DEPENDENCY=$1
+	STEP=$2
+	INPUT_PREPARATION_COMMAND=$3
+	STEP_COMMAND=$4
+	INLINE_INPUT=$5
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
+	  -d $OUTPUTDIR/scheduling/scheduled__$DEPENDENCY \
+	  -w -c "$INPUT_PREPARATION_COMMAND > $OUTPUTDIR/scheduling/preparation__$STEP" \
+	  -l $OUTPUTDIR/scheduling/logs__preparation__$STEP \
+	> $OUTPUTDIR/scheduling/scheduled__preparation__$STEP
+	if [ "$INLINE_INPUT" == "yes" ]
+	then
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
+		  -d $OUTPUTDIR/scheduling/scheduled__preparation__$STEP \
+		  -c "$STEP_COMMAND $OUTPUTDIR/scheduling/preparation__$STEP" \
+		  -l $OUTPUTDIR/scheduling/logs__$STEP \
+		> $OUTPUTDIR/scheduling/scheduled__$STEP
+	else
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
+		  -d $OUTPUTDIR/scheduling/scheduled__preparation__$STEP \
+		  -c "$STEP_COMMAND" \
+		  -a $OUTPUTDIR/scheduling/preparation__$STEP \
+		  -l $OUTPUTDIR/scheduling/logs__$STEP \
+		> $OUTPUTDIR/scheduling/scheduled__$STEP
+	fi
+}
 
 if [[ $STEPNAMES == *"[raw_contacts]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__all_balls \
-	  -c "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_balls \
-	  -l $OUTPUTDIR/scheduling/logs__raw_contacts \
-	> $OUTPUTDIR/scheduling/scheduled__raw_contacts
+	submit_step all_balls raw_contacts \
+	  "find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//'" \
+	  "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" no
 fi
 
 if [[ $STEPNAMES == *"[contacts_and_summary]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name raw_contacts -not -empty | sed 's/raw_contacts$//' > $OUTPUTDIR/list_of_entries_with_raw_contacts
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__raw_contacts \
-	  -c "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_raw_contacts \
-	  -l $OUTPUTDIR/scheduling/logs__contacts_and_summary \
-	> $OUTPUTDIR/scheduling/scheduled__contacts_and_summary
+	submit_step raw_contacts contacts_and_summary \
+	  "find $OUTPUTDIR/entries/ -type f -name raw_contacts -not -empty | sed 's/raw_contacts$//'" \
+	  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[potential]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name summary -not -empty > $OUTPUTDIR/list_of_summaries
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-	  -d $OUTPUTDIR/scheduling/scheduled__contacts_and_summary \
-	  -c "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/list_of_summaries" \
-	  -l $OUTPUTDIR/scheduling/logs__potential \
-	> $OUTPUTDIR/scheduling/scheduled__potential
+	submit_step contacts_and_summary potential \
+	  "find $OUTPUTDIR/entries/ -type f -name summary -not -empty" \
+	  "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i" yes
 fi
 
 if [[ $STEPNAMES == *"[energies]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_contacts
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__contacts_and_summary \
-	  -c "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $BINDIR/potential -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_contacts \
-	  -l $OUTPUTDIR/scheduling/logs__energies \
-	> $OUTPUTDIR/scheduling/scheduled__energies
+	submit_step contacts_and_summary energies \
+	  "find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | sed 's/contacts$//'" \
+	  "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $BINDIR/potential -d" no
 fi
 
 if [[ $STEPNAMES == *"[quality_scores]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty | sed 's/atom_energies$//' > $OUTPUTDIR/list_of_entries_with_atom_energies
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__energies \
-	  -c "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_atom_energies \
-	  -l $OUTPUTDIR/scheduling/logs__quality_scores \
-	> $OUTPUTDIR/scheduling/scheduled__quality_scores
+	submit_step energies quality_scores \
+	  "find $OUTPUTDIR/entries/ -type f -name atom_energies -not -empty | sed 's/atom_energies$//'" \
+	  "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d" no
 fi
 
 if [[ $STEPNAMES == *"[atoms]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//' > $OUTPUTDIR/list_of_entries_with_balls
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__all_balls \
-	  -c "$BINDIR/collect_atoms_from_balls.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_balls \
-	  -l $OUTPUTDIR/scheduling/logs__atoms \
-	> $OUTPUTDIR/scheduling/scheduled__atoms
+	submit_step all_balls atoms \
+	 "find $OUTPUTDIR/entries/ -type f -name balls -not -empty | sed 's/balls$//'" \
+	 "$BINDIR/collect_atoms_from_balls.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[goap_scores]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_atoms
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__atoms \
-	  -c "$BINDIR/calc_goap_scores_from_atoms.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_atoms \
-	  -l $OUTPUTDIR/scheduling/logs__goap_scores \
-	> $OUTPUTDIR/scheduling/scheduled__goap_scores
+	submit_step atoms goap_scores \
+	  "find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//'" \
+	  "$BINDIR/calc_goap_scores_from_atoms.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[rwplus_score]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_atoms
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__atoms \
-	  -c "$BINDIR/calc_rwplus_score_from_atoms.bash" \
-	  -a $OUTPUTDIR/list_of_entries_with_atoms \
-	  -l $OUTPUTDIR/scheduling/logs__rwplus_score \
-	> $OUTPUTDIR/scheduling/scheduled__rwplus_score
+	submit_step atoms rwplus_score \
+	  "find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//'" \
+	  "$BINDIR/calc_rwplus_score_from_atoms.bash" no
 fi
 
 if [[ $STEPNAMES == *"[doop_score]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_atoms
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__atoms \
-	  -c "$BINDIR/calc_doop_score_from_atoms.bash" \
-	  -a $OUTPUTDIR/list_of_entries_with_atoms \
-	  -l $OUTPUTDIR/scheduling/logs__doop_score \
-	> $OUTPUTDIR/scheduling/scheduled__doop_score
+	submit_step atoms doop_score \
+	  "find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | sed 's/atoms.pdb$//'" \
+	  "$BINDIR/calc_doop_score_from_atoms.bash" no
 fi
 
 if [[ $STEPNAMES == *"[cad_scores]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | grep -v '/target/contacts$' | sed 's/contacts$//' > $OUTPUTDIR/list_of_entries_with_models_contacts
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__contacts_and_summary \
-	  -c "$BINDIR/calc_cad_scores_from_model_and_target_contacts.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_models_contacts \
-	  -l $OUTPUTDIR/scheduling/logs__cad_scores \
-	> $OUTPUTDIR/scheduling/scheduled__cad_scores
+	submit_step contacts_and_summary cad_scores \
+	  "find $OUTPUTDIR/entries/ -type f -name contacts -not -empty | grep -v '/target/contacts$' | sed 's/contacts$//'" \
+	  "$BINDIR/calc_cad_scores_from_model_and_target_contacts.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[tmscore]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | grep -v '/target/atoms.pdb$' | sed 's/atoms.pdb$//' > $OUTPUTDIR/list_of_entries_with_models_atoms
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__atoms \
-	  -c "$BINDIR/calc_tmscore_from_model_and_target_atoms.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_models_atoms \
-	  -l $OUTPUTDIR/scheduling/logs__tmscore \
-	> $OUTPUTDIR/scheduling/scheduled__tmscore
+	submit_step atoms tmscore \
+	  "find $OUTPUTDIR/entries/ -type f -name atoms.pdb -not -empty | grep -v '/target/atoms.pdb$' | sed 's/atoms.pdb$//'" \
+	  "$BINDIR/calc_tmscore_from_model_and_target_atoms.bash -d" no
 fi
 
-cat $OUTPUTDIR/scheduling/scheduled__*score* > $OUTPUTDIR/scheduling/scheduled__all_scores
+for STEP in energies quality_scores goap_scores rwplus_score doop_score cad_scores tmscore
+do
+	if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
+	then
+		cat $OUTPUTDIR/scheduling/scheduled__$STEP
+	fi
+done > $OUTPUTDIR/scheduling/scheduled__all_scores
 
 if [[ $STEPNAMES == *"[scores_list]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name global_quality_score -not -empty | sed 's/global_quality_score$//' > $OUTPUTDIR/list_of_entries_with_global_quality_score
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__all_scores \
-	  -c "$BINDIR/collect_scores_list_from_working_directory.bash -d" \
-	  -a $OUTPUTDIR/list_of_entries_with_global_quality_score \
-	  -l $OUTPUTDIR/scheduling/logs__scores_list \
-	> $OUTPUTDIR/scheduling/scheduled__scores_list
+	submit_step all_scores scores_list \
+	  "find $OUTPUTDIR/entries/ -type f -name global_quality_score -not -empty | sed 's/global_quality_score$//'" \
+	  "$BINDIR/collect_scores_list_from_working_directory.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[concatenated_scores_lists]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name scores_list -not -empty > $OUTPUTDIR/list_of_scores_lists
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-	  -d $OUTPUTDIR/scheduling/scheduled__scores_list \
-	  -c "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_scores_lists $OUTPUTDIR/concatenated_scores_lists" \
-	  -l $OUTPUTDIR/scheduling/logs__concatenated_scores_lists \
-	> $OUTPUTDIR/scheduling/scheduled__concatenated_scores_lists
+	submit_step scores_list concatenated_scores_lists \
+	  "find $OUTPUTDIR/entries/ -type f -name scores_list -not -empty" \
+	  "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/concatenated_scores_lists" yes
 fi
 
 if [[ $STEPNAMES == *"[local_scores_evaluation]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type d -name target | sed 's/target$//' > $OUTPUTDIR/list_of_target_directories
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -d $OUTPUTDIR/scheduling/scheduled__quality_scores \
-	  -c "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d" \
-	  -a $OUTPUTDIR/list_of_target_directories \
-	  -l $OUTPUTDIR/scheduling/logs__local_scores_evaluation \
-	> $OUTPUTDIR/scheduling/scheduled__local_scores_evaluation
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-	  -d $OUTPUTDIR/scheduling/scheduled__quality_scores \
-	  -c "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d $OUTPUTDIR/entries" \
-	  -l $OUTPUTDIR/scheduling/logs__local_scores_evaluation \
-	>> $OUTPUTDIR/scheduling/scheduled__local_scores_evaluation
+	submit_step quality_scores local_scores_evaluation \
+	  "( find $OUTPUTDIR/entries/ -type d -name target | sed 's/target$//' ; echo $OUTPUTDIR/entries )" \
+	  "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d" no
 fi
 
 if [[ $STEPNAMES == *"[concatenated_local_scores_evaluations]"* ]]
 then
-	find $OUTPUTDIR/entries/ -type f -name local_scores_evaluation -not -empty > $OUTPUTDIR/list_of_local_scores_evaluations
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-	  -d $OUTPUTDIR/scheduling/scheduled__local_scores_evaluation \
-	  -c "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_local_scores_evaluations $OUTPUTDIR/concatenated_local_scores_evaluations" \
-	  -l $OUTPUTDIR/scheduling/logs__concatenated_local_scores_evaluations \
-	> $OUTPUTDIR/scheduling/scheduled__concatenated_local_scores_evaluations
+	submit_step local_scores_evaluation concatenated_local_scores_evaluations \
+	  "find $OUTPUTDIR/entries/ -type f -name local_scores_evaluation -not -empty" \
+	  "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/concatenated_local_scores_evaluations" yes
 fi
