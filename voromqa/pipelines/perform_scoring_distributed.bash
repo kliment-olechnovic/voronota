@@ -74,7 +74,10 @@ then
 	fi
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
 	do
-		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries"
+		$BINDIR/schedule_jobs.bash \
+		  -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs_balls_CASP
 	done > $OUTPUTDIR/scheduling/scheduled_balls_CASP
 fi
 
@@ -87,7 +90,10 @@ then
 	fi
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
-		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
+		$BINDIR/schedule_jobs.bash \
+		  -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs_balls_decoys99
 	done > $OUTPUTDIR/scheduling/scheduled_balls_decoys99
 fi
 
@@ -100,7 +106,10 @@ then
 	fi
 	cat $INPUT_LIST_FILE | while read INPUTFILE
 	do
-		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries"
+		$BINDIR/schedule_jobs.bash \
+		  -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs_balls_RosettaDecoys
 	done > $OUTPUTDIR/scheduling/scheduled_balls_RosettaDecoys
 fi
 
@@ -114,6 +123,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_balls \
+	  -l $OUTPUTDIR/scheduling/logs_raw_contacts \
 	> $OUTPUTDIR/scheduling/scheduled_raw_contacts
 fi
 
@@ -125,6 +135,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_raw_contacts \
+	  -l $OUTPUTDIR/scheduling/logs_contacts_and_summary \
 	> $OUTPUTDIR/scheduling/scheduled_contacts_and_summary
 fi
 
@@ -135,6 +146,7 @@ then
 	  -d $OUTPUTDIR/scheduling/scheduled_contacts_and_summary \
 	  -b $BINDIR -s $SCHEDULER -p 1 \
 	  -c "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/list_of_summaries" \
+	  -l $OUTPUTDIR/scheduling/logs_potential \
 	> $OUTPUTDIR/scheduling/scheduled_potential
 fi
 
@@ -146,6 +158,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $BINDIR/potential -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_contacts \
+	  -l $OUTPUTDIR/scheduling/logs_energies \
 	> $OUTPUTDIR/scheduling/scheduled_energies
 fi
 
@@ -157,6 +170,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_atom_energies \
+	  -l $OUTPUTDIR/scheduling/logs_quality_scores \
 	> $OUTPUTDIR/scheduling/scheduled_quality_scores
 fi
 
@@ -168,6 +182,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/collect_atoms_from_balls.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_balls \
+	  -l $OUTPUTDIR/scheduling/logs_atoms \
 	> $OUTPUTDIR/scheduling/scheduled_atoms
 fi
 
@@ -179,6 +194,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_goap_scores_from_atoms.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_atoms \
+	  -l $OUTPUTDIR/scheduling/logs_goap_scores \
 	> $OUTPUTDIR/scheduling/scheduled_goap_scores
 fi
 
@@ -190,6 +206,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_rwplus_score_from_atoms.bash" \
 	  -a $OUTPUTDIR/list_of_entries_with_atoms \
+	  -l $OUTPUTDIR/scheduling/logs_rwplus_score \
 	> $OUTPUTDIR/scheduling/scheduled_rwplus_score
 fi
 
@@ -201,6 +218,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_doop_score_from_atoms.bash" \
 	  -a $OUTPUTDIR/list_of_entries_with_atoms \
+	  -l $OUTPUTDIR/scheduling/logs_doop_score \
 	> $OUTPUTDIR/scheduling/scheduled_doop_score
 fi
 
@@ -212,6 +230,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_cad_scores_from_model_and_target_contacts.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_models_contacts \
+	  -l $OUTPUTDIR/scheduling/logs_cad_scores \
 	> $OUTPUTDIR/scheduling/scheduled_cad_scores
 fi
 
@@ -223,10 +242,11 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_tmscore_from_model_and_target_atoms.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_models_atoms \
+	  -l $OUTPUTDIR/scheduling/logs_tmscore \
 	> $OUTPUTDIR/scheduling/scheduled_tmscore
 fi
 
-cat $OUTPUTDIR/scheduling/*score* > $OUTPUTDIR/scheduling/scheduled_all_scores
+cat $OUTPUTDIR/scheduling/scheduled_*score* > $OUTPUTDIR/scheduling/scheduled_all_scores
 
 if [[ $STEPNAMES == *"[scores_list]"* ]]
 then
@@ -236,6 +256,7 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/collect_scores_list_from_working_directory.bash -d" \
 	  -a $OUTPUTDIR/list_of_entries_with_global_quality_score \
+	  -l $OUTPUTDIR/scheduling/logs_scores_list \
 	> $OUTPUTDIR/scheduling/scheduled_scores_list
 fi
 
@@ -246,6 +267,7 @@ then
 	  -d $OUTPUTDIR/scheduling/scheduled_scores_list \
 	  -b $BINDIR -s $SCHEDULER -p 1 \
 	  -c "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_scores_lists $OUTPUTDIR/concatenated_scores_lists" \
+	  -l $OUTPUTDIR/scheduling/logs_concatenated_scores_lists \
 	> $OUTPUTDIR/scheduling/scheduled_concatenated_scores_lists
 fi
 
@@ -257,11 +279,13 @@ then
 	  -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
 	  -c "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d" \
 	  -a $OUTPUTDIR/list_of_target_directories \
+	  -l $OUTPUTDIR/scheduling/logs_local_scores_evaluation \
 	> $OUTPUTDIR/scheduling/scheduled_local_scores_evaluation
 	$BINDIR/schedule_jobs.bash \
 	  -d $OUTPUTDIR/scheduling/scheduled_quality_scores \
 	  -b $BINDIR -s $SCHEDULER -p 1 \
 	  -c "$BINDIR/calc_local_scores_evaluation_from_target_models_local_scores.bash -d $OUTPUTDIR/entries" \
+	  -l $OUTPUTDIR/scheduling/logs_local_scores_evaluation \
 	>> $OUTPUTDIR/scheduling/scheduled_local_scores_evaluation
 fi
 
@@ -272,5 +296,6 @@ then
 	  -d $OUTPUTDIR/scheduling/scheduled_local_scores_evaluation \
 	  -b $BINDIR -s $SCHEDULER -p 1 \
 	  -c "$BINDIR/concatenate_files_from_list_of_files.bash $OUTPUTDIR/list_of_local_scores_evaluations $OUTPUTDIR/concatenated_local_scores_evaluations" \
+	  -l $OUTPUTDIR/scheduling/logs_concatenated_local_scores_evaluations \
 	> $OUTPUTDIR/scheduling/scheduled_concatenated_local_scores_evaluations
 fi

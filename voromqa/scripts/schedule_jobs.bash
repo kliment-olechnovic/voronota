@@ -6,8 +6,9 @@ CPUCOUNT=""
 COMMANDBUNDLE=""
 ARGLIST=""
 DEPENDENCIES_FILE=""
+LOG_OUTPUT_DIR=""
 
-while getopts "b:s:p:c:a:d:" OPTION
+while getopts "b:s:p:c:a:d:l:" OPTION
 do
 	case $OPTION in
 	b)
@@ -28,6 +29,9 @@ do
 	d)
 		DEPENDENCIES_FILE=$OPTARG
 		;;
+	l)
+		LOG_OUTPUT_DIR=$OPTARG
+		;;
 	esac
 done
 
@@ -47,9 +51,16 @@ then
 	fi
 fi
 
+LOG_OUTPUT_OPTION=""
+if [ -n "$LOG_OUTPUT_DIR" ] && [ "$SCHEDULER" != "bash" ]
+then
+	mkdir -p $LOG_OUTPUT_DIR
+	LOG_OUTPUT_OPTION="--output=$LOG_OUTPUT_DIR/log_%j"
+fi
+
 if [ -z "$ARGLIST" ]
 then
-	$SCHEDULER $DEPENDENCIES_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
+	$SCHEDULER $DEPENDENCIES_OPTION $LOG_OUTPUT_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
 else
 	INCOUNT=$(cat $ARGLIST | wc -l)
 	CHUNKSIZE=$(echo "$INCOUNT/$CPUCOUNT" | bc)
@@ -61,5 +72,5 @@ else
 	
 	cat $ARGLIST \
 	| xargs -L $CHUNKSIZE \
-	$SCHEDULER $DEPENDENCIES_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
+	$SCHEDULER $DEPENDENCIES_OPTION $LOG_OUTPUT_OPTION $BINDIR/run_jobs.bash $BINDIR "$COMMANDBUNDLE"
 fi
