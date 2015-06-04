@@ -191,7 +191,7 @@ if [[ $STEPNAMES == *"[energies]"* ]]
 then
 	if $TEACHING
 	then
-		submit_step contacts_and_summary energies \
+		submit_step potential energies \
 		  "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $OUTPUTDIR/potential/potential -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 	else
 		submit_step contacts_and_summary energies \
@@ -204,13 +204,18 @@ then
 	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/atom_energies|' > $OUTPUTDIR/scheduling/input_list_for__energies_stats
 	submit_step energies energies_stats \
 	  "$BINDIR/calc_energies_stats_from_energies.bash -o $OUTPUTDIR/energies_stats -i $OUTPUTDIR/scheduling/input_list_for__energies_stats"
-	exit 0
 fi
 
 if [[ $STEPNAMES == *"[quality_scores]"* ]]
 then
-	submit_step energies quality_scores \
-	  "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	if $TEACHING
+	then
+		submit_step energies_stats quality_scores \
+		  "$BINDIR/calc_quality_scores_from_energies.bash -e $OUTPUTDIR/energies_stats/energy_means_and_sds -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	else
+		submit_step energies quality_scores \
+		  "$BINDIR/calc_quality_scores_from_energies.bash -e $BINDIR/energy_means_and_sds -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	fi
 fi
 
 if [[ $STEPNAMES == *"[atoms]"* ]]
