@@ -8,9 +8,10 @@ OUTPUTDIR=""
 CPUCOUNT=""
 STEPNAMES=""
 SCHEDULER=""
+PARTIAL_POTENTIALS=""
 TEACHING=false;
 
-while getopts "b:i:o:p:s:c:t" OPTION
+while getopts "b:i:o:p:s:c:r:t" OPTION
 do
 	case $OPTION in
 	b)
@@ -30,6 +31,9 @@ do
 		;;
 	c)
 		SCHEDULER=$OPTARG
+		;;
+	r)
+		PARTIAL_POTENTIALS=$OPTARG
 		;;
 	t)
 		TEACHING=true
@@ -70,6 +74,12 @@ fi
 if [ -z "$INPUT_LIST_FILE" ] && [[ $STEPNAMES == *"[balls_"* ]]
 then
 	echo "Missing input list file parameter." 1>&2
+	exit 1
+fi
+
+if [ -z "$PARTIAL_POTENTIALS" ] && [[ $STEPNAMES == *"[partial_potentials]"* ]]
+then
+	echo "Missing partial potentials parameter." 1>&2
 	exit 1
 fi
 
@@ -182,6 +192,27 @@ then
 		submit_step contacts_and_summary potential \
 		  "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/scheduling/input_list_for__potential"
 	fi
+fi
+
+if [[ $STEPNAMES == *"[partial_potentials]"* ]]
+then
+	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/summary|' > $OUTPUTDIR/scheduling/input_list_for__potential
+	yes $(echo "$(cat $OUTPUTDIR/scheduling/input_list_for__potential | wc -l)/2" | bc) | head -n $PARTIAL_POTENTIALS > $OUTPUTDIR/scheduling/input_list_for__partial_potentials
+	if $TEACHING
+	then
+		submit_step contacts_and_summary partial_potentials \
+		  "$BINDIR/calc_potential_from_summaries.bash -c $BINDIR/contributions_from_casp_models -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/scheduling/input_list_for__potential -r" $OUTPUTDIR/scheduling/input_list_for__partial_potentials
+	else
+		submit_step contacts_and_summary partial_potentials \
+		  "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/partial_potentials -i $OUTPUTDIR/scheduling/input_list_for__potential -r" $OUTPUTDIR/scheduling/input_list_for__partial_potentials
+	fi
+fi
+
+if [[ $STEPNAMES == *"[partial_potentials_stats]"* ]]
+then
+	find $OUTPUTDIR/partial_potentials/ -type f -name potential -not -empty > $OUTPUTDIR/scheduling/input_list_for__partial_potentials_stats
+	submit_step partial_potentials partial_potentials_stats \
+	  "$BINDIR/calc_potentials_stats_from_potentials.bash -o $OUTPUTDIR/partial_potentials_stats -i $OUTPUTDIR/scheduling/input_list_for__partial_potentials_stats"
 fi
 
 if [[ $STEPNAMES == *"[energies]"* ]]
