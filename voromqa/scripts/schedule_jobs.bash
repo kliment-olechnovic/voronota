@@ -51,7 +51,7 @@ then
 	DEPENDENCIES_STRING=$(cat $DEPENDENCIES_FILE | egrep "^Submitted batch job" | awk '{print $4}' | tr '\n' ':' | sed 's/:$//')
 	if [ -n "$DEPENDENCIES_STRING" ]
 	then
-		DEPENDENCIES_OPTION="--dependency=afterok:<$DEPENDENCIES_STRING>"
+		DEPENDENCIES_OPTION="--dependency=afterok:$DEPENDENCIES_STRING"
 	fi
 fi
 
