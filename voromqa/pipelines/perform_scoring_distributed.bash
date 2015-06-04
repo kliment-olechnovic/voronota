@@ -63,49 +63,46 @@ then
 	exit 1
 fi
 
+if [ -z "$INPUT_LIST_FILE" ] && [[ $STEPNAMES == *"[balls_"* ]]
+then
+	echo "Missing input list file parameter." 1>&2
+	exit 1
+fi
+
 mkdir -p $OUTPUTDIR/scheduling
 
-if [[ $STEPNAMES == *"[balls_"* ]]
+if [[ $STEPNAMES == *"[balls_CASP]"* ]]
 then
-	if [ -z "$INPUT_LIST_FILE" ]
-	then
-		echo "Missing input list file parameter." 1>&2
-		exit 1
-	fi
-	
-	if [[ $STEPNAMES == *"[balls_CASP]"* ]]
-	then
-		cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
-		do
-			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-			  -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries" \
-			  -l $OUTPUTDIR/scheduling/logs__balls_CASP
-		done > $OUTPUTDIR/scheduling/scheduled__balls_CASP
-		exit
-	fi
-	
-	if [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
-	then
-	
-		cat $INPUT_LIST_FILE | while read INPUTFILE
-		do
-			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-			  -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
-			  -l $OUTPUTDIR/scheduling/logs__balls_RosettaDecoys
-		done > $OUTPUTDIR/scheduling/scheduled__balls_RosettaDecoys
-		exit
-	fi
-	
-	if [[ $STEPNAMES == *"[balls_decoys99]"* ]]
-	then
-		cat $INPUT_LIST_FILE | while read INPUTFILE
-		do
-			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-			  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
-			  -l $OUTPUTDIR/scheduling/logs__balls_decoys99
-		done > $OUTPUTDIR/scheduling/scheduled__balls_decoys99
-		exit
-	fi
+	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
+	do
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs__balls_CASP
+	done > $OUTPUTDIR/scheduling/scheduled__balls_CASP
+	exit
+fi
+
+if [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
+then
+
+	cat $INPUT_LIST_FILE | while read INPUTFILE
+	do
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs__balls_RosettaDecoys
+	done > $OUTPUTDIR/scheduling/scheduled__balls_RosettaDecoys
+	exit
+fi
+
+if [[ $STEPNAMES == *"[balls_decoys99]"* ]]
+then
+	cat $INPUT_LIST_FILE | while read INPUTFILE
+	do
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+		  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+		  -l $OUTPUTDIR/scheduling/logs__balls_decoys99
+	done > $OUTPUTDIR/scheduling/scheduled__balls_decoys99
+	exit
 fi
 
 if [[ $STEPNAMES == *"[list_of_balls]"* ]]
