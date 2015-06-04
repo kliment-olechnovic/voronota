@@ -41,46 +41,45 @@ do
 	esac
 done
 
+function exit_with_error_message
+{
+	echo $1 1>&2
+	exit 1
+}
+
 if [ -z "$BINDIR" ]
 then
-	echo "Missing executables directory parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing executables directory parameter."
 fi
 
 if [ -z "$OUTPUTDIR" ]
 then
-	echo "Missing output directory parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing output directory parameter."
 fi
 
 if [ -z "$SCHEDULER" ]
 then
-	echo "Missing scheduler parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing scheduler parameter."
 fi
 
 if [ -z "$CPUCOUNT" ]
 then
-	echo "Missing CPU count parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing CPU count parameter."
 fi
 
 if [ -z "$STEPNAMES" ]
 then
-	echo "Missing step names parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing step names parameter."
 fi
 
 if [ -z "$INPUT_LIST_FILE" ] && [[ $STEPNAMES == *"[balls_"* ]]
 then
-	echo "Missing input list file parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing input list file parameter."
 fi
 
 if [ -z "$PARTIAL_POTENTIALS" ] && [[ $STEPNAMES == *"[partial_potentials]"* ]]
 then
-	echo "Missing partial potentials parameter." 1>&2
-	exit 1
+	exit_with_error_message "Missing partial potentials parameter."
 fi
 
 mkdir -p $OUTPUTDIR/scheduling
@@ -139,8 +138,7 @@ fi
 
 if [ ! -s "$OUTPUTDIR/list_of_balls" ]
 then
-	echo "No balls to process." 1>&2
-	exit 1
+	exit_with_error_message "No balls to process."
 fi
 
 function submit_step
