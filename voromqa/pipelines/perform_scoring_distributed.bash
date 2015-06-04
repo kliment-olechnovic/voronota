@@ -75,65 +75,62 @@ fi
 
 mkdir -p $OUTPUTDIR/scheduling
 
-if [[ $STEPNAMES == *"[balls_PDB]"* ]]
+if [[ $STEPNAMES == *"[balls_"* ]] || [[ $STEPNAMES == *"[list_of_balls]"* ]]
 then
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
-	  -c "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" \
-	  -a $INPUT_LIST_FILE \
-	  -l $OUTPUTDIR/scheduling/logs__balls_PDB \
-	> $OUTPUTDIR/scheduling/scheduled__balls_PDB
-	exit
-fi
-
-if [[ $STEPNAMES == *"[balls_CASP]"* ]]
-then
-	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
-	do
+	if [[ $STEPNAMES == *"[balls_PDB]"* ]]
+	then
+		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
+		  -c "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" \
+		  -a $INPUT_LIST_FILE \
+		  -l $OUTPUTDIR/scheduling/logs__balls_PDB \
+		> $OUTPUTDIR/scheduling/scheduled__balls_PDB
+	elif [[ $STEPNAMES == *"[balls_CASP]"* ]]
+	then
+		cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
+		do
+			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+			  -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries" \
+			  -l $OUTPUTDIR/scheduling/logs__balls_CASP
+		done > $OUTPUTDIR/scheduling/scheduled__balls_CASP
+	elif [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
+	then
+		cat $INPUT_LIST_FILE | while read INPUTFILE
+		do
+			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+			  -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+			  -l $OUTPUTDIR/scheduling/logs__balls_RosettaDecoys
+		done > $OUTPUTDIR/scheduling/scheduled__balls_RosettaDecoys
+	elif [[ $STEPNAMES == *"[balls_decoys99]"* ]]
+	then
+		cat $INPUT_LIST_FILE | while read INPUTFILE
+		do
+			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+			  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+			  -l $OUTPUTDIR/scheduling/logs__balls_decoys99
+		done > $OUTPUTDIR/scheduling/scheduled__balls_decoys99
+	fi
+	if [[ $STEPNAMES == *"[list_of_balls]"* ]]
+	then
+		for STEP in balls_CASP balls_decoys99 balls_RosettaDecoys
+		do
+			if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
+			then
+				cat $OUTPUTDIR/scheduling/scheduled__$STEP
+			fi
+		done > $OUTPUTDIR/scheduling/scheduled__all_balls
 		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-		  -c "$BINDIR/get_balls_from_CASP_target_models.bash -c $CASPNAME -t $TARGETNAME -o $OUTPUTDIR/entries" \
-		  -l $OUTPUTDIR/scheduling/logs__balls_CASP
-	done > $OUTPUTDIR/scheduling/scheduled__balls_CASP
+		  -d $OUTPUTDIR/scheduling/scheduled__all_balls \
+		  -w -c "find $OUTPUTDIR/entries/ -type f -name balls -not -empty > $OUTPUTDIR/list_of_balls" \
+		  -l $OUTPUTDIR/scheduling/logs__list_of_balls \
+		> $OUTPUTDIR/scheduling/scheduled__list_of_balls
+	fi
 	exit
 fi
 
-if [[ $STEPNAMES == *"[balls_RosettaDecoys]"* ]]
+if [ ! -s "$OUTPUTDIR/list_of_balls" ]
 then
-
-	cat $INPUT_LIST_FILE | while read INPUTFILE
-	do
-		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-		  -c "$BINDIR/get_balls_from_RosettaDecoys_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
-		  -l $OUTPUTDIR/scheduling/logs__balls_RosettaDecoys
-	done > $OUTPUTDIR/scheduling/scheduled__balls_RosettaDecoys
-	exit
-fi
-
-if [[ $STEPNAMES == *"[balls_decoys99]"* ]]
-then
-	cat $INPUT_LIST_FILE | while read INPUTFILE
-	do
-		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-		  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
-		  -l $OUTPUTDIR/scheduling/logs__balls_decoys99
-	done > $OUTPUTDIR/scheduling/scheduled__balls_decoys99
-	exit
-fi
-
-if [[ $STEPNAMES == *"[list_of_balls]"* ]]
-then
-	for STEP in balls_CASP balls_decoys99 balls_RosettaDecoys
-	do
-		if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
-		then
-			cat $OUTPUTDIR/scheduling/scheduled__$STEP
-		fi
-	done > $OUTPUTDIR/scheduling/scheduled__all_balls
-	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-	  -d $OUTPUTDIR/scheduling/scheduled__all_balls \
-	  -w -c "find $OUTPUTDIR/entries/ -type f -name balls -not -empty > $OUTPUTDIR/list_of_balls" \
-	  -l $OUTPUTDIR/scheduling/logs__list_of_balls \
-	> $OUTPUTDIR/scheduling/scheduled__list_of_balls
-	exit
+	echo "No balls to process." 1>&2
+	exit 1
 fi
 
 function submit_step
