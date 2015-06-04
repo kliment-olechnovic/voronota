@@ -8,8 +8,9 @@ OUTPUTDIR=""
 CPUCOUNT=""
 STEPNAMES=""
 SCHEDULER=""
+TEACHING=false;
 
-while getopts "b:i:o:p:s:c:" OPTION
+while getopts "b:i:o:p:s:c:t" OPTION
 do
 	case $OPTION in
 	b)
@@ -29,6 +30,9 @@ do
 		;;
 	c)
 		SCHEDULER=$OPTARG
+		;;
+	t)
+		TEACHING=true
 		;;
 	esac
 done
@@ -160,21 +164,47 @@ fi
 
 if [[ $STEPNAMES == *"[contacts_and_summary]"* ]]
 then
-	submit_step raw_contacts contacts_and_summary \
-	  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	if $TEACHING
+	then
+		submit_step raw_contacts contacts_and_summary \
+		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	else
+		submit_step raw_contacts contacts_and_summary \
+		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	fi
 fi
 
 if [[ $STEPNAMES == *"[potential]"* ]]
 then
 	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/summary|' > $OUTPUTDIR/scheduling/input_list_for__potential
-	submit_step contacts_and_summary potential \
-	  "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/scheduling/input_list_for__potential"
+	if $TEACHING
+	then
+		submit_step contacts_and_summary potential \
+		  "$BINDIR/calc_potential_from_summaries.bash -c $BINDIR/contributions_from_casp_models -o $OUTPUTDIR/potential -i $OUTPUTDIR/scheduling/input_list_for__potential"
+	else
+		submit_step contacts_and_summary potential \
+		  "$BINDIR/calc_potential_from_summaries.bash -o $OUTPUTDIR/potential -i $OUTPUTDIR/scheduling/input_list_for__potential"
+	fi
 fi
 
 if [[ $STEPNAMES == *"[energies]"* ]]
 then
-	submit_step contacts_and_summary energies \
-	  "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $BINDIR/potential -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	if $TEACHING
+	then
+		submit_step contacts_and_summary energies \
+		  "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $OUTPUTDIR/potential/potential -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	else
+		submit_step contacts_and_summary energies \
+		  "$BINDIR/calc_energies_from_contacts_and_potential.bash -p $BINDIR/potential -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	fi
+fi
+
+if [[ $STEPNAMES == *"[energies_stats]"* ]]
+then
+	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/atom_energies|' > $OUTPUTDIR/scheduling/input_list_for__energies_stats
+	submit_step energies energies_stats \
+	  "$BINDIR/calc_energies_stats_from_energies.bash -o $OUTPUTDIR/energies_stats -i $OUTPUTDIR/scheduling/input_list_for__energies_stats"
+	exit 0
 fi
 
 if [[ $STEPNAMES == *"[quality_scores]"* ]]
