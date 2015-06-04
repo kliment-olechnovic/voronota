@@ -246,5 +246,5 @@ if [[ $STEPNAMES == *"[concatenated_local_scores_evaluations]"* ]]
 then
 	( cat $OUTPUTDIR/list_of_balls | grep '/target/balls$' | sed 's|/target/balls$|/local_scores_evaluation|' ; echo $OUTPUTDIR/entries/local_scores_evaluation ) > $OUTPUTDIR/scheduling/input_list_for__concatenated_local_scores_evaluations
 	submit_step local_scores_evaluation concatenated_local_scores_evaluations \
-	  "$BINDIR/concatenate_files_from_list_of_files.bash -h target -s -t -o $OUTPUTDIR/concatenated_local_scores_evaluations -i $OUTPUTDIR/scheduling/input_list_for__concatenated_local_scores_evaluations"
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -h -s -t -o $OUTPUTDIR/concatenated_local_scores_evaluations -i $OUTPUTDIR/scheduling/input_list_for__concatenated_local_scores_evaluations"
 fi

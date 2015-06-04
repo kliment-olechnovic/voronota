@@ -5,11 +5,11 @@ trap "rm -r $TMPDIR" EXIT
 
 INPUT_FILE_LIST=""
 OUTPUT_FILE=""
-HEADER_START=""
+HEADER=false
 SORT=false
 TABULATE=false
 
-while getopts "i:o:h:sut" OPTION
+while getopts "i:o:hst" OPTION
 do
 	case $OPTION in
 	i)
@@ -19,7 +19,7 @@ do
 		OUTPUT_FILE=$OPTARG
 		;;
 	h)
-		HEADER_START=$OPTARG
+		HEADER=true
 		;;
 	s)
 		SORT=true
@@ -32,18 +32,22 @@ done
 
 (cat $INPUT_FILE_LIST | xargs -L 100 -P 1 cat) > $TMPDIR/output
 
+if $HEADER
+then
+	head -1 $TMPDIR/output > $TMPDIR/header
+	cat $TMPDIR/output | egrep -v "$(cat $TMPDIR/header)" > $TMPDIR/output_mod
+	mv $TMPDIR/output_mod $TMPDIR/output
+fi
+
 if $SORT
 then
 	cat $TMPDIR/output | sort | uniq > $TMPDIR/output_mod
 	mv $TMPDIR/output_mod $TMPDIR/output
 fi
 
-if [ "$HEADER_START" != "" ]
+if $HEADER
 then
-	{
-		cat $TMPDIR/output | egrep "^$HEADER_START" | uniq
-		cat $TMPDIR/output | egrep -v "^$HEADER_START"
-	} > $TMPDIR/output_mod
+	cat $TMPDIR/header $TMPDIR/output > $TMPDIR/output_mod
 	mv $TMPDIR/output_mod $TMPDIR/output
 fi
 
