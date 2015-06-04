@@ -208,9 +208,8 @@ fi
 
 if [[ $STEPNAMES == *"[partial_potentials_stats]"* ]]
 then
-	find $OUTPUTDIR/partial_potentials/ -type f -name potential -not -empty > $OUTPUTDIR/scheduling/input_list_for__partial_potentials_stats
 	submit_step partial_potentials partial_potentials_stats \
-	  "$BINDIR/calc_potentials_stats_from_potentials.bash -o $OUTPUTDIR/partial_potentials_stats -i $OUTPUTDIR/scheduling/input_list_for__partial_potentials_stats"
+	  "$BINDIR/calc_potentials_stats_from_potentials.bash -o $OUTPUTDIR/partial_potentials_stats -i $OUTPUTDIR/partial_potentials"
 fi
 
 if [[ $STEPNAMES == *"[energies]"* ]]

@@ -2,14 +2,14 @@
 
 set +e
 
-INPUT_FILE_LIST=""
+INPUT_SEARCH_DIR=""
 OUTPUTDIR=""
 
 while getopts "i:o:" OPTION
 do
 	case $OPTION in
 	i)
-		INPUT_FILE_LIST=$OPTARG
+		INPUT_SEARCH_DIR=$OPTARG
 		;;
     o)
 		OUTPUTDIR=$OPTARG
@@ -19,6 +19,6 @@ done
 
 mkdir -p $OUTPUTDIR
 
-cat $INPUT_FILE_LIST \
+find $INPUT_SEARCH_DIR -type f -name potential -not -empty \
 | $BINDIR/voronota score-contacts-potentials-stats \
 > $OUTPUTDIR/potential_means_and_sds
