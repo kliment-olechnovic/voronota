@@ -71,6 +71,16 @@ fi
 
 mkdir -p $OUTPUTDIR/scheduling
 
+if [[ $STEPNAMES == *"[balls_PDB]"* ]]
+then
+	$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p $CPUCOUNT \
+	  -c "$BINDIR/get_balls_from_atoms_link.bash -u -z -m -o $OUTPUTDIR/entries -i" \
+	  -a $INPUT_LIST_FILE \
+	  -l $OUTPUTDIR/scheduling/logs__balls_PDB \
+	> $OUTPUTDIR/scheduling/scheduled__balls_PDB
+	exit
+fi
+
 if [[ $STEPNAMES == *"[balls_CASP]"* ]]
 then
 	cat $INPUT_LIST_FILE | while read CASPNAME TARGETNAME
