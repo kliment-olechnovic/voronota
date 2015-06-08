@@ -7,6 +7,7 @@ calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
 query-balls
+query-balls-sequences-pairings-stats
 query-contacts
 plot-contacts
 score-contacts-potential
@@ -108,6 +109,11 @@ Command 'query-balls' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
+
+Command 'query-balls-sequences-pairings-stats' options:
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of balls files
+stdout  ->  list of sequences pairings stats
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group

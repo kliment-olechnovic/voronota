@@ -7,6 +7,7 @@ calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
 query-balls
+query-balls-sequences-pairings-stats
 query-contacts
 plot-contacts
 score-contacts-potential
