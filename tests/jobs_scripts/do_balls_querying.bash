@@ -71,3 +71,6 @@ c<E>r<0>a<1766>R<ILE>A<C> 44.016 20.291 50.633 1.75 . .
 c<E>r<1>a<1767>R<ILE>A<O> 45.09 20.176 51.246 1.49 . .
 EOF
 
+echo $SUBDIR/balls \
+| $VORONOTA query-balls-sequences-pairings-stats \
+> $SUBDIR/sequences_pairings_stats
