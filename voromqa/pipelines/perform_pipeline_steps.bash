@@ -161,6 +161,12 @@ function submit_step
 
 cat $OUTPUTDIR/list_of_balls | sed 's|/balls$||' > $OUTPUTDIR/scheduling/input_list_for__entries_operations
 
+if [[ $STEPNAMES == *"[sequences_pairings_stats]"* ]]
+then
+	submit_step list_of_balls sequences_pairings_stats \
+	  "$BINDIR/calc_sequences_pairings_stats_from_balls.bash -o $OUTPUTDIR/sequences_pairings_stats -i $OUTPUTDIR/list_of_balls"
+fi
+
 if [[ $STEPNAMES == *"[raw_contacts]"* ]]
 then
 	submit_step none raw_contacts \
@@ -245,7 +251,7 @@ fi
 
 if [[ $STEPNAMES == *"[atoms]"* ]]
 then
-	submit_step all_balls atoms \
+	submit_step list_of_balls atoms \
 	  "$BINDIR/collect_atoms_from_balls.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
 
