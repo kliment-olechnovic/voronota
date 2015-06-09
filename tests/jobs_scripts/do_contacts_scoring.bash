@@ -63,6 +63,17 @@ cat $SUBDIR/summary \
   --potential-file $SUBDIR/potentialfromsummary \
 > /dev/null
 
+echo $SUBDIR/*.balls \
+| $VORONOTA query-balls-sequences-pairings-stats \
+> $SUBDIR/sequences_pairings_stats
+
+cat $SUBDIR/summary \
+| $VORONOTA score-contacts-potential \
+  --input-contributions $SUBDIR/contributions \
+  --input-seq-pairs-stats $SUBDIR/sequences_pairings_stats \
+  --potential-file $SUBDIR/potentialadjustedtoseqpairingsstat \
+> /dev/null
+
 echo "$SUBDIR/potential $SUBDIR/potentialfromsummary" \
 | $VORONOTA score-contacts-potentials-stats \
 > $SUBDIR/potentials_stats
