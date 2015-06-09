@@ -117,10 +117,18 @@ then
 			  -c "$BINDIR/get_balls_from_decoys99_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
 			  -l $OUTPUTDIR/scheduling/logs__balls_decoys99
 		done > $OUTPUTDIR/scheduling/scheduled__balls_decoys99
+	elif [[ $STEPNAMES == *"[balls_decoy_st_set]"* ]]
+	then
+		cat $INPUT_LIST_FILE | while read INPUTFILE
+		do
+			$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
+			  -c "$BINDIR/get_balls_from_decoy_st_set.bash -i $INPUTFILE -o $OUTPUTDIR/entries" \
+			  -l $OUTPUTDIR/scheduling/logs__balls_decoy_st_set
+		done > $OUTPUTDIR/scheduling/scheduled__balls_decoy_st_set
 	fi
 	if [[ $STEPNAMES == *"[list_of_balls]"* ]]
 	then
-		for STEP in balls_CASP balls_decoys99 balls_RosettaDecoys
+		for STEP in balls_CASP balls_RosettaDecoys balls_decoys99 balls_decoy_st_set
 		do
 			if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
 			then
