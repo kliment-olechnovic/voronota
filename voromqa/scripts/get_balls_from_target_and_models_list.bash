@@ -6,8 +6,9 @@ trap "rm -r $TMPDIR" EXIT
 TARGETFILE=""
 MODELSLISTFILE=""
 OUTDIR=""
+PRINTCOMMAND="cat"
 
-while getopts "t:m:o:" OPTION
+while getopts "t:m:o:z" OPTION
 do
 	case $OPTION in
 	t)
@@ -18,6 +19,9 @@ do
 		;;
     o)
 		OUTDIR=$OPTARG
+		;;
+    z)
+		PRINTCOMMAND="zcat"
 		;;
 	esac
 done
@@ -31,7 +35,7 @@ fi
 mkdir -p $OUTDIR/target
 mkdir -p $OUTDIR/models
 
-cat $TARGETFILE \
+$PRINTCOMMAND $TARGETFILE \
 | $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
 | grep -f $BINDIR/standard_names \
 | $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
@@ -42,7 +46,7 @@ cat $OUTDIR/target/balls | awk '{print $1}' > $TMPDIR/filter
 
 cat $MODELSLISTFILE | while read MODEL
 do
-	cat $MODEL \
+	$PRINTCOMMAND $MODEL \
 	| $BINDIR/voronota get-balls-from-atoms-file --radii-file $BINDIR/radii --annotated \
 	| grep -f $BINDIR/standard_names \
 	| $BINDIR/voronota query-balls --rename-chains --drop-atom-serials --drop-altloc-indicators \
