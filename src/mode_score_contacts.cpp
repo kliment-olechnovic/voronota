@@ -233,6 +233,21 @@ inline bool read_energy_descriptors_and_accumulate_to_map_of_value_stats(std::is
 	return false;
 }
 
+inline bool read_to_map_of_crads_pairs_stats(std::istream& input, std::map< CRADsPair, std::pair<double, double> >& map_of_crads_pairs_stats)
+{
+	CRAD a;
+	CRAD b;
+	double p1=0.0;
+	double p2=0.0;
+	input >> a >> b >> p1 >> p2;
+	if(!input.fail())
+	{
+		map_of_crads_pairs_stats[CRADsPair(a, b)]=std::make_pair(p1, p2);
+		return true;
+	}
+	return false;
+}
+
 std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, double>& atom_scores)
 {
 	std::map<CRAD, std::pair<int, double> > summed_scores;
@@ -261,6 +276,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
 		ods.push_back(OD("--input-contributions", "string", "file path to input contact types contributions"));
 		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
+		ods.push_back(OD("--input-seq-pairs-stats", "string", "file path to input sequence pairings statistics"));
 		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
 		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
 		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
@@ -278,6 +294,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool input_file_list=poh.contains_option("--input-file-list");
 	const std::string input_contributions=poh.argument<std::string>("--input-contributions", "");
 	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
+	const std::string input_seq_pairs_stats=poh.argument<std::string>("--input-seq-pairs-stats", "");
 	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
 	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
 	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
@@ -372,6 +389,31 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_subtags_contributions[InteractionName(CRADsPair(CRAD("any"), CRAD::solvent()), "solvent")]=(sum_of_solvent_areas/sum_of_contact_areas);
 	}
 
+	std::map< CRADsPair, std::pair<double, double> > seqsep_modifiers;
+	if(!input_seq_pairs_stats.empty())
+	{
+		std::map< CRADsPair, std::pair<double, double> > seq_pairs_stats;
+		auxiliaries::IOUtilities().read_file_lines_to_container(input_seq_pairs_stats, read_to_map_of_crads_pairs_stats, seq_pairs_stats);
+		if(!seq_pairs_stats.empty())
+		{
+			double sep1_contribution=0.0;
+			for(std::map<InteractionName, double>::const_iterator it=map_of_subtags_contributions.begin();it!=map_of_subtags_contributions.end();++it)
+			{
+				const InteractionName& interaction=it->first;
+				if(interaction.tag.find("sep1")!=std::string::npos)
+				{
+					sep1_contribution+=it->second;
+				}
+			}
+			for(std::map< CRADsPair, std::pair<double, double> >::const_iterator it=seq_pairs_stats.begin();it!=seq_pairs_stats.end();++it)
+			{
+				const double a=(it->second.first/it->second.second);
+				const double b=(1-a*sep1_contribution)/(1-sep1_contribution);
+				seqsep_modifiers[it->first]=std::make_pair(a, b);
+			}
+		}
+	}
+
 	const double solvent_contribution=map_of_subtags_contributions[InteractionName(CRADsPair(CRAD("any"), CRAD::solvent()), "solvent")];
 
 	std::map< InteractionName, std::pair<double, double> > result;
@@ -401,6 +443,21 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 					if(map_of_crads_possible_subtags[interaction.crads].count(*toggling_subtags_it)>0 && subtags.count(*toggling_subtags_it)==0)
 					{
 						p_exp*=(1.0-map_of_subtags_contributions[InteractionName(simplify_crads_pair(interaction.crads), *toggling_subtags_it)]);
+					}
+				}
+				if(!seqsep_modifiers.empty() && interaction.tag.find("sep")!=std::string::npos)
+				{
+					std::map< CRADsPair, std::pair<double, double> >::const_iterator seqsep_modifiers_it=seqsep_modifiers.find(CRADsPair(interaction.crads.a.without_atom(), interaction.crads.b.without_atom()));
+					if(seqsep_modifiers_it!=seqsep_modifiers.end())
+					{
+						if(interaction.tag.find("sep1")!=std::string::npos)
+						{
+							p_exp*=seqsep_modifiers_it->second.first;
+						}
+						else
+						{
+							p_exp*=seqsep_modifiers_it->second.second;
+						}
 					}
 				}
 			}
