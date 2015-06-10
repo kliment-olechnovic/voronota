@@ -340,7 +340,7 @@ if [[ $STEPNAMES == *"[secondary_structure_energy_profile]"* ]]
 then
 	concatenate_steps_scheduling_output dssp_info energies \
 	  > $OUTPUTDIR/scheduling/scheduled__all_for_secondary_structure_energy_profile
-	submit_step all_for_scores_secondary_structure_energy_profile secondary_structure_energy_profile \
+	submit_step all_for_secondary_structure_energy_profile secondary_structure_energy_profile \
 	  "$BINDIR/collect_secondary_structure_energy_profile_from_working_directory.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
 
