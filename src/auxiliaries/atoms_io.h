@@ -390,8 +390,12 @@ public:
 			std::string iCode;
 			std::string resNameShort;
 			std::string resSSE;
+			double anglePhi;
+			double anglePsi;
 
 			bool resSeq_valid;
+			bool anglePhi_valid;
+			bool anglePsi_valid;
 		};
 
 		struct Data
@@ -422,7 +426,7 @@ public:
 						if(!resNameShort.empty() && resNameShort!="!")
 						{
 							const DSSPRecord record=read_dssp_record_from_line(line);
-							if(record.resSeq_valid)
+							if(record.resSeq_valid && record.anglePhi_valid && record.anglePsi_valid)
 							{
 								data.dssp_records.push_back(record);
 							}
@@ -446,6 +450,8 @@ public:
 			record.iCode=fix_undefined_string(substring_of_columned_line(dssp_file_line, 11, 11));
 			record.resNameShort=fix_undefined_string(substring_of_columned_line(dssp_file_line, 14, 14));
 			record.resSSE=fix_undefined_string(substring_of_columned_line(dssp_file_line, 17, 17));
+			record.anglePhi=convert_string<double>(substring_of_columned_line(dssp_file_line, 104, 109), record.anglePhi_valid);
+			record.anglePsi=convert_string<double>(substring_of_columned_line(dssp_file_line, 110, 115), record.anglePsi_valid);
 			return record;
 		}
 	};

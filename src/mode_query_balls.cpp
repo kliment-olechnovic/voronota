@@ -360,6 +360,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						value.props.tags.insert(std::string("dssp=")+dssp_record.resSSE);
 					}
+					value.props.adjuncts["phi"]=dssp_record.anglePhi;
+					value.props.adjuncts["psi"]=dssp_record.anglePsi;
 				}
 			}
 			if(!sequence_mapping.empty())
