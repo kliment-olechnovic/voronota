@@ -335,3 +335,18 @@ then
 	submit_step local_scores_evaluation concatenated_local_scores_evaluations \
 	  "$BINDIR/concatenate_files_from_list_of_files.bash -h -s -t -o $OUTPUTDIR/concatenated_local_scores_evaluations -i $OUTPUTDIR/scheduling/input_list_for__concatenated_local_scores_evaluations"
 fi
+
+if [[ $STEPNAMES == *"[secondary_structure_energy_profile]"* ]]
+then
+	concatenate_steps_scheduling_output dssp_info energies \
+	  > $OUTPUTDIR/scheduling/scheduled__all_for_secondary_structure_energy_profile
+	submit_step all_for_scores_secondary_structure_energy_profile secondary_structure_energy_profile \
+	  "$BINDIR/collect_secondary_structure_energy_profile_from_working_directory.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+fi
+
+if [[ $STEPNAMES == *"[concatenated_secondary_structure_energy_profiles]"* ]]
+then
+	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/secondary_structure_energy_profile|' > $OUTPUTDIR/scheduling/input_list_for__concatenated_secondary_structure_energy_profiles
+	submit_step secondary_structure_energy_profile concatenated_secondary_structure_energy_profiles \
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_secondary_structure_energy_profiles -i $OUTPUTDIR/scheduling/input_list_for__concatenated_secondary_structure_energy_profiles"
+fi
