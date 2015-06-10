@@ -84,6 +84,17 @@ fi
 
 mkdir -p $OUTPUTDIR/scheduling
 
+function concatenate_steps_scheduling_output
+{
+	for STEP in "$@"
+	do
+		if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
+		then
+			cat $OUTPUTDIR/scheduling/scheduled__$STEP
+		fi
+	done
+}
+
 if [[ $STEPNAMES == *"[balls_"* ]] || [[ $STEPNAMES == *"[list_of_balls]"* ]]
 then
 	if [[ $STEPNAMES == *"[balls_PDB]"* ]]
@@ -128,15 +139,10 @@ then
 	fi
 	if [[ $STEPNAMES == *"[list_of_balls]"* ]]
 	then
-		for STEP in balls_CASP balls_RosettaDecoys balls_decoys99 balls_decoy_st_set
-		do
-			if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
-			then
-				cat $OUTPUTDIR/scheduling/scheduled__$STEP
-			fi
-		done > $OUTPUTDIR/scheduling/scheduled__all_balls
+		concatenate_steps_scheduling_output balls_RosettaDecoys balls_decoys99 balls_decoy_st_set \
+		  > $OUTPUTDIR/scheduling/scheduled__all_for_list_of_balls
 		$BINDIR/schedule_jobs.bash -b $BINDIR -s $SCHEDULER -p 1 \
-		  -d $OUTPUTDIR/scheduling/scheduled__all_balls \
+		  -d $OUTPUTDIR/scheduling/scheduled__all_for_list_of_balls \
 		  -w -c "find $OUTPUTDIR/entries/ -type f -name balls -not -empty > $OUTPUTDIR/list_of_balls" \
 		  -l $OUTPUTDIR/scheduling/logs__list_of_balls \
 		> $OUTPUTDIR/scheduling/scheduled__list_of_balls
@@ -263,6 +269,12 @@ then
 	  "$BINDIR/collect_atoms_from_balls.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
 
+if [[ $STEPNAMES == *"[dssp_info]"* ]]
+then
+	submit_step atoms dssp_info \
+	  "$BINDIR/calc_dssp_info_from_atoms.bash" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+fi
+
 if [[ $STEPNAMES == *"[goap_scores]"* ]]
 then
 	submit_step atoms goap_scores \
@@ -295,17 +307,11 @@ then
 	  "$BINDIR/calc_tmscore_from_model_and_target_atoms.bash -d" $OUTPUTDIR/scheduling/input_list_for__tmscore
 fi
 
-for STEP in energies quality_scores goap_scores rwplus_score doop_score cad_scores tmscore
-do
-	if [ -s "$OUTPUTDIR/scheduling/scheduled__$STEP" ]
-	then
-		cat $OUTPUTDIR/scheduling/scheduled__$STEP
-	fi
-done > $OUTPUTDIR/scheduling/scheduled__all_scores
-
 if [[ $STEPNAMES == *"[scores_list]"* ]]
 then
-	submit_step all_scores scores_list \
+	concatenate_steps_scheduling_output energies quality_scores goap_scores rwplus_score doop_score cad_scores tmscore \
+	  > $OUTPUTDIR/scheduling/scheduled__all_for_scores_list
+	submit_step all_for_scores_list scores_list \
 	  "$BINDIR/collect_scores_list_from_working_directory.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
 
