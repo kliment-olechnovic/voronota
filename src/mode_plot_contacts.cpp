@@ -5,96 +5,13 @@
 #include "auxiliaries/chain_residue_atom_descriptor.h"
 
 #include "modescommon/contact_value.h"
+#include "modescommon/svg_writer.h"
 
 namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
-
-class XMLWriter
-{
-public:
-	XMLWriter(const std::string& type) : type_(type)
-	{
-	}
-
-	template<typename T>
-	XMLWriter& set(const std::string& name, const T& value, const std::string& units="")
-	{
-		std::ostringstream output;
-		output << value << units;
-		parameters_[name]=output.str();
-		return (*this);
-	}
-
-	XMLWriter& set(const std::string& contents)
-	{
-		contents_=contents;
-		return (*this);
-	}
-
-	XMLWriter& add_child(const XMLWriter& child)
-	{
-		children_.push_back(child);
-		return (*this);
-	}
-
-	void write(std::ostream& output, const std::size_t tabs=0) const
-	{
-		output << std::string(tabs, ' ') << "<" << type_;
-		for(std::map<std::string, std::string>::const_iterator it=parameters_.begin();it!=parameters_.end();++it)
-		{
-			output << " " << it->first << "=\"" << it->second << "\"";
-		}
-		if(contents_.empty() && children_.empty())
-		{
-			output << "/>\n";
-		}
-		else
-		{
-			output << ">\n";
-			if(!contents_.empty())
-			{
-				output << std::string(tabs+2, ' ') << contents_ << "\n";
-			}
-			for(std::size_t i=0;i<children_.size();i++)
-			{
-				children_[i].write(output, tabs+2);
-			}
-			output << "</" << type_ << ">\n";
-		}
-	}
-
-private:
-	std::string type_;
-	std::map<std::string, std::string> parameters_;
-	std::string contents_;
-	std::vector<XMLWriter> children_;
-};
-
-class SVGWriter : public XMLWriter
-{
-public:
-	SVGWriter(const unsigned int width, const unsigned int height) : XMLWriter("svg")
-	{
-		set("width", width);
-		set("height", height);
-	}
-
-	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& color)
-	{
-		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("fill", color));
-		return (*this);
-	}
-};
-
-std::string color_from_red_green_blue_components(const double r, const double g, const double b, const double scale)
-{
-	std::ostringstream output;
-	output << "rgb(" << static_cast<unsigned int>(r*scale) << "," << static_cast<unsigned int>(g*scale) << "," << static_cast<unsigned int>(b*scale) << ")";
-	return output.str();
-}
 
 }
 
@@ -152,7 +69,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
 			const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
 			const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
-			color=color_from_red_green_blue_components(r, g, b, 255);
+			color=SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
 		}
 		svg.add_rect(x, y, 1, 1, color);
 		svg.add_rect(y, x, 1, 1, color);
