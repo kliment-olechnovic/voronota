@@ -90,7 +90,7 @@ Command 'query-balls' options:
 --drop-tags                                 flag to drop all tags from input
 --drop-adjuncts                             flag to drop all adjuncts from input
 --set-tags                      string      set tags instead of filtering
---set-dssp-tags                 string      file path to input DSSP file
+--set-dssp-info                 string      file path to input DSSP file
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
