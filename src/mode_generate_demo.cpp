@@ -91,7 +91,6 @@ struct Matrix
 				{
 					int empty_neighbors=0;
 					int filled_neighbors=0;
-					Bin neighbors_bin;
 					for(int wi=(i-window);wi<=(i+window);wi++)
 					{
 						for(int wj=(j-window);wj<=(j+window);wj++)
@@ -126,19 +125,31 @@ struct Matrix
 		{
 			for(int j=0;j<size;j++)
 			{
-				if(data[i][j].count_all>0)
+				int empty_neighbors=0;
+				int filled_neighbors=0;
+				Bin neighbors_bin;
+				for(int wi=(i-window);wi<=(i+window);wi++)
 				{
-					for(int wi=(i-window);wi<=(i+window);wi++)
+					for(int wj=(j-window);wj<=(j+window);wj++)
 					{
-						for(int wj=(j-window);wj<=(j+window);wj++)
+						if(wi>=0 && wi<size && wj>=0 && wj<size)
 						{
-							if(wi>=0 && wi<size && wj>=0 && wj<size)
+							if(data[wi][wj].count_all<=0)
 							{
-								smoothed_data[i][j].add(data[wi][wj]);
+								empty_neighbors++;
+							}
+							else
+							{
+								filled_neighbors++;
+								neighbors_bin.add(data[wi][wj]);
 							}
 						}
 					}
-					smoothed_data[i][j].multiply(1.0/static_cast<double>((2*window+1)*(2*window+1)));
+				}
+				if(filled_neighbors>empty_neighbors)
+				{
+					neighbors_bin.multiply(1.0/static_cast<double>((2*window+1)*(2*window+1)));
+					smoothed_data[i][j]=neighbors_bin;
 				}
 			}
 		}
