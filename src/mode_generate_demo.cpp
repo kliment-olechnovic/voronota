@@ -18,9 +18,9 @@ struct Matrix
 	struct Bin
 	{
 		double sum_energy;
-		unsigned long count_all;
-		unsigned long count_helix;
-		unsigned long count_sheet;
+		double count_all;
+		double count_helix;
+		double count_sheet;
 
 		Bin() : sum_energy(0.0), count_all(0), count_helix(0), count_sheet(0)
 		{
@@ -227,9 +227,9 @@ Image construct_image_from_matrix_by_ss(const Matrix& m)
 			if(bin.count_all>0)
 			{
 				Color& color=image[i][j];
-				color.r=static_cast<unsigned int>(static_cast<double>(bin.count_helix)/static_cast<double>(bin.count_all)*255.0);
-				color.g=static_cast<unsigned int>(static_cast<double>(bin.count_sheet)/static_cast<double>(bin.count_all)*255.0);
-				color.b=static_cast<unsigned int>(static_cast<double>(bin.count_all-(bin.count_helix+bin.count_sheet))/static_cast<double>(bin.count_all)*255.0);
+				color.r=static_cast<unsigned int>(bin.count_helix/bin.count_all*255.0);
+				color.g=static_cast<unsigned int>(bin.count_sheet/bin.count_all*255.0);
+				color.b=static_cast<unsigned int>((bin.count_all-(bin.count_helix+bin.count_sheet))/bin.count_all*255.0);
 			}
 		}
 	}
@@ -247,8 +247,8 @@ Image construct_image_from_matrix_by_ss_without_loops(const Matrix& m)
 			if((bin.count_helix+bin.count_sheet)>0)
 			{
 				Color& color=image[i][j];
-				color.r=static_cast<unsigned int>(static_cast<double>(bin.count_helix)/static_cast<double>(bin.count_helix+bin.count_sheet)*255.0);
-				color.g=static_cast<unsigned int>(static_cast<double>(bin.count_sheet)/static_cast<double>(bin.count_helix+bin.count_sheet)*255.0);
+				color.r=static_cast<unsigned int>(bin.count_helix/(bin.count_helix+bin.count_sheet)*255.0);
+				color.g=static_cast<unsigned int>(bin.count_sheet/(bin.count_helix+bin.count_sheet)*255.0);
 			}
 		}
 	}
@@ -267,7 +267,7 @@ Image construct_image_from_matrix_by_mean_energy(const Matrix& m)
 			const Matrix::Bin& bin=m.data[i][j];
 			if(bin.count_all>0)
 			{
-				const double mean_energy=(bin.sum_energy/static_cast<double>(bin.count_all));
+				const double mean_energy=(bin.sum_energy/bin.count_all);
 				mean_energies.push_back(mean_energy);
 			}
 		}
@@ -283,7 +283,7 @@ Image construct_image_from_matrix_by_mean_energy(const Matrix& m)
 			const Matrix::Bin& bin=m.data[i][j];
 			if(bin.count_all>0)
 			{
-				const double mean_energy=(bin.sum_energy/static_cast<double>(bin.count_all));
+				const double mean_energy=(bin.sum_energy/bin.count_all);
 				const double gradient_value=(mean_energy-gradient_range.first)/(gradient_range.second-gradient_range.first);
 				image[i][j]=Color::from_blue_white_red_gradient(gradient_value);
 			}
