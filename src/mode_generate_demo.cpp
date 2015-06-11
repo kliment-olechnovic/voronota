@@ -25,6 +25,14 @@ struct Matrix
 		Bin() : sum_energy(0.0), count_all(0), count_helix(0), count_sheet(0)
 		{
 		}
+
+		void add(const Bin& bin)
+		{
+			sum_energy+=bin.sum_energy;
+			count_all+=bin.count_all;
+			count_helix+=bin.count_helix;
+			count_sheet+=bin.count_sheet;
+		}
 	};
 
 	typedef std::vector< std::vector<Bin> > Data;
@@ -62,6 +70,64 @@ struct Matrix
 				bin.count_sheet++;
 			}
 		}
+	}
+
+	void remove_noise(const int window, const int max_empty_neighbors)
+	{
+		Data cleaned_data=data;
+		for(int i=0;i<size;i++)
+		{
+			for(int j=0;j<size;j++)
+			{
+				if(data[i][j].count_all>0)
+				{
+					int empty_neighbors=0;
+					for(int wi=(i-window);wi<=(i+window);wi++)
+					{
+						for(int wj=(j-window);wj<=(j+window);wj++)
+						{
+							if(wi>=0 && wi<size && wj>=0 && wj<size)
+							{
+								if(data[wi][wj].count_all<=0)
+								{
+									empty_neighbors++;
+								}
+							}
+						}
+					}
+					if(empty_neighbors>max_empty_neighbors)
+					{
+						cleaned_data[i][j]=Bin();
+					}
+				}
+			}
+		}
+		data=cleaned_data;
+	}
+
+	void smooth(const int window)
+	{
+		Data smoothed_data(size, std::vector<Bin>(size));
+		for(int i=0;i<size;i++)
+		{
+			for(int j=0;j<size;j++)
+			{
+				if(data[i][j].count_all>0)
+				{
+					for(int wi=(i-window);wi<=(i+window);wi++)
+					{
+						for(int wj=(j-window);wj<=(j+window);wj++)
+						{
+							if(wi>=0 && wi<size && wj>=0 && wj<size)
+							{
+								smoothed_data[i][j].add(data[wi][wj]);
+							}
+						}
+					}
+				}
+			}
+		}
+		data=smoothed_data;
 	}
 };
 
@@ -288,6 +354,9 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		processed_lines++;
 	}
+
+	matrix.remove_noise(5, 12);
+	matrix.smooth(2);
 
 	if(print_counts_image)
 	{
