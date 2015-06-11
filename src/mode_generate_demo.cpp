@@ -108,6 +108,42 @@ struct Color
 
 typedef std::vector< std::vector<Color> > Image;
 
+Image construct_image_from_matrix_by_counts(const Matrix& m)
+{
+	Image image(m.size, std::vector<Color>(m.size));
+	std::vector<double> counts;
+	counts.reserve(m.size*m.size);
+	for(int i=0;i<m.size;i++)
+	{
+		for(int j=0;j<m.size;j++)
+		{
+			const Matrix::Bin& bin=m.data[i][j];
+			if(bin.count_all>0)
+			{
+				counts.push_back(bin.count_all);
+			}
+		}
+	}
+	std::sort(counts.begin(), counts.end());
+	const std::size_t q1=counts.size()/100*5;
+	const std::size_t q2=counts.size()/100*95;
+	const std::pair<double, double> gradient_range(counts[q1], counts[q2]);
+	for(int i=0;i<m.size;i++)
+	{
+		for(int j=0;j<m.size;j++)
+		{
+			const Matrix::Bin& bin=m.data[i][j];
+			if(bin.count_all>0)
+			{
+				const double count=bin.count_all;
+				const double gradient_value=(count-gradient_range.first)/(gradient_range.second-gradient_range.first);
+				image[i][j]=Color::from_blue_white_red_gradient(gradient_value);
+			}
+		}
+	}
+	return image;
+}
+
 Image construct_image_from_matrix_by_ss(const Matrix& m)
 {
 	Image image(m.size, std::vector<Color>(m.size));
@@ -165,8 +201,8 @@ Image construct_image_from_matrix_by_mean_energy(const Matrix& m)
 		}
 	}
 	std::sort(mean_energies.begin(), mean_energies.end());
-	const std::size_t q1=mean_energies.size()/10*1;
-	const std::size_t q2=mean_energies.size()/10*9;
+	const std::size_t q1=mean_energies.size()/100*5;
+	const std::size_t q2=mean_energies.size()/100*95;
 	const std::pair<double, double> gradient_range(mean_energies[q1], mean_energies[q2]);
 	for(int i=0;i<m.size;i++)
 	{
@@ -211,6 +247,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> ods;
+		ods.push_back(OD("--print-counts-image", "", "flag to print counts image"));
 		ods.push_back(OD("--print-ss-image", "", "flag to print secondary structures image"));
 		ods.push_back(OD("--print-ss-without-loops-image", "", "flag to print secondary structures image, without loops"));
 		ods.push_back(OD("--print-energies-image", "", "flag to print mean energies image"));
@@ -221,6 +258,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const bool print_ss_image=poh.contains_option("--print-ss-image");
+	const bool print_counts_image=poh.contains_option("--print-counts-image");
 	const bool print_ss_without_loops_image=poh.contains_option("--print-ss-without-loops-image");
 	const bool print_energies_image=poh.contains_option("--print-energies-image");
 
@@ -249,6 +287,11 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 		processed_lines++;
+	}
+
+	if(print_counts_image)
+	{
+		print_image(construct_image_from_matrix_by_counts(matrix));
 	}
 
 	if(print_ss_image)
