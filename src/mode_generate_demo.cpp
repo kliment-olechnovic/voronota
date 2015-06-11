@@ -33,6 +33,14 @@ struct Matrix
 			count_helix+=bin.count_helix;
 			count_sheet+=bin.count_sheet;
 		}
+
+		void multiply(const double v)
+		{
+			sum_energy*=v;
+			count_all*=v;
+			count_helix*=v;
+			count_sheet*=v;
+		}
 	};
 
 	typedef std::vector< std::vector<Bin> > Data;
@@ -130,6 +138,7 @@ struct Matrix
 							}
 						}
 					}
+					smoothed_data[i][j].multiply(1.0/static_cast<double>((2*window+1)*(2*window+1)));
 				}
 			}
 		}
