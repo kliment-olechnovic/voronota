@@ -72,7 +72,7 @@ struct Matrix
 		}
 	}
 
-	void remove_noise(const int window, const int max_empty_neighbors)
+	void remove_noise(const int window)
 	{
 		Data cleaned_data=data;
 		for(int i=0;i<size;i++)
@@ -82,6 +82,8 @@ struct Matrix
 				if(data[i][j].count_all>0)
 				{
 					int empty_neighbors=0;
+					int filled_neighbors=0;
+					Bin neighbors_bin;
 					for(int wi=(i-window);wi<=(i+window);wi++)
 					{
 						for(int wj=(j-window);wj<=(j+window);wj++)
@@ -92,10 +94,14 @@ struct Matrix
 								{
 									empty_neighbors++;
 								}
+								else
+								{
+									filled_neighbors++;
+								}
 							}
 						}
 					}
-					if(empty_neighbors>max_empty_neighbors)
+					if(empty_neighbors>filled_neighbors)
 					{
 						cleaned_data[i][j]=Bin();
 					}
@@ -355,8 +361,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		processed_lines++;
 	}
 
-	matrix.remove_noise(5, 12);
-	matrix.smooth(2);
+	matrix.remove_noise(4);
+	matrix.smooth(4);
 
 	if(print_counts_image)
 	{
