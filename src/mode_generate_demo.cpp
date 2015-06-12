@@ -195,6 +195,40 @@ struct Color
 		}
 		return color;
 	}
+
+	static Color from_rainbow_gradient(const double value)
+	{
+		Color color;
+		if(value<0)
+		{
+			color.b=255;
+		}
+		else if(value<=0.25)
+		{
+			color.g=static_cast<unsigned char>((value/0.25)*255);
+			color.b=255;
+		}
+		else if(value<=0.5)
+		{
+			color.g=255;
+			color.b=static_cast<unsigned char>((1.0-(value-0.25)/0.25)*255);
+		}
+		else if(value<=0.75)
+		{
+			color.r=static_cast<unsigned char>(((value-0.5)/0.25)*255);
+			color.g=255;
+		}
+		else if(value<1.0)
+		{
+			color.r=255;
+			color.g=static_cast<unsigned char>((1.0-(value-0.75)/0.25)*255);
+		}
+		else
+		{
+			color.r=255;
+		}
+		return color;
+	}
 };
 
 typedef std::vector< std::vector<Color> > Image;
@@ -228,7 +262,7 @@ Image construct_image_from_matrix_by_counts(const Matrix& m)
 			{
 				const double count=bin.count_all;
 				const double gradient_value=(count-gradient_range.first)/(gradient_range.second-gradient_range.first);
-				image[i][j]=Color::from_blue_white_red_gradient(gradient_value);
+				image[i][j]=Color::from_rainbow_gradient(gradient_value);
 			}
 		}
 	}
@@ -304,7 +338,7 @@ Image construct_image_from_matrix_by_mean_energy(const Matrix& m)
 			{
 				const double mean_energy=(bin.sum_energy/bin.count_all);
 				const double gradient_value=(mean_energy-gradient_range.first)/(gradient_range.second-gradient_range.first);
-				image[i][j]=Color::from_blue_white_red_gradient(gradient_value);
+				image[i][j]=Color::from_rainbow_gradient(gradient_value);
 			}
 		}
 	}
