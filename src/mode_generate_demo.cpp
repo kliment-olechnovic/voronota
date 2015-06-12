@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <vector>
 #include <map>
 #include <cmath>
@@ -345,7 +346,7 @@ Image construct_image_from_matrix_by_mean_energy(const Matrix& m)
 	return image;
 }
 
-void print_image(const Image& image)
+void print_image(const Image& image, std::ostream& output)
 {
 	if(!image.empty())
 	{
@@ -361,7 +362,7 @@ void print_image(const Image& image)
 				svg.add_rect(x, (h-1-y), 1, 1, SVGWriter::color_from_red_green_blue_components(color.r, color.g, color.b, 1.0));
 			}
 		}
-		svg.write(std::cout);
+		svg.write(output);
 	}
 }
 
@@ -372,20 +373,14 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
 		std::vector<OD> ods;
-		ods.push_back(OD("--print-counts-image", "", "flag to print counts image"));
-		ods.push_back(OD("--print-ss-image", "", "flag to print secondary structures image"));
-		ods.push_back(OD("--print-ss-without-loops-image", "", "flag to print secondary structures image, without loops"));
-		ods.push_back(OD("--print-energies-image", "", "flag to print mean energies image"));
+		ods.push_back(OD("--output-prefix", "string", "output file name prefix"));
 		if(!poh.assert(ods, false))
 		{
 			return;
 		}
 	}
 
-	const bool print_ss_image=poh.contains_option("--print-ss-image");
-	const bool print_counts_image=poh.contains_option("--print-counts-image");
-	const bool print_ss_without_loops_image=poh.contains_option("--print-ss-without-loops-image");
-	const bool print_energies_image=poh.contains_option("--print-energies-image");
+	const std::string output_prefix=poh.argument<std::string>("--output-prefix", "");
 
 	Matrix matrix(360);
 
@@ -417,23 +412,23 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	matrix.remove_noise(10);
 	matrix.smooth(10);
 
-	if(print_counts_image)
 	{
-		print_image(construct_image_from_matrix_by_counts(matrix));
+		std::ofstream output((output_prefix+"counts.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_counts(matrix), output);
 	}
 
-	if(print_ss_image)
 	{
-		print_image(construct_image_from_matrix_by_ss(matrix));
+		std::ofstream output((output_prefix+"ss.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_ss(matrix), output);
 	}
 
-	if(print_ss_without_loops_image)
 	{
-		print_image(construct_image_from_matrix_by_ss_without_loops(matrix));
+		std::ofstream output((output_prefix+"ss_without_loops.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_ss_without_loops(matrix), output);
 	}
 
-	if(print_energies_image)
 	{
-		print_image(construct_image_from_matrix_by_mean_energy(matrix));
+		std::ofstream output((output_prefix+"mean_energy.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_mean_energy(matrix), output);
 	}
 }
