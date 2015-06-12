@@ -270,7 +270,7 @@ Image construct_image_from_matrix_by_counts(const Matrix& m)
 	return image;
 }
 
-Image construct_image_from_matrix_by_ss(const Matrix& m)
+Image construct_image_from_matrix_by_ss(const Matrix& m, const int mode)
 {
 	Image image(m.size, std::vector<Color>(m.size));
 	for(int i=0;i<m.size;i++)
@@ -281,28 +281,18 @@ Image construct_image_from_matrix_by_ss(const Matrix& m)
 			if(bin.count_all>0)
 			{
 				Color& color=image[i][j];
-				color.r=static_cast<unsigned int>(bin.count_helix/bin.count_all*255.0);
-				color.g=static_cast<unsigned int>(bin.count_sheet/bin.count_all*255.0);
-				color.b=static_cast<unsigned int>((bin.count_all-(bin.count_helix+bin.count_sheet))/bin.count_all*255.0);
-			}
-		}
-	}
-	return image;
-}
-
-Image construct_image_from_matrix_by_ss_without_loops(const Matrix& m)
-{
-	Image image(m.size, std::vector<Color>(m.size));
-	for(int i=0;i<m.size;i++)
-	{
-		for(int j=0;j<m.size;j++)
-		{
-			const Matrix::Bin& bin=m.data[i][j];
-			if((bin.count_helix+bin.count_sheet)>0)
-			{
-				Color& color=image[i][j];
-				color.r=static_cast<unsigned int>(bin.count_helix/(bin.count_helix+bin.count_sheet)*255.0);
-				color.g=static_cast<unsigned int>(bin.count_sheet/(bin.count_helix+bin.count_sheet)*255.0);
+				if(mode==0)
+				{
+					color=Color::from_rainbow_gradient(bin.count_helix/bin.count_all);
+				}
+				else if(mode==1)
+				{
+					color=Color::from_rainbow_gradient(bin.count_sheet/bin.count_all);
+				}
+				else
+				{
+					color=Color::from_rainbow_gradient((bin.count_all-bin.count_helix-bin.count_sheet)/bin.count_all);
+				}
 			}
 		}
 	}
@@ -418,13 +408,18 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		std::ofstream output((output_prefix+"ss.svg").c_str(), std::ios::out);
-		print_image(construct_image_from_matrix_by_ss(matrix), output);
+		std::ofstream output((output_prefix+"ss_helix.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_ss(matrix, 0), output);
 	}
 
 	{
-		std::ofstream output((output_prefix+"ss_without_loops.svg").c_str(), std::ios::out);
-		print_image(construct_image_from_matrix_by_ss_without_loops(matrix), output);
+		std::ofstream output((output_prefix+"ss_sheet.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_ss(matrix, 1), output);
+	}
+
+	{
+		std::ofstream output((output_prefix+"ss_loop.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_ss(matrix, 2), output);
 	}
 
 	{
