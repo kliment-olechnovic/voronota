@@ -45,11 +45,10 @@ struct Matrix
 
 	typedef std::vector< std::vector<Bin> > Data;
 
-	static const int size=360;
-
+	const int size;
 	Data data;
 
-	Matrix() : data(size, std::vector<Bin>(size))
+	Matrix(const int size) : size(size), data(size, std::vector<Bin>(size))
 	{
 	}
 
@@ -354,7 +353,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool print_ss_without_loops_image=poh.contains_option("--print-ss-without-loops-image");
 	const bool print_energies_image=poh.contains_option("--print-energies-image");
 
-	Matrix matrix;
+	Matrix matrix(360);
 
 	int processed_lines=0;
 	while(std::cin.good())
@@ -381,8 +380,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		processed_lines++;
 	}
 
-	matrix.remove_noise(4);
-	matrix.smooth(4);
+	matrix.remove_noise(10);
+	matrix.smooth(10);
 
 	if(print_counts_image)
 	{
