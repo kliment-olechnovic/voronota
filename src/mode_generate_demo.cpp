@@ -234,11 +234,11 @@ struct Color
 
 typedef std::vector< std::vector<Color> > Image;
 
-Image construct_image_from_matrix_by_counts(const Matrix& m)
+Image construct_image_from_matrix_by_counts_energies(const Matrix& m)
 {
 	Image image(m.size, std::vector<Color>(m.size));
-	std::vector<double> counts;
-	counts.reserve(m.size*m.size);
+	std::vector<double> counts_energies;
+	counts_energies.reserve(m.size*m.size);
 	for(int i=0;i<m.size;i++)
 	{
 		for(int j=0;j<m.size;j++)
@@ -246,14 +246,15 @@ Image construct_image_from_matrix_by_counts(const Matrix& m)
 			const Matrix::Bin& bin=m.data[i][j];
 			if(bin.count_all>0)
 			{
-				counts.push_back(bin.count_all);
+				const double count_energy=(0-log(bin.count_all));
+				counts_energies.push_back(count_energy);
 			}
 		}
 	}
-	std::sort(counts.begin(), counts.end());
-	const std::size_t q1=counts.size()/100*5;
-	const std::size_t q2=counts.size()/100*95;
-	const std::pair<double, double> gradient_range(counts[q1], counts[q2]);
+	std::sort(counts_energies.begin(), counts_energies.end());
+	const std::size_t q1=counts_energies.size()/100*5;
+	const std::size_t q2=counts_energies.size()/100*95;
+	const std::pair<double, double> gradient_range(counts_energies[q1], counts_energies[q2]);
 	for(int i=0;i<m.size;i++)
 	{
 		for(int j=0;j<m.size;j++)
@@ -261,8 +262,8 @@ Image construct_image_from_matrix_by_counts(const Matrix& m)
 			const Matrix::Bin& bin=m.data[i][j];
 			if(bin.count_all>0)
 			{
-				const double count=bin.count_all;
-				const double gradient_value=(count-gradient_range.first)/(gradient_range.second-gradient_range.first);
+				const double count_energy=(0-log(bin.count_all));
+				const double gradient_value=(count_energy-gradient_range.first)/(gradient_range.second-gradient_range.first);
 				image[i][j]=Color::from_rainbow_gradient(gradient_value);
 			}
 		}
@@ -403,8 +404,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	matrix.smooth(10);
 
 	{
-		std::ofstream output((output_prefix+"counts.svg").c_str(), std::ios::out);
-		print_image(construct_image_from_matrix_by_counts(matrix), output);
+		std::ofstream output((output_prefix+"counts_energies.svg").c_str(), std::ios::out);
+		print_image(construct_image_from_matrix_by_counts_energies(matrix), output);
 	}
 
 	{
@@ -423,7 +424,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	{
-		std::ofstream output((output_prefix+"mean_energy.svg").c_str(), std::ios::out);
+		std::ofstream output((output_prefix+"mean_energies.svg").c_str(), std::ios::out);
 		print_image(construct_image_from_matrix_by_mean_energy(matrix), output);
 	}
 }
