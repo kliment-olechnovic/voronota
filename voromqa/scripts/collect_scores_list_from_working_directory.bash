@@ -13,6 +13,8 @@ done
 
 QSCORE1="QSCORE1_NA"
 QSCORE2="QSCORE2_NA"
+QSCORE3="QSCORE3_NA"
+QSCORE4="QSCORE4_NA"
 CADSCORE1="CADSCORE1_NA"
 CADSCORE2="CADSCORE2_NA"
 CADSCORE3="CADSCORE3_NA"
@@ -32,6 +34,8 @@ if [ -s "$WORKDIR/global_quality_score" ]
 then
 	QSCORE1=$(cat $WORKDIR/global_quality_score | awk '{print $1}')
 	QSCORE2=$(cat $WORKDIR/global_quality_score | awk '{print $2}')
+	QSCORE3=$(cat $WORKDIR/global_quality_score | awk '{print $3}')
+	QSCORE4=$(cat $WORKDIR/global_quality_score | awk '{print $4}')
 fi
 
 if [ -s "$WORKDIR/global_cad_score" ]
@@ -80,4 +84,4 @@ then
 	DOOP=$(cat $WORKDIR/doop_score | awk '{print $2}')
 fi
 
-echo "$WORKDIR $QSCORE1 $QSCORE2 $CADSCORE1 $CADSCORE2 $CADSCORE3 $CADSCORE4 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE $ATOMSCOUNT $QAREA $QENERGY $QSAS $RWPLUS $DOOP" > $WORKDIR/scores_list
+echo "$WORKDIR $QSCORE1 $QSCORE2 $QSCORE3 $QSCORE4 $CADSCORE1 $CADSCORE2 $CADSCORE3 $CADSCORE4 $GOAPSCORE1 $GOAPSCORE2 $GOAPSCORE3 $TMSCORE $ATOMSCOUNT $QAREA $QENERGY $QSAS $RWPLUS $DOOP" > $WORKDIR/scores_list

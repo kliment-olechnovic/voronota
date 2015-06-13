@@ -718,6 +718,10 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
 
 	std::map<CRAD, double> atom_quality_scores;
+	std::map<CRAD, double> atom_quality_scores_weighted_by_contacts_count;
+	std::map<CRAD, double> atom_quality_scores_weighted_by_total_area;
+	int sum_of_atom_contacts_counts=0;
+	double sum_of_atom_total_areas=0;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
 	{
 		const CRAD& crad=it->first;
@@ -732,10 +736,16 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			const double adjusted_normalized_energy=((normalized_energy-mean)/sd);
 			const double energy_score=(1.0-(0.5*(1.0+erf((adjusted_normalized_energy-mean_shift)/sqrt(2.0)))));
 			atom_quality_scores[crad]=(energy_score*actuality_score);
+			atom_quality_scores_weighted_by_contacts_count[crad]=(energy_score*actuality_score*static_cast<double>(ed.contacts_count));
+			atom_quality_scores_weighted_by_total_area[crad]=(energy_score*actuality_score*ed.total_area);
+			sum_of_atom_contacts_counts+=ed.contacts_count;
+			sum_of_atom_total_areas+=ed.total_area;
 		}
 		else
 		{
 			atom_quality_scores[crad]=0.0;
+			atom_quality_scores_weighted_by_contacts_count[crad]=0.0;
+			atom_quality_scores_weighted_by_total_area[crad]=0.0;
 		}
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
@@ -760,6 +770,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		std::cout << "0";
 	}
 	std::cout << " ";
+
 	if(!residue_quality_scores.empty())
 	{
 		double sum=0.0;
@@ -768,6 +779,36 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			sum+=it->second;
 		}
 		std::cout << (sum/static_cast<double>(residue_quality_scores.size()));
+	}
+	else
+	{
+		std::cout << "0";
+	}
+	std::cout << " ";
+
+	if(!atom_quality_scores_weighted_by_contacts_count.empty())
+	{
+		double sum=0.0;
+		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_contacts_count.begin();it!=atom_quality_scores_weighted_by_contacts_count.end();++it)
+		{
+			sum+=it->second;
+		}
+		std::cout << (sum/static_cast<double>(sum_of_atom_contacts_counts));
+	}
+	else
+	{
+		std::cout << "0";
+	}
+	std::cout << " ";
+
+	if(!atom_quality_scores_weighted_by_total_area.empty())
+	{
+		double sum=0.0;
+		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_total_area.begin();it!=atom_quality_scores_weighted_by_total_area.end();++it)
+		{
+			sum+=it->second;
+		}
+		std::cout << (sum/static_cast<double>(sum_of_atom_total_areas));
 	}
 	else
 	{
