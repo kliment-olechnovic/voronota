@@ -32,6 +32,14 @@ analyze "qscore_atom" "goap_ag" "F-invert-refscore F-normalize-refscore"
 analyze "qscore_atom" "rwplus" "F-invert-refscore F-normalize-refscore"
 analyze "qscore_atom" "doop" "F-invert-refscore F-normalize-refscore"
 
+analyze "qscore_atom_wc" "cadscore_residue"
+analyze "qscore_atom_wc" "cadscore_atom"
+analyze "qscore_atom_wc" "tmscore"
+
+analyze "qscore_atom_wa" "cadscore_residue"
+analyze "qscore_atom_wa" "cadscore_atom"
+analyze "qscore_atom_wa" "tmscore"
+
 analyze "qenergy" "cadscore_residue" "F-invert-testscore F-normalize-testscore-by-area"
 analyze "qenergy" "cadscore_atom" "F-invert-testscore F-normalize-testscore-by-area"
 analyze "qenergy" "tmscore" "F-invert-testscore F-normalize-testscore-by-area"
