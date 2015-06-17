@@ -458,6 +458,11 @@ public:
 	{
 		return ((a<v.a) || (a==v.a && b<v.b));
 	}
+
+	bool contains(const ChainResidueAtomDescriptor& v) const
+	{
+		return (a==v || b==v);
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)
