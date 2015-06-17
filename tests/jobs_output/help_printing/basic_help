@@ -9,6 +9,7 @@ calculate-contacts
 query-balls
 query-balls-sequences-pairings-stats
 query-contacts
+query-contacts-simulating-unfolding
 plot-contacts
 score-contacts-potential
 score-contacts-potentials-stats

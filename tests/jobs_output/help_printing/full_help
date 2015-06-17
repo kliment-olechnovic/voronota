@@ -9,6 +9,7 @@ calculate-contacts
 query-balls
 query-balls-sequences-pairings-stats
 query-contacts
+query-contacts-simulating-unfolding
 plot-contacts
 score-contacts-potential
 score-contacts-potentials-stats
@@ -161,6 +162,12 @@ Command 'query-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'query-contacts-simulating-unfolding' options:
+--max-seq-sep                   number   *  maximum untouchable residue sequence separation
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
 
 Command 'plot-contacts' options:
 --background-color              string      color string in SVG-acceptable format
