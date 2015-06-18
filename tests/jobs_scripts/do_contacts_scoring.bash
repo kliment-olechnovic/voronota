@@ -90,12 +90,17 @@ do
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomenergies \
 	> $SUBDIR/$INFILEBASENAME.globalenergy
 	
+	cat $INFILE \
+	| $VORONOTA query-contacts-depth-values \
+	> $SUBDIR/$INFILEBASENAME.depthvalues
+	
 	cat $SUBDIR/$INFILEBASENAME.atomenergies \
 	| $VORONOTA score-contacts-quality \
 	  --default-mean -0.32 \
 	  --default-sd 0.17 \
 	  --mean-shift 0.0 \
 	  --means-and-sds-file $VORONOTADIR/energy_means_and_sds \
+	  --external-weights-file $SUBDIR/$INFILEBASENAME.depthvalues \
 	  --smoothing-window 5 \
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomqscores \
 	  --residue-scores-file $SUBDIR/$INFILEBASENAME.residueqscores \

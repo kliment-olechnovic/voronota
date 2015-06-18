@@ -223,6 +223,7 @@ Command 'score-contacts-quality' options:
 --default-sd                    number      default standard deviation parameter
 --means-and-sds-file            string      file path to input atomic mean and sd parameters
 --mean-shift                    number      mean shift in standard deviations
+--external-weights-file         string      file path to input external weights for global scoring
 --smoothing-window              number      window to smooth residue quality scores along sequence
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
