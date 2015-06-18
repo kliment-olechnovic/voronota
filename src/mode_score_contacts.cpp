@@ -690,6 +690,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		ods.push_back(OD("--default-sd", "number", "default standard deviation parameter"));
 		ods.push_back(OD("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"));
 		ods.push_back(OD("--mean-shift", "number", "mean shift in standard deviations"));
+		ods.push_back(OD("--external-weights-file", "string", "file path to input external weights for global scoring"));
 		ods.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
 		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
 		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
@@ -705,6 +706,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const double default_sd=poh.argument<double>("--default-sd", 0.3);
 	const std::string mean_and_sds_file=poh.argument<std::string>("--means-and-sds-file", "");
 	const double mean_shift=poh.argument<double>("--mean-shift", 0.0);
+	const std::string external_weights_file=poh.argument<std::string>("--external-weights-file", "");
 	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
 	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
 	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
@@ -717,11 +719,13 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
 
+	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
+
 	std::map<CRAD, double> atom_quality_scores;
-	std::map<CRAD, double> atom_quality_scores_weighted_by_contacts_count;
 	std::map<CRAD, double> atom_quality_scores_weighted_by_total_area;
-	int sum_of_atom_contacts_counts=0;
 	double sum_of_atom_total_areas=0;
+	std::map<CRAD, double> atom_quality_scores_weighted_by_external_weights;
+	double sum_of_external_weights=0;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
 	{
 		const CRAD& crad=it->first;
@@ -735,17 +739,24 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			const double sd=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.sd : default_sd);
 			const double adjusted_normalized_energy=((normalized_energy-mean)/sd);
 			const double energy_score=(1.0-(0.5*(1.0+erf((adjusted_normalized_energy-mean_shift)/sqrt(2.0)))));
-			atom_quality_scores[crad]=(energy_score*actuality_score);
-			atom_quality_scores_weighted_by_contacts_count[crad]=(energy_score*actuality_score*static_cast<double>(ed.contacts_count));
-			atom_quality_scores_weighted_by_total_area[crad]=(energy_score*actuality_score*ed.total_area);
-			sum_of_atom_contacts_counts+=ed.contacts_count;
-			sum_of_atom_total_areas+=ed.total_area;
+			const double unweighted_quality_score=(energy_score*actuality_score);
+			atom_quality_scores[crad]=unweighted_quality_score;
+			{
+				atom_quality_scores_weighted_by_total_area[crad]=(unweighted_quality_score*ed.total_area);
+				sum_of_atom_total_areas+=ed.total_area;
+			}
+			{
+				std::map<CRAD, double>::const_iterator external_weights_it=external_weights.find(crad);
+				const double external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1.0);
+				atom_quality_scores_weighted_by_external_weights[crad]=(unweighted_quality_score*external_weight);
+				sum_of_external_weights+=external_weight;
+			}
 		}
 		else
 		{
 			atom_quality_scores[crad]=0.0;
-			atom_quality_scores_weighted_by_contacts_count[crad]=0.0;
 			atom_quality_scores_weighted_by_total_area[crad]=0.0;
+			atom_quality_scores_weighted_by_external_weights[crad]=0.0;
 		}
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
@@ -786,21 +797,6 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	std::cout << " ";
 
-	if(!atom_quality_scores_weighted_by_contacts_count.empty())
-	{
-		double sum=0.0;
-		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_contacts_count.begin();it!=atom_quality_scores_weighted_by_contacts_count.end();++it)
-		{
-			sum+=it->second;
-		}
-		std::cout << (sum/static_cast<double>(sum_of_atom_contacts_counts));
-	}
-	else
-	{
-		std::cout << "0";
-	}
-	std::cout << " ";
-
 	if(!atom_quality_scores_weighted_by_total_area.empty())
 	{
 		double sum=0.0;
@@ -809,6 +805,21 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			sum+=it->second;
 		}
 		std::cout << (sum/static_cast<double>(sum_of_atom_total_areas));
+	}
+	else
+	{
+		std::cout << "0";
+	}
+	std::cout << " ";
+
+	if(!atom_quality_scores_weighted_by_external_weights.empty())
+	{
+		double sum=0.0;
+		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_external_weights.begin();it!=atom_quality_scores_weighted_by_external_weights.end();++it)
+		{
+			sum+=it->second;
+		}
+		std::cout << (sum/static_cast<double>(sum_of_external_weights));
 	}
 	else
 	{
