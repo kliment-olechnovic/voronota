@@ -166,7 +166,7 @@ stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distanc
 
 Command 'query-contacts-depth-values' options:
 --help                                      flag to print usage help to stderr and exit
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+stdin   <-  list of contacts (line format: 'annotation1 annotation2')
 stdout  ->  list of depth values (line format: 'annotation depth')
 
 Command 'query-contacts-simulating-unfolding' options:
