@@ -9,6 +9,7 @@ calculate-contacts
 query-balls
 query-balls-sequences-pairings-stats
 query-contacts
+query-contacts-depth-values
 query-contacts-simulating-unfolding
 plot-contacts
 score-contacts-potential
@@ -162,6 +163,11 @@ Command 'query-contacts' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'query-contacts-depth-values' options:
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+stdout  ->  list of depth values (line format: 'annotation depth')
 
 Command 'query-contacts-simulating-unfolding' options:
 --max-seq-sep                   number   *  maximum untouchable residue sequence separation
