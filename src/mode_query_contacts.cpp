@@ -382,6 +382,65 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 }
 
+void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
+{
+	{
+		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
+		std::vector<OD> ods;
+		if(!poh.assert(ods, false))
+		{
+			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
+			poh.print_io_description("stdout", false, true, "list of depth values (line format: 'annotation depth')");
+			return;
+		}
+	}
+
+	const std::map<CRADsPair, ContactValue> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, ContactValue> >(std::cin);
+	if(map_of_contacts.empty())
+	{
+		throw std::runtime_error("No input.");
+	}
+
+	std::map<CRAD, int> map_crad_to_depth;
+	int level_count=0;
+
+	for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const CRADsPair& crads=it->first;
+		if(crads.b==CRAD::solvent())
+		{
+			map_crad_to_depth[crads.a]=1;
+			level_count++;
+		}
+	}
+
+	for(int depth=1;level_count>0;depth++)
+	{
+		level_count=0;
+		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			const CRADsPair& crads=it->first;
+			if(!crads.contains(CRAD::solvent()))
+			{
+				const int depth_a=map_crad_to_depth[crads.a];
+				const int depth_b=map_crad_to_depth[crads.b];
+				if(depth_a==depth && depth_b==0)
+				{
+					map_crad_to_depth[crads.b]=(depth+1);
+					level_count++;
+				}
+				else if(depth_b==depth && depth_a==0)
+				{
+					map_crad_to_depth[crads.a]=(depth+1);
+					level_count++;
+				}
+			}
+		}
+	}
+
+	auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
+}
+
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	{
