@@ -184,19 +184,28 @@ template<typename OutputPointType, typename InputPointType>
 OutputPointType any_normal_of_vector(const InputPointType& a)
 {
 	PODPoint b=custom_point_from_object<PODPoint>(a);
-	if(!equal(b.x, 0.0))
+	if(!equal(b.x, 0.0) && (!equal(b.y, 0.0) || !equal(b.z, 0.0)))
 	{
 		b.x=0.0-b.x;
+		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
+	}
+	else if(!equal(b.y, 0.0) && !equal(b.z, 0.0))
+	{
+		b.y=0.0-b.y;
+		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
+	}
+	else if(!equal(b.x, 0.0))
+	{
+		return custom_point<OutputPointType>(0, 1, 0);
 	}
 	else if(!equal(b.y, 0.0))
 	{
-		b.y=0.0-b.y;
+		return custom_point<OutputPointType>(1, 0, 0);
 	}
 	else
 	{
-		b.z=0.0-b.z;
+		return custom_point<OutputPointType>(1, 0, 0);
 	}
-	return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
 }
 
 template<typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
