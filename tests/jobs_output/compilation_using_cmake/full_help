@@ -6,6 +6,7 @@ get-balls-from-atoms-file
 calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
+calculate-mock-solvent
 query-balls
 query-balls-sequences-pairings-stats
 query-contacts
@@ -76,6 +77,14 @@ stdin   <-  list of balls
 stdout  ->  list of contacts
               (default mode line format: 'b1 b2 area')
               (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
+
+Command 'calculate-mock-solvent' options:
+--solvent-radius                number      solvent atom radius
+--solvent-distance              number      min distance from non-solvent atoms to solvent atoms
+--sih-depth                     number      spherical surface optimization depth
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-balls' options:
 --match                         string      selection

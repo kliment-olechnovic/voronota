@@ -29,8 +29,8 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	const double solvent_radius=std::max(1.0, std::min(2.0, poh.argument<double>("--solvent-radius", 1.4)));
-	const double solvent_distance=std::max(0.0, std::min(100.0, poh.argument<double>("--solvent-distance", 1.0)));
-	const int sih_depth=std::max(0, std::min(3, poh.argument<int>("--sih-depth", 0)));
+	const double solvent_distance=std::max(0.0, std::min(10.0, poh.argument<double>("--solvent-distance", 1.0)));
+	const int sih_depth=std::max(0, std::min(3, poh.argument<int>("--sih-depth", 1)));
 
 	const double probe=(solvent_radius+solvent_distance);
 
@@ -58,6 +58,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::SubdividedIcosahedron initial_sih(sih_depth);
 
 	std::vector<apollota::SimpleSphere> mock_solvent_spheres;
+	mock_solvent_spheres.reserve(ids_graph.size()*2);
 	for(std::size_t i=0;i<ids_graph.size();i++)
 	{
 		apollota::SubdividedIcosahedron sih=initial_sih;

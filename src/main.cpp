@@ -11,6 +11,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
+void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
@@ -50,6 +51,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
 	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+	list_of_modes.push_back(ModeDescriptor("calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
 	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-balls-sequences-pairings-stats", ModeDescriptor::FunctionPtr(query_balls_sequences_pairings_stats)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
