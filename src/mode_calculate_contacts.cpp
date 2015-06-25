@@ -253,7 +253,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 								draw_solvent_contact(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 								draw_inter_atom_contact(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 					}
-					if(tag_centrality && a_id!=b_id && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
+					if(tag_centrality && crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() && crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
 					{
 						value.props.tags.insert("central");
 					}
