@@ -10,8 +10,9 @@ STEPNAMES=""
 SCHEDULER=""
 PARTIAL_POTENTIALS=""
 TEACHING=false;
+MOCK_SOLVENT_OPTION=""
 
-while getopts "b:i:o:p:s:c:r:t" OPTION
+while getopts "b:i:o:p:s:c:r:tm" OPTION
 do
 	case $OPTION in
 	b)
@@ -37,6 +38,9 @@ do
 		;;
 	t)
 		TEACHING=true
+		;;
+	m)
+		MOCK_SOLVENT_OPTION="-s"
 		;;
 	esac
 done
@@ -184,7 +188,7 @@ fi
 if [[ $STEPNAMES == *"[raw_contacts]"* ]]
 then
 	submit_step none raw_contacts \
-	  "$BINDIR/calc_raw_contacts_from_balls.bash -c -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+	  "$BINDIR/calc_raw_contacts_from_balls.bash -c $MOCK_SOLVENT_OPTION -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
 
 if [[ $STEPNAMES == *"[contacts_and_summary]"* ]]
@@ -192,10 +196,10 @@ then
 	if $TEACHING
 	then
 		submit_step raw_contacts contacts_and_summary \
-		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -m $MOCK_SOLVENT_OPTION -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 	else
 		submit_step raw_contacts contacts_and_summary \
-		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+		  "$BINDIR/calc_contacts_and_summary_from_raw_contacts.bash $MOCK_SOLVENT_OPTION -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 	fi
 fi
 
