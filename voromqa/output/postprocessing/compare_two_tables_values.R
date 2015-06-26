@@ -112,9 +112,11 @@ if(output_image!="")
 	plot(x, y, type="n", xlab=column1, ylab=column2, main=paste(column1, " vs ", column2, sep=""));
 	if(length(sds)>0) { segments(x, y-sds, x, y+sds, col="red"); }
 	points(x, y, col="black");
-	points(c(-100, 100), c(-100, 100), type="l", col="yellow");
-	points(c(-100, 100), c(0, 0), type="l", col="yellow");
-	points(c(0, 0), c(-100, 100), type="l", col="yellow");
+	
+	axises_range=c(min(c(x,y)), max(c(x,y)));
+	points(axises_range, axises_range, type="l", col="yellow");
+	points(axises_range, c(0, 0), type="l", col="yellow");
+	points(c(0, 0), axises_range, type="l", col="yellow");
 
 	dev.off();
 }
