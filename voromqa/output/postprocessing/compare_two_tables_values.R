@@ -86,6 +86,7 @@ if(filter2_name!="")
 x=c();
 y=c();
 sds=c();
+t=t1;
 if(length(mergings)>0)
 {
 	t=merge(t1, t2, by=mergings);
@@ -118,9 +119,7 @@ if(output_image!="")
 	dev.off();
 }
 
-
-### Results statistics output ###
-
+t[rev(order(abs(x-y)))[1:5],]
 
 cor(x, y);
 
