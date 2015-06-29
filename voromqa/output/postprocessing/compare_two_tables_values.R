@@ -130,3 +130,7 @@ quantile(x-y);
 mean(x-y);
 
 sd(x-y);
+
+length(which(x<y));
+length(which(x==y));
+length(which(x>y));
