@@ -3,7 +3,7 @@
 WORKDIR=$1
 
 {
-	echo "set_name target model qscore_atom qscore_residue qscore_atom_wa qscore_atom_we cadscore_atom cadscore_residue cadscore_atom_avg cadscore_residue_avg goap dfire goap_ag tmscore atomscount qarea qenergy qsas rwplus doop"
+	echo "set_name target model qscore_atom cadscore_atom cadscore_residue cadscore_atom_avg cadscore_residue_avg goap dfire goap_ag tmscore atomscount qarea qenergy qsas rwplus doop"
 	cat $WORKDIR/concatenated_scores_lists \
 	| sed 's|^.*/entries/\(.*\)|\1|' \
 	| sed 's|models/||' \
