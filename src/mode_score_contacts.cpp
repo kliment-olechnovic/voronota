@@ -719,13 +719,10 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
 
-	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
+	const std::map<CRAD, int> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, int> >(external_weights_file);
 
 	std::map<CRAD, double> atom_quality_scores;
-	std::map<CRAD, double> atom_quality_scores_weighted_by_total_area;
-	double sum_of_atom_total_areas=0;
-	std::map<CRAD, double> atom_quality_scores_weighted_by_external_weights;
-	double sum_of_external_weights=0;
+	std::map< int, std::pair<int, double> > map_of_external_weights_scores;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
 	{
 		const CRAD& crad=it->first;
@@ -742,21 +739,25 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			const double unweighted_quality_score=(energy_score*actuality_score);
 			atom_quality_scores[crad]=unweighted_quality_score;
 			{
-				atom_quality_scores_weighted_by_total_area[crad]=(unweighted_quality_score*ed.total_area);
-				sum_of_atom_total_areas+=ed.total_area;
-			}
-			{
-				std::map<CRAD, double>::const_iterator external_weights_it=external_weights.find(crad);
-				const double external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1.0);
-				atom_quality_scores_weighted_by_external_weights[crad]=(unweighted_quality_score*external_weight);
-				sum_of_external_weights+=external_weight;
+				std::map<CRAD, int>::const_iterator external_weights_it=external_weights.find(crad);
+				int external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1);
+				if(external_weight<1)
+				{
+					external_weight=1;
+				}
+				if(external_weight>3)
+				{
+					external_weight=3;
+				}
+				std::pair<int, double>& external_weight_score_record=map_of_external_weights_scores[external_weight];
+				external_weight_score_record.first++;
+				external_weight_score_record.second+=unweighted_quality_score;
 			}
 		}
 		else
 		{
 			atom_quality_scores[crad]=0.0;
-			atom_quality_scores_weighted_by_total_area[crad]=0.0;
-			atom_quality_scores_weighted_by_external_weights[crad]=0.0;
+			map_of_external_weights_scores[1].first++;
 		}
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
@@ -767,63 +768,10 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
 	}
 
-	if(!atom_quality_scores.empty())
+	for(int i=1;i<=3;i++)
 	{
-		double sum=0.0;
-		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores.begin();it!=atom_quality_scores.end();++it)
-		{
-			sum+=it->second;
-		}
-		std::cout << (sum/static_cast<double>(atom_quality_scores.size()));
+		const std::pair<int, double>& external_weight_score_record=map_of_external_weights_scores[i];
+		std::cout << (static_cast<double>(external_weight_score_record.first)/static_cast<double>(atom_quality_scores.size())) << " ";
+		std::cout << (external_weight_score_record.second/static_cast<double>(external_weight_score_record.first)) << (i<3 ? "  " : "\n");
 	}
-	else
-	{
-		std::cout << "0";
-	}
-	std::cout << " ";
-
-	if(!residue_quality_scores.empty())
-	{
-		double sum=0.0;
-		for(std::map<CRAD, double>::const_iterator it=residue_quality_scores.begin();it!=residue_quality_scores.end();++it)
-		{
-			sum+=it->second;
-		}
-		std::cout << (sum/static_cast<double>(residue_quality_scores.size()));
-	}
-	else
-	{
-		std::cout << "0";
-	}
-	std::cout << " ";
-
-	if(!atom_quality_scores_weighted_by_total_area.empty())
-	{
-		double sum=0.0;
-		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_total_area.begin();it!=atom_quality_scores_weighted_by_total_area.end();++it)
-		{
-			sum+=it->second;
-		}
-		std::cout << (sum/static_cast<double>(sum_of_atom_total_areas));
-	}
-	else
-	{
-		std::cout << "0";
-	}
-	std::cout << " ";
-
-	if(!atom_quality_scores_weighted_by_external_weights.empty())
-	{
-		double sum=0.0;
-		for(std::map<CRAD, double>::const_iterator it=atom_quality_scores_weighted_by_external_weights.begin();it!=atom_quality_scores_weighted_by_external_weights.end();++it)
-		{
-			sum+=it->second;
-		}
-		std::cout << (sum/static_cast<double>(sum_of_external_weights));
-	}
-	else
-	{
-		std::cout << "0";
-	}
-	std::cout << "\n";
 }
