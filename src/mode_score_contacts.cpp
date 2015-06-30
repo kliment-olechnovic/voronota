@@ -719,10 +719,11 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::map<CRAD, NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, NormalDistributionParameters> >(mean_and_sds_file);
 
-	const std::map<CRAD, int> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, int> >(external_weights_file);
+	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
 
 	std::map<CRAD, double> atom_quality_scores;
-	std::map< int, std::pair<int, double> > map_of_external_weights_scores;
+	double sum_of_weighted_scores=0.0;
+	double sum_of_weights=0.0;
 	for(std::map<CRAD, EnergyDescriptor>::const_iterator it=atom_energy_descriptors.begin();it!=atom_energy_descriptors.end();++it)
 	{
 		const CRAD& crad=it->first;
@@ -739,25 +740,16 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			const double unweighted_quality_score=(energy_score*actuality_score);
 			atom_quality_scores[crad]=unweighted_quality_score;
 			{
-				std::map<CRAD, int>::const_iterator external_weights_it=external_weights.find(crad);
-				int external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1);
-				if(external_weight<1)
-				{
-					external_weight=1;
-				}
-				if(external_weight>3)
-				{
-					external_weight=3;
-				}
-				std::pair<int, double>& external_weight_score_record=map_of_external_weights_scores[external_weight];
-				external_weight_score_record.first++;
-				external_weight_score_record.second+=unweighted_quality_score;
+				std::map<CRAD, double>::const_iterator external_weights_it=external_weights.find(crad);
+				const double external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1.0);
+				sum_of_weighted_scores+=(unweighted_quality_score*external_weight);
+				sum_of_weights+=external_weight;
 			}
 		}
 		else
 		{
 			atom_quality_scores[crad]=0.0;
-			map_of_external_weights_scores[1].first++;
+			sum_of_weights+=1.0;
 		}
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
@@ -768,10 +760,5 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
 	}
 
-	for(int i=1;i<=3;i++)
-	{
-		const std::pair<int, double>& external_weight_score_record=map_of_external_weights_scores[i];
-		std::cout << (static_cast<double>(external_weight_score_record.first)/static_cast<double>(atom_quality_scores.size())) << " ";
-		std::cout << (external_weight_score_record.second/static_cast<double>(external_weight_score_record.first)) << (i<3 ? "  " : "\n");
-	}
+	std::cout << (sum_of_weights>0.0 ? sum_of_weighted_scores/sum_of_weights : 0.0) << "\n";
 }
