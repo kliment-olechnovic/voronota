@@ -3,6 +3,12 @@
 SCRIPTDIR=$(dirname $0)
 INFILE=$1
 OUTDIR=$2
+MAINSCORE=$3
+
+if [ -z "$MAINSCORE" ]
+then
+	MAINSCORE="qscore_atom"
+fi
 
 function analyze
 {
@@ -23,14 +29,14 @@ function analyze
 	cat $SUBDIR/results_summary | column -t | sponge $SUBDIR/results_summary
 }
 
-analyze "qscore_atom" "cadscore_residue"
-analyze "qscore_atom" "cadscore_atom"
-analyze "qscore_atom" "tmscore"
-analyze "qscore_atom" "goap" "F-invert-refscore F-normalize-refscore"
-analyze "qscore_atom" "dfire" "F-invert-refscore F-normalize-refscore"
-analyze "qscore_atom" "goap_ag" "F-invert-refscore F-normalize-refscore"
-analyze "qscore_atom" "rwplus" "F-invert-refscore F-normalize-refscore"
-analyze "qscore_atom" "doop" "F-invert-refscore F-normalize-refscore"
+analyze "$MAINSCORE" "cadscore_residue"
+analyze "$MAINSCORE" "cadscore_atom"
+analyze "$MAINSCORE" "tmscore"
+analyze "$MAINSCORE" "goap" "F-invert-refscore F-normalize-refscore"
+analyze "$MAINSCORE" "dfire" "F-invert-refscore F-normalize-refscore"
+analyze "$MAINSCORE" "goap_ag" "F-invert-refscore F-normalize-refscore"
+analyze "$MAINSCORE" "rwplus" "F-invert-refscore F-normalize-refscore"
+analyze "$MAINSCORE" "doop" "F-invert-refscore F-normalize-refscore"
 
 analyze "qenergy" "cadscore_residue" "F-invert-testscore F-normalize-testscore-by-area"
 analyze "qenergy" "cadscore_atom" "F-invert-testscore F-normalize-testscore-by-area"
