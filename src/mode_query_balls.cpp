@@ -92,77 +92,45 @@ std::map<CRAD, DSSPRecord> init_map_of_dssp_records(const std::string& dssp_file
 
 void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--match", "string", "selection"));
-		ods.push_back(OD("--match-not", "string", "negative selection"));
-		ods.push_back(OD("--match-tags", "string", "tags to match"));
-		ods.push_back(OD("--match-tags-not", "string", "tags to not match"));
-		ods.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
-		ods.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
-		ods.push_back(OD("--match-external-annotations", "string", "file path to input matchable annotations"));
-		ods.push_back(OD("--invert", "", "flag to invert selection"));
-		ods.push_back(OD("--whole-residues", "", "flag to select whole residues"));
-		ods.push_back(OD("--drop-atom-serials", "", "flag to drop atom serial numbers from input"));
-		ods.push_back(OD("--drop-altloc-indicators", "", "flag to drop alternate location indicators from input"));
-		ods.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		ods.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
-		ods.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
-		ods.push_back(OD("--set-dssp-info", "string", "file path to input DSSP file"));
-		ods.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
-		ods.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
-		ods.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
-		ods.push_back(OD("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
-		ods.push_back(OD("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"));
-		ods.push_back(OD("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
-		ods.push_back(OD("--reset-serials", "", "flag to reset atom serial numbers"));
-		ods.push_back(OD("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"));
-		ods.push_back(OD("--ref-seq-alignment", "string", "file path to output alignment with reference"));
-		ods.push_back(OD("--seq-output", "string", "file path to output query result sequence string"));
-		ods.push_back(OD("--chains-summary-output", "string", "file path to output chains summary"));
-		ods.push_back(OD("--chains-seq-identity", "number", "sequence identity threshold for chains summary"));
-		ods.push_back(OD("--pdb-output", "string", "file path to output query result in PDB format"));
-		ods.push_back(OD("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"));
-		ods.push_back(OD("--pdb-output-template", "string", "file path to input template for B-factor insertions"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
-			poh.print_io_description("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
+	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
-	const std::string match=poh.argument<std::string>("--match", "");
-	const std::string match_not=poh.argument<std::string>("--match-not", "");
-	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
-	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
-	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
-	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
-	const std::string match_external_annotations=poh.argument<std::string>("--match-external-annotations", "");
-	const bool invert=poh.contains_option("--invert");
-	const bool whole_residues=poh.contains_option("--whole-residues");
-	const bool drop_atom_serial=poh.contains_option("--drop-atom-serials");
-	const bool drop_altloc_indicators=poh.contains_option("--drop-altloc-indicators");
-	const bool drop_tags=poh.contains_option("--drop-tags");
-	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
-	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
-	const std::string set_dssp_info=poh.argument<std::string>("--set-dssp-info", "");
-	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
-	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
-	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
-	const bool rename_chains=poh.contains_option("--rename-chains");
-	const std::string renumber_from_adjunct=poh.argument<std::string>("--renumber-from-adjunct", "");
-	const bool renumber_positively=poh.contains_option("--renumber-positively");
-	const bool reset_serials=poh.contains_option("--reset-serials");
-	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>("--set-ref-seq-num-adjunct", "");
-	const std::string ref_seq_alignment=poh.argument<std::string>("--ref-seq-alignment", "");
-	const std::string seq_output=poh.argument<std::string>("--seq-output", "");
-	const std::string chains_summary_output=poh.argument<std::string>("--chains-summary-output", "");
-	const double chains_seq_identity=poh.argument<double>("--chains-seq-identity", 0.9);
-	const std::string pdb_output=poh.argument<std::string>("--pdb-output", "");
-	const std::string pdb_output_b_factor=poh.argument<std::string>("--pdb-output-b-factor", "tf");
-	const std::string pdb_output_template=poh.argument<std::string>("--pdb-output-template", "");
+	const std::string match=poh.argument<std::string>(pohw.describe_option("--match", "string", "selection"), "");
+	const std::string match_not=poh.argument<std::string>(pohw.describe_option("--match-not", "string", "negative selection"), "");
+	const std::string match_tags=poh.argument<std::string>(pohw.describe_option("--match-tags", "string", "tags to match"), "");
+	const std::string match_tags_not=poh.argument<std::string>(pohw.describe_option("--match-tags-not", "string", "tags to not match"), "");
+	const std::string match_adjuncts=poh.argument<std::string>(pohw.describe_option("--match-adjuncts", "string", "adjuncts intervals to match"), "");
+	const std::string match_adjuncts_not=poh.argument<std::string>(pohw.describe_option("--match-adjuncts-not", "string", "adjuncts intervals to not match"), "");
+	const std::string match_external_annotations=poh.argument<std::string>(pohw.describe_option("--match-external-annotations", "string", "file path to input matchable annotations"), "");
+	const bool invert=poh.contains_option(pohw.describe_option("--invert", "", "flag to invert selection"));
+	const bool whole_residues=poh.contains_option(pohw.describe_option("--whole-residues", "", "flag to select whole residues"));
+	const bool drop_atom_serial=poh.contains_option(pohw.describe_option("--drop-atom-serials", "", "flag to drop atom serial numbers from input"));
+	const bool drop_altloc_indicators=poh.contains_option(pohw.describe_option("--drop-altloc-indicators", "", "flag to drop alternate location indicators from input"));
+	const bool drop_tags=poh.contains_option(pohw.describe_option("--drop-tags", "", "flag to drop all tags from input"));
+	const bool drop_adjuncts=poh.contains_option(pohw.describe_option("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+	const std::string set_tags=poh.argument<std::string>(pohw.describe_option("--set-tags", "string", "set tags instead of filtering"), "");
+	const std::string set_dssp_info=poh.argument<std::string>(pohw.describe_option("--set-dssp-info", "string", "file path to input DSSP file"), "");
+	const std::string set_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-adjuncts", "string", "set adjuncts instead of filtering"), "");
+	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
+	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
+	const bool rename_chains=poh.contains_option(pohw.describe_option("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
+	const std::string renumber_from_adjunct=poh.argument<std::string>(pohw.describe_option("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"), "");
+	const bool renumber_positively=poh.contains_option(pohw.describe_option("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
+	const bool reset_serials=poh.contains_option(pohw.describe_option("--reset-serials", "", "flag to reset atom serial numbers"));
+	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>(pohw.describe_option("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"), "");
+	const std::string ref_seq_alignment=poh.argument<std::string>(pohw.describe_option("--ref-seq-alignment", "string", "file path to output alignment with reference"), "");
+	const std::string seq_output=poh.argument<std::string>(pohw.describe_option("--seq-output", "string", "file path to output query result sequence string"), "");
+	const std::string chains_summary_output=poh.argument<std::string>(pohw.describe_option("--chains-summary-output", "string", "file path to output chains summary"), "");
+	const double chains_seq_identity=poh.argument<double>(pohw.describe_option("--chains-seq-identity", "number", "sequence identity threshold for chains summary"), 0.9);
+	const std::string pdb_output=poh.argument<std::string>(pohw.describe_option("--pdb-output", "string", "file path to output query result in PDB format"), "");
+	const std::string pdb_output_b_factor=poh.argument<std::string>(pohw.describe_option("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"), "tf");
+	const std::string pdb_output_template=poh.argument<std::string>(pohw.describe_option("--pdb-output-template", "string", "file path to input template for B-factor insertions"), "");
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
@@ -498,15 +466,13 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 {
 	typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls files");
+	pohw.describe_io("stdout", false, true, "list of sequences pairings stats");
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of balls files");
-			poh.print_io_description("stdout", false, true, "list of sequences pairings stats");
-			return;
-		}
+		return;
 	}
 
 	std::map<CRAD, double> map_of_single_stats;

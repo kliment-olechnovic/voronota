@@ -24,31 +24,6 @@ public:
 		}
 	};
 
-	struct OptionDescription
-	{
-		std::string name;
-		std::string argument_type;
-		std::string description_text;
-		bool required;
-
-		OptionDescription(
-				const std::string& name,
-				const std::string& argument_type,
-				const std::string& description_text,
-				const bool required=false) :
-					name(name),
-					argument_type(argument_type),
-					description_text(description_text),
-					required(required)
-		{
-		}
-
-		bool operator==(const std::string& check_name) const
-		{
-			return (check_name==name);
-		}
-	};
-
 	ProgramOptionsHandler(const int argc, const char** argv)
 	{
 		if(argc>0)
@@ -90,6 +65,11 @@ public:
 	const std::vector<std::string>& unused_argv() const
 	{
 		return unused_argv_;
+	}
+
+	const std::map<std::string, std::string>& options() const
+	{
+		return options_;
 	}
 
 	bool empty() const
@@ -192,25 +172,6 @@ public:
 		options_.erase(name);
 	}
 
-	bool assert(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized_options) const
-	{
-		std::vector<OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions;
-		basic_list_of_option_descriptions.push_back(OptionDescription("--help", "", "flag to print usage help to stderr and exit"));
-		if(contains_option("--help"))
-		{
-			if(!basic_list_of_option_descriptions.empty())
-			{
-				print_list_of_option_descriptions("", basic_list_of_option_descriptions, std::cerr);
-			}
-			return false;
-		}
-		else
-		{
-			compare_with_list_of_option_descriptions(basic_list_of_option_descriptions, allow_unrecognized_options);
-			return true;
-		}
-	}
-
 	template<typename T>
 	static T convert_hex_string_to_integer(const std::string& str)
 	{
@@ -224,87 +185,7 @@ public:
 		return value;
 	}
 
-	static void print_io_description(const std::string& name, const bool from, const bool to, const std::string& description)
-	{
-		if(!name.empty() && !description.empty() && (from || to))
-		{
-			std::ostream& output=std::cerr;
-			const std::size_t max_name_length=std::max(static_cast<std::size_t>(7), name.size());
-			output << name << std::string(max_name_length+1-name.size(), ' ');
-			if(from && to)
-			{
-				output << "<->";
-			}
-			else if(from)
-			{
-				output << "<- ";
-			}
-			else if(to)
-			{
-				output << "-> ";
-			}
-			std::istringstream strstream(description);
-			int linescount=0;
-			while(strstream.good())
-			{
-				std::string line;
-				std::getline(strstream, line);
-				if(!line.empty())
-				{
-					if(linescount>0)
-					{
-						output << std::string(max_name_length+6, ' ');
-					}
-					output << " " << line << "\n";
-					linescount++;
-				}
-			}
-		}
-	}
-
 private:
-	void compare_with_list_of_option_descriptions(const std::vector<OptionDescription>& list_of_option_descriptions, const bool allow_unrecognized) const
-	{
-		for(std::map<std::string, std::string>::const_iterator it=options_.begin();it!=options_.end();++it)
-		{
-			const std::string& option=it->first;
-			std::vector<OptionDescription>::const_iterator jt=std::find(list_of_option_descriptions.begin(), list_of_option_descriptions.end(), option);
-			if(jt==list_of_option_descriptions.end())
-			{
-				if(!allow_unrecognized)
-				{
-					throw Exception(std::string("Unrecognized command line option '")+option+"'.");
-				}
-			}
-			else if(it->second.empty() && !jt->argument_type.empty())
-			{
-				throw Exception(std::string("Command line option '")+option+"' should have arguments.");
-			}
-			else if(!it->second.empty() && jt->argument_type.empty())
-			{
-				throw Exception(std::string("Command line option '")+option+"' cannot have arguments.");
-			}
-		}
-	}
-
-	static void print_list_of_option_descriptions(const std::string& prefix, const std::vector<OptionDescription>& list_of_option_descriptions, std::ostream& output)
-	{
-		std::size_t max_option_name_length=30;
-		std::size_t max_argument_type_length=7;
-		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
-		{
-			max_option_name_length=std::max(max_option_name_length, it->name.size());
-			max_argument_type_length=std::max(max_argument_type_length, it->argument_type.size());
-		}
-		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
-		{
-			output << prefix << it->name << std::string(max_option_name_length+2-(it->name.size()), ' ');
-			output << it->argument_type << std::string(max_argument_type_length+2-(it->argument_type.size()), ' ');
-			output << (it->required ? "*" : " ") << "  ";
-			output << it->description_text << "\n";
-		}
-	}
-
 	static std::vector<std::string> split_string(const std::string& str, const char delimiter)
 	{
 		std::vector<std::string> result;
@@ -353,6 +234,185 @@ private:
 	std::vector<std::string> original_argv_;
 	std::vector<std::string> unused_argv_;
 	std::map<std::string, std::string> options_;
+};
+
+class ProgramOptionsHandlerWrapper
+{
+public:
+	class Exception : public std::runtime_error
+	{
+	public:
+		Exception(const std::string& msg) : std::runtime_error(msg)
+		{
+		}
+	};
+
+	const ProgramOptionsHandler& poh;
+
+	ProgramOptionsHandlerWrapper(const ProgramOptionsHandler& poh) : poh(poh)
+	{
+	}
+
+	std::string describe_option(const std::string& name, const std::string& argument_type, const std::string& description_text, const bool required=false)
+	{
+		list_of_option_descriptions_.push_back(OptionDescription(name, argument_type, description_text, required));
+		return name;
+	}
+
+	void describe_io(const std::string& name, const bool from, const bool to, const std::string& description)
+	{
+		list_of_io_descriptions_.push_back(IODescription(name, from, to, description));
+	}
+
+	bool assert_or_print_help(const bool allow_unrecognized_options) const
+	{
+		if(poh.contains_option("--help"))
+		{
+			{
+				std::vector<OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions_;
+				basic_list_of_option_descriptions.push_back(OptionDescription("--help", "", "flag to print usage help to stderr and exit", false));
+				print_list_of_option_descriptions(basic_list_of_option_descriptions, std::cerr);
+			}
+			print_list_of_io_descriptions(list_of_io_descriptions_, std::cerr);
+			return false;
+		}
+		else
+		{
+			assert_list_of_option_descriptions(allow_unrecognized_options);
+			return true;
+		}
+	}
+
+private:
+	struct OptionDescription
+	{
+		std::string name;
+		std::string argument_type;
+		std::string description_text;
+		bool required;
+
+		OptionDescription(const std::string& name, const std::string& argument_type, const std::string& description_text, const bool required) :
+			name(name), argument_type(argument_type), description_text(description_text), required(required)
+		{
+		}
+
+		bool operator==(const std::string& check_name) const
+		{
+			return (check_name==name);
+		}
+
+		void print(const std::size_t max_option_name_length, const std::size_t max_argument_type_length, std::ostream& output) const
+		{
+			output << name << std::string(std::max(max_option_name_length, name.size())+2-name.size(), ' ');
+			output << argument_type << std::string(std::max(max_argument_type_length, argument_type.size())+2-argument_type.size(), ' ');
+			output << (required ? "*" : " ") << "  ";
+			output << description_text << "\n";
+		}
+	};
+
+	struct IODescription
+	{
+		std::string name;
+		bool from;
+		bool to;
+		std::string description;
+
+		IODescription(const std::string& name, const bool from, const bool to, const std::string& description) :
+			name(name), from(from), to(to), description(description)
+		{
+		}
+
+		void print(std::ostream& output) const
+		{
+			const std::size_t max_name_length=std::max(static_cast<std::size_t>(7), name.size());
+			output << name << std::string(max_name_length+1-name.size(), ' ');
+			if(from && to)
+			{
+				output << "<->";
+			}
+			else if(from)
+			{
+				output << "<- ";
+			}
+			else if(to)
+			{
+				output << "-> ";
+			}
+			std::istringstream strstream(description);
+			int linescount=0;
+			while(strstream.good())
+			{
+				std::string line;
+				std::getline(strstream, line);
+				if(!line.empty())
+				{
+					if(linescount>0)
+					{
+						output << std::string(max_name_length+6, ' ');
+					}
+					output << " " << line << "\n";
+					linescount++;
+				}
+			}
+		}
+	};
+
+	static void print_list_of_option_descriptions(const std::vector<OptionDescription>& list_of_option_descriptions, std::ostream& output)
+	{
+		std::size_t max_option_name_length=30;
+		std::size_t max_argument_type_length=7;
+		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
+		{
+			max_option_name_length=std::max(max_option_name_length, it->name.size());
+			max_argument_type_length=std::max(max_argument_type_length, it->argument_type.size());
+		}
+		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions.begin();it!=list_of_option_descriptions.end();++it)
+		{
+			it->print(max_option_name_length, max_argument_type_length, output);
+		}
+	}
+
+	static void print_list_of_io_descriptions(const std::vector<IODescription>& list_of_io_descriptions, std::ostream& output)
+	{
+		for(std::vector<IODescription>::const_iterator it=list_of_io_descriptions.begin();it!=list_of_io_descriptions.end();++it)
+		{
+			it->print(output);
+		}
+	}
+
+	void assert_list_of_option_descriptions(const bool allow_unrecognized) const
+	{
+		for(std::vector<OptionDescription>::const_iterator it=list_of_option_descriptions_.begin();it!=list_of_option_descriptions_.end();++it)
+		{
+			if(it->required && poh.options().count(it->name)==0)
+			{
+				throw Exception(std::string("Missing required option '")+(it->name)+"'.");
+			}
+		}
+		for(std::map<std::string, std::string>::const_iterator it=poh.options().begin();it!=poh.options().end();++it)
+		{
+			const std::string& option=it->first;
+			std::vector<OptionDescription>::const_iterator jt=std::find(list_of_option_descriptions_.begin(), list_of_option_descriptions_.end(), option);
+			if(jt==list_of_option_descriptions_.end())
+			{
+				if(!allow_unrecognized)
+				{
+					throw Exception(std::string("Unrecognized command line option '")+option+"'.");
+				}
+			}
+			else if(it->second.empty() && !jt->argument_type.empty())
+			{
+				throw Exception(std::string("Command line option '")+option+"' should have arguments.");
+			}
+			else if(!it->second.empty() && jt->argument_type.empty())
+			{
+				throw Exception(std::string("Command line option '")+option+"' cannot have arguments.");
+			}
+		}
+	}
+
+	std::vector<OptionDescription> list_of_option_descriptions_;
+	std::vector<IODescription> list_of_io_descriptions_;
 };
 
 }

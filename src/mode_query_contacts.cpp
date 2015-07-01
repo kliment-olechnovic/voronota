@@ -58,101 +58,57 @@ unsigned int calc_two_crads_color_integer(const CRAD& a, const CRAD& b)
 
 void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--match-first", "string", "selection for first contacting group"));
-		ods.push_back(OD("--match-first-not", "string", "negative selection for first contacting group"));
-		ods.push_back(OD("--match-second", "string", "selection for second contacting group"));
-		ods.push_back(OD("--match-second-not", "string", "negative selection for second contacting group"));
-		ods.push_back(OD("--match-min-seq-sep", "number", "minimum residue sequence separation"));
-		ods.push_back(OD("--match-max-seq-sep", "number", "maximum residue sequence separation"));
-		ods.push_back(OD("--match-min-area", "number", "minimum contact area"));
-		ods.push_back(OD("--match-max-area", "number", "maximum contact area"));
-		ods.push_back(OD("--match-min-dist", "number", "minimum distance"));
-		ods.push_back(OD("--match-max-dist", "number", "maximum distance"));
-		ods.push_back(OD("--match-tags", "string", "tags to match"));
-		ods.push_back(OD("--match-tags-not", "string", "tags to not match"));
-		ods.push_back(OD("--match-adjuncts", "string", "adjuncts intervals to match"));
-		ods.push_back(OD("--match-adjuncts-not", "string", "adjuncts intervals to not match"));
-		ods.push_back(OD("--match-external-first", "string", "file path to input matchable annotations"));
-		ods.push_back(OD("--match-external-second", "string", "file path to input matchable annotations"));
-		ods.push_back(OD("--match-external-pairs", "string", "file path to input matchable annotation pairs"));
-		ods.push_back(OD("--no-solvent", "", "flag to not include solvent accessible areas"));
-		ods.push_back(OD("--no-same-chain", "", "flag to not include same chain contacts"));
-		ods.push_back(OD("--invert", "", "flag to invert selection"));
-		ods.push_back(OD("--drop-tags", "", "flag to drop all tags from input"));
-		ods.push_back(OD("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
-		ods.push_back(OD("--set-tags", "string", "set tags instead of filtering"));
-		ods.push_back(OD("--set-hbplus-tags", "string", "file path to input HBPLUS file"));
-		ods.push_back(OD("--set-distance-bins-tags", "string", "list of distance thresholds"));
-		ods.push_back(OD("--inter-residue-hbplus-tags", "", "flag to set inter-residue H-bond tags"));
-		ods.push_back(OD("--set-adjuncts", "string", "set adjuncts instead of filtering"));
-		ods.push_back(OD("--set-external-adjuncts", "string", "file path to input external adjuncts"));
-		ods.push_back(OD("--set-external-adjuncts-name", "string", "name for external adjuncts"));
-		ods.push_back(OD("--inter-residue", "", "flag to convert input to inter-residue contacts"));
-		ods.push_back(OD("--summarize", "", "flag to output only summary of contacts"));
-		ods.push_back(OD("--preserve-graphics", "", "flag to preserve graphics in output"));
-		ods.push_back(OD("--drawing-for-pymol", "string", "file path to output drawing as pymol script"));
-		ods.push_back(OD("--drawing-for-jmol", "string", "file path to output drawing as jmol script"));
-		ods.push_back(OD("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"));
-		ods.push_back(OD("--drawing-name", "string", "graphics object name for drawing output"));
-		ods.push_back(OD("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"));
-		ods.push_back(OD("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"));
-		ods.push_back(OD("--drawing-reverse-gradient", "", "flag to use reversed gradient for drawing"));
-		ods.push_back(OD("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
-		ods.push_back(OD("--drawing-alpha", "number", "alpha opacity value for drawing output"));
-		ods.push_back(OD("--drawing-labels", "", "flag to use labels in drawing if possible"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
-			poh.print_io_description("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
+	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 
-	const std::string match_first=poh.argument<std::string>("--match-first", "");
-	const std::string match_first_not=poh.argument<std::string>("--match-first-not", "");
-	const std::string match_second=poh.argument<std::string>("--match-second", "");
-	const std::string match_second_not=poh.argument<std::string>("--match-second-not", "");
-	const int match_min_sequence_separation=poh.argument<int>("--match-min-seq-sep", CRAD::null_num());
-	const int match_max_sequence_separation=poh.argument<int>("--match-max-seq-sep", CRAD::null_num());
-	const double match_min_area=poh.argument<double>("--match-min-area", std::numeric_limits<double>::min());
-	const double match_max_area=poh.argument<double>("--match-max-area", std::numeric_limits<double>::max());
-	const double match_min_dist=poh.argument<double>("--match-min-dist", std::numeric_limits<double>::min());
-	const double match_max_dist=poh.argument<double>("--match-max-dist", std::numeric_limits<double>::max());
-	const std::string match_tags=poh.argument<std::string>("--match-tags", "");
-	const std::string match_tags_not=poh.argument<std::string>("--match-tags-not", "");
-	const std::string match_adjuncts=poh.argument<std::string>("--match-adjuncts", "");
-	const std::string match_adjuncts_not=poh.argument<std::string>("--match-adjuncts-not", "");
-	const std::string match_external_first=poh.argument<std::string>("--match-external-first", "");
-	const std::string match_external_second=poh.argument<std::string>("--match-external-second", "");
-	const std::string match_external_pairs=poh.argument<std::string>("--match-external-pairs", "");
-	const bool no_solvent=poh.contains_option("--no-solvent");
-	const bool no_same_chain=poh.contains_option("--no-same-chain");
-	const bool invert=poh.contains_option("--invert");
-	const bool drop_tags=poh.contains_option("--drop-tags");
-	const bool drop_adjuncts=poh.contains_option("--drop-adjuncts");
-	const std::string set_tags=poh.argument<std::string>("--set-tags", "");
-	const std::string set_hbplus_tags=poh.argument<std::string>("--set-hbplus-tags", "");
-	const std::string set_distance_bins_tags=poh.argument<std::string>("--set-distance-bins-tags", "");
-	const bool inter_residue_hbplus_tags=poh.contains_option("--inter-residue-hbplus-tags");
-	const std::string set_adjuncts=poh.argument<std::string>("--set-adjuncts", "");
-	const std::string set_external_adjuncts=poh.argument<std::string>("--set-external-adjuncts", "");
-	const std::string set_external_adjuncts_name=poh.argument<std::string>("--set-external-adjuncts-name", "ex");
-	const bool inter_residue=poh.contains_option("--inter-residue");
-	const bool summarize=poh.contains_option("--summarize");
-	const std::string drawing_for_pymol=poh.argument<std::string>("--drawing-for-pymol", "");
-	const std::string drawing_for_jmol=poh.argument<std::string>("--drawing-for-jmol", "");
-	const std::string drawing_for_scenejs=poh.argument<std::string>("--drawing-for-scenejs", "");
-	const std::string drawing_name=poh.argument<std::string>("--drawing-name", "contacts");
-	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>("--drawing-color", "0xFFFFFF"));
-	const std::string drawing_adjunct_gradient=poh.argument<std::string>("--drawing-adjunct-gradient", "");
-	const bool drawing_reverse_gradient=poh.contains_option("--drawing-reverse-gradient");
-	const bool drawing_random_colors=poh.contains_option("--drawing-random-colors");
-	const double drawing_alpha=poh.argument<double>("--drawing-alpha", 1.0);
-	const bool drawing_labels=poh.contains_option("--drawing-labels");
-	enabled_output_of_ContactValue_graphics()=poh.contains_option("--preserve-graphics");
+	const std::string match_first=poh.argument<std::string>(pohw.describe_option("--match-first", "string", "selection for first contacting group"), "");
+	const std::string match_first_not=poh.argument<std::string>(pohw.describe_option("--match-first-not", "string", "negative selection for first contacting group"), "");
+	const std::string match_second=poh.argument<std::string>(pohw.describe_option("--match-second", "string", "selection for second contacting group"), "");
+	const std::string match_second_not=poh.argument<std::string>(pohw.describe_option("--match-second-not", "string", "negative selection for second contacting group"), "");
+	const int match_min_sequence_separation=poh.argument<int>(pohw.describe_option("--match-min-seq-sep", "number", "minimum residue sequence separation"), CRAD::null_num());
+	const int match_max_sequence_separation=poh.argument<int>(pohw.describe_option("--match-max-seq-sep", "number", "maximum residue sequence separation"), CRAD::null_num());
+	const double match_min_area=poh.argument<double>(pohw.describe_option("--match-min-area", "number", "minimum contact area"), std::numeric_limits<double>::min());
+	const double match_max_area=poh.argument<double>(pohw.describe_option("--match-max-area", "number", "maximum contact area"), std::numeric_limits<double>::max());
+	const double match_min_dist=poh.argument<double>(pohw.describe_option("--match-min-dist", "number", "minimum distance"), std::numeric_limits<double>::min());
+	const double match_max_dist=poh.argument<double>(pohw.describe_option("--match-max-dist", "number", "maximum distance"), std::numeric_limits<double>::max());
+	const std::string match_tags=poh.argument<std::string>(pohw.describe_option("--match-tags", "string", "tags to match"), "");
+	const std::string match_tags_not=poh.argument<std::string>(pohw.describe_option("--match-tags-not", "string", "tags to not match"), "");
+	const std::string match_adjuncts=poh.argument<std::string>(pohw.describe_option("--match-adjuncts", "string", "adjuncts intervals to match"), "");
+	const std::string match_adjuncts_not=poh.argument<std::string>(pohw.describe_option("--match-adjuncts-not", "string", "adjuncts intervals to not match"), "");
+	const std::string match_external_first=poh.argument<std::string>(pohw.describe_option("--match-external-first", "string", "file path to input matchable annotations"), "");
+	const std::string match_external_second=poh.argument<std::string>(pohw.describe_option("--match-external-second", "string", "file path to input matchable annotations"), "");
+	const std::string match_external_pairs=poh.argument<std::string>(pohw.describe_option("--match-external-pairs", "string", "file path to input matchable annotation pairs"), "");
+	const bool no_solvent=poh.contains_option(pohw.describe_option("--no-solvent", "", "flag to not include solvent accessible areas"));
+	const bool no_same_chain=poh.contains_option(pohw.describe_option("--no-same-chain", "", "flag to not include same chain contacts"));
+	const bool invert=poh.contains_option(pohw.describe_option("--invert", "", "flag to invert selection"));
+	const bool drop_tags=poh.contains_option(pohw.describe_option("--drop-tags", "", "flag to drop all tags from input"));
+	const bool drop_adjuncts=poh.contains_option(pohw.describe_option("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
+	const std::string set_tags=poh.argument<std::string>(pohw.describe_option("--set-tags", "string", "set tags instead of filtering"), "");
+	const std::string set_hbplus_tags=poh.argument<std::string>(pohw.describe_option("--set-hbplus-tags", "string", "file path to input HBPLUS file"), "");
+	const std::string set_distance_bins_tags=poh.argument<std::string>(pohw.describe_option("--set-distance-bins-tags", "string", "list of distance thresholds"), "");
+	const bool inter_residue_hbplus_tags=poh.contains_option(pohw.describe_option("--inter-residue-hbplus-tags", "", "flag to set inter-residue H-bond tags"));
+	const std::string set_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-adjuncts", "string", "set adjuncts instead of filtering"), "");
+	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
+	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
+	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
+	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of contacts"));
+	enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
+	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
+	const std::string drawing_for_jmol=poh.argument<std::string>(pohw.describe_option("--drawing-for-jmol", "string", "file path to output drawing as jmol script"), "");
+	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
+	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
+	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
+	const std::string drawing_adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
+	const bool drawing_reverse_gradient=poh.contains_option(pohw.describe_option("--drawing-reverse-gradient", "", "flag to use reversed gradient for drawing"));
+	const bool drawing_random_colors=poh.contains_option(pohw.describe_option("--drawing-random-colors", "", "flag to use random color for each drawn contact"));
+	const double drawing_alpha=poh.argument<double>(pohw.describe_option("--drawing-alpha", "number", "alpha opacity value for drawing output"), 1.0);
+	const bool drawing_labels=poh.contains_option(pohw.describe_option("--drawing-labels", "", "flag to use labels in drawing if possible"));
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	std::map<CRADsPair, ContactValue> map_of_contacts;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
@@ -384,15 +340,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2')");
+	pohw.describe_io("stdout", false, true, "list of depth values (line format: 'annotation depth')");
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2')");
-			poh.print_io_description("stdout", false, true, "list of depth values (line format: 'annotation depth')");
-			return;
-		}
+		return;
 	}
 
 	const std::set<CRADsPair> set_of_contacts=auxiliaries::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
@@ -443,21 +397,18 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
+	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
+
+	const int match_max_sequence_separation=poh.argument<int>(pohw.describe_option("--max-seq-sep", "number", "maximum untouchable residue sequence separation", true), 0);
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--max-seq-sep", "number", "maximum untouchable residue sequence separation", true));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
-			poh.print_io_description("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
-			return;
-		}
+		return;
 	}
 
 	enabled_output_of_ContactValue_graphics()=false;
-
-	const int match_max_sequence_separation=poh.argument<int>("--max-seq-sep");
 
 	const std::map<CRADsPair, ContactValue> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, ContactValue> >(std::cin);
 	if(map_of_contacts.empty())

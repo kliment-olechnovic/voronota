@@ -370,46 +370,36 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		available_processing_method_names_string=output.str();
 	}
 
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+	pohw.describe_io("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
+
+	const std::string method=poh.argument<std::string>(pohw.describe_option("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true), "");
+	const std::size_t parts=poh.argument<std::size_t>(pohw.describe_option("--parts", "number", "number of parts for splitting, must be power of 2", true), 0);
+	const bool print_log=poh.contains_option(pohw.describe_option("--print-log", "", "flag to print log of calculations"));
+	const bool include_surplus_quadruples=poh.contains_option(pohw.describe_option("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+	const bool link=poh.contains_option(pohw.describe_option("--link", "", "flag to output links between vertices"));
+	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true));
-		ods.push_back(OD("--parts", "number", "number of parts for splitting, must be power of 2", true));
-		ods.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		ods.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		ods.push_back(OD("--link", "", "flag to output links between vertices"));
-		ods.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
-			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
-			return;
-		}
+		return;
 	}
 
-	const std::string method=poh.argument<std::string>("--method");
 	if(available_processing_method_names.count(method)==0)
 	{
 		throw std::runtime_error("Invalid processing method name, acceptable values are:"+available_processing_method_names_string+".");
 	}
 
-	const std::size_t parts=poh.argument<std::size_t>("--parts");
 	if(!number_is_power_of_two(parts))
 	{
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
-	const bool print_log=poh.contains_option("--print-log");
-
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
-	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
-
-	const bool link=poh.contains_option("--link");
 
 	ParallelComputationResult result;
 	bool master_finished=true;
