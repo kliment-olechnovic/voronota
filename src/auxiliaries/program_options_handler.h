@@ -185,6 +185,12 @@ public:
 		return value;
 	}
 
+	template<typename T>
+	static T restrict_value_in_range(const T min_value, const T max_value, const T value)
+	{
+		return std::max(min_value, std::min(max_value, value));
+	}
+
 private:
 	static std::vector<std::string> split_string(const std::string& str, const char delimiter)
 	{
