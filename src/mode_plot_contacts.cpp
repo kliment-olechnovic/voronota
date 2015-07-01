@@ -17,23 +17,18 @@ typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--background-color", "string", "color string in SVG-acceptable format"));
-		ods.push_back(OD("--default-color", "string", "color string in SVG-acceptable format"));
-		ods.push_back(OD("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
-			poh.print_io_description("stdout", false, true, "plot of contacts in SVG format");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
+	pohw.describe_io("stdout", false, true, "plot of contacts in SVG format");
 
-	const std::string background_color=poh.argument<std::string>("--background-color", "#000000");
-	const std::string default_color=poh.argument<std::string>("--default-color", "#FFFFFF");
-	const bool adjuncts_rgb=poh.contains_option("--adjuncts-rgb");
+	const std::string background_color=poh.argument<std::string>(pohw.describe_option("--background-color", "string", "color string in SVG-acceptable format"), "#000000");
+	const std::string default_color=poh.argument<std::string>(pohw.describe_option("--default-color", "string", "color string in SVG-acceptable format"), "#FFFFFF");
+	const bool adjuncts_rgb=poh.contains_option(pohw.describe_option("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	std::map<CRADsPair, ContactValue> map_of_contacts;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);

@@ -12,25 +12,18 @@
 
 void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--solvent-radius", "number", "solvent atom radius"));
-		ods.push_back(OD("--solvent-distance", "number", "min distance from non-solvent atoms to solvent atoms"));
-		ods.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false,
-					"list of balls (line format: 'annotation x y z r tags adjuncts')");
-			poh.print_io_description("stdout", false, true,
-					"list of balls (line format: 'annotation x y z r tags adjuncts')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
+	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
-	const double solvent_radius=std::max(1.0, std::min(2.0, poh.argument<double>("--solvent-radius", 1.4)));
-	const double solvent_distance=std::max(0.0, std::min(10.0, poh.argument<double>("--solvent-distance", 1.0)));
-	const int sih_depth=std::max(0, std::min(3, poh.argument<int>("--sih-depth", 1)));
+	const double solvent_radius=std::max(1.0, std::min(2.0, poh.argument<double>(pohw.describe_option("--solvent-radius", "number", "solvent atom radius"), 1.4)));
+	const double solvent_distance=std::max(0.0, std::min(10.0, poh.argument<double>(pohw.describe_option("--solvent-distance", "number", "min distance from non-solvent atoms to solvent atoms"), 1.0)));
+	const int sih_depth=std::max(0, std::min(3, poh.argument<int>(pohw.describe_option("--sih-depth", "number", "spherical surface optimization depth"), 1)));
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const double probe=(solvent_radius+solvent_distance);
 

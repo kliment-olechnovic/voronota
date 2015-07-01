@@ -144,35 +144,24 @@ std::map<CRAD, double> collect_scores_from_map_of_cad_descriptors(const std::map
 
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--target-contacts-file", "string", "file path to input target contacts", true));
-		ods.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
-		ods.push_back(OD("--inter-residue-scores-file", "string", "file path to output inter-residue scores"));
-		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		ods.push_back(OD("--depth", "number", "local neighborhood depth"));
-		ods.push_back(OD("--smoothing-window", "number", "window to smooth residue scores along sequence"));
-		ods.push_back(OD("--smoothed-scores-file", "string", "file path to output smoothed residue scores"));
-		ods.push_back(OD("--detailed-output", "", "flag to enable detailed output"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
-			poh.print_io_description("stdout", false, true, "two lines of global scores (atom-level and residue-level)");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
+	pohw.describe_io("stdout", false, true, "two lines of global scores (atom-level and residue-level)");
 
-	const std::string target_contacts_file=poh.argument<std::string>("--target-contacts-file");
-	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
-	const std::string inter_residue_scores_file=poh.argument<std::string>("--inter-residue-scores-file", "");
-	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
-	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
-	const int depth=poh.argument<int>("--depth", 0);
-	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
-	const std::string smoothed_scores_file=poh.argument<std::string>("--smoothed-scores-file", "");
-	detailed_output_of_CADDescriptor()=poh.contains_option("--detailed-output");
+	const std::string target_contacts_file=poh.argument<std::string>(pohw.describe_option("--target-contacts-file", "string", "file path to input target contacts", true), "");
+	const std::string inter_atom_scores_file=poh.argument<std::string>(pohw.describe_option("--inter-atom-scores-file", "string", "file path to output inter-atom scores"), "");
+	const std::string inter_residue_scores_file=poh.argument<std::string>(pohw.describe_option("--inter-residue-scores-file", "string", "file path to output inter-residue scores"), "");
+	const std::string atom_scores_file=poh.argument<std::string>(pohw.describe_option("--atom-scores-file", "string", "file path to output atom scores"), "");
+	const std::string residue_scores_file=poh.argument<std::string>(pohw.describe_option("--residue-scores-file", "string", "file path to output residue scores"), "");
+	const int depth=poh.argument<int>(pohw.describe_option("--depth", "number", "local neighborhood depth"), 0);
+	const unsigned int smoothing_window=poh.argument<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue scores along sequence"), 0);
+	const std::string smoothed_scores_file=poh.argument<std::string>(pohw.describe_option("--smoothed-scores-file", "string", "file path to output smoothed residue scores"), "");
+	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())

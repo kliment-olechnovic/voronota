@@ -270,37 +270,25 @@ std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, doubl
 
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--input-file-list", "", "flag to read file list from stdin"));
-		ods.push_back(OD("--input-contributions", "string", "file path to input contact types contributions"));
-		ods.push_back(OD("--input-fixed-types", "string", "file path to input fixed types"));
-		ods.push_back(OD("--input-seq-pairs-stats", "string", "file path to input sequence pairings statistics"));
-		ods.push_back(OD("--potential-file", "string", "file path to output potential values"));
-		ods.push_back(OD("--probabilities-file", "string", "file path to output observed and expected probabilities"));
-		ods.push_back(OD("--single-areas-file", "string", "file path to output single type total areas"));
-		ods.push_back(OD("--contributions-file", "string", "file path to output contact types contributions"));
-		ods.push_back(OD("--multiply-areas", "number", "coefficient to multiply output areas"));
-		ods.push_back(OD("--toggling-list", "string", "list of toggling subtags"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
-			poh.print_io_description("stdout", false, true, "line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
+	pohw.describe_io("stdout", false, true, "line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')");
 
-	const bool input_file_list=poh.contains_option("--input-file-list");
-	const std::string input_contributions=poh.argument<std::string>("--input-contributions", "");
-	const std::string input_fixed_types=poh.argument<std::string>("--input-fixed-types", "");
-	const std::string input_seq_pairs_stats=poh.argument<std::string>("--input-seq-pairs-stats", "");
-	const std::string potential_file=poh.argument<std::string>("--potential-file", "");
-	const std::string probabilities_file=poh.argument<std::string>("--probabilities-file", "");
-	const std::string single_areas_file=poh.argument<std::string>("--single-areas-file", "");
-	const std::string contributions_file=poh.argument<std::string>("--contributions-file", "");
-	const double multiply_areas=poh.argument<double>("--multiply-areas", -1.0);
-	const std::string toggling_list=poh.argument<std::string>("--toggling-list", "");
+	const bool input_file_list=poh.contains_option(pohw.describe_option("--input-file-list", "", "flag to read file list from stdin"));
+	const std::string input_contributions=poh.argument<std::string>(pohw.describe_option("--input-contributions", "string", "file path to input contact types contributions"), "");
+	const std::string input_fixed_types=poh.argument<std::string>(pohw.describe_option("--input-fixed-types", "string", "file path to input fixed types"), "");
+	const std::string input_seq_pairs_stats=poh.argument<std::string>(pohw.describe_option("--input-seq-pairs-stats", "string", "file path to input sequence pairings statistics"), "");
+	const std::string potential_file=poh.argument<std::string>(pohw.describe_option("--potential-file", "string", "file path to output potential values"), "");
+	const std::string probabilities_file=poh.argument<std::string>(pohw.describe_option("--probabilities-file", "string", "file path to output observed and expected probabilities"), "");
+	const std::string single_areas_file=poh.argument<std::string>(pohw.describe_option("--single-areas-file", "string", "file path to output single type total areas"), "");
+	const std::string contributions_file=poh.argument<std::string>(pohw.describe_option("--contributions-file", "string", "file path to output contact types contributions"), "");
+	const double multiply_areas=poh.argument<double>(pohw.describe_option("--multiply-areas", "number", "coefficient to multiply output areas"), -1.0);
+	const std::string toggling_list=poh.argument<std::string>(pohw.describe_option("--toggling-list", "string", "list of toggling subtags"), "");
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const std::set<std::string> toggling_subtags=(toggling_list.empty() ? std::set<std::string>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(toggling_list));
 
@@ -550,15 +538,13 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 
 void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of potential files");
+	pohw.describe_io("stdout", false, true, "list of normalized energy mean and sd values per interaction type");
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of potential files");
-			poh.print_io_description("stdout", false, true, "list of normalized energy mean and sd values per interaction type");
-			return;
-		}
+		return;
 	}
 
 	std::map<InteractionName, ValueStat> map_of_value_stats;
@@ -584,27 +570,20 @@ void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& p
 
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--potential-file", "string", "file path to input potential values", true));
-		ods.push_back(OD("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"));
-		ods.push_back(OD("--inter-atom-scores-file", "string", "file path to output inter-atom scores"));
-		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		ods.push_back(OD("--depth", "number", "neighborhood normalization depth"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
-			poh.print_io_description("stdout", false, true, "global scores");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
+	pohw.describe_io("stdout", false, true, "global scores");
 
-	const std::string potential_file=poh.argument<std::string>("--potential-file");
-	const int ignorable_max_seq_sep=poh.argument<int>("--ignorable-max-seq-sep", 1);
-	const std::string inter_atom_scores_file=poh.argument<std::string>("--inter-atom-scores-file", "");
-	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
-	const int depth=poh.argument<int>("--depth", 2);
+	const std::string potential_file=poh.argument<std::string>(pohw.describe_option("--potential-file", "string", "file path to input potential values", true), "");
+	const int ignorable_max_seq_sep=poh.argument<int>(pohw.describe_option("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"), 1);
+	const std::string inter_atom_scores_file=poh.argument<std::string>(pohw.describe_option("--inter-atom-scores-file", "string", "file path to output inter-atom scores"), "");
+	const std::string atom_scores_file=poh.argument<std::string>(pohw.describe_option("--atom-scores-file", "string", "file path to output atom scores"), "");
+	const int depth=poh.argument<int>(pohw.describe_option("--depth", "number", "neighborhood normalization depth"), 2);
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 	if(map_of_contacts.empty())
@@ -658,15 +637,13 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 
 void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of atom energy descriptors");
+	pohw.describe_io("stdout", false, true, "list of normalized energy mean and sd values per atom type");
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of atom energy descriptors");
-			poh.print_io_description("stdout", false, true, "list of normalized energy mean and sd values per atom type");
-			return;
-		}
+		return;
 	}
 
 	std::map<CRAD, ValueStat> map_of_value_stats;
@@ -683,33 +660,23 @@ void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
 
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--default-mean", "number", "default mean parameter"));
-		ods.push_back(OD("--default-sd", "number", "default standard deviation parameter"));
-		ods.push_back(OD("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"));
-		ods.push_back(OD("--mean-shift", "number", "mean shift in standard deviations"));
-		ods.push_back(OD("--external-weights-file", "string", "file path to input external weights for global scoring"));
-		ods.push_back(OD("--smoothing-window", "number", "window to smooth residue quality scores along sequence"));
-		ods.push_back(OD("--atom-scores-file", "string", "file path to output atom scores"));
-		ods.push_back(OD("--residue-scores-file", "string", "file path to output residue scores"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of atom energy descriptors");
-			poh.print_io_description("stdout", false, true, "average local score");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of atom energy descriptors");
+	pohw.describe_io("stdout", false, true, "average local score");
 
-	const double default_mean=poh.argument<double>("--default-mean", 0.4);
-	const double default_sd=poh.argument<double>("--default-sd", 0.3);
-	const std::string mean_and_sds_file=poh.argument<std::string>("--means-and-sds-file", "");
-	const double mean_shift=poh.argument<double>("--mean-shift", 0.0);
-	const std::string external_weights_file=poh.argument<std::string>("--external-weights-file", "");
-	const unsigned int smoothing_window=poh.argument<unsigned int>("--smoothing-window", 0);
-	const std::string atom_scores_file=poh.argument<std::string>("--atom-scores-file", "");
-	const std::string residue_scores_file=poh.argument<std::string>("--residue-scores-file", "");
+	const double default_mean=poh.argument<double>(pohw.describe_option("--default-mean", "number", "default mean parameter"), 0.4);
+	const double default_sd=poh.argument<double>(pohw.describe_option("--default-sd", "number", "default standard deviation parameter"), 0.3);
+	const std::string mean_and_sds_file=poh.argument<std::string>(pohw.describe_option("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"), "");
+	const double mean_shift=poh.argument<double>(pohw.describe_option("--mean-shift", "number", "mean shift in standard deviations"), 0.0);
+	const std::string external_weights_file=poh.argument<std::string>(pohw.describe_option("--external-weights-file", "string", "file path to input external weights for global scoring"), "");
+	const unsigned int smoothing_window=poh.argument<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue quality scores along sequence"), 0);
+	const std::string atom_scores_file=poh.argument<std::string>(pohw.describe_option("--atom-scores-file", "string", "file path to output atom scores"), "");
+	const std::string residue_scores_file=poh.argument<std::string>(pohw.describe_option("--residue-scores-file", "string", "file path to output residue scores"), "");
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
 	if(atom_energy_descriptors.empty())

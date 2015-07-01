@@ -121,37 +121,26 @@ bool identify_mock_solvent(const auxiliaries::ChainResidueAtomDescriptor& crad)
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--annotated", "", "flag to enable annotated mode"));
-		ods.push_back(OD("--probe", "number", "probe radius"));
-		ods.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		ods.push_back(OD("--step", "number", "curve step length"));
-		ods.push_back(OD("--projections", "number", "curve optimization depth"));
-		ods.push_back(OD("--sih-depth", "number", "spherical surface optimization depth"));
-		ods.push_back(OD("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
-		ods.push_back(OD("--draw", "", "flag to output graphics for annotated contacts"));
-		ods.push_back(OD("--tag-centrality", "", "flag to tag contacts centrality"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false,
-					"list of balls\n(default mode line format: 'x y z r')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
-			poh.print_io_description("stdout", false, true,
-					"list of contacts\n(default mode line format: 'b1 b2 area')\n(annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false,
+			"list of balls\n(default mode line format: 'x y z r')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
+	pohw.describe_io("stdout", false, true,
+			"list of contacts\n(default mode line format: 'b1 b2 area')\n(annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 
-	const bool annotated=poh.contains_option("--annotated");
-	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
-	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>("--probe", 1.4)));
-	const double step=std::max(0.05, std::min(0.5, poh.argument<double>("--step", 0.2)));
-	const int projections=std::max(1, std::min(10, poh.argument<int>("--projections", 5)));
-	const int sih_depth=std::max(1, std::min(5, poh.argument<int>("--sih-depth", 3)));
-	const bool add_mirrored=poh.contains_option("--add-mirrored");
-	const bool draw=poh.contains_option("--draw");
-	const bool tag_centrality=poh.contains_option("--tag-centrality");
+	const bool annotated=poh.contains_option(pohw.describe_option("--annotated", "", "flag to enable annotated mode"));
+	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4)));
+	const bool exclude_hidden_balls=poh.contains_option(pohw.describe_option("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+	const double step=std::max(0.05, std::min(0.5, poh.argument<double>(pohw.describe_option("--step", "number", "curve step length"), 0.2)));
+	const int projections=std::max(1, std::min(10, poh.argument<int>(pohw.describe_option("--projections", "number", "curve optimization depth"), 5)));
+	const int sih_depth=std::max(1, std::min(5, poh.argument<int>(pohw.describe_option("--sih-depth", "number", "spherical surface optimization depth"), 3)));
+	const bool add_mirrored=poh.contains_option(pohw.describe_option("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
+	const bool draw=poh.contains_option(pohw.describe_option("--draw", "", "flag to output graphics for annotated contacts"));
+	const bool tag_centrality=poh.contains_option(pohw.describe_option("--tag-centrality", "", "flag to tag contacts centrality"));
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	std::vector<apollota::SimpleSphere> spheres;
 	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, BallValue> > input_ball_records;

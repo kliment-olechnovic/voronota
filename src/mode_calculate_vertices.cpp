@@ -8,34 +8,22 @@
 
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+	pohw.describe_io("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
+
+	const bool print_log=poh.contains_option(pohw.describe_option("--print-log", "", "flag to print log of calculations"));
+	const bool exclude_hidden_balls=poh.contains_option(pohw.describe_option("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+	const bool include_surplus_quadruples=poh.contains_option(pohw.describe_option("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+	const bool link=poh.contains_option(pohw.describe_option("--link", "", "flag to output links between vertices"));
+	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
+	const bool check=poh.contains_option(pohw.describe_option("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		ods.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		ods.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		ods.push_back(OD("--link", "", "flag to output links between vertices"));
-		ods.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		ods.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "list of balls (line format: 'x y z r')");
-			poh.print_io_description("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
-			return;
-		}
+		return;
 	}
 
-	const bool print_log=poh.contains_option("--print-log");
-
-	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
-
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
-	const bool check=poh.contains_option("--check");
-
-	const bool link=poh.contains_option("--link");
-
-	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");

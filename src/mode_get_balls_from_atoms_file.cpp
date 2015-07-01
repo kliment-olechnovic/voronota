@@ -36,36 +36,26 @@ std::string refine_empty_string(const std::string& x)
 
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--annotated", "", "flag to enable annotated mode"));
-		ods.push_back(OD("--include-heteroatoms", "", "flag to include heteroatoms"));
-		ods.push_back(OD("--include-hydrogens", "", "flag to include hydrogen atoms"));
-		ods.push_back(OD("--multimodel-chains", "", "flag to read multiple models in PDB format and rename chains accordingly"));
-		ods.push_back(OD("--mmcif", "", "flag to input in mmCIF format"));
-		ods.push_back(OD("--radii-file", "string", "path to radii configuration file"));
-		ods.push_back(OD("--default-radius", "number", "default atomic radius"));
-		ods.push_back(OD("--only-default-radius", "", "flag to make all radii equal to the default radius"));
-		ods.push_back(OD("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "file in PDB or mmCIF format");
-			poh.print_io_description("stdout", false, true,
-					"list of balls\n(default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false,
+			"file in PDB or mmCIF format");
+	pohw.describe_io("stdout", false, true,
+			"list of balls\n(default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')\n(annotated mode line format: 'annotation x y z r tags adjuncts')");
 
-	const bool annotated=poh.contains_option("--annotated");
-	const bool mmcif=poh.contains_option("--mmcif");
-	const bool include_heteroatoms=poh.contains_option("--include-heteroatoms");
-	const bool include_hydrogens=poh.contains_option("--include-hydrogens");
-	const bool multimodel_chains=poh.contains_option("--multimodel-chains");
-	const std::string radii_file=poh.argument<std::string>("--radii-file", "");
-	const double default_radius=poh.argument<double>("--default-radius", 1.70);
-	const bool only_default_radius=poh.contains_option("--only-default-radius");
-	const double hull_offset=poh.argument<double>("--hull-offset", -1.0);
+	const bool annotated=poh.contains_option(pohw.describe_option("--annotated", "", "flag to enable annotated mode"));
+	const bool include_heteroatoms=poh.contains_option(pohw.describe_option("--include-heteroatoms", "", "flag to include heteroatoms"));
+	const bool include_hydrogens=poh.contains_option(pohw.describe_option("--include-hydrogens", "", "flag to include hydrogen atoms"));
+	const bool multimodel_chains=poh.contains_option(pohw.describe_option("--multimodel-chains", "", "flag to read multiple models in PDB format and rename chains accordingly"));
+	const bool mmcif=poh.contains_option(pohw.describe_option("--mmcif", "", "flag to input in mmCIF format"));
+	const std::string radii_file=poh.argument<std::string>(pohw.describe_option("--radii-file", "string", "path to radii configuration file"), "");
+	const double default_radius=poh.argument<double>(pohw.describe_option("--default-radius", "number", "default atomic radius"), 1.70);
+	const bool only_default_radius=poh.contains_option(pohw.describe_option("--only-default-radius", "", "flag to make all radii equal to the default radius"));
+	const double hull_offset=poh.argument<double>(pohw.describe_option("--hull-offset", "number", "positive offset distance enables adding artificial hull balls"), -1.0);
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
 			auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens).atom_records :

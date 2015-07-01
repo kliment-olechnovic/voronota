@@ -214,27 +214,20 @@ std::pair<double, double> calc_best_MCC(const std::map<double, ClassificationRes
 
 void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		ods.push_back(OD("--reference-threshold", "number", "reference scores classification threshold"));
-		ods.push_back(OD("--testable-step", "number", "testable scores threshold step"));
-		ods.push_back(OD("--outcomes-file", "string", "file path to output lines of 'threshold TP TN FP FN'"));
-		ods.push_back(OD("--ROC-curve-file", "string", "file path to output ROC curve"));
-		ods.push_back(OD("--PR-curve-file", "string", "file path to output PR curve"));
-		if(!poh.assert(ods, false))
-		{
-			poh.print_io_description("stdin", true, false, "pairs of reference and testable scores files");
-			poh.print_io_description("stdout", false, true, "global results");
-			return;
-		}
-	}
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "pairs of reference and testable scores files");
+	pohw.describe_io("stdout", false, true, "global results");
 
-	const double reference_threshold=poh.argument<double>("--reference-threshold", 0.5);
-	const double testable_step=poh.argument<double>("--testable-step", 0.02);
-	const std::string outcomes_file=poh.argument<std::string>("--outcomes-file", "");
-	const std::string ROC_curve_file=poh.argument<std::string>("--ROC-curve-file", "");
-	const std::string PR_curve_file=poh.argument<std::string>("--PR-curve-file", "");
+	const double reference_threshold=poh.argument<double>(pohw.describe_option("--reference-threshold", "number", "reference scores classification threshold"), 0.5);
+	const double testable_step=poh.argument<double>(pohw.describe_option("--testable-step", "number", "testable scores threshold step"), 0.02);
+	const std::string outcomes_file=poh.argument<std::string>(pohw.describe_option("--outcomes-file", "string", "file path to output lines of 'threshold TP TN FP FN'"), "");
+	const std::string ROC_curve_file=poh.argument<std::string>(pohw.describe_option("--ROC-curve-file", "string", "file path to output ROC curve"), "");
+	const std::string PR_curve_file=poh.argument<std::string>(pohw.describe_option("--PR-curve-file", "string", "file path to output PR curve"), "");
+
+	if(!pohw.assert_or_print_help(false))
+	{
+		return;
+	}
 
 	const SetOfStringsPairs input_file_pairs=auxiliaries::IOUtilities().read_lines_to_map<SetOfStringsPairs>(std::cin);
 	if(input_file_pairs.empty())

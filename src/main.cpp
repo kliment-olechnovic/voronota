@@ -142,10 +142,6 @@ int main(const int argc, const char** argv)
 
 		return 1;
 	}
-	catch(const auxiliaries::ProgramOptionsHandler::Exception& e)
-	{
-		print_error_message(mode, e.what());
-	}
 	catch(const std::exception& e)
 	{
 		print_error_message(mode, e.what());

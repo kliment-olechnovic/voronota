@@ -2,12 +2,10 @@
 
 void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> ods;
-		if(!poh.assert(ods, false))
-		{
-			return;
-		}
+		return;
 	}
 }
