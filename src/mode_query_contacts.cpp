@@ -98,7 +98,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_jmol=poh.argument<std::string>(pohw.describe_option("--drawing-for-jmol", "string", "file path to output drawing as jmol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
-	const unsigned int drawing_color=auxiliaries::ProgramOptionsHandler::convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
+	const unsigned int drawing_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
 	const std::string drawing_adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
 	const bool drawing_reverse_gradient=poh.contains_option(pohw.describe_option("--drawing-reverse-gradient", "", "flag to use reversed gradient for drawing"));
 	const bool drawing_random_colors=poh.contains_option(pohw.describe_option("--drawing-random-colors", "", "flag to use random color for each drawn contact"));

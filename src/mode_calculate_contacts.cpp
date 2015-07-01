@@ -128,11 +128,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			"list of contacts\n(default mode line format: 'b1 b2 area')\n(annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 
 	const bool annotated=poh.contains_option(pohw.describe_option("--annotated", "", "flag to enable annotated mode"));
-	const double probe=std::max(0.01, std::min(14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4)));
+	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
 	const bool exclude_hidden_balls=poh.contains_option(pohw.describe_option("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-	const double step=std::max(0.05, std::min(0.5, poh.argument<double>(pohw.describe_option("--step", "number", "curve step length"), 0.2)));
-	const int projections=std::max(1, std::min(10, poh.argument<int>(pohw.describe_option("--projections", "number", "curve optimization depth"), 5)));
-	const int sih_depth=std::max(1, std::min(5, poh.argument<int>(pohw.describe_option("--sih-depth", "number", "spherical surface optimization depth"), 3)));
+	const double step=poh.restrict_value_in_range(0.05, 0.5, poh.argument<double>(pohw.describe_option("--step", "number", "curve step length"), 0.2));
+	const int projections=poh.restrict_value_in_range(1, 10, poh.argument<int>(pohw.describe_option("--projections", "number", "curve optimization depth"), 5));
+	const int sih_depth=poh.restrict_value_in_range(1, 5, poh.argument<int>(pohw.describe_option("--sih-depth", "number", "spherical surface optimization depth"), 3));
 	const bool add_mirrored=poh.contains_option(pohw.describe_option("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 	const bool draw=poh.contains_option(pohw.describe_option("--draw", "", "flag to output graphics for annotated contacts"));
 	const bool tag_centrality=poh.contains_option(pohw.describe_option("--tag-centrality", "", "flag to tag contacts centrality"));
