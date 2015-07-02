@@ -1,7 +1,7 @@
 var CRO_contacts={type:"scale",x:0.139,y:0.139,z:0.139,
 nodes:[{type:"translate",x:-27.880,y:-27.597,z:-38.066,
 nodes:[
-{type:"name",name:"(c[A]r[16]a[108]R[VAL]A[CG2])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 16 VAL CG2 ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -105,7 +105,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[42]a[292]R[LEU]A[CB])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 42 LEU CB ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -209,7 +209,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[42]a[294]R[LEU]A[CD1])&(c[A]r[66]a[468]R[CRO]A[CB1])",
+{type:"name",name:"[ A 42 LEU CD1 ] [ A 66 CRO CB1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -382,7 +382,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[42]a[294]R[LEU]A[CD1])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 42 LEU CD1 ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -558,7 +558,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[42]a[294]R[LEU]A[CD1])&(c[A]r[66]a[471]R[CRO]A[C1])",
+{type:"name",name:"[ A 42 LEU CD1 ] [ A 66 CRO C1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -617,7 +617,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[42]a[295]R[LEU]A[CD2])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 42 LEU CD2 ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -688,7 +688,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[44]a[308]R[LEU]A[CG])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 44 LEU CG ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -888,7 +888,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[44]a[310]R[LEU]A[CD2])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 44 LEU CD2 ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -992,7 +992,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[46]a[330]R[PHE]A[CZ])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 46 PHE CZ ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1156,7 +1156,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[436]R[VAL]A[C])&(c[A]r[66]a[482]R[CRO]A[CD1])",
+{type:"name",name:"[ A 61 VAL C ] [ A 66 CRO CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1191,7 +1191,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1340,7 +1340,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[467]R[CRO]A[CA1])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO CA1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1372,7 +1372,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[470]R[CRO]A[OG1])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1533,7 +1533,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[471]R[CRO]A[C1])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO C1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1610,7 +1610,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[472]R[CRO]A[N2])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO N2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1705,7 +1705,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[437]R[VAL]A[O])&(c[A]r[66]a[482]R[CRO]A[CD1])",
+{type:"name",name:"[ A 61 VAL O ] [ A 66 CRO CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1755,7 +1755,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[439]R[VAL]A[CG1])&(c[A]r[66]a[470]R[CRO]A[OG1])",
+{type:"name",name:"[ A 61 VAL CG1 ] [ A 66 CRO OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -1913,7 +1913,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[439]R[VAL]A[CG1])&(c[A]r[66]a[482]R[CRO]A[CD1])",
+{type:"name",name:"[ A 61 VAL CG1 ] [ A 66 CRO CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2050,7 +2050,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[61]a[439]R[VAL]A[CG1])&(c[A]r[66]a[484]R[CRO]A[CE1])",
+{type:"name",name:"[ A 61 VAL CG1 ] [ A 66 CRO CE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2211,7 +2211,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[471]R[CRO]A[C1])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO C1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2240,7 +2240,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[472]R[CRO]A[N2])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO N2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2341,7 +2341,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[476]R[CRO]A[CA2])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO CA2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2457,7 +2457,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[480]R[CRO]A[CB2])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO CB2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2534,7 +2534,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[481]R[CRO]A[CG2])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2602,7 +2602,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[442]R[THR]A[CA])&(c[A]r[66]a[482]R[CRO]A[CD1])",
+{type:"name",name:"[ A 62 THR CA ] [ A 66 CRO CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2721,7 +2721,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[443]R[THR]A[C])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 62 THR C ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2789,7 +2789,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[443]R[THR]A[C])&(c[A]r[66]a[471]R[CRO]A[C1])",
+{type:"name",name:"[ A 62 THR C ] [ A 66 CRO C1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2869,7 +2869,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[443]R[THR]A[C])&(c[A]r[66]a[472]R[CRO]A[N2])",
+{type:"name",name:"[ A 62 THR C ] [ A 66 CRO N2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2913,7 +2913,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[443]R[THR]A[C])&(c[A]r[66]a[476]R[CRO]A[CA2])",
+{type:"name",name:"[ A 62 THR C ] [ A 66 CRO CA2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -2954,7 +2954,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3004,7 +3004,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[471]R[CRO]A[C1])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO C1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3099,7 +3099,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[472]R[CRO]A[N2])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO N2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3128,7 +3128,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[473]R[CRO]A[N3])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO N3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3190,7 +3190,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[474]R[CRO]A[C2])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO C2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3342,7 +3342,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[476]R[CRO]A[CA2])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO CA2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3458,7 +3458,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[477]R[CRO]A[CA3])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO CA3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3586,7 +3586,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[444]R[THR]A[O])&(c[A]r[66]a[480]R[CRO]A[CB2])",
+{type:"name",name:"[ A 62 THR O ] [ A 66 CRO CB2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3621,7 +3621,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[445]R[THR]A[CB])&(c[A]r[66]a[476]R[CRO]A[CA2])",
+{type:"name",name:"[ A 62 THR CB ] [ A 66 CRO CA2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3656,7 +3656,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[445]R[THR]A[CB])&(c[A]r[66]a[480]R[CRO]A[CB2])",
+{type:"name",name:"[ A 62 THR CB ] [ A 66 CRO CB2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3772,7 +3772,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[445]R[THR]A[CB])&(c[A]r[66]a[481]R[CRO]A[CG2])",
+{type:"name",name:"[ A 62 THR CB ] [ A 66 CRO CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3858,7 +3858,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[445]R[THR]A[CB])&(c[A]r[66]a[483]R[CRO]A[CD2])",
+{type:"name",name:"[ A 62 THR CB ] [ A 66 CRO CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -3893,7 +3893,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[481]R[CRO]A[CG2])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4018,7 +4018,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[482]R[CRO]A[CD1])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4137,7 +4137,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[483]R[CRO]A[CD2])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4274,7 +4274,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[484]R[CRO]A[CE1])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4381,7 +4381,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[485]R[CRO]A[CE2])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4479,7 +4479,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[62]a[447]R[THR]A[CG2])&(c[A]r[66]a[486]R[CRO]A[CZ])",
+{type:"name",name:"[ A 62 THR CG2 ] [ A 66 CRO CZ ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4583,7 +4583,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[63]a[450]R[THR]A[C])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 63 THR C ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4657,7 +4657,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[63]a[450]R[THR]A[C])&(c[A]r[66]a[477]R[CRO]A[CA3])",
+{type:"name",name:"[ A 63 THR C ] [ A 66 CRO CA3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4731,7 +4731,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[63]a[451]R[THR]A[O])&(c[A]r[66]a[477]R[CRO]A[CA3])",
+{type:"name",name:"[ A 63 THR O ] [ A 66 CRO CA3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -4904,7 +4904,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[455]R[PHE]A[N])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 64 PHE N ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5002,7 +5002,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[456]R[PHE]A[CA])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 64 PHE CA ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5085,7 +5085,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[457]R[PHE]A[C])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 64 PHE C ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5252,7 +5252,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[457]R[PHE]A[C])&(c[A]r[66]a[467]R[CRO]A[CA1])",
+{type:"name",name:"[ A 64 PHE C ] [ A 66 CRO CA1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5368,7 +5368,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[457]R[PHE]A[C])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 64 PHE C ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5475,7 +5475,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[457]R[PHE]A[C])&(c[A]r[66]a[477]R[CRO]A[CA3])",
+{type:"name",name:"[ A 64 PHE C ] [ A 66 CRO CA3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5585,7 +5585,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[458]R[PHE]A[O])&(c[A]r[66]a[467]R[CRO]A[CA1])",
+{type:"name",name:"[ A 64 PHE O ] [ A 66 CRO CA1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5710,7 +5710,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[458]R[PHE]A[O])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 64 PHE O ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5850,7 +5850,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[458]R[PHE]A[O])&(c[A]r[66]a[477]R[CRO]A[CA3])",
+{type:"name",name:"[ A 64 PHE O ] [ A 66 CRO CA3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -5945,7 +5945,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[458]R[PHE]A[O])&(c[A]r[66]a[478]R[CRO]A[C3])",
+{type:"name",name:"[ A 64 PHE O ] [ A 66 CRO C3 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6022,7 +6022,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[459]R[PHE]A[CB])&(c[A]r[66]a[466]R[CRO]A[N1])",
+{type:"name",name:"[ A 64 PHE CB ] [ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6129,7 +6129,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[459]R[PHE]A[CB])&(c[A]r[66]a[469]R[CRO]A[CG1])",
+{type:"name",name:"[ A 64 PHE CB ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6284,7 +6284,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[64]a[459]R[PHE]A[CB])&(c[A]r[66]a[470]R[CRO]A[OG1])",
+{type:"name",name:"[ A 64 PHE CB ] [ A 66 CRO OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6331,7 +6331,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[467]R[CRO]A[CA1])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO CA1 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6471,7 +6471,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[467]R[CRO]A[CA1])&(c[A]r[68]a[494]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CA1 ] [ A 68 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6614,7 +6614,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[468]R[CRO]A[CB1])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO CB1 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6640,7 +6640,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[468]R[CRO]A[CB1])&(c[A]r[68]a[494]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CB1 ] [ A 68 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6768,7 +6768,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[468]R[CRO]A[CB1])&(c[A]r[222]a[1722]R[GLU]A[CD])",
+{type:"name",name:"[ A 66 CRO CB1 ] [ A 222 GLU CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6857,7 +6857,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[468]R[CRO]A[CB1])&(c[A]r[222]a[1723]R[GLU]A[OE1])",
+{type:"name",name:"[ A 66 CRO CB1 ] [ A 222 GLU OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -6937,7 +6937,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[468]R[CRO]A[CB1])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CB1 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7062,7 +7062,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[469]R[CRO]A[CG1])&(c[A]r[68]a[494]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CG1 ] [ A 68 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7220,7 +7220,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[469]R[CRO]A[CG1])&(c[A]r[220]a[1707]R[LEU]A[CD2])",
+{type:"name",name:"[ A 66 CRO CG1 ] [ A 220 LEU CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7435,7 +7435,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[469]R[CRO]A[CG1])&(c[A]r[222]a[1723]R[GLU]A[OE1])",
+{type:"name",name:"[ A 66 CRO CG1 ] [ A 222 GLU OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7518,7 +7518,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[469]R[CRO]A[CG1])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CG1 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7643,7 +7643,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[470]R[CRO]A[OG1])&(c[A]r[220]a[1707]R[LEU]A[CD2])",
+{type:"name",name:"[ A 66 CRO OG1 ] [ A 220 LEU CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7783,7 +7783,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[470]R[CRO]A[OG1])&(c[A]r[222]a[1722]R[GLU]A[CD])",
+{type:"name",name:"[ A 66 CRO OG1 ] [ A 222 GLU CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -7875,7 +7875,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[470]R[CRO]A[OG1])&(c[A]r[222]a[1723]R[GLU]A[OE1])",
+{type:"name",name:"[ A 66 CRO OG1 ] [ A 222 GLU OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8033,7 +8033,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[470]R[CRO]A[OG1])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO OG1 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8119,7 +8119,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[471]R[CRO]A[C1])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO C1 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8262,7 +8262,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[471]R[CRO]A[C1])&(c[A]r[68]a[494]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO C1 ] [ A 68 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8300,7 +8300,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[471]R[CRO]A[C1])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO C1 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8359,7 +8359,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[471]R[CRO]A[C1])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO C1 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8409,7 +8409,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[471]R[CRO]A[C1])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO C1 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8709,7 +8709,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[472]R[CRO]A[N2])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO N2 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -8855,7 +8855,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[472]R[CRO]A[N2])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO N2 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9057,7 +9057,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[473]R[CRO]A[N3])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO N3 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9164,7 +9164,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9247,7 +9247,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9390,7 +9390,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[69]a[501]R[GLN]A[CD])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 69 GLN CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9437,7 +9437,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[94]a[718]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 94 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9505,7 +9505,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[96]a[737]R[ARG]A[NH1])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 96 ARG NH1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9549,7 +9549,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[474]R[CRO]A[C2])&(c[A]r[96]a[738]R[ARG]A[NH2])",
+{type:"name",name:"[ A 66 CRO C2 ] [ A 96 ARG NH2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9659,7 +9659,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9775,7 +9775,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[69]a[501]R[GLN]A[CD])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 69 GLN CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -9930,7 +9930,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[69]a[502]R[GLN]A[OE1])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 69 GLN OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10052,7 +10052,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[69]a[503]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 69 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10129,7 +10129,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[94]a[717]R[GLN]A[OE1])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 94 GLN OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10203,7 +10203,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[94]a[718]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 94 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10370,7 +10370,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[96]a[737]R[ARG]A[NH1])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 96 ARG NH1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10402,7 +10402,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[475]R[CRO]A[O2])&(c[A]r[96]a[738]R[ARG]A[NH2])",
+{type:"name",name:"[ A 66 CRO O2 ] [ A 96 ARG NH2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10569,7 +10569,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[476]R[CRO]A[CA2])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO CA2 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10691,7 +10691,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[476]R[CRO]A[CA2])&(c[A]r[96]a[738]R[ARG]A[NH2])",
+{type:"name",name:"[ A 66 CRO CA2 ] [ A 96 ARG NH2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10732,7 +10732,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[476]R[CRO]A[CA2])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CA2 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10782,7 +10782,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[476]R[CRO]A[CA2])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CA2 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -10998,7 +10998,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[477]R[CRO]A[CA3])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO CA3 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11087,7 +11087,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[477]R[CRO]A[CA3])&(c[A]r[94]a[718]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO CA3 ] [ A 94 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11254,7 +11254,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[477]R[CRO]A[CA3])&(c[A]r[121]a[940]R[ASN]A[ND2])",
+{type:"name",name:"[ A 66 CRO CA3 ] [ A 121 ASN ND2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11388,7 +11388,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[477]R[CRO]A[CA3])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CA3 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11520,7 +11520,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[68]a[488]R[VAL]A[N])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 68 VAL N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11714,7 +11714,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[68]a[489]R[VAL]A[CA])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 68 VAL CA ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11848,7 +11848,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[68]a[493]R[VAL]A[CG1])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 68 VAL CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -11970,7 +11970,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[69]a[495]R[GLN]A[N])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 69 GLN N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12083,7 +12083,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12166,7 +12166,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[94]a[717]R[GLN]A[OE1])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 94 GLN OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12249,7 +12249,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[94]a[718]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 94 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12320,7 +12320,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[478]R[CRO]A[C3])&(c[A]r[121]a[940]R[ASN]A[ND2])",
+{type:"name",name:"[ A 66 CRO C3 ] [ A 121 ASN ND2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12415,7 +12415,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[68]a[489]R[VAL]A[CA])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 68 VAL CA ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12555,7 +12555,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[68]a[493]R[VAL]A[CG1])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 68 VAL CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12683,7 +12683,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[69]a[495]R[GLN]A[N])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 69 GLN N ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12748,7 +12748,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[92]a[699]R[TYR]A[CE1])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 92 TYR CE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12813,7 +12813,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[92]a[702]R[TYR]A[OH])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 92 TYR OH ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12932,7 +12932,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[94]a[714]R[GLN]A[CB])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 94 GLN CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -12958,7 +12958,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[94]a[716]R[GLN]A[CD])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 94 GLN CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13077,7 +13077,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[94]a[717]R[GLN]A[OE1])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 94 GLN OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13205,7 +13205,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[94]a[718]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 94 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13339,7 +13339,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[112]a[868]R[VAL]A[CG1])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 112 VAL CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13536,7 +13536,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[112]a[869]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 112 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13586,7 +13586,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[121]a[938]R[ASN]A[CG])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 121 ASN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13702,7 +13702,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[121]a[939]R[ASN]A[OD1])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 121 ASN OD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13812,7 +13812,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[A]r[121]a[940]R[ASN]A[ND2])",
+{type:"name",name:"[ A 66 CRO O3 ] [ A 121 ASN ND2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -13937,7 +13937,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[479]R[CRO]A[O3])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO O3 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14265,7 +14265,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[69]a[500]R[GLN]A[CG])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 69 GLN CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14390,7 +14390,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[69]a[501]R[GLN]A[CD])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 69 GLN CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14443,7 +14443,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[69]a[503]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 69 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14631,7 +14631,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[96]a[738]R[ARG]A[NH2])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 96 ARG NH2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14786,7 +14786,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[165]a[1275]R[PHE]A[CZ])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 165 PHE CZ ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14899,7 +14899,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -14952,7 +14952,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[480]R[CRO]A[CB2])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CB2 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15308,7 +15308,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[481]R[CRO]A[CG2])&(c[A]r[69]a[503]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO CG2 ] [ A 69 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15340,7 +15340,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[481]R[CRO]A[CG2])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CG2 ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15450,7 +15450,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[481]R[CRO]A[CG2])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CG2 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15476,7 +15476,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[481]R[CRO]A[CG2])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CG2 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15755,7 +15755,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15847,7 +15847,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[A]r[222]a[1722]R[GLU]A[CD])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ A 222 GLU CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15921,7 +15921,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[A]r[222]a[1723]R[GLU]A[OE1])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ A 222 GLU OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -15989,7 +15989,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16165,7 +16165,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[A]r[224]a[1742]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ A 224 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16209,7 +16209,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[482]R[CRO]A[CD1])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CD1 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16320,7 +16320,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[69]a[503]R[GLN]A[NE2])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 69 GLN NE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16460,7 +16460,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[150]a[1168]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 150 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16639,7 +16639,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[165]a[1273]R[PHE]A[CE1])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 165 PHE CE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16677,7 +16677,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[165]a[1274]R[PHE]A[CE2])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 165 PHE CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16811,7 +16811,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[165]a[1275]R[PHE]A[CZ])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 165 PHE CZ ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -16972,7 +16972,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17097,7 +17097,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[483]R[CRO]A[CD2])&(c[solvent])",
+{type:"name",name:"[ A 66 CRO CD2 ] [ solvent    ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17180,7 +17180,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[145]a[1127]R[TYR]A[CE2])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 145 TYR CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17320,7 +17320,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[145]a[1128]R[TYR]A[CZ])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 145 TYR CZ ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17349,7 +17349,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[145]a[1129]R[TYR]A[OH])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 145 TYR OH ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17423,7 +17423,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[203]a[1573]R[THR]A[CB])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 203 THR CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17563,7 +17563,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17673,7 +17673,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[205]a[1590]R[SER]A[OG])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 205 SER OG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17840,7 +17840,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[222]a[1721]R[GLU]A[CG])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 222 GLU CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -17890,7 +17890,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[222]a[1722]R[GLU]A[CD])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 222 GLU CD ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18030,7 +18030,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[222]a[1723]R[GLU]A[OE1])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 222 GLU OE1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18101,7 +18101,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[484]R[CRO]A[CE1])&(c[A]r[222]a[1724]R[GLU]A[OE2])",
+{type:"name",name:"[ A 66 CRO CE1 ] [ A 222 GLU OE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18211,7 +18211,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[148]a[1148]R[HIS]A[CB])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 148 HIS CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18354,7 +18354,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[148]a[1149]R[HIS]A[CG])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 148 HIS CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18383,7 +18383,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[150]a[1168]R[VAL]A[CG2])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 150 VAL CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18547,7 +18547,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[165]a[1272]R[PHE]A[CD2])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 165 PHE CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18639,7 +18639,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[165]a[1274]R[PHE]A[CE2])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 165 PHE CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18752,7 +18752,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[167]a[1292]R[ILE]A[CD1])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 167 ILE CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18910,7 +18910,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[203]a[1574]R[THR]A[OG1])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 203 THR OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -18999,7 +18999,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[485]R[CRO]A[CE2])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CE2 ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19148,7 +19148,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[145]a[1127]R[TYR]A[CE2])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 145 TYR CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19243,7 +19243,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[145]a[1129]R[TYR]A[OH])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 145 TYR OH ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19305,7 +19305,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[167]a[1292]R[ILE]A[CD1])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 167 ILE CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19415,7 +19415,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[203]a[1573]R[THR]A[CB])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 203 THR CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19537,7 +19537,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[203]a[1574]R[THR]A[OG1])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 203 THR OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19608,7 +19608,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[486]R[CRO]A[CZ])&(c[A]r[203]a[1575]R[THR]A[CG2])",
+{type:"name",name:"[ A 66 CRO CZ ] [ A 203 THR CG2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19721,7 +19721,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[145]a[1125]R[TYR]A[CD2])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 145 TYR CD2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19789,7 +19789,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[145]a[1127]R[TYR]A[CE2])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 145 TYR CE2 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -19941,7 +19941,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[146]a[1133]R[ASN]A[O])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 146 ASN O ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20066,7 +20066,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[148]a[1148]R[HIS]A[CB])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 148 HIS CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20167,7 +20167,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[148]a[1149]R[HIS]A[CG])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 148 HIS CG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20199,7 +20199,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[148]a[1150]R[HIS]A[ND1])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 148 HIS ND1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20369,7 +20369,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[167]a[1292]R[ILE]A[CD1])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 167 ILE CD1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20479,7 +20479,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[203]a[1573]R[THR]A[CB])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 203 THR CB ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20619,7 +20619,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[203]a[1574]R[THR]A[OG1])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 203 THR OG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20786,7 +20786,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[204]a[1577]R[GLN]A[CA])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 204 GLN CA ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
@@ -20824,7 +20824,7 @@ indices:[
 }]
 }]
 },
-{type:"name",name:"(c[A]r[66]a[487]R[CRO]A[OH])&(c[A]r[205]a[1590]R[SER]A[OG])",
+{type:"name",name:"[ A 66 CRO OH ] [ A 205 SER OG ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
 nodes:[{type:"geometry",primitive:"triangles",
