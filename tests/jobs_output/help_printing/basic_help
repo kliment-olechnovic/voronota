@@ -12,6 +12,7 @@ query-balls-sequences-pairings-stats
 query-contacts
 query-contacts-depth-values
 query-contacts-simulating-unfolding
+draw-contacts
 plot-contacts
 score-contacts-potential
 score-contacts-potentials-stats
