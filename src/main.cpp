@@ -17,6 +17,7 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
+void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
 void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler&);
@@ -57,6 +58,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
+	list_of_modes.push_back(ModeDescriptor("draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
 	list_of_modes.push_back(ModeDescriptor("plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potentials-stats", ModeDescriptor::FunctionPtr(score_contacts_potentials_stats)));

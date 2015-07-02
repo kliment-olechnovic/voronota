@@ -12,6 +12,7 @@ query-balls-sequences-pairings-stats
 query-contacts
 query-contacts-depth-values
 query-contacts-simulating-unfolding
+draw-contacts
 plot-contacts
 score-contacts-potential
 score-contacts-potentials-stats
@@ -159,16 +160,6 @@ Command 'query-contacts' options:
 --inter-residue                             flag to convert input to inter-residue contacts
 --summarize                                 flag to output only summary of contacts
 --preserve-graphics                         flag to preserve graphics in output
---drawing-for-pymol             string      file path to output drawing as pymol script
---drawing-for-jmol              string      file path to output drawing as jmol script
---drawing-for-scenejs           string      file path to output drawing as scenejs script
---drawing-name                  string      graphics object name for drawing output
---drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
---drawing-adjunct-gradient      string      adjunct name to use for gradient-based coloring
---drawing-reverse-gradient                  flag to use reversed gradient for drawing
---drawing-random-colors                     flag to use random color for each drawn contact
---drawing-alpha                 number      alpha opacity value for drawing output
---drawing-labels                            flag to use labels in drawing if possible
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
@@ -183,6 +174,21 @@ Command 'query-contacts-simulating-unfolding' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
+
+Command 'draw-contacts' options:
+--drawing-for-pymol             string      file path to output drawing as pymol script
+--drawing-for-jmol              string      file path to output drawing as jmol script
+--drawing-for-scenejs           string      file path to output drawing as scenejs script
+--drawing-name                  string      graphics object name for drawing output
+--drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
+--drawing-adjunct-gradient      string      adjunct name to use for gradient-based coloring
+--drawing-reverse-gradient                  flag to use reversed gradient for drawing
+--drawing-random-colors                     flag to use random color for each drawn contact
+--drawing-alpha                 number      alpha opacity value for drawing output
+--drawing-labels                            flag to use labels in drawing if possible
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
+stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
 
 Command 'plot-contacts' options:
 --background-color              string      color string in SVG-acceptable format

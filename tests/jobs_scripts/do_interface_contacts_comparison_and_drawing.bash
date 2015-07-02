@@ -46,6 +46,8 @@ cat $SUBDIR/target_iface \
 | $VORONOTA query-contacts --inter-residue \
   --set-external-adjuncts <(cat $SUBDIR/model1_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " $3}') \
   --set-external-adjuncts-name irs \
+  --preserve-graphics \
+| $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model1_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model1_iface_cad_score \
   --drawing-adjunct-gradient irs \
@@ -56,6 +58,8 @@ cat $SUBDIR/target_iface \
 | $VORONOTA query-contacts --inter-residue \
   --set-external-adjuncts <(cat $SUBDIR/model2_iface_cad_score_inter_residue | awk '{print $1 " " $2 " " $3}') \
   --set-external-adjuncts-name irs \
+  --preserve-graphics \
+| $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model2_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model2_iface_cad_score \
   --drawing-adjunct-gradient irs \

@@ -84,6 +84,7 @@ cat $SUBDIR/balls \
   --match-first 'R<CRO>' \
   --match-min-seq-sep 1 \
   --preserve-graphics \
+| $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_for_pymol.py \
   --drawing-for-jmol $SUBDIR/drawing_matched_residue_for_jmol \
   --drawing-for-scenejs $SUBDIR/drawing_matched_residue_for_scenejs \
@@ -93,6 +94,8 @@ cat $SUBDIR/balls \
   --drawing-labels \
 | $VORONOTA query-contacts \
   --inter-residue \
+  --preserve-graphics \
+| $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_randomly_colored_for_pymol.py \
   --drawing-name 'CRO_contacts_random_colors' \
   --drawing-random-colors \
