@@ -113,7 +113,7 @@ public:
 
 	void add_label(const std::string& label)
 	{
-		string_stream_ << object_typer_.label << " " << label << " ";
+		string_stream_ << object_typer_.label << " " << remove_unsafe_characters_in_string(label) << " ";
 	}
 
 	std::string str() const
@@ -620,7 +620,7 @@ private:
 	{
 		if(!(vertices.empty() || normals.size()!=vertices.size() || triples.empty()))
 		{
-			output << "{type:\"name\",name:\"" << id << "\",\n";
+			output << "{type:\"name\",name:\"" << restore_unsafe_characters_in_string(id) << "\",\n";
 			{
 				output << "nodes:[{type:\"material\",\n";
 				output.precision(3);
@@ -661,6 +661,43 @@ private:
 		vertices.clear();
 		normals.clear();
 		triples.clear();
+	}
+
+	static std::string remove_unsafe_characters_in_string(const std::string& str)
+	{
+		std::ostringstream output;
+		for(std::size_t i=0;i<str.size();i++)
+		{
+			if(str[i]==' ')
+			{
+				output << "__";
+			}
+			else
+			{
+				output << str[i];
+			}
+		}
+		return output.str();
+	}
+
+	static std::string restore_unsafe_characters_in_string(const std::string& str)
+	{
+		std::ostringstream output;
+		std::size_t i=0;
+		while(i<str.size())
+		{
+			if(str[i]=='_' && (i+1)<str.size() && str[i+1]=='_')
+			{
+				output << ' ';
+				i+=2;
+			}
+			else
+			{
+				output << str[i];
+				i++;
+			}
+		}
+		return output.str();
 	}
 
 	ObjectTyper object_typer_;
