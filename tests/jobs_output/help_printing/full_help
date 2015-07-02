@@ -9,6 +9,7 @@ calculate-contacts
 calculate-mock-solvent
 query-balls
 query-balls-sequences-pairings-stats
+write-balls-to-atoms-file
 query-contacts
 query-contacts-depth-values
 query-contacts-simulating-unfolding
@@ -115,9 +116,6 @@ Command 'query-balls' options:
 --seq-output                    string      file path to output query result sequence string
 --chains-summary-output         string      file path to output chains summary
 --chains-seq-identity           number      sequence identity threshold for chains summary
---pdb-output                    string      file path to output query result in PDB format
---pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
---pdb-output-template           string      file path to input template for B-factor insertions
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
@@ -126,6 +124,14 @@ Command 'query-balls-sequences-pairings-stats' options:
 --help                                      flag to print usage help to stderr and exit
 stdin   <-  list of balls files
 stdout  ->  list of sequences pairings stats
+
+Command 'write-balls-to-atoms-file' options:
+--pdb-output                    string      file path to output query result in PDB format
+--pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
+--pdb-output-template           string      file path to input template for B-factor insertions
+--help                                      flag to print usage help to stderr and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-contacts' options:
 --match-first                   string      selection for first contacting group
