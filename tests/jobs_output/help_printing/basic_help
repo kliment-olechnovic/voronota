@@ -9,6 +9,7 @@ calculate-contacts
 calculate-mock-solvent
 query-balls
 query-balls-sequences-pairings-stats
+write-balls-to-atoms-file
 query-contacts
 query-contacts-depth-values
 query-contacts-simulating-unfolding

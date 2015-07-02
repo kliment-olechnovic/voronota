@@ -53,7 +53,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls --set-adjuncts 'ssc=100' \
 | $VORONOTA query-balls --match-tags 'helix' --set-adjuncts 'ssc=50' \
 | $VORONOTA query-balls --match-tags 'sheet' --set-adjuncts 'ssc=0' \
-| $VORONOTA query-balls \
+| $VORONOTA write-balls-to-atoms-file \
   --pdb-output $SUBDIR/balls_with_dssp_info.pdb \
   --pdb-output-b-factor ssc \
   --pdb-output-template $INPUTDIR/single/structure.pdb \
