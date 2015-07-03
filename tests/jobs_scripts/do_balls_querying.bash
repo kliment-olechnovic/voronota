@@ -74,3 +74,13 @@ EOF
 echo $SUBDIR/balls \
 | $VORONOTA query-balls-sequences-pairings-stats \
 > $SUBDIR/sequences_pairings_stats
+
+cat $SUBDIR/balls \
+| $VORONOTA query-balls --match 'R<CRO>' \
+| $VORONOTA draw-balls \
+  --drawing-for-pymol $SUBDIR/drawing_matched_balls_for_pymol.py \
+  --drawing-for-scenejs $SUBDIR/drawing_matched_balls_for_scenejs \
+  --drawing-name CRO_balls \
+  --drawing-color '0x00FFFF' \
+  --drawing-labels \
+> /dev/null

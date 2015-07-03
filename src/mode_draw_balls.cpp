@@ -22,8 +22,6 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
 	const unsigned int drawing_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
-	const std::string drawing_adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--drawing-adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
-	const bool drawing_reverse_gradient=poh.contains_option(pohw.describe_option("--drawing-reverse-gradient", "", "flag to use reversed gradient for drawing"));
 	const bool drawing_labels=poh.contains_option(pohw.describe_option("--drawing-labels", "", "flag to use labels in drawing if possible"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -48,19 +46,6 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		if(drawing_labels)
 		{
 			opengl_printer.add_label(construct_label_from_crad(crad));
-		}
-
-		if(!drawing_adjunct_gradient.empty())
-		{
-			if(value.props.adjuncts.count(drawing_adjunct_gradient)>0)
-			{
-				const double gradient_value=value.props.adjuncts.find(drawing_adjunct_gradient)->second;
-				opengl_printer.add_color_from_blue_white_red_gradient(drawing_reverse_gradient ? (1.0-gradient_value) : gradient_value);
-			}
-			else
-			{
-				opengl_printer.add_color(drawing_color);
-			}
 		}
 
 		opengl_printer.add_sphere(value);

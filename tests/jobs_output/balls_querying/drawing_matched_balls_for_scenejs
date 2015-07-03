@@ -1,0 +1,226 @@
+var CRO_balls={type:"scale",x:0.200,y:0.200,z:0.200,
+nodes:[{type:"translate",x:-27.889,y:-27.960,z:-38.181,
+nodes:[
+{type:"name",name:"[ A 66 CRO N1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:24.077,y:27.513,z:36.610,
+nodes:[{type:"scale",x:1.600,y:1.600,z:1.600,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CA1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:25.011,y:26.478,z:37.078,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CB1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:25.931,y:26.035,z:35.930,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CG1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:25.155,y:25.422,z:34.796,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO OG1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:26.679,y:27.129,z:35.461,
+nodes:[{type:"scale",x:1.500,y:1.500,z:1.500,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO C1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:25.730,y:27.106,z:38.245,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO N2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:26.975,y:27.732,z:38.216,
+nodes:[{type:"scale",x:1.600,y:1.600,z:1.600,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO N3 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:25.274,y:27.124,z:39.509,
+nodes:[{type:"scale",x:1.600,y:1.600,z:1.600,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO C2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:26.043,y:27.875,z:40.370,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO O2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:26.022,y:27.962,z:41.566,
+nodes:[{type:"scale",x:1.500,y:1.500,z:1.500,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CA2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:27.197,y:28.245,z:39.512,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CA3 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:23.919,y:26.721,z:39.842,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO C3 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:23.745,y:25.326,z:40.360,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO O3 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:22.885,y:25.116,z:41.193,
+nodes:[{type:"scale",x:1.500,y:1.500,z:1.500,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CB2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:28.329,y:28.822,z:39.960,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CG2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:29.437,y:29.370,z:39.124,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CD1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:29.541,y:29.103,z:37.742,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CD2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:30.487,y:30.110,z:39.805,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CE1 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:30.707,y:29.546,z:37.033,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CE2 ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:31.614,y:30.563,z:39.085,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO CZ ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:31.718,y:30.300,z:37.721,
+nodes:[{type:"scale",x:1.800,y:1.800,z:1.800,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+{type:"name",name:"[ A 66 CRO OH ]",
+nodes:[{type:"material",
+color:{r:0.000,g:1.000,b:1.000},
+nodes:[{type:"translate",x:32.894,y:30.804,z:36.971,
+nodes:[{type:"scale",x:1.500,y:1.500,z:1.500,
+nodes:[{type: "geometry/sphere"}]
+}]
+}],
+}]
+},
+]
+}]
+};
