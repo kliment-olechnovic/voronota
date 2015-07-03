@@ -1,6 +1,4 @@
-var CRO_contacts={type:"scale",x:0.139,y:0.139,z:0.139,
-nodes:[{type:"translate",x:-27.880,y:-27.597,z:-38.066,
-nodes:[
+var CRO_contacts={nodes:[
 {type:"name",name:"[ A 16 VAL CG2 ] [ A 66 CRO CG1 ]",
 nodes:[{type:"material",
 color:{r:1.000,g:1.000,b:0.000},
@@ -20938,5 +20936,11 @@ indices:[
 }]
 },
 ]
+};
+var CRO_contacts_view={type:"scale",x:0.139,y:0.139,z:0.139,
+nodes:[{type:"translate",x:-27.880,y:-27.597,z:-38.066,
+nodes:[{
+id:"CRO_contacts_view"
+}]
 }]
 };
