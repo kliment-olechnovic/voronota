@@ -34,27 +34,28 @@ std::string construct_label_from_crad(const CRAD& crad)
 	if(!crad.chainID.empty())
 	{
 		output << crad.chainID;
+		output << " ";
 	}
-	output << " ";
 	if(crad.resSeq!=CRAD::null_num())
 	{
 		output << crad.resSeq;
+		if(!crad.iCode.empty())
+		{
+			output << crad.iCode;
+		}
+		output << " ";
 	}
-	if(!crad.iCode.empty())
-	{
-		output << crad.iCode;
-	}
-	output << " ";
 	if(!crad.resName.empty())
 	{
 		output << crad.resName;
+		output << " ";
 	}
-	output << " ";
 	if(!crad.name.empty())
 	{
 		output << crad.name;
+		output << " ";
 	}
-	output << " ]";
+	output << "]";
 	return output.str();
 }
 
