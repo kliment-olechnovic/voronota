@@ -249,6 +249,7 @@ public:
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
+		std::vector< std::pair<PlainPoint, double> > global_spheres;
 		BoundingBox bounding_box;
 		while(input.good())
 		{
@@ -258,6 +259,7 @@ public:
 			if(type.color || type.label)
 			{
 				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
+				print_scenejs_spheres(global_spheres, color, label, body_output);
 				if(type.color)
 				{
 					color=read_color_from_stream(input);
@@ -286,8 +288,17 @@ public:
 					}
 				}
 			}
+			else if(type.sphere)
+			{
+				const PlainPoint c=read_point_from_stream(input);
+				double r;
+				input >> r;
+				global_spheres.push_back(std::make_pair(c, r));
+				bounding_box.update(c);
+			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
+		print_scenejs_spheres(global_spheres, color, label, body_output);
 		{
 			const std::pair<PlainPoint, double> transformation=(fit ? bounding_box.calc_normal_transformation() : std::make_pair(PlainPoint(), 1.0));
 			output.precision(3);
@@ -662,6 +673,42 @@ private:
 		normals.clear();
 		triples.clear();
 	}
+
+	static void print_scenejs_spheres(
+			std::vector< std::pair<PlainPoint, double> >& spheres,
+			const Color& color,
+			const std::string& id,
+			std::ostream& output)
+	{
+		if(!spheres.empty())
+		{
+			output << "{type:\"name\",name:\"" << restore_unsafe_characters_in_string(id) << "\",\n";
+			{
+				output << "nodes:[{type:\"material\",\n";
+				output.precision(3);
+				output << "color:{r:" << std::fixed << (static_cast<double>(color.r)/255.0) << ",g:" << (static_cast<double>(color.g)/255.0) << ",b:" << (static_cast<double>(color.b)/255.0) << "},\n";
+				{
+					for(std::size_t i=0;i<spheres.size();i++)
+					{
+						const std::pair<PlainPoint, double>& sphere=spheres[i];
+						output << "nodes:[{type:\"translate\",x:" << std::fixed << sphere.first.x << ",y:" << sphere.first.y << ",z:" << sphere.first.z << ",\n";
+						{
+							output << "nodes:[{type:\"scale\",x:" << std::fixed << sphere.second << ",y:" << sphere.second << ",z:" << sphere.second << ",\n";
+							{
+								output << "nodes:[{type: \"geometry/sphere\"}]\n";
+							}
+							output << "}]\n";
+						}
+						output << "}],\n";
+					}
+				}
+				output << "}]\n";
+			}
+			output << "},\n";
+		}
+		spheres.clear();
+	}
+
 
 	static std::string remove_unsafe_characters_in_string(const std::string& str)
 	{

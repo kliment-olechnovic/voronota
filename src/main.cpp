@@ -15,6 +15,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
 void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
+void draw_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
@@ -57,6 +58,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-balls-sequences-pairings-stats", ModeDescriptor::FunctionPtr(query_balls_sequences_pairings_stats)));
 	list_of_modes.push_back(ModeDescriptor("write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
+	list_of_modes.push_back(ModeDescriptor("draw-balls", ModeDescriptor::FunctionPtr(draw_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
