@@ -245,7 +245,7 @@ public:
 		}
 		std::ostringstream body_output;
 		Color color(0xFFFFFF);
-		std::string label=obj_name;
+		std::string label="undefined";
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
@@ -300,19 +300,25 @@ public:
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
 		print_scenejs_spheres(global_spheres, color, label, body_output);
 		{
-			const std::pair<PlainPoint, double> transformation=(fit ? bounding_box.calc_normal_transformation() : std::make_pair(PlainPoint(), 1.0));
 			output.precision(3);
-			output << "var " << obj_name << "={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
+			output << "var " << obj_name << "={nodes:[\n" << body_output.str() << "]\n};\n";
+			if(fit)
 			{
-				output << "nodes:[{type:\"translate\",x:" << std::fixed << transformation.first.x << ",y:" << transformation.first.y << ",z:" << transformation.first.z << ",\n";
+				const std::pair<PlainPoint, double> transformation=bounding_box.calc_normal_transformation();
+				output << "var " << obj_name << "_view={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
 				{
-					output << "nodes:[\n";
-					output << body_output.str();
-					output << "]\n";
+					output << "nodes:[{type:\"translate\",x:" << std::fixed << transformation.first.x << ",y:" << transformation.first.y << ",z:" << transformation.first.z << ",\n";
+					{
+						output << "nodes:[{\n";
+						{
+							output << "id:\"" << obj_name << "_view\"";
+						}
+						output << "\n}]\n";
+					}
+					output << "}]\n";
 				}
-				output << "}]\n";
+				output << "};\n";
 			}
-			output << "};\n";
 		}
 	}
 

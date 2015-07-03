@@ -1,6 +1,4 @@
-var CRO_balls={type:"scale",x:0.200,y:0.200,z:0.200,
-nodes:[{type:"translate",x:-27.889,y:-27.960,z:-38.181,
-nodes:[
+var CRO_balls={nodes:[
 {type:"name",name:"[ A 66 CRO N1 ]",
 nodes:[{type:"material",
 color:{r:0.000,g:1.000,b:1.000},
@@ -222,5 +220,11 @@ nodes:[{type: "geometry/sphere"}]
 }]
 },
 ]
+};
+var CRO_balls_view={type:"scale",x:0.200,y:0.200,z:0.200,
+nodes:[{type:"translate",x:-27.889,y:-27.960,z:-38.181,
+nodes:[{
+id:"CRO_balls_view"
+}]
 }]
 };
