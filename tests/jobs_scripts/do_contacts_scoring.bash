@@ -24,6 +24,7 @@ do
 	| tee $SUBDIR/$INFILEBASENAME.balls \
 	| $VORONOTA calculate-contacts \
 	  --annotated \
+	  --tag-centrality \
 	| $VORONOTA query-contacts --match-min-seq-sep 1 \
 	| $VORONOTA query-contacts \
 	  --match-first 'A<C>' \
@@ -40,6 +41,7 @@ do
 	  --no-solvent \
 	  --set-tags 'sep2' \
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
 	| tee $SUBDIR/$INFILEBASENAME.contacts \
 	| $VORONOTA score-contacts-potential \
 	  --multiply-areas 0.5 \
