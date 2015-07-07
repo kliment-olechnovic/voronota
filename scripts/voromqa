@@ -3,12 +3,25 @@
 set +e
 
 BINDIR=$(dirname $0)
-INFILE=$1
-OUTDIR=$2
+
+while getopts "i:a:r:" OPTION
+do
+	case $OPTION in
+	i)
+		INFILE=$OPTARG
+		;;
+	a)
+		OUTFILE_ATOM_SCORES=$OPTARG
+		;;
+	r)
+		OUTFILE_RESIDUE_SCORES=$OPTARG
+		;;
+	esac
+done
 
 if [ -z "$INFILE" ]
 then
-	echo >&2 "Usage: ./voromqa input_file.pdb [output_directory]"
+	echo >&2 "Usage: ./voromqa -i input_file.pdb [-a output_atom_scores_file.pdb] [-r output_residue_scores_file.pdb]"
 	exit 1
 fi
 
@@ -22,16 +35,6 @@ if [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file does not exist or is empty"
 	exit 1
-fi
-
-if [ -n "$OUTDIR" ]
-then
-	mkdir -p $OUTDIR
-	if [ ! -d "$OUTDIR" ]
-	then
-		echo >&2 "Error: could not create output directory"
-		exit 1
-	fi
 fi
 
 readonly TMPDIR=$(mktemp -d)
@@ -94,20 +97,28 @@ cat $TMPDIR/atom_energies \
   --residue-scores-file $TMPDIR/residue_quality_scores \
 > $TMPDIR/global_quality_score
 
-if [ -n "$OUTDIR" ]
+if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
+	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
 	cat $TMPDIR/balls \
 	| $BINDIR/voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/atom_quality_scores \
 	  --set-external-adjuncts-name aqscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_ATOM_SCORES \
+	  --pdb-output-b-factor aqscore \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_RESIDUE_SCORES" ]
+then
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+	cat $TMPDIR/balls \
 	| $BINDIR/voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/residue_quality_scores \
 	  --set-external-adjuncts-name rqscore \
 	| $BINDIR/voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTDIR/atom_scores.pdb \
-	  --pdb-output-b-factor aqscore \
-	| $BINDIR/voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTDIR/residue_scores.pdb \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
 	> /dev/null
 fi
