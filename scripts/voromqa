@@ -4,6 +4,10 @@ set +e
 
 BINDIR=$(dirname $0)
 
+INFILE=""
+OUTFILE_ATOM_SCORES=""
+OUTFILE_RESIDUE_SCORES=""
+
 while getopts "i:a:r:" OPTION
 do
 	case $OPTION in
