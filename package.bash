@@ -24,6 +24,7 @@ cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp resources/radii $PACKAGE_NAME/radii
 cp resources/energy_potential $PACKAGE_NAME/energy_potential
 cp resources/energy_means_and_sds $PACKAGE_NAME/energy_means_and_sds
+cp scripts/voromqa $PACKAGE_NAME/voromqa
 cp Release/voronota $PACKAGE_NAME/voronota
 pandoc README.markdown -f markdown -t html -s -o $PACKAGE_NAME/README.html
 

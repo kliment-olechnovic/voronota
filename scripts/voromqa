@@ -1,0 +1,116 @@
+#!/bin/bash
+
+set +e
+
+BINDIR=$(dirname $0)
+INFILE=$1
+OUTDIR=$2
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Usage: ./voromqa input_file.pdb [output_directory]"
+	exit 1
+fi
+
+if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/radii" ] || [ ! -s "$BINDIR/energy_potential" ] || [ ! -s "$BINDIR/energy_means_and_sds" ]
+then
+	echo >&2 "Error: script directory does not contain Voronota files"
+	exit1
+fi
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file does not exist or is empty"
+	exit 1
+fi
+
+if [ -n "$OUTDIR" ]
+then
+	mkdir -p $OUTDIR
+	if [ ! -d "$OUTDIR" ]
+	then
+		echo >&2 "Error: could not create output directory"
+		exit 1
+	fi
+fi
+
+readonly TMPDIR=$(mktemp -d)
+trap "rm -r $TMPDIR" EXIT
+
+INPRINTER="cat"
+file $INFILE > $TMPDIR/input_file_type
+if grep "gzip compressed data" $TMPDIR/input_file_type > /dev/null
+then
+	INPRINTER="zcat"
+fi
+
+$INPRINTER $INFILE \
+| $BINDIR/voronota get-balls-from-atoms-file \
+  --annotated \
+  --radii-file $BINDIR/radii \
+| $BINDIR/voronota query-balls \
+  --drop-adjuncts \
+  --drop-altloc-indicators \
+| tee $TMPDIR/balls \
+| $BINDIR/voronota calculate-contacts \
+  --annotated \
+  --tag-centrality \
+| $BINDIR/voronota query-contacts \
+  --match-min-seq-sep 1 \
+| $BINDIR/voronota query-contacts \
+  --match-first 'A<C>' \
+  --match-second 'A<N>' \
+  --match-max-seq-sep 1 \
+  --match-max-dist 1.6 \
+  --invert \
+| $BINDIR/voronota query-contacts \
+  --match-min-seq-sep 1 \
+  --match-max-seq-sep 1 \
+  --set-tags 'sep1' \
+| $BINDIR/voronota query-contacts \
+  --match-min-seq-sep 2 \
+  --no-solvent \
+  --set-tags 'sep2' \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| tr ';' '_' \
+| tee $TMPDIR/contacts \
+| $BINDIR/voronota score-contacts-energy \
+  --potential-file $BINDIR/energy_potential \
+  --atom-scores-file $TMPDIR/atom_energies \
+> /dev/null
+
+cat $TMPDIR/contacts \
+| $BINDIR/voronota query-contacts-depth-values \
+> $TMPDIR/depth_values
+
+cat $TMPDIR/atom_energies \
+| $BINDIR/voronota score-contacts-quality \
+  --default-mean -0.34 \
+  --default-sd 0.19 \
+  --means-and-sds-file $BINDIR/energy_means_and_sds \
+  --external-weights-file $TMPDIR/depth_values \
+  --smoothing-window 5 \
+  --atom-scores-file $TMPDIR/atom_quality_scores \
+  --residue-scores-file $TMPDIR/residue_quality_scores \
+> $TMPDIR/global_quality_score
+
+if [ -n "$OUTDIR" ]
+then
+	cat $TMPDIR/balls \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/atom_quality_scores \
+	  --set-external-adjuncts-name aqscore \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/residue_quality_scores \
+	  --set-external-adjuncts-name rqscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTDIR/atom_scores.pdb \
+	  --pdb-output-b-factor aqscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTDIR/residue_scores.pdb \
+	  --pdb-output-b-factor rqscore \
+	> /dev/null
+fi
+
+cat $TMPDIR/global_quality_score \
+| sed 's/^/VoroMQA global score = /'
