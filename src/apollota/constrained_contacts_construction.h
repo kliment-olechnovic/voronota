@@ -45,7 +45,8 @@ public:
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
 			const double step,
-			const int projections)
+			const int projections,
+			const std::set<std::size_t>& mock_solvent_ids)
 	{
 		std::map<Pair, double> result;
 
@@ -54,7 +55,7 @@ public:
 		{
 			const std::size_t a=pairs_vertices_it->first.get(0);
 			const std::size_t b=pairs_vertices_it->first.get(1);
-			if(minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
+			if((mock_solvent_ids.count(a)==0 || mock_solvent_ids.count(b)==0) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
 				double sum=0.0;
 				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections);

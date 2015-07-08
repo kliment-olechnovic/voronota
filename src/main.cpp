@@ -5,19 +5,30 @@
 #include <vector>
 #include <algorithm>
 
-#include "apollota/safer_comparison_of_numbers.h"
-
 #include "auxiliaries/program_options_handler.h"
 
 void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
+void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
+void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
+void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
+void draw_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
+void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
+void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
+void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
+void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
+void score_scores(const auxiliaries::ProgramOptionsHandler&);
+void generate_demo(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -43,17 +54,30 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
 	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
+	list_of_modes.push_back(ModeDescriptor("calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
 	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
+	list_of_modes.push_back(ModeDescriptor("query-balls-sequences-pairings-stats", ModeDescriptor::FunctionPtr(query_balls_sequences_pairings_stats)));
+	list_of_modes.push_back(ModeDescriptor("write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
+	list_of_modes.push_back(ModeDescriptor("draw-balls", ModeDescriptor::FunctionPtr(draw_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
+	list_of_modes.push_back(ModeDescriptor("query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
+	list_of_modes.push_back(ModeDescriptor("query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
+	list_of_modes.push_back(ModeDescriptor("draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
+	list_of_modes.push_back(ModeDescriptor("plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
-	list_of_modes.push_back(ModeDescriptor("score-contacts", ModeDescriptor::FunctionPtr(score_contacts)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-potentials-stats", ModeDescriptor::FunctionPtr(score_contacts_potentials_stats)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-energy-stats", ModeDescriptor::FunctionPtr(score_contacts_energy_stats)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
+	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
+	list_of_modes.push_back(ModeDescriptor("generate-demo", ModeDescriptor::FunctionPtr(generate_demo)));
 	return list_of_modes;
 }
 
 std::string version()
 {
-	static const std::string str="Voronota version 1.7";
+	static const std::string str="Voronota version 1.9";
 	return str;
 }
 
@@ -123,10 +147,6 @@ int main(const int argc, const char** argv)
 		}
 
 		return 1;
-	}
-	catch(const auxiliaries::ProgramOptionsHandler::Exception& e)
-	{
-		print_error_message(mode, e.what());
 	}
 	catch(const std::exception& e)
 	{

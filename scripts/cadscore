@@ -1,0 +1,137 @@
+#!/bin/bash
+
+set +e
+
+BINDIR=$(dirname $0)
+
+INFILE_TARGET=""
+INFILE_MODEL=""
+OUTFILE_RESIDUE_SCORES_ON_TARGET=""
+OUTFILE_RESIDUE_SCORES_ON_MODEL=""
+SMOOTHING_WINDOW="1"
+HELP_MODE=false
+
+while getopts "t:m:T:M:s:h" OPTION
+do
+	case $OPTION in
+	t)
+		INFILE_TARGET=$OPTARG
+		;;
+	m)
+		INFILE_MODEL=$OPTARG
+		;;
+	T)
+		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
+		;;
+	M)
+		OUTFILE_RESIDUE_SCORES_ON_MODEL=$OPTARG
+		;;
+	s)
+		SMOOTHING_WINDOW=$OPTARG
+		;;
+	h)
+		HELP_MODE=true
+		;;
+	esac
+done
+
+if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ] || $HELP_MODE
+then
+cat >&2 << EOF
+Script parameters:
+    -t input_target_file.pdb
+    -m input_model_file.pdb
+    [-T output_residue_scores_on_target_file.pdb]
+    [-M output_residue_scores_on_model_file.pdb]
+    [-s residue_scores_smoothing_window_size]
+EOF
+exit 1
+fi
+
+if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/radii" ]
+then
+	echo >&2 "Error: script directory does not contain Voronota files"
+	exit1
+fi
+
+if [ ! -s "$INFILE_TARGET" ]
+then
+	echo >&2 "Error: input target file does not exist or is empty"
+	exit 1
+fi
+
+if [ ! -s "$INFILE_MODEL" ]
+then
+	echo >&2 "Error: input model file does not exist or is empty"
+	exit 1
+fi
+
+readonly TMPDIR=$(mktemp -d)
+trap "rm -r $TMPDIR" EXIT
+
+cp $INFILE_TARGET $TMPDIR/target
+cp $INFILE_MODEL $TMPDIR/model
+
+for WORKFILE in $TMPDIR/target $TMPDIR/model
+do
+	cat $WORKFILE \
+	| $BINDIR/voronota get-balls-from-atoms-file \
+	  --annotated \
+	  --radii-file $BINDIR/radii \
+	| $BINDIR/voronota query-balls \
+	  --drop-adjuncts \
+	  --drop-altloc-indicators \
+	| tee $WORKFILE.balls \
+	| $BINDIR/voronota calculate-contacts \
+	  --annotated \
+	| $BINDIR/voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	  --no-solvent \
+	| $BINDIR/voronota query-contacts \
+	  --match-first 'A<C>' \
+	  --match-second 'A<N>' \
+	  --match-max-seq-sep 1 \
+	  --match-max-dist 1.6 \
+	  --invert \
+	| awk '{print $1 " " $2 " " $3}' \
+	> $WORKFILE.contacts
+done
+
+cat $TMPDIR/model.contacts \
+| $BINDIR/voronota compare-contacts \
+  --target-contacts-file $TMPDIR/target.contacts \
+  --smoothing-window $SMOOTHING_WINDOW \
+  --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
+  --depth 0 \
+| grep "residue_level_global" \
+| awk '{print $2}' \
+> $TMPDIR/global_cad_score
+
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ]
+then
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_TARGET)
+	cat $TMPDIR/target.balls \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name rcadscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_TARGET \
+	  --pdb-output-b-factor rcadscore \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ]
+then
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_MODEL)
+	cat $TMPDIR/model.balls \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name rcadscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_MODEL \
+	  --pdb-output-b-factor rcadscore \
+	> /dev/null
+fi
+
+cat $TMPDIR/global_cad_score \
+| sed 's/^/CAD-score global score = /'
