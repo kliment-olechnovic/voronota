@@ -3,46 +3,33 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
-#include "modescommon/assert_options.h"
-#include "modescommon/read_sphere.h"
+#include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+	pohw.describe_io("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
+
+	const bool print_log=poh.contains_option(pohw.describe_option("--print-log", "", "flag to print log of calculations"));
+	const bool exclude_hidden_balls=poh.contains_option(pohw.describe_option("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
+	const bool include_surplus_quadruples=poh.contains_option(pohw.describe_option("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+	const bool link=poh.contains_option(pohw.describe_option("--link", "", "flag to output links between vertices"));
+	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
+	const bool check=poh.contains_option(pohw.describe_option("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		list_of_option_descriptions.push_back(OD("--exclude-hidden-balls", "", "flag to exclude hidden input balls"));
-		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
-		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		list_of_option_descriptions.push_back(OD("--check", "", "flag to slowly check the resulting vertices (used only for testing)"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
-		{
-			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
-			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
-			return;
-		}
+		return;
 	}
 
-	const bool print_log=poh.contains_option("--print-log");
-
-	const bool exclude_hidden_balls=poh.contains_option("--exclude-hidden-balls");
-
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
-	const bool check=poh.contains_option("--check");
-
-	const bool link=poh.contains_option("--link");
-
-	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+	const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(std::cin);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

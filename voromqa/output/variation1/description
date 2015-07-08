@@ -1,0 +1,5 @@
+Used configuration:
+sequence separation for potential calculation: sep1=1:1, sep2=2:N
+sequence separation for energies scoring: sep2=2:N
+contacts centrality tagging
+contributions ratios from CASP models

@@ -135,6 +135,20 @@ struct SimpleSphere
 	}
 };
 
+template<typename T>
+inline T& operator<<(T& output, const SimpleSphere& sphere)
+{
+	output << sphere.x << " " << sphere.y << " " << sphere.z << " " << sphere.r;
+	return output;
+}
+
+template<typename T>
+inline T& operator>>(T& input, SimpleSphere& sphere)
+{
+	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
+	return input;
+}
+
 }
 
 #endif /* APOLLOTA_BASIC_OPERATIONS_ON_SPHERES_H_ */

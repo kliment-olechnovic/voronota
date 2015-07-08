@@ -71,6 +71,35 @@ public:
 	}
 
 	template<typename PointType>
+	void add_line_strip(const std::vector<PointType>& vertices)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << object_typer_.lstrip << " ";
+			write_points_vector_to_stream(vertices, string_stream_);
+		}
+	}
+
+	template<typename PointType>
+	void add_line_strip(const PointType& a, const PointType& b)
+	{
+		std::vector<PointType> vertices(2);
+		vertices[0]=a;
+		vertices[1]=b;
+		add_line_strip(vertices);
+	}
+
+	template<typename PointType>
+	void add_line_loop(const std::vector<PointType>& vertices)
+	{
+		if(!vertices.empty())
+		{
+			string_stream_ << object_typer_.lloop << " ";
+			write_points_vector_to_stream(vertices, string_stream_);
+		}
+	}
+
+	template<typename PointType>
 	void add_triangle_fan(const PointType& center, const std::vector<PointType>& vertices, const PointType& normal)
 	{
 		if(!vertices.empty())
@@ -84,7 +113,7 @@ public:
 
 	void add_label(const std::string& label)
 	{
-		string_stream_ << object_typer_.label << " " << label << " ";
+		string_stream_ << object_typer_.label << " " << remove_unsafe_characters_in_string(label) << " ";
 	}
 
 	std::string str() const
@@ -92,7 +121,7 @@ public:
 		return string_stream_.str();
 	}
 
-	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output)
+	void print_pymol_script(const std::string& obj_name, const bool two_sided_lighting, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -133,6 +162,19 @@ public:
 					output << "END, ";
 				}
 			}
+			else if(type.lstrip || type.lloop)
+			{
+				const std::vector<PlainPoint> vertices=read_points_vector_from_stream(input);
+				if(!vertices.empty())
+				{
+					output << (type.lstrip ? "BEGIN, LINE_STRIP, " : "BEGIN, LINE_LOOP, ");
+					for(std::size_t i=0;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+					}
+					output << "END, ";
+				}
+			}
 			else if(type.sphere)
 			{
 				const PlainPoint c=read_point_from_stream(input);
@@ -147,7 +189,7 @@ public:
 		output << "cmd.set('two_sided_lighting', '" << (two_sided_lighting ? "on" : "off") << "')\n";
 	}
 
-	void print_jmol_script(const std::string& obj_name, std::ostream& output)
+	void print_jmol_script(const std::string& obj_name, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -194,7 +236,7 @@ public:
 		print_jmol_polygon(global_vertices, global_triples, color, alpha, obj_name, output);
 	}
 
-	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output)
+	void print_scenejs_script(const std::string& obj_name, const bool fit, std::ostream& output) const
 	{
 		std::istringstream input(str());
 		if(!input.good())
@@ -203,10 +245,11 @@ public:
 		}
 		std::ostringstream body_output;
 		Color color(0xFFFFFF);
-		std::string label=obj_name;
+		std::string label="undefined";
 		std::vector<PlainPoint> global_vertices;
 		std::vector<PlainPoint> global_normals;
 		std::vector<PlainTriple> global_triples;
+		std::vector< std::pair<PlainPoint, double> > global_spheres;
 		BoundingBox bounding_box;
 		while(input.good())
 		{
@@ -216,6 +259,7 @@ public:
 			if(type.color || type.label)
 			{
 				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
+				print_scenejs_spheres(global_spheres, color, label, body_output);
 				if(type.color)
 				{
 					color=read_color_from_stream(input);
@@ -244,22 +288,37 @@ public:
 					}
 				}
 			}
+			else if(type.sphere)
+			{
+				const PlainPoint c=read_point_from_stream(input);
+				double r;
+				input >> r;
+				global_spheres.push_back(std::make_pair(c, r));
+				bounding_box.update(c);
+			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
+		print_scenejs_spheres(global_spheres, color, label, body_output);
 		{
-			const std::pair<PlainPoint, double> transformation=(fit ? bounding_box.calc_normal_transformation() : std::make_pair(PlainPoint(), 1.0));
 			output.precision(3);
-			output << "var " << obj_name << "={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
+			output << "var " << obj_name << "={nodes:[\n" << body_output.str() << "]\n};\n";
+			if(fit)
 			{
-				output << "nodes:[{type:\"translate\",x:" << std::fixed << transformation.first.x << ",y:" << transformation.first.y << ",z:" << transformation.first.z << ",\n";
+				const std::pair<PlainPoint, double> transformation=bounding_box.calc_normal_transformation();
+				output << "var " << obj_name << "_view={type:\"scale\",x:" << std::fixed << transformation.second << ",y:" << transformation.second << ",z:" << transformation.second << ",\n";
 				{
-					output << "nodes:[\n";
-					output << body_output.str();
-					output << "]\n";
+					output << "nodes:[{type:\"translate\",x:" << std::fixed << transformation.first.x << ",y:" << transformation.first.y << ",z:" << transformation.first.z << ",\n";
+					{
+						output << "nodes:[{\n";
+						{
+							output << "id:\"" << obj_name << "_view\"";
+						}
+						output << "\n}]\n";
+					}
+					output << "}]\n";
 				}
-				output << "}]\n";
+				output << "};\n";
 			}
-			output << "};\n";
 		}
 	}
 
@@ -272,6 +331,8 @@ private:
 		std::string tstrip;
 		std::string tfan;
 		std::string tfanc;
+		std::string lstrip;
+		std::string lloop;
 		std::string sphere;
 
 		ObjectTyper() :
@@ -281,6 +342,8 @@ private:
 			tstrip("_tstrip"),
 			tfan("_tfan"),
 			tfanc("_tfanc"),
+			lstrip("_lstrip"),
+			lloop("_lloop"),
 			sphere("_sphere")
 		{
 		}
@@ -294,6 +357,8 @@ private:
 		bool tstrip;
 		bool tfan;
 		bool tfanc;
+		bool lstrip;
+		bool lloop;
 		bool sphere;
 
 		ObjectTypeMarker(const std::string& type_str, const ObjectTyper& object_typer) :
@@ -303,6 +368,8 @@ private:
 			tstrip(type_str==object_typer.tstrip),
 			tfan(type_str==object_typer.tfan),
 			tfanc(type_str==object_typer.tfanc),
+			lstrip(type_str==object_typer.lstrip),
+			lloop(type_str==object_typer.lloop),
 			sphere(type_str==object_typer.sphere)
 		{
 		}
@@ -570,7 +637,7 @@ private:
 	{
 		if(!(vertices.empty() || normals.size()!=vertices.size() || triples.empty()))
 		{
-			output << "{type:\"name\",name:\"" << id << "\",\n";
+			output << "{type:\"name\",name:\"" << restore_unsafe_characters_in_string(id) << "\",\n";
 			{
 				output << "nodes:[{type:\"material\",\n";
 				output.precision(3);
@@ -611,6 +678,79 @@ private:
 		vertices.clear();
 		normals.clear();
 		triples.clear();
+	}
+
+	static void print_scenejs_spheres(
+			std::vector< std::pair<PlainPoint, double> >& spheres,
+			const Color& color,
+			const std::string& id,
+			std::ostream& output)
+	{
+		if(!spheres.empty())
+		{
+			output << "{type:\"name\",name:\"" << restore_unsafe_characters_in_string(id) << "\",\n";
+			{
+				output << "nodes:[{type:\"material\",\n";
+				output.precision(3);
+				output << "color:{r:" << std::fixed << (static_cast<double>(color.r)/255.0) << ",g:" << (static_cast<double>(color.g)/255.0) << ",b:" << (static_cast<double>(color.b)/255.0) << "},\n";
+				{
+					for(std::size_t i=0;i<spheres.size();i++)
+					{
+						const std::pair<PlainPoint, double>& sphere=spheres[i];
+						output << "nodes:[{type:\"translate\",x:" << std::fixed << sphere.first.x << ",y:" << sphere.first.y << ",z:" << sphere.first.z << ",\n";
+						{
+							output << "nodes:[{type:\"scale\",x:" << std::fixed << sphere.second << ",y:" << sphere.second << ",z:" << sphere.second << ",\n";
+							{
+								output << "nodes:[{type: \"geometry/sphere\"}]\n";
+							}
+							output << "}]\n";
+						}
+						output << "}],\n";
+					}
+				}
+				output << "}]\n";
+			}
+			output << "},\n";
+		}
+		spheres.clear();
+	}
+
+
+	static std::string remove_unsafe_characters_in_string(const std::string& str)
+	{
+		std::ostringstream output;
+		for(std::size_t i=0;i<str.size();i++)
+		{
+			if(str[i]==' ')
+			{
+				output << "__";
+			}
+			else
+			{
+				output << str[i];
+			}
+		}
+		return output.str();
+	}
+
+	static std::string restore_unsafe_characters_in_string(const std::string& str)
+	{
+		std::ostringstream output;
+		std::size_t i=0;
+		while(i<str.size())
+		{
+			if(str[i]=='_' && (i+1)<str.size() && str[i+1]=='_')
+			{
+				output << ' ';
+				i+=2;
+			}
+			else
+			{
+				output << str[i];
+				i++;
+			}
+		}
+		return output.str();
 	}
 
 	ObjectTyper object_typer_;

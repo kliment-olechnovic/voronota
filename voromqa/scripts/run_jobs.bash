@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export BINDIR=$1
+COMMANDBUNDLE=$2
+
+$COMMANDBUNDLE $3
+
+for ARGVALUE in ${@:4}
+do
+	$COMMANDBUNDLE $ARGVALUE
+done

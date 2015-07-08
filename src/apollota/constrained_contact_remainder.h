@@ -17,7 +17,7 @@ public:
 		int s[3];
 
 		TriangleRecord(const SimplePoint& a, const SimplePoint& b, const SimplePoint& c,
-				const bool sa, const bool sb, const bool sc)
+				const int sa, const int sb, const int sc)
 		{
 			p[0]=a;
 			p[1]=b;

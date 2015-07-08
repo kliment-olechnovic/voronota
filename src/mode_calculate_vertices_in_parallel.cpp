@@ -9,8 +9,8 @@
 #include "apollota/triangulation.h"
 #include "apollota/triangulation_output.h"
 
-#include "modescommon/assert_options.h"
-#include "modescommon/read_sphere.h"
+#include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
 namespace
 {
@@ -38,7 +38,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -66,7 +66,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -145,7 +145,7 @@ public:
 				int spheres_plain_vector_length=0;
 				if(mpi_handle.rank()==0)
 				{
-					auxiliaries::read_lines_to_container(std::cin, modescommon::add_sphere_from_stream_to_vector<apollota::SimpleSphere>, spheres);
+					auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 					fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 					spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 				}
@@ -370,46 +370,36 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		available_processing_method_names_string=output.str();
 	}
 
+	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+	pohw.describe_io("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
+
+	const std::string method=poh.argument<std::string>(pohw.describe_option("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true), "");
+	const std::size_t parts=poh.argument<std::size_t>(pohw.describe_option("--parts", "number", "number of parts for splitting, must be power of 2", true), 0);
+	const bool print_log=poh.contains_option(pohw.describe_option("--print-log", "", "flag to print log of calculations"));
+	const bool include_surplus_quadruples=poh.contains_option(pohw.describe_option("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
+	const bool link=poh.contains_option(pohw.describe_option("--link", "", "flag to output links between vertices"));
+	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
+
+	if(!pohw.assert_or_print_help(false))
 	{
-		typedef auxiliaries::ProgramOptionsHandler::OptionDescription OD;
-		std::vector<OD> list_of_option_descriptions;
-		list_of_option_descriptions.push_back(OD("--method", "string", "parallelization method name, variants are:"+available_processing_method_names_string, true));
-		list_of_option_descriptions.push_back(OD("--parts", "number", "number of parts for splitting, must be power of 2", true));
-		list_of_option_descriptions.push_back(OD("--print-log", "", "flag to print log of calculations"));
-		list_of_option_descriptions.push_back(OD("--include-surplus-quadruples", "", "flag to include surplus quadruples"));
-		list_of_option_descriptions.push_back(OD("--link", "", "flag to output links between vertices"));
-		list_of_option_descriptions.push_back(OD("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"));
-		if(!modescommon::assert_options(list_of_option_descriptions, poh, false))
-		{
-			std::cerr << "stdin   <-  list of balls (line format: 'x y z r')\n";
-			std::cerr << "stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')\n";
-			return;
-		}
+		return;
 	}
 
-	const std::string method=poh.argument<std::string>("--method");
 	if(available_processing_method_names.count(method)==0)
 	{
 		throw std::runtime_error("Invalid processing method name, acceptable values are:"+available_processing_method_names_string+".");
 	}
 
-	const std::size_t parts=poh.argument<std::size_t>("--parts");
 	if(!number_is_power_of_two(parts))
 	{
 		throw std::runtime_error("Number of parts must be power of 2.");
 	}
 
-	const bool print_log=poh.contains_option("--print-log");
-
-	const bool include_surplus_quadruples=poh.contains_option("--include-redundant-quadruples");
-
-	const double init_radius_for_BSH=poh.argument<double>("--init-radius-for-BSH", 3.5);
 	if(init_radius_for_BSH<=1.0)
 	{
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
-
-	const bool link=poh.contains_option("--link");
 
 	ParallelComputationResult result;
 	bool master_finished=true;

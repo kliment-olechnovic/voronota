@@ -75,6 +75,31 @@ public:
 		}
 		return pairs_vertices_map;
 	}
+
+	template<typename QuadruplesMapType>
+	static PairsMap collect_pairs_neighbors_map_from_quadruples_map(const QuadruplesMapType& quadruples_map)
+	{
+		PairsMap pairs_neighbors_map;
+		for(typename QuadruplesMapType::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		{
+			const Quadruple& quadruple=it->first;
+			for(int a=0;a<4;a++)
+			{
+				for(int b=a+1;b<4;b++)
+				{
+					const Pair p(quadruple.get(a), quadruple.get(b));
+					for(int c=0;c<4;c++)
+					{
+						if(c!=a && c!=b)
+						{
+							pairs_neighbors_map[p].insert(quadruple.get(c));
+						}
+					}
+				}
+			}
+		}
+		return pairs_neighbors_map;
+	}
 };
 
 }

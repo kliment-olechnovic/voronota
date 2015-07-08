@@ -7,6 +7,9 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
+#include <set>
+#include <map>
+#include <cmath>
 
 namespace auxiliaries
 {
@@ -236,6 +239,10 @@ public:
 			}
 			return ((min_sep==null_num() || sep>=min_sep) && (max_sep==null_num() || sep<=max_sep));
 		}
+		else if(max_sep!=null_num() && a.chainID!=b.chainID)
+		{
+			return false;
+		}
 		return uncheckable_result;
 	}
 
@@ -283,6 +290,11 @@ public:
 	bool operator==(const ChainResidueAtomDescriptor& v) const
 	{
 		return (serial==v.serial && resSeq==v.resSeq && chainID==v.chainID && iCode==v.iCode && altLoc==v.altLoc && resName==v.resName && name==v.name);
+	}
+
+	bool operator!=(const ChainResidueAtomDescriptor& v) const
+	{
+		return (!((*this)==v));
 	}
 
 	bool operator<(const ChainResidueAtomDescriptor& v) const
@@ -397,6 +409,216 @@ private:
 			}
 		}
 		return output.str();
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptor& descriptor)
+{
+	output << descriptor.str();
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptor& descriptor)
+{
+	std::string str;
+	input >> str;
+	descriptor=ChainResidueAtomDescriptor::from_str(str);
+	if(!descriptor.valid())
+	{
+		input.setstate(std::ios::failbit);
+	}
+	return input;
+}
+
+class ChainResidueAtomDescriptorsPair
+{
+public:
+	ChainResidueAtomDescriptor a;
+	ChainResidueAtomDescriptor b;
+	bool reversed_display;
+
+	ChainResidueAtomDescriptorsPair() : reversed_display(false)
+	{
+	}
+
+	ChainResidueAtomDescriptorsPair(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b) : a(a<b ? a : b), b(a<b ? b : a), reversed_display(false)
+	{
+	}
+
+	ChainResidueAtomDescriptorsPair(const ChainResidueAtomDescriptor& a, const ChainResidueAtomDescriptor& b, const bool reversed_display) : a(a<b ? a : b), b(a<b ? b : a), reversed_display(reversed_display)
+	{
+	}
+
+	bool operator==(const ChainResidueAtomDescriptorsPair& v) const
+	{
+		return (a==v.a && b==v.b);
+	}
+
+	bool operator<(const ChainResidueAtomDescriptorsPair& v) const
+	{
+		return ((a<v.a) || (a==v.a && b<v.b));
+	}
+
+	bool contains(const ChainResidueAtomDescriptor& v) const
+	{
+		return (a==v || b==v);
+	}
+};
+
+inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)
+{
+	if(descriptors_pair.reversed_display)
+	{
+		output << descriptors_pair.b << " " << descriptors_pair.a;
+	}
+	else
+	{
+		output << descriptors_pair.a << " " << descriptors_pair.b;
+	}
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, ChainResidueAtomDescriptorsPair& descriptors_pair)
+{
+	ChainResidueAtomDescriptor a;
+	ChainResidueAtomDescriptor b;
+	input >> a >> b;
+	descriptors_pair=ChainResidueAtomDescriptorsPair(a, b);
+	return input;
+}
+
+class ChainResidueAtomDescriptorsGraphOperations
+{
+public:
+	template<typename T>
+	static std::map<ChainResidueAtomDescriptor, T> accumulate_mapped_values_by_graph_neighbors(
+			const std::map< ChainResidueAtomDescriptorsPair, T >& map_of_pair_descriptors,
+			const int depth)
+	{
+		return construct_map_of_single_descriptors(map_of_pair_descriptors, construct_graph(map_of_pair_descriptors, depth));
+	}
+
+private:
+	template<typename T>
+	static std::map< ChainResidueAtomDescriptor, std::set<ChainResidueAtomDescriptor> > construct_graph(
+			const std::map<ChainResidueAtomDescriptorsPair, T>& map_of_pair_descriptors,
+			const int depth)
+	{
+		typedef ChainResidueAtomDescriptor CRAD;
+		std::map< CRAD, std::set<CRAD> > graph;
+		if(depth>0)
+		{
+			for(typename std::map<ChainResidueAtomDescriptorsPair, T>::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+			{
+				const ChainResidueAtomDescriptorsPair& crads=it->first;
+				if(!(crads.a==crads.b || crads.a==CRAD::solvent() || crads.b==CRAD::solvent()))
+				{
+					graph[crads.a].insert(crads.b);
+					graph[crads.b].insert(crads.a);
+				}
+			}
+			for(int i=1;i<depth;i++)
+			{
+				std::map< CRAD, std::set<CRAD> > expanded_graph=graph;
+				for(std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.begin();graph_it!=graph.end();++graph_it)
+				{
+					const CRAD& center=graph_it->first;
+					const std::set<CRAD>& neighbors=graph_it->second;
+					std::set<CRAD>& expandable_neighbors=expanded_graph[center];
+					for(std::set<CRAD>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+					{
+						const std::set<CRAD>& neighbor_neighbors=graph[*neighbors_it];
+						expandable_neighbors.insert(neighbor_neighbors.begin(), neighbor_neighbors.end());
+					}
+					expandable_neighbors.erase(center);
+				}
+				graph=expanded_graph;
+			}
+		}
+		return graph;
+	}
+
+	template<typename T>
+	static std::map<ChainResidueAtomDescriptor, T> construct_map_of_single_descriptors(
+			const std::map< ChainResidueAtomDescriptorsPair, T >& map_of_pair_descriptors,
+			const std::map< ChainResidueAtomDescriptor, std::set<ChainResidueAtomDescriptor> >& graph)
+	{
+		typedef ChainResidueAtomDescriptor CRAD;
+		std::map<CRAD, T> map_of_single_descriptors;
+		for(typename std::map<ChainResidueAtomDescriptorsPair, T>::const_iterator it=map_of_pair_descriptors.begin();it!=map_of_pair_descriptors.end();++it)
+		{
+			const ChainResidueAtomDescriptorsPair& crads=it->first;
+			std::set<CRAD> related_crads;
+			if(crads.a!=CRAD::solvent())
+			{
+				related_crads.insert(crads.a);
+			}
+			if(crads.b!=CRAD::solvent())
+			{
+				related_crads.insert(crads.b);
+			}
+			{
+				const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.a);
+				if(graph_it!=graph.end())
+				{
+					const std::set<CRAD>& related_crads1=graph_it->second;
+					related_crads.insert(related_crads1.begin(), related_crads1.end());
+				}
+			}
+			{
+				const std::map< CRAD, std::set<CRAD> >::const_iterator graph_it=graph.find(crads.b);
+				if(graph_it!=graph.end())
+				{
+					const std::set<CRAD>& related_crads2=graph_it->second;
+					related_crads.insert(related_crads2.begin(), related_crads2.end());
+				}
+			}
+			for(std::set<CRAD>::const_iterator jt=related_crads.begin();jt!=related_crads.end();++jt)
+			{
+				map_of_single_descriptors[*jt].add(it->second);
+			}
+		}
+		return map_of_single_descriptors;
+	}
+};
+
+class ChainResidueAtomDescriptorsSequenceOperations
+{
+public:
+	static std::map<ChainResidueAtomDescriptor, double> smooth_residue_scores_along_sequence(const std::map<ChainResidueAtomDescriptor, double>& raw_scores, const unsigned int window)
+	{
+		if(window>0)
+		{
+			std::vector< std::pair<ChainResidueAtomDescriptor, double> > v(raw_scores.size());
+			std::copy(raw_scores.begin(), raw_scores.end(), v.begin());
+			std::vector< std::pair<ChainResidueAtomDescriptor, double> > sv=v;
+			for(std::size_t i=0;i<v.size();i++)
+			{
+				const int start=std::max(0, (static_cast<int>(i)-static_cast<int>(window)));
+				const int end=std::min(static_cast<int>(v.size())-1, (static_cast<int>(i)+static_cast<int>(window)));
+				double sum_of_weighted_values=0.0;
+				double sum_of_weights=0.0;
+				for(int j=start;j<=end;j++)
+				{
+					if(v[i].first.chainID==v[j].first.chainID)
+					{
+						double ndist=fabs(static_cast<double>(static_cast<int>(i)-j))/static_cast<double>(window);
+						double weight=(1.0-(ndist*ndist));
+						sum_of_weights+=weight;
+						sum_of_weighted_values+=v[j].second*weight;
+					}
+				}
+				if(sum_of_weights>0.0)
+				{
+					sv[i].second=(sum_of_weighted_values/sum_of_weights);
+				}
+			}
+			return std::map<ChainResidueAtomDescriptor, double>(sv.begin(), sv.end());
+		}
+		else
+		{
+			return raw_scores;
+		}
 	}
 };
 

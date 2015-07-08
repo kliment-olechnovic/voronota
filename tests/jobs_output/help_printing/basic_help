@@ -1,0 +1,27 @@
+Voronota version 1.9
+
+Commands:
+
+get-balls-from-atoms-file
+calculate-vertices
+calculate-vertices-in-parallel
+calculate-contacts
+calculate-mock-solvent
+query-balls
+query-balls-sequences-pairings-stats
+write-balls-to-atoms-file
+draw-balls
+query-contacts
+query-contacts-depth-values
+query-contacts-simulating-unfolding
+draw-contacts
+plot-contacts
+score-contacts-potential
+score-contacts-potentials-stats
+score-contacts-energy
+score-contacts-energy-stats
+score-contacts-quality
+compare-contacts
+score-scores
+generate-demo
+
