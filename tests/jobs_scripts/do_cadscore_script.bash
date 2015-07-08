@@ -11,6 +11,8 @@ do
 	$VORONOTADIR/cadscore \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
-	  -r $SUBDIR/$INFILEBASENAME/residue_scores_on_model.pdb \
+	  -T $SUBDIR/$INFILEBASENAME/residue_scores_on_target.pdb \
+	  -M $SUBDIR/$INFILEBASENAME/residue_scores_on_model.pdb \
+	  -s 1 \
 	| sed "s/^CAD-score global score =/$INFILEBASENAME/"
 done > $SUBDIR/global_scores
