@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set +e
+
+BINDIR=$(dirname $0)
+
+INFILE_TARGET=""
+INFILE_MODEL=""
+OUTFILE_RESIDUE_SCORES=""
+
+while getopts "t:m:r:" OPTION
+do
+	case $OPTION in
+	t)
+		INFILE_TARGET=$OPTARG
+		;;
+	m)
+		INFILE_MODEL=$OPTARG
+		;;
+	r)
+		OUTFILE_RESIDUE_SCORES=$OPTARG
+		;;
+	esac
+done
+
+if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ]
+then
+	echo >&2 "Usage: ./voromqa -t input_target_file.pdb -m input_model_file.pdb [-r output_residue_scores_file.pdb]"
+	exit 1
+fi
+
+if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/radii" ]
+then
+	echo >&2 "Error: script directory does not contain Voronota files"
+	exit1
+fi
+
+if [ ! -s "$INFILE_TARGET" ]
+then
+	echo >&2 "Error: input target file does not exist or is empty"
+	exit 1
+fi
+
+if [ ! -s "$INFILE_MODEL" ]
+then
+	echo >&2 "Error: input model file does not exist or is empty"
+	exit 1
+fi
+
+readonly TMPDIR=$(mktemp -d)
+trap "rm -r $TMPDIR" EXIT
+
+cp $INFILE_TARGET $TMPDIR/target
+cp $INFILE_MODEL $TMPDIR/model
+
+for WORKFILE in $TMPDIR/target $TMPDIR/model
+do
+	cat $WORKFILE \
+	| $BINDIR/voronota get-balls-from-atoms-file \
+	  --annotated \
+	  --radii-file $BINDIR/radii \
+	| $BINDIR/voronota query-balls \
+	  --drop-adjuncts \
+	  --drop-altloc-indicators \
+	| tee $WORKFILE.balls \
+	| $BINDIR/voronota calculate-contacts \
+	  --annotated \
+	| $BINDIR/voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	  --no-solvent \
+	| $BINDIR/voronota query-contacts \
+	  --match-first 'A<C>' \
+	  --match-second 'A<N>' \
+	  --match-max-seq-sep 1 \
+	  --match-max-dist 1.6 \
+	  --invert \
+	| awk '{print $1 " " $2 " " $3}' \
+	> $WORKFILE.contacts
+done
+
+cat $TMPDIR/model.contacts \
+| $BINDIR/voronota compare-contacts \
+  --target-contacts-file $TMPDIR/target.contacts \
+  --smoothing-window 1 \
+  --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
+  --depth 0 \
+| grep "residue_level_global" \
+| awk '{print $2}' \
+> $TMPDIR/global_cad_score
+
+if [ -n "$OUTFILE_RESIDUE_SCORES" ]
+then
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+	cat $TMPDIR/model.balls \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name rcadscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES \
+	  --pdb-output-b-factor rcadscore \
+	> /dev/null
+fi
+
+cat $TMPDIR/global_cad_score \
+| sed 's/^/CAD-score global score = /'
