@@ -38,7 +38,7 @@ done
 if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ] || $HELP_MODE
 then
 cat >&2 << EOF
-VoroMQA script parameters:
+Script parameters:
     -t input_target_file.pdb
     -m input_model_file.pdb
     [-T output_residue_scores_on_target_file.pdb]

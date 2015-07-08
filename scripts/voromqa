@@ -34,7 +34,7 @@ done
 if [ -z "$INFILE" ] || $HELP_MODE
 then
 cat >&2 << EOF
-VoroMQA script parameters:
+Script parameters:
     -i input_file.pdb
     [-a output_atom_scores_file.pdb]
     [-r output_residue_scores_file.pdb]
