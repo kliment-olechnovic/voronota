@@ -6,9 +6,12 @@ BINDIR=$(dirname $0)
 
 INFILE_TARGET=""
 INFILE_MODEL=""
-OUTFILE_RESIDUE_SCORES=""
+OUTFILE_RESIDUE_SCORES_ON_TARGET=""
+OUTFILE_RESIDUE_SCORES_ON_MODEL=""
+SMOOTHING_WINDOW="1"
+HELP_MODE=false
 
-while getopts "t:m:r:" OPTION
+while getopts "t:m:T:M:s:h" OPTION
 do
 	case $OPTION in
 	t)
@@ -17,16 +20,32 @@ do
 	m)
 		INFILE_MODEL=$OPTARG
 		;;
-	r)
-		OUTFILE_RESIDUE_SCORES=$OPTARG
+	T)
+		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
+		;;
+	M)
+		OUTFILE_RESIDUE_SCORES_ON_MODEL=$OPTARG
+		;;
+	s)
+		SMOOTHING_WINDOW=$OPTARG
+		;;
+	h)
+		HELP_MODE=true
 		;;
 	esac
 done
 
-if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ]
+if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ] || $HELP_MODE
 then
-	echo >&2 "Usage: ./voromqa -t input_target_file.pdb -m input_model_file.pdb [-r output_residue_scores_file.pdb]"
-	exit 1
+cat >&2 << EOF
+VoroMQA script parameters:
+    -t input_target_file.pdb
+    -m input_model_file.pdb
+    [-T output_residue_scores_on_target_file.pdb]
+    [-M output_residue_scores_on_model_file.pdb]
+    [-s residue_scores_smoothing_window_size]
+EOF
+exit 1
 fi
 
 if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/radii" ]
@@ -81,22 +100,35 @@ done
 cat $TMPDIR/model.contacts \
 | $BINDIR/voronota compare-contacts \
   --target-contacts-file $TMPDIR/target.contacts \
-  --smoothing-window 1 \
+  --smoothing-window $SMOOTHING_WINDOW \
   --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
   --depth 0 \
 | grep "residue_level_global" \
 | awk '{print $2}' \
 > $TMPDIR/global_cad_score
 
-if [ -n "$OUTFILE_RESIDUE_SCORES" ]
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ]
 then
-	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_TARGET)
+	cat $TMPDIR/target.balls \
+	| $BINDIR/voronota query-balls \
+	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name rcadscore \
+	| $BINDIR/voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_TARGET \
+	  --pdb-output-b-factor rcadscore \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ]
+then
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_MODEL)
 	cat $TMPDIR/model.balls \
 	| $BINDIR/voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
 	  --set-external-adjuncts-name rcadscore \
 	| $BINDIR/voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTFILE_RESIDUE_SCORES \
+	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_MODEL \
 	  --pdb-output-b-factor rcadscore \
 	> /dev/null
 fi
