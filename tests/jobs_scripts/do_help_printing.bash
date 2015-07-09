@@ -7,4 +7,4 @@ mkdir -p $SUBDIR
 
 $VORONOTA &> $SUBDIR/basic_help
 
-$VORONOTA --help &> $SUBDIR/full_help
+$VORONOTA --help > $SUBDIR/full_help

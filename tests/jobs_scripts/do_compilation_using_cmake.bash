@@ -15,4 +15,4 @@ cmake ../ &> /dev/null
 make &> /dev/null
 cd - &> /dev/null
 
-$TMPDIR/package/build/voronota --help &> $SUBDIR/full_help
+$TMPDIR/package/build/voronota --help > $SUBDIR/full_help
