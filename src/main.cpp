@@ -128,20 +128,21 @@ int main(const int argc, const char** argv)
 		}
 		else
 		{
-			std::cerr << version() << "\n\n";
-			std::cerr << "Commands:\n\n";
+			std::ostream& output=std::cout;
+			output << version() << "\n\n";
+			output << "Commands:\n\n";
 			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 			{
-				std::cerr << it->name << "\n";
+				output << it->name << "\n";
 			}
-			std::cerr << "\n";
+			output << "\n";
 			if(help)
 			{
 				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
 				{
-					std::cerr << "Command '" << it->name << "' options:\n";
+					output << "Command '" << it->name << "' options:\n";
 					it->func_ptr(poh);
-					std::cerr << "\n";
+					output << "\n";
 				}
 			}
 		}

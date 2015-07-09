@@ -277,9 +277,9 @@ public:
 			{
 				std::vector<OptionDescription> basic_list_of_option_descriptions=list_of_option_descriptions_;
 				basic_list_of_option_descriptions.push_back(OptionDescription("--help", "", "flag to print usage help to stderr and exit", false));
-				print_list_of_option_descriptions(basic_list_of_option_descriptions, std::cerr);
+				print_list_of_option_descriptions(basic_list_of_option_descriptions, std::cout);
 			}
-			print_list_of_io_descriptions(list_of_io_descriptions_, std::cerr);
+			print_list_of_io_descriptions(list_of_io_descriptions_, std::cout);
 			return false;
 		}
 		else
