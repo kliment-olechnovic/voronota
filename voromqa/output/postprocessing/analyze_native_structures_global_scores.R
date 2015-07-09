@@ -28,3 +28,8 @@ data.frame(lower_limit_percentile=percentiles, lower_limit_score=min_score_value
 mean(t$qscore_atom);
 sd(t$qscore_atom);
 quantile(t$qscore_atom, p=c(0.01, 0.5, 0.99, 1.0));
+
+st=t[which(t$qscore_atom<0.20),];
+st=st[which(st$qsas/st$atomscount<20),];
+st=st[order(st$qscore_atom),];
+write.table(st, "low_scored_experimental_structures", quote=FALSE, row.names=FALSE);
