@@ -146,7 +146,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
-	pohw.describe_io("stdout", false, true, "two lines of global scores (atom-level and residue-level)");
+	pohw.describe_io("stdout", false, true, "global scores (atom-level and residue-level)");
 
 	const std::string target_contacts_file=poh.argument<std::string>(pohw.describe_option("--target-contacts-file", "string", "file path to input target contacts", true), "");
 	const std::string inter_atom_scores_file=poh.argument<std::string>(pohw.describe_option("--inter-atom-scores-file", "string", "file path to output inter-atom scores"), "");
