@@ -47,4 +47,4 @@ td {
 </style>
 EOF
 
-pandoc $TMPDIR/documentation.markdown -f markdown -t html -H $TMPDIR/documentation.css -s -o ./documentation.htm
+pandoc $TMPDIR/documentation.markdown -f markdown -t html -H $TMPDIR/documentation.css -s -o ./README.html
