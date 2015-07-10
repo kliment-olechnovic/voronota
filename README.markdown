@@ -101,6 +101,8 @@ For example, below is a part of some possible "vertices.txt":
 
 # Advanced usage
 
+## Getting help in command line
+
 The list of all available Voronota commands is displayed when executing Voronota without any parameters.
 
 Command help is shown when "--help" command line option is present, for example:
