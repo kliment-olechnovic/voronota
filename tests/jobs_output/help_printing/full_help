@@ -23,7 +23,6 @@ score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
 score-scores
-generate-demo
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -35,7 +34,7 @@ Command 'get-balls-from-atoms-file' options:
 --default-radius                number      default atomic radius
 --only-default-radius                       flag to make all radii equal to the default radius
 --hull-offset                   number      positive offset distance enables adding artificial hull balls
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  file in PDB or mmCIF format
 stdout  ->  list of balls
               (default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode')
@@ -48,7 +47,7 @@ Command 'calculate-vertices' options:
 --link                                      flag to output links between vertices
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --check                                     flag to slowly check the resulting vertices (used only for testing)
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'x y z r')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
@@ -59,7 +58,7 @@ Command 'calculate-vertices-in-parallel' options:
 --include-surplus-quadruples                flag to include surplus quadruples
 --link                                      flag to output links between vertices
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'x y z r')
 stdout  ->  list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')
 
@@ -73,7 +72,7 @@ Command 'calculate-contacts' options:
 --add-mirrored                              flag to add mirrored contacts to non-annnotated output
 --draw                                      flag to output graphics for annotated contacts
 --tag-centrality                            flag to tag contacts centrality
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls
               (default mode line format: 'x y z r')
               (annotated mode line format: 'annotation x y z r tags adjuncts')
@@ -85,7 +84,7 @@ Command 'calculate-mock-solvent' options:
 --solvent-radius                number      solvent atom radius
 --solvent-distance              number      min distance from non-solvent atoms to solvent atoms
 --sih-depth                     number      spherical surface optimization depth
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
@@ -117,12 +116,12 @@ Command 'query-balls' options:
 --seq-output                    string      file path to output query result sequence string
 --chains-summary-output         string      file path to output chains summary
 --chains-seq-identity           number      sequence identity threshold for chains summary
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-balls-sequences-pairings-stats' options:
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls files
 stdout  ->  list of sequences pairings stats
 
@@ -130,7 +129,7 @@ Command 'write-balls-to-atoms-file' options:
 --pdb-output                    string      file path to output query result in PDB format
 --pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
 --pdb-output-template           string      file path to input template for B-factor insertions
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
@@ -140,7 +139,7 @@ Command 'draw-balls' options:
 --drawing-name                  string      graphics object name for drawing output
 --drawing-color                 string      color for drawing output, in hex format, white is 0xFFFFFF
 --drawing-labels                            flag to use labels in drawing if possible
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
@@ -177,18 +176,18 @@ Command 'query-contacts' options:
 --inter-residue                             flag to convert input to inter-residue contacts
 --summarize                                 flag to output only summary of contacts
 --preserve-graphics                         flag to preserve graphics in output
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 
 Command 'query-contacts-depth-values' options:
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2')
 stdout  ->  list of depth values (line format: 'annotation depth')
 
 Command 'query-contacts-simulating-unfolding' options:
 --max-seq-sep                   number   *  maximum untouchable residue sequence separation
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
 
@@ -203,7 +202,7 @@ Command 'draw-contacts' options:
 --drawing-random-colors                     flag to use random color for each drawn contact
 --drawing-alpha                 number      alpha opacity value for drawing output
 --drawing-labels                            flag to use labels in drawing if possible
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
 stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')
 
@@ -211,7 +210,7 @@ Command 'plot-contacts' options:
 --background-color              string      color string in SVG-acceptable format
 --default-color                 string      color string in SVG-acceptable format
 --adjuncts-rgb                              flag to use RGB color values from adjuncts
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
 stdout  ->  plot of contacts in SVG format
 
@@ -226,12 +225,12 @@ Command 'score-contacts-potential' options:
 --contributions-file            string      file path to output contact types contributions
 --multiply-areas                number      coefficient to multiply output areas
 --toggling-list                 string      list of toggling subtags
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
 
 Command 'score-contacts-potentials-stats' options:
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of potential files
 stdout  ->  list of normalized energy mean and sd values per interaction type
 
@@ -241,12 +240,12 @@ Command 'score-contacts-energy' options:
 --inter-atom-scores-file        string      file path to output inter-atom scores
 --atom-scores-file              string      file path to output atom scores
 --depth                         number      neighborhood normalization depth
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
 stdout  ->  global scores
 
 Command 'score-contacts-energy-stats' options:
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of atom energy descriptors
 stdout  ->  list of normalized energy mean and sd values per atom type
 
@@ -259,9 +258,9 @@ Command 'score-contacts-quality' options:
 --smoothing-window              number      window to smooth residue quality scores along sequence
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of atom energy descriptors
-stdout  ->  average local score
+stdout  ->  weighted average local score
 
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
@@ -273,9 +272,9 @@ Command 'compare-contacts' options:
 --smoothing-window              number      window to smooth residue scores along sequence
 --smoothed-scores-file          string      file path to output smoothed residue scores
 --detailed-output                           flag to enable detailed output
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
-stdout  ->  two lines of global scores (atom-level and residue-level)
+stdout  ->  global scores (atom-level and residue-level)
 
 Command 'score-scores' options:
 --reference-threshold           number      reference scores classification threshold
@@ -283,10 +282,7 @@ Command 'score-scores' options:
 --outcomes-file                 string      file path to output lines of 'threshold TP TN FP FN'
 --ROC-curve-file                string      file path to output ROC curve
 --PR-curve-file                 string      file path to output PR curve
---help                                      flag to print usage help to stderr and exit
+--help                                      flag to print usage help to stdout and exit
 stdin   <-  pairs of reference and testable scores files
 stdout  ->  global results
-
-Command 'generate-demo' options:
---help                                      flag to print usage help to stderr and exit
 

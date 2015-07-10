@@ -39,4 +39,12 @@ EOF
 
 } > $TMPDIR/documentation.markdown
 
-pandoc $TMPDIR/documentation.markdown -f markdown -t html -s -o ./documentation.htm
+cat > $TMPDIR/documentation.css << EOF
+<style type="text/css">
+td {
+  padding-right: 1em;
+}
+</style>
+EOF
+
+pandoc $TMPDIR/documentation.markdown -f markdown -t html -H $TMPDIR/documentation.css -s -o ./documentation.htm
