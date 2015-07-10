@@ -5,11 +5,13 @@ cd $(dirname "$0")
 TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
+{
+cat ./README.markdown
+
 ./Release/voronota \
 | grep 'Commands:' -A 999999 \
 | sed 's/^Commands:/## List of all commands/' \
-| sed 's/^\([[:alpha:]]\S*\)/* \1/' \
-> $TMPDIR/commands_list.markdown
+| sed 's/^\([[:alpha:]]\S*\)/* \1/'
 
 ./Release/voronota --help \
 | grep 'Command ' -A 999999 \
@@ -18,9 +20,8 @@ trap "rm -r $TMPDIR" EXIT
 | sed 's/COMMAND_OPTIONS_TABLE_HEADER2/------------------------------- ------ ---- ------------------------------------------------------------------------/' \
 | sed 's/^stdin   <-\s*/\n### Input stream:\n\n/' \
 | sed 's/^stdout  ->\s*/\n### Output stream:\n\n/' \
-| sed 's/^\s\+(\(.\+\))/\n* \1/' \
-> $TMPDIR/commands_descriptions.markdown
+| sed 's/^\s\+(\(.\+\))/\n* \1/'
 
-cat ./README.markdown $TMPDIR/commands_list.markdown $TMPDIR/commands_descriptions.markdown > ./help.markdown
+} > $TMPDIR/documentation.markdown
 
-pandoc ./help.markdown -f markdown -t html -s -o ./help.htm
+pandoc $TMPDIR/documentation.markdown -f markdown -t html -s -o ./documentation.htm
