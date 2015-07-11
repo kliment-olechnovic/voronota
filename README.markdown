@@ -1,4 +1,4 @@
-## About Voronota
+# About Voronota
 
 The analysis of macromolecular structures often requires
 a comprehensive definition of atomic neighborhoods.
@@ -18,13 +18,13 @@ compare contacts and evaluate quality of protein structural models using contact
 Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 
 
-## Getting the latest version
+# Getting the latest version
 
 Download the latest archive from the official downloads page:
 [https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
 
 
-## Building from source code
+# Building from source code
 
 Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
@@ -55,7 +55,7 @@ run the sequence of commands:
     make
 
 
-## Basic usage example
+# Basic usage example
 
 Here is a basic example of computing Voronoi vertices
 for a structure in a PDB file:
@@ -99,9 +99,9 @@ For example, below is a part of some possible "vertices.txt":
     0 1 5 23 28.544 10.254 50.194 0.595
 
 
-## Advanced usage
+# Advanced usage
 
-### Getting help in command line
+## Getting help in command line
 
 The list of all available Voronota commands is displayed when executing Voronota without any parameters.
 
