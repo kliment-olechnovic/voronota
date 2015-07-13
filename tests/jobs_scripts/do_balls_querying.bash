@@ -78,6 +78,7 @@ echo $SUBDIR/balls \
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match 'R<CRO>' \
 | $VORONOTA draw-balls \
+  --representation vdw \
   --drawing-for-pymol $SUBDIR/drawing_matched_balls_for_pymol.py \
   --drawing-for-scenejs $SUBDIR/drawing_matched_balls_for_scenejs \
   --drawing-name CRO_balls \
