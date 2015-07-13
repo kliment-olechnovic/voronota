@@ -31,7 +31,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of atom energy descriptors");
-	pohw.describe_io("stdout", false, true, "average local score");
+	pohw.describe_io("stdout", false, true, "weighted average local score");
 
 	const double default_mean=poh.argument<double>(pohw.describe_option("--default-mean", "number", "default mean parameter"), 0.4);
 	const double default_sd=poh.argument<double>(pohw.describe_option("--default-sd", "number", "default standard deviation parameter"), 0.3);

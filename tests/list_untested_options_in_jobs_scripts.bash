@@ -6,7 +6,7 @@ TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
 MODE="unknown"
-../Release/voronota --help 2>&1 \
+../Release/voronota --help \
 | sed "s/Command\s\+'\([[:alpha:]]\S*\)'/mode-\1 /" \
 | tr ' ' '\n' | tr '\t' '\n' \
 | egrep '^mode-|^--' \

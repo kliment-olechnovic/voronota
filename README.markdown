@@ -1,21 +1,27 @@
-# About Voronota 1.9
+# About Voronota
 
 The analysis of macromolecular structures often requires
 a comprehensive definition of atomic neighborhoods.
 Such a definition can be based on the Voronoi diagram of balls,
 where each ball represents an atom of some van der Waals radius.
-Voronota is a simple software tool for finding all the vertices
+Voronota is a software tool for finding all the vertices
 of the Voronoi diagram of balls. Such vertices correspond to
 the centers of the empty tangent spheres defined by quadruples of balls.
 Voronota is especially suitable for processing three-dimensional
 structures of biological macromolecules such as proteins and RNA.
+
+Since version 1.2 Voronota also uses the Voronoi vertices to construct
+inter-atom contact surfaces and solvent accessible surfaces.
+Voronota provides tools to query contacts, generate contacts graphics,
+compare contacts and evaluate quality of protein structural models using contacts.
+
 Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 
 
 # Getting the latest version
 
-Download the latest archive from
-[the official downloads page](https://bitbucket.org/kliment/voronota/downloads).
+Download the latest archive from the official downloads page:
+[https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
 
 
 # Building from source code
@@ -58,13 +64,13 @@ for a structure in a PDB file:
     ./voronota calculate-vertices < balls.txt > vertices.txt
 
 The first command reads a PDB file "input.pdb" and outputs a file "balls.txt"
-that contains balls corresponding to the atoms in "input.pdb".
+that contains balls corresponding to the atoms in "input.pdb"
+(by default, Voronota ignores all heteroatoms and all hydrogen atoms
+when reading PDB files: this behavior can be altered using command-line options).
 The second command reads "balls.txt" and outputs a file "vertices.txt"
 that contains a quadruples and empty tangent spheres that correspond
 to the vertices of the Voronoi diagram of the input balls.
-The formats of "balls.txt" and "vertices.txt" are described in the next section.
-
-## Formats of the generated files
+The formats of "balls.txt" and "vertices.txt" are described below.
 
 In "balls.txt" the line format is "x y z r # comments".
 The first four values (x, y, z, r) are atomic ball coordinates and radius.
@@ -85,28 +91,19 @@ The remaining four values (x, y, z, r) are the coordinates and the radius of
 an empty tangent sphere of the quadruple of atoms.
 For example, below is a part of some possible "vertices.txt":
 
-    0 1 2 3 27.761102562843565 8.691997298653096 51.553793549752584 -0.169539877389858
-    0 1 2 23 28.275245701294317 9.804833656716982 50.131544414709701 0.588818396229702
-    0 1 3 1438 24.793076643633416 -3.225565058946097 60.761180096988049 14.047230829473824
-    0 1 4 5 28.785921875922050 10.604515846944295 50.721223702985561 0.283777011742720
-    0 1 4 1453 30.018509862360325 10.901712470945974 55.386025520055981 1.908826059705324
-    0 1 5 23 28.544757823719145 10.254546149917743 50.194182932428276 0.595962029178680
+    0 1 2 3 27.761 8.691 51.553 -0.169
+    0 1 2 23 28.275 9.804 50.131 0.588
+    0 1 3 1438 24.793 -3.225 60.761 14.047
+    0 1 4 5 28.785 10.604 50.721 0.283
+    0 1 4 1453 30.018 10.901 55.386 1.908
+    0 1 5 23 28.544 10.254 50.194 0.595
 
 
-# Important notes
+# Advanced usage
 
-By default, Voronota ignores all heteroatoms and all hydrogen
-atoms when reading PDB files. This behavior can be altered using
-"--include-heteroatoms" and "--include-hydrogens" command-line options.
+## Getting help in command line
 
-Since version 1.2 Voronota also calculates inter-atom contacts and works with
-them in various ways. These features are currently not covered in this document,
-but can be viewed using built-in usage help options.
-
-
-# Getting usage help
-
-The list of Voronota commands is displayed when executing Voronota without any parameters.
+The list of all available Voronota commands is displayed when executing Voronota without any parameters.
 
 Command help is shown when "--help" command line option is present, for example:
 
@@ -115,3 +112,4 @@ Command help is shown when "--help" command line option is present, for example:
 Using "--help" option without specific command results in printing help for all commands:
 
     ./voronota --help
+

@@ -27,7 +27,9 @@ cp resources/energy_means_and_sds $PACKAGE_NAME/energy_means_and_sds
 cp scripts/cadscore $PACKAGE_NAME/cadscore
 cp scripts/voromqa $PACKAGE_NAME/voromqa
 cp Release/voronota $PACKAGE_NAME/voronota
-pandoc README.markdown -f markdown -t html -s -o $PACKAGE_NAME/README.html
+
+./document.bash
+mv ./README.html $PACKAGE_NAME/README.html
 
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
 rm -r $PACKAGE_NAME
