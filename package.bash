@@ -18,7 +18,6 @@ rm -r -f $PACKAGE_NAME
 
 mkdir -p $PACKAGE_NAME
 cp -r src $PACKAGE_NAME/src
-cp README.markdown $PACKAGE_NAME/README.txt
 cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp resources/radii $PACKAGE_NAME/radii
