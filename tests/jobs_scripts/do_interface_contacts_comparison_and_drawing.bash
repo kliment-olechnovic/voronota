@@ -50,8 +50,9 @@ cat $SUBDIR/target_iface \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model1_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model1_iface_cad_score \
-  --drawing-adjunct-gradient irs \
-  --drawing-reverse-gradient \
+  --adjunct-gradient irs \
+  --adjunct-gradient-blue 1.0 \
+  --adjunct-gradient-red 0.0 \
 > /dev/null
 
 cat $SUBDIR/target_iface \
@@ -62,6 +63,7 @@ cat $SUBDIR/target_iface \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model2_iface_cad_score_inter_residue_drawing.py \
   --drawing-name model2_iface_cad_score \
-  --drawing-adjunct-gradient irs \
-  --drawing-reverse-gradient \
+  --adjunct-gradient irs \
+  --adjunct-gradient-blue 1.0 \
+  --adjunct-gradient-red 0.0 \
 > /dev/null
