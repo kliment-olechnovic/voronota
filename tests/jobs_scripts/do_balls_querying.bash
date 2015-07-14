@@ -84,6 +84,11 @@ cat $SUBDIR/balls \
   --drawing-name CRO_balls \
   --default-color '0x00FFFF' \
   --use-labels \
+| $VORONOTA draw-balls \
+  --representation vdw \
+  --drawing-for-pymol $SUBDIR/drawing_matched_balls_colored_randomly_for_pymol.py \
+  --drawing-name CRO_balls_colored_randomly \
+  --random-colors \
 | $VORONOTA query-balls --match-tags 'el=C' --set-adjuncts 'r=0.8;g=0.8;b=0.8' \
 | $VORONOTA query-balls --match-tags 'el=N' --set-adjuncts 'r=0.2;g=0.2;b=1.0' \
 | $VORONOTA query-balls --match-tags 'el=O' --set-adjuncts 'r=1.0;g=0.2;b=0.2' \
@@ -95,4 +100,11 @@ cat $SUBDIR/balls \
   --default-color '0x00FF00' \
   --adjuncts-rgb \
   --use-labels \
+| $VORONOTA draw-balls \
+  --representation sticks \
+  --drawing-for-pymol $SUBDIR/drawing_matched_sticks_colored_by_tf_for_pymol.py \
+  --drawing-name CRO_sticks_colored_by_tf \
+  --adjunct-gradient tf \
+  --adjunct-gradient-blue 0.0 \
+  --adjunct-gradient-red 20.0 \
 > /dev/null
