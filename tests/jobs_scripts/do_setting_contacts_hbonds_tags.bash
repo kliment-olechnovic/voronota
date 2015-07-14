@@ -9,7 +9,7 @@ SUBDIR=$OUTPUTDIR/setting_contacts_hbonds_tags
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/single/structure.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms --annotated \
 > $TMPDIR/balls
 
 cat $TMPDIR/balls \

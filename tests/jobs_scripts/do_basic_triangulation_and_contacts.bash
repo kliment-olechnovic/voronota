@@ -22,7 +22,7 @@ cat $SUBDIR/balls | $VORONOTA calculate-contacts > $SUBDIR/contacts
 SUBDIR=$DIR/custom_radii
 mkdir -p $SUBDIR
 
-cat $INPUTDIR/single/structure.pdb | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii > $SUBDIR/balls
+cat $INPUTDIR/single/structure.pdb | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii > $SUBDIR/balls
 
 cat $SUBDIR/balls | $VORONOTA calculate-vertices --print-log --check > $SUBDIR/triangulation 2> $SUBDIR/triangulation_log
 
@@ -35,7 +35,7 @@ cat $SUBDIR/balls | $VORONOTA calculate-contacts > $SUBDIR/contacts
 SUBDIR=$DIR/custom_radii_with_heteroatoms
 mkdir -p $SUBDIR
 
-cat $INPUTDIR/single/structure.pdb | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms > $SUBDIR/balls
+cat $INPUTDIR/single/structure.pdb | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms > $SUBDIR/balls
 
 cat $SUBDIR/balls | $VORONOTA calculate-vertices --print-log --check > $SUBDIR/triangulation 2> $SUBDIR/triangulation_log
 
@@ -51,7 +51,7 @@ mkdir -p $SUBDIR
 cat $INPUTDIR/single/structure.cif \
 | $VORONOTA get-balls-from-atoms-file \
   --mmcif \
-  --radii-file $VORONOTADIR/radii \
+  --radii-file $VORONOTADIR/resources/radii \
   --include-heteroatoms \
   --hull-offset 3.0 \
 > $SUBDIR/balls
@@ -88,7 +88,7 @@ mkdir -p $SUBDIR
 
 cat $INPUTDIR/single/structure.pdb \
 | $VORONOTA get-balls-from-atoms-file \
-  --radii-file $VORONOTADIR/radii \
+  --radii-file $VORONOTADIR/resources/radii \
   --include-heteroatoms \
   --include-hydrogens \
   --multimodel-chains \

@@ -43,7 +43,7 @@ EOF
 exit 1
 fi
 
-if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/radii" ] || [ ! -s "$BINDIR/energy_potential" ] || [ ! -s "$BINDIR/energy_means_and_sds" ]
+if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/resources/radii" ] || [ ! -s "$BINDIR/resources/energy_potential" ] || [ ! -s "$BINDIR/resources/energy_means_and_sds" ]
 then
 	echo >&2 "Error: script directory does not contain Voronota files"
 	exit 1
@@ -68,7 +68,7 @@ fi
 $INPRINTER $INFILE \
 | $BINDIR/voronota get-balls-from-atoms-file \
   --annotated \
-  --radii-file $BINDIR/radii \
+  --radii-file $BINDIR/resources/radii \
 | $BINDIR/voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
@@ -96,7 +96,7 @@ $INPRINTER $INFILE \
 | tr ';' '_' \
 | tee $TMPDIR/contacts \
 | $BINDIR/voronota score-contacts-energy \
-  --potential-file $BINDIR/energy_potential \
+  --potential-file $BINDIR/resources/energy_potential \
   --atom-scores-file $TMPDIR/atom_energies \
 > /dev/null
 
@@ -108,7 +108,7 @@ cat $TMPDIR/atom_energies \
 | $BINDIR/voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
-  --means-and-sds-file $BINDIR/energy_means_and_sds \
+  --means-and-sds-file $BINDIR/resources/energy_means_and_sds \
   --external-weights-file $TMPDIR/depth_values \
   --smoothing-window $SMOOTHING_WINDOW \
   --atom-scores-file $TMPDIR/atom_quality_scores \

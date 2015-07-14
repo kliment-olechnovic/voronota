@@ -18,11 +18,9 @@ rm -r -f $PACKAGE_NAME
 
 mkdir -p $PACKAGE_NAME
 cp -r src $PACKAGE_NAME/src
+cp -r resources $PACKAGE_NAME/resources
 cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
-cp resources/radii $PACKAGE_NAME/radii
-cp resources/energy_potential $PACKAGE_NAME/energy_potential
-cp resources/energy_means_and_sds $PACKAGE_NAME/energy_means_and_sds
 cp scripts/cadscore $PACKAGE_NAME/cadscore
 cp scripts/voromqa $PACKAGE_NAME/voromqa
 cp Release/voronota $PACKAGE_NAME/voronota

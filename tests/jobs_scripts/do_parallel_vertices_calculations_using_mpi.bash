@@ -13,7 +13,7 @@ MPI_BIN_DIR="/usr/lib64/openmpi/bin/"
 $MPI_BIN_DIR/mpic++ -O3 -DENABLE_MPI -o $TMPDIR/voronota_mpi $VORONOTADIR/src/*.cpp
 
 cat $INPUTDIR/single/structure.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \
 > $TMPDIR/balls
 
 $MPI_BIN_DIR/mpirun -n 5 $TMPDIR/voronota_mpi calculate-vertices-in-parallel --method mpi --parts 4 --print-log < $TMPDIR/balls > /dev/null 2> $SUBDIR/mpi_4p_log
