@@ -8,7 +8,6 @@ namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 class DrawingParametersWrapper
 {
