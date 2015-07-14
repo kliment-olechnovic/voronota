@@ -101,7 +101,11 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
 	DrawingParametersWrapper drawing_parameters_wrapper;
 	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
+	drawing_parameters_wrapper.adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
+	drawing_parameters_wrapper.adjunct_gradient_blue=poh.argument<double>(pohw.describe_option("--adjunct-gradient-blue", "number", "blue adjunct gradient value"), 0.0);
+	drawing_parameters_wrapper.adjunct_gradient_red=poh.argument<double>(pohw.describe_option("--adjunct-gradient-red", "number", "red adjunct gradient value"), 1.0);
 	drawing_parameters_wrapper.adjuncts_rgb=poh.contains_option(pohw.describe_option("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
+	drawing_parameters_wrapper.random_colors=poh.contains_option(pohw.describe_option("--random-colors", "", "flag to use random color for each drawn contact"));
 	drawing_parameters_wrapper.use_labels=poh.contains_option(pohw.describe_option("--use-labels", "", "flag to use labels in drawing if possible"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -118,7 +122,6 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	auxiliaries::OpenGLPrinter opengl_printer;
 	opengl_printer.add_color(drawing_parameters_wrapper.default_color);
-
 	if(representation=="vdw")
 	{
 		for(std::size_t i=0;i<list_of_balls.size();i++)
