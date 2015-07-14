@@ -84,4 +84,15 @@ cat $SUBDIR/balls \
   --drawing-name CRO_balls \
   --default-color '0x00FFFF' \
   --use-labels \
+| $VORONOTA query-balls --match-tags 'el=C' --set-adjuncts 'r=0.8;g=0.8;b=0.8' \
+| $VORONOTA query-balls --match-tags 'el=N' --set-adjuncts 'r=0.2;g=0.2;b=1.0' \
+| $VORONOTA query-balls --match-tags 'el=O' --set-adjuncts 'r=1.0;g=0.2;b=0.2' \
+| $VORONOTA draw-balls \
+  --representation sticks \
+  --drawing-for-pymol $SUBDIR/drawing_matched_sticks_for_pymol.py \
+  --drawing-for-scenejs $SUBDIR/drawing_matched_sticks_for_scenejs \
+  --drawing-name CRO_sticks \
+  --default-color '0x00FF00' \
+  --adjuncts-rgb \
+  --use-labels \
 > /dev/null
