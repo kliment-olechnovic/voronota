@@ -2,6 +2,7 @@
 #define DRAWING_UTILITIES_H_
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
+#include "../auxiliaries/opengl_printer.h"
 
 namespace
 {
@@ -64,6 +65,43 @@ std::string construct_label_from_two_crads(const CRAD& a, const CRAD& b)
 	output << construct_label_from_crad(a) << " " << construct_label_from_crad(b);
 	return output.str();
 }
+
+struct DrawingParametersWrapper
+{
+	unsigned int default_color;
+	bool adjuncts_rgb;
+	bool use_labels;
+
+	DrawingParametersWrapper() : default_color(0xFFFFFF), adjuncts_rgb(false), use_labels(false)
+	{
+	}
+
+	void process(const CRAD& crad, const std::map<std::string, double>& adjuncts, auxiliaries::OpenGLPrinter& opengl_printer) const
+	{
+		if(use_labels)
+		{
+			opengl_printer.add_label(construct_label_from_crad(crad));
+		}
+
+		if(adjuncts_rgb)
+		{
+			const bool rp=adjuncts.count("r")>0;
+			const bool gp=adjuncts.count("g")>0;
+			const bool bp=adjuncts.count("b")>0;
+			if(!(rp || gp || bp))
+			{
+				opengl_printer.add_color(default_color);
+			}
+			else
+			{
+				opengl_printer.add_color(
+						(rp ? adjuncts.find("r")->second : 0.0),
+						(gp ? adjuncts.find("g")->second : 0.0),
+						(bp ? adjuncts.find("b")->second : 0.0));
+			}
+		}
+	}
+};
 
 }
 

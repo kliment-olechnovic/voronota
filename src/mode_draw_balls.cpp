@@ -3,53 +3,12 @@
 #include "apollota/search_for_spherical_collisions.h"
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
-#include "auxiliaries/opengl_printer.h"
 
 #include "modescommon/ball_value.h"
 #include "modescommon/drawing_utilities.h"
 
 namespace
 {
-
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-
-struct DrawingParametersWrapper
-{
-	unsigned int default_color;
-	bool adjuncts_rgb;
-	bool use_labels;
-
-	DrawingParametersWrapper() : default_color(0xFFFFFF), adjuncts_rgb(false), use_labels(false)
-	{
-	}
-
-	void process(const CRAD& crad, const BallValue& value, auxiliaries::OpenGLPrinter& opengl_printer) const
-	{
-		if(use_labels)
-		{
-			opengl_printer.add_label(construct_label_from_crad(crad));
-		}
-
-		if(adjuncts_rgb)
-		{
-			const bool rp=value.props.adjuncts.count("r")>0;
-			const bool gp=value.props.adjuncts.count("g")>0;
-			const bool bp=value.props.adjuncts.count("b")>0;
-			if(!(rp || gp || bp))
-			{
-				opengl_printer.add_color(default_color);
-			}
-			else
-			{
-				opengl_printer.add_color(
-						(rp ? value.props.adjuncts.find("r")->second : 0.0),
-						(gp ? value.props.adjuncts.find("g")->second : 0.0),
-						(bp ? value.props.adjuncts.find("b")->second : 0.0));
-			}
-		}
-	}
-};
 
 void draw_cylinder(
 		const apollota::SimpleSphere& a,
@@ -107,7 +66,7 @@ void draw_links(
 	{
 		const apollota::SimpleSphere& a=spheres[i];
 		const CRAD& a_crad=list_of_balls[i].first;
-		drawing_parameters_wrapper.process(a_crad, list_of_balls[i].second, opengl_printer);
+		drawing_parameters_wrapper.process(a_crad, list_of_balls[i].second.props.adjuncts, opengl_printer);
 		opengl_printer.add_sphere(apollota::SimpleSphere(a, ball_drawing_radius));
 		std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
 		for(std::size_t j=0;j<collisions.size();j++)
@@ -166,7 +125,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRAD& crad=list_of_balls[i].first;
 			const BallValue& value=list_of_balls[i].second;
-			drawing_parameters_wrapper.process(crad, value, opengl_printer);
+			drawing_parameters_wrapper.process(crad, value.props.adjuncts, opengl_printer);
 			opengl_printer.add_sphere(value);
 		}
 	}
