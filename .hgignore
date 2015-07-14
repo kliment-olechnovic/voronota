@@ -2,8 +2,6 @@
 syntax: regexp
 ^Release$
 syntax: regexp
-^README\.html$
-syntax: regexp
 ^voronota$
 syntax: regexp
 ^build$

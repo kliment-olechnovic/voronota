@@ -48,4 +48,4 @@ EOF
 
 echo "<h1>$(./voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
 
-pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./README.html
+pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./index.html
