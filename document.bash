@@ -9,12 +9,12 @@ trap "rm -r $TMPDIR" EXIT
 
 cat ./README.markdown
 
-./Release/voronota \
+./voronota \
 | grep 'Commands:' -A 999999 \
 | sed 's/^Commands:/## List of all commands/' \
 | sed 's/^\([[:alpha:]]\S*\)/* \1/'
 
-./Release/voronota --help \
+./voronota --help \
 | grep 'Command ' -A 999999 \
 | sed "s/^Command\s\+'\(\S\+\)'.*/## Command '\1'\n\n### Command line arguments:\n\nCOMMAND_OPTIONS_TABLE_HEADER1\nCOMMAND_OPTIONS_TABLE_HEADER2/" \
 | sed 's/COMMAND_OPTIONS_TABLE_HEADER1/Name                            Type        Description/' \
@@ -46,6 +46,6 @@ div#TOC > ul > li > ul > li ul { display: none; }
 </style>
 EOF
 
-echo "<h1>$(./Release/voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
+echo "<h1>$(./voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
 
 pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./README.html
