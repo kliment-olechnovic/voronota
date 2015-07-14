@@ -143,7 +143,7 @@ Command 'draw-balls' options:
 --adjunct-gradient-blue         number      blue adjunct gradient value
 --adjunct-gradient-red          number      red adjunct gradient value
 --adjuncts-rgb                              flag to use RGB color values from adjuncts
---random-colors                             flag to use random color for each drawn contact
+--random-colors                             flag to use random color for each drawn ball
 --use-labels                                flag to use labels in drawing if possible
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
