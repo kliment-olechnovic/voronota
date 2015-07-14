@@ -102,8 +102,8 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
-	const unsigned int drawing_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--drawing-color", "string", "color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
-	const bool drawing_labels=poh.contains_option(pohw.describe_option("--drawing-labels", "", "flag to use labels in drawing if possible"));
+	const unsigned int default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
+	const bool use_labels=poh.contains_option(pohw.describe_option("--drawing-labels", "", "flag to use labels in drawing if possible"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -118,7 +118,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	auxiliaries::OpenGLPrinter opengl_printer;
-	opengl_printer.add_color(drawing_color);
+	opengl_printer.add_color(default_color);
 
 	if(representation=="vdw")
 	{
@@ -126,7 +126,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRAD& crad=list_of_balls[i].first;
 			const BallValue& value=list_of_balls[i].second;
-			if(drawing_labels)
+			if(use_labels)
 			{
 				opengl_printer.add_label(construct_label_from_crad(crad));
 			}
@@ -135,7 +135,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="sticks")
 	{
-		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, drawing_labels, opengl_printer);
+		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, use_labels, opengl_printer);
 	}
 	else if(representation=="trace")
 	{
@@ -147,7 +147,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				list_of_balls_filtered.push_back(list_of_balls[i]);
 			}
 		}
-		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_labels, opengl_printer);
+		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, use_labels, opengl_printer);
 	}
 	else
 	{
