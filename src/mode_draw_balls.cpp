@@ -49,6 +49,47 @@ void draw_cylinder(
 	opengl_printer.add_triangle_strip(vertices, normals);
 }
 
+void draw_links(
+		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		const double ball_collision_radius,
+		const double bsh_initial_radius,
+		const double ball_drawing_radius,
+		const double cylinder_drawing_radius,
+		const int cylinder_sides,
+		const bool check_sequence,
+		const bool drawing_labels,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	std::vector<apollota::SimpleSphere> spheres(list_of_balls.size());
+	for(std::size_t i=0;i<list_of_balls.size();i++)
+	{
+		spheres[i]=apollota::SimpleSphere(list_of_balls[i].second, ball_collision_radius);
+	}
+	apollota::BoundingSpheresHierarchy bsh(spheres, bsh_initial_radius, 1);
+	for(std::size_t i=0;i<list_of_balls.size();i++)
+	{
+		const apollota::SimpleSphere& a=spheres[i];
+		const CRAD& a_crad=list_of_balls[i].first;
+		if(drawing_labels)
+		{
+			opengl_printer.add_label(construct_label_from_crad(a_crad));
+		}
+		opengl_printer.add_sphere(apollota::SimpleSphere(a, ball_drawing_radius));
+		std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
+		for(std::size_t j=0;j<collisions.size();j++)
+		{
+			const apollota::SimpleSphere& b=spheres[collisions[j]];
+			const CRAD& b_crad=list_of_balls[collisions[j]].first;
+			if(!check_sequence || (a_crad.chainID==b_crad.chainID && abs(a_crad.resSeq-b_crad.resSeq)<=1))
+			draw_cylinder(
+					apollota::SimpleSphere(a, cylinder_drawing_radius),
+					apollota::SimpleSphere(apollota::sum_of_points<apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
+					cylinder_sides,
+					opengl_printer);
+		}
+	}
+}
+
 }
 
 void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
@@ -57,7 +98,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
-	const std::string representation=poh.argument<std::string>(pohw.describe_option("--representation", "string", "representation name: 'vdw' or 'sticks'"), "vdw");
+	const std::string representation=poh.argument<std::string>(pohw.describe_option("--representation", "string", "representation name: 'vdw', 'sticks' or 'trace'"), "vdw");
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
@@ -85,52 +126,28 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRAD& crad=list_of_balls[i].first;
 			const BallValue& value=list_of_balls[i].second;
-
 			if(drawing_labels)
 			{
 				opengl_printer.add_label(construct_label_from_crad(crad));
 			}
-
 			opengl_printer.add_sphere(value);
 		}
 	}
 	else if(representation=="sticks")
 	{
-		std::vector<apollota::SimpleSphere> spheres(list_of_balls.size());
+		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, drawing_labels, opengl_printer);
+	}
+	else if(representation=="trace")
+	{
+		std::vector< std::pair<CRAD, BallValue> > list_of_balls_filtered;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			spheres[i]=apollota::SimpleSphere(list_of_balls[i].second);
-		}
-
-		apollota::BoundingSpheresHierarchy bsh(spheres, 3.5, 1);
-
-		for(std::size_t i=0;i<list_of_balls.size();i++)
-		{
-			const CRAD& crad=list_of_balls[i].first;
-			const BallValue& value=list_of_balls[i].second;
-
-			if(drawing_labels)
+			if(list_of_balls[i].first.name=="CA")
 			{
-				opengl_printer.add_label(construct_label_from_crad(crad));
-			}
-
-			opengl_printer.add_sphere(apollota::SimpleSphere(value, 0.5));
-
-			const apollota::SimpleSphere& a=spheres[i];
-			std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
-			for(std::size_t j=0;j<collisions.size();j++)
-			{
-				const apollota::SimpleSphere& b=spheres[collisions[j]];
-				if(apollota::distance_from_point_to_point(a, b)<1.6)
-				{
-					draw_cylinder(
-							apollota::SimpleSphere(a, 0.3),
-							apollota::SimpleSphere(apollota::sum_of_points<apollota::SimplePoint>(a, b)*0.5, 0.3),
-							9,
-							opengl_printer);
-				}
+				list_of_balls_filtered.push_back(list_of_balls[i]);
 			}
 		}
+		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_labels, opengl_printer);
 	}
 	else
 	{
