@@ -1,6 +1,4 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
-#include "auxiliaries/opengl_printer.h"
 
 #include "modescommon/contact_value.h"
 #include "modescommon/drawing_utilities.h"
