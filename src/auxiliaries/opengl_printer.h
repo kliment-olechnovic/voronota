@@ -33,6 +33,12 @@ public:
 		write_color_to_stream(Color(rgb), string_stream_);
 	}
 
+	void add_color(const double r, const double g, const double b)
+	{
+		string_stream_ << object_typer_.color << " ";
+		write_color_to_stream(Color(r, g, b), string_stream_);
+	}
+
 	void add_color_from_blue_white_red_gradient(const double value)
 	{
 		string_stream_ << object_typer_.color << " ";
@@ -417,6 +423,15 @@ private:
 
 		Color(const unsigned int rgb) : r((rgb&0xFF0000) >> 16), g((rgb&0x00FF00) >> 8), b(rgb&0x0000FF)
 		{
+		}
+
+		Color(const double r, const double g, const double b) : r(color_component_from_ratio(r)), g(color_component_from_ratio(g)), b(color_component_from_ratio(b))
+		{
+		}
+
+		static unsigned int color_component_from_ratio(const double r)
+		{
+			return static_cast<unsigned int>(std::min(std::max(r*255.0, 0.0), 255.0));
 		}
 
 		static Color from_blue_white_red_gradient(const double value)
