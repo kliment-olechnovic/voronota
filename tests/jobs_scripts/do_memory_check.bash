@@ -11,7 +11,7 @@ mkdir -p $SUBDIR
 g++ -g -O1 -o $TMPDIR/voronota_raw $VORONOTADIR/src/*.cpp
 
 cat $INPUTDIR/single/structure.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \
 > $TMPDIR/balls
 
 valgrind --tool=memcheck $TMPDIR/voronota_raw calculate-vertices < $TMPDIR/balls > $SUBDIR/triangulation 2> $TMPDIR/log

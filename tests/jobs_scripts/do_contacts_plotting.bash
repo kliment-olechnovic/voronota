@@ -6,7 +6,7 @@ SUBDIR=$OUTPUTDIR/contacts_plotting
 mkdir -p $SUBDIR
 
 cat $INPUTDIR/complex/target.pdb \
-| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --annotated \
+| $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --annotated \
 | $VORONOTA calculate-contacts --annotated \
 | $VORONOTA query-contacts --inter-residue --no-solvent \
 | $VORONOTA query-contacts --match-min-seq-sep 0 --match-max-seq-sep 1 --set-adjuncts 'r=1;g=1;b=0' \

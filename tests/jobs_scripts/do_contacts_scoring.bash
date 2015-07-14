@@ -10,7 +10,7 @@ do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	cat $INFILE \
 	| $VORONOTA get-balls-from-atoms-file \
-	  --radii-file $VORONOTADIR/radii \
+	  --radii-file $VORONOTADIR/resources/radii \
 	  --include-heteroatoms \
 	  --annotated \
 	  --multimodel-chains \
@@ -85,7 +85,7 @@ do
 	INFILEBASENAME=$(basename $INFILE .contacts)
 	cat $INFILE \
 	| $VORONOTA score-contacts-energy \
-	  --potential-file $VORONOTADIR/energy_potential \
+	  --potential-file $VORONOTADIR/resources/energy_potential \
 	  --ignorable-max-seq-sep 1 \
 	  --depth 2 \
 	  --inter-atom-scores-file $SUBDIR/$INFILEBASENAME.interatomenergies \
@@ -101,7 +101,7 @@ do
 	  --default-mean -0.32 \
 	  --default-sd 0.17 \
 	  --mean-shift 0.0 \
-	  --means-and-sds-file $VORONOTADIR/energy_means_and_sds \
+	  --means-and-sds-file $VORONOTADIR/resources/energy_means_and_sds \
 	  --external-weights-file $SUBDIR/$INFILEBASENAME.depthvalues \
 	  --smoothing-window 5 \
 	  --atom-scores-file $SUBDIR/$INFILEBASENAME.atomqscores \

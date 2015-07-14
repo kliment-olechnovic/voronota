@@ -11,7 +11,7 @@ mkdir -p $SUBDIR
 g++ -O3 -fopenmp -o $TMPDIR/voronota_openmp $VORONOTADIR/src/*.cpp
 
 cat $INPUTDIR/single/structure.pdb \
-| $TMPDIR/voronota_openmp get-balls-from-atoms-file --radii-file $VORONOTADIR/radii --include-heteroatoms \
+| $TMPDIR/voronota_openmp get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms \
 > $TMPDIR/balls
 
 cat $TMPDIR/balls | $TMPDIR/voronota_openmp calculate-vertices-in-parallel --method openmp --parts 4 --print-log > /dev/null 2> $SUBDIR/openmp_4p_log
