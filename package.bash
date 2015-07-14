@@ -26,7 +26,7 @@ cp scripts/voromqa $PACKAGE_NAME/voromqa
 cp voronota $PACKAGE_NAME/voronota
 
 ./document.bash
-mv ./README.html $PACKAGE_NAME/README.html
+cp ./index.html $PACKAGE_NAME/README.html
 
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
 rm -r $PACKAGE_NAME

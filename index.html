@@ -1,0 +1,1697 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">
+  td { padding-right: 1em; }
+  div#TOC > ul > li > ul > li ul { display: none; }
+  </style>
+</head>
+<body>
+<h1>Voronota version 1.9</h1>
+<div id="TOC">
+<ul>
+<li><a href="#about-voronota">About Voronota</a></li>
+<li><a href="#getting-the-latest-version">Getting the latest version</a></li>
+<li><a href="#building-from-source-code">Building from source code</a></li>
+<li><a href="#basic-usage-example">Basic usage example</a></li>
+<li><a href="#advanced-usage">Advanced usage</a><ul>
+<li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
+<li><a href="#list-of-all-commands">List of all commands</a></li>
+<li><a href="#command-get-balls-from-atoms-file">Command 'get-balls-from-atoms-file'</a><ul>
+<li><a href="#command-line-arguments">Command line arguments:</a></li>
+<li><a href="#input-stream">Input stream:</a></li>
+<li><a href="#output-stream">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-calculate-vertices">Command 'calculate-vertices'</a><ul>
+<li><a href="#command-line-arguments-1">Command line arguments:</a></li>
+<li><a href="#input-stream-1">Input stream:</a></li>
+<li><a href="#output-stream-1">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-calculate-vertices-in-parallel">Command 'calculate-vertices-in-parallel'</a><ul>
+<li><a href="#command-line-arguments-2">Command line arguments:</a></li>
+<li><a href="#input-stream-2">Input stream:</a></li>
+<li><a href="#output-stream-2">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-calculate-contacts">Command 'calculate-contacts'</a><ul>
+<li><a href="#command-line-arguments-3">Command line arguments:</a></li>
+<li><a href="#input-stream-3">Input stream:</a></li>
+<li><a href="#output-stream-3">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-calculate-mock-solvent">Command 'calculate-mock-solvent'</a><ul>
+<li><a href="#command-line-arguments-4">Command line arguments:</a></li>
+<li><a href="#input-stream-4">Input stream:</a></li>
+<li><a href="#output-stream-4">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-balls">Command 'query-balls'</a><ul>
+<li><a href="#command-line-arguments-5">Command line arguments:</a></li>
+<li><a href="#input-stream-5">Input stream:</a></li>
+<li><a href="#output-stream-5">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-balls-sequences-pairings-stats">Command 'query-balls-sequences-pairings-stats'</a><ul>
+<li><a href="#command-line-arguments-6">Command line arguments:</a></li>
+<li><a href="#input-stream-6">Input stream:</a></li>
+<li><a href="#output-stream-6">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-write-balls-to-atoms-file">Command 'write-balls-to-atoms-file'</a><ul>
+<li><a href="#command-line-arguments-7">Command line arguments:</a></li>
+<li><a href="#input-stream-7">Input stream:</a></li>
+<li><a href="#output-stream-7">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-draw-balls">Command 'draw-balls'</a><ul>
+<li><a href="#command-line-arguments-8">Command line arguments:</a></li>
+<li><a href="#input-stream-8">Input stream:</a></li>
+<li><a href="#output-stream-8">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-contacts">Command 'query-contacts'</a><ul>
+<li><a href="#command-line-arguments-9">Command line arguments:</a></li>
+<li><a href="#input-stream-9">Input stream:</a></li>
+<li><a href="#output-stream-9">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-contacts-depth-values">Command 'query-contacts-depth-values'</a><ul>
+<li><a href="#command-line-arguments-10">Command line arguments:</a></li>
+<li><a href="#input-stream-10">Input stream:</a></li>
+<li><a href="#output-stream-10">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-contacts-simulating-unfolding">Command 'query-contacts-simulating-unfolding'</a><ul>
+<li><a href="#command-line-arguments-11">Command line arguments:</a></li>
+<li><a href="#input-stream-11">Input stream:</a></li>
+<li><a href="#output-stream-11">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-draw-contacts">Command 'draw-contacts'</a><ul>
+<li><a href="#command-line-arguments-12">Command line arguments:</a></li>
+<li><a href="#input-stream-12">Input stream:</a></li>
+<li><a href="#output-stream-12">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-plot-contacts">Command 'plot-contacts'</a><ul>
+<li><a href="#command-line-arguments-13">Command line arguments:</a></li>
+<li><a href="#input-stream-13">Input stream:</a></li>
+<li><a href="#output-stream-13">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-contacts-potential">Command 'score-contacts-potential'</a><ul>
+<li><a href="#command-line-arguments-14">Command line arguments:</a></li>
+<li><a href="#input-stream-14">Input stream:</a></li>
+<li><a href="#output-stream-14">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-contacts-potentials-stats">Command 'score-contacts-potentials-stats'</a><ul>
+<li><a href="#command-line-arguments-15">Command line arguments:</a></li>
+<li><a href="#input-stream-15">Input stream:</a></li>
+<li><a href="#output-stream-15">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-contacts-energy">Command 'score-contacts-energy'</a><ul>
+<li><a href="#command-line-arguments-16">Command line arguments:</a></li>
+<li><a href="#input-stream-16">Input stream:</a></li>
+<li><a href="#output-stream-16">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-contacts-energy-stats">Command 'score-contacts-energy-stats'</a><ul>
+<li><a href="#command-line-arguments-17">Command line arguments:</a></li>
+<li><a href="#input-stream-17">Input stream:</a></li>
+<li><a href="#output-stream-17">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-contacts-quality">Command 'score-contacts-quality'</a><ul>
+<li><a href="#command-line-arguments-18">Command line arguments:</a></li>
+<li><a href="#input-stream-18">Input stream:</a></li>
+<li><a href="#output-stream-18">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
+<li><a href="#command-line-arguments-19">Command line arguments:</a></li>
+<li><a href="#input-stream-19">Input stream:</a></li>
+<li><a href="#output-stream-19">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-line-arguments-20">Command line arguments:</a></li>
+<li><a href="#input-stream-20">Input stream:</a></li>
+<li><a href="#output-stream-20">Output stream:</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
+<li><a href="#cad-score-method-wrapper-script">CAD-score method wrapper script</a></li>
+<li><a href="#voromqa-method-wrapper-script">VoroMQA method wrapper script</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="about-voronota"><a href="#TOC">About Voronota</a></h1>
+<p>The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods. Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius. Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls. Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls. Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.</p>
+<p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
+<p>Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).</p>
+<h1 id="getting-the-latest-version"><a href="#TOC">Getting the latest version</a></h1>
+<p>Download the latest archive from the official downloads page: <a href="https://bitbucket.org/kliment/voronota/downloads">https://bitbucket.org/kliment/voronota/downloads</a>.</p>
+<h1 id="building-from-source-code"><a href="#TOC">Building from source code</a></h1>
+<p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
+<p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
+<pre><code>g++ -O3 -o voronota src/*.cpp
+</code></pre>
+<p>To enable the usage of OpenMP for parallel processing, add &quot;-fopenmp&quot; option when buiding:</p>
+<pre><code>g++ -O3 -fopenmp -o voronota src/*.cpp
+</code></pre>
+<p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
+<pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
+</code></pre>
+<p>You can also build using cmake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
+<pre><code>mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
+</code></pre>
+<h1 id="basic-usage-example"><a href="#TOC">Basic usage example</a></h1>
+<p>Here is a basic example of computing Voronoi vertices for a structure in a PDB file:</p>
+<pre><code>./voronota get-balls-from-atoms-file &lt; input.pdb &gt; balls.txt
+./voronota calculate-vertices &lt; balls.txt &gt; vertices.txt
+</code></pre>
+<p>The first command reads a PDB file &quot;input.pdb&quot; and outputs a file &quot;balls.txt&quot; that contains balls corresponding to the atoms in &quot;input.pdb&quot; (by default, Voronota ignores all heteroatoms and all hydrogen atoms when reading PDB files: this behavior can be altered using command-line options). The second command reads &quot;balls.txt&quot; and outputs a file &quot;vertices.txt&quot; that contains a quadruples and empty tangent spheres that correspond to the vertices of the Voronoi diagram of the input balls. The formats of &quot;balls.txt&quot; and &quot;vertices.txt&quot; are described below.</p>
+<p>In &quot;balls.txt&quot; the line format is &quot;x y z r # comments&quot;. The first four values (x, y, z, r) are atomic ball coordinates and radius. Comments are not needed for further calculations, they are to assist human readers. For example, below is a part of some possible &quot;balls.txt&quot;:</p>
+<pre><code>28.888 9.409 52.301 1.7 # 1 A 2 SER N
+27.638 10.125 52.516 1.9 # 2 A 2 SER CA
+26.499 9.639 51.644 1.75 # 3 A 2 SER C
+26.606 8.656 50.915 1.49 # 4 A 2 SER O
+27.783 11.635 52.378 1.91 # 5 A 2 SER CB
+27.69 12.033 51.012 1.54 # 6 A 2 SER OG
+</code></pre>
+<p>In &quot;vertices.txt&quot; the line format is &quot;q1 q2 q3 q4 x y z r&quot;. The first four numbers (q1, q2, q3, q4) are numbers of atomic records in &quot;balls.txt&quot;, starting from 0. The remaining four values (x, y, z, r) are the coordinates and the radius of an empty tangent sphere of the quadruple of atoms. For example, below is a part of some possible &quot;vertices.txt&quot;:</p>
+<pre><code>0 1 2 3 27.761 8.691 51.553 -0.169
+0 1 2 23 28.275 9.804 50.131 0.588
+0 1 3 1438 24.793 -3.225 60.761 14.047
+0 1 4 5 28.785 10.604 50.721 0.283
+0 1 4 1453 30.018 10.901 55.386 1.908
+0 1 5 23 28.544 10.254 50.194 0.595
+</code></pre>
+<h1 id="advanced-usage"><a href="#TOC">Advanced usage</a></h1>
+<h2 id="getting-help-in-command-line"><a href="#TOC">Getting help in command line</a></h2>
+<p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>
+<p>Command help is shown when &quot;--help&quot; command line option is present, for example:</p>
+<pre><code>./voronota calculate-vertices --help
+</code></pre>
+<p>Using &quot;--help&quot; option without specific command results in printing help for all commands:</p>
+<pre><code>./voronota --help
+</code></pre>
+<h2 id="list-of-all-commands"><a href="#TOC">List of all commands</a></h2>
+<ul>
+<li>get-balls-from-atoms-file</li>
+<li>calculate-vertices</li>
+<li>calculate-vertices-in-parallel</li>
+<li>calculate-contacts</li>
+<li>calculate-mock-solvent</li>
+<li>query-balls</li>
+<li>query-balls-sequences-pairings-stats</li>
+<li>write-balls-to-atoms-file</li>
+<li>draw-balls</li>
+<li>query-contacts</li>
+<li>query-contacts-depth-values</li>
+<li>query-contacts-simulating-unfolding</li>
+<li>draw-contacts</li>
+<li>plot-contacts</li>
+<li>score-contacts-potential</li>
+<li>score-contacts-potentials-stats</li>
+<li>score-contacts-energy</li>
+<li>score-contacts-energy-stats</li>
+<li>score-contacts-quality</li>
+<li>compare-contacts</li>
+<li>score-scores</li>
+</ul>
+<h2 id="command-get-balls-from-atoms-file"><a href="#TOC">Command 'get-balls-from-atoms-file'</a></h2>
+<h3 id="command-line-arguments"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--annotated</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to enable annotated mode</td>
+</tr>
+<tr class="even">
+<td align="left">--include-heteroatoms</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to include heteroatoms</td>
+</tr>
+<tr class="odd">
+<td align="left">--include-hydrogens</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to include hydrogen atoms</td>
+</tr>
+<tr class="even">
+<td align="left">--multimodel-chains</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to read multiple models in PDB format and rename chains accordingly</td>
+</tr>
+<tr class="odd">
+<td align="left">--mmcif</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to input in mmCIF format</td>
+</tr>
+<tr class="even">
+<td align="left">--radii-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">path to radii configuration file</td>
+</tr>
+<tr class="odd">
+<td align="left">--default-radius</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">default atomic radius</td>
+</tr>
+<tr class="even">
+<td align="left">--only-default-radius</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to make all radii equal to the default radius</td>
+</tr>
+<tr class="odd">
+<td align="left">--hull-offset</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">positive offset distance enables adding artificial hull balls</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream"><a href="#TOC">Input stream:</a></h3>
+<p>file in PDB or mmCIF format</p>
+<h3 id="output-stream"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls</p>
+<ul>
+<li><p>default mode line format: 'x y z r # atomSerial chainID resSeq resName atomName altLoc iCode'</p></li>
+<li><p>annotated mode line format: 'annotation x y z r tags adjuncts'</p></li>
+</ul>
+<h2 id="command-calculate-vertices"><a href="#TOC">Command 'calculate-vertices'</a></h2>
+<h3 id="command-line-arguments-1"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--print-log</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print log of calculations</td>
+</tr>
+<tr class="even">
+<td align="left">--exclude-hidden-balls</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to exclude hidden input balls</td>
+</tr>
+<tr class="odd">
+<td align="left">--include-surplus-quadruples</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to include surplus quadruples</td>
+</tr>
+<tr class="even">
+<td align="left">--link</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to output links between vertices</td>
+</tr>
+<tr class="odd">
+<td align="left">--init-radius-for-BSH</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">initial radius for bounding sphere hierarchy</td>
+</tr>
+<tr class="even">
+<td align="left">--check</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to slowly check the resulting vertices (used only for testing)</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-1"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'x y z r')</p>
+<h3 id="output-stream-1"><a href="#TOC">Output stream:</a></h3>
+<p>list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')</p>
+<h2 id="command-calculate-vertices-in-parallel"><a href="#TOC">Command 'calculate-vertices-in-parallel'</a></h2>
+<h3 id="command-line-arguments-2"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--method</td>
+<td align="left">string</td>
+<td align="left">*</td>
+<td align="left">parallelization method name, variants are: 'simulated'</td>
+</tr>
+<tr class="even">
+<td align="left">--parts</td>
+<td align="left">number</td>
+<td align="left">*</td>
+<td align="left">number of parts for splitting, must be power of 2</td>
+</tr>
+<tr class="odd">
+<td align="left">--print-log</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print log of calculations</td>
+</tr>
+<tr class="even">
+<td align="left">--include-surplus-quadruples</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to include surplus quadruples</td>
+</tr>
+<tr class="odd">
+<td align="left">--link</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to output links between vertices</td>
+</tr>
+<tr class="even">
+<td align="left">--init-radius-for-BSH</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">initial radius for bounding sphere hierarchy</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-2"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'x y z r')</p>
+<h3 id="output-stream-2"><a href="#TOC">Output stream:</a></h3>
+<p>list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')</p>
+<h2 id="command-calculate-contacts"><a href="#TOC">Command 'calculate-contacts'</a></h2>
+<h3 id="command-line-arguments-3"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--annotated</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to enable annotated mode</td>
+</tr>
+<tr class="even">
+<td align="left">--probe</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">probe radius</td>
+</tr>
+<tr class="odd">
+<td align="left">--exclude-hidden-balls</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to exclude hidden input balls</td>
+</tr>
+<tr class="even">
+<td align="left">--step</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">curve step length</td>
+</tr>
+<tr class="odd">
+<td align="left">--projections</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">curve optimization depth</td>
+</tr>
+<tr class="even">
+<td align="left">--sih-depth</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">spherical surface optimization depth</td>
+</tr>
+<tr class="odd">
+<td align="left">--add-mirrored</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to add mirrored contacts to non-annnotated output</td>
+</tr>
+<tr class="even">
+<td align="left">--draw</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to output graphics for annotated contacts</td>
+</tr>
+<tr class="odd">
+<td align="left">--tag-centrality</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to tag contacts centrality</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-3"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls</p>
+<ul>
+<li><p>default mode line format: 'x y z r'</p></li>
+<li><p>annotated mode line format: 'annotation x y z r tags adjuncts'</p></li>
+</ul>
+<h3 id="output-stream-3"><a href="#TOC">Output stream:</a></h3>
+<p>list of contacts</p>
+<ul>
+<li><p>default mode line format: 'b1 b2 area'</p></li>
+<li><p>annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]'</p></li>
+</ul>
+<h2 id="command-calculate-mock-solvent"><a href="#TOC">Command 'calculate-mock-solvent'</a></h2>
+<h3 id="command-line-arguments-4"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--solvent-radius</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">solvent atom radius</td>
+</tr>
+<tr class="even">
+<td align="left">--solvent-distance</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">min distance from non-solvent atoms to solvent atoms</td>
+</tr>
+<tr class="odd">
+<td align="left">--sih-depth</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">spherical surface optimization depth</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-4"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h3 id="output-stream-4"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h2 id="command-query-balls"><a href="#TOC">Command 'query-balls'</a></h2>
+<h3 id="command-line-arguments-5"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--match</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">selection</td>
+</tr>
+<tr class="even">
+<td align="left">--match-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">negative selection</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">tags to match</td>
+</tr>
+<tr class="even">
+<td align="left">--match-tags-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">tags to not match</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjuncts intervals to match</td>
+</tr>
+<tr class="even">
+<td align="left">--match-adjuncts-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjuncts intervals to not match</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-external-annotations</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input matchable annotations</td>
+</tr>
+<tr class="even">
+<td align="left">--invert</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to invert selection</td>
+</tr>
+<tr class="odd">
+<td align="left">--whole-residues</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to select whole residues</td>
+</tr>
+<tr class="even">
+<td align="left">--drop-atom-serials</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop atom serial numbers from input</td>
+</tr>
+<tr class="odd">
+<td align="left">--drop-altloc-indicators</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop alternate location indicators from input</td>
+</tr>
+<tr class="even">
+<td align="left">--drop-tags</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop all tags from input</td>
+</tr>
+<tr class="odd">
+<td align="left">--drop-adjuncts</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop all adjuncts from input</td>
+</tr>
+<tr class="even">
+<td align="left">--set-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">set tags instead of filtering</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-dssp-info</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input DSSP file</td>
+</tr>
+<tr class="even">
+<td align="left">--set-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">set adjuncts instead of filtering</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-external-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input external adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--set-external-adjuncts-name</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">name for external adjuncts</td>
+</tr>
+<tr class="odd">
+<td align="left">--rename-chains</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to rename input chains to be in interval from 'A' to 'Z'</td>
+</tr>
+<tr class="even">
+<td align="left">--renumber-from-adjunct</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjunct name to use for input residue renumbering</td>
+</tr>
+<tr class="odd">
+<td align="left">--renumber-positively</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to increment residue numbers to make them positive</td>
+</tr>
+<tr class="even">
+<td align="left">--reset-serials</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to reset atom serial numbers</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-ref-seq-num-adjunct</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input reference sequence</td>
+</tr>
+<tr class="even">
+<td align="left">--ref-seq-alignment</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output alignment with reference</td>
+</tr>
+<tr class="odd">
+<td align="left">--seq-output</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output query result sequence string</td>
+</tr>
+<tr class="even">
+<td align="left">--chains-summary-output</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output chains summary</td>
+</tr>
+<tr class="odd">
+<td align="left">--chains-seq-identity</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">sequence identity threshold for chains summary</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-5"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h3 id="output-stream-5"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h2 id="command-query-balls-sequences-pairings-stats"><a href="#TOC">Command 'query-balls-sequences-pairings-stats'</a></h2>
+<h3 id="command-line-arguments-6"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-6"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls files</p>
+<h3 id="output-stream-6"><a href="#TOC">Output stream:</a></h3>
+<p>list of sequences pairings stats</p>
+<h2 id="command-write-balls-to-atoms-file"><a href="#TOC">Command 'write-balls-to-atoms-file'</a></h2>
+<h3 id="command-line-arguments-7"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--pdb-output</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output query result in PDB format</td>
+</tr>
+<tr class="even">
+<td align="left">--pdb-output-b-factor</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">name of adjunct to output as B-factor in PDB format</td>
+</tr>
+<tr class="odd">
+<td align="left">--pdb-output-template</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input template for B-factor insertions</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-7"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h3 id="output-stream-7"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h2 id="command-draw-balls"><a href="#TOC">Command 'draw-balls'</a></h2>
+<h3 id="command-line-arguments-8"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--representation</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">representation name: 'vdw', 'sticks' or 'trace'</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-for-pymol</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as pymol script</td>
+</tr>
+<tr class="odd">
+<td align="left">--drawing-for-scenejs</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as scenejs script</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-name</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">graphics object name for drawing output</td>
+</tr>
+<tr class="odd">
+<td align="left">--default-color</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">default color for drawing output, in hex format, white is 0xFFFFFF</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjunct name to use for gradient-based coloring</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjunct-gradient-blue</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">blue adjunct gradient value</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient-red</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">red adjunct gradient value</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjuncts-rgb</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use RGB color values from adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--random-colors</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use random color for each drawn ball</td>
+</tr>
+<tr class="odd">
+<td align="left">--use-labels</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use labels in drawing if possible</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-8"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h3 id="output-stream-8"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h2 id="command-query-contacts"><a href="#TOC">Command 'query-contacts'</a></h2>
+<h3 id="command-line-arguments-9"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--match-first</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">selection for first contacting group</td>
+</tr>
+<tr class="even">
+<td align="left">--match-first-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">negative selection for first contacting group</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-second</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">selection for second contacting group</td>
+</tr>
+<tr class="even">
+<td align="left">--match-second-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">negative selection for second contacting group</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-min-seq-sep</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">minimum residue sequence separation</td>
+</tr>
+<tr class="even">
+<td align="left">--match-max-seq-sep</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">maximum residue sequence separation</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-min-area</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">minimum contact area</td>
+</tr>
+<tr class="even">
+<td align="left">--match-max-area</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">maximum contact area</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-min-dist</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">minimum distance</td>
+</tr>
+<tr class="even">
+<td align="left">--match-max-dist</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">maximum distance</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">tags to match</td>
+</tr>
+<tr class="even">
+<td align="left">--match-tags-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">tags to not match</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjuncts intervals to match</td>
+</tr>
+<tr class="even">
+<td align="left">--match-adjuncts-not</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjuncts intervals to not match</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-external-first</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input matchable annotations</td>
+</tr>
+<tr class="even">
+<td align="left">--match-external-second</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input matchable annotations</td>
+</tr>
+<tr class="odd">
+<td align="left">--match-external-pairs</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input matchable annotation pairs</td>
+</tr>
+<tr class="even">
+<td align="left">--no-solvent</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to not include solvent accessible areas</td>
+</tr>
+<tr class="odd">
+<td align="left">--no-same-chain</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to not include same chain contacts</td>
+</tr>
+<tr class="even">
+<td align="left">--invert</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to invert selection</td>
+</tr>
+<tr class="odd">
+<td align="left">--drop-tags</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop all tags from input</td>
+</tr>
+<tr class="even">
+<td align="left">--drop-adjuncts</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to drop all adjuncts from input</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">set tags instead of filtering</td>
+</tr>
+<tr class="even">
+<td align="left">--set-hbplus-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input HBPLUS file</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-distance-bins-tags</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">list of distance thresholds</td>
+</tr>
+<tr class="even">
+<td align="left">--inter-residue-hbplus-tags</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to set inter-residue H-bond tags</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">set adjuncts instead of filtering</td>
+</tr>
+<tr class="even">
+<td align="left">--set-external-adjuncts</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input external adjuncts</td>
+</tr>
+<tr class="odd">
+<td align="left">--set-external-adjuncts-name</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">name for external adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--inter-residue</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to convert input to inter-residue contacts</td>
+</tr>
+<tr class="odd">
+<td align="left">--summarize</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to output only summary of contacts</td>
+</tr>
+<tr class="even">
+<td align="left">--preserve-graphics</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to preserve graphics in output</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-9"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')</p>
+<h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')</p>
+<h2 id="command-query-contacts-depth-values"><a href="#TOC">Command 'query-contacts-depth-values'</a></h2>
+<h3 id="command-line-arguments-10"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-10"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2')</p>
+<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
+<p>list of depth values (line format: 'annotation depth')</p>
+<h2 id="command-query-contacts-simulating-unfolding"><a href="#TOC">Command 'query-contacts-simulating-unfolding'</a></h2>
+<h3 id="command-line-arguments-11"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--max-seq-sep</td>
+<td align="left">number</td>
+<td align="left">*</td>
+<td align="left">maximum untouchable residue sequence separation</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-11"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')</p>
+<h3 id="output-stream-11"><a href="#TOC">Output stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')</p>
+<h2 id="command-draw-contacts"><a href="#TOC">Command 'draw-contacts'</a></h2>
+<h3 id="command-line-arguments-12"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--drawing-for-pymol</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as pymol script</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-for-jmol</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as jmol script</td>
+</tr>
+<tr class="odd">
+<td align="left">--drawing-for-scenejs</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as scenejs script</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-name</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">graphics object name for drawing output</td>
+</tr>
+<tr class="odd">
+<td align="left">--default-color</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">default color for drawing output, in hex format, white is 0xFFFFFF</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjunct name to use for gradient-based coloring</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjunct-gradient-blue</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">blue adjunct gradient value</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient-red</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">red adjunct gradient value</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjuncts-rgb</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use RGB color values from adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--random-colors</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use random color for each drawn contact</td>
+</tr>
+<tr class="odd">
+<td align="left">--alpha</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">alpha opacity value for drawing output</td>
+</tr>
+<tr class="even">
+<td align="left">--use-labels</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use labels in drawing if possible</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-12"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')</p>
+<h3 id="output-stream-12"><a href="#TOC">Output stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')</p>
+<h2 id="command-plot-contacts"><a href="#TOC">Command 'plot-contacts'</a></h2>
+<h3 id="command-line-arguments-13"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--background-color</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">color string in SVG-acceptable format</td>
+</tr>
+<tr class="even">
+<td align="left">--default-color</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">color string in SVG-acceptable format</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjuncts-rgb</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use RGB color values from adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-13"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')</p>
+<h3 id="output-stream-13"><a href="#TOC">Output stream:</a></h3>
+<p>plot of contacts in SVG format</p>
+<h2 id="command-score-contacts-potential"><a href="#TOC">Command 'score-contacts-potential'</a></h2>
+<h3 id="command-line-arguments-14"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--input-file-list</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to read file list from stdin</td>
+</tr>
+<tr class="even">
+<td align="left">--input-contributions</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input contact types contributions</td>
+</tr>
+<tr class="odd">
+<td align="left">--input-fixed-types</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input fixed types</td>
+</tr>
+<tr class="even">
+<td align="left">--input-seq-pairs-stats</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input sequence pairings statistics</td>
+</tr>
+<tr class="odd">
+<td align="left">--potential-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output potential values</td>
+</tr>
+<tr class="even">
+<td align="left">--probabilities-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output observed and expected probabilities</td>
+</tr>
+<tr class="odd">
+<td align="left">--single-areas-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output single type total areas</td>
+</tr>
+<tr class="even">
+<td align="left">--contributions-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output contact types contributions</td>
+</tr>
+<tr class="odd">
+<td align="left">--multiply-areas</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">coefficient to multiply output areas</td>
+</tr>
+<tr class="even">
+<td align="left">--toggling-list</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">list of toggling subtags</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-14"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 conditions area')</p>
+<h3 id="output-stream-14"><a href="#TOC">Output stream:</a></h3>
+<p>line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')</p>
+<h2 id="command-score-contacts-potentials-stats"><a href="#TOC">Command 'score-contacts-potentials-stats'</a></h2>
+<h3 id="command-line-arguments-15"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-15"><a href="#TOC">Input stream:</a></h3>
+<p>list of potential files</p>
+<h3 id="output-stream-15"><a href="#TOC">Output stream:</a></h3>
+<p>list of normalized energy mean and sd values per interaction type</p>
+<h2 id="command-score-contacts-energy"><a href="#TOC">Command 'score-contacts-energy'</a></h2>
+<h3 id="command-line-arguments-16"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--potential-file</td>
+<td align="left">string</td>
+<td align="left">*</td>
+<td align="left">file path to input potential values</td>
+</tr>
+<tr class="even">
+<td align="left">--ignorable-max-seq-sep</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">maximum residue sequence separation for ignorable contacts</td>
+</tr>
+<tr class="odd">
+<td align="left">--inter-atom-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output inter-atom scores</td>
+</tr>
+<tr class="even">
+<td align="left">--atom-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output atom scores</td>
+</tr>
+<tr class="odd">
+<td align="left">--depth</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">neighborhood normalization depth</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-16"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 conditions area')</p>
+<h3 id="output-stream-16"><a href="#TOC">Output stream:</a></h3>
+<p>global scores</p>
+<h2 id="command-score-contacts-energy-stats"><a href="#TOC">Command 'score-contacts-energy-stats'</a></h2>
+<h3 id="command-line-arguments-17"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-17"><a href="#TOC">Input stream:</a></h3>
+<p>list of atom energy descriptors</p>
+<h3 id="output-stream-17"><a href="#TOC">Output stream:</a></h3>
+<p>list of normalized energy mean and sd values per atom type</p>
+<h2 id="command-score-contacts-quality"><a href="#TOC">Command 'score-contacts-quality'</a></h2>
+<h3 id="command-line-arguments-18"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--default-mean</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">default mean parameter</td>
+</tr>
+<tr class="even">
+<td align="left">--default-sd</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">default standard deviation parameter</td>
+</tr>
+<tr class="odd">
+<td align="left">--means-and-sds-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input atomic mean and sd parameters</td>
+</tr>
+<tr class="even">
+<td align="left">--mean-shift</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">mean shift in standard deviations</td>
+</tr>
+<tr class="odd">
+<td align="left">--external-weights-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input external weights for global scoring</td>
+</tr>
+<tr class="even">
+<td align="left">--smoothing-window</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">window to smooth residue quality scores along sequence</td>
+</tr>
+<tr class="odd">
+<td align="left">--atom-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output atom scores</td>
+</tr>
+<tr class="even">
+<td align="left">--residue-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output residue scores</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-18"><a href="#TOC">Input stream:</a></h3>
+<p>list of atom energy descriptors</p>
+<h3 id="output-stream-18"><a href="#TOC">Output stream:</a></h3>
+<p>weighted average local score</p>
+<h2 id="command-compare-contacts"><a href="#TOC">Command 'compare-contacts'</a></h2>
+<h3 id="command-line-arguments-19"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--target-contacts-file</td>
+<td align="left">string</td>
+<td align="left">*</td>
+<td align="left">file path to input target contacts</td>
+</tr>
+<tr class="even">
+<td align="left">--inter-atom-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output inter-atom scores</td>
+</tr>
+<tr class="odd">
+<td align="left">--inter-residue-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output inter-residue scores</td>
+</tr>
+<tr class="even">
+<td align="left">--atom-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output atom scores</td>
+</tr>
+<tr class="odd">
+<td align="left">--residue-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output residue scores</td>
+</tr>
+<tr class="even">
+<td align="left">--depth</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">local neighborhood depth</td>
+</tr>
+<tr class="odd">
+<td align="left">--smoothing-window</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">window to smooth residue scores along sequence</td>
+</tr>
+<tr class="even">
+<td align="left">--smoothed-scores-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output smoothed residue scores</td>
+</tr>
+<tr class="odd">
+<td align="left">--detailed-output</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to enable detailed output</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-19"><a href="#TOC">Input stream:</a></h3>
+<p>list of model contacts (line format: 'annotation1 annotation2 area')</p>
+<h3 id="output-stream-19"><a href="#TOC">Output stream:</a></h3>
+<p>global scores (atom-level and residue-level)</p>
+<h2 id="command-score-scores"><a href="#TOC">Command 'score-scores'</a></h2>
+<h3 id="command-line-arguments-20"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--reference-threshold</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">reference scores classification threshold</td>
+</tr>
+<tr class="even">
+<td align="left">--testable-step</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">testable scores threshold step</td>
+</tr>
+<tr class="odd">
+<td align="left">--outcomes-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output lines of 'threshold TP TN FP FN'</td>
+</tr>
+<tr class="even">
+<td align="left">--ROC-curve-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output ROC curve</td>
+</tr>
+<tr class="odd">
+<td align="left">--PR-curve-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output PR curve</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-20"><a href="#TOC">Input stream:</a></h3>
+<p>pairs of reference and testable scores files</p>
+<h3 id="output-stream-20"><a href="#TOC">Output stream:</a></h3>
+<p>global results</p>
+<h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
+<h2 id="cad-score-method-wrapper-script"><a href="#TOC">CAD-score method wrapper script</a></h2>
+<p>The 'cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script command line arguments are:</p>
+<pre><code>-t input_target_file.pdb
+-m input_model_file.pdb
+[-T output_residue_scores_on_target_file.pdb]
+[-M output_residue_scores_on_model_file.pdb]
+[-s residue_scores_smoothing_window_size]
+</code></pre>
+<h2 id="voromqa-method-wrapper-script"><a href="#TOC">VoroMQA method wrapper script</a></h2>
+<p>The 'voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script command line arguments are:</p>
+<pre><code>-i input_file.pdb
+[-a output_atom_scores_file.pdb]
+[-r output_residue_scores_file.pdb]
+[-s residue_scores_smoothing_window_size]
+</code></pre>
+</body>
+</html>
