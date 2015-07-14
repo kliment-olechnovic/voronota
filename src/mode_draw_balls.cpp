@@ -110,8 +110,8 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	typedef std::vector< std::pair<CRAD, BallValue> > ListOfBalls;
+	const ListOfBalls list_of_balls=auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
