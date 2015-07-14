@@ -3,6 +3,13 @@
 #include "modescommon/contact_value.h"
 #include "modescommon/drawing_utilities.h"
 
+namespace
+{
+
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+
+}
+
 void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
