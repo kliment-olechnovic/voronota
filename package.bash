@@ -4,7 +4,7 @@ PACKAGE_NAME=$1
 
 cd $(dirname "$0")
 
-VERSION_MAJOR_STRING=$(./Release/voronota --version 2>&1 | awk '{print $3}')
+VERSION_MAJOR_STRING=$(./voronota | head -1 | awk '{print $3}')
 VERSION_MINOR_STRING=$(hg branches | egrep '^default' | tr ':' ' ' | awk '{print $2}')
 VERSION_STRING="voronota_$VERSION_MAJOR_STRING.$VERSION_MINOR_STRING"
 
@@ -23,7 +23,7 @@ cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp scripts/cadscore $PACKAGE_NAME/cadscore
 cp scripts/voromqa $PACKAGE_NAME/voromqa
-cp Release/voronota $PACKAGE_NAME/voronota
+cp voronota $PACKAGE_NAME/voronota
 
 ./document.bash
 mv ./README.html $PACKAGE_NAME/README.html
