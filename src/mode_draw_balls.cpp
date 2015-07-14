@@ -14,6 +14,43 @@ namespace
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
+struct DrawingParametersWrapper
+{
+	unsigned int default_color;
+	bool adjuncts_rgb;
+	bool use_labels;
+
+	DrawingParametersWrapper() : default_color(0xFFFFFF), adjuncts_rgb(false), use_labels(false)
+	{
+	}
+
+	void process(const CRAD& crad, const BallValue& value, auxiliaries::OpenGLPrinter& opengl_printer) const
+	{
+		if(use_labels)
+		{
+			opengl_printer.add_label(construct_label_from_crad(crad));
+		}
+
+		if(adjuncts_rgb)
+		{
+			const bool rp=value.props.adjuncts.count("r")>0;
+			const bool gp=value.props.adjuncts.count("g")>0;
+			const bool bp=value.props.adjuncts.count("b")>0;
+			if(!(rp || gp || bp))
+			{
+				opengl_printer.add_color(default_color);
+			}
+			else
+			{
+				opengl_printer.add_color(
+						(rp ? value.props.adjuncts.find("r")->second : 0.0),
+						(gp ? value.props.adjuncts.find("g")->second : 0.0),
+						(bp ? value.props.adjuncts.find("b")->second : 0.0));
+			}
+		}
+	}
+};
+
 void draw_cylinder(
 		const apollota::SimpleSphere& a,
 		const apollota::SimpleSphere& b,
@@ -57,7 +94,7 @@ void draw_links(
 		const double cylinder_drawing_radius,
 		const int cylinder_sides,
 		const bool check_sequence,
-		const bool drawing_labels,
+		const DrawingParametersWrapper& drawing_parameters_wrapper,
 		auxiliaries::OpenGLPrinter& opengl_printer)
 {
 	std::vector<apollota::SimpleSphere> spheres(list_of_balls.size());
@@ -70,10 +107,7 @@ void draw_links(
 	{
 		const apollota::SimpleSphere& a=spheres[i];
 		const CRAD& a_crad=list_of_balls[i].first;
-		if(drawing_labels)
-		{
-			opengl_printer.add_label(construct_label_from_crad(a_crad));
-		}
+		drawing_parameters_wrapper.process(a_crad, list_of_balls[i].second, opengl_printer);
 		opengl_printer.add_sphere(apollota::SimpleSphere(a, ball_drawing_radius));
 		std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
 		for(std::size_t j=0;j<collisions.size();j++)
@@ -102,8 +136,9 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
-	const unsigned int default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
-	const bool use_labels=poh.contains_option(pohw.describe_option("--drawing-labels", "", "flag to use labels in drawing if possible"));
+	DrawingParametersWrapper drawing_parameters_wrapper;
+	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
+	drawing_parameters_wrapper.use_labels=poh.contains_option(pohw.describe_option("--use-labels", "", "flag to use labels in drawing if possible"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -118,7 +153,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	auxiliaries::OpenGLPrinter opengl_printer;
-	opengl_printer.add_color(default_color);
+	opengl_printer.add_color(drawing_parameters_wrapper.default_color);
 
 	if(representation=="vdw")
 	{
@@ -126,16 +161,13 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRAD& crad=list_of_balls[i].first;
 			const BallValue& value=list_of_balls[i].second;
-			if(use_labels)
-			{
-				opengl_printer.add_label(construct_label_from_crad(crad));
-			}
+			drawing_parameters_wrapper.process(crad, value, opengl_printer);
 			opengl_printer.add_sphere(value);
 		}
 	}
 	else if(representation=="sticks")
 	{
-		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, use_labels, opengl_printer);
+		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, drawing_parameters_wrapper, opengl_printer);
 	}
 	else if(representation=="trace")
 	{
@@ -147,7 +179,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				list_of_balls_filtered.push_back(list_of_balls[i]);
 			}
 		}
-		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, use_labels, opengl_printer);
+		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_parameters_wrapper, opengl_printer);
 	}
 	else
 	{
