@@ -93,6 +93,14 @@ cat $SUBDIR/balls \
   --alpha 0.75 \
   --use-labels \
 | $VORONOTA query-contacts \
+  --match-min-area 5.0 \
+  --set-adjuncts 'r=1.0;g=0.2;b=0.2' \
+  --preserve-graphics \
+| $VORONOTA draw-contacts \
+  --drawing-for-pymol $SUBDIR/drawing_matched_residue_large_highlighted_for_pymol.py \
+  --drawing-name 'CRO_contacts_large_highlighted' \
+  --adjuncts-rgb \
+| $VORONOTA query-contacts \
   --inter-residue \
   --preserve-graphics \
 | $VORONOTA draw-contacts \
