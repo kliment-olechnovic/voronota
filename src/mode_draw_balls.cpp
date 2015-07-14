@@ -112,14 +112,18 @@ void draw_links(
 		std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
 		for(std::size_t j=0;j<collisions.size();j++)
 		{
-			const apollota::SimpleSphere& b=spheres[collisions[j]];
-			const CRAD& b_crad=list_of_balls[collisions[j]].first;
-			if(!check_sequence || (a_crad.chainID==b_crad.chainID && abs(a_crad.resSeq-b_crad.resSeq)<=1))
-			draw_cylinder(
-					apollota::SimpleSphere(a, cylinder_drawing_radius),
-					apollota::SimpleSphere(apollota::sum_of_points<apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
-					cylinder_sides,
-					opengl_printer);
+			const std::size_t collision_id=collisions[j];
+			if(i!=collision_id)
+			{
+				const apollota::SimpleSphere& b=spheres[collision_id];
+				const CRAD& b_crad=list_of_balls[collision_id].first;
+				if(!check_sequence || (a_crad.chainID==b_crad.chainID && abs(a_crad.resSeq-b_crad.resSeq)<=1))
+				draw_cylinder(
+						apollota::SimpleSphere(a, cylinder_drawing_radius),
+						apollota::SimpleSphere(apollota::sum_of_points<apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
+						cylinder_sides,
+						opengl_printer);
+			}
 		}
 	}
 }
