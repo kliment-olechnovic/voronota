@@ -49,10 +49,7 @@ You can also build using cmake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
 run the sequence of commands:
 
-    mkdir build
-    cd build
-    cmake ../
-    make
+    mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
 
 
 # Basic usage example
