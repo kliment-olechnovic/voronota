@@ -87,6 +87,59 @@ void draw_links(
 	}
 }
 
+std::vector<apollota::SimplePoint> interpolate(
+		const apollota::SimplePoint& a,
+		const apollota::SimplePoint& b,
+		const apollota::SimplePoint& c,
+		const apollota::SimplePoint& d,
+		const double k,
+		const int steps)
+{
+	std::vector<apollota::SimplePoint> result(steps+1);
+	const double step=1.0/static_cast<double>(steps);
+	const apollota::SimplePoint mb=(c-a)*k;
+	const apollota::SimplePoint mc=(d-b)*k;
+	for(int i=0;i<=steps;i++)
+	{
+		const double t=(i<steps ? static_cast<double>(i)*step : 1.0);
+		const double h00=(2*t*t*t)-(3*t*t)+1;
+		const double h10=(t*t*t)-(2*t*t)+t;
+		const double h01=0-(2*t*t*t)+(3*t*t);
+		const double h11=(t*t*t)-(t*t);
+		result[i]=((b*h00)+(mb*h10)+(c*h01)+(mc*h11));
+	}
+	return result;
+}
+
+void draw_ribbon(
+		const std::vector<apollota::SimplePoint>& raw_points,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	const double k=0.8;
+	const int steps=10;
+	if(raw_points.size()>=4)
+	{
+		std::vector<apollota::SimplePoint> interpolated_points;
+		{
+			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[0]+(raw_points[0]-raw_points[1]), raw_points[0], raw_points[1], raw_points[2], k, steps);
+			strip.pop_back();
+			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
+		}
+		for(std::size_t i=1;i+2<raw_points.size();i++)
+		{
+			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[i-1], raw_points[i], raw_points[i+1], raw_points[i+2], k, steps);
+			strip.pop_back();
+			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
+		}
+		{
+			std::size_t i=(raw_points.size()-2);
+			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[i-1], raw_points[i], raw_points[i+1], raw_points[i+1]+(raw_points[i+1]-raw_points[i]), k, steps);
+			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
+		}
+		opengl_printer.add_line_strip(interpolated_points);
+	}
+}
+
 }
 
 void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
@@ -147,6 +200,18 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_parameters_wrapper, opengl_printer);
+	}
+	else if(representation=="ribbon")
+	{
+		std::vector<apollota::SimplePoint> raw_points;
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			if(list_of_balls[i].first.name=="CA")
+			{
+				raw_points.push_back(apollota::SimplePoint(list_of_balls[i].second));
+			}
+		}
+		draw_ribbon(raw_points, opengl_printer);
 	}
 	else
 	{
