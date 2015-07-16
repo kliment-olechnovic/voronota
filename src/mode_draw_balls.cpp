@@ -162,18 +162,12 @@ public:
 
 	void reorient(const ResidueOrientation& reference)
 	{
-		reorient(up, reference.up);
-		reorient(right, reference.right);
-	}
-
-private:
-	static void reorient(apollota::SimplePoint& direction, const apollota::SimplePoint& reference_direction)
-	{
-		const double v_plus=(direction*reference_direction);
-		const double v_minus=(direction.inverted()*reference_direction);
+		const double v_plus=(right*reference.right);
+		const double v_minus=(right.inverted()*reference.right);
 		if(v_minus>v_plus)
 		{
-			direction=direction.inverted();
+			up=up.inverted();
+			right=right.inverted();
 		}
 	}
 };
