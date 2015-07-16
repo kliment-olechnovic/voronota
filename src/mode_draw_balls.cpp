@@ -328,11 +328,21 @@ void draw_cartoon(
 		const DrawingParametersWrapper& drawing_parameters_wrapper,
 		auxiliaries::OpenGLPrinter& opengl_printer)
 {
+	std::map<CRAD, BallValue> map_of_crad_values;
+	for(std::size_t i=0;i<list_of_balls.size();i++)
+	{
+		const CRAD& crad=list_of_balls[i].first;
+		if(crad.name=="CA")
+		{
+			map_of_crad_values[crad.without_atom()]=list_of_balls[i].second;
+		}
+	}
 	const std::map< CRAD, std::vector<RibbonVertebra> > spine=construct_ribbon_spine(list_of_balls);
 	for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 	{
+		const CRAD& crad=it->first;
 		const std::vector<RibbonVertebra>& subspine=it->second;
-		drawing_parameters_wrapper.process(it->first, std::map<std::string, double>(), opengl_printer);
+		drawing_parameters_wrapper.process(crad, map_of_crad_values[crad].props.adjuncts, opengl_printer);
 		{
 			std::vector<apollota::SimplePoint> points(subspine.size());
 			for(std::size_t i=0;i<subspine.size();i++)
