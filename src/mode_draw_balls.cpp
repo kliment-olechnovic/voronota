@@ -295,6 +295,11 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 					{
 						result_a.push_back(v);
 					}
+					else if(j==strip_center.size()/2)
+					{
+						result_a.push_back(v);
+						result_b.push_back(v);
+					}
 					else
 					{
 						result_b.push_back(v);
