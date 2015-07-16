@@ -325,13 +325,14 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 
 void draw_cartoon(
 		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		const DrawingParametersWrapper& drawing_parameters_wrapper,
 		auxiliaries::OpenGLPrinter& opengl_printer)
 {
 	const std::map< CRAD, std::vector<RibbonVertebra> > spine=construct_ribbon_spine(list_of_balls);
 	for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 	{
 		const std::vector<RibbonVertebra>& subspine=it->second;
-		opengl_printer.add_color(0xFFFF00);
+		drawing_parameters_wrapper.process(it->first, std::map<std::string, double>(), opengl_printer);
 		{
 			std::vector<apollota::SimplePoint> points(subspine.size());
 			for(std::size_t i=0;i<subspine.size();i++)
@@ -353,15 +354,6 @@ void draw_cartoon(
 			for(std::size_t i=0;i<subspine.size();i++)
 			{
 				points[i]=subspine[i].center+(subspine[i].right-subspine[i].center).inverted();
-			}
-			opengl_printer.add_line_strip(points);
-		}
-		opengl_printer.add_color(0x00FF00);
-		{
-			std::vector<apollota::SimplePoint> points(subspine.size());
-			for(std::size_t i=0;i<subspine.size();i++)
-			{
-				points[i]=subspine[i].up;
 			}
 			opengl_printer.add_line_strip(points);
 		}
@@ -472,7 +464,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="cartoon")
 	{
-		draw_cartoon(list_of_balls, opengl_printer);
+		draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
 	}
 	else
 	{
