@@ -111,6 +111,264 @@ std::vector<apollota::SimplePoint> interpolate(
 	return result;
 }
 
+class ResidueOrientation
+{
+public:
+	CRAD crad;
+	apollota::SimplePoint CA;
+	apollota::SimplePoint C;
+	apollota::SimplePoint N;
+	apollota::SimplePoint O;
+	apollota::SimplePoint up;
+	apollota::SimplePoint right;
+	bool CA_flag;
+	bool C_flag;
+	bool N_flag;
+	bool O_flag;
+
+	ResidueOrientation() : CA_flag(false), C_flag(false), N_flag(false), O_flag(false)
+	{
+	}
+
+	static void orient_sequence(std::vector<ResidueOrientation>& seq)
+	{
+		if(seq.size()>1)
+		{
+			for(std::size_t i=1;(i+1)<seq.size();i++)
+			{
+				seq[i].orient(seq[i+1].CA-seq[i].CA);
+			}
+			seq[seq.size()-1].orient(seq[seq.size()-1].CA-seq[seq.size()-2].CA);
+			for(std::size_t i=1;i<seq.size();i++)
+			{
+				seq[i].reorient(seq[i-1]);
+			}
+		}
+	}
+
+	bool orientable() const
+	{
+		return (CA_flag && C_flag && N_flag && O_flag);
+	}
+
+	void orient(const apollota::SimplePoint& forward)
+	{
+		if(orientable())
+		{
+			up=(forward&(O-C)).unit();
+			right=(forward&up).unit();
+		}
+	}
+
+	void reorient(const ResidueOrientation& reference)
+	{
+		reorient(up, reference.up);
+		reorient(right, reference.right);
+	}
+
+private:
+	static void reorient(apollota::SimplePoint& direction, const apollota::SimplePoint& reference_direction)
+	{
+		const double v_plus=(direction*reference_direction);
+		const double v_minus=(direction.inverted()*reference_direction);
+		if(v_minus>v_plus)
+		{
+			direction=direction.inverted();
+		}
+	}
+};
+
+std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls)
+{
+	std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
+	for(std::size_t i=0;i<list_of_balls.size();i++)
+	{
+		const CRAD& crad=list_of_balls[i].first;
+		const apollota::SimplePoint value(list_of_balls[i].second);
+		ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
+		ro.crad=crad.without_atom();
+		if(crad.name=="CA")
+		{
+			ro.CA=value;
+			ro.CA_flag=true;
+		}
+		else if(crad.name=="C")
+		{
+			ro.C=value;
+			ro.C_flag=true;
+		}
+		else if(crad.name=="N")
+		{
+			ro.N=value;
+			ro.N_flag=true;
+		}
+		else if(crad.name=="O")
+		{
+			ro.O=value;
+			ro.O_flag=true;
+		}
+	}
+	std::vector< std::vector<ResidueOrientation> > result;
+	for(std::map<CRAD, ResidueOrientation>::const_iterator it=map_of_residue_orientations.begin();it!=map_of_residue_orientations.end();++it)
+	{
+		const ResidueOrientation& ro=it->second;
+		if(ro.orientable())
+		{
+			if(result.empty())
+			{
+				result.push_back(std::vector<ResidueOrientation>(1, ro));
+			}
+			else
+			{
+				const ResidueOrientation& prev_ro=result.back().back();
+				if(prev_ro.crad.chainID==ro.crad.chainID && apollota::distance_from_point_to_point(prev_ro.C, ro.N)<1.6)
+				{
+					result.back().push_back(ro);
+				}
+				else
+				{
+					result.push_back(std::vector<ResidueOrientation>(1, ro));
+				}
+			}
+		}
+	}
+	for(std::size_t i=0;i<result.size();i++)
+	{
+		ResidueOrientation::orient_sequence(result[i]);
+	}
+	return result;
+}
+
+struct RibbonVertebra
+{
+	apollota::SimplePoint center;
+	apollota::SimplePoint up;
+	apollota::SimplePoint right;
+};
+
+std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector<ResidueOrientation>& ros)
+{
+	const double k=0.8;
+	const int steps=10;
+	std::map< CRAD, std::vector<RibbonVertebra> > result;
+	std::vector<RibbonVertebra> controls(ros.size());
+	for(std::size_t i=0;i<ros.size();i++)
+	{
+		const ResidueOrientation& ro=ros[i];
+		RibbonVertebra& rv=controls[i];
+		rv.center=ro.CA;
+		rv.up=ro.CA+(ro.up*0.5);
+		rv.right=ro.CA+(ro.right*0.5);
+	}
+	if(ros.size()>=4)
+	{
+		for(std::size_t i=0;i+1<controls.size();i++)
+		{
+			std::vector<apollota::SimplePoint> strip_center;
+			std::vector<apollota::SimplePoint> strip_up;
+			std::vector<apollota::SimplePoint> strip_right;
+			if(i==0)
+			{
+				strip_center=interpolate(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
+				strip_up=interpolate(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
+				strip_right=interpolate(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
+			}
+			else if(i+2==controls.size())
+			{
+				strip_center=interpolate(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
+				strip_up=interpolate(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
+				strip_right=interpolate(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
+			}
+			else
+			{
+				strip_center=interpolate(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+				strip_up=interpolate(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+				strip_right=interpolate(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
+			}
+			if(!strip_center.empty() && strip_center.size()==strip_up.size() && strip_center.size()==strip_right.size())
+			{
+				std::vector<RibbonVertebra>& result_a=result[ros[i].crad];
+				std::vector<RibbonVertebra>& result_b=result[ros[i+1].crad];
+				result_a.reserve(strip_center.size()/2+1);
+				result_b.reserve(strip_center.size()/2+1);
+				for(std::size_t j=0;j<strip_center.size();j++)
+				{
+					RibbonVertebra v;
+					v.center=strip_center[j];
+					v.up=strip_up[j];
+					v.right=strip_right[j];
+					if(j<strip_center.size()/2)
+					{
+						result_a.push_back(v);
+					}
+					else
+					{
+						result_b.push_back(v);
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls)
+{
+	std::map< CRAD, std::vector<RibbonVertebra> > result;
+	const std::vector< std::vector<ResidueOrientation> > residue_orientations=collect_residue_orientations(list_of_balls);
+	for(std::size_t i=0;i<residue_orientations.size();i++)
+	{
+		std::map< CRAD, std::vector<RibbonVertebra> > partial_result=construct_ribbon_spine(residue_orientations[i]);
+		result.insert(partial_result.begin(), partial_result.end());
+	}
+	return result;
+}
+
+void draw_cartoon(
+		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	const std::map< CRAD, std::vector<RibbonVertebra> > spine=construct_ribbon_spine(list_of_balls);
+	for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
+	{
+		const std::vector<RibbonVertebra>& subspine=it->second;
+		opengl_printer.add_color(0xFFFF00);
+		{
+			std::vector<apollota::SimplePoint> points(subspine.size());
+			for(std::size_t i=0;i<subspine.size();i++)
+			{
+				points[i]=subspine[i].center;
+			}
+			opengl_printer.add_line_strip(points);
+		}
+		{
+			std::vector<apollota::SimplePoint> points(subspine.size());
+			for(std::size_t i=0;i<subspine.size();i++)
+			{
+				points[i]=subspine[i].right;
+			}
+			opengl_printer.add_line_strip(points);
+		}
+		{
+			std::vector<apollota::SimplePoint> points(subspine.size());
+			for(std::size_t i=0;i<subspine.size();i++)
+			{
+				points[i]=subspine[i].center+(subspine[i].right-subspine[i].center).inverted();
+			}
+			opengl_printer.add_line_strip(points);
+		}
+		opengl_printer.add_color(0x00FF00);
+		{
+			std::vector<apollota::SimplePoint> points(subspine.size());
+			for(std::size_t i=0;i<subspine.size();i++)
+			{
+				points[i]=subspine[i].up;
+			}
+			opengl_printer.add_line_strip(points);
+		}
+	}
+}
+
 void draw_ribbon(
 		const std::vector<apollota::SimplePoint>& raw_points,
 		auxiliaries::OpenGLPrinter& opengl_printer)
@@ -212,6 +470,10 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 		draw_ribbon(raw_points, opengl_printer);
+	}
+	else if(representation=="cartoon")
+	{
+		draw_cartoon(list_of_balls, opengl_printer);
 	}
 	else
 	{
