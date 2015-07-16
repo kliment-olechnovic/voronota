@@ -134,7 +134,7 @@ public:
 	{
 		if(seq.size()>1)
 		{
-			for(std::size_t i=1;(i+1)<seq.size();i++)
+			for(std::size_t i=0;(i+1)<seq.size();i++)
 			{
 				seq[i].orient(seq[i+1].CA-seq[i].CA);
 			}
@@ -251,8 +251,8 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 		const ResidueOrientation& ro=ros[i];
 		RibbonVertebra& rv=controls[i];
 		rv.center=ro.CA;
-		rv.up=ro.CA+(ro.up*0.5);
-		rv.right=ro.CA+(ro.right*0.5);
+		rv.up=ro.CA+(ro.up*0.2);
+		rv.right=ro.CA+(ro.right*0.7);
 	}
 	if(ros.size()>=4)
 	{
@@ -343,29 +343,62 @@ void draw_cartoon(
 		const CRAD& crad=it->first;
 		const std::vector<RibbonVertebra>& subspine=it->second;
 		drawing_parameters_wrapper.process(crad, map_of_crad_values[crad].props.adjuncts, opengl_printer);
+
+		for(std::size_t i=0;i+1<subspine.size();i++)
 		{
-			std::vector<apollota::SimplePoint> points(subspine.size());
-			for(std::size_t i=0;i<subspine.size();i++)
-			{
-				points[i]=subspine[i].center;
-			}
-			opengl_printer.add_line_strip(points);
-		}
-		{
-			std::vector<apollota::SimplePoint> points(subspine.size());
-			for(std::size_t i=0;i<subspine.size();i++)
-			{
-				points[i]=subspine[i].right;
-			}
-			opengl_printer.add_line_strip(points);
-		}
-		{
-			std::vector<apollota::SimplePoint> points(subspine.size());
-			for(std::size_t i=0;i<subspine.size();i++)
-			{
-				points[i]=subspine[i].center+(subspine[i].right-subspine[i].center).inverted();
-			}
-			opengl_printer.add_line_strip(points);
+			const apollota::SimplePoint& c1=subspine[i].center;
+			const apollota::SimplePoint& u1=subspine[i].up-c1;
+			const apollota::SimplePoint& r1=subspine[i].right-c1;
+			const apollota::SimplePoint& c2=subspine[i+1].center;
+			const apollota::SimplePoint& u2=subspine[i+1].up-c2;
+			const apollota::SimplePoint& r2=subspine[i+1].right-c2;
+			std::vector<apollota::SimplePoint> ts;
+			std::vector<apollota::SimplePoint> ns;
+
+			apollota::SimplePoint d;
+
+			d=(r1+u1);
+			ts.push_back(c1+d);
+			ns.push_back(d.unit());
+
+			d=(r2+u2);
+			ts.push_back(c2+d);
+			ns.push_back(d.unit());
+
+			d=(r1+u1.inverted());
+			ts.push_back(c1+d);
+			ns.push_back(d.unit());
+
+			d=(r2+u2.inverted());
+			ts.push_back(c2+d);
+			ns.push_back(d.unit());
+
+			d=(r1.inverted()+u1.inverted());
+			ts.push_back(c1+d);
+			ns.push_back(d.unit());
+
+			d=(r2.inverted()+u2.inverted());
+			ts.push_back(c2+d);
+			ns.push_back(d.unit());
+
+			d=(r1.inverted()+u1);
+			ts.push_back(c1+d);
+			ns.push_back(d.unit());
+
+			d=(r2.inverted()+u2);
+			ts.push_back(c2+d);
+			ns.push_back(d.unit());
+
+			d=(r1+u1);
+			ts.push_back(c1+d);
+			ns.push_back(d.unit());
+
+			d=(r2+u2);
+			ts.push_back(c2+d);
+			ns.push_back(d.unit());
+
+//			opengl_printer.add_triangle_strip(ts, ns);
+			opengl_printer.add_line_strip(ts);
 		}
 	}
 }
