@@ -341,21 +341,33 @@ void draw_cartoon(
 	for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 	{
 		const CRAD& crad=it->first;
+		const BallValue& ball_value=map_of_crad_values[crad];
+
 		const std::vector<RibbonVertebra>& subspine=it->second;
-		drawing_parameters_wrapper.process(crad, map_of_crad_values[crad].props.adjuncts, opengl_printer);
+		drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
+
+		double wk=0.5;
+		if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
+		{
+			wk=2.0;
+		}
+		else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
+		{
+			wk=2.0;
+		}
 
 		for(std::size_t i=0;i+1<subspine.size();i++)
 		{
 			const apollota::SimplePoint c1=subspine[i].center;
 			const apollota::SimplePoint u1=subspine[i].up-c1;
 			const apollota::SimplePoint d1=u1.inverted();
-			const apollota::SimplePoint r1=subspine[i].right-c1;
+			const apollota::SimplePoint r1=(subspine[i].right-c1)*wk;
 			const apollota::SimplePoint l1=r1.inverted();
 
 			const apollota::SimplePoint c2=subspine[i+1].center;
 			const apollota::SimplePoint u2=subspine[i+1].up-c2;
 			const apollota::SimplePoint d2=u2.inverted();
-			const apollota::SimplePoint r2=subspine[i+1].right-c2;
+			const apollota::SimplePoint r2=(subspine[i+1].right-c2)*wk;
 			const apollota::SimplePoint l2=r2.inverted();
 
 			{
