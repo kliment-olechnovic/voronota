@@ -346,85 +346,54 @@ void draw_cartoon(
 		const std::vector<RibbonVertebra>& subspine=it->second;
 		drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
 
-		double wk=0.5;
+		int ss_type=0;
 		if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
 		{
-			wk=2.0;
+			ss_type=1;
 		}
 		else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
 		{
-			wk=2.0;
+			ss_type=2;
 		}
 
-		for(std::size_t i=0;i+1<subspine.size();i++)
+		const double wk=(ss_type==0 ? 0.5 : 2.0);
+
+		for(int e=0;e<2;e++)
 		{
-			const apollota::SimplePoint c1=subspine[i].center;
-			const apollota::SimplePoint u1=subspine[i].up-c1;
-			const apollota::SimplePoint d1=u1.inverted();
-			const apollota::SimplePoint r1=(subspine[i].right-c1)*wk;
-			const apollota::SimplePoint l1=r1.inverted();
-
-			const apollota::SimplePoint c2=subspine[i+1].center;
-			const apollota::SimplePoint u2=subspine[i+1].up-c2;
-			const apollota::SimplePoint d2=u2.inverted();
-			const apollota::SimplePoint r2=(subspine[i+1].right-c2)*wk;
-			const apollota::SimplePoint l2=r2.inverted();
-
+			std::vector<apollota::SimplePoint> vertices;
+			std::vector<apollota::SimplePoint> normals;
+			for(std::size_t i=0;i<subspine.size();i++)
 			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				vertices.push_back(c1+l1+u1);
-				normals.push_back(u1.unit());
-				vertices.push_back(c2+l2+u2);
-				normals.push_back(u2.unit());
-				vertices.push_back(c1+r1+u1);
-				normals.push_back(u1.unit());
-				vertices.push_back(c2+r2+u2);
-				normals.push_back(u2.unit());
-				opengl_printer.add_triangle_strip(vertices, normals);
+				const RibbonVertebra& rv=subspine[i];
+				const apollota::SimplePoint c=rv.center;
+				const apollota::SimplePoint u=(rv.up-c)*(e==0 ? 1.0 : -1.0);
+				const apollota::SimplePoint r=(rv.right-c)*wk;
+				const apollota::SimplePoint l=r.inverted();
+				vertices.push_back(c+l+u);
+				vertices.push_back(c+r+u);
+				normals.push_back(u.unit());
+				normals.push_back(u.unit());
 			}
+			opengl_printer.add_triangle_strip(vertices, normals);
+		}
 
+		for(int e=0;e<2;e++)
+		{
+			std::vector<apollota::SimplePoint> vertices;
+			std::vector<apollota::SimplePoint> normals;
+			for(std::size_t i=0;i<subspine.size();i++)
 			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				vertices.push_back(c1+l1+d1);
-				normals.push_back(d1.unit());
-				vertices.push_back(c2+l2+d2);
-				normals.push_back(d2.unit());
-				vertices.push_back(c1+r1+d1);
-				normals.push_back(d1.unit());
-				vertices.push_back(c2+r2+d2);
-				normals.push_back(d2.unit());
-				opengl_printer.add_triangle_strip(vertices, normals);
+				const RibbonVertebra& rv=subspine[i];
+				const apollota::SimplePoint c=rv.center;
+				const apollota::SimplePoint u=(rv.right-c)*(e==0 ? 1.0 : -1.0)*wk;
+				const apollota::SimplePoint r=(rv.up-c);
+				const apollota::SimplePoint l=r.inverted();
+				vertices.push_back(c+l+u);
+				vertices.push_back(c+r+u);
+				normals.push_back(u.unit());
+				normals.push_back(u.unit());
 			}
-
-			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				vertices.push_back(c1+l1+u1);
-				normals.push_back(l1.unit());
-				vertices.push_back(c2+l2+u2);
-				normals.push_back(l2.unit());
-				vertices.push_back(c1+l1+d1);
-				normals.push_back(l1.unit());
-				vertices.push_back(c2+l2+d2);
-				normals.push_back(l2.unit());
-				opengl_printer.add_triangle_strip(vertices, normals);
-			}
-
-			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				vertices.push_back(c1+r1+u1);
-				normals.push_back(r1.unit());
-				vertices.push_back(c2+r2+u2);
-				normals.push_back(r2.unit());
-				vertices.push_back(c1+r1+d1);
-				normals.push_back(r1.unit());
-				vertices.push_back(c2+r2+d2);
-				normals.push_back(r2.unit());
-				opengl_printer.add_triangle_strip(vertices, normals);
-			}
+			opengl_printer.add_triangle_strip(vertices, normals);
 		}
 	}
 }
