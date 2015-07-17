@@ -155,7 +155,7 @@ public:
 	{
 		if(orientable())
 		{
-			up=(forward&(O-C)).unit();
+			up=(forward&((O-C).unit()+(N-CA).unit()*0.5)).unit();
 			right=(forward&up).unit();
 		}
 	}
