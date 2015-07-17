@@ -323,6 +323,19 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 	return result;
 }
 
+int ss_type_from_ball_value(const BallValue& ball_value)
+{
+	if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
+	{
+		return 1;
+	}
+	else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
+	{
+		return 2;
+	}
+	return 0;
+}
+
 void draw_cartoon(
 		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
 		const DrawingParametersWrapper& drawing_parameters_wrapper,
@@ -348,15 +361,17 @@ void draw_cartoon(
 		{
 			drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
 
-			int ss_type=0;
-			if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
-			{
-				ss_type=1;
-			}
-			else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
-			{
-				ss_type=2;
-			}
+			const int ss_type=ss_type_from_ball_value(ball_value);
+
+//			int next_ss_type=0;
+//			{
+//				std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator next_it=it;
+//				++next_it;
+//				if(next_it!=spine.end())
+//				{
+//					next_ss_type=ss_type_from_ball_value(map_of_crad_values[next_it->first]);
+//				}
+//			}
 
 			const double wk=(ss_type==0 ? 0.5 : 2.0);
 
