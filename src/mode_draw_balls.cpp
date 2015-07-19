@@ -125,8 +125,9 @@ public:
 	bool C_flag;
 	bool N_flag;
 	bool O_flag;
+	int ss_type;
 
-	ResidueOrientation() : CA_flag(false), C_flag(false), N_flag(false), O_flag(false)
+	ResidueOrientation() : CA_flag(false), C_flag(false), N_flag(false), O_flag(false), ss_type(0)
 	{
 	}
 
@@ -172,35 +173,50 @@ public:
 	}
 };
 
+int ss_type_from_ball_value(const BallValue& ball_value)
+{
+	if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
+	{
+		return 1;
+	}
+	else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
+	{
+		return 2;
+	}
+	return 0;
+}
+
 std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls)
 {
 	std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
 		const CRAD& crad=list_of_balls[i].first;
-		const apollota::SimplePoint value(list_of_balls[i].second);
+		const BallValue& ball_value=list_of_balls[i].second;
+		const apollota::SimplePoint ball_center(ball_value);
 		ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 		ro.crad=crad.without_atom();
 		if(crad.name=="CA")
 		{
-			ro.CA=value;
+			ro.CA=ball_center;
 			ro.CA_flag=true;
 		}
 		else if(crad.name=="C")
 		{
-			ro.C=value;
+			ro.C=ball_center;
 			ro.C_flag=true;
 		}
 		else if(crad.name=="N")
 		{
-			ro.N=value;
+			ro.N=ball_center;
 			ro.N_flag=true;
 		}
 		else if(crad.name=="O")
 		{
-			ro.O=value;
+			ro.O=ball_center;
 			ro.O_flag=true;
 		}
+		ro.ss_type=ss_type_from_ball_value(ball_value);
 	}
 	std::vector< std::vector<ResidueOrientation> > result;
 	for(std::map<CRAD, ResidueOrientation>::const_iterator it=map_of_residue_orientations.begin();it!=map_of_residue_orientations.end();++it)
@@ -321,19 +337,6 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 		result.insert(partial_result.begin(), partial_result.end());
 	}
 	return result;
-}
-
-int ss_type_from_ball_value(const BallValue& ball_value)
-{
-	if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
-	{
-		return 1;
-	}
-	else if(ball_value.props.tags.count("dssp=B")>0 || ball_value.props.tags.count("dssp=E")>0)
-	{
-		return 2;
-	}
-	return 0;
 }
 
 void draw_cartoon(
