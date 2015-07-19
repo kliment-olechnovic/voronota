@@ -241,6 +241,7 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 	const int steps=10;
 	std::map< CRAD, std::vector<RibbonVertebra> > result;
 	std::vector<RibbonVertebra> controls(ros.size());
+	std::vector<std::size_t> beta_ids;
 	for(std::size_t i=0;i<ros.size();i++)
 	{
 		const ResidueOrientation& ro=ros[i];
@@ -248,6 +249,36 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 		rv.center=ro.CA;
 		rv.up=ro.CA+(ro.up*0.2);
 		rv.right=ro.CA+(ro.right*0.5);
+
+		if(ro.ss_type==2)
+		{
+			beta_ids.push_back(i);
+		}
+		else
+		{
+			if(beta_ids.size()>2)
+			{
+				std::vector<apollota::SimplePoint> controls_center(beta_ids.size());
+				std::vector<apollota::SimplePoint> controls_up(beta_ids.size());
+				std::vector<apollota::SimplePoint> controls_right(beta_ids.size());
+				for(std::size_t j=0;j<beta_ids.size();j++)
+				{
+					const RibbonVertebra& rv=controls[beta_ids[j]];
+					controls_center[j]=rv.center;
+					controls_up[j]=rv.up;
+					controls_right[j]=rv.right;
+				}
+				for(std::size_t j=1;(j+1)<beta_ids.size();j++)
+				{
+					const double t=1.0/static_cast<double>(beta_ids.size()-1)*static_cast<double>(j);
+					RibbonVertebra& rv=controls[beta_ids[j]];
+					rv.center=apollota::bezier_curve_point(controls_center, t);
+					rv.up=apollota::bezier_curve_point(controls_up, t);
+					rv.right=apollota::bezier_curve_point(controls_right, t);
+				}
+			}
+			beta_ids.clear();
+		}
 	}
 	if(ros.size()>=4)
 	{
@@ -258,21 +289,21 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 			std::vector<apollota::SimplePoint> strip_right;
 			if(i==0)
 			{
-				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
-				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
-				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
+				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
+				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
+				strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
 			}
 			else if(i+2==controls.size())
 			{
-				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
-				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
-				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
+				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
+				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
+				strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
 			}
 			else
 			{
-				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
-				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
-				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
+				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+				strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
 			}
 			if(!strip_center.empty() && strip_center.size()==strip_up.size() && strip_center.size()==strip_right.size())
 			{
