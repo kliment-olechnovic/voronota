@@ -387,21 +387,11 @@ void draw_cartoon(
 			drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
 
 			const int ss_type=ss_type_from_ball_value(ball_value);
-
-//			int next_ss_type=0;
-//			{
-//				std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator next_it=it;
-//				++next_it;
-//				if(next_it!=spine.end())
-//				{
-//					next_ss_type=ss_type_from_ball_value(map_of_crad_values[next_it->first]);
-//				}
-//			}
-
 			const double wk=(ss_type==0 ? 0.5 : 2.0);
 
 			for(int e=0;e<2;e++)
 			{
+				for(int o=0;o<2;o++)
 				{
 					std::vector<apollota::SimplePoint> vertices;
 					std::vector<apollota::SimplePoint> normals;
@@ -409,26 +399,8 @@ void draw_cartoon(
 					{
 						const RibbonVertebra& rv=subspine[i];
 						const apollota::SimplePoint c=rv.center;
-						const apollota::SimplePoint u=(rv.up-c)*(e==0 ? 1.0 : -1.0);
-						const apollota::SimplePoint r=(rv.right-c)*wk;
-						const apollota::SimplePoint l=r.inverted();
-						vertices.push_back(c+l+u);
-						vertices.push_back(c+r+u);
-						normals.push_back(u.unit());
-						normals.push_back(u.unit());
-					}
-					opengl_printer.add_triangle_strip(vertices, normals);
-				}
-
-				{
-					std::vector<apollota::SimplePoint> vertices;
-					std::vector<apollota::SimplePoint> normals;
-					for(std::size_t i=0;i<subspine.size();i++)
-					{
-						const RibbonVertebra& rv=subspine[i];
-						const apollota::SimplePoint c=rv.center;
-						const apollota::SimplePoint u=(rv.right-c)*(e==0 ? 1.0 : -1.0)*wk;
-						const apollota::SimplePoint r=(rv.up-c);
+						const apollota::SimplePoint u=(o==0 ? ((rv.up-c)*(e==0 ? 1.0 : -1.0)) : ((rv.right-c)*(e==0 ? 1.0 : -1.0)*wk));
+						const apollota::SimplePoint r=(o==0 ? ((rv.right-c)*wk) : (rv.up-c));
 						const apollota::SimplePoint l=r.inverted();
 						vertices.push_back(c+l+u);
 						vertices.push_back(c+r+u);
