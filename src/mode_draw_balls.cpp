@@ -1,6 +1,7 @@
 #include "apollota/basic_operations_on_spheres.h"
 #include "apollota/rotation.h"
 #include "apollota/search_for_spherical_collisions.h"
+#include "apollota/interpolation.h"
 
 #include "auxiliaries/program_options_handler.h"
 
@@ -87,29 +88,7 @@ void draw_links(
 	}
 }
 
-std::vector<apollota::SimplePoint> interpolate(
-		const apollota::SimplePoint& a,
-		const apollota::SimplePoint& b,
-		const apollota::SimplePoint& c,
-		const apollota::SimplePoint& d,
-		const double k,
-		const int steps)
-{
-	std::vector<apollota::SimplePoint> result(steps+1);
-	const double step=1.0/static_cast<double>(steps);
-	const apollota::SimplePoint mb=(c-a)*k;
-	const apollota::SimplePoint mc=(d-b)*k;
-	for(int i=0;i<=steps;i++)
-	{
-		const double t=(i<steps ? static_cast<double>(i)*step : 1.0);
-		const double h00=(2*t*t*t)-(3*t*t)+1;
-		const double h10=(t*t*t)-(2*t*t)+t;
-		const double h01=0-(2*t*t*t)+(3*t*t);
-		const double h11=(t*t*t)-(t*t);
-		result[i]=((b*h00)+(mb*h10)+(c*h01)+(mc*h11));
-	}
-	return result;
-}
+
 
 class ResidueOrientation
 {
@@ -279,21 +258,21 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 			std::vector<apollota::SimplePoint> strip_right;
 			if(i==0)
 			{
-				strip_center=interpolate(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
-				strip_up=interpolate(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
-				strip_right=interpolate(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
+				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
+				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
+				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
 			}
 			else if(i+2==controls.size())
 			{
-				strip_center=interpolate(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
-				strip_up=interpolate(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
-				strip_right=interpolate(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
+				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
+				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
+				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
 			}
 			else
 			{
-				strip_center=interpolate(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
-				strip_up=interpolate(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
-				strip_right=interpolate(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
+				strip_center=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+				strip_up=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+				strip_right=apollota::interpolate_using_cubic_Hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
 			}
 			if(!strip_center.empty() && strip_center.size()==strip_up.size() && strip_center.size()==strip_right.size())
 			{
@@ -441,35 +420,6 @@ void draw_cartoon(
 	}
 }
 
-void draw_ribbon(
-		const std::vector<apollota::SimplePoint>& raw_points,
-		auxiliaries::OpenGLPrinter& opengl_printer)
-{
-	const double k=0.8;
-	const int steps=10;
-	if(raw_points.size()>=4)
-	{
-		std::vector<apollota::SimplePoint> interpolated_points;
-		{
-			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[0]+(raw_points[0]-raw_points[1]), raw_points[0], raw_points[1], raw_points[2], k, steps);
-			strip.pop_back();
-			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
-		}
-		for(std::size_t i=1;i+2<raw_points.size();i++)
-		{
-			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[i-1], raw_points[i], raw_points[i+1], raw_points[i+2], k, steps);
-			strip.pop_back();
-			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
-		}
-		{
-			std::size_t i=(raw_points.size()-2);
-			std::vector<apollota::SimplePoint> strip=interpolate(raw_points[i-1], raw_points[i], raw_points[i+1], raw_points[i+1]+(raw_points[i+1]-raw_points[i]), k, steps);
-			interpolated_points.insert(interpolated_points.end(), strip.begin(), strip.end());
-		}
-		opengl_printer.add_line_strip(interpolated_points);
-	}
-}
-
 }
 
 void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
@@ -530,18 +480,6 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_parameters_wrapper, opengl_printer);
-	}
-	else if(representation=="ribbon")
-	{
-		std::vector<apollota::SimplePoint> raw_points;
-		for(std::size_t i=0;i<list_of_balls.size();i++)
-		{
-			if(list_of_balls[i].first.name=="CA")
-			{
-				raw_points.push_back(apollota::SimplePoint(list_of_balls[i].second));
-			}
-		}
-		draw_ribbon(raw_points, opengl_printer);
 	}
 	else if(representation=="cartoon")
 	{
