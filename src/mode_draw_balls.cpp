@@ -284,16 +284,17 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 	{
 		for(std::size_t i=0;i+1<controls.size();i++)
 		{
+			int ss_types[4]={(i>0 ? ros[i-1].ss_type : 0), ros[i].ss_type, ros[i+1].ss_type, (i+2<controls.size() ? ros[i+2].ss_type : 0)};
 			std::vector<apollota::SimplePoint> strip_center;
 			std::vector<apollota::SimplePoint> strip_up;
 			std::vector<apollota::SimplePoint> strip_right;
-			if(i==0)
+			if(i==0 || (ss_types[0]!=2 && ss_types[1]==2 && ss_types[2]==2))
 			{
-				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[0].center+(controls[0].center-controls[1].center), controls[0].center, controls[1].center, controls[2].center, k, steps);
-				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[0].up+(controls[0].up-controls[1].up), controls[0].up, controls[1].up, controls[2].up, k, steps);
-				strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[0].right+(controls[0].right-controls[1].right), controls[0].right, controls[1].right, controls[2].right, k, steps);
+				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i].center+(controls[i].center-controls[i+1].center), controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i].up+(controls[i].up-controls[i+1].up), controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+				strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i].right+(controls[i].right-controls[i+1].right), controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
 			}
-			else if(i+2==controls.size())
+			else if(i+2==controls.size() || (ss_types[1]==2 && ss_types[2]==2 && ss_types[3]!=2))
 			{
 				strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
 				strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
@@ -317,18 +318,29 @@ std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::
 					v.center=strip_center[j];
 					v.up=strip_up[j];
 					v.right=strip_right[j];
-					if(j<strip_center.size()/2)
+					if(ss_types[1]==0 && ss_types[2]!=0 && ss_types[3]!=0 && ss_types[2]==ss_types[3])
 					{
 						result_a.push_back(v);
 					}
-					else if(j==strip_center.size()/2)
+					else if(ss_types[0]!=0 && ss_types[1]!=0 && ss_types[2]==0 && ss_types[0]==ss_types[1])
 					{
-						result_a.push_back(v);
 						result_b.push_back(v);
 					}
 					else
 					{
-						result_b.push_back(v);
+						if(j<strip_center.size()/2)
+						{
+							result_a.push_back(v);
+						}
+						else if(j==strip_center.size()/2)
+						{
+							result_a.push_back(v);
+							result_b.push_back(v);
+						}
+						else
+						{
+							result_b.push_back(v);
+						}
 					}
 				}
 			}
