@@ -9,6 +9,23 @@ namespace
 class DrawingCartoons
 {
 public:
+	double loop_width;
+	double loop_height;
+	double nonloop_width;
+	double nonloop_height;
+	double hermite_spline_k;
+	double hermite_spline_steps;
+
+	DrawingCartoons() :
+		loop_width(0.2),
+		loop_height(0.2),
+		nonloop_width(1.2),
+		nonloop_height(0.2),
+		hermite_spline_k(0.8),
+		hermite_spline_steps(10)
+	{
+	}
+
 	void draw_cartoon(
 			const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
 			const DrawingParametersWrapper& drawing_parameters_wrapper,
@@ -23,21 +40,18 @@ public:
 				map_of_crad_values[crad.without_atom()]=list_of_balls[i].second;
 			}
 		}
-		const std::map< CRAD, std::vector<RibbonVertebra> > spine=construct_ribbon_spine(list_of_balls);
+		const std::map< CRAD, std::vector<RibbonVertebra> > spine=construct_ribbon_spine(list_of_balls, hermite_spline_k, hermite_spline_steps);
 		for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 		{
 			const CRAD& crad=it->first;
 			const BallValue& ball_value=map_of_crad_values[crad];
 			const std::vector<RibbonVertebra>& subspine=it->second;
-
 			if(subspine.size()>1)
 			{
 				drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
-
 				const int ss_type=ss_type_from_ball_value(ball_value);
-				const double wk=(ss_type==0 ? 0.2 : 1.2);
-				const double hk=(ss_type==0 ? 0.2 : 0.2);
-
+				const double wk=(ss_type==0 ? loop_width : nonloop_width);
+				const double hk=(ss_type==0 ? loop_height : nonloop_height);
 				for(int e=0;e<2;e++)
 				{
 					for(int o=0;o<2;o++)
@@ -230,10 +244,8 @@ private:
 		return result;
 	}
 
-	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector<ResidueOrientation>& ros)
+	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector<ResidueOrientation>& ros, const double k, const int steps)
 	{
-		const double k=0.8;
-		const int steps=10;
 		std::map< CRAD, std::vector<RibbonVertebra> > result;
 		std::vector<RibbonVertebra> controls(ros.size());
 		std::vector<std::size_t> beta_ids;
@@ -344,13 +356,13 @@ private:
 		return result;
 	}
 
-	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls)
+	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls, const double k, const int steps)
 	{
 		std::map< CRAD, std::vector<RibbonVertebra> > result;
 		const std::vector< std::vector<ResidueOrientation> > residue_orientations=collect_residue_orientations(list_of_balls);
 		for(std::size_t i=0;i<residue_orientations.size();i++)
 		{
-			std::map< CRAD, std::vector<RibbonVertebra> > partial_result=construct_ribbon_spine(residue_orientations[i]);
+			std::map< CRAD, std::vector<RibbonVertebra> > partial_result=construct_ribbon_spine(residue_orientations[i], k, steps);
 			result.insert(partial_result.begin(), partial_result.end());
 		}
 		return result;
