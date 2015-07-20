@@ -108,3 +108,14 @@ cat $SUBDIR/balls \
   --adjunct-gradient-blue 0.0 \
   --adjunct-gradient-red 20.0 \
 > /dev/null
+
+cat $SUBDIR/balls \
+| $VORONOTA query-balls \
+  --set-dssp-info <(dssp $INPUTDIR/single/structure.pdb) \
+| $VORONOTA draw-balls \
+  --representation cartoon \
+  --drawing-for-pymol $SUBDIR/cartoon_for_pymol.py \
+  --drawing-name cartoon \
+  --use-labels \
+  --random-colors-by-chain \
+> /dev/null
