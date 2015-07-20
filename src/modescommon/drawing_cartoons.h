@@ -54,14 +54,14 @@ public:
 			{
 				drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
 
-				const int ss_type=ss_type_from_ball_value(ball_value);
+				const int ss_type=subspine.front().ss_type;
 
 				int prev_ss_type=0;
 				if(it!=spine.begin())
 				{
 					std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator prev_it=it;
 					--prev_it;
-					prev_ss_type=ss_type_from_ball_value(map_of_crad_values[prev_it->first]);
+					prev_ss_type=prev_it->second.front().ss_type;
 				}
 
 				int next_ss_type=0;
@@ -70,7 +70,7 @@ public:
 					++next_it;
 					if(next_it!=spine.end())
 					{
-						next_ss_type=ss_type_from_ball_value(map_of_crad_values[next_it->first]);
+						next_ss_type=next_it->second.front().ss_type;
 					}
 				}
 
@@ -204,6 +204,7 @@ private:
 		apollota::SimplePoint center;
 		apollota::SimplePoint up;
 		apollota::SimplePoint right;
+		int ss_type;
 	};
 
 	static int ss_type_from_ball_value(const BallValue& ball_value)
@@ -294,13 +295,34 @@ private:
 			rv.center=ro.CA;
 			rv.up=ro.CA+(ro.up*0.2);
 			rv.right=ro.CA+(ro.right*0.5);
-
-			if(ro.ss_type==2)
+			rv.ss_type=ro.ss_type;
+		}
+		for(std::size_t i=1;i+1<controls.size();i++)
+		{
+			RibbonVertebra& rv=controls[i];
+			const ResidueOrientation& prev_ro=ros[i-1];
+			const ResidueOrientation& next_ro=ros[i+1];
+			if(rv.ss_type==2 && prev_ro.ss_type==2 && next_ro.ss_type==1)
+			{
+				rv.ss_type=0;
+			}
+			else if(rv.ss_type==2 && prev_ro.ss_type==1 && next_ro.ss_type==2)
+			{
+				rv.ss_type=0;
+			}
+			else if(rv.ss_type!=0 && prev_ro.ss_type==0 && next_ro.ss_type==0)
+			{
+				rv.ss_type=0;
+			}
+		}
+		for(std::size_t i=0;i<controls.size();i++)
+		{
+			const RibbonVertebra& rv=controls[i];
+			if(rv.ss_type==2)
 			{
 				beta_ids.push_back(i);
 			}
-
-			if(ro.ss_type!=2 || (i+1)==ros.size())
+			if(rv.ss_type!=2 || (i+1)==controls.size())
 			{
 				if(beta_ids.size()>2)
 				{
@@ -326,11 +348,11 @@ private:
 				beta_ids.clear();
 			}
 		}
-		if(ros.size()>=4)
+		if(controls.size()>=4)
 		{
 			for(std::size_t i=0;i+1<controls.size();i++)
 			{
-				int ss_types[4]={(i>0 ? ros[i-1].ss_type : 0), ros[i].ss_type, ros[i+1].ss_type, (i+2<controls.size() ? ros[i+2].ss_type : 0)};
+				int ss_types[4]={(i>0 ? controls[i-1].ss_type : 0), controls[i].ss_type, controls[i+1].ss_type, (i+2<controls.size() ? controls[i+2].ss_type : 0)};
 				std::vector<apollota::SimplePoint> strip_center;
 				std::vector<apollota::SimplePoint> strip_up;
 				std::vector<apollota::SimplePoint> strip_right;
@@ -366,25 +388,31 @@ private:
 						v.right=strip_right[j];
 						if(ss_types[1]==0 && ss_types[2]!=0 && ss_types[3]!=0 && ss_types[2]==ss_types[3])
 						{
+							v.ss_type=controls[i].ss_type;
 							result_a.push_back(v);
 						}
 						else if(ss_types[0]!=0 && ss_types[1]!=0 && ss_types[2]==0 && ss_types[0]==ss_types[1])
 						{
+							v.ss_type=controls[i+1].ss_type;
 							result_b.push_back(v);
 						}
 						else
 						{
 							if(j<strip_center.size()/2)
 							{
+								v.ss_type=controls[i].ss_type;
 								result_a.push_back(v);
 							}
 							else if(j==strip_center.size()/2)
 							{
+								v.ss_type=controls[i].ss_type;
 								result_a.push_back(v);
+								v.ss_type=controls[i+1].ss_type;
 								result_b.push_back(v);
 							}
 							else
 							{
+								v.ss_type=controls[i+1].ss_type;
 								result_b.push_back(v);
 							}
 						}
