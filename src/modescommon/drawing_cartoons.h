@@ -17,10 +17,10 @@ public:
 	double hermite_spline_steps;
 
 	DrawingCartoons() :
-		loop_width(0.2),
-		loop_height(0.2),
+		loop_width(0.15),
+		loop_height(0.15),
 		nonloop_width(1.2),
-		nonloop_height(0.2),
+		nonloop_height(0.15),
 		hermite_spline_k(0.8),
 		hermite_spline_steps(10)
 	{
