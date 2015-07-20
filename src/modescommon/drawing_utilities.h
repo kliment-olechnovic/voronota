@@ -103,6 +103,11 @@ private:
 		return static_cast<unsigned int>(hash%limiter);
 	}
 
+	static unsigned int calc_lighter_color_integer(const unsigned int color)
+	{
+		return std::min(color+static_cast<unsigned int>(0x444444), static_cast<unsigned int>(0xFFFFFF));
+	}
+
 	static unsigned int calc_color_integer(const CRAD& crad)
 	{
 		return calc_string_color_integer(crad.str());
@@ -118,15 +123,12 @@ private:
 
 	static unsigned int calc_color_integer_by_chain(const CRAD& crad)
 	{
-		return calc_string_color_integer(crad.chainID);
+		return calc_lighter_color_integer(calc_string_color_integer(crad.chainID));
 	}
 
 	static unsigned int calc_color_integer_by_chain(const std::pair<CRAD, CRAD>& crads)
 	{
-		return calc_string_color_integer(
-				crads.first.chainID<crads.second.chainID ?
-						(crads.first.chainID+crads.second.chainID) :
-						(crads.second.chainID+crads.first.chainID));
+		return calc_lighter_color_integer(calc_string_color_integer(crads.first.chainID<crads.second.chainID ? (crads.first.chainID+crads.second.chainID) : (crads.second.chainID+crads.first.chainID)));
 	}
 
 	static std::string construct_label(const CRAD& crad)
