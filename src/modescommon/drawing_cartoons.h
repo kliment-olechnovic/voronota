@@ -17,7 +17,7 @@ public:
 	double hermite_spline_steps;
 
 	DrawingCartoons() :
-		loop_width(0.15),
+		loop_width(0.30),
 		loop_height(0.15),
 		nonloop_width(1.2),
 		nonloop_height(0.15),
@@ -50,8 +50,29 @@ public:
 			{
 				drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
 				const int ss_type=ss_type_from_ball_value(ball_value);
-				const double wk=(ss_type==0 ? loop_width : nonloop_width);
-				const double hk=(ss_type==0 ? loop_height : nonloop_height);
+
+				int prev_ss_type=0;
+				if(it!=spine.begin())
+				{
+					std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator prev_it=it;
+					--prev_it;
+					prev_ss_type=ss_type_from_ball_value(map_of_crad_values[prev_it->first]);
+				}
+
+				int next_ss_type=0;
+				{
+					std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator next_it=it;
+					++next_it;
+					if(next_it!=spine.end())
+					{
+						next_ss_type=ss_type_from_ball_value(map_of_crad_values[next_it->first]);
+					}
+				}
+
+				const bool loop=(ss_type==0 || (ss_type==2 && prev_ss_type==1 && next_ss_type==2) || (ss_type==2 && prev_ss_type==2 && next_ss_type==1));
+				const double wk=(loop ? loop_width : nonloop_width);
+				const double hk=(loop ? loop_height : nonloop_height);
+
 				for(int e=0;e<2;e++)
 				{
 					for(int o=0;o<2;o++)
