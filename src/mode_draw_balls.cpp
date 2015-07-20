@@ -64,7 +64,8 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="cartoon")
 	{
-		DrawingCartoons().draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
+		DrawingCartoons dc;
+		dc.draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
 	}
 	else
 	{
