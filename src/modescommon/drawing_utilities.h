@@ -18,6 +18,7 @@ public:
 	double adjunct_gradient_red;
 	bool adjuncts_rgb;
 	bool random_colors;
+	bool random_colors_by_chain;
 	double alpha_opacity;
 	bool use_labels;
 
@@ -28,6 +29,7 @@ public:
 		adjunct_gradient_red(1.0),
 		adjuncts_rgb(false),
 		random_colors(false),
+		random_colors_by_chain(false),
 		alpha_opacity(1.0),
 		use_labels(false)
 	{
@@ -82,6 +84,10 @@ public:
 		{
 			opengl_printer.add_color(calc_color_integer(descriptor));
 		}
+		else if(random_colors_by_chain)
+		{
+			opengl_printer.add_color(calc_color_integer_by_chain(descriptor));
+		}
 	}
 
 private:
@@ -108,6 +114,19 @@ private:
 				crads.first<crads.second ?
 						(crads.first.str()+crads.second.str()) :
 						(crads.second.str()+crads.first.str()));
+	}
+
+	static unsigned int calc_color_integer_by_chain(const CRAD& crad)
+	{
+		return calc_string_color_integer(crad.chainID);
+	}
+
+	static unsigned int calc_color_integer_by_chain(const std::pair<CRAD, CRAD>& crads)
+	{
+		return calc_string_color_integer(
+				crads.first.chainID<crads.second.chainID ?
+						(crads.first.chainID+crads.second.chainID) :
+						(crads.second.chainID+crads.first.chainID));
 	}
 
 	static std::string construct_label(const CRAD& crad)
