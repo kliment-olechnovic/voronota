@@ -13,16 +13,20 @@ public:
 	double loop_height;
 	double nonloop_width;
 	double nonloop_height;
+	double arrow_width;
 	double hermite_spline_k;
 	double hermite_spline_steps;
+	bool enable_arrows;
 
 	DrawingCartoons() :
 		loop_width(0.30),
 		loop_height(0.15),
 		nonloop_width(1.2),
 		nonloop_height(0.15),
+		arrow_width(1.6),
 		hermite_spline_k(0.8),
-		hermite_spline_steps(10)
+		hermite_spline_steps(10),
+		enable_arrows(true)
 	{
 	}
 
@@ -49,6 +53,7 @@ public:
 			if(subspine.size()>1)
 			{
 				drawing_parameters_wrapper.process(crad, ball_value.props.adjuncts, opengl_printer);
+
 				const int ss_type=ss_type_from_ball_value(ball_value);
 
 				int prev_ss_type=0;
@@ -69,9 +74,11 @@ public:
 					}
 				}
 
-				const bool loop=(ss_type==0 || (ss_type==2 && prev_ss_type==1 && next_ss_type==2) || (ss_type==2 && prev_ss_type==2 && next_ss_type==1));
+				const bool loop=(ss_type==0);
 				const double wk=(loop ? loop_width : nonloop_width);
 				const double hk=(loop ? loop_height : nonloop_height);
+
+				const bool arrow=(enable_arrows && (prev_ss_type==2 && ss_type==2 && next_ss_type!=2));
 
 				for(int e=0;e<2;e++)
 				{
@@ -81,10 +88,15 @@ public:
 						std::vector<apollota::SimplePoint> normals;
 						for(std::size_t i=0;i<subspine.size();i++)
 						{
+							double mwk=wk;
+							if(arrow)
+							{
+								mwk=(1.0-static_cast<double>(i)/static_cast<double>(subspine.size()-1))*arrow_width+loop_width;
+							}
 							const RibbonVertebra& rv=subspine[i];
 							const apollota::SimplePoint c=rv.center;
-							const apollota::SimplePoint u=(o==0 ? ((rv.up-c).unit()*(e==0 ? 1.0 : -1.0)*hk) : ((rv.right-c).unit()*(e==0 ? 1.0 : -1.0)*wk));
-							const apollota::SimplePoint r=(o==0 ? ((rv.right-c).unit()*wk) : ((rv.up-c).unit()*hk));
+							const apollota::SimplePoint u=(o==0 ? ((rv.up-c).unit()*(e==0 ? 1.0 : -1.0)*hk) : ((rv.right-c).unit()*(e==0 ? 1.0 : -1.0)*mwk));
+							const apollota::SimplePoint r=(o==0 ? ((rv.right-c).unit()*mwk) : ((rv.up-c).unit()*hk));
 							const apollota::SimplePoint l=r.inverted();
 							vertices.push_back(c+l+u);
 							vertices.push_back(c+r+u);
@@ -95,11 +107,16 @@ public:
 					}
 
 					{
+						double mwk=wk;
+						if(arrow)
+						{
+							mwk=(e==0 ? (arrow_width+loop_width) : loop_width);
+						}
 						const RibbonVertebra& rv=(e==0 ? subspine.front() : subspine.back());
 						const apollota::SimplePoint c=rv.center;
 						const apollota::SimplePoint u=(rv.up-c).unit()*hk;
 						const apollota::SimplePoint d=u.inverted();
-						const apollota::SimplePoint r=(rv.right-c).unit()*wk;
+						const apollota::SimplePoint r=(rv.right-c).unit()*mwk;
 						const apollota::SimplePoint l=r.inverted();
 						const apollota::SimplePoint n=((subspine.front().center-subspine.back().center)*(e==0 ? 1.0 : -1.0)).unit();
 						std::vector<apollota::SimplePoint> vertices;
