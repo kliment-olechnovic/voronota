@@ -282,7 +282,8 @@ private:
 			{
 				beta_ids.push_back(i);
 			}
-			else
+
+			if(ro.ss_type!=2 || (i+1)==ros.size())
 			{
 				if(beta_ids.size()>2)
 				{
