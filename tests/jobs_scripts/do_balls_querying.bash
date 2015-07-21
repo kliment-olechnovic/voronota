@@ -111,6 +111,7 @@ cat $SUBDIR/balls \
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls \
+  --set-seq-pos-adjunct \
   --set-dssp-info <(dssp $INPUTDIR/single/structure.pdb) \
 | $VORONOTA draw-balls \
   --representation cartoon \
@@ -118,4 +119,6 @@ cat $SUBDIR/balls \
   --drawing-name cartoon \
   --use-labels \
   --random-colors-by-chain \
+  --adjunct-gradient seqpos \
+  --rainbow-gradient \
 > /dev/null

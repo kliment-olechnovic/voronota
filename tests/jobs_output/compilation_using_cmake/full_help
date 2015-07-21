@@ -111,6 +111,7 @@ Command 'query-balls' options:
 --renumber-from-adjunct         string      adjunct name to use for input residue renumbering
 --renumber-positively                       flag to increment residue numbers to make them positive
 --reset-serials                             flag to reset atom serial numbers
+--set-seq-pos-adjunct                       flag to set normalized sequence position adjunct
 --set-ref-seq-num-adjunct       string      file path to input reference sequence
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string
@@ -142,6 +143,7 @@ Command 'draw-balls' options:
 --adjunct-gradient              string      adjunct name to use for gradient-based coloring
 --adjunct-gradient-blue         number      blue adjunct gradient value
 --adjunct-gradient-red          number      red adjunct gradient value
+--rainbow-gradient                          flag to use rainbow color gradient
 --adjuncts-rgb                              flag to use RGB color values from adjuncts
 --random-colors                             flag to use random color for each drawn ball
 --random-colors-by-chain                    flag to use random color for each drawn chain
