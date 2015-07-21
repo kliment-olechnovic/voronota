@@ -1,7 +1,7 @@
 #include "auxiliaries/program_options_handler.h"
 
 #include "modescommon/drawing_links.h"
-#include "modescommon/drawing_cartoons.h"
+#include "modescommon/drawing_protein_cartoons.h"
 
 void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -66,7 +66,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="cartoon")
 	{
-		DrawingCartoons dc;
+		DrawingProteinCartoons dc;
 		dc.draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
 	}
 	else

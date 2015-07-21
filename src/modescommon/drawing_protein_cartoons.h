@@ -6,7 +6,7 @@
 namespace
 {
 
-class DrawingCartoons
+class DrawingProteinCartoons
 {
 public:
 	double loop_width;
@@ -18,7 +18,7 @@ public:
 	double hermite_spline_steps;
 	bool enable_arrows;
 
-	DrawingCartoons() :
+	DrawingProteinCartoons() :
 		loop_width(0.30),
 		loop_height(0.15),
 		nonloop_width(1.2),
