@@ -2,6 +2,7 @@
 
 #include "modescommon/drawing_links.h"
 #include "modescommon/drawing_protein_cartoons.h"
+#include "modescommon/drawing_nucleic_acid_cartoons.h"
 
 void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -55,12 +56,12 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	else if(representation=="trace")
 	{
 		draw_trace(list_of_balls, "CA", 4.0, 0.3, drawing_parameters_wrapper, opengl_printer);
-		draw_trace(list_of_balls, "P", 8.0, 0.3, drawing_parameters_wrapper, opengl_printer);
+		draw_trace(list_of_balls, "C3'", 8.0, 0.3, drawing_parameters_wrapper, opengl_printer);
 	}
 	else if(representation=="cartoon")
 	{
 		DrawingProteinCartoons().draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
-		draw_trace(list_of_balls, "P", 8.0, 0.3, drawing_parameters_wrapper, opengl_printer);
+		DrawingNucleicAcidCartoons().draw_cartoon(list_of_balls, drawing_parameters_wrapper, opengl_printer);
 	}
 	else
 	{
