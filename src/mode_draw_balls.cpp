@@ -18,6 +18,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	drawing_parameters_wrapper.adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
 	drawing_parameters_wrapper.adjunct_gradient_blue=poh.argument<double>(pohw.describe_option("--adjunct-gradient-blue", "number", "blue adjunct gradient value"), 0.0);
 	drawing_parameters_wrapper.adjunct_gradient_red=poh.argument<double>(pohw.describe_option("--adjunct-gradient-red", "number", "red adjunct gradient value"), 1.0);
+	drawing_parameters_wrapper.rainbow_gradient=poh.contains_option(pohw.describe_option("--rainbow-gradient", "", "flag to use rainbow color gradient"));
 	drawing_parameters_wrapper.adjuncts_rgb=poh.contains_option(pohw.describe_option("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
 	drawing_parameters_wrapper.random_colors=poh.contains_option(pohw.describe_option("--random-colors", "", "flag to use random color for each drawn ball"));
 	drawing_parameters_wrapper.random_colors_by_chain=poh.contains_option(pohw.describe_option("--random-colors-by-chain", "", "flag to use random color for each drawn chain"));
