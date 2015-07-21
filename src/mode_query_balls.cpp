@@ -65,6 +65,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string renumber_from_adjunct=poh.argument<std::string>(pohw.describe_option("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"), "");
 	const bool renumber_positively=poh.contains_option(pohw.describe_option("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
 	const bool reset_serials=poh.contains_option(pohw.describe_option("--reset-serials", "", "flag to reset atom serial numbers"));
+	const bool set_seq_pos_adjunct=poh.contains_option(pohw.describe_option("--set-seq-pos-adjunct", "", "flag to set normalized sequence position adjunct"));
 	const std::string set_ref_seq_num_adjunct=poh.argument<std::string>(pohw.describe_option("--set-ref-seq-num-adjunct", "string", "file path to input reference sequence"), "");
 	const std::string ref_seq_alignment=poh.argument<std::string>(pohw.describe_option("--ref-seq-alignment", "string", "file path to output alignment with reference"), "");
 	const std::string seq_output=poh.argument<std::string>(pohw.describe_option("--seq-output", "string", "file path to output query result sequence string"), "");
@@ -158,6 +159,35 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			list_of_balls[i].first.serial=static_cast<int>(i+1);
+		}
+	}
+
+	if(set_seq_pos_adjunct)
+	{
+		typedef std::map<std::string, std::pair<double, double> > MapOfRanges;
+		MapOfRanges chain_seq_num_ranges;
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			const CRAD& crad=list_of_balls[i].first;
+			MapOfRanges::iterator chain_seq_num_ranges_it=chain_seq_num_ranges.find(crad.chainID);
+			if(chain_seq_num_ranges_it==chain_seq_num_ranges.end())
+			{
+				std::pair<double, double>& range=chain_seq_num_ranges[crad.chainID];
+				range.first=crad.resSeq;
+				range.second=crad.resSeq;
+			}
+			else
+			{
+				std::pair<double, double>& range=chain_seq_num_ranges_it->second;
+				range.first=std::min(range.first, static_cast<double>(crad.resSeq));
+				range.second=std::max(range.second, static_cast<double>(crad.resSeq));
+			}
+		}
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			const CRAD& crad=list_of_balls[i].first;
+			const std::pair<double, double>& range=chain_seq_num_ranges[crad.chainID];
+			list_of_balls[i].second.props.adjuncts["seqpos"]=((range.first<range.second) ? ((crad.resSeq-range.first)/(range.second-range.first)) : 0.0);
 		}
 	}
 
