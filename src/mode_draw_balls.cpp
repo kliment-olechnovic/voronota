@@ -54,15 +54,18 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="trace")
 	{
-		std::vector< std::pair<CRAD, BallValue> > list_of_balls_filtered;
-		for(std::size_t i=0;i<list_of_balls.size();i++)
+		for(int molecule_type=0;molecule_type<2;molecule_type++)
 		{
-			if(list_of_balls[i].first.name=="CA")
+			std::vector< std::pair<CRAD, BallValue> > list_of_balls_filtered;
+			for(std::size_t i=0;i<list_of_balls.size();i++)
 			{
-				list_of_balls_filtered.push_back(list_of_balls[i]);
+				if(list_of_balls[i].first.name==(molecule_type==0 ? "CA" : "P"))
+				{
+					list_of_balls_filtered.push_back(list_of_balls[i]);
+				}
 			}
+			draw_links(list_of_balls_filtered, (molecule_type==0 ? 2.0 : 4.0), 10.0, 0.3, 0.3, 12, true, drawing_parameters_wrapper, opengl_printer);
 		}
-		draw_links(list_of_balls_filtered, 2.0, 10.0, 0.3, 0.3, 12, true, drawing_parameters_wrapper, opengl_printer);
 	}
 	else if(representation=="cartoon")
 	{
