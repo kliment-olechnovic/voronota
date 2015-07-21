@@ -51,6 +51,25 @@ void draw_links(
 	}
 }
 
+void draw_trace(
+		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		const std::string& atom_name,
+		const double max_distance,
+		const double drawing_radius,
+		const DrawingParametersWrapper& drawing_parameters_wrapper,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	std::vector< std::pair<CRAD, BallValue> > list_of_balls_filtered;
+	for(std::size_t i=0;i<list_of_balls.size();i++)
+	{
+		if(list_of_balls[i].first.name==atom_name)
+		{
+			list_of_balls_filtered.push_back(list_of_balls[i]);
+		}
+	}
+	draw_links(list_of_balls_filtered, max_distance*0.5, 10.0, drawing_radius, drawing_radius, 12, true, drawing_parameters_wrapper, opengl_printer);
+}
+
 }
 
 #endif /* DRAWING_LINKS_H_ */
