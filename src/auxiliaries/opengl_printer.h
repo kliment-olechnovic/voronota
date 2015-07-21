@@ -45,6 +45,12 @@ public:
 		write_color_to_stream(Color::from_blue_white_red_gradient(value), string_stream_);
 	}
 
+	void add_color_from_rainbow_gradient(const double value)
+	{
+		string_stream_ << object_typer_.color << " ";
+		write_color_to_stream(Color::from_rainbow_gradient(value), string_stream_);
+	}
+
 	template<typename SphereType>
 	void add_sphere(const SphereType& sphere)
 	{
@@ -456,6 +462,40 @@ private:
 				color.r=255;
 				color.b=static_cast<unsigned char>(255*(1-(value-0.5)/0.5));
 				color.g=color.b;
+			}
+			return color;
+		}
+
+		static Color from_rainbow_gradient(const double value)
+		{
+			Color color;
+			if(value<0)
+			{
+				color.b=255;
+			}
+			else if(value>1)
+			{
+				color.r=255;
+			}
+			else if(value<=0.25)
+			{
+				color.g=static_cast<unsigned char>(255*(value/0.25));
+				color.b=255;
+			}
+			else if(value<=0.5)
+			{
+				color.g=255;
+				color.b=static_cast<unsigned char>(255*(1-(value-0.25)/0.25));
+			}
+			else if(value<=0.75)
+			{
+				color.r=static_cast<unsigned char>(255*((value-0.5)/0.25));
+				color.g=255;
+			}
+			else if(value<=1.0)
+			{
+				color.r=255;
+				color.g=static_cast<unsigned char>(255*(1-(value-0.75)/0.25));
 			}
 			return color;
 		}

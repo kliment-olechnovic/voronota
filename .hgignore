@@ -5,3 +5,5 @@ syntax: regexp
 ^voronota$
 syntax: regexp
 ^build$
+syntax: regexp
+^tmp$

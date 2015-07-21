@@ -21,6 +21,7 @@ public:
 	bool random_colors_by_chain;
 	double alpha_opacity;
 	bool use_labels;
+	bool rainbow_gradient;
 
 	DrawingParametersWrapper() :
 		default_color(0xFFFFFF),
@@ -31,7 +32,8 @@ public:
 		random_colors(false),
 		random_colors_by_chain(false),
 		alpha_opacity(1.0),
-		use_labels(false)
+		use_labels(false),
+		rainbow_gradient(false)
 	{
 	}
 
@@ -60,7 +62,14 @@ public:
 				{
 					value=1.0-((value-adjunct_gradient_red)/(adjunct_gradient_blue-adjunct_gradient_red));
 				}
-				opengl_printer.add_color_from_blue_white_red_gradient(value);
+				if(rainbow_gradient)
+				{
+					opengl_printer.add_color_from_rainbow_gradient(value);
+				}
+				else
+				{
+					opengl_printer.add_color_from_blue_white_red_gradient(value);
+				}
 			}
 		}
 		else if(adjuncts_rgb)
