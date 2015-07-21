@@ -49,7 +49,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="sticks")
 	{
-		draw_links(list_of_balls, 0.8, 4.0, 0.3, 0.2, 6, false, drawing_parameters_wrapper, opengl_printer);
+		draw_links(list_of_balls, 0.8, 4.0, 0.2, 0.2, 9, false, drawing_parameters_wrapper, opengl_printer);
 	}
 	else if(representation=="trace")
 	{
