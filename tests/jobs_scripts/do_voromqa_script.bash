@@ -8,7 +8,7 @@ mkdir -p $SUBDIR
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
-	$VORONOTADIR/voromqa \
+	$VORONOTADIR/voromqa.bash \
 	  -i $INFILE \
 	  -a $SUBDIR/$INFILEBASENAME/atom_scores.pdb \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores.pdb \

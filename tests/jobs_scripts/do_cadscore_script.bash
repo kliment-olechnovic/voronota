@@ -8,7 +8,7 @@ mkdir -p $SUBDIR
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
-	$VORONOTADIR/cadscore \
+	$VORONOTADIR/cadscore.bash \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  -T $SUBDIR/$INFILEBASENAME/residue_scores_on_target.pdb \
