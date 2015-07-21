@@ -3,6 +3,8 @@
 
 #include "../apollota/interpolation.h"
 
+#include "drawing_utilities.h"
+
 namespace
 {
 
