@@ -271,7 +271,6 @@ public:
 			if(type.color || type.label)
 			{
 				print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
-				print_scenejs_spheres(global_spheres, color, label, body_output);
 				if(type.color)
 				{
 					color=read_color_from_stream(input);
@@ -307,10 +306,10 @@ public:
 				input >> r;
 				global_spheres.push_back(std::make_pair(c, r));
 				bounding_box.update(c);
+				print_scenejs_spheres(global_spheres, color, label, body_output);
 			}
 		}
 		print_scenejs_polygon(global_vertices, global_normals, global_triples, color, label, body_output);
-		print_scenejs_spheres(global_spheres, color, label, body_output);
 		{
 			output.precision(3);
 			output << "var " << obj_name << "={nodes:[\n" << body_output.str() << "]\n};\n";
