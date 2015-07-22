@@ -18,13 +18,15 @@ rm -r -f $PACKAGE_NAME
 
 mkdir -p $PACKAGE_NAME
 cp -r src $PACKAGE_NAME/src
-cp -r resources $PACKAGE_NAME/resources
 cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp voronota-cadscore $PACKAGE_NAME/voronota-cadscore
 cp voronota-voromqa $PACKAGE_NAME/voronota-voromqa
-cp voronota-resources $PACKAGE_NAME/voronota-resources
 cp voronota $PACKAGE_NAME/voronota
+
+./stock.bash
+cp voronota-resources $PACKAGE_NAME/voronota-resources
+./voronota-resources radii > $PACKAGE_NAME/radii
 
 ./document.bash
 cp ./index.html $PACKAGE_NAME/README.html
