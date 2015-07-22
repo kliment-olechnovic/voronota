@@ -21,8 +21,8 @@ cp -r src $PACKAGE_NAME/src
 cp -r resources $PACKAGE_NAME/resources
 cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
-cp cadscore.bash $PACKAGE_NAME/cadscore.bash
-cp voromqa.bash $PACKAGE_NAME/voromqa.bash
+cp voronota-cadscore $PACKAGE_NAME/voronota-cadscore
+cp voronota-voromqa $PACKAGE_NAME/voronota-voromqa
 cp voronota $PACKAGE_NAME/voronota
 
 ./document.bash

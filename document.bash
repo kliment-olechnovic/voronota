@@ -27,15 +27,15 @@ echo -e "# Wrapper scripts"
 
 echo -e "\n## CAD-score method wrapper script\n"
 cat << EOF
-The 'cadscore.bash' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota.
+The 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota.
 EOF
-./cadscore.bash -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+./voronota-cadscore -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
 
 echo -e "\n## VoroMQA method wrapper script\n"
 cat << EOF
-The 'voromqa.bash' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota.
+The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota.
 EOF
-./voromqa.bash -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+./voronota-voromqa -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
 
 } > $TMPDIR/documentation.markdown
 
