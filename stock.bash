@@ -18,7 +18,7 @@ function write_resource_file
 	echo '#!/bin/bash'
 	echo ''
 	echo 'RESOURCE_NAME=$1'
-	find ./resources/ -type f | while read RESOURCE_FILE
+	find ./resources/ -type f -not -empty | sort | while read RESOURCE_FILE
 	do
 		echo ''
 		write_resource_file $RESOURCE_FILE
