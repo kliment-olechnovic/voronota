@@ -23,6 +23,7 @@ cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
 cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp voronota-cadscore $PACKAGE_NAME/voronota-cadscore
 cp voronota-voromqa $PACKAGE_NAME/voronota-voromqa
+cp voronota-resources $PACKAGE_NAME/voronota-resources
 cp voronota $PACKAGE_NAME/voronota
 
 ./document.bash
