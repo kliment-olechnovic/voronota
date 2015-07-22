@@ -2,8 +2,6 @@
 
 set +e
 
-BINDIR=$(dirname $0)
-
 INFILE_TARGET=""
 INFILE_MODEL=""
 OUTFILE_RESIDUE_SCORES_ON_TARGET=""
@@ -48,11 +46,15 @@ EOF
 exit 1
 fi
 
-if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/voronota-resources" ]
+if [[ $0 == *"/"* ]]
 then
-	echo >&2 "Error: script directory does not contain Voronota files"
-	exit1
+	cd $(dirname $0)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
 fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
 if [ ! -s "$INFILE_TARGET" ]
 then
@@ -75,19 +77,19 @@ cp $INFILE_MODEL $TMPDIR/model
 for WORKFILE in $TMPDIR/target $TMPDIR/model
 do
 	cat $WORKFILE \
-	| $BINDIR/voronota get-balls-from-atoms-file \
+	| voronota get-balls-from-atoms-file \
 	  --annotated \
-	  --radii-file <($BINDIR/voronota-resources radii) \
-	| $BINDIR/voronota query-balls \
+	  --radii-file <(voronota-resources radii) \
+	| voronota query-balls \
 	  --drop-adjuncts \
 	  --drop-altloc-indicators \
 	| tee $WORKFILE.balls \
-	| $BINDIR/voronota calculate-contacts \
+	| voronota calculate-contacts \
 	  --annotated \
-	| $BINDIR/voronota query-contacts \
+	| voronota query-contacts \
 	  --match-min-seq-sep 1 \
 	  --no-solvent \
-	| $BINDIR/voronota query-contacts \
+	| voronota query-contacts \
 	  --match-first 'A<C>' \
 	  --match-second 'A<N>' \
 	  --match-max-seq-sep 1 \
@@ -98,7 +100,7 @@ do
 done
 
 cat $TMPDIR/model.contacts \
-| $BINDIR/voronota compare-contacts \
+| voronota compare-contacts \
   --target-contacts-file $TMPDIR/target.contacts \
   --smoothing-window $SMOOTHING_WINDOW \
   --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
@@ -111,10 +113,10 @@ if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_TARGET)
 	cat $TMPDIR/target.balls \
-	| $BINDIR/voronota query-balls \
+	| voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
 	  --set-external-adjuncts-name rcadscore \
-	| $BINDIR/voronota write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_TARGET \
 	  --pdb-output-b-factor rcadscore \
 	> /dev/null
@@ -124,10 +126,10 @@ if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_MODEL)
 	cat $TMPDIR/model.balls \
-	| $BINDIR/voronota query-balls \
+	| voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
 	  --set-external-adjuncts-name rcadscore \
-	| $BINDIR/voronota write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_MODEL \
 	  --pdb-output-b-factor rcadscore \
 	> /dev/null
