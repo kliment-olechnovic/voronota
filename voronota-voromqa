@@ -2,8 +2,6 @@
 
 set +e
 
-BINDIR=$(dirname $0)
-
 INFILE=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
@@ -43,11 +41,15 @@ EOF
 exit 1
 fi
 
-if [ ! -s "$BINDIR/voronota" ] || [ ! -s "$BINDIR/voronota-resources" ]
+if [[ $0 == *"/"* ]]
 then
-	echo >&2 "Error: script directory does not contain Voronota files"
-	exit 1
+	cd $(dirname $0)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
 fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
 if [ ! -s "$INFILE" ]
 then
@@ -66,49 +68,49 @@ then
 fi
 
 $INPRINTER $INFILE \
-| $BINDIR/voronota get-balls-from-atoms-file \
+| voronota get-balls-from-atoms-file \
   --annotated \
-  --radii-file <($BINDIR/voronota-resources radii) \
-| $BINDIR/voronota query-balls \
+  --radii-file <(voronota-resources radii) \
+| voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
 | tee $TMPDIR/balls \
-| $BINDIR/voronota calculate-contacts \
+| voronota calculate-contacts \
   --annotated \
   --tag-centrality \
-| $BINDIR/voronota query-contacts \
+| voronota query-contacts \
   --match-min-seq-sep 1 \
-| $BINDIR/voronota query-contacts \
+| voronota query-contacts \
   --match-first 'A<C>' \
   --match-second 'A<N>' \
   --match-max-seq-sep 1 \
   --match-max-dist 1.6 \
   --invert \
-| $BINDIR/voronota query-contacts \
+| voronota query-contacts \
   --match-min-seq-sep 1 \
   --match-max-seq-sep 1 \
   --set-tags 'sep1' \
-| $BINDIR/voronota query-contacts \
+| voronota query-contacts \
   --match-min-seq-sep 2 \
   --no-solvent \
   --set-tags 'sep2' \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
 | tr ';' '_' \
 | tee $TMPDIR/contacts \
-| $BINDIR/voronota score-contacts-energy \
-  --potential-file <($BINDIR/voronota-resources energy_potential) \
+| voronota score-contacts-energy \
+  --potential-file <(voronota-resources energy_potential) \
   --atom-scores-file $TMPDIR/atom_energies \
 > /dev/null
 
 cat $TMPDIR/contacts \
-| $BINDIR/voronota query-contacts-depth-values \
+| voronota query-contacts-depth-values \
 > $TMPDIR/depth_values
 
 cat $TMPDIR/atom_energies \
-| $BINDIR/voronota score-contacts-quality \
+| voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
-  --means-and-sds-file <($BINDIR/voronota-resources energy_means_and_sds) \
+  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
   --external-weights-file $TMPDIR/depth_values \
   --smoothing-window $SMOOTHING_WINDOW \
   --atom-scores-file $TMPDIR/atom_quality_scores \
@@ -119,10 +121,10 @@ if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
 	cat $TMPDIR/balls \
-	| $BINDIR/voronota query-balls \
+	| voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/atom_quality_scores \
 	  --set-external-adjuncts-name aqscore \
-	| $BINDIR/voronota write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_ATOM_SCORES \
 	  --pdb-output-b-factor aqscore \
 	> /dev/null
@@ -132,10 +134,10 @@ if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
 	cat $TMPDIR/balls \
-	| $BINDIR/voronota query-balls \
+	| voronota query-balls \
 	  --set-external-adjuncts $TMPDIR/residue_quality_scores \
 	  --set-external-adjuncts-name rqscore \
-	| $BINDIR/voronota write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
 	> /dev/null
