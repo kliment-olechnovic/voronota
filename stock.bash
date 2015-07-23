@@ -6,12 +6,10 @@ function write_resource_file
 {
 	RESOURCE_FILE=$1
 	RESOURCE_BASENAME=$(basename $RESOURCE_FILE)
-	echo 'if [ "$RESOURCE_NAME" == "RESOURCE_NAME_VALUE" ]' | sed "s/RESOURCE_NAME_VALUE/$RESOURCE_BASENAME/"
-	echo "then"
-	echo "cat << 'EOF'"
+	echo -e '\nif [ "$RESOURCE_NAME" == "RESOURCE_NAME_VALUE" ]' | sed "s/RESOURCE_NAME_VALUE/$RESOURCE_BASENAME/"
+	echo -e "then\ncat << 'EOF'"
 	cat $RESOURCE_FILE
-	echo "EOF"
-	echo "fi"
+	echo -e "EOF\nfi"
 }
 
 {
@@ -25,7 +23,6 @@ if [ -z $RESOURCE_NAME ]
 then
 echo -e 'Need resource name as argument, available options are:\n  radii\n  energy_potential\n  energy_means_and_sds' >&2
 fi
-
 EOF
 
 write_resource_file ./resources/radii

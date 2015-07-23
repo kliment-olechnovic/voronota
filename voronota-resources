@@ -131,6 +131,7 @@ VAL  CG1  1.92
 VAL  CG2  1.92
 EOF
 fi
+
 if [ "$RESOURCE_NAME" == "energy_potential" ]
 then
 cat << 'EOF'
@@ -51808,6 +51809,7 @@ R<VAL>A<O> R<VAL>A<O> sep2 0.374492
 R<VAL>A<O> c<solvent> . 0.829146
 EOF
 fi
+
 if [ "$RESOURCE_NAME" == "energy_means_and_sds" ]
 then
 cat << 'EOF'
