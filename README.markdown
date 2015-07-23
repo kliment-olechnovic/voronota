@@ -35,6 +35,8 @@ to one of the directories listed in $PATH variable.
 
 # Building from source code
 
+## Using C++ compiler directly
+
 Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
 
@@ -43,22 +45,30 @@ the sources in "src" directory using GNU C++ compiler:
 
     g++ -O3 -o voronota src/*.cpp
 
-To enable the usage of OpenMP for parallel processing,
-add "-fopenmp" option when buiding:
+## Using CMake
+
+You can also build using CMake for makefile generation.
+Starting in the directory containing "CMakeLists.txt" file,
+run the sequence of commands:
+
+    mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
+
+## Enabling OpenMP
+
+To enable the usage of OpenMP for parallel processing when
+building using C++ compiler directly, add "-fopenmp" option:
 
     g++ -O3 -fopenmp -o voronota src/*.cpp
+
+When using CMake, OpenMP usage is enabled automatically if it is possible.
+
+## Enabling MPI
 
 To enable the usage of MPI for parallel processing, you
 can use mpic++ compiler wrapper. You also need to define
 "ENABLE_MPI" macro when buiding:
 
     mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
-    
-You can also build using cmake for makefile generation.
-Starting in the directory containing "CMakeLists.txt" file,
-run the sequence of commands:
-
-    mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
 
 
 # Basic usage example
