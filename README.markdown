@@ -116,6 +116,41 @@ For example, below is a part of some possible "vertices.txt":
     0 1 4 1453 30.018 10.901 55.386 1.908
     0 1 5 23 28.544 10.254 50.194 0.595
 
+## Computing inter-atom contacts
+
+Taking the "balls.txt" file described in the previous section,
+here is a basic example of computing inter-atom contacts:
+
+    ./voronota calculate-contacts < balls.txt > contacts.txt
+
+In "contacts.txt" file the line format is "b1 b2 area".
+The first two numbers (b1 and b2) are numbers of atomic records in "balls.txt", starting from 0.
+If b1 does not equal b2, then the area value is the area of contact between atoms b1 and b2.
+If b1 equals b2, then the area value is the solvent-accessible area of atom b1.
+For example, below is a part of some possible "contacts.txt":
+
+    0 0 35.440
+    0 1 15.908
+    0 2 0.167
+    0 3 7.025
+    0 4 7.021
+    0 5 0.624
+    0 23 2.849
+    0 25 0.008
+    0 26 11.323
+    0 1454 0.021
+    1 1 16.448
+    1 2 11.608
+    1 3 0.327
+    1 4 14.170
+    1 5 0.820
+    1 6 3.902
+    1 23 0.081
+    2 2 3.591
+    2 3 11.714
+    2 4 0.305
+    2 5 2.019
+
 ## Getting help in command line
 
 The list of all available Voronota commands is displayed when executing Voronota without any parameters.
