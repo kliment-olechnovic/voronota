@@ -12,6 +12,7 @@ do
 	  -i $INFILE \
 	  -a $SUBDIR/$INFILEBASENAME/atom_scores.pdb \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores.pdb \
+	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
 	  -s 5 \
 	| sed "s/^VoroMQA global score =/$INFILEBASENAME/"
 done > $SUBDIR/global_scores
