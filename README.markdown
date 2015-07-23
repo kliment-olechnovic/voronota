@@ -23,6 +23,15 @@ Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 Download the latest archive from the official downloads page:
 [https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
 
+The archive contains ready-to-use statically compiled 'voronota' program for
+64 bit Linux systems. This executable can be rebuilt from the provided
+source code to work on any modern Linux, Mac OS X or Windows operating systems.
+
+Packages in .deb or .rpm formats are currently not available. However,
+installing Voronota in Linux or Mac OS X is easy: just copy Voronota
+executable files ('voronota' program and, if needed, the wrapper scripts)
+to one of the directories listed in $PATH variable.
+
 
 # Building from source code
 
