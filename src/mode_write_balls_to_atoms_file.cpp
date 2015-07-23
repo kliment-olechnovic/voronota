@@ -139,7 +139,10 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 					for(std::size_t i=0;i<pdb_file_data.all_lines.size();i++)
 					{
-						foutput << pdb_file_data.all_lines[i] << "\n";
+						if((i+1<pdb_file_data.all_lines.size()) || !pdb_file_data.all_lines[i].empty())
+						{
+							foutput << pdb_file_data.all_lines[i] << "\n";
+						}
 					}
 				}
 			}

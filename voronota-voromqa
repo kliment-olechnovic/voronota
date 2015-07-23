@@ -6,10 +6,11 @@ readonly ZEROARG=$0
 INFILE=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
+OUTFILE_CAMEO_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="5"
 HELP_MODE=false
 
-while getopts "i:a:r:s:h" OPTION
+while getopts "i:a:r:c:s:h" OPTION
 do
 	case $OPTION in
 	i)
@@ -20,6 +21,9 @@ do
 		;;
 	r)
 		OUTFILE_RESIDUE_SCORES=$OPTARG
+		;;
+	c)
+		OUTFILE_CAMEO_RESIDUE_SCORES=$OPTARG
 		;;
 	s)
 		SMOOTHING_WINDOW=$OPTARG
@@ -67,8 +71,9 @@ if grep "gzip compressed data" $TMPDIR/input_file_type > /dev/null
 then
 	INPRINTER="zcat"
 fi
+$INPRINTER $INFILE > $TMPDIR/extracted_input_file
 
-$INPRINTER $INFILE \
+cat $TMPDIR/extracted_input_file \
 | voronota get-balls-from-atoms-file \
   --annotated \
   --radii-file <(voronota-resources radii) \
@@ -141,6 +146,20 @@ then
 	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ]
+then
+	mkdir -p $(dirname $OUTFILE_CAMEO_RESIDUE_SCORES)
+	cat $TMPDIR/balls \
+	| voronota query-balls \
+	  --set-external-adjuncts <(awk '{print $1 " " (10*(1-$2))}' $TMPDIR/residue_quality_scores) \
+	  --set-external-adjuncts-name rqscore \
+	| voronota write-balls-to-atoms-file \
+	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
+	  --pdb-output-b-factor rqscore \
+	  --pdb-output-template $TMPDIR/extracted_input_file \
 	> /dev/null
 fi
 
