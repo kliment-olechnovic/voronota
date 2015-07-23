@@ -2,6 +2,7 @@
 
 set +e
 
+readonly ZEROARG=$0
 INFILE=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
@@ -41,9 +42,9 @@ EOF
 exit 1
 fi
 
-if [[ $0 == *"/"* ]]
+if [[ $ZEROARG == *"/"* ]]
 then
-	cd $(dirname $0)
+	cd $(dirname $ZEROARG)
 	export PATH=$(pwd):$PATH
 	cd - &> /dev/null
 fi
