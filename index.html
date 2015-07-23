@@ -16,7 +16,12 @@
 <ul>
 <li><a href="#about-voronota">About Voronota</a></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
-<li><a href="#building-from-source-code">Building from source code</a></li>
+<li><a href="#building-from-source-code">Building from source code</a><ul>
+<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#using-cmake">Using CMake</a></li>
+<li><a href="#enabling-openmp">Enabling OpenMP</a></li>
+<li><a href="#enabling-mpi">Enabling MPI</a></li>
+</ul></li>
 <li><a href="#basic-usage-example">Basic usage example</a></li>
 <li><a href="#advanced-usage">Advanced usage</a><ul>
 <li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
@@ -142,18 +147,23 @@
 <p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, Mac OS X or Windows operating systems.</p>
 <p>Packages in .deb or .rpm formats are currently not available. However, installing Voronota in Linux or Mac OS X is easy: just copy Voronota executable files ('voronota' program and, if needed, the wrapper scripts) to one of the directories listed in $PATH variable.</p>
 <h1 id="building-from-source-code"><a href="#TOC">Building from source code</a></h1>
+<h2 id="using-c-compiler-directly"><a href="#TOC">Using C++ compiler directly</a></h2>
 <p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
 <p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
 <pre><code>g++ -O3 -o voronota src/*.cpp
 </code></pre>
-<p>To enable the usage of OpenMP for parallel processing, add &quot;-fopenmp&quot; option when buiding:</p>
+<h2 id="using-cmake"><a href="#TOC">Using CMake</a></h2>
+<p>You can also build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
+<pre><code>mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
+</code></pre>
+<h2 id="enabling-openmp"><a href="#TOC">Enabling OpenMP</a></h2>
+<p>To enable the usage of OpenMP for parallel processing when building using C++ compiler directly, add &quot;-fopenmp&quot; option:</p>
 <pre><code>g++ -O3 -fopenmp -o voronota src/*.cpp
 </code></pre>
+<p>When using CMake, OpenMP usage is enabled automatically if it is possible.</p>
+<h2 id="enabling-mpi"><a href="#TOC">Enabling MPI</a></h2>
 <p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
-</code></pre>
-<p>You can also build using cmake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
-<pre><code>mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
 </code></pre>
 <h1 id="basic-usage-example"><a href="#TOC">Basic usage example</a></h1>
 <p>Here is a basic example of computing Voronoi vertices for a structure in a PDB file:</p>
