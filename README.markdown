@@ -73,6 +73,8 @@ can use mpic++ compiler wrapper. You also need to define
 
 # Basic usage example
 
+## Computing Voronoi vertices
+
 Here is a basic example of computing Voronoi vertices
 for a structure in a PDB file:
 
@@ -113,9 +115,6 @@ For example, below is a part of some possible "vertices.txt":
     0 1 4 5 28.785 10.604 50.721 0.283
     0 1 4 1453 30.018 10.901 55.386 1.908
     0 1 5 23 28.544 10.254 50.194 0.595
-
-
-# Advanced usage
 
 ## Getting help in command line
 

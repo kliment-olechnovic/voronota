@@ -9,6 +9,8 @@ trap "rm -r $TMPDIR" EXIT
 
 cat ./README.markdown
 
+echo -e "# Command reference"
+
 ./voronota \
 | grep 'Commands:' -A 999999 \
 | sed 's/^Commands:/## List of all commands/' \

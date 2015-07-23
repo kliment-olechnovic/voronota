@@ -22,9 +22,11 @@
 <li><a href="#enabling-openmp">Enabling OpenMP</a></li>
 <li><a href="#enabling-mpi">Enabling MPI</a></li>
 </ul></li>
-<li><a href="#basic-usage-example">Basic usage example</a></li>
-<li><a href="#advanced-usage">Advanced usage</a><ul>
+<li><a href="#basic-usage-example">Basic usage example</a><ul>
+<li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
 <li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
+</ul></li>
+<li><a href="#command-reference">Command reference</a><ul>
 <li><a href="#list-of-all-commands">List of all commands</a></li>
 <li><a href="#command-get-balls-from-atoms-file">Command 'get-balls-from-atoms-file'</a><ul>
 <li><a href="#command-line-arguments">Command line arguments:</a></li>
@@ -166,6 +168,7 @@
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
 </code></pre>
 <h1 id="basic-usage-example"><a href="#TOC">Basic usage example</a></h1>
+<h2 id="computing-voronoi-vertices"><a href="#TOC">Computing Voronoi vertices</a></h2>
 <p>Here is a basic example of computing Voronoi vertices for a structure in a PDB file:</p>
 <pre><code>./voronota get-balls-from-atoms-file &lt; input.pdb &gt; balls.txt
 ./voronota calculate-vertices &lt; balls.txt &gt; vertices.txt
@@ -187,7 +190,6 @@
 0 1 4 1453 30.018 10.901 55.386 1.908
 0 1 5 23 28.544 10.254 50.194 0.595
 </code></pre>
-<h1 id="advanced-usage"><a href="#TOC">Advanced usage</a></h1>
 <h2 id="getting-help-in-command-line"><a href="#TOC">Getting help in command line</a></h2>
 <p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>
 <p>Command help is shown when &quot;--help&quot; command line option is present, for example:</p>
@@ -196,6 +198,7 @@
 <p>Using &quot;--help&quot; option without specific command results in printing help for all commands:</p>
 <pre><code>./voronota --help
 </code></pre>
+<h1 id="command-reference"><a href="#TOC">Command reference</a></h1>
 <h2 id="list-of-all-commands"><a href="#TOC">List of all commands</a></h2>
 <ul>
 <li>get-balls-from-atoms-file</li>
