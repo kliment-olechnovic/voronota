@@ -25,6 +25,7 @@
 <li><a href="#basic-usage-example">Basic usage example</a><ul>
 <li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
 <li><a href="#computing-inter-atom-contacts">Computing inter-atom contacts</a></li>
+<li><a href="#computing-annotated-inter-atom-contacts">Computing annotated inter-atom contacts</a></li>
 <li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
 </ul></li>
 <li><a href="#command-reference">Command reference</a><ul>
@@ -195,7 +196,7 @@
 <p>Taking the &quot;balls.txt&quot; file described in the previous section, here is a basic example of computing inter-atom contacts:</p>
 <pre><code>./voronota calculate-contacts &lt; balls.txt &gt; contacts.txt
 </code></pre>
-<p>In &quot;contacts.txt&quot; file the line format is &quot;b1 b2 area&quot;. The first two numbers (b1 and b2) are numbers of atomic records in &quot;balls.txt&quot;, starting from 0. If b1 does not equal b2, then the area value is the area of contact between atoms b1 and b2. If b1 equals b2, then the area value is the solvent-accessible area of atom b1. For example, below is a part of some possible &quot;contacts.txt&quot;:</p>
+<p>In &quot;contacts.txt&quot; file the line format is &quot;b1 b2 area&quot;. The first two numbers (b1 and b2) are numbers of atomic records in &quot;balls.txt&quot;, starting from 0. If b1 does not equal b2, then the 'area' value is the area of contact between atoms b1 and b2. If b1 equals b2, then the 'area' value is the solvent-accessible area of atom b1. For example, below is a part of some possible &quot;contacts.txt&quot;:</p>
 <pre><code>0 0 35.440
 0 1 15.908
 0 2 0.167
@@ -217,6 +218,30 @@
 2 3 11.714
 2 4 0.305
 2 5 2.019
+</code></pre>
+<h2 id="computing-annotated-inter-atom-contacts"><a href="#TOC">Computing annotated inter-atom contacts</a></h2>
+<p>Here is a basic example of computing annotated inter-atom contacts:</p>
+<pre><code>./voronota get-balls-from-atoms-file --annotated &lt; input.pdb &gt; annotated_balls.txt
+./voronota calculate-contacts --annotated &lt; annotated_balls.txt &gt; annotated_contacts.txt
+</code></pre>
+<p>In &quot;annotated_contacts.txt&quot; the line format is &quot;annotation1 annotation2 area distance tags adjuncts [graphics]&quot;. The strings 'annotation1' and 'annotation2' describe contacting atoms, the 'area' value is the area of contact between the two atoms, the 'distance' value is the distance between the centers of the contacting atoms. If 'annotation2' contains string &quot;solvent&quot;, then the 'area' value is the solvent-accessible area of the atom described by 'annotation1'. The remaining part of the line is used by Voronota querying and drawing commands that are not covered in this section. Below is a part of some possible &quot;annotated_contacts.txt&quot;:</p>
+<pre><code>c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; 15.908 1.456 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt; 0.167 2.488 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt; 7.025 2.774 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt; 7.021 2.486 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt; 0.624 3.159 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt; 2.849 4.628 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;26&gt;R&lt;GLU&gt;A&lt;CD&gt; 0.008 4.792 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;27&gt;R&lt;GLU&gt;A&lt;OE1&gt; 11.323 3.932 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;194&gt;a&lt;1501&gt;R&lt;LEU&gt;A&lt;CD2&gt; 0.021 5.465 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;solvent&gt; 35.440 5.9 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt; 11.608 1.514 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt; 0.327 2.405 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt; 14.170 1.523 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt; 0.820 2.430 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;3&gt;a&lt;7&gt;R&lt;LYS&gt;A&lt;N&gt; 3.902 2.371 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt; 0.081 4.954 . .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.1 . .
 </code></pre>
 <h2 id="getting-help-in-command-line"><a href="#TOC">Getting help in command line</a></h2>
 <p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>

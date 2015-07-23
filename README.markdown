@@ -125,8 +125,8 @@ here is a basic example of computing inter-atom contacts:
 
 In "contacts.txt" file the line format is "b1 b2 area".
 The first two numbers (b1 and b2) are numbers of atomic records in "balls.txt", starting from 0.
-If b1 does not equal b2, then the area value is the area of contact between atoms b1 and b2.
-If b1 equals b2, then the area value is the solvent-accessible area of atom b1.
+If b1 does not equal b2, then the 'area' value is the area of contact between atoms b1 and b2.
+If b1 equals b2, then the 'area' value is the solvent-accessible area of atom b1.
 For example, below is a part of some possible "contacts.txt":
 
     0 0 35.440
@@ -150,6 +150,42 @@ For example, below is a part of some possible "contacts.txt":
     2 3 11.714
     2 4 0.305
     2 5 2.019
+
+## Computing annotated inter-atom contacts
+
+Here is a basic example of computing annotated inter-atom contacts:
+
+    ./voronota get-balls-from-atoms-file --annotated < input.pdb > annotated_balls.txt
+    ./voronota calculate-contacts --annotated < annotated_balls.txt > annotated_contacts.txt
+
+In "annotated_contacts.txt" the line format is
+"annotation1 annotation2 area distance tags adjuncts [graphics]".
+The strings 'annotation1' and 'annotation2' describe contacting atoms,
+the 'area' value is the area of contact between the two atoms,
+the 'distance' value is the distance between the centers of the contacting atoms.
+If 'annotation2' contains string "solvent", then the 'area' value is
+the solvent-accessible area of the atom described by 'annotation1'.
+The remaining part of the line is used by Voronota querying
+and drawing commands that are not covered in this section.
+Below is a part of some possible "annotated_contacts.txt":
+
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<2>R<SER>A<CA> 15.908 1.456 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<3>R<SER>A<C> 0.167 2.488 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<4>R<SER>A<O> 7.025 2.774 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<5>R<SER>A<CB> 7.021 2.486 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<6>R<SER>A<OG> 0.624 3.159 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<24>R<GLU>A<CB> 2.849 4.628 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<26>R<GLU>A<CD> 0.008 4.792 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<27>R<GLU>A<OE1> 11.323 3.932 . .
+    c<A>r<2>a<1>R<SER>A<N> c<A>r<194>a<1501>R<LEU>A<CD2> 0.021 5.465 . .
+    c<A>r<2>a<1>R<SER>A<N> c<solvent> 35.440 5.9 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<3>R<SER>A<C> 11.608 1.514 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<4>R<SER>A<O> 0.327 2.405 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<5>R<SER>A<CB> 14.170 1.523 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<6>R<SER>A<OG> 0.820 2.430 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<3>a<7>R<LYS>A<N> 3.902 2.371 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<A>r<5>a<24>R<GLU>A<CB> 0.081 4.954 . .
+    c<A>r<2>a<2>R<SER>A<CA> c<solvent> 16.448 6.1 . .
 
 ## Getting help in command line
 
