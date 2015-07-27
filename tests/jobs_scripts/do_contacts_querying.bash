@@ -25,6 +25,11 @@ cat $SUBDIR/contacts \
 > $SUBDIR/match_first_and_second_resnames
 
 cat $SUBDIR/contacts \
+| $VORONOTA query-contacts --inter-residue --summing-exceptions <(echo 'R<ARG>') --match-first 'R<THR>' --match-second 'R<ARG>' \
+| column -t \
+> $SUBDIR/match_first_and_second_resnames_semicontracted
+
+cat $SUBDIR/contacts \
 | $VORONOTA query-contacts \
   --no-solvent \
   --match-min-area 10.0 \
