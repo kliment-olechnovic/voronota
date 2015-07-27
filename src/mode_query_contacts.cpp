@@ -74,6 +74,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-adjuncts", "string", "set adjuncts instead of filtering"), "");
 	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
+	const std::string renaming_map=poh.argument<std::string>(pohw.describe_option("--renaming-map", "string", "file path to input atoms renaming map"), "");
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of contacts"));
@@ -89,6 +90,31 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
+	}
+
+	if(!renaming_map.empty())
+	{
+		const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
+		if(!renaming_map_of_crads.empty())
+		{
+			std::map< CRADsPair, ContactValue > map_of_renamed_contacts;
+			for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			{
+				CRAD crads[2]={it->first.a, it->first.b};
+				for(int i=0;i<2;i++)
+				{
+					CRAD& crad=crads[i];
+					std::map<CRAD, CRAD>::const_iterator renaming_it=renaming_map_of_crads.find(crad.without_numbering());
+					if(renaming_it!=renaming_map_of_crads.end())
+					{
+						crad.resName=renaming_it->second.resName;
+						crad.name=renaming_it->second.name;
+					}
+				}
+				map_of_renamed_contacts[CRADsPair(crads[0], crads[1])].add(it->second);
+			}
+			map_of_contacts=map_of_renamed_contacts;
+		}
 	}
 
 	if(inter_residue)

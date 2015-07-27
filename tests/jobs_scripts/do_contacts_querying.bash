@@ -25,7 +25,12 @@ cat $SUBDIR/contacts \
 > $SUBDIR/match_first_and_second_resnames
 
 cat $SUBDIR/contacts \
-| $VORONOTA query-contacts --inter-residue --summing-exceptions <(echo 'R<ARG>') --match-first 'R<THR>' --match-second 'R<ARG>' \
+| $VORONOTA query-contacts \
+  --renaming-map <(echo -e 'R<ARG>A<NH2> R<ARG>A<NH1>\nR<ARG>A<CG> R<ARG>A<CD>') \
+  --inter-residue \
+  --summing-exceptions <(echo 'R<ARG>') \
+  --match-first 'R<THR>' \
+  --match-second 'R<ARG>' \
 | column -t \
 > $SUBDIR/match_first_and_second_resnames_semicontracted
 
