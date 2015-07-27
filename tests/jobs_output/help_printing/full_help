@@ -182,6 +182,7 @@ Command 'query-contacts' options:
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
+--renaming-map                  string      file path to input atoms renaming map
 --inter-residue                             flag to convert input to inter-residue contacts
 --summing-exceptions            string      file path to input inter-residue summing exceptions annotations
 --summarize                                 flag to output only summary of contacts
