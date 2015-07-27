@@ -75,6 +75,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
+	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of contacts"));
 	enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
 
@@ -92,10 +93,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(inter_residue)
 	{
+		const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
 		std::map< CRADsPair, ContactValue > map_of_reduced_contacts;
 		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			const CRADsPair crads(it->first.a.without_atom(), it->first.b.without_atom());
+			const CRADsPair& raw_crads=it->first;
+			const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
+			const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.b, summing_exceptions_set_of_crads));
+			const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()));
 			if(!(crads.a==crads.b))
 			{
 				map_of_reduced_contacts[crads].add(it->second);
