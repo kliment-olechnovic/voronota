@@ -130,10 +130,15 @@
 <li><a href="#input-stream-19">Input stream:</a></li>
 <li><a href="#output-stream-19">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-vectorize-contacts">Command 'vectorize-contacts'</a><ul>
 <li><a href="#command-line-arguments-20">Command line arguments:</a></li>
 <li><a href="#input-stream-20">Input stream:</a></li>
 <li><a href="#output-stream-20">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-line-arguments-21">Command line arguments:</a></li>
+<li><a href="#input-stream-21">Input stream:</a></li>
+<li><a href="#output-stream-21">Output stream:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
@@ -274,6 +279,7 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <li>score-contacts-energy-stats</li>
 <li>score-contacts-quality</li>
 <li>compare-contacts</li>
+<li>vectorize-contacts</li>
 <li>score-scores</li>
 </ul>
 <h2 id="command-get-balls-from-atoms-file"><a href="#TOC">Command 'get-balls-from-atoms-file'</a></h2>
@@ -1722,8 +1728,32 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>list of model contacts (line format: 'annotation1 annotation2 area')</p>
 <h3 id="output-stream-19"><a href="#TOC">Output stream:</a></h3>
 <p>global scores (atom-level and residue-level)</p>
-<h2 id="command-score-scores"><a href="#TOC">Command 'score-scores'</a></h2>
+<h2 id="command-vectorize-contacts"><a href="#TOC">Command 'vectorize-contacts'</a></h2>
 <h3 id="command-line-arguments-20"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-20"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts files</p>
+<h3 id="output-stream-20"><a href="#TOC">Output stream:</a></h3>
+<p>table of contacts vectors</p>
+<h2 id="command-score-scores"><a href="#TOC">Command 'score-scores'</a></h2>
+<h3 id="command-line-arguments-21"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1772,9 +1802,9 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-20"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-21"><a href="#TOC">Input stream:</a></h3>
 <p>pairs of reference and testable scores files</p>
-<h3 id="output-stream-20"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-21"><a href="#TOC">Output stream:</a></h3>
 <p>global results</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="cad-score-method-wrapper-script"><a href="#TOC">CAD-score method wrapper script</a></h2>
