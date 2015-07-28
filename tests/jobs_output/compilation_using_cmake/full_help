@@ -22,6 +22,7 @@ score-contacts-energy
 score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
+vectorize-contacts
 score-scores
 
 Command 'get-balls-from-atoms-file' options:
@@ -288,6 +289,11 @@ Command 'compare-contacts' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  global scores (atom-level and residue-level)
+
+Command 'vectorize-contacts' options:
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts files
+stdout  ->  table of contacts vectors
 
 Command 'score-scores' options:
 --reference-threshold           number      reference scores classification threshold
