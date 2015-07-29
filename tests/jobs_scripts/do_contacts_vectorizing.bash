@@ -26,6 +26,8 @@ find $SUBDIR/ -type f -name "*.contacts" \
 | $VORONOTA vectorize-contacts \
   --CAD-score-matrix $SUBDIR/cadscore_matrix \
   --distance-matrix $SUBDIR/distance_matrix \
+  --clustering-output $SUBDIR/clusters \
+  --clustering-threshold 0.6 \
 > $SUBDIR/contacts_vectors
 
 rm $SUBDIR/*.contacts
