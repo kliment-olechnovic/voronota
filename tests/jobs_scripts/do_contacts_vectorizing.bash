@@ -24,6 +24,8 @@ done
 find $SUBDIR/ -type f -name "*.contacts" \
 | sort \
 | $VORONOTA vectorize-contacts \
+  --CAD-score-matrix $SUBDIR/cadscore_matrix \
+  --distance-matrix $SUBDIR/distance_matrix \
 > $SUBDIR/contacts_vectors
 
 rm $SUBDIR/*.contacts

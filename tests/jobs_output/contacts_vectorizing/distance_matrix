@@ -1,0 +1,4 @@
+./jobs_output/contacts_vectorizing/model1.contacts ./jobs_output/contacts_vectorizing/model2.contacts ./jobs_output/contacts_vectorizing/target.contacts
+0 79.0515 94.5544
+79.0515 0 67.6772
+94.5544 67.6772 0
