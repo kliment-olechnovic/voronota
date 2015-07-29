@@ -293,6 +293,8 @@ stdout  ->  global scores (atom-level and residue-level)
 Command 'vectorize-contacts' options:
 --CAD-score-matrix              string      file path to output CAD-score matrix
 --distance-matrix               string      file path to output euclidean distance matrix
+--clustering-output             string      file path to output clusters
+--clustering-threshold          string      clustering threshold value
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts files
 stdout  ->  table of contacts vectors

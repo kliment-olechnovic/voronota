@@ -154,6 +154,110 @@ void print_similarity_matrix(const std::map< std::string, std::vector<double> >&
 	}
 }
 
+template<typename Functor>
+std::vector< std::vector<double> > calc_similarity_matrix(const std::map< std::string, std::vector<double> >& map_of_areas_vectors, Functor functor)
+{
+	std::vector< std::vector<double> > matrix(map_of_areas_vectors.size(), std::vector<double>(map_of_areas_vectors.size(), 0.0));
+	int i=0;
+	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	{
+		int j=0;
+		for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
+		{
+			matrix[i][j]=functor(it->second, jt->second);
+			j++;
+		}
+		i++;
+	}
+	return matrix;
+}
+
+std::vector< std::vector<std::size_t> > calc_clusters_using_similarity_matrix(const std::vector< std::vector<double> >& matrix, const double threshold)
+{
+	std::vector< std::vector<std::size_t> > clusters;
+	std::set<std::size_t> unclustered_ids;
+	for(std::size_t i=0;i<matrix.size();i++)
+	{
+		unclustered_ids.insert(i);
+	}
+	bool end=false;
+	while(!end)
+	{
+		std::pair<int, std::size_t> max_neighbours_value_id(-1, 0);
+		for(std::set<std::size_t>::const_iterator it=unclustered_ids.begin();it!=unclustered_ids.end();++it)
+		{
+			const std::size_t i=(*it);
+			int neighbours=0;
+			for(std::set<std::size_t>::const_iterator jt=unclustered_ids.begin();jt!=unclustered_ids.end();++jt)
+			{
+				const std::size_t j=(*jt);
+				if(matrix[i][j]>=threshold)
+				{
+					neighbours++;
+				}
+			}
+			if(neighbours>max_neighbours_value_id.first)
+			{
+				max_neighbours_value_id.first=neighbours;
+				max_neighbours_value_id.second=i;
+			}
+		}
+		if(max_neighbours_value_id.first>=0)
+		{
+			const std::size_t i=max_neighbours_value_id.second;
+			std::vector<std::size_t> cluster(1, i);
+			cluster.reserve(max_neighbours_value_id.first+1);
+			for(std::set<std::size_t>::const_iterator jt=unclustered_ids.begin();jt!=unclustered_ids.end();++jt)
+			{
+				const std::size_t j=(*jt);
+				if(j!=i && matrix[i][j]>=threshold)
+				{
+					cluster.push_back(j);
+				}
+			}
+			for(std::vector<std::size_t>::const_iterator it=cluster.begin();it!=cluster.end();++it)
+			{
+				unclustered_ids.erase(*it);
+			}
+			clusters.push_back(cluster);
+		}
+		else
+		{
+			end=true;
+		}
+	}
+	return clusters;
+}
+
+void print_clusters(
+		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
+		const std::vector< std::vector<std::size_t> > clusters,
+		const std::string& output_file)
+{
+	std::ofstream output(output_file.c_str(), std::ios::out);
+	if(!output.good())
+	{
+		return;
+	}
+	std::vector<std::string> titles(map_of_areas_vectors.size());
+	{
+		std::size_t i=0;
+		for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+		{
+			titles[i]=(it->first);
+			i++;
+		}
+	}
+	for(std::size_t i=0;i<clusters.size();i++)
+	{
+		for(std::size_t j=0;j<clusters[i].size();j++)
+		{
+			output << (j==0 ? "" : " ") << titles[clusters[i][j]];
+		}
+		output << "\n";
+	}
+}
+
 }
 
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -164,6 +268,8 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::string cadscore_matrix_file=poh.argument<std::string>(pohw.describe_option("--CAD-score-matrix", "string", "file path to output CAD-score matrix"), "");
 	const std::string distance_matrix_file=poh.argument<std::string>(pohw.describe_option("--distance-matrix", "string", "file path to output euclidean distance matrix"), "");
+	const std::string clustering_output_file=poh.argument<std::string>(pohw.describe_option("--clustering-output", "string", "file path to output clusters"), "");
+	const double clustering_threshold=poh.argument<double>(pohw.describe_option("--clustering-threshold", "string", "clustering threshold value"), 0.5);
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -181,6 +287,14 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
 	print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
+
+	if(!clustering_output_file.empty())
+	{
+		print_clusters(
+				map_of_areas_vectors,
+				calc_clusters_using_similarity_matrix(calc_similarity_matrix(map_of_areas_vectors, calc_cadscore_of_two_vectors), clustering_threshold),
+				clustering_output_file);
+	}
 
 	print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
 }
