@@ -172,7 +172,10 @@ std::vector< std::vector<double> > calc_similarity_matrix(const std::map< std::s
 	return matrix;
 }
 
-std::vector< std::vector<std::size_t> > calc_clusters_using_similarity_matrix(const std::vector< std::vector<double> >& matrix, const double threshold)
+std::vector< std::vector<std::size_t> > calc_clusters_using_similarity_matrix(
+		const std::vector< std::vector<double> >& matrix,
+		const double threshold,
+		const bool eliminate_false_singletons)
 {
 	std::vector< std::vector<std::size_t> > clusters;
 	std::set<std::size_t> unclustered_ids;
@@ -226,7 +229,67 @@ std::vector< std::vector<std::size_t> > calc_clusters_using_similarity_matrix(co
 			end=true;
 		}
 	}
-	return clusters;
+	if(eliminate_false_singletons)
+	{
+		std::vector<std::size_t> non_singletons;
+		std::vector<std::size_t> singletons;
+		for(std::size_t l=0;l<clusters.size();l++)
+		{
+			if(clusters[l].size()==1)
+			{
+				singletons.push_back(l);
+			}
+			else if(clusters[l].size()>1)
+			{
+				non_singletons.push_back(l);
+			}
+		}
+		std::vector<std::size_t> true_singletons;
+		for(std::size_t l=0;l<singletons.size();l++)
+		{
+			const std::size_t i=clusters[singletons[l]].front();
+			std::pair<std::size_t, double> max_similarity_value_id(0, 0.0);
+			for(std::size_t m=0;m<non_singletons.size();m++)
+			{
+				const std::vector<std::size_t>& cluster=clusters[non_singletons[m]];
+				for(std::size_t n=0;n<cluster.size();n++)
+				{
+					const std::size_t j=cluster[n];
+					if(matrix[i][j]>max_similarity_value_id.second)
+					{
+						max_similarity_value_id.first=non_singletons[m];
+						max_similarity_value_id.second=matrix[i][j];
+					}
+				}
+			}
+			if(max_similarity_value_id.second>=threshold)
+			{
+				clusters[max_similarity_value_id.first].push_back(i);
+			}
+			else
+			{
+				true_singletons.push_back(singletons[l]);
+			}
+		}
+		std::vector<std::size_t> survived_clusters=non_singletons;
+		survived_clusters.insert(survived_clusters.end(), true_singletons.begin(), true_singletons.end());
+		std::multimap<std::size_t, std::size_t> survived_clusters_sizes;
+		for(std::size_t l=0;l<survived_clusters.size();l++)
+		{
+			survived_clusters_sizes.insert(std::make_pair(clusters[survived_clusters[l]].size(), survived_clusters[l]));
+		}
+		std::vector< std::vector<std::size_t> > refined_clusters;
+		refined_clusters.reserve(survived_clusters.size());
+		for(std::multimap<std::size_t, std::size_t>::const_reverse_iterator it=survived_clusters_sizes.rbegin();it!=survived_clusters_sizes.rend();++it)
+		{
+			refined_clusters.push_back(clusters[it->second]);
+		}
+		return refined_clusters;
+	}
+	else
+	{
+		return clusters;
+	}
 }
 
 void print_clusters(
@@ -292,7 +355,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_clusters(
 				map_of_areas_vectors,
-				calc_clusters_using_similarity_matrix(calc_similarity_matrix(map_of_areas_vectors, calc_cadscore_of_two_vectors), clustering_threshold),
+				calc_clusters_using_similarity_matrix(calc_similarity_matrix(map_of_areas_vectors, calc_cadscore_of_two_vectors), clustering_threshold, true),
 				clustering_output_file);
 	}
 
