@@ -175,40 +175,39 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 	std::vector<int> deletion_flags(map_of_areas_vectors.size(), 0);
 
 	{
+		std::size_t i=0;
+		for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
 		{
-			std::size_t i=0;
-			for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+			Neighbors& neighbors=map_of_available_neighbors[i];
+			std::size_t j=0;
+			for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
 			{
-				Neighbors& neighbors=map_of_available_neighbors[i];
-				std::size_t j=0;
-				for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
+				const double similarity=functor(it->second, jt->second);
+				if(similarity>=threshold)
 				{
-					const double similarity=functor(it->second, jt->second);
-					if(similarity>=threshold)
-					{
-						neighbors.push_back(j);
-					}
-					j++;
+					neighbors.push_back(j);
 				}
-				i++;
+				j++;
 			}
+			i++;
 		}
+	}
+
+	{
+		MapOfNeighbors::iterator map_it=map_of_available_neighbors.begin();
+		while(map_it!=map_of_available_neighbors.end())
 		{
-			MapOfNeighbors::iterator map_it=map_of_available_neighbors.begin();
-			while(map_it!=map_of_available_neighbors.end())
+			if(map_it->second.size()<2)
 			{
-				if(map_it->second.size()<2)
-				{
-					true_singleton_clusters.push_back(std::make_pair(map_it->first, map_it->second));
-					deletion_flags[map_it->first]=1;
-					MapOfNeighbors::iterator deletion_it=map_it;
-					++map_it;
-					map_of_available_neighbors.erase(deletion_it);
-				}
-				else
-				{
-					++map_it;
-				}
+				true_singleton_clusters.push_back(std::make_pair(map_it->first, map_it->second));
+				deletion_flags[map_it->first]=1;
+				MapOfNeighbors::iterator deletion_it=map_it;
+				++map_it;
+				map_of_available_neighbors.erase(deletion_it);
+			}
+			else
+			{
+				++map_it;
 			}
 		}
 	}
@@ -301,13 +300,13 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 	}
 
 	ListOfNeighbors clusters=big_clusters;
-	if(!true_singleton_clusters.empty())
-	{
-		clusters.insert(clusters.end(), true_singleton_clusters.begin(), true_singleton_clusters.end());
-	}
 	if(!false_singleton_clusters.empty())
 	{
 		clusters.insert(clusters.end(), false_singleton_clusters.begin(), false_singleton_clusters.end());
+	}
+	if(!true_singleton_clusters.empty())
+	{
+		clusters.insert(clusters.end(), true_singleton_clusters.begin(), true_singleton_clusters.end());
 	}
 
 	return clusters;
