@@ -46,7 +46,8 @@ public:
 			const double probe,
 			const double step,
 			const int projections,
-			const std::set<std::size_t>& mock_solvent_ids)
+			const std::set<std::size_t>& mock_solvent_ids,
+			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle)
 	{
 		std::map<Pair, double> result;
 
@@ -55,7 +56,9 @@ public:
 		{
 			const std::size_t a=pairs_vertices_it->first.get(0);
 			const std::size_t b=pairs_vertices_it->first.get(1);
-			if((mock_solvent_ids.count(a)==0 || mock_solvent_ids.count(b)==0) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
+			const bool a_is_not_mock_solvent=(mock_solvent_ids.count(a)==0);
+			const bool b_is_not_mock_solvent=(mock_solvent_ids.count(b)==0);
+			if((a_is_not_mock_solvent || b_is_not_mock_solvent) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
 				double sum=0.0;
 				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections);
@@ -68,7 +71,19 @@ public:
 						const SimplePoint center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a], spheres[b]);
 						for(std::size_t i=0;i<outline.size();i++)
 						{
-							sum+=triangle_area(center, outline[i], outline[(i+1<outline.size()) ? (i+1) : 0]);
+							const std::size_t second_index=((i+1<outline.size()) ? (i+1) : 0);
+							sum+=triangle_area(center, outline[i], outline[second_index]);
+							if(volumes_bundle.first)
+							{
+								if(a_is_not_mock_solvent)
+								{
+									volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], center, outline[i], outline[second_index]));
+								}
+								if(b_is_not_mock_solvent)
+								{
+									volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], center, outline[i], outline[second_index]));
+								}
+							}
 						}
 					}
 				}
@@ -86,7 +101,8 @@ public:
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
 			const double probe,
-			const int sih_depth)
+			const int sih_depth,
+			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle)
 	{
 		std::map<std::size_t, double> result;
 
@@ -107,6 +123,10 @@ public:
 				if(sum>0.0)
 				{
 					result[a]=sum;
+					if(volumes_bundle.first)
+					{
+						volumes_bundle.second[a]+=((sum*surface_sphere.r)/3.0);
+					}
 				}
 			}
 		}

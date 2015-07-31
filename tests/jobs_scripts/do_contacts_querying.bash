@@ -8,7 +8,7 @@ mkdir -p $SUBDIR
 cat $INPUTDIR/single/structure.pdb \
 | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms --annotated \
 | tee $SUBDIR/balls \
-| $VORONOTA calculate-contacts --annotated \
+| $VORONOTA calculate-contacts --annotated --volumes-output $SUBDIR/volumes \
 > $SUBDIR/contacts
 
 cat $SUBDIR/contacts \

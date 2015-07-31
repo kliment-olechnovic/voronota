@@ -15,7 +15,7 @@ cat $SUBDIR/balls | $VORONOTA calculate-vertices --print-log --check > $SUBDIR/t
 
 cat $SUBDIR/balls | $VORONOTA calculate-vertices-in-parallel --print-log --method simulated --parts 8 > $SUBDIR/triangulation_simulated_parallel 2> $SUBDIR/triangulation_simulated_parallel_log
 
-cat $SUBDIR/balls | $VORONOTA calculate-contacts > $SUBDIR/contacts
+cat $SUBDIR/balls | $VORONOTA calculate-contacts --volumes-output $SUBDIR/volumes > $SUBDIR/contacts
 
 ##############################################################
 
@@ -28,7 +28,7 @@ cat $SUBDIR/balls | $VORONOTA calculate-vertices --print-log --check > $SUBDIR/t
 
 cat $SUBDIR/balls | $VORONOTA calculate-vertices-in-parallel --print-log --method simulated --parts 8 > $SUBDIR/triangulation_simulated_parallel 2> $SUBDIR/triangulation_simulated_parallel_log
 
-cat $SUBDIR/balls | $VORONOTA calculate-contacts > $SUBDIR/contacts
+cat $SUBDIR/balls | $VORONOTA calculate-contacts --volumes-output $SUBDIR/volumes > $SUBDIR/contacts
 
 ##############################################################
 
@@ -41,7 +41,7 @@ cat $SUBDIR/balls | $VORONOTA calculate-vertices --print-log --check > $SUBDIR/t
 
 cat $SUBDIR/balls | $VORONOTA calculate-vertices-in-parallel --print-log --method simulated --parts 8 > $SUBDIR/triangulation_simulated_parallel 2> $SUBDIR/triangulation_simulated_parallel_log
 
-cat $SUBDIR/balls | $VORONOTA calculate-contacts > $SUBDIR/contacts
+cat $SUBDIR/balls | $VORONOTA calculate-contacts --volumes-output $SUBDIR/volumes > $SUBDIR/contacts
 
 ##############################################################
 
