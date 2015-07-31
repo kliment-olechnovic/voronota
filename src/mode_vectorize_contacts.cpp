@@ -119,6 +119,31 @@ void print_map_of_areas_vectors(
 	}
 }
 
+void print_map_of_areas_vectors_transposed(
+		const std::map<CRADsPair, std::size_t>& crads_ids,
+		const std::map< std::string, std::vector<double> >& map_of_areas_vectors)
+{
+	std::cout << "contact";
+	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	{
+		std::cout << " " << it->first;
+	}
+	std::cout << "\n";
+	std::size_t i=0;
+	for(std::map<CRADsPair, std::size_t>::const_iterator it=crads_ids.begin();it!=crads_ids.end();++it)
+	{
+		const CRADsPair& crads=it->first;
+		std::cout << crads.a.str() << "__" << crads.b.str();
+		for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+		{
+			const std::vector<double>& areas_vector=it->second;
+			std::cout << " " << (i<areas_vector.size() ? areas_vector[i] : 0.0);
+		}
+		std::cout << "\n";
+		i++;
+	}
+}
+
 double calc_configurable_cadscore_of_two_vectors(const std::vector<double>& a, const std::vector<double>& b, const bool symmetric)
 {
 	if(a.size()!=b.size())
@@ -382,6 +407,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "list of contacts files");
 	pohw.describe_io("stdout", false, true, "table of contacts vectors");
 
+	const bool transpose=poh.contains_option(pohw.describe_option("--transpose", "", "flag to transpose output table"));
 	const std::string cadscore_matrix_file=poh.argument<std::string>(pohw.describe_option("--CAD-score-matrix", "string", "file path to output CAD-score matrix"), "");
 	const std::string distance_matrix_file=poh.argument<std::string>(pohw.describe_option("--distance-matrix", "string", "file path to output euclidean distance matrix"), "");
 	const std::string clustering_output_file=poh.argument<std::string>(pohw.describe_option("--clustering-output", "string", "file path to output clusters"), "");
@@ -412,5 +438,12 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				clustering_output_file);
 	}
 
-	print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
+	if(transpose)
+	{
+		print_map_of_areas_vectors_transposed(crads_ids, map_of_areas_vectors);
+	}
+	else
+	{
+		print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
+	}
 }

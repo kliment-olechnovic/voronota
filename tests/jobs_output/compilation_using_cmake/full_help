@@ -291,6 +291,7 @@ stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  global scores (atom-level and residue-level)
 
 Command 'vectorize-contacts' options:
+--transpose                                 flag to transpose output table
 --CAD-score-matrix              string      file path to output CAD-score matrix
 --distance-matrix               string      file path to output euclidean distance matrix
 --clustering-output             string      file path to output clusters
