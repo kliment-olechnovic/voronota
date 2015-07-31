@@ -30,4 +30,10 @@ find $SUBDIR/ -type f -name "*.contacts" \
   --clustering-threshold 0.6 \
 > $SUBDIR/contacts_vectors
 
+find $SUBDIR/ -type f -name "*.contacts" \
+| sort \
+| $VORONOTA vectorize-contacts \
+  --transpose \
+> $SUBDIR/contacts_vectors_transposed
+
 rm $SUBDIR/*.contacts
