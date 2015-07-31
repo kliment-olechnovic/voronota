@@ -136,6 +136,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool add_mirrored=poh.contains_option(pohw.describe_option("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 	const bool draw=poh.contains_option(pohw.describe_option("--draw", "", "flag to output graphics for annotated contacts"));
 	const bool tag_centrality=poh.contains_option(pohw.describe_option("--tag-centrality", "", "flag to tag contacts centrality"));
+	const std::string volumes_output=poh.argument<std::string>(pohw.describe_option("--volumes-output", "string", "file path to output constrained cells volumes"), "");
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -175,9 +176,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
 
 	std::map<apollota::Pair, double> interactions_map;
+	std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(!volumes_output.empty(), std::map<std::size_t, double>());
 	
 	{
-		const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids);
+		const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids, volumes_map_bundle);
 		for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 		{
 			if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
@@ -189,7 +191,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(mock_solvent_ids.empty())
 	{
-		const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth);
+		const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(spheres, vertices_vector, probe, sih_depth, volumes_map_bundle);
 		for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
 		{
 			if(it->first<input_spheres_count)
@@ -276,6 +278,46 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				std::cout << it->first.get(0) << " " << it->first.get(1) << " " << it->second << "\n";
 			}
+		}
+	}
+
+	if(volumes_map_bundle.first && !volumes_map_bundle.second.empty() && !volumes_output.empty())
+	{
+		const std::map<std::size_t, double>& volumes_map=volumes_map_bundle.second;
+		if(!input_ball_records.empty())
+		{
+			std::map<auxiliaries::ChainResidueAtomDescriptor, double> output_volumes_map;
+			for(std::map<std::size_t, double>::const_iterator it=volumes_map.begin();it!=volumes_map.end();++it)
+			{
+				const double volume=it->second;
+				if(volume>0.0)
+				{
+					const std::size_t a_id=it->first;
+					if(a_id<input_ball_records.size())
+					{
+						const auxiliaries::ChainResidueAtomDescriptor& crad_a=input_ball_records[a_id].first;
+						output_volumes_map[crad_a]=volume;
+					}
+				}
+			}
+			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+		}
+		else
+		{
+			std::map<std::size_t, double> output_volumes_map;
+			for(std::map<std::size_t, double>::const_iterator it=volumes_map.begin();it!=volumes_map.end();++it)
+			{
+				const double volume=it->second;
+				if(volume>0.0)
+				{
+					const std::size_t a_id=it->first;
+					if(a_id<input_spheres_count)
+					{
+						output_volumes_map[a_id]=volume;
+					}
+				}
+			}
+			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
 		}
 	}
 }

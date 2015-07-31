@@ -73,6 +73,7 @@ Command 'calculate-contacts' options:
 --add-mirrored                              flag to add mirrored contacts to non-annnotated output
 --draw                                      flag to output graphics for annotated contacts
 --tag-centrality                            flag to tag contacts centrality
+--volumes-output                string      file path to output constrained cells volumes
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls
               (default mode line format: 'x y z r')
