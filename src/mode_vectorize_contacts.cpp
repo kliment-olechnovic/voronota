@@ -1,3 +1,5 @@
+#include <list>
+
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/chain_residue_atom_descriptor.h"
@@ -154,147 +156,110 @@ void print_similarity_matrix(const std::map< std::string, std::vector<double> >&
 	}
 }
 
-template<typename Functor>
-std::vector< std::vector<double> > calc_similarity_matrix(const std::map< std::string, std::vector<double> >& map_of_areas_vectors, Functor functor)
-{
-	std::vector< std::vector<double> > matrix(map_of_areas_vectors.size(), std::vector<double>(map_of_areas_vectors.size(), 0.0));
-	int i=0;
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
-	{
-		int j=0;
-		for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
-		{
-			matrix[i][j]=functor(it->second, jt->second);
-			j++;
-		}
-		i++;
-	}
-	return matrix;
-}
+typedef std::list< std::pair<std::size_t, double> > Neighbors;
+typedef std::map< std::size_t, Neighbors > MapOfNeighbors;
 
-std::vector< std::vector<std::size_t> > calc_clusters_using_similarity_matrix(
-		const std::vector< std::vector<double> >& matrix,
-		const double threshold,
-		const bool eliminate_false_singletons)
+template<typename Functor>
+MapOfNeighbors calc_clusters(
+		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
+		Functor functor,
+		const double threshold)
 {
-	std::vector< std::vector<std::size_t> > clusters;
-	std::set<std::size_t> unclustered_ids;
-	for(std::size_t i=0;i<matrix.size();i++)
+	MapOfNeighbors clusters;
+	MapOfNeighbors map_of_available_neighbors;
+	std::vector<int> deletion_flags(map_of_areas_vectors.size(), 0);
+
 	{
-		unclustered_ids.insert(i);
-	}
-	bool end=false;
-	while(!end)
-	{
-		std::pair<int, std::size_t> max_neighbours_value_id(-1, 0);
-		for(std::set<std::size_t>::const_iterator it=unclustered_ids.begin();it!=unclustered_ids.end();++it)
 		{
-			const std::size_t i=(*it);
-			int neighbours=0;
-			for(std::set<std::size_t>::const_iterator jt=unclustered_ids.begin();jt!=unclustered_ids.end();++jt)
+			std::size_t i=0;
+			for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
 			{
-				const std::size_t j=(*jt);
-				if(matrix[i][j]>=threshold)
+				Neighbors& neighbors=map_of_available_neighbors[i];
+				std::size_t j=0;
+				for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
 				{
-					neighbours++;
-				}
-			}
-			if(neighbours>max_neighbours_value_id.first)
-			{
-				max_neighbours_value_id.first=neighbours;
-				max_neighbours_value_id.second=i;
-			}
-		}
-		if(max_neighbours_value_id.first>=0)
-		{
-			const std::size_t i=max_neighbours_value_id.second;
-			std::vector<std::size_t> cluster(1, i);
-			cluster.reserve(max_neighbours_value_id.first+1);
-			for(std::set<std::size_t>::const_iterator jt=unclustered_ids.begin();jt!=unclustered_ids.end();++jt)
-			{
-				const std::size_t j=(*jt);
-				if(j!=i && matrix[i][j]>=threshold)
-				{
-					cluster.push_back(j);
-				}
-			}
-			for(std::vector<std::size_t>::const_iterator it=cluster.begin();it!=cluster.end();++it)
-			{
-				unclustered_ids.erase(*it);
-			}
-			clusters.push_back(cluster);
-		}
-		else
-		{
-			end=true;
-		}
-	}
-	if(eliminate_false_singletons)
-	{
-		std::vector<std::size_t> non_singletons;
-		std::vector<std::size_t> singletons;
-		for(std::size_t l=0;l<clusters.size();l++)
-		{
-			if(clusters[l].size()==1)
-			{
-				singletons.push_back(l);
-			}
-			else if(clusters[l].size()>1)
-			{
-				non_singletons.push_back(l);
-			}
-		}
-		std::vector<std::size_t> true_singletons;
-		for(std::size_t l=0;l<singletons.size();l++)
-		{
-			const std::size_t i=clusters[singletons[l]].front();
-			std::pair<std::size_t, double> max_similarity_value_id(0, 0.0);
-			for(std::size_t m=0;m<non_singletons.size();m++)
-			{
-				const std::vector<std::size_t>& cluster=clusters[non_singletons[m]];
-				for(std::size_t n=0;n<cluster.size();n++)
-				{
-					const std::size_t j=cluster[n];
-					if(matrix[i][j]>max_similarity_value_id.second)
+					const double similarity=functor(it->second, jt->second);
+					if(similarity>=threshold)
 					{
-						max_similarity_value_id.first=non_singletons[m];
-						max_similarity_value_id.second=matrix[i][j];
+						neighbors.push_back(std::make_pair(j, similarity));
+					}
+					j++;
+				}
+				i++;
+			}
+		}
+		{
+			MapOfNeighbors::iterator map_it=map_of_available_neighbors.begin();
+			while(map_it!=map_of_available_neighbors.end())
+			{
+				if(map_it->second.size()<2)
+				{
+					clusters[map_it->first]=map_it->second;
+					deletion_flags[map_it->first]=1;
+					MapOfNeighbors::iterator deletion_it=map_it;
+					++map_it;
+					map_of_available_neighbors.erase(deletion_it);
+				}
+				else
+				{
+					++map_it;
+				}
+			}
+		}
+	}
+
+	while(!map_of_available_neighbors.empty())
+	{
+		MapOfNeighbors::const_iterator map_it_of_most_neighbors=map_of_available_neighbors.end();
+		for(MapOfNeighbors::iterator map_it=map_of_available_neighbors.begin();map_it!=map_of_available_neighbors.end();++map_it)
+		{
+			Neighbors& neighbors=map_it->second;
+			{
+				Neighbors::iterator neighbors_it=neighbors.begin();
+				while(neighbors_it!=neighbors.end())
+				{
+					if(deletion_flags[neighbors_it->first]!=0)
+					{
+						Neighbors::iterator deletion_it=neighbors_it;
+						++neighbors_it;
+						neighbors.erase(deletion_it);
+					}
+					else
+					{
+						++neighbors_it;
 					}
 				}
 			}
-			if(max_similarity_value_id.second>=threshold)
+			if(map_it_of_most_neighbors==map_of_available_neighbors.end() || neighbors.size()>map_it_of_most_neighbors->second.size())
 			{
-				clusters[max_similarity_value_id.first].push_back(i);
-			}
-			else
-			{
-				true_singletons.push_back(singletons[l]);
+				map_it_of_most_neighbors=map_it;
 			}
 		}
-		std::vector<std::size_t> survived_clusters=non_singletons;
-		survived_clusters.insert(survived_clusters.end(), true_singletons.begin(), true_singletons.end());
-		std::multimap<std::size_t, std::size_t> survived_clusters_sizes;
-		for(std::size_t l=0;l<survived_clusters.size();l++)
+		if(map_it_of_most_neighbors!=map_of_available_neighbors.end())
 		{
-			survived_clusters_sizes.insert(std::make_pair(clusters[survived_clusters[l]].size(), survived_clusters[l]));
+			const std::size_t center=map_it_of_most_neighbors->first;
+			Neighbors& neighbors=clusters[center];
+			neighbors=map_it_of_most_neighbors->second;
+			for(Neighbors::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
+			{
+				deletion_flags[neighbors_it->first]=1;
+				map_of_available_neighbors.erase(neighbors_it->first);
+			}
+			deletion_flags[center]=1;
+			map_of_available_neighbors.erase(center);
 		}
-		std::vector< std::vector<std::size_t> > refined_clusters;
-		refined_clusters.reserve(survived_clusters.size());
-		for(std::multimap<std::size_t, std::size_t>::const_reverse_iterator it=survived_clusters_sizes.rbegin();it!=survived_clusters_sizes.rend();++it)
+		else
 		{
-			refined_clusters.push_back(clusters[it->second]);
+			map_of_available_neighbors.clear();
 		}
-		return refined_clusters;
 	}
-	else
-	{
-		return clusters;
-	}
+
+	return clusters;
 }
 
 void print_clusters(
 		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
-		const std::vector< std::vector<std::size_t> > clusters,
+		const MapOfNeighbors& clusters,
 		const std::string& output_file)
 {
 	std::ofstream output(output_file.c_str(), std::ios::out);
@@ -302,6 +267,7 @@ void print_clusters(
 	{
 		return;
 	}
+
 	std::vector<std::string> titles(map_of_areas_vectors.size());
 	{
 		std::size_t i=0;
@@ -311,11 +277,17 @@ void print_clusters(
 			i++;
 		}
 	}
-	for(std::size_t i=0;i<clusters.size();i++)
+
+	for(MapOfNeighbors::const_iterator map_it=clusters.begin();map_it!=clusters.end();++map_it)
 	{
-		for(std::size_t j=0;j<clusters[i].size();j++)
+		output << titles[map_it->first];
+		const Neighbors& neighbors=map_it->second;
+		for(Neighbors::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
 		{
-			output << (j==0 ? "" : " ") << titles[clusters[i][j]];
+			if(neighbors_it->first!=map_it->first)
+			{
+				output << " " << titles[neighbors_it->first];
+			}
 		}
 		output << "\n";
 	}
@@ -355,7 +327,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_clusters(
 				map_of_areas_vectors,
-				calc_clusters_using_similarity_matrix(calc_similarity_matrix(map_of_areas_vectors, calc_cadscore_of_two_vectors), clustering_threshold, true),
+				calc_clusters(map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold),
 				clustering_output_file);
 	}
 
