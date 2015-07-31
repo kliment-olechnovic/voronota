@@ -163,9 +163,13 @@ template<typename Functor>
 MapOfNeighbors calc_clusters(
 		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
 		Functor functor,
-		const double threshold)
+		const double threshold,
+		const bool eliminate_false_singletons)
 {
-	MapOfNeighbors clusters;
+	MapOfNeighbors big_clusters;
+	MapOfNeighbors true_singleton_clusters;
+	MapOfNeighbors false_singleton_clusters;
+
 	MapOfNeighbors map_of_available_neighbors;
 	std::vector<int> deletion_flags(map_of_areas_vectors.size(), 0);
 
@@ -194,7 +198,7 @@ MapOfNeighbors calc_clusters(
 			{
 				if(map_it->second.size()<2)
 				{
-					clusters[map_it->first]=map_it->second;
+					true_singleton_clusters[map_it->first]=map_it->second;
 					deletion_flags[map_it->first]=1;
 					MapOfNeighbors::iterator deletion_it=map_it;
 					++map_it;
@@ -238,8 +242,7 @@ MapOfNeighbors calc_clusters(
 		if(map_it_of_most_neighbors!=map_of_available_neighbors.end())
 		{
 			const std::size_t center=map_it_of_most_neighbors->first;
-			Neighbors& neighbors=clusters[center];
-			neighbors=map_it_of_most_neighbors->second;
+			const Neighbors neighbors=map_it_of_most_neighbors->second;
 			for(Neighbors::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
 			{
 				deletion_flags[neighbors_it->first]=1;
@@ -247,11 +250,63 @@ MapOfNeighbors calc_clusters(
 			}
 			deletion_flags[center]=1;
 			map_of_available_neighbors.erase(center);
+			if(neighbors.size()>1)
+			{
+				big_clusters[center]=neighbors;
+			}
+			else
+			{
+				false_singleton_clusters[center]=neighbors;
+			}
 		}
 		else
 		{
 			map_of_available_neighbors.clear();
 		}
+	}
+
+	if(eliminate_false_singletons && !false_singleton_clusters.empty())
+	{
+		std::vector< std::map< std::string, std::vector<double> >::const_iterator > iterators_of_map_of_areas_vectors(map_of_areas_vectors.size());
+		{
+			std::size_t i=0;
+			for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+			{
+				iterators_of_map_of_areas_vectors[i]=it;
+				i++;
+			}
+		}
+		for(MapOfNeighbors::iterator singletons_it=false_singleton_clusters.begin();singletons_it!=false_singleton_clusters.end();++singletons_it)
+		{
+			double max_similarity=0.0;
+			MapOfNeighbors::iterator big_clusters_it_of_closest=big_clusters.end();
+			for(MapOfNeighbors::iterator big_clusters_it=big_clusters.begin();big_clusters_it!=big_clusters.end();++big_clusters_it)
+			{
+				const double similarity=functor(
+						iterators_of_map_of_areas_vectors[singletons_it->first]->second,
+						iterators_of_map_of_areas_vectors[big_clusters_it->first]->second);
+				if(big_clusters_it_of_closest==big_clusters.end() || similarity>max_similarity)
+				{
+					max_similarity=similarity;
+					big_clusters_it_of_closest=big_clusters_it;
+				}
+			}
+			if(big_clusters_it_of_closest!=big_clusters.end())
+			{
+				big_clusters_it_of_closest->second.push_back(std::make_pair(singletons_it->first, max_similarity));
+			}
+		}
+		false_singleton_clusters.clear();
+	}
+
+	MapOfNeighbors clusters=big_clusters;
+	if(!true_singleton_clusters.empty())
+	{
+		clusters.insert(true_singleton_clusters.begin(), true_singleton_clusters.end());
+	}
+	if(!false_singleton_clusters.empty())
+	{
+		clusters.insert(false_singleton_clusters.begin(), false_singleton_clusters.end());
 	}
 
 	return clusters;
@@ -327,7 +382,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		print_clusters(
 				map_of_areas_vectors,
-				calc_clusters(map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold),
+				calc_clusters(map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
 				clustering_output_file);
 	}
 
