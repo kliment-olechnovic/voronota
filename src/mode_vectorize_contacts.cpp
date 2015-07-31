@@ -157,18 +157,20 @@ void print_similarity_matrix(const std::map< std::string, std::vector<double> >&
 }
 
 typedef std::list< std::pair<std::size_t, double> > Neighbors;
-typedef std::map< std::size_t, Neighbors > MapOfNeighbors;
+typedef std::vector< std::pair<std::size_t, Neighbors> > ListOfNeighbors;
 
 template<typename Functor>
-MapOfNeighbors calc_clusters(
+ListOfNeighbors calc_clusters(
 		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
 		Functor functor,
 		const double threshold,
 		const bool eliminate_false_singletons)
 {
-	MapOfNeighbors big_clusters;
-	MapOfNeighbors true_singleton_clusters;
-	MapOfNeighbors false_singleton_clusters;
+	typedef std::map< std::size_t, Neighbors > MapOfNeighbors;
+
+	ListOfNeighbors big_clusters;
+	ListOfNeighbors true_singleton_clusters;
+	ListOfNeighbors false_singleton_clusters;
 
 	MapOfNeighbors map_of_available_neighbors;
 	std::vector<int> deletion_flags(map_of_areas_vectors.size(), 0);
@@ -198,7 +200,7 @@ MapOfNeighbors calc_clusters(
 			{
 				if(map_it->second.size()<2)
 				{
-					true_singleton_clusters[map_it->first]=map_it->second;
+					true_singleton_clusters.push_back(std::make_pair(map_it->first, map_it->second));
 					deletion_flags[map_it->first]=1;
 					MapOfNeighbors::iterator deletion_it=map_it;
 					++map_it;
@@ -252,11 +254,11 @@ MapOfNeighbors calc_clusters(
 			map_of_available_neighbors.erase(center);
 			if(neighbors.size()>1)
 			{
-				big_clusters[center]=neighbors;
+				big_clusters.push_back(std::make_pair(center, neighbors));
 			}
 			else
 			{
-				false_singleton_clusters[center]=neighbors;
+				false_singleton_clusters.push_back(std::make_pair(center, neighbors));
 			}
 		}
 		else
@@ -276,11 +278,11 @@ MapOfNeighbors calc_clusters(
 				i++;
 			}
 		}
-		for(MapOfNeighbors::iterator singletons_it=false_singleton_clusters.begin();singletons_it!=false_singleton_clusters.end();++singletons_it)
+		for(ListOfNeighbors::iterator singletons_it=false_singleton_clusters.begin();singletons_it!=false_singleton_clusters.end();++singletons_it)
 		{
 			double max_similarity=0.0;
-			MapOfNeighbors::iterator big_clusters_it_of_closest=big_clusters.end();
-			for(MapOfNeighbors::iterator big_clusters_it=big_clusters.begin();big_clusters_it!=big_clusters.end();++big_clusters_it)
+			ListOfNeighbors::iterator big_clusters_it_of_closest=big_clusters.end();
+			for(ListOfNeighbors::iterator big_clusters_it=big_clusters.begin();big_clusters_it!=big_clusters.end();++big_clusters_it)
 			{
 				const double similarity=functor(
 						iterators_of_map_of_areas_vectors[singletons_it->first]->second,
@@ -299,14 +301,14 @@ MapOfNeighbors calc_clusters(
 		false_singleton_clusters.clear();
 	}
 
-	MapOfNeighbors clusters=big_clusters;
+	ListOfNeighbors clusters=big_clusters;
 	if(!true_singleton_clusters.empty())
 	{
-		clusters.insert(true_singleton_clusters.begin(), true_singleton_clusters.end());
+		clusters.insert(clusters.end(), true_singleton_clusters.begin(), true_singleton_clusters.end());
 	}
 	if(!false_singleton_clusters.empty())
 	{
-		clusters.insert(false_singleton_clusters.begin(), false_singleton_clusters.end());
+		clusters.insert(clusters.end(), false_singleton_clusters.begin(), false_singleton_clusters.end());
 	}
 
 	return clusters;
@@ -314,7 +316,7 @@ MapOfNeighbors calc_clusters(
 
 void print_clusters(
 		const std::map< std::string, std::vector<double> >& map_of_areas_vectors,
-		const MapOfNeighbors& clusters,
+		const ListOfNeighbors& clusters,
 		const std::string& output_file)
 {
 	std::ofstream output(output_file.c_str(), std::ios::out);
@@ -333,7 +335,7 @@ void print_clusters(
 		}
 	}
 
-	for(MapOfNeighbors::const_iterator map_it=clusters.begin();map_it!=clusters.end();++map_it)
+	for(ListOfNeighbors::const_iterator map_it=clusters.begin();map_it!=clusters.end();++map_it)
 	{
 		output << titles[map_it->first];
 		const Neighbors& neighbors=map_it->second;
