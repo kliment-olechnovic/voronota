@@ -7,20 +7,46 @@
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+
+std::size_t calc_common_path_start_length(const std::set<std::string>& filenames)
+{
+	std::size_t common_path_start_length=0;
+	if(filenames.size()>1)
+	{
+		const std::string& first_filename=(*filenames.begin());
+		bool common_start=true;
+		for(std::size_t pos=0;(common_start && pos<first_filename.size());pos++)
+		{
+			for(std::set<std::string>::const_iterator it=filenames.begin();(common_start && it!=filenames.end());++it)
+			{
+				const std::string& filename=(*it);
+				if(!(pos<filename.size() && filename[pos]==first_filename[pos]))
+				{
+					common_start=false;
+				}
+			}
+			if(common_start && (first_filename[pos]=='/' || first_filename[pos]=='\\'))
+			{
+				common_path_start_length=(pos+1);
+			}
+		}
+	}
+	return common_path_start_length;
+}
 
 std::map< std::string, std::map<CRADsPair, double> > read_maps_of_contacts()
 {
 	std::map< std::string, std::map<CRADsPair, double> > maps_of_contacts;
 	const std::set<std::string> input_files=auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin);
+	const std::size_t common_path_start_length=calc_common_path_start_length(input_files);
 	for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
 	{
 		const std::string& filename=(*it);
 		const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(filename);
 		if(!map_of_contacts.empty())
 		{
-			maps_of_contacts[filename]=map_of_contacts;
+			maps_of_contacts[filename.substr(common_path_start_length)]=map_of_contacts;
 		}
 	}
 	return maps_of_contacts;

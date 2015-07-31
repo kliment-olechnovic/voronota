@@ -1,4 +1,4 @@
-./jobs_output/contacts_vectorizing/model1.contacts ./jobs_output/contacts_vectorizing/model2.contacts ./jobs_output/contacts_vectorizing/target.contacts
+model1.contacts model2.contacts target.contacts
 1 0.568228 0.459761
 0.568228 1 0.616255
 0.459761 0.616255 1
