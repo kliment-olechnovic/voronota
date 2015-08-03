@@ -295,6 +295,7 @@ Command 'vectorize-contacts' options:
 --transpose                                 flag to transpose output table
 --CAD-score-matrix              string      file path to output CAD-score matrix
 --distance-matrix               string      file path to output euclidean distance matrix
+--consensus-list                string      file path to output ordered similarities to consensus (average contacts)
 --clustering-output             string      file path to output clusters
 --clustering-threshold          string      clustering threshold value
 --help                                      flag to print usage help to stdout and exit

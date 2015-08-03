@@ -219,6 +219,62 @@ std::vector< typename Map::const_iterator > collect_const_iterators_of_map(const
 	return iterators;
 }
 
+std::vector<double> calc_consensus_vector(const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors)
+{
+	std::vector<double> result;
+	for(std::size_t i=0;i<iterators_of_map_of_areas_vectors.size();i++)
+	{
+		const std::vector<double>& v=iterators_of_map_of_areas_vectors[i]->second;
+		if(result.size()<v.size())
+		{
+			result.resize(v.size(), 0.0);
+		}
+		for(std::size_t j=0;j<result.size();j++)
+		{
+			result[j]+=v[j];
+		}
+	}
+	for(std::size_t j=0;j<result.size();j++)
+	{
+		result[j]/=static_cast<double>(iterators_of_map_of_areas_vectors.size());
+	}
+	return result;
+}
+
+template<typename Functor>
+std::multimap<double, std::size_t> calc_consensus_similarities(
+		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		Functor functor)
+{
+	std::multimap<double, std::size_t> similarities;
+	const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_areas_vectors);
+	for(std::size_t i=0;i<iterators_of_map_of_areas_vectors.size();i++)
+	{
+		similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_areas_vectors[i]->second), i));
+	}
+	return similarities;
+}
+
+void print_consensus_similarities(
+		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		const std::multimap<double, std::size_t>& similarities,
+		const std::string& output_file)
+{
+	std::ofstream output(output_file.c_str(), std::ios::out);
+	if(!output.good())
+	{
+		return;
+	}
+
+	for(std::multimap<double, std::size_t>::const_reverse_iterator it=similarities.rbegin();it!=similarities.rend();++it)
+	{
+		if(it->second<iterators_of_map_of_areas_vectors.size())
+		{
+			output << iterators_of_map_of_areas_vectors[it->second]->first << " " << it->first << "\n";
+		}
+	}
+}
+
 template<typename Functor>
 std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
@@ -396,6 +452,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool transpose=poh.contains_option(pohw.describe_option("--transpose", "", "flag to transpose output table"));
 	const std::string cadscore_matrix_file=poh.argument<std::string>(pohw.describe_option("--CAD-score-matrix", "string", "file path to output CAD-score matrix"), "");
 	const std::string distance_matrix_file=poh.argument<std::string>(pohw.describe_option("--distance-matrix", "string", "file path to output euclidean distance matrix"), "");
+	const std::string consensus_list_file=poh.argument<std::string>(pohw.describe_option("--consensus-list", "string", "file path to output ordered similarities to consensus (average contacts)"), "");
 	const std::string clustering_output_file=poh.argument<std::string>(pohw.describe_option("--clustering-output", "string", "file path to output clusters"), "");
 	const double clustering_threshold=poh.argument<double>(pohw.describe_option("--clustering-threshold", "string", "clustering threshold value"), 0.5);
 
@@ -416,6 +473,14 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
 	print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
+
+	if(!consensus_list_file.empty())
+	{
+		print_consensus_similarities(
+				iterators_of_map_of_areas_vectors,
+				calc_consensus_similarities(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors),
+				consensus_list_file);
+	}
 
 	if(!clustering_output_file.empty())
 	{
