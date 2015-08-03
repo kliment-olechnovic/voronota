@@ -208,11 +208,11 @@ void print_similarity_matrix(const std::map< std::string, std::vector<double> >&
 }
 
 template<typename Map>
-std::vector< std::map< std::string, std::vector<double> >::const_iterator > collect_const_iterators_of_map(const Map& map)
+std::vector< typename Map::const_iterator > collect_const_iterators_of_map(const Map& map)
 {
-	std::vector< std::map< std::string, std::vector<double> >::const_iterator > iterators;
+	std::vector< typename Map::const_iterator > iterators;
 	iterators.reserve(map.size());
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map.begin();it!=map.end();++it)
+	for(typename Map::const_iterator it=map.begin();it!=map.end();++it)
 	{
 		iterators.push_back(it);
 	}
