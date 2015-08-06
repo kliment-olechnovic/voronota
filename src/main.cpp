@@ -29,6 +29,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
+void generate_demo(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -72,6 +73,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
 	list_of_modes.push_back(ModeDescriptor("vectorize-contacts", ModeDescriptor::FunctionPtr(vectorize_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
+	list_of_modes.push_back(ModeDescriptor("generate-demo", ModeDescriptor::FunctionPtr(generate_demo)));
 	return list_of_modes;
 }
 

@@ -130,6 +130,17 @@ public:
 		return false;
 	}
 
+	std::pair<std::size_t, std::size_t> get_min_max() const
+	{
+		std::pair<std::size_t, std::size_t> result(v_[0], v_[0]);
+		for(unsigned int i=1;i<N;i++)
+		{
+			result.first=std::min(result.first, v_[i]);
+			result.second=std::max(result.second, v_[i]);
+		}
+		return result;
+	}
+
 	std::size_t hash_value() const
 	{
 		std::size_t h=0;
