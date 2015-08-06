@@ -64,19 +64,27 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 						if(tangents.size()==2)
 						{
 							const std::set<std::size_t>& vertices_ids=all_triples_map.find(triple)->second;
+							std::vector<bool> tangents_valid(tangents.size(), true);
 							for(std::size_t i=0;i<tangents.size();i++)
 							{
-								bool tangent_valid=true;
-								for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();(tangent_valid && vertices_ids_it!=vertices_ids.end());++vertices_ids_it)
+								for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();(tangents_valid[i] && vertices_ids_it!=vertices_ids.end());++vertices_ids_it)
 								{
 									const apollota::Quadruple& quadruple=all_vertices_vector[*vertices_ids_it].first;
 									const int number_of_triple_in_quadruple=quadruple.number_of_subtuple(triple);
 									if(number_of_triple_in_quadruple>=0)
 									{
-										tangent_valid=!apollota::sphere_intersects_sphere(tangents[i], spheres[quadruple.get(number_of_triple_in_quadruple)]);
+										tangents_valid[i]=!apollota::sphere_intersects_sphere(tangents[i], spheres[quadruple.get(number_of_triple_in_quadruple)]);
 									}
 								}
-								if(tangent_valid)
+							}
+							if(tangents_valid[0] && tangents_valid[1] && apollota::sphere_intersects_sphere(tangents[0], tangents[1]))
+							{
+								tangents_valid[0]=false;
+								tangents_valid[1]=false;
+							}
+							for(std::size_t i=0;i<tangents.size();i++)
+							{
+								if(tangents_valid[i])
 								{
 									alpha_shape_triples.push_back(std::make_pair(triple, tangents[i]));
 								}
@@ -90,15 +98,6 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 
 	apollota::TriangulationQueries::PairsMap alpha_shape_pairs;
 	{
-//		const apollota::TriangulationQueries::PairsMap pairs_map=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-//		for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_map_it=pairs_map.begin();pairs_map_it!=pairs_map.end();++pairs_map_it)
-//		{
-//			const apollota::Pair& pair=pairs_map_it->first;
-//			if(pair.get_min_max().second<input_spheres_count && apollota::minimal_distance_from_sphere_to_sphere(spheres[pair.get(0)], spheres[pair.get(1)])<(probe*2.0))
-//			{
-//				alpha_shape_pairs[pair];
-//			}
-//		}
 		for(std::size_t i=0;i<alpha_shape_triples.size();i++)
 		{
 			const apollota::Triple& triple=alpha_shape_triples[i].first;
