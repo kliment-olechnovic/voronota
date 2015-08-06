@@ -12,6 +12,7 @@ public:
 	typedef std::tr1::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
 	typedef std::vector< std::vector<std::size_t> > IDsGraph;
 	typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
+	typedef std::tr1::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> TriplesMap;
 
 	template<typename QuadruplesMapType>
 	static IDsMap collect_neighbors_map_from_quadruples_map(const QuadruplesMapType& quadruples_map)
@@ -74,6 +75,20 @@ public:
 			}
 		}
 		return pairs_vertices_map;
+	}
+
+	static TriplesMap collect_triples_vertices_map_from_vertices_vector(const Triangulation::VerticesVector& vertices_vector)
+	{
+		TriplesMap triples_vertices_map;
+		for(std::size_t i=0;i<vertices_vector.size();i++)
+		{
+			const Quadruple& quadruple=vertices_vector[i].first;
+			for(int a=0;a<4;a++)
+			{
+				triples_vertices_map[quadruple.exclude(a)].insert(i);
+			}
+		}
+		return triples_vertices_map;
 	}
 
 	template<typename QuadruplesMapType>
