@@ -266,7 +266,6 @@ public:
 		return marks;
 	}
 
-private:
 	static int construct_surface_contours(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
@@ -366,6 +365,7 @@ private:
 		return groups_count;
 	}
 
+private:
 	static std::set<int> select_external_contours_groups(
 			const std::vector<SimpleSphere>& spheres,
 			const std::vector<int>& spheres_marks,
