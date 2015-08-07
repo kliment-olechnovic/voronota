@@ -56,6 +56,48 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	{
+		typedef std::tr1::unordered_map<apollota::Triple, std::vector<std::size_t>, apollota::Triple::HashFunctor> TriplesMap;
+		TriplesMap triples_map;
+		for(std::size_t i=0;i<surface_triples_vector.size();i++)
+		{
+			triples_map[surface_triples_vector[i].first].push_back(i);
+		}
+		for(std::size_t i=0;i<surface_contours_vector.size();i++)
+		{
+			const apollota::Pair& pair=surface_contours_vector[i].first;
+			apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
+			for(int mode=0;mode<2;mode++)
+			{
+				const std::size_t mode_id=(mode==0 ? contour.front().left_id : contour.back().right_id);
+				apollota::SimplePoint& mode_p=(mode==0 ? contour.front().p : contour.back().p);
+				if(!pair.contains(mode_id))
+				{
+					const std::vector<std::size_t>& ids=triples_map[apollota::Triple(pair, mode_id)];
+					if(ids.size()==1)
+					{
+						mode_p=surface_triples_vector[ids[0]].second;
+					}
+					else if(ids.size()>1)
+					{
+						std::size_t closest_id=ids[0];
+						double closest_distance=apollota::distance_from_point_to_point(mode_p, surface_triples_vector[ids[0]].second);
+						for(std::size_t j=1;j<ids.size();j++)
+						{
+							const double distance=apollota::distance_from_point_to_point(mode_p, surface_triples_vector[ids[j]].second);
+							if(distance<closest_distance)
+							{
+								closest_id=ids[j];
+								closest_distance=distance;
+							}
+						}
+						mode_p=surface_triples_vector[closest_id].second;
+					}
+				}
+			}
+		}
+	}
+
 	if(representation=="")
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
