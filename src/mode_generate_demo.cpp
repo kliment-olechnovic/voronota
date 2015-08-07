@@ -30,64 +30,54 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
 	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
-	apollota::Triangulation::VerticesVector vertices_vector;
 	std::vector< std::pair<apollota::Triple, apollota::SimpleSphere> > alpha_shape_triples;
 	{
 		const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
-		const apollota::Triangulation::VerticesVector all_vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
-
+		const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+		const apollota::TriangulationQueries::TriplesMap triples_map=apollota::TriangulationQueries::collect_triples_vertices_map_from_vertices_vector(vertices_vector);
+		alpha_shape_triples.reserve(triples_map.size()/4);
+		for(apollota::TriangulationQueries::TriplesMap::const_iterator triples_map_it=triples_map.begin();triples_map_it!=triples_map.end();++triples_map_it)
 		{
-			vertices_vector.reserve(all_vertices_vector.size()/4);
-			for(std::size_t i=0;i<all_vertices_vector.size();i++)
+			const apollota::Triple& triple=triples_map_it->first;
+			const std::set<std::size_t>& vertices_ids=triples_map_it->second;
+			if(triple.get_min_max().second<input_spheres_count)
 			{
-				if(all_vertices_vector[i].second.r>probe)
+				bool exposed=false;
+				for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();(!exposed && vertices_ids_it!=vertices_ids.end());++vertices_ids_it)
 				{
-					vertices_vector.push_back(all_vertices_vector[i]);
+					exposed=vertices_vector[*vertices_ids_it].second.r>probe;
 				}
-			}
-		}
-
-		{
-			const apollota::TriangulationQueries::TriplesMap all_triples_map=apollota::TriangulationQueries::collect_triples_vertices_map_from_vertices_vector(all_vertices_vector);
-			const apollota::TriangulationQueries::TriplesMap triples_map=apollota::TriangulationQueries::collect_triples_vertices_map_from_vertices_vector(vertices_vector);
-			alpha_shape_triples.reserve(triples_map.size()/2);
-			for(apollota::TriangulationQueries::TriplesMap::const_iterator triples_map_it=triples_map.begin();triples_map_it!=triples_map.end();++triples_map_it)
-			{
-				const apollota::Triple& triple=triples_map_it->first;
-				if(triple.get_min_max().second<input_spheres_count)
+				if(exposed
+						&& apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(0)], spheres[triple.get(1)])<(probe*2.0)
+						&& apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(0)], spheres[triple.get(2)])<(probe*2.0)
+						&& apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(1)], spheres[triple.get(2)])<(probe*2.0))
 				{
-					if(apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(0)], spheres[triple.get(1)])<(probe*2.0)
-							|| apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(0)], spheres[triple.get(2)])<(probe*2.0)
-							|| apollota::minimal_distance_from_sphere_to_sphere(spheres[triple.get(1)], spheres[triple.get(2)])<(probe*2.0))
+					const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfThreeSpheres::calculate(spheres[triple.get(0)], spheres[triple.get(1)], spheres[triple.get(2)], probe);
+					if(tangents.size()==2)
 					{
-						const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfThreeSpheres::calculate(spheres[triple.get(0)], spheres[triple.get(1)], spheres[triple.get(2)], probe);
-						if(tangents.size()==2)
+						std::vector<bool> tangents_valid(tangents.size(), true);
+						for(std::size_t i=0;i<tangents.size();i++)
 						{
-							const std::set<std::size_t>& vertices_ids=all_triples_map.find(triple)->second;
-							std::vector<bool> tangents_valid(tangents.size(), true);
-							for(std::size_t i=0;i<tangents.size();i++)
+							for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();(tangents_valid[i] && vertices_ids_it!=vertices_ids.end());++vertices_ids_it)
 							{
-								for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();(tangents_valid[i] && vertices_ids_it!=vertices_ids.end());++vertices_ids_it)
+								const apollota::Quadruple& quadruple=vertices_vector[*vertices_ids_it].first;
+								const int number_of_triple_in_quadruple=quadruple.number_of_subtuple(triple);
+								if(number_of_triple_in_quadruple>=0)
 								{
-									const apollota::Quadruple& quadruple=all_vertices_vector[*vertices_ids_it].first;
-									const int number_of_triple_in_quadruple=quadruple.number_of_subtuple(triple);
-									if(number_of_triple_in_quadruple>=0)
-									{
-										tangents_valid[i]=!apollota::sphere_intersects_sphere(tangents[i], spheres[quadruple.get(number_of_triple_in_quadruple)]);
-									}
+									tangents_valid[i]=!apollota::sphere_intersects_sphere(tangents[i], spheres[quadruple.get(number_of_triple_in_quadruple)]);
 								}
 							}
-							if(tangents_valid[0] && tangents_valid[1] && apollota::sphere_intersects_sphere(tangents[0], tangents[1]))
+						}
+						if(tangents_valid[0] && tangents_valid[1] && apollota::sphere_intersects_sphere(tangents[0], tangents[1]))
+						{
+							tangents_valid[0]=false;
+							tangents_valid[1]=false;
+						}
+						for(std::size_t i=0;i<tangents.size();i++)
+						{
+							if(tangents_valid[i])
 							{
-								tangents_valid[0]=false;
-								tangents_valid[1]=false;
-							}
-							for(std::size_t i=0;i<tangents.size();i++)
-							{
-								if(tangents_valid[i])
-								{
-									alpha_shape_triples.push_back(std::make_pair(triple, tangents[i]));
-								}
+								alpha_shape_triples.push_back(std::make_pair(triple, tangents[i]));
 							}
 						}
 					}
@@ -105,6 +95,19 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				alpha_shape_pairs[triple.exclude(j)].insert(i);
 			}
+		}
+	}
+
+	{
+		std::set<std::size_t> counts;
+		for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_it=alpha_shape_pairs.begin();pairs_it!=alpha_shape_pairs.end();++pairs_it)
+		{
+			const std::set<std::size_t>& triples_ids=pairs_it->second;
+			counts.insert(triples_ids.size());
+		}
+		for(std::set<std::size_t>::const_iterator it=counts.begin();it!=counts.end();++it)
+		{
+			std::cerr << (*it) << "\n";
 		}
 	}
 
