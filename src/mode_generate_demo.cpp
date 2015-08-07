@@ -40,13 +40,28 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<int> marks;
 	apollota::ConstrainedContactsConstruction::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
 
+	std::vector< std::pair<apollota::Triple, apollota::SimplePoint> > surface_triples_vector;
+	surface_triples_vector.reserve(surface_contours_vector.size());
+	for(std::size_t i=0;i<surface_contours_vector.size();i++)
+	{
+		const apollota::Pair& pair=surface_contours_vector[i].first;
+		const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
+		if(contour.front().left_id<pair.get_min_max().first)
+		{
+			surface_triples_vector.push_back(std::make_pair(apollota::Triple(pair, contour.front().left_id), contour.front().p));
+		}
+		if(contour.back().right_id<pair.get_min_max().first)
+		{
+			surface_triples_vector.push_back(std::make_pair(apollota::Triple(pair, contour.back().right_id), contour.back().p));
+		}
+	}
+
 	if(representation=="")
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(0xFFFF00);
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
-//			const apollota::Pair& pair=surface_contours_vector[i].first;
 			const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
 			std::vector<apollota::SimplePoint> points;
 			points.reserve(contour.size());
@@ -56,6 +71,11 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			opengl_printer.add_color(((marks[i]+1)*123456789)%(0xFFFFFF));
 			opengl_printer.add_line_strip(points);
+		}
+		opengl_printer.add_color(0x00FFFF);
+		for(std::size_t i=0;i<surface_triples_vector.size();i++)
+		{
+			opengl_printer.add_sphere(apollota::SimpleSphere(surface_triples_vector[i].second, probe*0.05));
 		}
 		opengl_printer.print_pymol_script("surface_curves", true, std::cout);
 	}
