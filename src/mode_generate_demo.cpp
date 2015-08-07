@@ -121,4 +121,42 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		opengl_printer.print_pymol_script("surface_curves", true, std::cout);
 	}
+	else if(representation=="presurface")
+	{
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(0xFFFF00);
+		for(std::size_t i=0;i<surface_contours_vector.size();i++)
+		{
+			const apollota::Pair& pair=surface_contours_vector[i].first;
+			const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
+			std::vector<apollota::SimplePoint> vertices;
+			std::vector<apollota::SimplePoint> normals;
+			for(apollota::ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
+			{
+				const apollota::SimplePoint a(spheres[pair.get(0)]);
+				const apollota::SimplePoint b(spheres[pair.get(1)]);
+				const apollota::SimplePoint& c=contour_it->p;
+				vertices.push_back(c+((a-c).unit()*probe));
+				vertices.push_back(c+((b-c).unit()*probe));
+				normals.push_back(((a-c).unit()*0.5)+((b-c).unit()*0.5));
+				normals.push_back(normals.back());
+			}
+			opengl_printer.add_triangle_strip(vertices, normals);
+		}
+		opengl_printer.add_color(0x00FFFF);
+		for(std::size_t i=0;i<surface_triples_vector.size();i++)
+		{
+			const apollota::Triple& triple=surface_triples_vector[i].first;
+			const apollota::SimplePoint& d=surface_triples_vector[i].second;
+			std::vector<apollota::SimplePoint> vertices;
+			for(int j=0;j<3;j++)
+			{
+				const apollota::SimplePoint& a(spheres[triple.get(j)]);
+				vertices.push_back(d+((a-d).unit()*probe));
+			}
+			std::vector<apollota::SimplePoint> normals(3, ((vertices[1]-vertices[0])&(vertices[2]-vertices[0])).unit());
+			opengl_printer.add_triangle_strip(vertices, normals);
+		}
+		opengl_printer.print_pymol_script("presurface", true, std::cout);
+	}
 }
