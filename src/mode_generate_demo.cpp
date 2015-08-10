@@ -5,6 +5,52 @@
 #include "auxiliaries/opengl_printer.h"
 #include "auxiliaries/program_options_handler.h"
 
+namespace
+{
+
+std::vector<apollota::SimplePoint> subdivide_triangles(const std::vector<apollota::SimplePoint>& points, const int times)
+{
+	if(points.size()%3!=0)
+	{
+		throw std::runtime_error("Invalid triangles points.");
+	}
+	std::vector<apollota::SimplePoint> result;
+	result.reserve(points.size()*4);
+	for(std::size_t i=0;i<points.size();i+=3)
+	{
+		const apollota::SimplePoint midpoints[3]={
+				(points[i]+points[i+1])*0.5,
+				(points[i]+points[i+2])*0.5,
+				(points[i+1]+points[i+2])*0.5};
+
+		result.push_back(points[i]);
+		result.push_back(midpoints[0]);
+		result.push_back(midpoints[1]);
+
+		result.push_back(points[i+1]);
+		result.push_back(midpoints[0]);
+		result.push_back(midpoints[2]);
+
+		result.push_back(points[i+2]);
+		result.push_back(midpoints[1]);
+		result.push_back(midpoints[2]);
+
+		result.push_back(midpoints[0]);
+		result.push_back(midpoints[1]);
+		result.push_back(midpoints[2]);
+	}
+	if(times>1)
+	{
+		return subdivide_triangles(result, times-1);
+	}
+	else
+	{
+		return result;
+	}
+}
+
+}
+
 void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
@@ -128,13 +174,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
 			const apollota::Pair& pair=surface_contours_vector[i].first;
+			const apollota::SimplePoint a(spheres[pair.get(0)]);
+			const apollota::SimplePoint b(spheres[pair.get(1)]);
 			const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
 			std::vector<apollota::SimplePoint> vertices;
 			std::vector<apollota::SimplePoint> normals;
 			for(apollota::ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
 			{
-				const apollota::SimplePoint a(spheres[pair.get(0)]);
-				const apollota::SimplePoint b(spheres[pair.get(1)]);
 				const apollota::SimplePoint& c=contour_it->p;
 				vertices.push_back(c+((a-c).unit()*probe));
 				vertices.push_back(c+((b-c).unit()*probe));
@@ -158,5 +204,73 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			opengl_printer.add_triangle_strip(vertices, normals);
 		}
 		opengl_printer.print_pymol_script("presurface", true, std::cout);
+	}
+	else if(representation=="surface")
+	{
+		auxiliaries::OpenGLPrinter opengl_printer;
+
+		opengl_printer.add_color(0xFFFF00);
+		for(std::size_t i=0;i<surface_contours_vector.size();i++)
+		{
+			const apollota::Pair& pair=surface_contours_vector[i].first;
+			const apollota::SimplePoint a(spheres[pair.get(0)]);
+			const apollota::SimplePoint b(spheres[pair.get(1)]);
+			const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
+			std::vector<apollota::SimplePoint> as;
+			std::vector<apollota::SimplePoint> bs;
+			std::vector<apollota::SimplePoint> cs;
+			for(apollota::ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
+			{
+				const apollota::SimplePoint& c=contour_it->p;
+				as.push_back(c+((a-c).unit()*probe));
+				bs.push_back(c+((b-c).unit()*probe));
+				cs.push_back(c);
+			}
+			std::vector<apollota::SimplePoint> normals;
+			for(std::size_t j=0;(j+1)<as.size();j++)
+			{
+				std::vector<apollota::SimplePoint> vertices;
+				std::vector<apollota::SimplePoint> normals;
+				for(int li=0;li<=4;li++)
+				{
+					for(std::size_t e=0;e<2;e++)
+					{
+						const double l=static_cast<double>(li)/4.0;
+						const apollota::SimplePoint p=((as[j+e]*(1.0-l))+(bs[j+e]*l));
+						const apollota::SimplePoint n=(cs[j+e]-p).unit();
+						vertices.push_back(cs[j+e]-(n*probe));
+						normals.push_back(n);
+					}
+				}
+				opengl_printer.add_triangle_strip(vertices, normals);
+			}
+		}
+
+		opengl_printer.add_color(0x00FFFF);
+		for(std::size_t i=0;i<surface_triples_vector.size();i++)
+		{
+			const apollota::Triple& triple=surface_triples_vector[i].first;
+			const apollota::SimplePoint& d=surface_triples_vector[i].second;
+			std::vector<apollota::SimplePoint> vertices;
+			for(int j=0;j<3;j++)
+			{
+				const apollota::SimplePoint& a(spheres[triple.get(j)]);
+				vertices.push_back(d+((a-d).unit()*probe));
+			}
+			vertices=subdivide_triangles(vertices, 2);
+			std::vector<apollota::SimplePoint> normals(vertices.size());
+			for(std::size_t j=0;j<vertices.size();j++)
+			{
+				apollota::SimplePoint& a=vertices[j];
+				a=(d+((a-d).unit()*probe));
+				normals[j]=(d-a).unit();
+			}
+			for(std::size_t j=0;j<vertices.size();j+=3)
+			{
+				opengl_printer.add_triangle_strip(std::vector<apollota::SimplePoint>(vertices.begin()+j, vertices.begin()+j+3), std::vector<apollota::SimplePoint>(normals.begin()+j, normals.begin()+j+3));
+			}
+		}
+
+		opengl_printer.print_pymol_script("surface", true, std::cout);
 	}
 }
