@@ -86,6 +86,29 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<int> marks;
 	apollota::ConstrainedContactsConstruction::construct_surface_contours(spheres, vertices_vector, probe, step, projections, surface_contours_vector, marks);
 
+	std::vector< std::vector< std::pair<apollota::SimplePoint, apollota::SimplePoint> > > surface_toric_controls(surface_contours_vector.size());
+	for(std::size_t i=0;i<surface_contours_vector.size();i++)
+	{
+		const apollota::Pair& pair=surface_contours_vector[i].first;
+		const apollota::SimpleSphere& a=spheres[pair.get(0)];
+		const apollota::SimpleSphere& b=spheres[pair.get(1)];
+		const apollota::SimpleSphere c=apollota::intersection_circle_of_two_spheres<apollota::SimpleSphere>(apollota::SimpleSphere(a, a.r+probe), apollota::SimpleSphere(b, b.r+probe));
+		std::vector< std::pair<apollota::SimplePoint, apollota::SimplePoint> >& controls=surface_toric_controls[i];
+		if(c.r>probe)
+		{
+			controls.push_back(std::make_pair(apollota::SimplePoint(a), apollota::SimplePoint(b)));
+		}
+		else
+		{
+			const double dl=sqrt((probe*probe)-(c.r*c.r));
+			const apollota::SimplePoint ap(a);
+			const apollota::SimplePoint bp(b);
+			const apollota::SimplePoint cp(c);
+			controls.push_back(std::make_pair(ap, cp+((ap-cp).unit()*dl)));
+			controls.push_back(std::make_pair(bp, cp+((bp-cp).unit()*dl)));
+		}
+	}
+
 	std::vector< std::pair<apollota::Triple, apollota::SimplePoint> > surface_triples_vector;
 	surface_triples_vector.reserve(surface_contours_vector.size());
 	for(std::size_t i=0;i<surface_contours_vector.size();i++)
@@ -212,37 +235,41 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		opengl_printer.add_color(0xFFFF00);
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
-			const apollota::Pair& pair=surface_contours_vector[i].first;
-			const apollota::SimplePoint a(spheres[pair.get(0)]);
-			const apollota::SimplePoint b(spheres[pair.get(1)]);
-			const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
-			std::vector<apollota::SimplePoint> as;
-			std::vector<apollota::SimplePoint> bs;
-			std::vector<apollota::SimplePoint> cs;
-			for(apollota::ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
+			const std::vector< std::pair<apollota::SimplePoint, apollota::SimplePoint> >& controls=surface_toric_controls[i];
+			for(std::vector< std::pair<apollota::SimplePoint, apollota::SimplePoint> >::const_iterator controls_it=controls.begin();controls_it!=controls.end();++controls_it)
 			{
-				const apollota::SimplePoint& c=contour_it->p;
-				as.push_back(c+((a-c).unit()*probe));
-				bs.push_back(c+((b-c).unit()*probe));
-				cs.push_back(c);
-			}
-			std::vector<apollota::SimplePoint> normals;
-			for(std::size_t j=0;(j+1)<as.size();j++)
-			{
-				std::vector<apollota::SimplePoint> vertices;
-				std::vector<apollota::SimplePoint> normals;
-				for(int li=0;li<=4;li++)
+				const apollota::SimplePoint& a=controls_it->first;
+				const apollota::SimplePoint& b=controls_it->second;
+				const apollota::ConstrainedContactContour::Contour& contour=surface_contours_vector[i].second;
+				std::vector<apollota::SimplePoint> as;
+				std::vector<apollota::SimplePoint> bs;
+				std::vector<apollota::SimplePoint> cs;
+				for(apollota::ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
 				{
-					for(std::size_t e=0;e<2;e++)
-					{
-						const double l=static_cast<double>(li)/4.0;
-						const apollota::SimplePoint p=((as[j+e]*(1.0-l))+(bs[j+e]*l));
-						const apollota::SimplePoint n=(cs[j+e]-p).unit();
-						vertices.push_back(cs[j+e]-(n*probe));
-						normals.push_back(n);
-					}
+					const apollota::SimplePoint& c=contour_it->p;
+					as.push_back(c+((a-c).unit()*probe));
+					bs.push_back(c+((b-c).unit()*probe));
+					cs.push_back(c);
 				}
-				opengl_printer.add_triangle_strip(vertices, normals);
+				std::vector<apollota::SimplePoint> normals;
+				for(std::size_t j=0;(j+1)<as.size();j++)
+				{
+					std::vector<apollota::SimplePoint> vertices;
+					std::vector<apollota::SimplePoint> normals;
+					const int steps=8/controls.size();
+					for(int li=0;li<=steps;li++)
+					{
+						for(std::size_t e=0;e<2;e++)
+						{
+							const double l=static_cast<double>(li)/static_cast<double>(steps);
+							const apollota::SimplePoint p=((as[j+e]*(1.0-l))+(bs[j+e]*l));
+							const apollota::SimplePoint n=(cs[j+e]-p).unit();
+							vertices.push_back(cs[j+e]-(n*probe));
+							normals.push_back(n);
+						}
+					}
+					opengl_printer.add_triangle_strip(vertices, normals);
+				}
 			}
 		}
 
@@ -257,7 +284,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				const apollota::SimplePoint& a(spheres[triple.get(j)]);
 				vertices.push_back(d+((a-d).unit()*probe));
 			}
-			vertices=subdivide_triangles(vertices, 2);
+			vertices=subdivide_triangles(vertices, 3);
 			std::vector<apollota::SimplePoint> normals(vertices.size());
 			for(std::size_t j=0;j<vertices.size();j++)
 			{
