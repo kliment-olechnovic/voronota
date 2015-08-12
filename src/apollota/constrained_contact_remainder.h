@@ -54,12 +54,61 @@ public:
 					{
 						const SimpleSphere& c=spheres[c_id];
 						const SimpleSphere c_expanded=SimpleSphere(c, c.r+probe);
-						cut_remainder(c_expanded, result);
+						cut_contact_remainder(c_expanded, result);
 					}
 				}
 			}
 		}
 		return result;
+	}
+
+	static void cut_contact_remainder(const SimpleSphere& sphere, Remainder& remainder)
+	{
+		int marks[3]={0, 0, 0};
+		Remainder::iterator it=remainder.begin();
+		while(it!=remainder.end())
+		{
+			for(int i=0;i<3;i++)
+			{
+				marks[i]=distance_from_point_to_point(it->p[i], sphere)<sphere.r ? 1 : 0;
+			}
+			int marks_sum=marks[0]+marks[1]+marks[2];
+			if(marks_sum==3)
+			{
+				it=remainder.erase(it);
+			}
+			else if(marks_sum==2)
+			{
+				int s0=(marks[0]==0 ? 0 : (marks[1]==0 ? 1 : 2));
+				int s1=(s0==0 ? 1 : 0);
+				int s2=(s0==2 ? 1 : 2);
+				SimplePoint c01;
+				SimplePoint c02;
+				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				{
+					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02, it->s[s0], 1, 1));
+					it=remainder.erase(it);
+				}
+			}
+			else if(marks_sum==1)
+			{
+				int s0=(marks[0]==1 ? 0 : (marks[1]==1 ? 1 : 2));
+				int s1=(s0==0 ? 1 : 0);
+				int s2=(s0==2 ? 1 : 2);
+				SimplePoint c01;
+				SimplePoint c02;
+				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				{
+					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02, it->s[s1], 1, 1));
+					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2], it->s[s1], 1, it->s[s2]));
+					it=remainder.erase(it);
+				}
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 
 private:
@@ -135,55 +184,6 @@ private:
 			result.push_back(TriangleRecord(sih.vertices()[t.get(0)], sih.vertices()[t.get(1)], sih.vertices()[t.get(2)], 0, 0, 0));
 		}
 		return result;
-	}
-
-	static void cut_remainder(const SimpleSphere& sphere, Remainder& remainder)
-	{
-		int marks[3]={0, 0, 0};
-		Remainder::iterator it=remainder.begin();
-		while(it!=remainder.end())
-		{
-			for(int i=0;i<3;i++)
-			{
-				marks[i]=distance_from_point_to_point(it->p[i], sphere)<sphere.r ? 1 : 0;
-			}
-			int marks_sum=marks[0]+marks[1]+marks[2];
-			if(marks_sum==3)
-			{
-				it=remainder.erase(it);
-			}
-			else if(marks_sum==2)
-			{
-				int s0=(marks[0]==0 ? 0 : (marks[1]==0 ? 1 : 2));
-				int s1=(s0==0 ? 1 : 0);
-				int s2=(s0==2 ? 1 : 2);
-				SimplePoint c01;
-				SimplePoint c02;
-				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
-				{
-					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02, it->s[s0], 1, 1));
-					it=remainder.erase(it);
-				}
-			}
-			else if(marks_sum==1)
-			{
-				int s0=(marks[0]==1 ? 0 : (marks[1]==1 ? 1 : 2));
-				int s1=(s0==0 ? 1 : 0);
-				int s2=(s0==2 ? 1 : 2);
-				SimplePoint c01;
-				SimplePoint c02;
-				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
-				{
-					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02, it->s[s1], 1, 1));
-					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2], it->s[s1], 1, it->s[s2]));
-					it=remainder.erase(it);
-				}
-			}
-			else
-			{
-				++it;
-			}
-		}
 	}
 
 	static bool intersect_vector_with_sphere(const SimpleSphere& sphere, const SimplePoint& a, const SimplePoint& b, SimplePoint& c)
