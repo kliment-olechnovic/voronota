@@ -125,13 +125,73 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	typedef std::tr1::unordered_map<apollota::Pair, std::vector<std::size_t>, apollota::Pair::HashFunctor> PairsMap;
+	PairsMap pairs_map;
+	for(std::size_t i=0;i<surface_contours_vector.size();i++)
 	{
-		typedef std::tr1::unordered_map<apollota::Triple, std::vector<std::size_t>, apollota::Triple::HashFunctor> TriplesMap;
-		TriplesMap triples_map;
-		for(std::size_t i=0;i<surface_triples_vector.size();i++)
+		pairs_map[surface_contours_vector[i].first].push_back(i);
+	}
+
+	typedef std::tr1::unordered_map<apollota::Triple, std::vector<std::size_t>, apollota::Triple::HashFunctor> TriplesMap;
+	TriplesMap triples_map;
+	for(std::size_t i=0;i<surface_triples_vector.size();i++)
+	{
+		triples_map[surface_triples_vector[i].first].push_back(i);
+	}
+
+	std::vector< std::set<std::size_t> > surface_triples_conflicts(surface_triples_vector.size());
+	{
+		for(TriplesMap::const_iterator triples_map_it=triples_map.begin();triples_map_it!=triples_map.end();++triples_map_it)
 		{
-			triples_map[surface_triples_vector[i].first].push_back(i);
+			const std::vector<std::size_t>& ids=triples_map_it->second;
+			if(ids.size()==2 && apollota::sphere_intersects_sphere(apollota::SimpleSphere(surface_triples_vector[ids[0]].second, probe), apollota::SimpleSphere(surface_triples_vector[ids[1]].second, probe)))
+			{
+				surface_triples_conflicts[ids[0]].insert(ids[1]);
+				surface_triples_conflicts[ids[1]].insert(ids[0]);
+			}
 		}
+
+		{
+			PairsMap difficult_pairs_to_triples_map;
+			for(std::size_t i=0;i<surface_triples_vector.size();i++)
+			{
+				const apollota::Triple& triple=surface_triples_vector[i].first;
+				for(unsigned int j=0;j<3;j++)
+				{
+					const apollota::Pair pair=triple.exclude(j);
+					const std::vector<std::size_t>& pair_ids=pairs_map[pair];
+					for(std::vector<std::size_t>::const_iterator pair_ids_it=pair_ids.begin();pair_ids_it!=pair_ids.end();++pair_ids_it)
+					{
+						if(surface_toric_controls[*pair_ids_it].size()>1)
+						{
+							difficult_pairs_to_triples_map[pair].push_back(i);
+						}
+					}
+				}
+			}
+			for(PairsMap::const_iterator it=difficult_pairs_to_triples_map.begin();it!=difficult_pairs_to_triples_map.end();++it)
+			{
+				const std::vector<std::size_t>& triples_ids=it->second;
+				for(std::size_t i=0;i<triples_ids.size();i++)
+				{
+					for(std::size_t j=0;j<triples_ids.size();j++)
+					{
+						if(i!=j)
+						{
+							surface_triples_conflicts[triples_ids[i]].insert(triples_ids[j]);
+						}
+					}
+				}
+			}
+		}
+
+		for(std::size_t i=0;i<surface_triples_conflicts.size();i++)
+		{
+			surface_triples_conflicts[i].erase(i);
+		}
+	}
+
+	{
 		for(std::size_t i=0;i<surface_contours_vector.size();i++)
 		{
 			const apollota::Pair& pair=surface_contours_vector[i].first;
@@ -284,7 +344,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				const apollota::SimplePoint& a(spheres[triple.get(j)]);
 				vertices.push_back(d+((a-d).unit()*probe));
 			}
-			vertices=subdivide_triangles(vertices, 3);
+			vertices=subdivide_triangles(vertices, (surface_triples_conflicts[i].empty() ? 3 : 5));
 			std::vector<apollota::SimplePoint> normals(vertices.size());
 			for(std::size_t j=0;j<vertices.size();j++)
 			{
@@ -292,9 +352,36 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				a=(d+((a-d).unit()*probe));
 				normals[j]=(d-a).unit();
 			}
-			for(std::size_t j=0;j<vertices.size();j+=3)
+			if(surface_triples_conflicts[i].empty())
 			{
-				opengl_printer.add_triangle_strip(std::vector<apollota::SimplePoint>(vertices.begin()+j, vertices.begin()+j+3), std::vector<apollota::SimplePoint>(normals.begin()+j, normals.begin()+j+3));
+				for(std::size_t j=0;j<vertices.size();j+=3)
+				{
+					opengl_printer.add_triangle_strip(std::vector<apollota::SimplePoint>(vertices.begin()+j, vertices.begin()+j+3), std::vector<apollota::SimplePoint>(normals.begin()+j, normals.begin()+j+3));
+				}
+			}
+			else
+			{
+				apollota::ConstrainedContactRemainder::Remainder remainder;
+				for(std::size_t j=0;j<vertices.size();j+=3)
+				{
+					remainder.push_back(apollota::ConstrainedContactRemainder::TriangleRecord(vertices[j], vertices[j+1], vertices[j+2], 0, 0, 0));
+				}
+				const std::set<std::size_t>& conflicts=surface_triples_conflicts[i];
+				for(std::set<std::size_t>::const_iterator conflicts_it=conflicts.begin();conflicts_it!=conflicts.end();++conflicts_it)
+				{
+					apollota::ConstrainedContactRemainder::cut_contact_remainder(apollota::SimpleSphere(surface_triples_vector[*conflicts_it].second, probe), remainder);
+				}
+				for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+				{
+					std::vector<apollota::SimplePoint> cut_vertices(3);
+					std::vector<apollota::SimplePoint> cut_normals(3);
+					for(int j=0;j<3;j++)
+					{
+						cut_vertices[j]=remainder_it->p[j];
+						cut_normals[j]=(d-cut_vertices[j]).unit();
+					}
+					opengl_printer.add_triangle_strip(cut_vertices, cut_normals);
+				}
 			}
 		}
 
