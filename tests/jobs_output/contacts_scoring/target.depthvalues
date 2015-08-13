@@ -311,7 +311,7 @@ c<A>r<67>R<ILE>A<CG1> 1
 c<A>r<67>R<ILE>A<CG2> 1
 c<A>r<67>R<ILE>A<N> 1
 c<A>r<67>R<ILE>A<O> 1
-c<A>r<68>R<THR>A<C> 2
+c<A>r<68>R<THR>A<C> 1
 c<A>r<68>R<THR>A<CA> 1
 c<A>r<68>R<THR>A<CB> 1
 c<A>r<68>R<THR>A<CG2> 1
@@ -322,7 +322,7 @@ c<A>r<69>R<GLY>A<C> 1
 c<A>r<69>R<GLY>A<CA> 1
 c<A>r<69>R<GLY>A<N> 1
 c<A>r<69>R<GLY>A<O> 1
-c<A>r<70>R<THR>A<C> 2
+c<A>r<70>R<THR>A<C> 1
 c<A>r<70>R<THR>A<CA> 2
 c<A>r<70>R<THR>A<CB> 2
 c<A>r<70>R<THR>A<CG2> 1
@@ -1435,7 +1435,7 @@ c<B>r<76>R<ARG>A<C> 2
 c<B>r<76>R<ARG>A<CA> 1
 c<B>r<76>R<ARG>A<CB> 1
 c<B>r<76>R<ARG>A<CD> 2
-c<B>r<76>R<ARG>A<CG> 2
+c<B>r<76>R<ARG>A<CG> 1
 c<B>r<76>R<ARG>A<CZ> 1
 c<B>r<76>R<ARG>A<N> 2
 c<B>r<76>R<ARG>A<NE> 1
@@ -1571,7 +1571,7 @@ c<B>r<91>R<VAL>A<CG2> 2
 c<B>r<91>R<VAL>A<N> 2
 c<B>r<91>R<VAL>A<O> 2
 c<B>r<92>R<VAL>A<C> 3
-c<B>r<92>R<VAL>A<CA> 3
+c<B>r<92>R<VAL>A<CA> 2
 c<B>r<92>R<VAL>A<CB> 2
 c<B>r<92>R<VAL>A<CG1> 1
 c<B>r<92>R<VAL>A<CG2> 1
@@ -2021,7 +2021,7 @@ c<B>r<150>R<VAL>A<N> 2
 c<B>r<150>R<VAL>A<O> 1
 c<B>r<151>R<VAL>A<C> 2
 c<B>r<151>R<VAL>A<CA> 1
-c<B>r<151>R<VAL>A<CB> 2
+c<B>r<151>R<VAL>A<CB> 1
 c<B>r<151>R<VAL>A<CG1> 1
 c<B>r<151>R<VAL>A<CG2> 1
 c<B>r<151>R<VAL>A<N> 2
