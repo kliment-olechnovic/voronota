@@ -316,7 +316,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					std::vector<apollota::SimplePoint> vertices;
 					std::vector<apollota::SimplePoint> normals;
-					const int steps=8/controls.size();
+					const int steps=8;
 					for(int li=0;li<=steps;li++)
 					{
 						for(std::size_t e=0;e<2;e++)
@@ -344,7 +344,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				const apollota::SimplePoint& a(spheres[triple.get(j)]);
 				vertices.push_back(d+((a-d).unit()*probe));
 			}
-			vertices=subdivide_triangles(vertices, (surface_triples_conflicts[i].empty() ? 3 : 5));
+			vertices=subdivide_triangles(vertices, (surface_triples_conflicts[i].empty() ? 3 : 4));
 			std::vector<apollota::SimplePoint> normals(vertices.size());
 			for(std::size_t j=0;j<vertices.size();j++)
 			{
@@ -369,7 +369,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::set<std::size_t>& conflicts=surface_triples_conflicts[i];
 				for(std::set<std::size_t>::const_iterator conflicts_it=conflicts.begin();conflicts_it!=conflicts.end();++conflicts_it)
 				{
-					apollota::ConstrainedContactRemainder::cut_contact_remainder(apollota::SimpleSphere(surface_triples_vector[*conflicts_it].second, probe), remainder);
+					apollota::ConstrainedContactRemainder::cut_contact_remainder(apollota::SimpleSphere(surface_triples_vector[*conflicts_it].second, probe), std::make_pair(1000, apollota::SimpleSphere(d, probe)), remainder);
 				}
 				for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 				{
