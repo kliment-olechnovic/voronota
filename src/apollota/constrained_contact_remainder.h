@@ -54,7 +54,7 @@ public:
 					{
 						const SimpleSphere& c=spheres[c_id];
 						const SimpleSphere c_expanded=SimpleSphere(c, c.r+probe);
-						cut_contact_remainder(c_expanded, result);
+						cut_contact_remainder(c_expanded, std::make_pair(0, a_expanded), result);
 					}
 				}
 			}
@@ -62,7 +62,7 @@ public:
 		return result;
 	}
 
-	static void cut_contact_remainder(const SimpleSphere& sphere, Remainder& remainder)
+	static void cut_contact_remainder(const SimpleSphere& sphere, const std::pair<int, SimpleSphere>& projection_parameters, Remainder& remainder)
 	{
 		int marks[3]={0, 0, 0};
 		Remainder::iterator it=remainder.begin();
@@ -86,6 +86,11 @@ public:
 				SimplePoint c02;
 				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
+					if(projection_parameters.first>0)
+					{
+						c01=project_point_on_spheres(projection_parameters.second, sphere, c01, projection_parameters.first);
+						c02=project_point_on_spheres(projection_parameters.second, sphere, c02, projection_parameters.first);
+					}
 					remainder.insert(it, TriangleRecord(it->p[s0], c01, c02, it->s[s0], 1, 1));
 					it=remainder.erase(it);
 				}
@@ -99,6 +104,11 @@ public:
 				SimplePoint c02;
 				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
+					if(projection_parameters.first>0)
+					{
+						c01=project_point_on_spheres(projection_parameters.second, sphere, c01, projection_parameters.first);
+						c02=project_point_on_spheres(projection_parameters.second, sphere, c02, projection_parameters.first);
+					}
 					remainder.insert(it, TriangleRecord(it->p[s1], c01, c02, it->s[s1], 1, 1));
 					remainder.insert(it, TriangleRecord(it->p[s1], c02, it->p[s2], it->s[s1], 1, it->s[s2]));
 					it=remainder.erase(it);
@@ -228,6 +238,23 @@ private:
 			}
 			return true;
 		}
+	}
+
+	static SimplePoint project_point_on_sphere(const SimpleSphere& sphere, const SimplePoint& p)
+	{
+		const SimplePoint s(sphere);
+		return (s+((p-s).unit()*sphere.r));
+	}
+
+	static SimplePoint project_point_on_spheres(const SimpleSphere& sphere_a, const SimpleSphere& sphere_b, const SimplePoint& p, const int times)
+	{
+		SimplePoint result=p;
+		for(int i=0;i<times;i++)
+		{
+			result=project_point_on_sphere(sphere_a, result);
+			result=project_point_on_sphere(sphere_b, result);
+		}
+		return result;
 	}
 };
 
