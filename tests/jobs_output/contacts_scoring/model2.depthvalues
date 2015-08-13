@@ -513,7 +513,7 @@ c<A>r<66>R<GLU>A<O> 2
 c<A>r<66>R<GLU>A<OE1> 1
 c<A>r<66>R<GLU>A<OE2> 1
 c<A>r<67>R<ILE>A<C> 1
-c<A>r<67>R<ILE>A<CA> 2
+c<A>r<67>R<ILE>A<CA> 1
 c<A>r<67>R<ILE>A<CB> 1
 c<A>r<67>R<ILE>A<CD1> 1
 c<A>r<67>R<ILE>A<CG1> 1
@@ -556,7 +556,7 @@ c<A>r<73>R<THR>A<C> 1
 c<A>r<73>R<THR>A<CA> 2
 c<A>r<73>R<THR>A<CB> 1
 c<A>r<73>R<THR>A<CG2> 1
-c<A>r<73>R<THR>A<N> 2
+c<A>r<73>R<THR>A<N> 1
 c<A>r<73>R<THR>A<O> 1
 c<A>r<73>R<THR>A<OG1> 1
 c<A>r<74>R<ILE>A<C> 1
@@ -1302,7 +1302,7 @@ c<B>r<10>R<HIS>A<N> 1
 c<B>r<10>R<HIS>A<ND1> 1
 c<B>r<10>R<HIS>A<NE2> 1
 c<B>r<10>R<HIS>A<O> 1
-c<B>r<11>R<SER>A<C> 2
+c<B>r<11>R<SER>A<C> 1
 c<B>r<11>R<SER>A<CA> 1
 c<B>r<11>R<SER>A<CB> 1
 c<B>r<11>R<SER>A<N> 1
@@ -1574,7 +1574,7 @@ c<B>r<45>R<LEU>A<CA> 2
 c<B>r<45>R<LEU>A<CB> 1
 c<B>r<45>R<LEU>A<CD1> 1
 c<B>r<45>R<LEU>A<CD2> 1
-c<B>r<45>R<LEU>A<CG> 2
+c<B>r<45>R<LEU>A<CG> 1
 c<B>r<45>R<LEU>A<N> 2
 c<B>r<45>R<LEU>A<O> 1
 c<B>r<46>R<PHE>A<C> 2
@@ -1670,7 +1670,7 @@ c<B>r<58>R<TYR>A<CD2> 1
 c<B>r<58>R<TYR>A<CE1> 1
 c<B>r<58>R<TYR>A<CE2> 1
 c<B>r<58>R<TYR>A<CG> 2
-c<B>r<58>R<TYR>A<CZ> 2
+c<B>r<58>R<TYR>A<CZ> 1
 c<B>r<58>R<TYR>A<N> 2
 c<B>r<58>R<TYR>A<O> 1
 c<B>r<58>R<TYR>A<OH> 1
@@ -1953,11 +1953,11 @@ c<B>r<93>R<PHE>A<CG> 2
 c<B>r<93>R<PHE>A<CZ> 2
 c<B>r<93>R<PHE>A<N> 1
 c<B>r<93>R<PHE>A<O> 1
-c<B>r<94>R<ASP>A<C> 2
+c<B>r<94>R<ASP>A<C> 1
 c<B>r<94>R<ASP>A<CA> 1
 c<B>r<94>R<ASP>A<CB> 1
 c<B>r<94>R<ASP>A<CG> 1
-c<B>r<94>R<ASP>A<N> 2
+c<B>r<94>R<ASP>A<N> 1
 c<B>r<94>R<ASP>A<O> 1
 c<B>r<94>R<ASP>A<OD1> 1
 c<B>r<94>R<ASP>A<OD2> 1
@@ -2087,7 +2087,7 @@ c<B>r<111>R<ASP>A<C> 2
 c<B>r<111>R<ASP>A<CA> 2
 c<B>r<111>R<ASP>A<CB> 1
 c<B>r<111>R<ASP>A<CG> 1
-c<B>r<111>R<ASP>A<N> 3
+c<B>r<111>R<ASP>A<N> 2
 c<B>r<111>R<ASP>A<O> 2
 c<B>r<111>R<ASP>A<OD1> 2
 c<B>r<111>R<ASP>A<OD2> 1
@@ -2135,9 +2135,9 @@ c<B>r<117>R<VAL>A<C> 1
 c<B>r<117>R<VAL>A<CA> 1
 c<B>r<117>R<VAL>A<CB> 2
 c<B>r<117>R<VAL>A<CG1> 1
-c<B>r<117>R<VAL>A<CG2> 2
+c<B>r<117>R<VAL>A<CG2> 1
 c<B>r<117>R<VAL>A<N> 3
-c<B>r<117>R<VAL>A<O> 2
+c<B>r<117>R<VAL>A<O> 1
 c<B>r<118>R<LEU>A<C> 2
 c<B>r<118>R<LEU>A<CA> 1
 c<B>r<118>R<LEU>A<CB> 1
@@ -2360,7 +2360,7 @@ c<B>r<143>R<ARG>A<NH1> 1
 c<B>r<143>R<ARG>A<NH2> 1
 c<B>r<143>R<ARG>A<O> 1
 c<B>r<144>R<TYR>A<C> 2
-c<B>r<144>R<TYR>A<CA> 2
+c<B>r<144>R<TYR>A<CA> 1
 c<B>r<144>R<TYR>A<CB> 1
 c<B>r<144>R<TYR>A<CD1> 2
 c<B>r<144>R<TYR>A<CD2> 1

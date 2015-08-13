@@ -62,7 +62,7 @@ R<ALA>A<C> R<VAL>A<CG2> central_sep1 1.72351
 R<ALA>A<C> R<VAL>A<CG2> central_sep2 1.19908
 R<ALA>A<C> R<VAL>A<CG2> sep1 1.42278
 R<ALA>A<C> R<VAL>A<O> sep1 0.0044992
-R<ALA>A<C> c<solvent> . 2.1481
+R<ALA>A<C> c<solvent> . 2.22422
 R<ALA>A<CA> R<ALA>A<CA> central_sep2 1.44095
 R<ALA>A<CA> R<ALA>A<CB> central_sep2 2.20961
 R<ALA>A<CA> R<ALA>A<N> sep1 3.7035
@@ -124,7 +124,7 @@ R<ALA>A<CA> R<VAL>A<CG2> sep2 0.0231876
 R<ALA>A<CA> R<VAL>A<N> sep1 2.5516
 R<ALA>A<CA> R<VAL>A<O> sep1 3.86292
 R<ALA>A<CA> R<VAL>A<O> sep2 0.0281264
-R<ALA>A<CA> c<solvent> . 17.7542
+R<ALA>A<CA> c<solvent> . 18.008
 R<ALA>A<CB> R<ALA>A<CB> central_sep2 12.0825
 R<ALA>A<CB> R<ALA>A<N> sep1 0.00153795
 R<ALA>A<CB> R<ALA>A<O> sep2 1.57905
@@ -215,7 +215,7 @@ R<ALA>A<CB> R<VAL>A<N> sep1 1.9772
 R<ALA>A<CB> R<VAL>A<N> sep2 0.177149
 R<ALA>A<CB> R<VAL>A<O> sep1 0.173936
 R<ALA>A<CB> R<VAL>A<O> sep2 2.5145
-R<ALA>A<CB> c<solvent> . 128.8
+R<ALA>A<CB> c<solvent> . 129.047
 R<ALA>A<N> R<ARG>A<C> sep2 0.488489
 R<ALA>A<N> R<ARG>A<CA> sep1 2.82123
 R<ALA>A<N> R<ARG>A<CB> sep2 3.3658e-06
@@ -278,7 +278,7 @@ R<ALA>A<N> R<VAL>A<CG2> central_sep2 0.827398
 R<ALA>A<N> R<VAL>A<CG2> sep1 2.29835
 R<ALA>A<N> R<VAL>A<N> sep2 0.0471246
 R<ALA>A<N> R<VAL>A<O> central_sep2 15.0016
-R<ALA>A<N> c<solvent> . 4.95942
+R<ALA>A<N> c<solvent> . 5.02481
 R<ALA>A<O> R<ARG>A<C> sep1 3.42769
 R<ALA>A<O> R<ARG>A<CA> central_sep2 3.17297
 R<ALA>A<O> R<ARG>A<CA> sep1 10.0396
@@ -357,7 +357,7 @@ R<ALA>A<O> R<VAL>A<CG2> sep2 1.73172
 R<ALA>A<O> R<VAL>A<N> central_sep2 13.1487
 R<ALA>A<O> R<VAL>A<N> sep2 0.615901
 R<ALA>A<O> R<VAL>A<O> central_sep2 3.32569
-R<ALA>A<O> c<solvent> . 31.9596
+R<ALA>A<O> c<solvent> . 32.0565
 R<ARG>A<C> R<ARG>A<C> central_sep2 0.331603
 R<ARG>A<C> R<ARG>A<CB> sep2 0.374785
 R<ARG>A<C> R<ARG>A<CD> sep2 0.63321
@@ -446,7 +446,7 @@ R<ARG>A<C> R<VAL>A<CG1> sep2 1.85721
 R<ARG>A<C> R<VAL>A<CG2> central_sep2 1.20797
 R<ARG>A<C> R<VAL>A<CG2> sep2 0.0302829
 R<ARG>A<C> R<VAL>A<N> sep2 0.321897
-R<ARG>A<C> c<solvent> . 1.92654
+R<ARG>A<C> c<solvent> . 2.02477
 R<ARG>A<CA> R<ARG>A<CB> sep2 0.0111586
 R<ARG>A<CA> R<ARG>A<CG> central_sep2 4.90928
 R<ARG>A<CA> R<ARG>A<N> sep2 1.28614
@@ -521,7 +521,7 @@ R<ARG>A<CA> R<VAL>A<N> sep2 0.3878
 R<ARG>A<CA> R<VAL>A<O> central_sep2 3.58608
 R<ARG>A<CA> R<VAL>A<O> sep1 2.82867
 R<ARG>A<CA> R<VAL>A<O> sep2 0.207059
-R<ARG>A<CA> c<solvent> . 32.7666
+R<ARG>A<CA> c<solvent> . 33.19
 R<ARG>A<CB> R<ARG>A<CG> sep2 0.00485974
 R<ARG>A<CB> R<ARG>A<N> sep2 0.0287808
 R<ARG>A<CB> R<ARG>A<O> sep2 1.93951
@@ -624,7 +624,7 @@ R<ARG>A<CB> R<VAL>A<CG1> central_sep2 3.29804
 R<ARG>A<CB> R<VAL>A<CG2> sep2 2.31064
 R<ARG>A<CB> R<VAL>A<N> sep2 0.277543
 R<ARG>A<CB> R<VAL>A<O> central_sep2 3.45585
-R<ARG>A<CB> c<solvent> . 86.4408
+R<ARG>A<CB> c<solvent> . 86.9751
 R<ARG>A<CD> R<ARG>A<NH1> central_sep2 5.08501
 R<ARG>A<CD> R<ARG>A<NH1> sep2 0.064532
 R<ARG>A<CD> R<ARG>A<O> sep2 0.062911
@@ -696,7 +696,7 @@ R<ARG>A<CD> R<VAL>A<CB> sep2 0.0231954
 R<ARG>A<CD> R<VAL>A<CG1> sep2 0.15379
 R<ARG>A<CD> R<VAL>A<CG2> central_sep2 9.34712
 R<ARG>A<CD> R<VAL>A<N> sep2 0.00695855
-R<ARG>A<CD> c<solvent> . 181.539
+R<ARG>A<CD> c<solvent> . 182.646
 R<ARG>A<CG> R<ARG>A<N> sep2 0.00198809
 R<ARG>A<CG> R<ARG>A<O> sep2 0.331776
 R<ARG>A<CG> R<ASP>A<C> central_sep2 0.711815
@@ -808,7 +808,7 @@ R<ARG>A<CG> R<VAL>A<CG2> central_sep2 3.71583
 R<ARG>A<CG> R<VAL>A<CG2> sep2 3.38049
 R<ARG>A<CG> R<VAL>A<N> sep2 0.707209
 R<ARG>A<CG> R<VAL>A<O> central_sep2 5.73617
-R<ARG>A<CG> c<solvent> . 73.2674
+R<ARG>A<CG> c<solvent> . 73.8064
 R<ARG>A<CZ> R<ARG>A<NH1> sep2 0.000474107
 R<ARG>A<CZ> R<ARG>A<O> sep2 0.939092
 R<ARG>A<CZ> R<ASP>A<CB> sep2 0.033832
@@ -873,7 +873,7 @@ R<ARG>A<CZ> R<VAL>A<CG1> central_sep2 0.666329
 R<ARG>A<CZ> R<VAL>A<CG1> sep2 3.54198
 R<ARG>A<CZ> R<VAL>A<CG2> central_sep2 3.7774
 R<ARG>A<CZ> R<VAL>A<CG2> sep2 1.0718
-R<ARG>A<CZ> c<solvent> . 61.2199
+R<ARG>A<CZ> c<solvent> . 62.6901
 R<ARG>A<N> R<ARG>A<O> central_sep2 3.01904
 R<ARG>A<N> R<ARG>A<O> sep2 2.73141
 R<ARG>A<N> R<ASN>A<CA> sep1 5.58582
@@ -959,7 +959,7 @@ R<ARG>A<N> R<VAL>A<CG2> sep2 0.375304
 R<ARG>A<N> R<VAL>A<N> sep2 0.807956
 R<ARG>A<N> R<VAL>A<O> central_sep2 3.14328
 R<ARG>A<N> R<VAL>A<O> sep2 0.772848
-R<ARG>A<N> c<solvent> . 8.41475
+R<ARG>A<N> c<solvent> . 8.59535
 R<ARG>A<NE> R<ARG>A<NE> central_sep2 0.618735
 R<ARG>A<NE> R<ARG>A<NH1> central_sep2 4.30552
 R<ARG>A<NE> R<ASP>A<CA> sep2 0.014235
@@ -1026,7 +1026,7 @@ R<ARG>A<NE> R<VAL>A<CB> sep2 0.010772
 R<ARG>A<NE> R<VAL>A<CG1> central_sep2 0.965705
 R<ARG>A<NE> R<VAL>A<CG1> sep2 0.137902
 R<ARG>A<NE> R<VAL>A<CG2> sep2 2.33072
-R<ARG>A<NE> c<solvent> . 81.0327
+R<ARG>A<NE> c<solvent> . 81.9123
 R<ARG>A<NH1> R<ARG>A<NH1> central_sep2 9.00766
 R<ARG>A<NH1> R<ARG>A<NH1> sep2 0.7304
 R<ARG>A<NH1> R<ARG>A<O> central_sep2 9.29574
@@ -1160,7 +1160,7 @@ R<ARG>A<NH1> R<VAL>A<CG1> central_sep2 25.7986
 R<ARG>A<NH1> R<VAL>A<CG1> sep2 5.0569
 R<ARG>A<NH1> R<VAL>A<CG2> central_sep2 23.7014
 R<ARG>A<NH1> R<VAL>A<CG2> sep2 8.9553
-R<ARG>A<NH1> c<solvent> . 650.567
+R<ARG>A<NH1> c<solvent> . 652.381
 R<ARG>A<O> R<ARG>A<O> sep2 0.0218448
 R<ARG>A<O> R<ASN>A<C> sep1 0.00182727
 R<ARG>A<O> R<ASN>A<CA> sep1 4.86557
@@ -1276,7 +1276,7 @@ R<ARG>A<O> R<VAL>A<CG1> central_sep2 1.32255
 R<ARG>A<O> R<VAL>A<CG1> sep2 0.00101237
 R<ARG>A<O> R<VAL>A<CG2> sep2 0.099555
 R<ARG>A<O> R<VAL>A<N> central_sep2 4.04101
-R<ARG>A<O> c<solvent> . 116.794
+R<ARG>A<O> c<solvent> . 117.05
 R<ASN>A<C> R<ASP>A<O> sep1 1.3091
 R<ASN>A<C> R<GLN>A<N> sep2 1.74597
 R<ASN>A<C> R<GLY>A<CA> sep1 1.09655
@@ -1284,12 +1284,12 @@ R<ASN>A<C> R<GLY>A<O> central_sep1 0.78997
 R<ASN>A<C> R<LEU>A<CD1> sep2 0.0471044
 R<ASN>A<C> R<LEU>A<CD2> sep2 0.895977
 R<ASN>A<C> R<TRP>A<CZ3> sep2 0.663448
-R<ASN>A<C> c<solvent> . 0.973935
+R<ASN>A<C> c<solvent> . 1.00511
 R<ASN>A<CA> R<ASP>A<C> sep1 1.09837
 R<ASN>A<CA> R<ASP>A<O> sep1 2.30396
 R<ASN>A<CA> R<GLY>A<N> sep1 0.31576
 R<ASN>A<CA> R<LEU>A<CD2> sep2 0.0415724
-R<ASN>A<CA> c<solvent> . 12.1905
+R<ASN>A<CA> c<solvent> . 12.3455
 R<ASN>A<CB> R<GLN>A<CB> central_sep2 1.22256
 R<ASN>A<CB> R<GLN>A<CG> sep2 0.346519
 R<ASN>A<CB> R<GLN>A<N> sep2 0.63052
@@ -1301,7 +1301,7 @@ R<ASN>A<CB> R<LEU>A<O> central_sep2 4.82946
 R<ASN>A<CB> R<PRO>A<CD> sep2 0.193578
 R<ASN>A<CB> R<SER>A<CA> sep2 0.903121
 R<ASN>A<CB> R<SER>A<CB> sep2 0.616315
-R<ASN>A<CB> c<solvent> . 26.4011
+R<ASN>A<CB> c<solvent> . 26.5627
 R<ASN>A<CG> R<GLN>A<CB> sep2 0.0201546
 R<ASN>A<CG> R<GLN>A<NE2> sep2 0.33955
 R<ASN>A<CG> R<GLY>A<N> sep1 0.400192
@@ -1313,7 +1313,7 @@ R<ASN>A<CG> R<LEU>A<O> central_sep2 1.68007
 R<ASN>A<CG> R<LYS>A<CB> central_sep2 0.939725
 R<ASN>A<CG> R<LYS>A<CE> sep2 0.0287474
 R<ASN>A<CG> R<SER>A<CB> sep2 0.158363
-R<ASN>A<CG> c<solvent> . 7.89999
+R<ASN>A<CG> c<solvent> . 8.09008
 R<ASN>A<N> R<ASP>A<CA> sep1 0.520565
 R<ASN>A<N> R<ASP>A<CB> sep1 2.92928
 R<ASN>A<N> R<ASP>A<N> sep1 1.11563
@@ -1325,7 +1325,7 @@ R<ASN>A<N> R<LEU>A<CG> sep2 0.67165
 R<ASN>A<N> R<LEU>A<O> central_sep2 4.52673
 R<ASN>A<N> R<LYS>A<C> sep2 0.390983
 R<ASN>A<N> R<LYS>A<CB> sep2 0.164396
-R<ASN>A<N> c<solvent> . 0.733646
+R<ASN>A<N> c<solvent> . 0.76919
 R<ASN>A<ND2> R<GLN>A<CB> sep2 0.395475
 R<ASN>A<ND2> R<GLN>A<NE2> sep2 2.56043
 R<ASN>A<ND2> R<GLY>A<N> sep1 0.0351813
@@ -1340,7 +1340,7 @@ R<ASN>A<ND2> R<LYS>A<NZ> sep2 3.1069
 R<ASN>A<ND2> R<PRO>A<CD> central_sep2 2.79302
 R<ASN>A<ND2> R<PRO>A<CG> sep2 0.57482
 R<ASN>A<ND2> R<SER>A<CB> sep2 0.318447
-R<ASN>A<ND2> c<solvent> . 36.3164
+R<ASN>A<ND2> c<solvent> . 36.4325
 R<ASN>A<O> R<GLN>A<N> central_sep2 0.68685
 R<ASN>A<O> R<GLY>A<C> sep1 0.129603
 R<ASN>A<O> R<GLY>A<CA> sep1 3.62279
@@ -1357,7 +1357,7 @@ R<ASN>A<O> R<TRP>A<CE3> sep2 0.108105
 R<ASN>A<O> R<TRP>A<CZ3> sep2 0.191721
 R<ASN>A<O> R<VAL>A<CG2> central_sep2 1.14261
 R<ASN>A<O> R<VAL>A<N> sep2 0.899164
-R<ASN>A<O> c<solvent> . 15.1065
+R<ASN>A<O> c<solvent> . 15.1486
 R<ASN>A<OD1> R<ASP>A<CB> sep1 1.0338
 R<ASN>A<OD1> R<ASP>A<N> central_sep1 1.42429
 R<ASN>A<OD1> R<GLN>A<CA> sep2 0.0398117
@@ -1376,7 +1376,7 @@ R<ASN>A<OD1> R<LYS>A<CG> sep2 1.26896
 R<ASN>A<OD1> R<PRO>A<CD> central_sep2 4.25008
 R<ASN>A<OD1> R<SER>A<CA> central_sep2 1.19555
 R<ASN>A<OD1> R<SER>A<CB> central_sep2 4.18016
-R<ASN>A<OD1> c<solvent> . 18.6652
+R<ASN>A<OD1> c<solvent> . 18.7593
 R<ASP>A<C> R<GLN>A<CA> sep2 0.0061784
 R<ASP>A<C> R<GLN>A<N> central_sep2 0.688895
 R<ASP>A<C> R<GLN>A<NE2> sep2 0.885775
@@ -1416,7 +1416,7 @@ R<ASP>A<C> R<TYR>A<CD1> central_sep2 2.72755
 R<ASP>A<C> R<VAL>A<C> sep1 0.565767
 R<ASP>A<C> R<VAL>A<CG1> sep1 1.90415
 R<ASP>A<C> R<VAL>A<O> sep1 0.131083
-R<ASP>A<C> c<solvent> . 0.791697
+R<ASP>A<C> c<solvent> . 0.832226
 R<ASP>A<CA> R<GLN>A<CA> sep2 0.0151227
 R<ASP>A<CA> R<GLN>A<N> sep2 0.0395593
 R<ASP>A<CA> R<GLU>A<C> sep1 2.1446
@@ -1452,7 +1452,7 @@ R<ASP>A<CA> R<VAL>A<CA> sep2 0.0217442
 R<ASP>A<CA> R<VAL>A<CG1> central_sep2 2.10147
 R<ASP>A<CA> R<VAL>A<CG1> sep2 2.35813
 R<ASP>A<CA> R<VAL>A<O> sep1 2.61651
-R<ASP>A<CA> c<solvent> . 18.6351
+R<ASP>A<CA> c<solvent> . 18.8132
 R<ASP>A<CB> R<GLN>A<CA> sep2 0.0167932
 R<ASP>A<CB> R<GLN>A<N> central_sep2 0.8501
 R<ASP>A<CB> R<GLN>A<NE2> sep2 1.08114
@@ -1494,7 +1494,7 @@ R<ASP>A<CB> R<VAL>A<CG1> sep2 1.2673
 R<ASP>A<CB> R<VAL>A<CG2> central_sep2 5.90342
 R<ASP>A<CB> R<VAL>A<N> sep2 4.58901
 R<ASP>A<CB> R<VAL>A<O> sep2 0.323572
-R<ASP>A<CB> c<solvent> . 102.705
+R<ASP>A<CB> c<solvent> . 103.207
 R<ASP>A<CG> R<ASP>A<CG> sep2 0.350399
 R<ASP>A<CG> R<ASP>A<OD1> sep2 2.08012
 R<ASP>A<CG> R<GLN>A<O> central_sep2 0.305795
@@ -1529,7 +1529,7 @@ R<ASP>A<CG> R<TYR>A<N> sep2 7.2467e-05
 R<ASP>A<CG> R<TYR>A<O> sep2 0.0353258
 R<ASP>A<CG> R<VAL>A<CG1> sep2 0.785536
 R<ASP>A<CG> R<VAL>A<N> sep2 0.2858
-R<ASP>A<CG> c<solvent> . 30.7114
+R<ASP>A<CG> c<solvent> . 31.4115
 R<ASP>A<N> R<ASP>A<OD1> sep2 0.711125
 R<ASP>A<N> R<GLN>A<C> sep2 0.352002
 R<ASP>A<N> R<GLN>A<CA> central_sep2 0.7991
@@ -1567,7 +1567,7 @@ R<ASP>A<N> R<VAL>A<CG1> sep2 2.92562
 R<ASP>A<N> R<VAL>A<CG2> sep2 6.4736e-07
 R<ASP>A<N> R<VAL>A<N> sep2 2.65301
 R<ASP>A<N> R<VAL>A<O> sep2 2.90057
-R<ASP>A<N> c<solvent> . 9.14018
+R<ASP>A<N> c<solvent> . 9.24789
 R<ASP>A<O> R<GLN>A<CA> sep2 2.54175
 R<ASP>A<O> R<GLN>A<CB> central_sep2 6.96987
 R<ASP>A<O> R<GLN>A<CD> sep2 0.629707
@@ -1618,7 +1618,7 @@ R<ASP>A<O> R<TYR>A<CD1> central_sep2 1.18485
 R<ASP>A<O> R<TYR>A<N> central_sep2 4.58676
 R<ASP>A<O> R<TYR>A<O> central_sep2 0.853266
 R<ASP>A<O> R<VAL>A<CG1> sep1 2.23955
-R<ASP>A<O> c<solvent> . 66.8079
+R<ASP>A<O> c<solvent> . 66.98
 R<ASP>A<OD1> R<ASP>A<OD1> central_sep2 6.88254
 R<ASP>A<OD1> R<GLN>A<CA> sep2 0.0172013
 R<ASP>A<OD1> R<GLN>A<N> central_sep2 0.97823
@@ -1688,7 +1688,7 @@ R<ASP>A<OD1> R<TYR>A<CA> central_sep2 1.91656
 R<ASP>A<OD1> R<TYR>A<O> sep2 0.195329
 R<ASP>A<OD1> R<VAL>A<CG1> central_sep2 1.30231
 R<ASP>A<OD1> R<VAL>A<CG1> sep2 0.0160144
-R<ASP>A<OD1> c<solvent> . 206.477
+R<ASP>A<OD1> c<solvent> . 207.259
 R<CYS>A<C> R<HIS>A<C> sep1 0.0700605
 R<CYS>A<C> R<HIS>A<CB> sep1 0.0254579
 R<CYS>A<C> R<LEU>A<C> sep1 0.211424
@@ -1708,7 +1708,7 @@ R<CYS>A<C> R<PHE>A<CD1> central_sep2 0.836243
 R<CYS>A<C> R<PHE>A<N> sep2 0.301511
 R<CYS>A<C> R<SER>A<CB> sep2 0.432233
 R<CYS>A<C> R<TYR>A<CD1> sep2 0.00793155
-R<CYS>A<C> c<solvent> . 0.465053
+R<CYS>A<C> c<solvent> . 0.479149
 R<CYS>A<CA> R<GLY>A<CA> central_sep2 3.14417
 R<CYS>A<CA> R<GLY>A<O> central_sep2 2.42036
 R<CYS>A<CA> R<HIS>A<C> sep1 2.73109
@@ -1723,7 +1723,7 @@ R<CYS>A<CA> R<LYS>A<N> sep1 3.68358
 R<CYS>A<CA> R<MET>A<C> sep1 1.9507
 R<CYS>A<CA> R<MET>A<O> sep1 4.05431
 R<CYS>A<CA> R<TRP>A<CA> central_sep2 1.03939
-R<CYS>A<CA> c<solvent> . 0.0294648
+R<CYS>A<CA> c<solvent> . 0.0374256
 R<CYS>A<CB> R<GLY>A<CA> sep2 1.29091
 R<CYS>A<CB> R<GLY>A<O> sep2 0.337599
 R<CYS>A<CB> R<HIS>A<C> sep1 0.935237
@@ -1752,7 +1752,7 @@ R<CYS>A<CB> R<PHE>A<CE1> central_sep2 7.98203
 R<CYS>A<CB> R<PHE>A<CZ> sep2 1.00229
 R<CYS>A<CB> R<PHE>A<O> sep2 0.189432
 R<CYS>A<CB> R<THR>A<OG1> sep2 0.0042267
-R<CYS>A<CB> c<solvent> . 0.929594
+R<CYS>A<CB> c<solvent> . 0.89836
 R<CYS>A<N> R<GLY>A<C> sep2 3.22534
 R<CYS>A<N> R<GLY>A<CA> sep2 1.13832
 R<CYS>A<N> R<GLY>A<N> sep2 0.0148587
@@ -1773,7 +1773,7 @@ R<CYS>A<N> R<MET>A<O> sep2 0.50333
 R<CYS>A<N> R<PHE>A<O> sep2 0.068102
 R<CYS>A<N> R<SER>A<CB> sep2 0.221659
 R<CYS>A<N> R<THR>A<OG1> sep2 0.388526
-R<CYS>A<N> c<solvent> . 0.288692
+R<CYS>A<N> c<solvent> . 0.302835
 R<CYS>A<O> R<GLY>A<C> sep2 0.35867
 R<CYS>A<O> R<GLY>A<N> central_sep2 3.86768
 R<CYS>A<O> R<GLY>A<O> central_sep2 4.37878
@@ -1801,7 +1801,7 @@ R<CYS>A<O> R<THR>A<O> sep2 0.074687
 R<CYS>A<O> R<TYR>A<CA> central_sep2 4.69139
 R<CYS>A<O> R<TYR>A<CB> sep2 0.483534
 R<CYS>A<O> R<TYR>A<CD1> central_sep2 2.8935
-R<CYS>A<O> c<solvent> . 0.46145
+R<CYS>A<O> c<solvent> . 0.464687
 R<CYS>A<SG> R<GLY>A<C> sep2 0.290299
 R<CYS>A<SG> R<GLY>A<CA> sep2 1.82852
 R<CYS>A<SG> R<GLY>A<O> central_sep2 4.5594
@@ -1852,7 +1852,7 @@ R<CYS>A<SG> R<TRP>A<NE1> central_sep2 3.12918
 R<CYS>A<SG> R<VAL>A<CB> sep2 0.0723976
 R<CYS>A<SG> R<VAL>A<CG2> central_sep2 14.2426
 R<CYS>A<SG> R<VAL>A<O> sep2 0.491551
-R<CYS>A<SG> c<solvent> . 0.021971
+R<CYS>A<SG> c<solvent> . 0.0240677
 R<GLN>A<C> R<GLU>A<C> sep1 0.457622
 R<GLN>A<C> R<GLU>A<O> central_sep1 0.87343
 R<GLN>A<C> R<GLU>A<O> sep1 0.80569
@@ -1885,7 +1885,7 @@ R<GLN>A<C> R<TYR>A<N> central_sep2 1.53678
 R<GLN>A<C> R<TYR>A<OH> central_sep2 0.786993
 R<GLN>A<C> R<VAL>A<C> sep2 0.00789343
 R<GLN>A<C> R<VAL>A<N> sep2 1.33283
-R<GLN>A<C> c<solvent> . 1.65924
+R<GLN>A<C> c<solvent> . 1.7285
 R<GLN>A<CA> R<GLU>A<C> sep1 2.1379
 R<GLN>A<CA> R<GLU>A<O> sep1 2.21223
 R<GLN>A<CA> R<GLY>A<C> sep1 1.77365
@@ -1908,7 +1908,7 @@ R<GLN>A<CA> R<PRO>A<O> sep2 0.0324359
 R<GLN>A<CA> R<THR>A<C> sep1 1.42992
 R<GLN>A<CA> R<THR>A<O> sep1 1.23638
 R<GLN>A<CA> R<TRP>A<O> sep2 0.0070169
-R<GLN>A<CA> c<solvent> . 15.3474
+R<GLN>A<CA> c<solvent> . 15.518
 R<GLN>A<CB> R<HIS>A<C> sep1 0.831022
 R<GLN>A<CB> R<HIS>A<O> central_sep1 7.72649
 R<GLN>A<CB> R<LEU>A<CD1> central_sep1 4.10435
@@ -1931,7 +1931,7 @@ R<GLN>A<CB> R<TRP>A<NE1> central_sep2 0.422472
 R<GLN>A<CB> R<TRP>A<O> central_sep2 4.72375
 R<GLN>A<CB> R<TYR>A<CE1> central_sep2 0.438552
 R<GLN>A<CB> R<TYR>A<OH> sep2 0.0749435
-R<GLN>A<CB> c<solvent> . 55.2222
+R<GLN>A<CB> c<solvent> . 55.6618
 R<GLN>A<CD> R<GLU>A<OE1> sep2 0.80706
 R<GLN>A<CD> R<HIS>A<C> sep1 0.00272359
 R<GLN>A<CD> R<ILE>A<CB> sep2 0.395483
@@ -1960,7 +1960,7 @@ R<GLN>A<CD> R<TRP>A<NE1> sep2 1.80462
 R<GLN>A<CD> R<TYR>A<CE1> central_sep2 0.386721
 R<GLN>A<CD> R<TYR>A<CE1> sep2 0.825095
 R<GLN>A<CD> R<TYR>A<OH> sep2 0.305975
-R<GLN>A<CD> c<solvent> . 24.073
+R<GLN>A<CD> c<solvent> . 24.6623
 R<GLN>A<CG> R<GLU>A<CB> sep2 0.63274
 R<GLN>A<CG> R<GLU>A<CD> central_sep2 0.860315
 R<GLN>A<CG> R<GLU>A<CG> central_sep2 1.64356
@@ -1989,7 +1989,7 @@ R<GLN>A<CG> R<TRP>A<CD1> sep2 0.539437
 R<GLN>A<CG> R<TRP>A<NE1> sep2 1.79118
 R<GLN>A<CG> R<TYR>A<CE1> sep2 0.32182
 R<GLN>A<CG> R<TYR>A<OH> central_sep2 4.36204
-R<GLN>A<CG> c<solvent> . 91.5964
+R<GLN>A<CG> c<solvent> . 92.1673
 R<GLN>A<N> R<GLU>A<CA> sep1 0.970624
 R<GLN>A<N> R<GLU>A<CB> sep1 2.31071
 R<GLN>A<N> R<GLU>A<N> sep1 1.39941
@@ -2021,7 +2021,7 @@ R<GLN>A<N> R<THR>A<CB> sep1 0.145875
 R<GLN>A<N> R<THR>A<N> sep1 1.38618
 R<GLN>A<N> R<THR>A<OG1> sep1 1.11739
 R<GLN>A<N> R<TRP>A<O> central_sep2 3.92406
-R<GLN>A<N> c<solvent> . 0.959448
+R<GLN>A<N> c<solvent> . 0.99555
 R<GLN>A<NE2> R<ILE>A<CB> central_sep2 1.46985
 R<GLN>A<NE2> R<ILE>A<CD1> sep2 2.87854
 R<GLN>A<NE2> R<ILE>A<CG1> sep2 0.337379
@@ -2049,7 +2049,7 @@ R<GLN>A<NE2> R<THR>A<OG1> central_sep2 8.8063
 R<GLN>A<NE2> R<TRP>A<CZ2> central_sep2 3.52716
 R<GLN>A<NE2> R<TRP>A<CZ2> sep2 0.955325
 R<GLN>A<NE2> R<TRP>A<NE1> sep2 2.48588
-R<GLN>A<NE2> c<solvent> . 114.467
+R<GLN>A<NE2> c<solvent> . 114.787
 R<GLN>A<O> R<GLU>A<CB> central_sep2 3.97801
 R<GLN>A<O> R<GLU>A<CD> sep2 0.089043
 R<GLN>A<O> R<GLU>A<CG> central_sep2 3.03466
@@ -2088,7 +2088,7 @@ R<GLN>A<O> R<TYR>A<N> sep2 0.67443
 R<GLN>A<O> R<TYR>A<OH> sep2 0.66588
 R<GLN>A<O> R<VAL>A<C> sep2 4.75225
 R<GLN>A<O> R<VAL>A<N> sep2 0.956837
-R<GLN>A<O> c<solvent> . 45.7947
+R<GLN>A<O> c<solvent> . 45.9409
 R<GLN>A<OE1> R<GLU>A<CD> sep2 0.074788
 R<GLN>A<OE1> R<GLU>A<CG> central_sep2 1.07425
 R<GLN>A<OE1> R<GLU>A<OE1> central_sep2 2.76587
@@ -2120,7 +2120,7 @@ R<GLN>A<OE1> R<TRP>A<O> sep2 0.145033
 R<GLN>A<OE1> R<TYR>A<CE1> central_sep2 2.91054
 R<GLN>A<OE1> R<TYR>A<CZ> sep2 0.941375
 R<GLN>A<OE1> R<TYR>A<OH> central_sep2 4.71946
-R<GLN>A<OE1> c<solvent> . 108.574
+R<GLN>A<OE1> c<solvent> . 108.912
 R<GLU>A<C> R<ILE>A<C> sep1 0.0341653
 R<GLU>A<C> R<ILE>A<CA> sep1 2.00419
 R<GLU>A<C> R<ILE>A<CD1> sep1 0.177143
@@ -2165,7 +2165,7 @@ R<GLU>A<C> R<VAL>A<CG1> sep1 1.15963
 R<GLU>A<C> R<VAL>A<N> sep2 1.85753
 R<GLU>A<C> R<VAL>A<O> sep1 0.0458417
 R<GLU>A<C> R<VAL>A<O> sep2 0.127048
-R<GLU>A<C> c<solvent> . 0.715959
+R<GLU>A<C> c<solvent> . 0.755435
 R<GLU>A<CA> R<GLY>A<C> sep1 1.57401
 R<GLU>A<CA> R<GLY>A<O> sep1 5.35886
 R<GLU>A<CA> R<HIS>A<CA> central_sep2 1.64677
@@ -2219,7 +2219,7 @@ R<GLU>A<CA> R<VAL>A<CG1> sep1 0.990306
 R<GLU>A<CA> R<VAL>A<CG2> central_sep2 0.65926
 R<GLU>A<CA> R<VAL>A<O> sep1 12.1102
 R<GLU>A<CA> R<VAL>A<O> sep2 0.00291814
-R<GLU>A<CA> c<solvent> . 23.0178
+R<GLU>A<CA> c<solvent> . 23.2754
 R<GLU>A<CB> R<GLY>A<C> sep1 0.89599
 R<GLU>A<CB> R<GLY>A<N> sep1 0.253829
 R<GLU>A<CB> R<HIS>A<CA> sep2 0.0163779
@@ -2278,7 +2278,7 @@ R<GLU>A<CB> R<VAL>A<C> sep1 1.88829
 R<GLU>A<CB> R<VAL>A<CA> sep1 0.0599505
 R<GLU>A<CB> R<VAL>A<CG1> sep2 0.566035
 R<GLU>A<CB> R<VAL>A<O> sep1 2.88173
-R<GLU>A<CB> c<solvent> . 75.6757
+R<GLU>A<CB> c<solvent> . 76.3007
 R<GLU>A<CD> R<GLU>A<OE1> sep2 0.208842
 R<GLU>A<CD> R<GLY>A<O> sep1 1.64478
 R<GLU>A<CD> R<HIS>A<CD2> central_sep2 1.8797
@@ -2320,7 +2320,7 @@ R<GLU>A<CD> R<TYR>A<OH> central_sep2 1.76124
 R<GLU>A<CD> R<TYR>A<OH> sep2 1.5993
 R<GLU>A<CD> R<VAL>A<CG2> sep2 0.938651
 R<GLU>A<CD> R<VAL>A<O> sep2 0.949755
-R<GLU>A<CD> c<solvent> . 49.6723
+R<GLU>A<CD> c<solvent> . 50.9538
 R<GLU>A<CG> R<GLY>A<C> sep1 2.60306
 R<GLU>A<CG> R<GLY>A<CA> sep1 0.234911
 R<GLU>A<CG> R<GLY>A<N> sep1 0.352108
@@ -2381,7 +2381,7 @@ R<GLU>A<CG> R<VAL>A<CG2> sep2 0.092399
 R<GLU>A<CG> R<VAL>A<O> central_sep2 5.41626
 R<GLU>A<CG> R<VAL>A<O> sep1 0.60341
 R<GLU>A<CG> R<VAL>A<O> sep2 0.267412
-R<GLU>A<CG> c<solvent> . 145.454
+R<GLU>A<CG> c<solvent> . 146.332
 R<GLU>A<N> R<GLY>A<CA> sep1 1.03886
 R<GLU>A<N> R<GLY>A<CA> sep2 0.00375402
 R<GLU>A<N> R<GLY>A<N> sep1 7.21346
@@ -2436,7 +2436,7 @@ R<GLU>A<N> R<VAL>A<CG1> sep1 1.81475
 R<GLU>A<N> R<VAL>A<CG1> sep2 0.52661
 R<GLU>A<N> R<VAL>A<CG2> sep2 0.252041
 R<GLU>A<N> R<VAL>A<O> sep2 0.202763
-R<GLU>A<N> c<solvent> . 5.21332
+R<GLU>A<N> c<solvent> . 5.29682
 R<GLU>A<O> R<GLU>A<OE1> central_sep2 1.5469
 R<GLU>A<O> R<HIS>A<CD2> sep2 0.00641695
 R<GLU>A<O> R<HIS>A<N> central_sep2 4.97655
@@ -2503,7 +2503,7 @@ R<GLU>A<O> R<VAL>A<CG1> sep2 0.0137384
 R<GLU>A<O> R<VAL>A<N> sep2 0.95413
 R<GLU>A<O> R<VAL>A<O> central_sep2 2.92497
 R<GLU>A<O> R<VAL>A<O> sep2 2.22034
-R<GLU>A<O> c<solvent> . 67.478
+R<GLU>A<O> c<solvent> . 67.6369
 R<GLU>A<OE1> R<GLU>A<OE1> central_sep2 1.67481
 R<GLU>A<OE1> R<GLY>A<O> sep1 2.06541
 R<GLU>A<OE1> R<HIS>A<CB> central_sep2 4.64913
@@ -2565,7 +2565,7 @@ R<GLU>A<OE1> R<VAL>A<C> sep1 0.411144
 R<GLU>A<OE1> R<VAL>A<CG2> sep2 2.00292
 R<GLU>A<OE1> R<VAL>A<O> sep1 2.76986
 R<GLU>A<OE1> R<VAL>A<O> sep2 2.22124
-R<GLU>A<OE1> c<solvent> . 542.575
+R<GLU>A<OE1> c<solvent> . 544.228
 R<GLY>A<C> R<GLY>A<CA> central_sep2 2.62526
 R<GLY>A<C> R<GLY>A<CA> sep1 6.16339
 R<GLY>A<C> R<GLY>A<O> sep1 0.100597
@@ -2614,7 +2614,7 @@ R<GLY>A<C> R<VAL>A<CG1> central_sep2 2.84341
 R<GLY>A<C> R<VAL>A<CG1> sep1 2.74575
 R<GLY>A<C> R<VAL>A<CG2> sep2 0.228465
 R<GLY>A<C> R<VAL>A<O> sep2 0.126277
-R<GLY>A<C> c<solvent> . 5.30863
+R<GLY>A<C> c<solvent> . 5.50991
 R<GLY>A<CA> R<GLY>A<CA> central_sep2 9.57349
 R<GLY>A<CA> R<GLY>A<CA> sep2 0.00127843
 R<GLY>A<CA> R<GLY>A<N> sep1 15.1282
@@ -2680,7 +2680,7 @@ R<GLY>A<CA> R<VAL>A<CG2> central_sep2 1.20314
 R<GLY>A<CA> R<VAL>A<CG2> sep2 1.11683
 R<GLY>A<CA> R<VAL>A<N> sep1 3.77948
 R<GLY>A<CA> R<VAL>A<O> central_sep2 5.19801
-R<GLY>A<CA> c<solvent> . 99.8386
+R<GLY>A<CA> c<solvent> . 100.366
 R<GLY>A<N> R<GLY>A<N> sep1 2.91493
 R<GLY>A<N> R<GLY>A<O> central_sep2 2.81907
 R<GLY>A<N> R<GLY>A<O> sep2 0.0153905
@@ -2729,7 +2729,7 @@ R<GLY>A<N> R<VAL>A<CB> sep2 0.505897
 R<GLY>A<N> R<VAL>A<CG1> central_sep2 2.1935
 R<GLY>A<N> R<VAL>A<O> central_sep2 0.519835
 R<GLY>A<N> R<VAL>A<O> sep2 0.0727365
-R<GLY>A<N> c<solvent> . 31.6366
+R<GLY>A<N> c<solvent> . 31.9391
 R<GLY>A<O> R<GLY>A<O> sep2 0.239176
 R<GLY>A<O> R<ILE>A<CA> sep1 1.46046
 R<GLY>A<O> R<ILE>A<CA> sep2 0.017865
@@ -2792,7 +2792,7 @@ R<GLY>A<O> R<VAL>A<CB> sep2 0.343728
 R<GLY>A<O> R<VAL>A<CG1> central_sep2 1.57078
 R<GLY>A<O> R<VAL>A<CG1> sep1 0.18648
 R<GLY>A<O> R<VAL>A<CG2> sep2 0.709411
-R<GLY>A<O> c<solvent> . 35.1984
+R<GLY>A<O> c<solvent> . 35.3009
 R<HIS>A<C> R<HIS>A<CD2> central_sep2 1.07106
 R<HIS>A<C> R<LEU>A<CA> sep1 2.36664
 R<HIS>A<C> R<LEU>A<CB> sep1 0.10232
@@ -2804,7 +2804,7 @@ R<HIS>A<C> R<LYS>A<NZ> sep2 0.056918
 R<HIS>A<C> R<LYS>A<O> sep1 0.0029545
 R<HIS>A<C> R<TRP>A<CE3> central_sep1 2.80679
 R<HIS>A<C> R<VAL>A<CG1> sep2 0.0400566
-R<HIS>A<C> c<solvent> . 0.377613
+R<HIS>A<C> c<solvent> . 0.402352
 R<HIS>A<CA> R<ILE>A<O> central_sep2 3.70674
 R<HIS>A<CA> R<LEU>A<C> sep1 2.06367
 R<HIS>A<CA> R<LEU>A<CG> sep1 0.365272
@@ -2821,7 +2821,7 @@ R<HIS>A<CA> R<TRP>A<C> sep1 1.15727
 R<HIS>A<CA> R<TRP>A<CE3> central_sep1 1.97674
 R<HIS>A<CA> R<TRP>A<O> sep1 2.40936
 R<HIS>A<CA> R<VAL>A<O> sep2 0.0151226
-R<HIS>A<CA> c<solvent> . 5.56259
+R<HIS>A<CA> c<solvent> . 5.62528
 R<HIS>A<CB> R<HIS>A<CD2> sep2 2.33034
 R<HIS>A<CB> R<HIS>A<CE1> sep2 0.549648
 R<HIS>A<CB> R<HIS>A<NE2> central_sep2 4.98832
@@ -2839,7 +2839,7 @@ R<HIS>A<CB> R<TYR>A<CE1> sep2 0.0963282
 R<HIS>A<CB> R<VAL>A<CG1> central_sep2 11.0389
 R<HIS>A<CB> R<VAL>A<N> sep2 0.161872
 R<HIS>A<CB> R<VAL>A<O> sep2 1.47274
-R<HIS>A<CB> c<solvent> . 31.8102
+R<HIS>A<CB> c<solvent> . 31.9728
 R<HIS>A<CD2> R<HIS>A<O> sep2 0.826075
 R<HIS>A<CD2> R<LEU>A<C> sep1 1.93262
 R<HIS>A<CD2> R<LEU>A<CA> sep1 0.435456
@@ -2858,7 +2858,7 @@ R<HIS>A<CD2> R<VAL>A<CG1> central_sep2 1.92837
 R<HIS>A<CD2> R<VAL>A<CG1> sep2 1.77112
 R<HIS>A<CD2> R<VAL>A<CG2> central_sep2 2.23396
 R<HIS>A<CD2> R<VAL>A<O> central_sep2 3.11093
-R<HIS>A<CD2> c<solvent> . 27.8292
+R<HIS>A<CD2> c<solvent> . 28.0329
 R<HIS>A<CE1> R<LEU>A<O> sep1 0.201637
 R<HIS>A<CE1> R<LYS>A<CB> central_sep1 2.76939
 R<HIS>A<CE1> R<LYS>A<CB> sep1 0.0124838
@@ -2871,7 +2871,7 @@ R<HIS>A<CE1> R<TYR>A<CE1> central_sep2 2.41117
 R<HIS>A<CE1> R<TYR>A<CZ> central_sep2 1.41319
 R<HIS>A<CE1> R<TYR>A<CZ> sep2 1.62134
 R<HIS>A<CE1> R<TYR>A<OH> central_sep2 6.25841
-R<HIS>A<CE1> c<solvent> . 75.0423
+R<HIS>A<CE1> c<solvent> . 75.4207
 R<HIS>A<CG> R<LEU>A<C> sep1 0.82791
 R<HIS>A<CG> R<LEU>A<O> sep1 1.01052
 R<HIS>A<CG> R<LYS>A<C> sep1 0.0100361
@@ -2880,7 +2880,7 @@ R<HIS>A<CG> R<LYS>A<CG> central_sep1 0.425776
 R<HIS>A<CG> R<THR>A<CG2> sep2 0.0256552
 R<HIS>A<CG> R<TYR>A<CE1> central_sep2 2.4551
 R<HIS>A<CG> R<VAL>A<CG1> sep2 0.508656
-R<HIS>A<CG> c<solvent> . 6.08591
+R<HIS>A<CG> c<solvent> . 6.26638
 R<HIS>A<N> R<LEU>A<CA> sep1 2.59275
 R<HIS>A<N> R<LEU>A<CD1> central_sep1 2.15721
 R<HIS>A<N> R<LEU>A<CG> sep1 1.18009
@@ -2906,7 +2906,7 @@ R<HIS>A<ND1> R<THR>A<CG2> sep2 0.454529
 R<HIS>A<ND1> R<THR>A<OG1> central_sep2 8.95486
 R<HIS>A<ND1> R<TYR>A<CE1> central_sep2 0.897753
 R<HIS>A<ND1> R<TYR>A<OH> central_sep2 4.33193
-R<HIS>A<ND1> c<solvent> . 24.3919
+R<HIS>A<ND1> c<solvent> . 24.6427
 R<HIS>A<NE2> R<LEU>A<O> sep1 0.0140514
 R<HIS>A<NE2> R<LYS>A<CB> sep1 0.322328
 R<HIS>A<NE2> R<LYS>A<CD> sep1 1.86065
@@ -2918,7 +2918,7 @@ R<HIS>A<NE2> R<TYR>A<CD1> sep2 0.420954
 R<HIS>A<NE2> R<TYR>A<CE1> central_sep2 1.80456
 R<HIS>A<NE2> R<TYR>A<CE1> sep2 1.50757
 R<HIS>A<NE2> R<TYR>A<CZ> sep2 0.000981985
-R<HIS>A<NE2> c<solvent> . 38.0706
+R<HIS>A<NE2> c<solvent> . 38.3862
 R<HIS>A<O> R<LEU>A<CA> sep1 4.12927
 R<HIS>A<O> R<LEU>A<CB> sep1 0.000483726
 R<HIS>A<O> R<LEU>A<CD1> central_sep1 4.48324
@@ -2931,7 +2931,7 @@ R<HIS>A<O> R<TRP>A<CE3> sep1 0.664698
 R<HIS>A<O> R<VAL>A<CG1> sep2 0.851982
 R<HIS>A<O> R<VAL>A<N> central_sep2 5.10105
 R<HIS>A<O> R<VAL>A<O> central_sep2 2.25885
-R<HIS>A<O> c<solvent> . 19.9695
+R<HIS>A<O> c<solvent> . 20.0464
 R<ILE>A<C> R<ILE>A<CD1> central_sep2 0.0743275
 R<ILE>A<C> R<ILE>A<CD1> sep2 0.370139
 R<ILE>A<C> R<LEU>A<C> sep1 0.340303
@@ -2956,7 +2956,7 @@ R<ILE>A<C> R<TRP>A<CZ3> sep2 0.16236
 R<ILE>A<C> R<TYR>A<C> sep1 0.0480793
 R<ILE>A<C> R<TYR>A<O> central_sep1 1.53594
 R<ILE>A<C> R<VAL>A<CB> central_sep2 0.573568
-R<ILE>A<C> c<solvent> . 1.11638
+R<ILE>A<C> c<solvent> . 1.16736
 R<ILE>A<CA> R<LEU>A<CA> central_sep2 0.593876
 R<ILE>A<CA> R<LEU>A<CD1> sep2 0.00084054
 R<ILE>A<CA> R<LEU>A<N> sep1 0.88784
@@ -3023,7 +3023,7 @@ R<ILE>A<CB> R<TRP>A<CZ3> central_sep2 1.17675
 R<ILE>A<CB> R<TRP>A<CZ3> sep2 1.23176
 R<ILE>A<CB> R<VAL>A<CG2> sep2 0.103968
 R<ILE>A<CB> R<VAL>A<O> sep2 0.483676
-R<ILE>A<CB> c<solvent> . 14.8614
+R<ILE>A<CB> c<solvent> . 15.0457
 R<ILE>A<CD1> R<ILE>A<CG2> central_sep2 14.4663
 R<ILE>A<CD1> R<ILE>A<O> central_sep2 0.371088
 R<ILE>A<CD1> R<ILE>A<O> sep2 0.622278
@@ -3063,7 +3063,7 @@ R<ILE>A<CD1> R<VAL>A<CG1> sep2 1.17678
 R<ILE>A<CD1> R<VAL>A<CG2> central_sep2 10.3876
 R<ILE>A<CD1> R<VAL>A<CG2> sep2 0.119059
 R<ILE>A<CD1> R<VAL>A<O> sep2 0.292953
-R<ILE>A<CD1> c<solvent> . 78.9022
+R<ILE>A<CD1> c<solvent> . 79.0845
 R<ILE>A<CG1> R<ILE>A<CG2> sep2 0.602494
 R<ILE>A<CG1> R<ILE>A<O> central_sep2 4.91357
 R<ILE>A<CG1> R<LEU>A<CA> central_sep2 0.502555
@@ -3105,7 +3105,7 @@ R<ILE>A<CG1> R<VAL>A<CG1> sep2 0.206481
 R<ILE>A<CG1> R<VAL>A<CG2> central_sep2 3.49383
 R<ILE>A<CG1> R<VAL>A<CG2> sep2 0.0420947
 R<ILE>A<CG1> R<VAL>A<O> central_sep2 4.29927
-R<ILE>A<CG1> c<solvent> . 12.3069
+R<ILE>A<CG1> c<solvent> . 12.4089
 R<ILE>A<CG2> R<LEU>A<CA> sep1 0.0459115
 R<ILE>A<CG2> R<LEU>A<CA> sep2 0.26277
 R<ILE>A<CG2> R<LEU>A<CB> central_sep2 2.90239
@@ -3155,7 +3155,7 @@ R<ILE>A<CG2> R<VAL>A<CB> central_sep2 2.39296
 R<ILE>A<CG2> R<VAL>A<CG1> central_sep2 6.34091
 R<ILE>A<CG2> R<VAL>A<CG2> central_sep2 7.75796
 R<ILE>A<CG2> R<VAL>A<CG2> sep2 0.282332
-R<ILE>A<CG2> c<solvent> . 54.6658
+R<ILE>A<CG2> c<solvent> . 54.7552
 R<ILE>A<N> R<ILE>A<O> central_sep2 3.14038
 R<ILE>A<N> R<LEU>A<CB> sep2 0.078534
 R<ILE>A<N> R<LEU>A<CD1> sep2 0.175924
@@ -3185,7 +3185,7 @@ R<ILE>A<N> R<TYR>A<CB> sep1 0.000416571
 R<ILE>A<N> R<TYR>A<N> sep1 2.82892
 R<ILE>A<N> R<VAL>A<CG1> sep2 0.0683975
 R<ILE>A<N> R<VAL>A<O> central_sep2 3.85342
-R<ILE>A<N> c<solvent> . 25.3258
+R<ILE>A<N> c<solvent> . 25.4403
 R<ILE>A<O> R<LEU>A<C> sep1 1.4451
 R<ILE>A<O> R<LEU>A<CA> sep1 1.94748
 R<ILE>A<O> R<LEU>A<CA> sep2 0.00360526
@@ -3220,7 +3220,7 @@ R<ILE>A<O> R<TRP>A<O> sep2 0.268739
 R<ILE>A<O> R<VAL>A<CB> central_sep2 2.19506
 R<ILE>A<O> R<VAL>A<CG1> central_sep2 2.22228
 R<ILE>A<O> R<VAL>A<O> sep2 0.38938
-R<ILE>A<O> c<solvent> . 47.7448
+R<ILE>A<O> c<solvent> . 47.8375
 R<LEU>A<C> R<LEU>A<CD1> central_sep2 0.634635
 R<LEU>A<C> R<LEU>A<CD1> sep2 0.96452
 R<LEU>A<C> R<LEU>A<CD2> sep2 0.243636
@@ -3272,7 +3272,7 @@ R<LEU>A<C> R<VAL>A<CA> sep1 1.81521
 R<LEU>A<C> R<VAL>A<CG2> sep1 0.915517
 R<LEU>A<C> R<VAL>A<CG2> sep2 0.297864
 R<LEU>A<C> R<VAL>A<N> sep2 0.897456
-R<LEU>A<C> c<solvent> . 3.43083
+R<LEU>A<C> c<solvent> . 3.52703
 R<LEU>A<CA> R<LEU>A<CD1> sep2 0.711787
 R<LEU>A<CA> R<LEU>A<O> central_sep2 2.77413
 R<LEU>A<CA> R<LEU>A<O> sep2 0.436142
@@ -3316,7 +3316,7 @@ R<LEU>A<CA> R<VAL>A<CG2> sep2 0.00848075
 R<LEU>A<CA> R<VAL>A<N> sep1 1.13918
 R<LEU>A<CA> R<VAL>A<O> central_sep2 2.57411
 R<LEU>A<CA> R<VAL>A<O> sep1 3.44982
-R<LEU>A<CA> c<solvent> . 11.1217
+R<LEU>A<CA> c<solvent> . 11.295
 R<LEU>A<CB> R<LEU>A<CB> sep2 0.719272
 R<LEU>A<CB> R<LEU>A<CD1> central_sep2 19.0418
 R<LEU>A<CB> R<LEU>A<CD1> sep2 0.302064
@@ -3385,7 +3385,7 @@ R<LEU>A<CB> R<VAL>A<CG2> sep2 0.136946
 R<LEU>A<CB> R<VAL>A<N> central_sep2 1.4174
 R<LEU>A<CB> R<VAL>A<N> sep1 0.599252
 R<LEU>A<CB> R<VAL>A<O> sep1 4.63002
-R<LEU>A<CB> c<solvent> . 4.33961
+R<LEU>A<CB> c<solvent> . 4.39727
 R<LEU>A<CD1> R<LEU>A<CD1> central_sep2 23.5214
 R<LEU>A<CD1> R<LEU>A<CD1> sep2 0.095899
 R<LEU>A<CD1> R<LEU>A<CD2> central_sep2 18.4505
@@ -3471,7 +3471,7 @@ R<LEU>A<CD1> R<VAL>A<N> sep2 0.170346
 R<LEU>A<CD1> R<VAL>A<O> central_sep2 3.50233
 R<LEU>A<CD1> R<VAL>A<O> sep1 0.735145
 R<LEU>A<CD1> R<VAL>A<O> sep2 0.173956
-R<LEU>A<CD1> c<solvent> . 26.0456
+R<LEU>A<CD1> c<solvent> . 26.1074
 R<LEU>A<CD2> R<LEU>A<CD2> central_sep2 16.4015
 R<LEU>A<CD2> R<LEU>A<CD2> sep2 3.32218
 R<LEU>A<CD2> R<LEU>A<CG> central_sep2 6.17694
@@ -3532,7 +3532,7 @@ R<LEU>A<CD2> R<VAL>A<CG1> sep2 1.2828
 R<LEU>A<CD2> R<VAL>A<CG2> central_sep2 21.8401
 R<LEU>A<CD2> R<VAL>A<CG2> sep2 0.573055
 R<LEU>A<CD2> R<VAL>A<N> sep2 0.245716
-R<LEU>A<CD2> c<solvent> . 115.181
+R<LEU>A<CD2> c<solvent> . 115.292
 R<LEU>A<CG> R<LEU>A<CG> central_sep2 0.799885
 R<LEU>A<CG> R<LEU>A<CG> sep2 0.00415226
 R<LEU>A<CG> R<LEU>A<N> central_sep2 2.73693
@@ -3573,7 +3573,7 @@ R<LEU>A<CG> R<TYR>A<CE1> sep2 0.202103
 R<LEU>A<CG> R<TYR>A<O> sep2 1.61077
 R<LEU>A<CG> R<VAL>A<CG2> sep2 1.29687
 R<LEU>A<CG> R<VAL>A<N> sep2 0.0188308
-R<LEU>A<CG> c<solvent> . 9.07344
+R<LEU>A<CG> c<solvent> . 9.1006
 R<LEU>A<N> R<LEU>A<O> central_sep2 3.59225
 R<LEU>A<N> R<LYS>A<CA> sep1 2.56146
 R<LEU>A<N> R<MET>A<C> sep2 0.798592
@@ -3616,7 +3616,7 @@ R<LEU>A<N> R<VAL>A<CG2> central_sep1 1.33732
 R<LEU>A<N> R<VAL>A<CG2> sep1 1.28663
 R<LEU>A<N> R<VAL>A<CG2> sep2 0.000536595
 R<LEU>A<N> R<VAL>A<N> sep1 5.22479
-R<LEU>A<N> c<solvent> . 0.145568
+R<LEU>A<N> c<solvent> . 0.162028
 R<LEU>A<O> R<LEU>A<O> central_sep2 0.667075
 R<LEU>A<O> R<LEU>A<O> sep2 0.62387
 R<LEU>A<O> R<MET>A<C> sep1 0.0644055
@@ -3684,14 +3684,14 @@ R<LEU>A<O> R<VAL>A<N> sep1 0.0173453
 R<LEU>A<O> R<VAL>A<O> central_sep2 1.62363
 R<LEU>A<O> R<VAL>A<O> sep1 1.2494
 R<LEU>A<O> R<VAL>A<O> sep2 3.96357
-R<LEU>A<O> c<solvent> . 41.9312
+R<LEU>A<O> c<solvent> . 42.0316
 R<LYS>A<C> R<PRO>A<C> sep1 0.498154
 R<LYS>A<C> R<PRO>A<O> sep1 1.20477
 R<LYS>A<C> R<THR>A<CG2> sep2 1.45e-06
 R<LYS>A<C> R<THR>A<O> sep2 0.092729
 R<LYS>A<C> R<VAL>A<CA> sep1 2.0529
 R<LYS>A<C> R<VAL>A<CG2> sep1 1.42941
-R<LYS>A<C> c<solvent> . 0.183455
+R<LYS>A<C> c<solvent> . 0.194153
 R<LYS>A<CA> R<PRO>A<C> sep1 0.89942
 R<LYS>A<CA> R<PRO>A<O> sep1 3.29897
 R<LYS>A<CA> R<SER>A<CA> central_sep2 1.84693
@@ -3702,12 +3702,12 @@ R<LYS>A<CA> R<THR>A<O> sep2 2.67898
 R<LYS>A<CA> R<THR>A<OG1> sep2 0.263537
 R<LYS>A<CA> R<VAL>A<CG2> sep1 0.0020948
 R<LYS>A<CA> R<VAL>A<N> sep1 7.50749
-R<LYS>A<CA> c<solvent> . 6.4163
+R<LYS>A<CA> c<solvent> . 6.53377
 R<LYS>A<CB> R<SER>A<OG> sep2 0.213088
 R<LYS>A<CB> R<THR>A<CG2> central_sep2 6.72136
 R<LYS>A<CB> R<THR>A<O> sep2 0.878295
 R<LYS>A<CB> R<THR>A<OG1> sep2 0.50225
-R<LYS>A<CB> c<solvent> . 17.1909
+R<LYS>A<CB> c<solvent> . 17.3601
 R<LYS>A<CD> R<THR>A<CA> central_sep2 1.00452
 R<LYS>A<CD> R<THR>A<CB> central_sep2 0.401815
 R<LYS>A<CD> R<THR>A<CG2> central_sep2 1.75783
@@ -3718,7 +3718,7 @@ R<LYS>A<CD> R<VAL>A<C> central_sep1 0.98726
 R<LYS>A<CD> R<VAL>A<CA> sep1 0.487804
 R<LYS>A<CD> R<VAL>A<N> sep1 0.437859
 R<LYS>A<CD> R<VAL>A<O> sep1 0.98475
-R<LYS>A<CD> c<solvent> . 70.0236
+R<LYS>A<CD> c<solvent> . 70.475
 R<LYS>A<CE> R<PRO>A<C> sep2 0.671987
 R<LYS>A<CE> R<PRO>A<O> central_sep2 2.81228
 R<LYS>A<CE> R<PRO>A<O> sep2 1.54787
@@ -3727,7 +3727,7 @@ R<LYS>A<CE> R<THR>A<CG2> central_sep2 3.74966
 R<LYS>A<CE> R<THR>A<CG2> sep2 0.84867
 R<LYS>A<CE> R<VAL>A<CG1> central_sep2 1.10798
 R<LYS>A<CE> R<VAL>A<O> sep1 0.03483
-R<LYS>A<CE> c<solvent> . 54.765
+R<LYS>A<CE> c<solvent> . 55.2286
 R<LYS>A<CG> R<PRO>A<C> sep1 0.0836105
 R<LYS>A<CG> R<PRO>A<O> sep1 0.000301421
 R<LYS>A<CG> R<SER>A<CA> sep2 0.000133637
@@ -3739,18 +3739,18 @@ R<LYS>A<CG> R<VAL>A<C> sep1 0.78421
 R<LYS>A<CG> R<VAL>A<CA> sep1 0.074426
 R<LYS>A<CG> R<VAL>A<N> sep1 3.00145
 R<LYS>A<CG> R<VAL>A<O> central_sep1 3.50788
-R<LYS>A<CG> c<solvent> . 31.0171
+R<LYS>A<CG> c<solvent> . 31.281
 R<LYS>A<N> R<PRO>A<CA> sep1 1.36349
 R<LYS>A<N> R<PRO>A<CB> sep1 0.214321
 R<LYS>A<N> R<SER>A<O> sep2 0.36673
 R<LYS>A<N> R<THR>A<O> central_sep2 1.65943
 R<LYS>A<N> R<THR>A<O> sep2 0.74451
-R<LYS>A<N> c<solvent> . 0.823063
+R<LYS>A<N> c<solvent> . 0.857538
 R<LYS>A<NZ> R<PRO>A<O> sep2 0.421756
 R<LYS>A<NZ> R<SER>A<O> central_sep2 0.399089
 R<LYS>A<NZ> R<VAL>A<CG1> central_sep2 4.64071
 R<LYS>A<NZ> R<VAL>A<O> sep1 1.30633
-R<LYS>A<NZ> c<solvent> . 158.518
+R<LYS>A<NZ> c<solvent> . 158.883
 R<LYS>A<O> R<PRO>A<C> sep1 0.509935
 R<LYS>A<O> R<PRO>A<CB> sep1 3.40206
 R<LYS>A<O> R<PRO>A<O> sep1 0.00893005
@@ -3766,7 +3766,7 @@ R<LYS>A<O> R<VAL>A<CG2> central_sep2 1.94031
 R<LYS>A<O> R<VAL>A<CG2> sep1 1.77564
 R<LYS>A<O> R<VAL>A<CG2> sep2 0.086762
 R<LYS>A<O> R<VAL>A<N> sep2 0.389589
-R<LYS>A<O> c<solvent> . 27.8694
+R<LYS>A<O> c<solvent> . 27.9231
 R<MET>A<C> R<MET>A<CE> central_sep2 1.01564
 R<MET>A<C> R<PHE>A<C> sep1 0.486981
 R<MET>A<C> R<PHE>A<CA> sep1 1.52371
@@ -3792,7 +3792,7 @@ R<MET>A<C> R<VAL>A<CB> sep2 0.19534
 R<MET>A<C> R<VAL>A<CG2> sep2 0.0400804
 R<MET>A<C> R<VAL>A<N> sep2 0.420921
 R<MET>A<C> R<VAL>A<O> sep1 1.84951
-R<MET>A<C> c<solvent> . 2.62599
+R<MET>A<C> c<solvent> . 2.6997
 R<MET>A<CA> R<MET>A<CB> sep2 0.0175248
 R<MET>A<CA> R<MET>A<CG> central_sep2 0.929955
 R<MET>A<CA> R<MET>A<SD> central_sep2 0.821915
@@ -3817,7 +3817,7 @@ R<MET>A<CA> R<TYR>A<CE1> sep2 0.595178
 R<MET>A<CA> R<TYR>A<CZ> central_sep2 1.67521
 R<MET>A<CA> R<TYR>A<OH> central_sep2 3.93998
 R<MET>A<CA> R<VAL>A<N> sep1 0.783953
-R<MET>A<CA> c<solvent> . 7.67271
+R<MET>A<CA> c<solvent> . 7.76344
 R<MET>A<CB> R<MET>A<CE> central_sep2 0.79074
 R<MET>A<CB> R<MET>A<CE> sep2 0.252676
 R<MET>A<CB> R<MET>A<CG> central_sep2 4.9794
@@ -3860,7 +3860,7 @@ R<MET>A<CB> R<TYR>A<CD1> sep2 0.0404129
 R<MET>A<CB> R<TYR>A<CE1> central_sep2 3.62798
 R<MET>A<CB> R<TYR>A<CZ> central_sep2 0.42694
 R<MET>A<CB> R<VAL>A<N> sep2 0.00440823
-R<MET>A<CB> c<solvent> . 7.73812
+R<MET>A<CB> c<solvent> . 7.8221
 R<MET>A<CE> R<MET>A<CE> central_sep2 3.67133
 R<MET>A<CE> R<MET>A<CG> central_sep2 7.32165
 R<MET>A<CE> R<MET>A<CG> sep2 0.87949
@@ -3913,7 +3913,7 @@ R<MET>A<CE> R<VAL>A<CG2> central_sep2 7.45593
 R<MET>A<CE> R<VAL>A<CG2> sep2 4.43938
 R<MET>A<CE> R<VAL>A<O> central_sep2 4.64172
 R<MET>A<CE> R<VAL>A<O> sep2 2.57023
-R<MET>A<CE> c<solvent> . 32.5906
+R<MET>A<CE> c<solvent> . 32.6498
 R<MET>A<CG> R<MET>A<CG> central_sep2 3.55462
 R<MET>A<CG> R<MET>A<O> central_sep2 5.07071
 R<MET>A<CG> R<MET>A<O> sep2 0.49703
@@ -3953,7 +3953,7 @@ R<MET>A<CG> R<VAL>A<CG2> central_sep2 4.54537
 R<MET>A<CG> R<VAL>A<CG2> sep1 1.64094
 R<MET>A<CG> R<VAL>A<N> central_sep2 1.29225
 R<MET>A<CG> R<VAL>A<N> sep1 3.12247
-R<MET>A<CG> c<solvent> . 1.2675
+R<MET>A<CG> c<solvent> . 1.28
 R<MET>A<N> R<MET>A<O> central_sep2 3.47907
 R<MET>A<N> R<MET>A<O> sep2 0.259117
 R<MET>A<N> R<PHE>A<CE1> central_sep2 0.614785
@@ -3978,7 +3978,7 @@ R<MET>A<N> R<TRP>A<O> sep2 1.21568
 R<MET>A<N> R<TYR>A<CE1> sep2 0.766887
 R<MET>A<N> R<TYR>A<OH> sep2 0.804358
 R<MET>A<N> R<VAL>A<N> sep1 2.47252
-R<MET>A<N> c<solvent> . 2.35391
+R<MET>A<N> c<solvent> . 2.40481
 R<MET>A<O> R<MET>A<SD> central_sep2 0.133883
 R<MET>A<O> R<PHE>A<C> central_sep1 1.98059
 R<MET>A<O> R<PHE>A<CA> sep1 3.00258
@@ -4014,7 +4014,7 @@ R<MET>A<O> R<VAL>A<N> sep2 0.81918
 R<MET>A<O> R<VAL>A<O> central_sep2 0.392193
 R<MET>A<O> R<VAL>A<O> sep1 0.248715
 R<MET>A<O> R<VAL>A<O> sep2 0.051993
-R<MET>A<O> c<solvent> . 11.8311
+R<MET>A<O> c<solvent> . 11.8824
 R<MET>A<SD> R<MET>A<SD> central_sep2 2.06153
 R<MET>A<SD> R<MET>A<SD> sep2 2.08845
 R<MET>A<SD> R<PHE>A<CB> central_sep2 7.03092
@@ -4067,7 +4067,7 @@ R<MET>A<SD> R<VAL>A<CG2> central_sep2 12.8323
 R<MET>A<SD> R<VAL>A<CG2> sep2 0.781638
 R<MET>A<SD> R<VAL>A<N> central_sep2 0.123767
 R<MET>A<SD> R<VAL>A<O> central_sep2 3.73832
-R<MET>A<SD> c<solvent> . 16.5398
+R<MET>A<SD> c<solvent> . 16.596
 R<PHE>A<C> R<PHE>A<CB> sep2 0.040182
 R<PHE>A<C> R<PHE>A<CE1> sep2 0.0682224
 R<PHE>A<C> R<PHE>A<CZ> sep2 0.307084
@@ -4111,7 +4111,7 @@ R<PHE>A<CA> R<VAL>A<CG1> sep2 1.15658
 R<PHE>A<CA> R<VAL>A<CG2> central_sep2 1.799
 R<PHE>A<CA> R<VAL>A<CG2> sep2 0.298585
 R<PHE>A<CA> R<VAL>A<O> sep1 5.8168
-R<PHE>A<CA> c<solvent> . 1.74368
+R<PHE>A<CA> c<solvent> . 1.77866
 R<PHE>A<CB> R<PHE>A<CD1> sep2 0.120999
 R<PHE>A<CB> R<PHE>A<CE1> central_sep2 3.6528
 R<PHE>A<CB> R<PHE>A<CE1> sep2 0.448138
@@ -4140,7 +4140,7 @@ R<PHE>A<CB> R<VAL>A<CG1> sep2 0.514167
 R<PHE>A<CB> R<VAL>A<CG2> central_sep2 12.5139
 R<PHE>A<CB> R<VAL>A<CG2> sep2 0.19321
 R<PHE>A<CB> R<VAL>A<O> sep2 1.79035
-R<PHE>A<CB> c<solvent> . 4.24627
+R<PHE>A<CB> c<solvent> . 4.28371
 R<PHE>A<CD1> R<PHE>A<CD1> central_sep2 0.398143
 R<PHE>A<CD1> R<PHE>A<CD1> sep2 4.5377
 R<PHE>A<CD1> R<PHE>A<CE1> central_sep2 3.75564
@@ -4188,7 +4188,7 @@ R<PHE>A<CD1> R<VAL>A<CG2> sep2 1.79565
 R<PHE>A<CD1> R<VAL>A<N> sep1 0.129102
 R<PHE>A<CD1> R<VAL>A<O> central_sep2 2.84335
 R<PHE>A<CD1> R<VAL>A<O> sep1 1.27024
-R<PHE>A<CD1> c<solvent> . 8.01504
+R<PHE>A<CD1> c<solvent> . 8.00949
 R<PHE>A<CE1> R<PHE>A<CE1> central_sep2 1.34588
 R<PHE>A<CE1> R<PHE>A<CE1> sep2 3.56696e-05
 R<PHE>A<CE1> R<PHE>A<CZ> central_sep2 1.31421
@@ -4228,7 +4228,7 @@ R<PHE>A<CE1> R<VAL>A<CG2> sep2 4.55992
 R<PHE>A<CE1> R<VAL>A<N> sep2 0.0155375
 R<PHE>A<CE1> R<VAL>A<O> central_sep2 1.89005
 R<PHE>A<CE1> R<VAL>A<O> sep2 0.0815778
-R<PHE>A<CE1> c<solvent> . 2.13704
+R<PHE>A<CE1> c<solvent> . 2.15028
 R<PHE>A<CG> R<THR>A<CB> sep2 0.0541595
 R<PHE>A<CG> R<THR>A<CG2> central_sep2 0.72272
 R<PHE>A<CG> R<THR>A<CG2> sep2 0.843101
@@ -4271,7 +4271,7 @@ R<PHE>A<N> R<VAL>A<CG1> sep1 4.20244
 R<PHE>A<N> R<VAL>A<N> sep2 0.00578995
 R<PHE>A<N> R<VAL>A<O> central_sep2 6.03351
 R<PHE>A<N> R<VAL>A<O> sep2 1.23415
-R<PHE>A<N> c<solvent> . 0.668411
+R<PHE>A<N> c<solvent> . 0.687817
 R<PHE>A<O> R<PRO>A<CA> central_sep2 4.31555
 R<PHE>A<O> R<PRO>A<CB> sep2 0.162736
 R<PHE>A<O> R<SER>A<CA> sep1 3.71588
@@ -4301,7 +4301,7 @@ R<PHE>A<O> R<VAL>A<CG1> sep2 0.0758224
 R<PHE>A<O> R<VAL>A<CG2> central_sep2 2.88493
 R<PHE>A<O> R<VAL>A<N> central_sep2 4.64682
 R<PHE>A<O> R<VAL>A<O> central_sep2 0.351149
-R<PHE>A<O> c<solvent> . 0.0279244
+R<PHE>A<O> c<solvent> . 0.0289058
 R<PRO>A<C> R<PRO>A<C> sep1 0.223789
 R<PRO>A<C> R<PRO>A<CA> sep1 1.20214
 R<PRO>A<C> R<PRO>A<CD> sep1 0.00303314
@@ -4330,7 +4330,7 @@ R<PRO>A<C> R<VAL>A<CG2> central_sep2 0.97382
 R<PRO>A<C> R<VAL>A<CG2> sep2 0.467137
 R<PRO>A<C> R<VAL>A<N> sep2 1.32509
 R<PRO>A<C> R<VAL>A<O> sep2 0.000319265
-R<PRO>A<C> c<solvent> . 12.2725
+R<PRO>A<C> c<solvent> . 12.4314
 R<PRO>A<CA> R<PRO>A<CB> sep2 1.21954
 R<PRO>A<CA> R<PRO>A<CD> central_sep1 0.740394
 R<PRO>A<CA> R<PRO>A<CG> sep2 2.68108
@@ -4347,7 +4347,7 @@ R<PRO>A<CA> R<THR>A<OG1> sep1 2.06713
 R<PRO>A<CA> R<VAL>A<CG1> sep2 1.09372
 R<PRO>A<CA> R<VAL>A<CG2> sep2 0.0431542
 R<PRO>A<CA> R<VAL>A<N> sep1 2.56698
-R<PRO>A<CA> c<solvent> . 40.9912
+R<PRO>A<CA> c<solvent> . 41.3843
 R<PRO>A<CB> R<PRO>A<CB> central_sep2 0.522335
 R<PRO>A<CB> R<PRO>A<CB> sep2 0.055548
 R<PRO>A<CB> R<PRO>A<CD> central_sep1 5.57748
@@ -4372,7 +4372,7 @@ R<PRO>A<CB> R<VAL>A<CG1> sep2 0.387967
 R<PRO>A<CB> R<VAL>A<CG2> central_sep2 5.40376
 R<PRO>A<CB> R<VAL>A<N> sep1 0.00315857
 R<PRO>A<CB> R<VAL>A<O> sep2 0.095014
-R<PRO>A<CB> c<solvent> . 138.944
+R<PRO>A<CB> c<solvent> . 139.76
 R<PRO>A<CD> R<PRO>A<CD> central_sep1 6.23114
 R<PRO>A<CD> R<PRO>A<CD> central_sep2 0.893435
 R<PRO>A<CD> R<PRO>A<CD> sep2 0.0793317
@@ -4403,7 +4403,7 @@ R<PRO>A<CD> R<VAL>A<CB> sep2 0.0262787
 R<PRO>A<CD> R<VAL>A<CG1> central_sep2 2.92784
 R<PRO>A<CD> R<VAL>A<CG1> sep2 0.559532
 R<PRO>A<CD> R<VAL>A<CG2> sep2 0.97784
-R<PRO>A<CD> c<solvent> . 131.206
+R<PRO>A<CD> c<solvent> . 131.966
 R<PRO>A<CG> R<PRO>A<CG> sep2 1.87528
 R<PRO>A<CG> R<PRO>A<O> central_sep2 4.06426
 R<PRO>A<CG> R<PRO>A<O> sep2 0.744843
@@ -4414,7 +4414,7 @@ R<PRO>A<CG> R<THR>A<C> sep2 0.00803513
 R<PRO>A<CG> R<THR>A<O> sep2 1.70063
 R<PRO>A<CG> R<VAL>A<CG1> sep2 3.34258
 R<PRO>A<CG> R<VAL>A<CG2> central_sep2 4.77739
-R<PRO>A<CG> c<solvent> . 185.036
+R<PRO>A<CG> c<solvent> . 186.179
 R<PRO>A<N> R<PRO>A<N> sep1 0.0517814
 R<PRO>A<N> R<PRO>A<O> sep2 0.226537
 R<PRO>A<N> R<SER>A<C> sep2 0.577838
@@ -4427,7 +4427,7 @@ R<PRO>A<N> R<THR>A<CB> sep1 0.000167643
 R<PRO>A<N> R<THR>A<OG1> sep1 1.38073
 R<PRO>A<N> R<VAL>A<CA> sep2 0.0140126
 R<PRO>A<N> R<VAL>A<CB> sep2 0.000207942
-R<PRO>A<N> c<solvent> . 0.902397
+R<PRO>A<N> c<solvent> . 0.97017
 R<PRO>A<O> R<PRO>A<O> central_sep2 1.0972
 R<PRO>A<O> R<PRO>A<O> sep2 0.931169
 R<PRO>A<O> R<SER>A<C> central_sep1 0.91724
@@ -4456,20 +4456,20 @@ R<PRO>A<O> R<VAL>A<CG1> sep2 0.0102503
 R<PRO>A<O> R<VAL>A<CG2> central_sep2 4.4365
 R<PRO>A<O> R<VAL>A<N> sep2 0.441395
 R<PRO>A<O> R<VAL>A<O> central_sep2 7.65375
-R<PRO>A<O> c<solvent> . 76.1108
+R<PRO>A<O> c<solvent> . 76.3021
 R<SER>A<C> R<THR>A<C> sep1 0.399596
 R<SER>A<C> R<THR>A<OG1> sep2 0.192547
 R<SER>A<C> R<VAL>A<C> sep1 0.154352
 R<SER>A<C> R<VAL>A<CA> sep1 2.16006
 R<SER>A<C> R<VAL>A<CG2> sep1 2.53424
-R<SER>A<C> c<solvent> . 1.53579
+R<SER>A<C> c<solvent> . 1.57865
 R<SER>A<CA> R<SER>A<CA> sep2 0.189254
 R<SER>A<CA> R<THR>A<C> sep1 2.11298
 R<SER>A<CA> R<THR>A<O> sep1 3.85747
 R<SER>A<CA> R<THR>A<O> sep2 0.0583395
 R<SER>A<CA> R<VAL>A<CG2> sep1 0.565466
 R<SER>A<CA> R<VAL>A<N> sep1 3.08476
-R<SER>A<CA> c<solvent> . 1.34778
+R<SER>A<CA> c<solvent> . 1.39839
 R<SER>A<CB> R<THR>A<CA> sep2 0.000373022
 R<SER>A<CB> R<THR>A<CB> sep2 4.56082
 R<SER>A<CB> R<THR>A<CG2> central_sep2 4.08932
@@ -4483,7 +4483,7 @@ R<SER>A<CB> R<VAL>A<CG1> central_sep2 5.58338
 R<SER>A<CB> R<VAL>A<CG2> central_sep2 8.56248
 R<SER>A<CB> R<VAL>A<N> sep1 1.09623
 R<SER>A<CB> R<VAL>A<O> sep2 2.42958
-R<SER>A<CB> c<solvent> . 71.7677
+R<SER>A<CB> c<solvent> . 71.9805
 R<SER>A<N> R<THR>A<C> sep2 0.294849
 R<SER>A<N> R<THR>A<CA> sep1 1.2506
 R<SER>A<N> R<THR>A<CA> sep2 0.278294
@@ -4493,7 +4493,7 @@ R<SER>A<N> R<THR>A<O> central_sep2 4.01971
 R<SER>A<N> R<THR>A<OG1> sep1 0.0890332
 R<SER>A<N> R<VAL>A<CG1> central_sep2 4.47175
 R<SER>A<N> R<VAL>A<CG2> sep1 0.167373
-R<SER>A<N> c<solvent> . 3.53082
+R<SER>A<N> c<solvent> . 3.57426
 R<SER>A<O> R<THR>A<C> sep1 0.0083851
 R<SER>A<O> R<THR>A<C> sep2 0.147363
 R<SER>A<O> R<THR>A<CB> sep2 0.384687
@@ -4503,7 +4503,7 @@ R<SER>A<O> R<THR>A<O> central_sep2 0.559079
 R<SER>A<O> R<THR>A<OG1> sep2 0.298644
 R<SER>A<O> R<VAL>A<CA> sep1 5.45984
 R<SER>A<O> R<VAL>A<CG2> sep1 0.84205
-R<SER>A<O> c<solvent> . 5.48921
+R<SER>A<O> c<solvent> . 5.53258
 R<SER>A<OG> R<THR>A<C> sep1 1.38353
 R<SER>A<OG> R<THR>A<CG2> sep2 2.46125
 R<SER>A<OG> R<THR>A<N> sep1 0.624604
@@ -4521,7 +4521,7 @@ R<SER>A<OG> R<VAL>A<CG2> sep2 2.99404
 R<SER>A<OG> R<VAL>A<N> sep1 0.145919
 R<SER>A<OG> R<VAL>A<O> central_sep2 5.15366
 R<SER>A<OG> R<VAL>A<O> sep2 1.55722
-R<SER>A<OG> c<solvent> . 41.4698
+R<SER>A<OG> c<solvent> . 41.5777
 R<THR>A<C> R<TYR>A<CB> sep2 0.072178
 R<THR>A<C> R<TYR>A<CD1> sep2 0.0822115
 R<THR>A<C> R<TYR>A<N> sep2 0.53031
@@ -4536,7 +4536,7 @@ R<THR>A<C> R<VAL>A<N> sep2 0.111775
 R<THR>A<C> R<VAL>A<O> central_sep1 1.77258
 R<THR>A<C> R<VAL>A<O> sep1 0.169626
 R<THR>A<C> R<VAL>A<O> sep2 0.0108775
-R<THR>A<C> c<solvent> . 0.443456
+R<THR>A<C> c<solvent> . 0.465102
 R<THR>A<CA> R<THR>A<CG2> central_sep2 3.98242
 R<THR>A<CA> R<TYR>A<CB> central_sep2 1.00195
 R<THR>A<CA> R<TYR>A<CB> sep2 0.306665
@@ -4548,7 +4548,7 @@ R<THR>A<CA> R<VAL>A<CG1> sep2 0.0444597
 R<THR>A<CA> R<VAL>A<CG2> sep1 0.116874
 R<THR>A<CA> R<VAL>A<N> sep1 3.5263
 R<THR>A<CA> R<VAL>A<O> sep1 1.21239
-R<THR>A<CA> c<solvent> . 18.0287
+R<THR>A<CA> c<solvent> . 18.2653
 R<THR>A<CB> R<THR>A<CG2> sep2 4.59923
 R<THR>A<CB> R<THR>A<OG1> sep2 0.813018
 R<THR>A<CB> R<TRP>A<CH2> sep2 0.0121102
@@ -4561,7 +4561,7 @@ R<THR>A<CB> R<VAL>A<CG2> sep1 2.07774
 R<THR>A<CB> R<VAL>A<CG2> sep2 1.9186
 R<THR>A<CB> R<VAL>A<N> sep1 2.878
 R<THR>A<CB> R<VAL>A<O> sep1 9.8692e-05
-R<THR>A<CB> c<solvent> . 49.5549
+R<THR>A<CB> c<solvent> . 50.0866
 R<THR>A<CG2> R<THR>A<CG2> central_sep2 8.32004
 R<THR>A<CG2> R<THR>A<OG1> central_sep2 3.58183
 R<THR>A<CG2> R<THR>A<OG1> sep2 1.44806
@@ -4570,7 +4570,7 @@ R<THR>A<CG2> R<TRP>A<CZ2> central_sep2 0.782685
 R<THR>A<CG2> R<TRP>A<CZ3> sep2 1.29753
 R<THR>A<CG2> R<VAL>A<CA> sep2 0.0480899
 R<THR>A<CG2> R<VAL>A<CG2> central_sep2 16.369
-R<THR>A<CG2> c<solvent> . 221.845
+R<THR>A<CG2> c<solvent> . 222.28
 R<THR>A<N> R<THR>A<O> central_sep2 3.60766
 R<THR>A<N> R<TRP>A<C> sep2 0.100922
 R<THR>A<N> R<TRP>A<O> central_sep2 1.7084
@@ -4580,7 +4580,7 @@ R<THR>A<N> R<VAL>A<CG1> central_sep2 2.11967
 R<THR>A<N> R<VAL>A<CG1> sep1 1.10983
 R<THR>A<N> R<VAL>A<CG2> central_sep1 3.63781
 R<THR>A<N> R<VAL>A<N> sep1 7.82236
-R<THR>A<N> c<solvent> . 3.45355
+R<THR>A<N> c<solvent> . 3.56858
 R<THR>A<O> R<TYR>A<C> sep2 0.0174397
 R<THR>A<O> R<TYR>A<CA> sep2 0.38725
 R<THR>A<O> R<TYR>A<CB> central_sep2 2.36055
@@ -4595,7 +4595,7 @@ R<THR>A<O> R<VAL>A<CG2> sep1 1.0078
 R<THR>A<O> R<VAL>A<CG2> sep2 0.2438
 R<THR>A<O> R<VAL>A<N> sep2 0.085209
 R<THR>A<O> R<VAL>A<O> central_sep2 1.64335
-R<THR>A<O> c<solvent> . 39.6905
+R<THR>A<O> c<solvent> . 39.8352
 R<THR>A<OG1> R<TRP>A<C> sep2 0.0539777
 R<THR>A<OG1> R<TRP>A<CA> central_sep2 4.22713
 R<THR>A<OG1> R<TRP>A<CE3> sep2 0.222188
@@ -4612,7 +4612,7 @@ R<THR>A<OG1> R<VAL>A<CG2> central_sep2 3.16016
 R<THR>A<OG1> R<VAL>A<CG2> sep1 1.38258
 R<THR>A<OG1> R<VAL>A<CG2> sep2 0.67527
 R<THR>A<OG1> R<VAL>A<N> sep1 1.59962
-R<THR>A<OG1> c<solvent> . 95.5675
+R<THR>A<OG1> c<solvent> . 95.8364
 R<TRP>A<C> R<TYR>A<CE1> sep2 0.0738499
 R<TRP>A<CA> R<TYR>A<CD1> central_sep2 2.49734
 R<TRP>A<CA> R<TYR>A<CE1> sep2 1.01663
@@ -4620,35 +4620,35 @@ R<TRP>A<CB> R<TRP>A<CB> central_sep2 0.510835
 R<TRP>A<CB> R<TRP>A<CD1> central_sep2 3.84644
 R<TRP>A<CB> R<VAL>A<CG1> central_sep2 4.16029
 R<TRP>A<CB> R<VAL>A<CG2> central_sep2 5.41547
-R<TRP>A<CB> c<solvent> . 0.0150802
+R<TRP>A<CB> c<solvent> . 0.0166724
 R<TRP>A<CD1> R<TRP>A<CD1> central_sep2 1.03154
 R<TRP>A<CD1> R<VAL>A<CG1> sep2 6.04382
 R<TRP>A<CD1> R<VAL>A<CG2> sep2 0.738456
 R<TRP>A<CD1> R<VAL>A<N> central_sep2 0.221832
 R<TRP>A<CD1> R<VAL>A<N> sep2 0.164067
-R<TRP>A<CD1> c<solvent> . 16.0308
+R<TRP>A<CD1> c<solvent> . 16.0849
 R<TRP>A<CD2> R<VAL>A<CB> sep2 1.87451
 R<TRP>A<CD2> R<VAL>A<CG1> sep2 0.65342
 R<TRP>A<CD2> R<VAL>A<CG2> central_sep2 0.663868
 R<TRP>A<CE2> R<TYR>A<N> sep2 0.105571
 R<TRP>A<CE2> R<VAL>A<CB> sep2 0.15903
 R<TRP>A<CE2> R<VAL>A<CG1> sep2 0.427433
-R<TRP>A<CE2> c<solvent> . 0.383626
+R<TRP>A<CE2> c<solvent> . 0.385249
 R<TRP>A<CE3> R<VAL>A<CB> sep2 0.813268
 R<TRP>A<CE3> R<VAL>A<CG2> central_sep2 5.79753
 R<TRP>A<CG> R<VAL>A<CB> sep2 0.0337922
 R<TRP>A<CG> R<VAL>A<CG1> central_sep2 0.75909
 R<TRP>A<CG> R<VAL>A<CG1> sep2 0.789495
 R<TRP>A<CG> R<VAL>A<CG2> sep2 0.129545
-R<TRP>A<CH2> c<solvent> . 7.58732
+R<TRP>A<CH2> c<solvent> . 7.63788
 R<TRP>A<CZ2> R<TYR>A<C> sep2 3.22303
 R<TRP>A<CZ2> R<TYR>A<CA> sep2 0.0304122
 R<TRP>A<CZ2> R<TYR>A<N> central_sep2 0.982852
 R<TRP>A<CZ2> R<TYR>A<O> central_sep2 2.76776
 R<TRP>A<CZ2> R<VAL>A<CG2> sep2 0.245158
-R<TRP>A<CZ2> c<solvent> . 5.69471
+R<TRP>A<CZ2> c<solvent> . 5.72362
 R<TRP>A<CZ3> R<VAL>A<CB> sep2 0.00578145
-R<TRP>A<CZ3> c<solvent> . 1.92579
+R<TRP>A<CZ3> c<solvent> . 1.95037
 R<TRP>A<N> R<TYR>A<CD1> sep2 1.17752
 R<TRP>A<N> R<TYR>A<CE1> sep2 0.0264189
 R<TRP>A<N> R<VAL>A<CG2> sep2 0.005519
@@ -4656,23 +4656,23 @@ R<TRP>A<NE1> R<TYR>A<N> central_sep2 1.83537
 R<TRP>A<NE1> R<TYR>A<O> central_sep2 4.47363
 R<TRP>A<NE1> R<VAL>A<CG1> sep2 0.186954
 R<TRP>A<NE1> R<VAL>A<CG2> central_sep2 4.87868
-R<TRP>A<NE1> c<solvent> . 8.87462
-R<TRP>A<O> c<solvent> . 4.81103
+R<TRP>A<NE1> c<solvent> . 8.93656
+R<TRP>A<O> c<solvent> . 4.80863
 R<TYR>A<C> R<VAL>A<CG1> sep2 0.0126156
 R<TYR>A<C> R<VAL>A<CG2> sep2 0.0727973
-R<TYR>A<C> c<solvent> . 0.159143
-R<TYR>A<CA> c<solvent> . 0.173222
+R<TYR>A<C> c<solvent> . 0.171521
+R<TYR>A<CA> c<solvent> . 0.190712
 R<TYR>A<CB> R<VAL>A<CG2> central_sep2 0.98168
 R<TYR>A<CB> R<VAL>A<CG2> sep2 0.519355
-R<TYR>A<CB> c<solvent> . 10.9983
-R<TYR>A<CD1> c<solvent> . 5.67212
-R<TYR>A<CE1> c<solvent> . 3.12529
-R<TYR>A<CG> c<solvent> . 0.487153
-R<TYR>A<CZ> c<solvent> . 2.10331
+R<TYR>A<CB> c<solvent> . 11.0298
+R<TYR>A<CD1> c<solvent> . 5.75905
+R<TYR>A<CE1> c<solvent> . 3.21121
+R<TYR>A<CG> c<solvent> . 0.520473
+R<TYR>A<CZ> c<solvent> . 2.15637
 R<TYR>A<O> R<VAL>A<CB> sep2 0.778462
 R<TYR>A<O> R<VAL>A<CG1> sep2 0.0178355
 R<TYR>A<O> R<VAL>A<CG2> central_sep2 5.28892
-R<TYR>A<OH> c<solvent> . 6.59946
+R<TYR>A<OH> c<solvent> . 6.62049
 R<VAL>A<C> R<VAL>A<C> sep1 0.453255
 R<VAL>A<C> R<VAL>A<CA> sep1 5.19585
 R<VAL>A<C> R<VAL>A<CA> sep2 0.202776
@@ -4684,7 +4684,7 @@ R<VAL>A<C> R<VAL>A<CG2> central_sep2 0.63951
 R<VAL>A<C> R<VAL>A<CG2> sep1 5.25834
 R<VAL>A<C> R<VAL>A<CG2> sep2 1.91275
 R<VAL>A<C> R<VAL>A<O> sep1 0.154728
-R<VAL>A<C> c<solvent> . 17.788
+R<VAL>A<C> c<solvent> . 17.9016
 R<VAL>A<CA> R<VAL>A<CB> central_sep2 4.67523
 R<VAL>A<CA> R<VAL>A<CB> sep2 3.07564e-05
 R<VAL>A<CA> R<VAL>A<CG1> central_sep2 3.02689
@@ -4697,7 +4697,7 @@ R<VAL>A<CA> R<VAL>A<N> sep1 7.03838
 R<VAL>A<CA> R<VAL>A<N> sep2 0.00425572
 R<VAL>A<CA> R<VAL>A<O> central_sep2 19.041
 R<VAL>A<CA> R<VAL>A<O> sep1 12.8741
-R<VAL>A<CA> c<solvent> . 4.32574
+R<VAL>A<CA> c<solvent> . 4.41075
 R<VAL>A<CB> R<VAL>A<CB> central_sep2 6.99709
 R<VAL>A<CB> R<VAL>A<CB> sep2 0.0941077
 R<VAL>A<CB> R<VAL>A<CG1> central_sep2 0.394377
@@ -4707,7 +4707,7 @@ R<VAL>A<CB> R<VAL>A<CG2> sep2 3.01524
 R<VAL>A<CB> R<VAL>A<N> central_sep2 0.0798365
 R<VAL>A<CB> R<VAL>A<N> sep2 0.181417
 R<VAL>A<CB> R<VAL>A<O> sep2 4.18438
-R<VAL>A<CB> c<solvent> . 15.3302
+R<VAL>A<CB> c<solvent> . 15.5105
 R<VAL>A<CG1> R<VAL>A<CG1> central_sep2 15.306
 R<VAL>A<CG1> R<VAL>A<CG1> sep2 0.00106953
 R<VAL>A<CG1> R<VAL>A<CG2> central_sep2 6.84975
@@ -4718,7 +4718,7 @@ R<VAL>A<CG1> R<VAL>A<N> sep2 0.743672
 R<VAL>A<CG1> R<VAL>A<O> central_sep2 13.0763
 R<VAL>A<CG1> R<VAL>A<O> sep1 1.48137
 R<VAL>A<CG1> R<VAL>A<O> sep2 1.88626
-R<VAL>A<CG1> c<solvent> . 106.89
+R<VAL>A<CG1> c<solvent> . 107.11
 R<VAL>A<CG2> R<VAL>A<CG2> central_sep2 10.4052
 R<VAL>A<CG2> R<VAL>A<CG2> sep2 3.31875
 R<VAL>A<CG2> R<VAL>A<N> central_sep2 1.59556
@@ -4728,11 +4728,11 @@ R<VAL>A<CG2> R<VAL>A<O> central_sep1 2.81596
 R<VAL>A<CG2> R<VAL>A<O> central_sep2 4.64789
 R<VAL>A<CG2> R<VAL>A<O> sep1 2.32958
 R<VAL>A<CG2> R<VAL>A<O> sep2 3.62228
-R<VAL>A<CG2> c<solvent> . 93.9144
+R<VAL>A<CG2> c<solvent> . 94.1449
 R<VAL>A<N> R<VAL>A<N> central_sep2 0.712172
 R<VAL>A<N> R<VAL>A<N> sep2 0.0193795
 R<VAL>A<N> R<VAL>A<O> central_sep2 16.7423
-R<VAL>A<N> c<solvent> . 40.527
+R<VAL>A<N> c<solvent> . 40.6493
 R<VAL>A<O> R<VAL>A<O> central_sep2 0.499525
 R<VAL>A<O> R<VAL>A<O> sep2 0.168743
-R<VAL>A<O> c<solvent> . 76.9045
+R<VAL>A<O> c<solvent> . 77.0506

@@ -54,7 +54,7 @@ public:
 					{
 						const SimpleSphere& c=spheres[c_id];
 						const SimpleSphere c_expanded=SimpleSphere(c, c.r+probe);
-						cut_contact_remainder(c_expanded, std::make_pair(0, a_expanded), result);
+						cut_contact_remainder(c_expanded, std::make_pair(10, a_expanded), result);
 					}
 				}
 			}
