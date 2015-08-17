@@ -35,4 +35,5 @@ do
 	CLUSTER_ID=$(( CLUSTER_ID+1 ))
 done
 echo "set all_states, on"
+echo "zoom"
 } > $CLUSTERS_OUTPUT_DIR/pymol_commands.pml
