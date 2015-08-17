@@ -1,13 +1,47 @@
 #!/bin/bash
 
-readonly CONTACTS_INPUT_DIR="./output/contacts"
-readonly CLUSTERS_OUTPUT_DIR="./output/clusters"
-CLUSTERING_THRESHOLD="0.6"
+set +e
 
-if [ -n "$1" ]
+WORK_DIR=""
+CLUSTERING_THRESHOLD=""
+HELP_MODE=false
+
+while getopts "w:t:h" OPTION
+do
+	case $OPTION in
+	w)
+		WORK_DIR=$OPTARG
+		;;
+	t)
+		CLUSTERING_THRESHOLD=$OPTARG
+		;;
+	h)
+		HELP_MODE=true
+		;;
+	esac
+done
+
+if [ -z "$WORK_DIR" ] || [ -z "$CLUSTERING_THRESHOLD" ] || $HELP_MODE
 then
-	CLUSTERING_THRESHOLD=$1
+cat >&2 << EOF
+Script parameters:
+    -w working_directory
+    -t clustering_threshold
+EOF
+exit 1
 fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+
+CONTACTS_INPUT_DIR="$WORK_DIR/contacts"
+CLUSTERS_OUTPUT_DIR="$WORK_DIR/clusters"
 
 mkdir -p $CLUSTERS_OUTPUT_DIR
 
