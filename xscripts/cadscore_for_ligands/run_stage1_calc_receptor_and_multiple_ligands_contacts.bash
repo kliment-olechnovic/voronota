@@ -6,11 +6,12 @@ readonly ZEROARG=$0
 RECEPTOR_FILE=""
 LIGANDS_FILES_LIST=""
 WORK_DIR=""
+INCLUDE_HYDROGENS_OPTION=""
 SYMMETRY_INPUT_FILE_OPTION=""
 PROCESSORS_COUNT=4
 HELP_MODE=false
 
-while getopts "r:l:w:s:p:h" OPTION
+while getopts "r:l:w:gs:p:h" OPTION
 do
 	case $OPTION in
 	r)
@@ -21,6 +22,9 @@ do
 		;;
 	w)
 		WORK_DIR=$OPTARG
+		;;
+	g)
+		INCLUDE_HYDROGENS_OPTION="-g"
 		;;
 	s)
 		SYMMETRY_INPUT_FILE_OPTION=" -s $OPTARG "
@@ -41,6 +45,7 @@ Script parameters:
     -r receptor_file.pdb
     -l list_of_ligands_files.txt
     -w output_working_directory
+    [-g] (flag to include hydrogen atoms)
     [-s symmetry_map.txt]
     [-p usable_processors_counts]
 EOF
@@ -59,6 +64,6 @@ command -v calc_receptor_and_ligand_contacts.bash &> /dev/null || { echo >&2 "Er
 cat $LIGANDS_FILES_LIST \
 | xargs -L 1 -P $PROCESSORS_COUNT \
   calc_receptor_and_ligand_contacts.bash \
-  -r $RECEPTOR_FILE $SYMMETRY_INPUT_FILE_OPTION \
+  -r $RECEPTOR_FILE $SYMMETRY_INPUT_FILE_OPTION $INCLUDE_HYDROGENS_OPTION \
   -o $WORK_DIR/contacts \
   -l
