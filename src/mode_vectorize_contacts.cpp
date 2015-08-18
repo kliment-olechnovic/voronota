@@ -180,10 +180,10 @@ double calc_euclidean_distance_of_two_vectors(const std::vector<double>& a, cons
 	return sqrt(sum);
 }
 
-template<typename Functor>
-void print_similarity_matrix(const std::map< std::string, std::vector<double> >& map_of_areas_vectors, const std::string& output_file, Functor functor)
+template<typename MapOfVectors, typename Functor>
+void print_similarity_matrix(const MapOfVectors& map_of_vectors, const std::string& output_file, Functor functor)
 {
-	if(map_of_areas_vectors.empty() || output_file.empty())
+	if(map_of_vectors.empty() || output_file.empty())
 	{
 		return;
 	}
@@ -192,16 +192,16 @@ void print_similarity_matrix(const std::map< std::string, std::vector<double> >&
 	{
 		return;
 	}
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	for(typename MapOfVectors::const_iterator it=map_of_vectors.begin();it!=map_of_vectors.end();++it)
 	{
-		output << (it==map_of_areas_vectors.begin() ? "" : " ") << it->first;
+		output << (it==map_of_vectors.begin() ? "" : " ") << it->first;
 	}
 	output << "\n";
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	for(typename MapOfVectors::const_iterator it=map_of_vectors.begin();it!=map_of_vectors.end();++it)
 	{
-		for(std::map< std::string, std::vector<double> >::const_iterator jt=map_of_areas_vectors.begin();jt!=map_of_areas_vectors.end();++jt)
+		for(typename MapOfVectors::const_iterator jt=map_of_vectors.begin();jt!=map_of_vectors.end();++jt)
 		{
-			output << (jt==map_of_areas_vectors.begin() ? "" : " ") << functor(it->second, jt->second);
+			output << (jt==map_of_vectors.begin() ? "" : " ") << functor(it->second, jt->second);
 		}
 		output << "\n";
 	}
@@ -219,12 +219,13 @@ std::vector< typename Map::const_iterator > collect_const_iterators_of_map(const
 	return iterators;
 }
 
-std::vector<double> calc_consensus_vector(const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors)
+template<typename IteratorsOfMapOfVectors>
+std::vector<double> calc_consensus_vector(const IteratorsOfMapOfVectors& iterators_of_map_of_vectors)
 {
 	std::vector<double> result;
-	for(std::size_t i=0;i<iterators_of_map_of_areas_vectors.size();i++)
+	for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
 	{
-		const std::vector<double>& v=iterators_of_map_of_areas_vectors[i]->second;
+		const std::vector<double>& v=iterators_of_map_of_vectors[i]->second;
 		if(result.size()<v.size())
 		{
 			result.resize(v.size(), 0.0);
@@ -236,27 +237,28 @@ std::vector<double> calc_consensus_vector(const std::vector< std::map< std::stri
 	}
 	for(std::size_t j=0;j<result.size();j++)
 	{
-		result[j]/=static_cast<double>(iterators_of_map_of_areas_vectors.size());
+		result[j]/=static_cast<double>(iterators_of_map_of_vectors.size());
 	}
 	return result;
 }
 
-template<typename Functor>
+template<typename IteratorsOfMapOfVectors, typename Functor>
 std::multimap<double, std::size_t> calc_consensus_similarities(
-		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
 		Functor functor)
 {
 	std::multimap<double, std::size_t> similarities;
-	const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_areas_vectors);
-	for(std::size_t i=0;i<iterators_of_map_of_areas_vectors.size();i++)
+	const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_vectors);
+	for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
 	{
-		similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_areas_vectors[i]->second), i));
+		similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_vectors[i]->second), i));
 	}
 	return similarities;
 }
 
+template<typename IteratorsOfMapOfVectors>
 void print_consensus_similarities(
-		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
 		const std::multimap<double, std::size_t>& similarities,
 		const std::string& output_file)
 {
@@ -268,16 +270,16 @@ void print_consensus_similarities(
 
 	for(std::multimap<double, std::size_t>::const_reverse_iterator it=similarities.rbegin();it!=similarities.rend();++it)
 	{
-		if(it->second<iterators_of_map_of_areas_vectors.size())
+		if(it->second<iterators_of_map_of_vectors.size())
 		{
-			output << iterators_of_map_of_areas_vectors[it->second]->first << " " << it->first << "\n";
+			output << iterators_of_map_of_vectors[it->second]->first << " " << it->first << "\n";
 		}
 	}
 }
 
-template<typename Functor>
+template<typename IteratorsOfMapOfVectors, typename Functor>
 std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
-		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
 		Functor functor,
 		const double threshold,
 		const bool eliminate_false_singletons)
@@ -291,12 +293,12 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 	ListOfNeighbors false_singleton_clusters;
 
 	MapOfNeighbors map_of_available_neighbors;
-	for(std::size_t i=0;i<iterators_of_map_of_areas_vectors.size();i++)
+	for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
 	{
 		Neighbors& neighbors=map_of_available_neighbors[i];
-		for(std::size_t j=0;j<iterators_of_map_of_areas_vectors.size();j++)
+		for(std::size_t j=0;j<iterators_of_map_of_vectors.size();j++)
 		{
-			const double similarity=functor(iterators_of_map_of_areas_vectors[i]->second, iterators_of_map_of_areas_vectors[j]->second);
+			const double similarity=functor(iterators_of_map_of_vectors[i]->second, iterators_of_map_of_vectors[j]->second);
 			if(similarity>=threshold)
 			{
 				neighbors.push_back(j);
@@ -304,7 +306,7 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 		}
 	}
 
-	std::vector<int> deletion_flags(iterators_of_map_of_areas_vectors.size(), 0);
+	std::vector<int> deletion_flags(iterators_of_map_of_vectors.size(), 0);
 	{
 		MapOfNeighbors::iterator map_it=map_of_available_neighbors.begin();
 		while(map_it!=map_of_available_neighbors.end())
@@ -386,8 +388,8 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 			for(ListOfNeighbors::iterator big_clusters_it=big_clusters.begin();big_clusters_it!=big_clusters.end();++big_clusters_it)
 			{
 				const double similarity=functor(
-						iterators_of_map_of_areas_vectors[singletons_it->first]->second,
-						iterators_of_map_of_areas_vectors[big_clusters_it->first]->second);
+						iterators_of_map_of_vectors[singletons_it->first]->second,
+						iterators_of_map_of_vectors[big_clusters_it->first]->second);
 				if(big_clusters_it_of_closest==big_clusters.end() || similarity>max_similarity)
 				{
 					max_similarity=similarity;
@@ -415,8 +417,9 @@ std::vector< std::pair< std::size_t, std::list<std::size_t> > > calc_clusters(
 	return clusters;
 }
 
+template<typename IteratorsOfMapOfVectors>
 void print_clusters(
-		const std::vector< std::map< std::string, std::vector<double> >::const_iterator >& iterators_of_map_of_areas_vectors,
+		const IteratorsOfMapOfVectors& iterators_of_map_of_areas_vectors,
 		const std::vector< std::pair< std::size_t, std::list<std::size_t> > >& clusters,
 		const std::string& output_file)
 {
