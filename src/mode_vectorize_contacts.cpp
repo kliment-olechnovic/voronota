@@ -43,101 +43,108 @@ std::map< std::string, std::map<CRADsPair, double> > read_maps_of_contacts()
 	for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
 	{
 		const std::string& filename=(*it);
-		const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(filename);
-		if(!map_of_contacts.empty())
+		const std::map<CRADsPair, double> raw_map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(filename);
+		if(!raw_map_of_contacts.empty())
 		{
-			maps_of_contacts[filename.substr(common_path_start_length)]=map_of_contacts;
+			maps_of_contacts[filename.substr(common_path_start_length)]=raw_map_of_contacts;
 		}
 	}
 	return maps_of_contacts;
 }
 
-const std::map<CRADsPair, std::size_t> collect_crads_ids(const std::map< std::string, std::map<CRADsPair, double> >& maps_of_contacts)
+template<typename MapKeysIDs, typename MapOfMaps>
+const MapKeysIDs collect_map_keys_ids(const MapOfMaps& map_of_maps)
 {
-	std::map<CRADsPair, std::size_t> crads_ids;
-	for(std::map< std::string, std::map<CRADsPair, double> >::const_iterator it=maps_of_contacts.begin();it!=maps_of_contacts.end();++it)
+	typedef typename MapOfMaps::mapped_type Map;
+	MapKeysIDs map_keys_ids;
+	for(typename MapOfMaps::const_iterator it=map_of_maps.begin();it!=map_of_maps.end();++it)
 	{
-		const std::map<CRADsPair, double>& map_of_contacts=it->second;
-		for(std::map<CRADsPair, double>::const_iterator jt=map_of_contacts.begin();jt!=map_of_contacts.end();++jt)
+		const Map& map=it->second;
+		for(typename Map::const_iterator jt=map.begin();jt!=map.end();++jt)
 		{
-			crads_ids[jt->first]=0;
+			map_keys_ids[jt->first]=0;
 		}
 	}
 	{
 		std::size_t i=0;
-		for(std::map<CRADsPair, std::size_t>::iterator it=crads_ids.begin();it!=crads_ids.end();++it)
+		for(typename MapKeysIDs::iterator it=map_keys_ids.begin();it!=map_keys_ids.end();++it)
 		{
 			it->second=i;
 			i++;
 		}
 	}
-	return crads_ids;
+	return map_keys_ids;
 }
 
-std::map< std::string, std::vector<double> > collect_map_of_areas_vectors(
-		const std::map< std::string, std::map<CRADsPair, double> >& maps_of_contacts,
-		const std::map<CRADsPair, std::size_t>& crads_ids)
+template<typename MapOfVectors, typename MapOfMaps, typename MapKeysIDs>
+MapOfVectors collect_map_of_vectors(
+		const MapOfMaps& map_of_maps,
+		const MapKeysIDs& map_keys_ids)
 {
-	std::map< std::string, std::vector<double> > map_of_areas_vectors;
-	for(std::map< std::string, std::map<CRADsPair, double> >::const_iterator it=maps_of_contacts.begin();it!=maps_of_contacts.end();++it)
+	typedef typename MapOfVectors::mapped_type Vector;
+	typedef typename MapOfMaps::mapped_type Map;
+	MapOfVectors map_of_vectors;
+	for(typename MapOfMaps::const_iterator it=map_of_maps.begin();it!=map_of_maps.end();++it)
 	{
-		const std::map<CRADsPair, double>& map_of_contacts=it->second;
-		std::vector<double>& areas_vector=map_of_areas_vectors[it->first];
-		areas_vector.resize(crads_ids.size());
-		for(std::map<CRADsPair, double>::const_iterator jt=map_of_contacts.begin();jt!=map_of_contacts.end();++jt)
+		const Map& map=it->second;
+		Vector& vector=map_of_vectors[it->first];
+		vector.resize(map_keys_ids.size());
+		for(typename Map::const_iterator jt=map.begin();jt!=map.end();++jt)
 		{
-			std::map<CRADsPair, std::size_t>::const_iterator crads_ids_it=crads_ids.find(jt->first);
-			if(crads_ids_it!=crads_ids.end())
+			typename MapKeysIDs::const_iterator map_keys_ids_it=map_keys_ids.find(jt->first);
+			if(map_keys_ids_it!=map_keys_ids.end())
 			{
-				areas_vector[crads_ids_it->second]=jt->second;
+				vector[map_keys_ids_it->second]=jt->second;
 			}
 		}
 	}
-	return map_of_areas_vectors;
+	return map_of_vectors;
 }
 
+template<typename MapKeysIDs, typename MapOfVectors>
 void print_map_of_areas_vectors(
-		const std::map<CRADsPair, std::size_t>& crads_ids,
-		const std::map< std::string, std::vector<double> >& map_of_areas_vectors)
+		const MapKeysIDs& map_keys_ids,
+		const MapOfVectors& map_of_vectors)
 {
+	typedef typename MapOfVectors::mapped_type Vector;
 	std::cout << "title";
-	for(std::map<CRADsPair, std::size_t>::const_iterator it=crads_ids.begin();it!=crads_ids.end();++it)
+	for(typename MapKeysIDs::const_iterator it=map_keys_ids.begin();it!=map_keys_ids.end();++it)
 	{
-		const CRADsPair& crads=it->first;
-		std::cout << " " << crads.a.str() << "__" << crads.b.str();
+		std::cout << " " << it->first;
 	}
 	std::cout << "\n";
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	for(typename MapOfVectors::const_iterator it=map_of_vectors.begin();it!=map_of_vectors.end();++it)
 	{
 		std::cout << it->first;
-		const std::vector<double>& areas_vector=it->second;
-		for(std::size_t i=0;i<areas_vector.size();i++)
+		const Vector& vector=it->second;
+		for(std::size_t i=0;i<vector.size();i++)
 		{
-			std::cout << " " << areas_vector[i];
+			std::cout << " " << vector[i];
 		}
 		std::cout << "\n";
 	}
 }
 
+template<typename MapKeysIDs, typename MapOfVectors>
 void print_map_of_areas_vectors_transposed(
-		const std::map<CRADsPair, std::size_t>& crads_ids,
-		const std::map< std::string, std::vector<double> >& map_of_areas_vectors)
+		const MapKeysIDs& map_keys_ids,
+		const MapOfVectors& map_of_vectors)
 {
+	typedef typename MapOfVectors::mapped_type Vector;
 	std::cout << "contact";
-	for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+	for(typename MapOfVectors::const_iterator it=map_of_vectors.begin();it!=map_of_vectors.end();++it)
 	{
 		std::cout << " " << it->first;
 	}
 	std::cout << "\n";
 	std::size_t i=0;
-	for(std::map<CRADsPair, std::size_t>::const_iterator it=crads_ids.begin();it!=crads_ids.end();++it)
+	for(typename MapKeysIDs::const_iterator it=map_keys_ids.begin();it!=map_keys_ids.end();++it)
 	{
-		const CRADsPair& crads=it->first;
-		std::cout << crads.a.str() << "__" << crads.b.str();
-		for(std::map< std::string, std::vector<double> >::const_iterator it=map_of_areas_vectors.begin();it!=map_of_areas_vectors.end();++it)
+		std::cout << it->first;
+		for(typename MapOfVectors::const_iterator jt=map_of_vectors.begin();jt!=map_of_vectors.end();++jt)
 		{
-			const std::vector<double>& areas_vector=it->second;
-			std::cout << " " << (i<areas_vector.size() ? areas_vector[i] : 0.0);
+			const Vector& vector=jt->second;
+			std::cout << " " << (i<vector.size() ? vector[i] : 0.0);
 		}
 		std::cout << "\n";
 		i++;
@@ -448,6 +455,10 @@ void print_clusters(
 
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	typedef std::map< std::string, std::map<CRADsPair, double> > MapOfMaps;
+	typedef std::map<CRADsPair, std::size_t> MapKeysIDs;
+	typedef std::map< std::string, std::vector<double> > MapOfVectors;
+
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts files");
 	pohw.describe_io("stdout", false, true, "table of contacts vectors");
@@ -464,15 +475,15 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::map< std::string, std::map<CRADsPair, double> > maps_of_contacts=read_maps_of_contacts();
+	const MapOfMaps maps_of_contacts=read_maps_of_contacts();
 	if(maps_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRADsPair, std::size_t> crads_ids=collect_crads_ids(maps_of_contacts);
-	const std::map< std::string, std::vector<double> > map_of_areas_vectors=collect_map_of_areas_vectors(maps_of_contacts, crads_ids);
-	const std::vector< std::map< std::string, std::vector<double> >::const_iterator > iterators_of_map_of_areas_vectors=collect_const_iterators_of_map(map_of_areas_vectors);
+	const MapKeysIDs crads_ids=collect_map_keys_ids<MapKeysIDs>(maps_of_contacts);
+	const MapOfVectors map_of_areas_vectors=collect_map_of_vectors<MapOfVectors>(maps_of_contacts, crads_ids);
+	const std::vector<MapOfVectors::const_iterator> iterators_of_map_of_areas_vectors=collect_const_iterators_of_map(map_of_areas_vectors);
 
 	print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
 	print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
