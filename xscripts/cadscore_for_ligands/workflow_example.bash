@@ -1,9 +1,27 @@
 #!/bin/bash
 
-find ./input/pdb_files/ -type f -name "manualfix_*.pdb" > ./list_of_ligands_files.txt
+mkdir -p ./output
 
-./run_stage1_calc_receptor_and_multiple_ligands_contacts.bash -r ./input/pdb_files/receptor.pdb -l ./list_of_ligands_files.txt -s ./input/symmetry_map.txt -w ./workdir
+find ./input/pdb_files/ \
+  -type f \
+  -name "manualfix_*.pdb" \
+> ./output/list_of_ligands_files.txt
 
-./run_stage2_cluster_contacts.bash -w ./workdir -t 0.6
+./calc_receptor_and_multiple_ligands_contacts.bash \
+  -r ./input/pdb_files/receptor.pdb \
+  -l ./output/list_of_ligands_files.txt \
+  -s ./input/symmetry_map.txt \
+  -o ./output/contacts
 
-./run_stage3_show_clusters_in_pymol.bash -w ./workdir -l ./list_of_ligands_files.txt
+./filter_multiple_contacts.bash \
+  -i ./output/contacts \
+  -o ./output/contacts_nosolvent
+
+./cluster_contacts.bash \
+  -i ./output/contacts_nosolvent \
+  -o ./output/clusters \
+  -t 0.6
+
+./show_clusters_in_pymol.bash \
+  -c ./output/clusters \
+  -l ./output/list_of_ligands_files.txt

@@ -2,15 +2,20 @@
 
 set +e
 
-WORK_DIR=""
+readonly ZEROARG=$0
+INPUT_DIR=""
+OUTPUT_DIR=""
 CLUSTERING_THRESHOLD=""
 HELP_MODE=false
 
-while getopts "w:t:h" OPTION
+while getopts "i:o:t:h" OPTION
 do
 	case $OPTION in
-	w)
-		WORK_DIR=$OPTARG
+	i)
+		INPUT_DIR=$OPTARG
+		;;
+	o)
+		OUTPUT_DIR=$OPTARG
 		;;
 	t)
 		CLUSTERING_THRESHOLD=$OPTARG
@@ -21,11 +26,12 @@ do
 	esac
 done
 
-if [ -z "$WORK_DIR" ] || [ -z "$CLUSTERING_THRESHOLD" ] || $HELP_MODE
+if [ -z "$INPUT_DIR" ] || [ -z "$OUTPUT_DIR" ] || [ -z "$CLUSTERING_THRESHOLD" ] || $HELP_MODE
 then
 cat >&2 << EOF
 Script parameters:
-    -w working_directory
+    -i input_directory
+    -o output_directory
     -t clustering_threshold
 EOF
 exit 1
@@ -40,22 +46,19 @@ fi
 
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 
-CONTACTS_INPUT_DIR="$WORK_DIR/contacts"
-CLUSTERS_OUTPUT_DIR="$WORK_DIR/clusters"
+mkdir -p $OUTPUT_DIR
 
-mkdir -p $CLUSTERS_OUTPUT_DIR
-
-find $CONTACTS_INPUT_DIR -type f \
+find $INPUT_DIR -type f \
 | voronota vectorize-contacts \
-  --clustering-output $CLUSTERS_OUTPUT_DIR/list_of_clusters.txt \
+  --clustering-output $OUTPUT_DIR/list_of_clusters.txt \
   --clustering-threshold $CLUSTERING_THRESHOLD \
-  --consensus-list $CLUSTERS_OUTPUT_DIR/list_of_consensus_scores.txt \
+  --consensus-list $OUTPUT_DIR/list_of_consensus_scores.txt \
 > /dev/null
 
 {
 CLUSTER_ID=1
 IFS=''
-cat $CLUSTERS_OUTPUT_DIR/list_of_clusters.txt | sed 's/.pdb//g' | while read LINE
+cat $OUTPUT_DIR/list_of_clusters.txt | sed 's/.pdb//g' | while read LINE
 do
 	TOKEN_ID=1
 	echo $LINE | tr ' ' '\n' | while read TOKEN
@@ -71,11 +74,11 @@ do
 done
 echo "set all_states, on"
 echo "zoom"
-} > $CLUSTERS_OUTPUT_DIR/pymol_commands.pml
+} > $OUTPUT_DIR/pymol_commands.pml
 
 if command -v voronota &> /dev/null
 then
-R --vanilla --args $CLUSTERS_OUTPUT_DIR/list_of_consensus_scores.txt $CLUSTERS_OUTPUT_DIR/distribution_of_consensus_scores.png &> /dev/null << 'EOF'
+R --vanilla --args $OUTPUT_DIR/list_of_consensus_scores.txt $OUTPUT_DIR/distribution_of_consensus_scores.png &> /dev/null << 'EOF'
 args=commandArgs(TRUE);
 t=read.table(args[1], header=FALSE, stringsAsFactors=FALSE);
 png(args[2]);
