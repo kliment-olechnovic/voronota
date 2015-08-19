@@ -23,6 +23,7 @@ score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
 vectorize-contacts
+vectorize-points
 score-scores
 
 Command 'get-balls-from-atoms-file' options:
@@ -301,6 +302,15 @@ Command 'vectorize-contacts' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts files
 stdout  ->  table of contacts vectors
+
+Command 'vectorize-points' options:
+--RMSD-matrix                   string      file path to output RMSD matrix
+--consensus-list                string      file path to output ordered similarities to consensus (average points)
+--clustering-output             string      file path to output clusters
+--clustering-threshold          string      clustering threshold value
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of points files
+stdout  ->  nothing
 
 Command 'score-scores' options:
 --reference-threshold           number      reference scores classification threshold
