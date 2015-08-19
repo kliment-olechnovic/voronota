@@ -3,7 +3,6 @@
 #include "auxiliaries/chain_residue_atom_descriptor.h"
 
 #include "modescommon/vectorization_utilities.h"
-#include "modescommon/filepath_utilities.h"
 
 namespace
 {
@@ -23,25 +22,6 @@ inline std::ostream& operator<<(std::ostream& output, const CRADsPair& crads_pai
 		output << crads_pair.a << "__" << crads_pair.b;
 	}
 	return output;
-}
-
-typedef VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
-
-Vectorizer::MapOfMaps read_maps_of_contacts()
-{
-	Vectorizer::MapOfMaps maps_of_contacts;
-	const std::set<std::string> input_files=auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin);
-	const std::size_t common_path_start_length=calc_common_path_start_length(input_files);
-	for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
-	{
-		const std::string& filename=(*it);
-		const Vectorizer::Map raw_map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map<Vectorizer::Map>(filename);
-		if(!raw_map_of_contacts.empty())
-		{
-			maps_of_contacts[filename.substr(common_path_start_length)]=raw_map_of_contacts;
-		}
-	}
-	return maps_of_contacts;
 }
 
 double calc_configurable_cadscore_of_two_vectors(const std::vector<double>& a, const std::vector<double>& b, const bool symmetric)
@@ -100,41 +80,43 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const Vectorizer::MapOfMaps maps_of_contacts=read_maps_of_contacts();
-	if(maps_of_contacts.empty())
+	typedef VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
+
+	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
+	if(maps_of_maps.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const Vectorizer::MapKeysIDs crads_ids=Vectorizer::collect_map_keys_ids(maps_of_contacts);
-	const Vectorizer::MapOfVectors map_of_areas_vectors=Vectorizer::collect_map_of_vectors(maps_of_contacts, crads_ids);
-	const Vectorizer::IteratorsOfMapOfVectors iterators_of_map_of_areas_vectors=Vectorizer::collect_iterators_of_map_of_vectors(map_of_areas_vectors);
+	const Vectorizer::MapKeysIDs map_keys_ids=Vectorizer::collect_map_keys_ids(maps_of_maps);
+	const Vectorizer::MapOfVectors map_of_vectors=Vectorizer::collect_map_of_vectors(maps_of_maps, map_keys_ids);
+	const Vectorizer::IteratorsOfMapOfVectors iterators_of_map_of_vectors=Vectorizer::collect_iterators_of_map_of_vectors(map_of_vectors);
 
-	Vectorizer::print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
-	Vectorizer::print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
+	Vectorizer::print_similarity_matrix(map_of_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
+	Vectorizer::print_similarity_matrix(map_of_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
 
 	if(!consensus_list_file.empty())
 	{
 		Vectorizer::print_consensus_similarities(
-				iterators_of_map_of_areas_vectors,
-				Vectorizer::calc_consensus_similarities(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors),
+				iterators_of_map_of_vectors,
+				Vectorizer::calc_consensus_similarities(iterators_of_map_of_vectors, calc_cadscore_of_two_vectors),
 				consensus_list_file);
 	}
 
 	if(!clustering_output_file.empty())
 	{
 		Vectorizer::print_clusters(
-				iterators_of_map_of_areas_vectors,
-				Vectorizer::calc_clusters(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
+				iterators_of_map_of_vectors,
+				Vectorizer::calc_clusters(iterators_of_map_of_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
 				clustering_output_file);
 	}
 
 	if(transpose)
 	{
-		Vectorizer::print_map_of_areas_vectors_transposed(crads_ids, map_of_areas_vectors);
+		Vectorizer::print_map_of_areas_vectors_transposed(map_keys_ids, map_of_vectors);
 	}
 	else
 	{
-		Vectorizer::print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
+		Vectorizer::print_map_of_areas_vectors(map_keys_ids, map_of_vectors);
 	}
 }
