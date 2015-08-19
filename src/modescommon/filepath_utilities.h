@@ -2,7 +2,7 @@
 #define FILEPATH_UTILITIES_H_
 
 #include <string>
-#include <vector>
+#include <set>
 
 namespace
 {

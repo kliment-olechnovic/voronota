@@ -5,6 +5,8 @@
 #include <list>
 #include <map>
 
+#include "filepath_utilities.h"
+
 namespace
 {
 
@@ -19,6 +21,25 @@ public:
 	typedef std::map<std::string, Vector> MapOfVectors;
 	typedef std::vector<typename MapOfVectors::const_iterator> IteratorsOfMapOfVectors;
 	typedef std::vector< std::pair< std::size_t, std::list<std::size_t> > > Clusters;
+
+	static MapOfMaps read_map_of_maps_from_multiple_files(const std::set<std::string>& input_files)
+	{
+		MapOfMaps map_of_maps;
+		if(!input_files.empty())
+		{
+			const std::size_t common_path_start_length=calc_common_path_start_length(input_files);
+			for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
+			{
+				const std::string& filename=(*it);
+				const Map map=auxiliaries::IOUtilities().read_file_lines_to_map<Map>(filename);
+				if(!map.empty())
+				{
+					map_of_maps[filename.substr(common_path_start_length)]=map;
+				}
+			}
+		}
+		return map_of_maps;
+	}
 
 	static const MapKeysIDs collect_map_keys_ids(const MapOfMaps& map_of_maps)
 	{
