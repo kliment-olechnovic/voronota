@@ -24,6 +24,8 @@ inline std::ostream& operator<<(std::ostream& output, const CRADsPair& crads_pai
 	return output;
 }
 
+typedef VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
+
 std::size_t calc_common_path_start_length(const std::set<std::string>& filenames)
 {
 	std::size_t common_path_start_length=0;
@@ -50,15 +52,15 @@ std::size_t calc_common_path_start_length(const std::set<std::string>& filenames
 	return common_path_start_length;
 }
 
-std::map< std::string, std::map<CRADsPair, double> > read_maps_of_contacts()
+Vectorizer::MapOfMaps read_maps_of_contacts()
 {
-	std::map< std::string, std::map<CRADsPair, double> > maps_of_contacts;
+	Vectorizer::MapOfMaps maps_of_contacts;
 	const std::set<std::string> input_files=auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin);
 	const std::size_t common_path_start_length=calc_common_path_start_length(input_files);
 	for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
 	{
 		const std::string& filename=(*it);
-		const std::map<CRADsPair, double> raw_map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(filename);
+		const Vectorizer::Map raw_map_of_contacts=auxiliaries::IOUtilities().read_file_lines_to_map<Vectorizer::Map>(filename);
 		if(!raw_map_of_contacts.empty())
 		{
 			maps_of_contacts[filename.substr(common_path_start_length)]=raw_map_of_contacts;
@@ -103,70 +105,10 @@ double calc_euclidean_distance_of_two_vectors(const std::vector<double>& a, cons
 	return sqrt(sum);
 }
 
-template<typename IteratorsOfMapOfVectors>
-std::vector<double> calc_consensus_vector(const IteratorsOfMapOfVectors& iterators_of_map_of_vectors)
-{
-	std::vector<double> result;
-	for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
-	{
-		const std::vector<double>& v=iterators_of_map_of_vectors[i]->second;
-		if(result.size()<v.size())
-		{
-			result.resize(v.size(), 0.0);
-		}
-		for(std::size_t j=0;j<result.size();j++)
-		{
-			result[j]+=v[j];
-		}
-	}
-	for(std::size_t j=0;j<result.size();j++)
-	{
-		result[j]/=static_cast<double>(iterators_of_map_of_vectors.size());
-	}
-	return result;
-}
-
-template<typename IteratorsOfMapOfVectors, typename Functor>
-std::multimap<double, std::size_t> calc_consensus_similarities(
-		const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
-		Functor functor)
-{
-	std::multimap<double, std::size_t> similarities;
-	const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_vectors);
-	for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
-	{
-		similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_vectors[i]->second), i));
-	}
-	return similarities;
-}
-
-template<typename IteratorsOfMapOfVectors>
-void print_consensus_similarities(
-		const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
-		const std::multimap<double, std::size_t>& similarities,
-		const std::string& output_file)
-{
-	std::ofstream output(output_file.c_str(), std::ios::out);
-	if(!output.good())
-	{
-		return;
-	}
-
-	for(std::multimap<double, std::size_t>::const_reverse_iterator it=similarities.rbegin();it!=similarities.rend();++it)
-	{
-		if(it->second<iterators_of_map_of_vectors.size())
-		{
-			output << iterators_of_map_of_vectors[it->second]->first << " " << it->first << "\n";
-		}
-	}
-}
-
 }
 
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
-
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts files");
 	pohw.describe_io("stdout", false, true, "table of contacts vectors");
@@ -198,9 +140,9 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!consensus_list_file.empty())
 	{
-		print_consensus_similarities(
+		Vectorizer::print_consensus_similarities(
 				iterators_of_map_of_areas_vectors,
-				calc_consensus_similarities(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors),
+				Vectorizer::calc_consensus_similarities(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors),
 				consensus_list_file);
 	}
 
