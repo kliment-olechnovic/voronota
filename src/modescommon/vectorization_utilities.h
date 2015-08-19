@@ -313,6 +313,62 @@ public:
 			output << "\n";
 		}
 	}
+
+	static Vector calc_consensus_vector(const IteratorsOfMapOfVectors& iterators_of_map_of_vectors)
+	{
+		Vector result;
+		for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
+		{
+			const Vector& v=iterators_of_map_of_vectors[i]->second;
+			if(result.size()<v.size())
+			{
+				result.resize(v.size(), 0.0);
+			}
+			for(std::size_t j=0;j<result.size();j++)
+			{
+				result[j]=result[j]+v[j];
+			}
+		}
+		for(std::size_t j=0;j<result.size();j++)
+		{
+			result[j]=result[j]*(1.0/static_cast<double>(iterators_of_map_of_vectors.size()));
+		}
+		return result;
+	}
+
+	template<typename Functor>
+	static std::multimap<double, std::size_t> calc_consensus_similarities(
+			const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
+			Functor functor)
+	{
+		std::multimap<double, std::size_t> similarities;
+		const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_vectors);
+		for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
+		{
+			similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_vectors[i]->second), i));
+		}
+		return similarities;
+	}
+
+	static void print_consensus_similarities(
+			const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
+			const std::multimap<double, std::size_t>& similarities,
+			const std::string& output_file)
+	{
+		std::ofstream output(output_file.c_str(), std::ios::out);
+		if(!output.good())
+		{
+			return;
+		}
+
+		for(std::multimap<double, std::size_t>::const_reverse_iterator it=similarities.rbegin();it!=similarities.rend();++it)
+		{
+			if(it->second<iterators_of_map_of_vectors.size())
+			{
+				output << iterators_of_map_of_vectors[it->second]->first << " " << it->first << "\n";
+			}
+		}
+	}
 };
 
 }
