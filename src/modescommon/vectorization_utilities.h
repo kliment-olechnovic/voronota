@@ -12,15 +12,16 @@ template<typename VectorNameType, typename ValueNameType, typename ValueType>
 class VectorizationUtilities
 {
 public:
-	typedef std::map< VectorNameType, std::map<ValueNameType, ValueType> > MapOfMaps;
+	typedef std::map<ValueNameType, ValueType> Map;
 	typedef std::map<ValueNameType, std::size_t> MapKeysIDs;
-	typedef std::map< std::string, std::vector<ValueType> > MapOfVectors;
+	typedef std::map<VectorNameType, Map> MapOfMaps;
+	typedef std::vector<ValueType> Vector;
+	typedef std::map<std::string, Vector> MapOfVectors;
 	typedef std::vector<typename MapOfVectors::const_iterator> IteratorsOfMapOfVectors;
 	typedef std::vector< std::pair< std::size_t, std::list<std::size_t> > > Clusters;
 
 	static const MapKeysIDs collect_map_keys_ids(const MapOfMaps& map_of_maps)
 	{
-		typedef typename MapOfMaps::mapped_type Map;
 		MapKeysIDs map_keys_ids;
 		for(typename MapOfMaps::const_iterator it=map_of_maps.begin();it!=map_of_maps.end();++it)
 		{
@@ -45,8 +46,6 @@ public:
 			const MapOfMaps& map_of_maps,
 			const MapKeysIDs& map_keys_ids)
 	{
-		typedef typename MapOfVectors::mapped_type Vector;
-		typedef typename MapOfMaps::mapped_type Map;
 		MapOfVectors map_of_vectors;
 		for(typename MapOfMaps::const_iterator it=map_of_maps.begin();it!=map_of_maps.end();++it)
 		{
@@ -69,7 +68,6 @@ public:
 			const MapKeysIDs& map_keys_ids,
 			const MapOfVectors& map_of_vectors)
 	{
-		typedef typename MapOfVectors::mapped_type Vector;
 		std::cout << "title";
 		for(typename MapKeysIDs::const_iterator it=map_keys_ids.begin();it!=map_keys_ids.end();++it)
 		{
@@ -92,7 +90,6 @@ public:
 			const MapKeysIDs& map_keys_ids,
 			const MapOfVectors& map_of_vectors)
 	{
-		typedef typename MapOfVectors::mapped_type Vector;
 		std::cout << "contact";
 		for(typename MapOfVectors::const_iterator it=map_of_vectors.begin();it!=map_of_vectors.end();++it)
 		{
