@@ -165,9 +165,7 @@ void print_consensus_similarities(
 
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef std::map< std::string, std::map<CRADsPair, double> > MapOfMaps;
-	typedef std::map<CRADsPair, std::size_t> MapKeysIDs;
-	typedef std::map< std::string, std::vector<double> > MapOfVectors;
+	typedef VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
 
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts files");
@@ -185,18 +183,18 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const MapOfMaps maps_of_contacts=read_maps_of_contacts();
+	const Vectorizer::MapOfMaps maps_of_contacts=read_maps_of_contacts();
 	if(maps_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const MapKeysIDs crads_ids=collect_map_keys_ids<MapKeysIDs>(maps_of_contacts);
-	const MapOfVectors map_of_areas_vectors=collect_map_of_vectors<MapOfVectors>(maps_of_contacts, crads_ids);
-	const std::vector<MapOfVectors::const_iterator> iterators_of_map_of_areas_vectors=collect_const_iterators_of_map(map_of_areas_vectors);
+	const Vectorizer::MapKeysIDs crads_ids=Vectorizer::collect_map_keys_ids(maps_of_contacts);
+	const Vectorizer::MapOfVectors map_of_areas_vectors=Vectorizer::collect_map_of_vectors(maps_of_contacts, crads_ids);
+	const Vectorizer::IteratorsOfMapOfVectors iterators_of_map_of_areas_vectors=Vectorizer::collect_iterators_of_map_of_vectors(map_of_areas_vectors);
 
-	print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
-	print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
+	Vectorizer::print_similarity_matrix(map_of_areas_vectors, cadscore_matrix_file, calc_cadscore_of_two_vectors);
+	Vectorizer::print_similarity_matrix(map_of_areas_vectors, distance_matrix_file, calc_euclidean_distance_of_two_vectors);
 
 	if(!consensus_list_file.empty())
 	{
@@ -208,18 +206,18 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!clustering_output_file.empty())
 	{
-		print_clusters(
+		Vectorizer::print_clusters(
 				iterators_of_map_of_areas_vectors,
-				calc_clusters(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
+				Vectorizer::calc_clusters(iterators_of_map_of_areas_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
 				clustering_output_file);
 	}
 
 	if(transpose)
 	{
-		print_map_of_areas_vectors_transposed(crads_ids, map_of_areas_vectors);
+		Vectorizer::print_map_of_areas_vectors_transposed(crads_ids, map_of_areas_vectors);
 	}
 	else
 	{
-		print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
+		Vectorizer::print_map_of_areas_vectors(crads_ids, map_of_areas_vectors);
 	}
 }
