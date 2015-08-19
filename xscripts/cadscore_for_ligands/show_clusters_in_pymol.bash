@@ -37,6 +37,8 @@ EOF
 exit 1
 fi
 
+command -v pymol &> /dev/null || { echo >&2 "Error: 'pymol' executable not in binaries path"; exit 1; }
+
 PYMOL_SCRIPT_FILE="$CLUSTERS_DIR/pymol_commands.pml"
 
 pymol $RECEPTOR_FILE $(cat $LIGANDS_FILES_LIST) $PYMOL_SCRIPT_FILE
