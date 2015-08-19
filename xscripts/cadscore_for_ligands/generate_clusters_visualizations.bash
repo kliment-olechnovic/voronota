@@ -48,7 +48,7 @@ echo "set all_states, on"
 echo "zoom"
 } > $CLUSTERS_DIR/pymol_commands.pml
 
-if command -v voronota &> /dev/null
+if command -v R &> /dev/null
 then
 R --vanilla --args $CLUSTERS_DIR/list_of_consensus_scores.txt $CLUSTERS_DIR/distribution_of_consensus_scores.png &> /dev/null << 'EOF'
 args=commandArgs(TRUE);
