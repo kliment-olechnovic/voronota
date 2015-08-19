@@ -107,7 +107,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		Vectorizer::print_clusters(
 				iterators_of_map_of_vectors,
-				Vectorizer::calc_clusters(iterators_of_map_of_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true),
+				Vectorizer::calc_clusters(iterators_of_map_of_vectors, calc_cadscore_of_two_vectors, clustering_threshold, true, false),
 				clustering_output_file);
 	}
 

@@ -174,11 +174,14 @@ public:
 			const IteratorsOfMapOfVectors& iterators_of_map_of_vectors,
 			Functor functor,
 			const double threshold,
-			const bool eliminate_false_singletons)
+			const bool eliminate_false_singletons,
+			const bool invert_similarity)
 	{
 		typedef std::list<std::size_t> Neighbors;
 		typedef std::vector< std::pair<std::size_t, Neighbors> > ListOfNeighbors;
 		typedef std::map< std::size_t, Neighbors > MapOfNeighbors;
+
+		const double similarity_modifier=(invert_similarity ? -1.0 : 1.0);
 
 		ListOfNeighbors big_clusters;
 		ListOfNeighbors true_singleton_clusters;
@@ -190,8 +193,8 @@ public:
 			Neighbors& neighbors=map_of_available_neighbors[i];
 			for(std::size_t j=0;j<iterators_of_map_of_vectors.size();j++)
 			{
-				const double similarity=functor(iterators_of_map_of_vectors[i]->second, iterators_of_map_of_vectors[j]->second);
-				if(similarity>=threshold)
+				const double similarity=functor(iterators_of_map_of_vectors[i]->second, iterators_of_map_of_vectors[j]->second)*similarity_modifier;
+				if(similarity>=threshold*similarity_modifier)
 				{
 					neighbors.push_back(j);
 				}
@@ -281,7 +284,7 @@ public:
 				{
 					const double similarity=functor(
 							iterators_of_map_of_vectors[singletons_it->first]->second,
-							iterators_of_map_of_vectors[big_clusters_it->first]->second);
+							iterators_of_map_of_vectors[big_clusters_it->first]->second)*similarity_modifier;
 					if(big_clusters_it_of_closest==big_clusters.end() || similarity>max_similarity)
 					{
 						max_similarity=similarity;
@@ -343,7 +346,7 @@ public:
 			const Vector& v=iterators_of_map_of_vectors[i]->second;
 			if(result.size()<v.size())
 			{
-				result.resize(v.size(), 0.0);
+				result.resize(v.size());
 			}
 			for(std::size_t j=0;j<result.size();j++)
 			{
@@ -363,7 +366,7 @@ public:
 			Functor functor)
 	{
 		std::multimap<double, std::size_t> similarities;
-		const std::vector<double> consensus=calc_consensus_vector(iterators_of_map_of_vectors);
+		const Vector consensus=calc_consensus_vector(iterators_of_map_of_vectors);
 		for(std::size_t i=0;i<iterators_of_map_of_vectors.size();i++)
 		{
 			similarities.insert(std::make_pair(functor(consensus, iterators_of_map_of_vectors[i]->second), i));
