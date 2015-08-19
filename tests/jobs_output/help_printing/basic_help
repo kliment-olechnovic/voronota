@@ -23,5 +23,6 @@ score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
 vectorize-contacts
+vectorize-points
 score-scores
 
