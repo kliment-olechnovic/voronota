@@ -7,7 +7,22 @@
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+class CRADsPair : public auxiliaries::ChainResidueAtomDescriptorsPair
+{
+};
+
+inline std::ostream& operator<<(std::ostream& output, const CRADsPair& crads_pair)
+{
+	if(crads_pair.reversed_display)
+	{
+		output << crads_pair.b << "__" << crads_pair.a;
+	}
+	else
+	{
+		output << crads_pair.a << "__" << crads_pair.b;
+	}
+	return output;
+}
 
 std::size_t calc_common_path_start_length(const std::set<std::string>& filenames)
 {
