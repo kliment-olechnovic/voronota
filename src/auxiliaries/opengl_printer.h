@@ -141,6 +141,7 @@ public:
 			return;
 		}
 		const std::string sep=", ";
+		const std::string bigsep=",\n";
 		output << "from pymol.cgo import *\n";
 		output << "from pymol import cmd\n";
 		output << obj_name << " = [";
@@ -153,11 +154,11 @@ public:
 			{
 				double alpha=1.0;
 				input >> alpha;
-				output << "ALPHA, " << alpha << sep;
+				output << "ALPHA, " << alpha << bigsep;
 			}
 			else if(type.color)
 			{
-				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, sep, output);
+				write_color_to_stream(read_color_from_stream(input), true, "COLOR, ", sep, bigsep, output);
 			}
 			else if(type.tstrip || type.tfan || type.tfanc)
 			{
@@ -165,13 +166,13 @@ public:
 				std::vector<PlainPoint> normals;
 				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
 				{
-					output << (type.tstrip ? "BEGIN, TRIANGLE_STRIP, " : "BEGIN, TRIANGLE_FAN, ");
+					output << (type.tstrip ? "BEGIN, TRIANGLE_STRIP" : "BEGIN, TRIANGLE_FAN") << bigsep;
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
-						write_point_to_stream(normals[i], "NORMAL, ", sep, sep, output);
-						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						write_point_to_stream(normals[i], "NORMAL, ", sep, bigsep, output);
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, bigsep, output);
 					}
-					output << "END, ";
+					output << "END" << bigsep;
 				}
 			}
 			else if(type.lstrip || type.lloop)
@@ -179,12 +180,12 @@ public:
 				const std::vector<PlainPoint> vertices=read_points_vector_from_stream(input);
 				if(!vertices.empty())
 				{
-					output << (type.lstrip ? "BEGIN, LINE_STRIP, " : "BEGIN, LINE_LOOP, ");
+					output << (type.lstrip ? "BEGIN, LINE_STRIP" : "BEGIN, LINE_LOOP") << bigsep;
 					for(std::size_t i=0;i<vertices.size();i++)
 					{
-						write_point_to_stream(vertices[i], "VERTEX, ", sep, sep, output);
+						write_point_to_stream(vertices[i], "VERTEX, ", sep, bigsep, output);
 					}
-					output << "END, ";
+					output << "END" << bigsep;
 				}
 			}
 			else if(type.sphere)
@@ -193,7 +194,7 @@ public:
 				double r;
 				input >> r;
 				write_point_to_stream(c, "SPHERE, ", sep, sep, output);
-				output << r << sep;
+				output << r << bigsep;
 			}
 		}
 		output << "]\n";
