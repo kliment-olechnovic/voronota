@@ -71,12 +71,25 @@ public:
 						const double virtual_x=u1*r+v1;
 						const double virtual_y=u2*r+v2;
 						const double real_l1_offset=virtual_y*x2/y2;
-						const double real_l2=sqrt(real_l1_offset*real_l1_offset+virtual_y*virtual_y);
 						const double real_l1=virtual_x-real_l1_offset;
-						const SimpleSphere candidate(SimplePoint(sm)+(sub_of_points<SimplePoint>(s1, sm).unit()*real_l1)+(sub_of_points<SimplePoint>(s2, sm).unit()*real_l2), (r-sm.r));
-						if(check_tangent_sphere(sm, s1, s2, candidate) && equal(fabs(signed_volume_of_tetrahedron(sm, s1, s2, candidate)), 0))
+						const double real_l2=sqrt(real_l1_offset*real_l1_offset+virtual_y*virtual_y);
+						for(int sign_id=0;sign_id<2;sign_id++)
 						{
-							results.push_back(candidate);
+							const double signed_real_l2=real_l2*(sign_id==0 ? 1.0 : -1.0);
+							SimpleSphere candidate(SimplePoint(sm)+(sub_of_points<SimplePoint>(s1, sm).unit()*real_l1)+(sub_of_points<SimplePoint>(s2, sm).unit()*signed_real_l2), (r-sm.r));
+							if((results.empty() || !(candidate==results.back())) && less(fabs(signed_volume_of_tetrahedron(sm, s1, s2, candidate)), tangent_spheres_max_allowed_error()))
+							{
+								std::pair<double, double> error_estimate=calculate_tangent_sphere_radius_error_estimate(sm, s1, s2, candidate);
+								if(error_estimate.first<0.0)
+								{
+									candidate.r+=error_estimate.first;
+									error_estimate=calculate_tangent_sphere_radius_error_estimate(sm, s1, s2, candidate);
+								}
+								if(std::max(fabs(error_estimate.first), fabs(error_estimate.second))<tangent_spheres_max_allowed_error())
+								{
+									results.push_back(candidate);
+								}
+							}
 						}
 					}
 				}
@@ -171,9 +184,13 @@ public:
 							candidate.y+=sm.y;
 							candidate.z+=sm.z;
 							candidate.r-=sm.r;
-							if(equal(candidate.r, custom_tangent_sphere_radius) && check_tangent_sphere(sm, s1, s2, candidate))
+							if(equal(candidate.r, custom_tangent_sphere_radius))
 							{
-								results.push_back(candidate);
+								const std::pair<double, double> error_estimate=calculate_tangent_sphere_radius_error_estimate(sm, s1, s2, candidate);
+								if(std::max(fabs(error_estimate.first), fabs(error_estimate.second))<tangent_spheres_max_allowed_error())
+								{
+									results.push_back(candidate);
+								}
 							}
 						}
 						return results;
@@ -187,11 +204,17 @@ public:
 
 private:
 	template<typename InputSphereTypeA, typename InputSphereTypeB, typename InputSphereTypeC, typename InputSphereTypeD>
-	static bool check_tangent_sphere(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& tangent_sphere)
+	static inline std::pair<double, double> calculate_tangent_sphere_radius_error_estimate(const InputSphereTypeA& s1, const InputSphereTypeB& s2, const InputSphereTypeC& s3, const InputSphereTypeD& tangent)
 	{
-		return (sphere_touches_sphere(tangent_sphere, s1) &&
-				sphere_touches_sphere(tangent_sphere, s2) &&
-				sphere_touches_sphere(tangent_sphere, s3));
+		const double d1=minimal_distance_from_sphere_to_sphere(tangent, s1);
+		const double d2=minimal_distance_from_sphere_to_sphere(tangent, s2);
+		const double d3=minimal_distance_from_sphere_to_sphere(tangent, s3);
+		return std::make_pair(std::min(std::min(d1, d2), d3), std::max(std::max(d1, d2), d3));
+	}
+
+	inline static double tangent_spheres_max_allowed_error()
+	{
+		return std::max(default_comparison_epsilon(), 0.001);
 	}
 };
 
