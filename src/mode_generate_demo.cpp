@@ -1,5 +1,8 @@
-#include "apollota/constrained_contacts_construction.h"
-#include "apollota/spheres_boundary_construction.h"
+//#include "apollota/constrained_contacts_construction.h"
+//#include "apollota/spheres_boundary_construction.h"
+
+#include "apollota/basic_operations_on_spheres.h"
+#include "apollota/interpolation.h"
 
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/opengl_printer.h"
@@ -389,14 +392,79 @@
 //	}
 //}
 
+//void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
+//{
+//	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+//	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+//	pohw.describe_io("stdout", false, true, "info");
+//
+//	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
+//
+//	if(!pohw.assert_or_print_help(false))
+//	{
+//		return;
+//	}
+//
+//	std::vector<apollota::SimpleSphere> spheres;
+//	auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+//	if(spheres.size()<4)
+//	{
+//		throw std::runtime_error("Less than 4 balls provided to stdin.");
+//	}
+//
+////	const std::size_t input_spheres_count=spheres.size();
+//	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
+//	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
+//
+//	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+//	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+//
+//	const apollota::TriangulationQueries::TriplesMap triples_map=apollota::TriangulationQueries::collect_triples_vertices_map_from_vertices_vector(vertices_vector);
+//	int failed_min_tangents=0;
+//	int failed_probe_tangents=0;
+//
+//	for(apollota::TriangulationQueries::TriplesMap::const_iterator triples_map_it=triples_map.begin();triples_map_it!=triples_map.end();++triples_map_it)
+//	{
+//		const apollota::Triple& triple=triples_map_it->first;
+//		const apollota::SimpleSphere s[3]={spheres[triple.get(0)], spheres[triple.get(1)], spheres[triple.get(2)]};
+//		const std::vector<apollota::SimpleSphere> min_tangents=apollota::TangentSphereOfThreeSpheres::calculate(s[0], s[1], s[2]);
+//		if(min_tangents.empty())
+//		{
+//			failed_min_tangents++;
+//		}
+//		else
+//		{
+//			double min_tangent_radius=min_tangents[0].r;
+//			if(min_tangents.size()>1 && min_tangent_radius>min_tangents[1].r)
+//			{
+//				min_tangent_radius=min_tangents[1].r;
+//			}
+//			double max_tangent_radius=min_tangents[0].r;
+//			if(min_tangents.size()>1 && max_tangent_radius<min_tangents[1].r)
+//			{
+//				max_tangent_radius=min_tangents[1].r;
+//			}
+//			if(min_tangent_radius<probe && (min_tangent_radius==max_tangent_radius || max_tangent_radius>probe))
+//			{
+//				const std::vector<apollota::SimpleSphere> probe_tangents=apollota::TangentSphereOfThreeSpheres::calculate(s[0], s[1], s[2], probe);
+//				if(probe_tangents.size()!=2)
+//				{
+//					failed_probe_tangents++;
+//				}
+//			}
+//		}
+//	}
+//
+//	std::cerr << triples_map.size() << " triples\n";
+//	std::cerr << failed_min_tangents << " failed_min_tangents\n";
+//	std::cerr << failed_probe_tangents << " failed_probe_tangents\n";
+//}
+
 void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
 	pohw.describe_io("stdout", false, true, "info");
-
-	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
-	const std::string representation=poh.argument<std::string>(pohw.describe_option("--representation", "string", "representation name"), "");
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -410,50 +478,17 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-//	const std::size_t input_spheres_count=spheres.size();
-	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
-	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
-
-	const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
-	const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
-
-	const apollota::TriangulationQueries::TriplesMap triples_map=apollota::TriangulationQueries::collect_triples_vertices_map_from_vertices_vector(vertices_vector);
-	int failed_min_tangents=0;
-	int failed_probe_tangents=0;
-
-	for(apollota::TriangulationQueries::TriplesMap::const_iterator triples_map_it=triples_map.begin();triples_map_it!=triples_map.end();++triples_map_it)
+	std::vector<apollota::SimplePoint> controls;
+	controls.reserve(spheres.size());
+	for(std::size_t i=0;i<spheres.size();i++)
 	{
-		const apollota::Triple& triple=triples_map_it->first;
-		const apollota::SimpleSphere s[3]={spheres[triple.get(0)], spheres[triple.get(1)], spheres[triple.get(2)]};
-		const std::vector<apollota::SimpleSphere> min_tangents=apollota::TangentSphereOfThreeSpheres::calculate(s[0], s[1], s[2]);
-		if(min_tangents.empty())
-		{
-			failed_min_tangents++;
-		}
-		else
-		{
-			double min_tangent_radius=min_tangents[0].r;
-			if(min_tangents.size()>1 && min_tangent_radius>min_tangents[1].r)
-			{
-				min_tangent_radius=min_tangents[1].r;
-			}
-			double max_tangent_radius=min_tangents[0].r;
-			if(min_tangents.size()>1 && max_tangent_radius<min_tangents[1].r)
-			{
-				max_tangent_radius=min_tangents[1].r;
-			}
-			if(min_tangent_radius<probe && (min_tangent_radius==max_tangent_radius || max_tangent_radius>probe))
-			{
-				const std::vector<apollota::SimpleSphere> probe_tangents=apollota::TangentSphereOfThreeSpheres::calculate(s[0], s[1], s[2], probe);
-				if(probe_tangents.size()!=2)
-				{
-					failed_probe_tangents++;
-				}
-			}
-		}
+		controls.push_back(apollota::SimplePoint(spheres[i]));
 	}
 
-	std::cerr << triples_map.size() << " triples\n";
-	std::cerr << failed_min_tangents << " failed_min_tangents\n";
-	std::cerr << failed_probe_tangents << " failed_probe_tangents\n";
+	const std::vector<apollota::SimplePoint> vertices=apollota::bezier_curve_points_de_casteljau(controls, 1000);
+
+	auxiliaries::OpenGLPrinter opengl_printer;
+	opengl_printer.add_color(0x00FFFF);
+	opengl_printer.add_line_strip(vertices);
+	opengl_printer.print_pymol_script("curve", false, std::cout);
 }
