@@ -8,7 +8,7 @@
 namespace apollota
 {
 
-std::vector<SimplePoint> interpolate_using_cubic_hermite_spline(
+inline std::vector<SimplePoint> interpolate_using_cubic_hermite_spline(
 		const SimplePoint& a,
 		const SimplePoint& b,
 		const SimplePoint& c,
@@ -32,7 +32,7 @@ std::vector<SimplePoint> interpolate_using_cubic_hermite_spline(
 	return result;
 }
 
-double binomial_coefficient(const unsigned long n, const unsigned long k)
+inline double binomial_coefficient(const unsigned long n, const unsigned long k)
 {
 	if(k==0 || k==n)
 	{
@@ -61,7 +61,7 @@ double binomial_coefficient(const unsigned long n, const unsigned long k)
 	}
 }
 
-double power(const double x, const unsigned long n)
+inline double power(const double x, const unsigned long n)
 {
 	double result=1.0;
 	for(unsigned long i=0;i<n;i++)
@@ -71,7 +71,7 @@ double power(const double x, const unsigned long n)
 	return result;
 }
 
-double bernstein_polynomial(const unsigned long n, const unsigned long k, const double t)
+inline double bernstein_polynomial(const unsigned long n, const unsigned long k, const double t)
 {
 	if(k>n)
 	{
@@ -83,12 +83,44 @@ double bernstein_polynomial(const unsigned long n, const unsigned long k, const 
 	}
 }
 
-SimplePoint bezier_curve_point(const std::vector<SimplePoint>& controls, const double t)
+inline SimplePoint bezier_curve_point(const std::vector<SimplePoint>& controls, const double t)
 {
 	SimplePoint result;
 	for(std::size_t i=0;i<controls.size();i++)
 	{
 		result=result+(controls[i]*bernstein_polynomial(controls.size()-1, i, t));
+	}
+	return result;
+}
+
+inline SimplePoint bezier_curve_point_de_casteljau(const std::vector<SimplePoint>& controls, const double t)
+{
+	static std::vector<SimplePoint> buffer(4);
+	if(buffer.size()<controls.size())
+	{
+		buffer.resize(controls.size());
+	}
+	for(std::size_t i=0;i<controls.size();i++)
+	{
+		buffer[i]=controls[i];
+	}
+	for(std::size_t j=0;j+1<controls.size();j++)
+	{
+		for(std::size_t i=0;i+1<(controls.size()-j);i++)
+		{
+			buffer[i]=(buffer[i]*(1-t))+(buffer[i+1]*t);
+		}
+	}
+	return buffer.at(0);
+}
+
+inline std::vector<SimplePoint> bezier_curve_points_de_casteljau(const std::vector<SimplePoint>& controls, unsigned int n)
+{
+	std::vector<SimplePoint> result(n+1);
+	for(std::size_t i=0;i<(n+1);i++)
+	{
+		const double t=static_cast<double>(i)/static_cast<double>(n);
+		result[i]=bezier_curve_point_de_casteljau(controls, t);
 	}
 	return result;
 }
