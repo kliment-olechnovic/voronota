@@ -160,6 +160,22 @@ static double min_angle(const InputPointO& o, const InputPointA& a, const InputP
 	return acos(cos_val);
 }
 
+template<typename InputPointO, typename InputPointA, typename InputPointB, typename InputPointC>
+static double directed_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b, const InputPointC& c)
+{
+	static const double pi=acos(-1.0);
+	const double angle=min_angle(o, a, b);
+	const PODPoint n=cross_product<PODPoint>(unit_point<PODPoint>(sub_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sub_of_points<PODPoint>(b, o)));
+	if(dot_product(sub_of_points<PODPoint>(c, o), n)>=0)
+	{
+		return angle;
+	}
+	else
+	{
+		return (pi*2-angle);
+	}
+}
+
 template<typename InputSphereType, typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
 double spherical_triangle_area(const InputSphereType& s, const InputPointTypeA& a, const InputPointTypeB& b, const InputPointTypeC& c)
 {
