@@ -34,7 +34,7 @@ private:
 		bool operator()(const PointType& a, const PointType& b) const
 		{
 			PODPoint c=cross_product<PODPoint>(sub_of_points<PODPoint>(a, center), sub_of_points<PODPoint>(b, center));
-			return (dot_product(axis, c)<0);
+			return (dot_product(axis, c)>0);
 		}
 	};
 };
