@@ -1,0 +1,179 @@
+#ifndef APOLLOTA_ROLLING_TOPOLOGY_H_
+#define APOLLOTA_ROLLING_TOPOLOGY_H_
+
+#include <list>
+#include <vector>
+#include <set>
+
+#include "tangent_sphere_of_three_spheres.h"
+#include "polar_sorting.h"
+#include "rotation.h"
+
+namespace apollota
+{
+
+class RollingTopology
+{
+public:
+	struct RollingPoint
+	{
+		std::size_t generator;
+		SimpleSphere tangent;
+	};
+
+	struct RollingStrip
+	{
+		RollingPoint start;
+		RollingPoint end;
+	};
+
+	struct RollingDescriptor
+	{
+		bool possible;
+		SimpleSphere circle;
+		SimplePoint axis;
+		bool detached;
+		std::set<std::size_t> generators;
+		std::list<RollingStrip> strips;
+	};
+
+	static inline RollingDescriptor calculate_rolling_descriptor(
+			const std::vector<SimpleSphere>& spheres,
+			const std::size_t a_id,
+			const std::size_t b_id,
+			const std::set<std::size_t>& neighbor_ids,
+			const std::set<std::size_t>& a_neighbor_ids,
+			const std::set<std::size_t>& b_neighbor_ids,
+			const double probe)
+	{
+		RollingDescriptor result;
+		const SimpleSphere& a=spheres[a_id];
+		const SimpleSphere& b=spheres[b_id];
+		result.possible=sphere_intersects_sphere_with_expansion(a, b, probe*2);
+		if(result.possible)
+		{
+			result.circle=intersection_circle_of_two_spheres<SimpleSphere>(SimpleSphere(a, a.r+probe), SimpleSphere(b, b.r+probe));
+			result.axis=sub_of_points<SimplePoint>(a, b).unit();
+			result.detached=true;
+			for(std::set<std::size_t>::const_iterator c_id_it=neighbor_ids.begin();c_id_it!=neighbor_ids.end() && result.detached;++c_id_it)
+			{
+				result.detached=!(sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2) && sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2));
+			}
+			if(!result.detached)
+			{
+				std::list<RollingPoint> rolling_points;
+				for(std::set<std::size_t>::const_iterator c_id_it=neighbor_ids.begin();c_id_it!=neighbor_ids.end();++c_id_it)
+				{
+					const std::vector<SimpleSphere> tangents=TangentSphereOfThreeSpheres::calculate(a, b, spheres[*c_id_it], probe);
+					if(tangents.size()==2)
+					{
+						for(std::vector<SimpleSphere>::const_iterator tangent_it=tangents.begin();tangent_it!=tangents.end();++tangent_it)
+						{
+							bool tangent_empty=true;
+							for(std::set<std::size_t>::const_iterator d_id_it=neighbor_ids.begin();d_id_it!=neighbor_ids.end() && tangent_empty;++d_id_it)
+							{
+								if(d_id_it!=c_id_it)
+								{
+									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+								}
+							}
+							for(std::set<std::size_t>::const_iterator d_id_it=a_neighbor_ids.begin();d_id_it!=a_neighbor_ids.end() && tangent_empty;++d_id_it)
+							{
+								if(d_id_it!=c_id_it && (*d_id_it)!=a_id && (*d_id_it)!=b_id)
+								{
+									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+								}
+							}
+							for(std::set<std::size_t>::const_iterator d_id_it=b_neighbor_ids.begin();d_id_it!=b_neighbor_ids.end() && tangent_empty;++d_id_it)
+							{
+								if(d_id_it!=c_id_it && (*d_id_it)!=a_id && (*d_id_it)!=b_id)
+								{
+									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+								}
+							}
+							if(tangent_empty)
+							{
+								result.generators.insert(*c_id_it);
+								RollingPoint rolling_point;
+								rolling_point.tangent=(*tangent_it);
+								rolling_point.generator=(*c_id_it);
+								rolling_points.push_back(rolling_point);
+							}
+						}
+					}
+				}
+				if(rolling_points.size()>=2 && rolling_points.size()%2==0)
+				{
+					std::vector< std::pair<SimpleSphere, std::pair<bool, std::size_t> > > circular_mapping;
+					{
+						circular_mapping.reserve(rolling_points.size()*2);
+						for(std::set<std::size_t>::const_iterator c_id_it=result.generators.begin();c_id_it!=result.generators.end();++c_id_it)
+						{
+							circular_mapping.push_back(std::make_pair(spheres[*c_id_it], std::make_pair(false, (*c_id_it))));
+						}
+						for(std::list<RollingPoint>::const_iterator rolling_point_it=rolling_points.begin();rolling_point_it!=rolling_points.end();++rolling_point_it)
+						{
+							circular_mapping.push_back(std::make_pair(rolling_point_it->tangent, std::make_pair(true, rolling_point_it->generator)));
+						}
+					}
+					PolarSorting::sort_mapping(result.circle, result.axis, circular_mapping.begin(), circular_mapping.end());
+					for(std::size_t i=0;i<circular_mapping.size();i++)
+					{
+						const std::size_t j=((i+1<circular_mapping.size()) ? (i+1) : 0);
+						if(circular_mapping[i].second.first && circular_mapping[j].second.first)
+						{
+							RollingStrip rolling_strip;
+							rolling_strip.start.tangent=circular_mapping[i].first;
+							rolling_strip.start.generator=circular_mapping[i].second.second;
+							rolling_strip.end.tangent=circular_mapping[j].first;
+							rolling_strip.end.generator=circular_mapping[j].second.second;
+							result.strips.push_back(rolling_strip);
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	static std::vector<SimplePoint> construct_rolling_circle_approximation(const RollingDescriptor& rolling_descriptor, const double angle_step)
+	{
+		std::vector<SimplePoint> result;
+		Rotation rotation(rolling_descriptor.axis, 0, true);
+		const SimplePoint base(rolling_descriptor.circle);
+		const SimplePoint start_vector=any_normal_of_vector<SimplePoint>(rotation.axis)*rolling_descriptor.circle.r;
+		const double angle=Rotation::pi()*2;
+		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
+		const double adjusted_angle_step=angle/static_cast<double>(steps);
+		result.reserve(steps+1);
+		for(int i=0;i<=steps;i++)
+		{
+			rotation.angle=adjusted_angle_step*static_cast<double>(i);
+			result.push_back(base+rotation.rotate<SimplePoint>(start_vector));
+		}
+		return result;
+	}
+
+	static std::vector<SimplePoint> construct_rolling_strip_approximation(const RollingDescriptor& rolling_descriptor, const RollingStrip& rolling_strip, const double angle_step)
+	{
+		std::vector<SimplePoint> result;
+		Rotation rotation(rolling_descriptor.axis, 0, true);
+		const SimplePoint base(rolling_descriptor.circle);
+		const SimplePoint start_vector=(SimplePoint(rolling_strip.start.tangent)-base);
+		const SimplePoint end_vector=(SimplePoint(rolling_strip.end.tangent)-base);
+		const double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, rotation.axis);
+		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
+		const double adjusted_angle_step=angle/static_cast<double>(steps);
+		result.reserve(steps+1);
+		for(int i=0;i<=steps;i++)
+		{
+			rotation.angle=adjusted_angle_step*static_cast<double>(i);
+			result.push_back(base+rotation.rotate<SimplePoint>(start_vector));
+		}
+		return result;
+	}
+};
+
+}
+
+#endif /* APOLLOTA_ROLLING_TOPOLOGY_H_ */
