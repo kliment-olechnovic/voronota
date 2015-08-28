@@ -29,6 +29,8 @@ public:
 
 	struct RollingDescriptor
 	{
+		std::size_t a_id;
+		std::size_t b_id;
 		bool possible;
 		SimpleSphere circle;
 		SimplePoint axis;
@@ -47,6 +49,8 @@ public:
 			const double probe)
 	{
 		RollingDescriptor result;
+		result.a_id=a_id;
+		result.b_id=b_id;
 		const SimpleSphere& a=spheres[a_id];
 		const SimpleSphere& b=spheres[b_id];
 		result.possible=sphere_intersects_sphere_with_expansion(a, b, probe*2);
@@ -139,30 +143,33 @@ public:
 
 	static std::vector<SimplePoint> construct_rolling_circle_approximation(const RollingDescriptor& rolling_descriptor, const double angle_step)
 	{
-		std::vector<SimplePoint> result;
-		Rotation rotation(rolling_descriptor.axis, 0, true);
-		const SimplePoint base(rolling_descriptor.circle);
-		const SimplePoint start_vector=any_normal_of_vector<SimplePoint>(rotation.axis)*rolling_descriptor.circle.r;
-		const double angle=Rotation::pi()*2;
-		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
-		const double adjusted_angle_step=angle/static_cast<double>(steps);
-		result.reserve(steps+1);
-		for(int i=0;i<=steps;i++)
-		{
-			rotation.angle=adjusted_angle_step*static_cast<double>(i);
-			result.push_back(base+rotation.rotate<SimplePoint>(start_vector));
-		}
-		return result;
+		return construct_circular_arc_approximation(
+				SimplePoint(rolling_descriptor.circle),
+				rolling_descriptor.axis,
+				any_normal_of_vector<SimplePoint>(rolling_descriptor.axis)*rolling_descriptor.circle.r,
+				Rotation::pi()*2,
+				angle_step);
 	}
 
 	static std::vector<SimplePoint> construct_rolling_strip_approximation(const RollingDescriptor& rolling_descriptor, const RollingStrip& rolling_strip, const double angle_step)
 	{
-		std::vector<SimplePoint> result;
-		Rotation rotation(rolling_descriptor.axis, 0, true);
 		const SimplePoint base(rolling_descriptor.circle);
 		const SimplePoint start_vector=(SimplePoint(rolling_strip.start.tangent)-base);
 		const SimplePoint end_vector=(SimplePoint(rolling_strip.end.tangent)-base);
-		const double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, rotation.axis);
+		const double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, rolling_descriptor.axis);
+		return construct_circular_arc_approximation(
+				base,
+				rolling_descriptor.axis,
+				start_vector,
+				angle,
+				angle_step);
+	}
+
+private:
+	static std::vector<SimplePoint> construct_circular_arc_approximation(const SimplePoint& base, const SimplePoint& axis, const SimplePoint& start_vector, const double angle, const double angle_step)
+	{
+		std::vector<SimplePoint> result;
+		Rotation rotation(axis, 0, true);
 		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
 		const double adjusted_angle_step=angle/static_cast<double>(steps);
 		result.reserve(steps+1);
