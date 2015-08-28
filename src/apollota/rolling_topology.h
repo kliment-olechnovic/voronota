@@ -67,6 +67,7 @@ public:
 					const std::vector<SimpleSphere> tangents=TangentSphereOfThreeSpheres::calculate(a, b, spheres[*c_id_it], probe);
 					if(tangents.size()==2)
 					{
+						const double allowed_tangent_error=0.00001;
 						for(std::vector<SimpleSphere>::const_iterator tangent_it=tangents.begin();tangent_it!=tangents.end();++tangent_it)
 						{
 							bool tangent_empty=true;
@@ -74,21 +75,21 @@ public:
 							{
 								if(d_id_it!=c_id_it)
 								{
-									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+									tangent_empty=!sphere_intersects_sphere_with_expansion((*tangent_it), spheres[*d_id_it], 0.0-allowed_tangent_error);
 								}
 							}
 							for(std::set<std::size_t>::const_iterator d_id_it=a_neighbor_ids.begin();d_id_it!=a_neighbor_ids.end() && tangent_empty;++d_id_it)
 							{
 								if(d_id_it!=c_id_it && (*d_id_it)!=a_id && (*d_id_it)!=b_id)
 								{
-									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+									tangent_empty=!sphere_intersects_sphere_with_expansion((*tangent_it), spheres[*d_id_it], 0.0-allowed_tangent_error);
 								}
 							}
 							for(std::set<std::size_t>::const_iterator d_id_it=b_neighbor_ids.begin();d_id_it!=b_neighbor_ids.end() && tangent_empty;++d_id_it)
 							{
 								if(d_id_it!=c_id_it && (*d_id_it)!=a_id && (*d_id_it)!=b_id)
 								{
-									tangent_empty=!sphere_intersects_sphere((*tangent_it), spheres[*d_id_it]);
+									tangent_empty=!sphere_intersects_sphere_with_expansion((*tangent_it), spheres[*d_id_it], 0.0-allowed_tangent_error);
 								}
 							}
 							if(tangent_empty)
