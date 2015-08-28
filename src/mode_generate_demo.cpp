@@ -51,14 +51,14 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
 				{
 					const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.05);
-					opengl_printer.add_color(0xFFFF00);
+					opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0xFF0000);
 					opengl_printer.add_line_strip(points);
 				}
 			}
 			else if(rolling_descriptor.detached)
 			{
 				const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, 0.05);
-				opengl_printer.add_color(0xFFFF00);
+				opengl_printer.add_color(0xFF00FF);
 				opengl_printer.add_line_strip(points);
 			}
 		}

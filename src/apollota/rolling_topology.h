@@ -37,6 +37,7 @@ public:
 		bool detached;
 		std::set<std::size_t> generators;
 		std::list<RollingStrip> strips;
+		std::vector<SimplePoint> breaks;
 	};
 
 	static inline RollingDescriptor calculate_rolling_descriptor(
@@ -58,6 +59,13 @@ public:
 		{
 			result.circle=intersection_circle_of_two_spheres<SimpleSphere>(SimpleSphere(a, a.r+probe), SimpleSphere(b, b.r+probe));
 			result.axis=sub_of_points<SimplePoint>(a, b).unit();
+			if(result.circle.r<probe)
+			{
+				result.breaks.resize(2);
+				const double dl=sqrt((probe*probe)-(result.circle.r*result.circle.r));
+				result.breaks[0]=sum_of_points<SimplePoint>(result.circle, point_and_number_product<PODPoint>(result.axis, dl));
+				result.breaks[1]=sum_of_points<SimplePoint>(result.circle, point_and_number_product<PODPoint>(result.axis, 0.0-dl));
+			}
 			result.detached=true;
 			for(std::set<std::size_t>::const_iterator c_id_it=neighbor_ids.begin();c_id_it!=neighbor_ids.end() && result.detached;++c_id_it)
 			{
