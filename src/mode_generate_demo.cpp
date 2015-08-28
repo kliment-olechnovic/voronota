@@ -6,6 +6,54 @@
 #include "auxiliaries/opengl_printer.h"
 #include "auxiliaries/program_options_handler.h"
 
+namespace
+{
+
+void draw_rolling_triangle(
+		const apollota::SimpleSphere& a,
+		const apollota::SimpleSphere& b,
+		const apollota::SimpleSphere& c,
+		const apollota::SimpleSphere& tangent,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	std::vector<apollota::SimplePoint> vertices(3);
+	std::vector<apollota::SimplePoint> normals(3);
+	normals[0]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(a)).unit();
+	normals[1]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(b)).unit();
+	normals[2]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(c)).unit();
+	for(int i=0;i<3;i++)
+	{
+		vertices[i]=apollota::SimplePoint(tangent)-(normals[i]*tangent.r);
+	}
+	opengl_printer.add_triangle_strip(vertices, normals);
+}
+
+void draw_rolling_quadrangle(
+		const apollota::SimpleSphere& a,
+		const apollota::SimpleSphere& b,
+		const apollota::SimpleSphere& tangent1,
+		const apollota::SimpleSphere& tangent2,
+		auxiliaries::OpenGLPrinter& opengl_printer)
+{
+	std::vector<apollota::SimplePoint> vertices(4);
+	std::vector<apollota::SimplePoint> normals(4);
+	normals[0]=(apollota::SimplePoint(tangent1)-apollota::SimplePoint(a)).unit();
+	normals[1]=(apollota::SimplePoint(tangent1)-apollota::SimplePoint(b)).unit();
+	normals[2]=(apollota::SimplePoint(tangent2)-apollota::SimplePoint(a)).unit();
+	normals[3]=(apollota::SimplePoint(tangent2)-apollota::SimplePoint(b)).unit();
+	for(int i=0;i<2;i++)
+	{
+		vertices[i]=apollota::SimplePoint(tangent1)-(normals[i]*tangent1.r);
+	}
+	for(int i=2;i<4;i++)
+	{
+		vertices[i]=apollota::SimplePoint(tangent2)-(normals[i]*tangent2.r);
+	}
+	opengl_printer.add_triangle_strip(vertices, normals);
+}
+
+}
+
 void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
@@ -26,7 +74,6 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-//	const std::size_t input_spheres_count=spheres.size();
 	const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
 	spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
@@ -50,9 +97,24 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
 				{
-					const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.05);
 					opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0xFF0000);
-					opengl_printer.add_line_strip(points);
+					{
+						const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.05);
+						for(std::size_t i=0;i+1<points.size();i++)
+						{
+							draw_rolling_quadrangle(spheres[pair.get(0)], spheres[pair.get(1)], apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), opengl_printer);
+						}
+					}
+
+					opengl_printer.add_color(0x00FFFF);
+					if(strip_it->start.generator<pair.get_min_max().first)
+					{
+						draw_rolling_triangle(spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->start.generator], strip_it->start.tangent, opengl_printer);
+					}
+					if(strip_it->end.generator<pair.get_min_max().first)
+					{
+						draw_rolling_triangle(spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->end.generator], strip_it->end.tangent, opengl_printer);
+					}
 				}
 			}
 			else if(rolling_descriptor.detached)
