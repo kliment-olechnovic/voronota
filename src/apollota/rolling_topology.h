@@ -151,7 +151,7 @@ public:
 
 	static std::vector<SimplePoint> construct_rolling_circle_approximation(const RollingDescriptor& rolling_descriptor, const double angle_step)
 	{
-		return construct_circular_arc_approximation(
+		return construct_circular_arc_approximation_from_axis_and_start(
 				SimplePoint(rolling_descriptor.circle),
 				rolling_descriptor.axis,
 				any_normal_of_vector<SimplePoint>(rolling_descriptor.axis)*rolling_descriptor.circle.r,
@@ -165,7 +165,7 @@ public:
 		const SimplePoint start_vector=(SimplePoint(rolling_strip.start.tangent)-base);
 		const SimplePoint end_vector=(SimplePoint(rolling_strip.end.tangent)-base);
 		const double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, rolling_descriptor.axis);
-		return construct_circular_arc_approximation(
+		return construct_circular_arc_approximation_from_axis_and_start(
 				base,
 				rolling_descriptor.axis,
 				start_vector,
@@ -173,12 +173,35 @@ public:
 				angle_step);
 	}
 
-private:
-	static std::vector<SimplePoint> construct_circular_arc_approximation(const SimplePoint& base, const SimplePoint& axis, const SimplePoint& start_vector, const double angle, const double angle_step)
+	static std::vector<SimplePoint> construct_circular_arc_approximation_from_start_and_end(const SimplePoint& center, const SimplePoint& start_vector, const SimplePoint& end_vector, const double angle_step)
+	{
+		const double angle=min_angle(SimplePoint(0, 0, 0), start_vector, end_vector);
+		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
+		return construct_circular_arc_approximation_from_start_and_end(center, start_vector, end_vector, steps);
+	}
+
+	static std::vector<SimplePoint> construct_circular_arc_approximation_from_start_and_end(const SimplePoint& base, const SimplePoint& start_vector, const SimplePoint& end_vector, const int steps)
+	{
+		SimplePoint axis=(start_vector&end_vector).unit();
+		double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, axis);
+		if(angle>Rotation::pi())
+		{
+			axis=axis.inverted();
+			angle=(Rotation::pi()*2-angle);
+		}
+		return construct_circular_arc_approximation_from_axis_and_start(base, axis, start_vector, angle, steps);
+	}
+
+	static std::vector<SimplePoint> construct_circular_arc_approximation_from_axis_and_start(const SimplePoint& base, const SimplePoint& axis, const SimplePoint& start_vector, const double angle, const double angle_step)
+	{
+		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
+		return construct_circular_arc_approximation_from_axis_and_start(base, axis, start_vector, angle, steps);
+	}
+
+	static std::vector<SimplePoint> construct_circular_arc_approximation_from_axis_and_start(const SimplePoint& base, const SimplePoint& axis, const SimplePoint& start_vector, const double angle, const int steps)
 	{
 		std::vector<SimplePoint> result;
 		Rotation rotation(axis, 0, true);
-		const int steps=static_cast<int>(floor(angle/angle_step)+1.0);
 		const double adjusted_angle_step=angle/static_cast<double>(steps);
 		result.reserve(steps+1);
 		for(int i=0;i<=steps;i++)
