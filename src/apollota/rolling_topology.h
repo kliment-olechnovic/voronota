@@ -69,7 +69,7 @@ public:
 			result.detached=true;
 			for(std::set<std::size_t>::const_iterator c_id_it=neighbor_ids.begin();c_id_it!=neighbor_ids.end() && result.detached;++c_id_it)
 			{
-				result.detached=!(sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2) && sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2));
+				result.detached=!(sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2) && sphere_intersects_sphere_with_expansion(b, spheres[*c_id_it], probe*2));
 			}
 			if(!result.detached)
 			{
