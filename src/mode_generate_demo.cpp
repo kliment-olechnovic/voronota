@@ -9,48 +9,128 @@
 namespace
 {
 
-void draw_rolling_triangle(
-		const apollota::SimpleSphere& a,
-		const apollota::SimpleSphere& b,
-		const apollota::SimpleSphere& c,
-		const apollota::SimpleSphere& tangent,
-		auxiliaries::OpenGLPrinter& opengl_printer)
+class SubdividedSphericalTriangle
 {
-	std::vector<apollota::SimplePoint> vertices(3);
-	std::vector<apollota::SimplePoint> normals(3);
-	normals[0]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(a)).unit();
-	normals[1]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(b)).unit();
-	normals[2]=(apollota::SimplePoint(tangent)-apollota::SimplePoint(c)).unit();
-	for(int i=0;i<3;i++)
+public:
+	SubdividedSphericalTriangle(
+			const apollota::SimpleSphere& tangent,
+			const apollota::SimpleSphere& a,
+			const apollota::SimpleSphere& b,
+			const apollota::SimpleSphere& c,
+			const int steps) : center(tangent)
 	{
-		vertices[i]=apollota::SimplePoint(tangent)-(normals[i]*tangent.r);
+		Triangle t;
+		t.p[0]=(center+((apollota::SimplePoint(a)-center).unit()*tangent.r));
+		t.p[1]=(center+((apollota::SimplePoint(b)-center).unit()*tangent.r));
+		t.p[2]=(center+((apollota::SimplePoint(c)-center).unit()*tangent.r));
+		triangles.push_back(t);
+		subdivide(steps);
 	}
-	opengl_printer.add_triangle_strip(vertices, normals);
-}
 
-void draw_rolling_quadrangle(
-		const apollota::SimpleSphere& a,
-		const apollota::SimpleSphere& b,
-		const apollota::SimpleSphere& tangent1,
-		const apollota::SimpleSphere& tangent2,
-		auxiliaries::OpenGLPrinter& opengl_printer)
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer)
+	{
+		std::vector<apollota::SimplePoint> vertices(3);
+		std::vector<apollota::SimplePoint> normals(3);
+		for(std::vector<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
+		{
+			const Triangle& t=(*triangle_it);
+			vertices[0]=t.p[0];
+			vertices[1]=t.p[1];
+			vertices[2]=t.p[2];
+			for(int i=0;i<3;i++)
+			{
+				normals[i]=(center-vertices[i]).unit();
+			}
+			opengl_printer.add_triangle_strip(vertices, normals);
+		}
+	}
+
+private:
+	struct Triangle
+	{
+		apollota::SimplePoint p[3];
+	};
+
+	void subdivide(const int steps)
+	{
+		for(int step=0;step<steps;step++)
+		{
+			std::vector<Triangle> new_triangles;
+			new_triangles.reserve(triangles.size()*4);
+			for(std::vector<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
+			{
+				const Triangle& t=(*triangle_it);
+				Triangle m;
+				m.p[0]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[0]-center, t.p[1]-center, 2)[1];
+				m.p[1]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[0]-center, t.p[2]-center, 2)[1];
+				m.p[2]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[1]-center, t.p[2]-center, 2)[1];
+				new_triangles.push_back(m);
+				{
+					Triangle s=m;
+					s.p[2]=t.p[0];
+					new_triangles.push_back(s);
+				}
+				{
+					Triangle s=m;
+					s.p[1]=t.p[1];
+					new_triangles.push_back(s);
+				}
+				{
+					Triangle s=m;
+					s.p[0]=t.p[2];
+					new_triangles.push_back(s);
+				}
+			}
+			triangles=new_triangles;
+		}
+	}
+
+	apollota::SimplePoint center;
+	std::vector<Triangle> triangles;
+};
+
+class SubdividedToricQuadrangle
 {
-	std::vector<apollota::SimplePoint> vertices(4);
-	std::vector<apollota::SimplePoint> normals(4);
-	normals[0]=(apollota::SimplePoint(tangent1)-apollota::SimplePoint(a)).unit();
-	normals[1]=(apollota::SimplePoint(tangent1)-apollota::SimplePoint(b)).unit();
-	normals[2]=(apollota::SimplePoint(tangent2)-apollota::SimplePoint(a)).unit();
-	normals[3]=(apollota::SimplePoint(tangent2)-apollota::SimplePoint(b)).unit();
-	for(int i=0;i<2;i++)
+public:
+	SubdividedToricQuadrangle(
+			const apollota::SimpleSphere& tangent1,
+			const apollota::SimpleSphere& tangent2,
+			const apollota::SimpleSphere& a,
+			const apollota::SimpleSphere& b,
+			const int steps) : centers(apollota::SimplePoint(tangent1), apollota::SimplePoint(tangent2))
 	{
-		vertices[i]=apollota::SimplePoint(tangent1)-(normals[i]*tangent1.r);
+		points.first=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(
+				centers.first,
+				(apollota::SimplePoint(a)-centers.first).unit()*tangent1.r,
+				(apollota::SimplePoint(b)-centers.first).unit()*tangent1.r,
+				steps);
+		points.second=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(
+				centers.second,
+				(apollota::SimplePoint(a)-centers.second).unit()*tangent2.r,
+				(apollota::SimplePoint(b)-centers.second).unit()*tangent2.r,
+				steps);
 	}
-	for(int i=2;i<4;i++)
+
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		vertices[i]=apollota::SimplePoint(tangent2)-(normals[i]*tangent2.r);
+		std::vector<apollota::SimplePoint> vertices;
+		vertices.reserve(points.first.size()*2);
+		std::vector<apollota::SimplePoint> normals;
+		normals.reserve(vertices.size());
+		for(std::size_t i=0;i<std::min(points.first.size(), points.second.size());i++)
+		{
+			vertices.push_back(points.first[i]);
+			vertices.push_back(points.second[i]);
+			normals.push_back((centers.first-points.first[i]).unit());
+			normals.push_back((centers.second-points.second[i]).unit());
+		}
+		opengl_printer.add_triangle_strip(vertices, normals);
 	}
-	opengl_printer.add_triangle_strip(vertices, normals);
-}
+
+private:
+	std::pair< apollota::SimplePoint, apollota::SimplePoint > centers;
+	std::pair< std::vector<apollota::SimplePoint>, std::vector<apollota::SimplePoint> > points;
+};
 
 }
 
@@ -99,21 +179,34 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0xFF0000);
 					{
-						const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.05);
+						const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.1);
 						for(std::size_t i=0;i+1<points.size();i++)
 						{
-							draw_rolling_quadrangle(spheres[pair.get(0)], spheres[pair.get(1)], apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), opengl_printer);
+							if(rolling_descriptor.breaks.size()==2)
+							{
+								SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[pair.get(0)], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), 4);
+								SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[pair.get(1)], 4);
+								stq1.draw(opengl_printer);
+								stq2.draw(opengl_printer);
+							}
+							else
+							{
+								SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[pair.get(0)], spheres[pair.get(1)], 4);
+								stq.draw(opengl_printer);
+							}
 						}
 					}
 
 					opengl_printer.add_color(0x00FFFF);
 					if(strip_it->start.generator<pair.get_min_max().first)
 					{
-						draw_rolling_triangle(spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->start.generator], strip_it->start.tangent, opengl_printer);
+						SubdividedSphericalTriangle sst(strip_it->start.tangent, spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->start.generator], 2);
+						sst.draw(opengl_printer);
 					}
 					if(strip_it->end.generator<pair.get_min_max().first)
 					{
-						draw_rolling_triangle(spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->end.generator], strip_it->end.tangent, opengl_printer);
+						SubdividedSphericalTriangle sst(strip_it->end.tangent, spheres[pair.get(0)], spheres[pair.get(1)], spheres[strip_it->end.generator], 2);
+						sst.draw(opengl_printer);
 					}
 				}
 			}
