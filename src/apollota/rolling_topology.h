@@ -69,7 +69,16 @@ public:
 			result.detached=true;
 			for(std::set<std::size_t>::const_iterator c_id_it=neighbor_ids.begin();c_id_it!=neighbor_ids.end() && result.detached;++c_id_it)
 			{
-				result.detached=!(sphere_intersects_sphere_with_expansion(a, spheres[*c_id_it], probe*2) && sphere_intersects_sphere_with_expansion(b, spheres[*c_id_it], probe*2));
+				const SimpleSphere expanded_c(spheres[*c_id_it], spheres[*c_id_it].r+probe);
+				const double distance_to_circle_plane=signed_distance_from_point_to_plane(result.circle, result.axis, expanded_c);
+				if(fabs(distance_to_circle_plane)<expanded_c.r)
+				{
+					const SimpleSphere projected_c(SimplePoint(expanded_c)-(result.axis*distance_to_circle_plane), sqrt((expanded_c.r*expanded_c.r)-(distance_to_circle_plane*distance_to_circle_plane)));
+					if(sphere_intersects_sphere(result.circle, projected_c))
+					{
+						result.detached=false;
+					}
+				}
 			}
 			if(!result.detached)
 			{
