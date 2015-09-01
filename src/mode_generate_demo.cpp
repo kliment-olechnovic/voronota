@@ -222,8 +222,10 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
 			{
+				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->start.generator)].push_back(strip_it->start.tangent);
 				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->start.generator)].push_back(strip_it->end.tangent);
 				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->end.generator)].push_back(strip_it->start.tangent);
+				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->end.generator)].push_back(strip_it->end.tangent);
 			}
 		}
 	}
@@ -275,7 +277,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		else if(rolling_descriptor.detached)
 		{
 			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, 0.05);
-			opengl_printer.add_color(0xFF00FF);
+			opengl_printer.add_color(0x00FF00);
 			for(std::size_t i=0;i+1<points.size();i++)
 			{
 				if(rolling_descriptor.breaks.size()==2)
