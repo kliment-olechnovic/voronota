@@ -276,7 +276,21 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, 0.05);
 			opengl_printer.add_color(0xFF00FF);
-			opengl_printer.add_line_strip(points);
+			for(std::size_t i=0;i+1<points.size();i++)
+			{
+				if(rolling_descriptor.breaks.size()==2)
+				{
+					SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), 4);
+					SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], 4);
+					stq1.draw(opengl_printer);
+					stq2.draw(opengl_printer);
+				}
+				else
+				{
+					SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], 8);
+					stq.draw(opengl_printer);
+				}
+			}
 		}
 	}
 
