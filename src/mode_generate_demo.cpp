@@ -99,10 +99,6 @@ public:
 									}
 									else if(points_in.size()==2)
 									{
-										if(((points_in[1]-points_in[0])*(points_on[1]-points_on[0]))<0)
-										{
-											std::swap(points_on[0], points_on[1]);
-										}
 										triangles.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1]));
 										triangles.insert(triangle_it, Triangle(points_in[0], points_in[1], points_on[1]));
 									}
