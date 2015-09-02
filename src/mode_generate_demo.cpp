@@ -32,33 +32,84 @@ public:
 	{
 		if(!cutting_spheres.empty())
 		{
-			apollota::ConstrainedContactRemainder::Remainder remainder;
-			for(std::vector<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
-			{
-				const Triangle& t=(*triangle_it);
-				remainder.push_back(apollota::ConstrainedContactRemainder::TriangleRecord(t.p[0], t.p[1], t.p[2], 0, 0, 0));
-			}
+			const apollota::SimpleSphere center_sphere(center, probe);
 			for(std::vector<apollota::SimpleSphere>::const_iterator cutting_sphere_it=cutting_spheres.begin();cutting_sphere_it!=cutting_spheres.end();++cutting_sphere_it)
 			{
 				const apollota::SimpleSphere& cutting_sphere=(*cutting_sphere_it);
-				if(apollota::greater(apollota::distance_from_point_to_point(center, cutting_sphere), 0.0))
+				if(!(center_sphere==cutting_sphere) && apollota::sphere_intersects_sphere(center_sphere, cutting_sphere))
 				{
-
-					apollota::ConstrainedContactRemainder::cut_contact_remainder(cutting_sphere, std::make_pair(1000, apollota::SimpleSphere(center, probe)), remainder);
+					const apollota::SimpleSphere intersection_circle=apollota::intersection_circle_of_two_spheres<apollota::SimpleSphere>(center_sphere, cutting_sphere);
+					const apollota::SimplePoint plane_normal=apollota::sub_of_points<apollota::SimplePoint>(center_sphere, cutting_sphere).unit();
+					std::list<Triangle>::iterator triangle_it=triangles.begin();
+					while(triangle_it!=triangles.end())
+					{
+						const Triangle t=(*triangle_it);
+						int h[3]={0,0,0};
+						for(int i=0;i<3;i++)
+						{
+							h[i]=apollota::halfspace_of_point(intersection_circle, plane_normal, t.p[i]);
+						}
+						if(h[0]>=0 && h[1]>=0 && h[2]>=0)
+						{
+							++triangle_it;
+						}
+						else
+						{
+							{
+								std::list<Triangle>::iterator deletion_triangle_it=triangle_it;
+								++triangle_it;
+								triangles.erase(deletion_triangle_it);
+							}
+							if(h[0]>0 || h[1]>0 || h[2]>0)
+							{
+								std::vector<apollota::SimplePoint> points_in;
+								std::vector<apollota::SimplePoint> points_on;
+								for(int i=0;i<3;i++)
+								{
+									if(h[i]>0)
+									{
+										points_in.push_back(t.p[i]);
+									}
+									else if(h[i]==0)
+									{
+										points_on.push_back(t.p[i]);
+									}
+								}
+								for(int i=0;i<3;i++)
+								{
+									for(int j=0;j<3;j++)
+									{
+										if(i!=j && h[i]>0 && h[j]<0)
+										{
+											points_on.push_back(apollota::intersection_of_plane_and_segment<apollota::SimplePoint>(intersection_circle, plane_normal, t.p[i], t.p[j]));
+										}
+									}
+								}
+								if((points_in.size()==1 || points_in.size()==2) && points_on.size()==2)
+								{
+									for(std::size_t i=0;i<points_on.size();i++)
+									{
+										points_on[i]=apollota::sum_of_points<apollota::SimplePoint>(intersection_circle, apollota::sub_of_points<apollota::SimplePoint>(points_on[i], intersection_circle).unit()*intersection_circle.r);
+									}
+									if(points_in.size()==1)
+									{
+										triangles.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1]));
+									}
+									else if(points_in.size()==2)
+									{
+										if(((points_in[1]-points_in[0])*(points_on[1]-points_on[0]))<0)
+										{
+											std::swap(points_on[0], points_on[1]);
+										}
+										triangles.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1]));
+										triangles.insert(triangle_it, Triangle(points_in[0], points_in[1], points_on[1]));
+									}
+								}
+							}
+						}
+					}
 				}
 			}
-			std::vector<Triangle> new_triangles;
-			new_triangles.reserve(remainder.size());
-			for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
-			{
-				const apollota::ConstrainedContactRemainder::TriangleRecord& tr=(*remainder_it);
-				Triangle t;
-				t.p[0]=tr.p[0];
-				t.p[1]=tr.p[1];
-				t.p[2]=tr.p[2];
-				new_triangles.push_back(t);
-			}
-			triangles=new_triangles;
 		}
 	}
 
@@ -66,7 +117,7 @@ public:
 	{
 		std::vector<apollota::SimplePoint> vertices(3);
 		std::vector<apollota::SimplePoint> normals(3);
-		for(std::vector<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
+		for(std::list<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
 		{
 			const Triangle& t=(*triangle_it);
 			vertices[0]=t.p[0];
@@ -84,15 +135,25 @@ private:
 	struct Triangle
 	{
 		apollota::SimplePoint p[3];
+
+		Triangle()
+		{
+		}
+
+		Triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c)
+		{
+			p[0]=a;
+			p[1]=b;
+			p[2]=c;
+		}
 	};
 
 	void subdivide(const int steps)
 	{
 		for(int step=0;step<steps;step++)
 		{
-			std::vector<Triangle> new_triangles;
-			new_triangles.reserve(triangles.size()*4);
-			for(std::vector<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
+			std::list<Triangle> new_triangles;
+			for(std::list<Triangle>::const_iterator triangle_it=triangles.begin();triangle_it!=triangles.end();++triangle_it)
 			{
 				const Triangle& t=(*triangle_it);
 				Triangle m;
@@ -122,7 +183,7 @@ private:
 
 	apollota::SimplePoint center;
 	double probe;
-	std::vector<Triangle> triangles;
+	std::list<Triangle> triangles;
 };
 
 class SubdividedToricQuadrangle

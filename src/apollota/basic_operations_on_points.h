@@ -133,6 +133,22 @@ int halfspace_of_point(const InputPointTypeA& plane_point, const InputPointTypeB
 	return 0;
 }
 
+template<typename OutputPointType, typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC, typename InputPointTypeD>
+OutputPointType intersection_of_plane_and_segment(const InputPointTypeA& plane_point, const InputPointTypeB& plane_normal, const InputPointTypeC& a, const InputPointTypeD& b)
+{
+	const double da=signed_distance_from_point_to_plane(plane_point, plane_normal, a);
+	const double db=signed_distance_from_point_to_plane(plane_point, plane_normal, b);
+	if((da-db)==0)
+	{
+		return custom_point_from_object<OutputPointType>(a);
+	}
+	else
+	{
+		const double t=da/(da-db);
+		return sum_of_points<OutputPointType>(a, point_and_number_product<PODPoint>(sub_of_points<PODPoint>(b, a), t));
+	}
+}
+
 template<typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC, typename InputPointTypeD>
 double signed_volume_of_tetrahedron(const InputPointTypeA& a, const InputPointTypeB& b, const InputPointTypeC& c, const InputPointTypeD& d)
 {
