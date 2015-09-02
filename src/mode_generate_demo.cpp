@@ -28,16 +28,18 @@ public:
 		subdivide(steps);
 	}
 
-	void cut(const std::vector<apollota::SimpleSphere>& cutting_spheres)
+	template<typename ContainerOfSpheres>
+	void cut(const ContainerOfSpheres& cutting_spheres)
 	{
 		if(!cutting_spheres.empty())
 		{
 			const apollota::SimpleSphere center_sphere(center, probe);
-			for(std::vector<apollota::SimpleSphere>::const_iterator cutting_sphere_it=cutting_spheres.begin();cutting_sphere_it!=cutting_spheres.end();++cutting_sphere_it)
+			for(typename ContainerOfSpheres::const_iterator cutting_sphere_it=cutting_spheres.begin();cutting_sphere_it!=cutting_spheres.end();++cutting_sphere_it)
 			{
 				const apollota::SimpleSphere& cutting_sphere=(*cutting_sphere_it);
-				if(!(center_sphere==cutting_sphere) && apollota::sphere_intersects_sphere(center_sphere, cutting_sphere))
+				if(!(center_sphere==cutting_sphere) && used_cutting_spheres.count(cutting_sphere)==0 && apollota::sphere_intersects_sphere(center_sphere, cutting_sphere))
 				{
+					used_cutting_spheres.insert(cutting_sphere);
 					const apollota::SimpleSphere intersection_circle=apollota::intersection_circle_of_two_spheres<apollota::SimpleSphere>(center_sphere, cutting_sphere);
 					const apollota::SimplePoint plane_normal=apollota::sub_of_points<apollota::SimplePoint>(center_sphere, cutting_sphere).unit();
 					std::list<Triangle>::iterator triangle_it=triangles.begin();
@@ -184,6 +186,7 @@ private:
 	apollota::SimplePoint center;
 	double probe;
 	std::list<Triangle> triangles;
+	std::set<apollota::SimpleSphere> used_cutting_spheres;
 };
 
 class SubdividedToricQuadrangle
@@ -275,18 +278,22 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	std::map<apollota::Triple, std::vector<apollota::SimpleSphere> > map_of_triples_cutting_spheres;
+	std::vector< std::set<apollota::SimpleSphere> > map_of_generators_cutting_spheres(spheres.size());
 	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
 	{
 		const apollota::RollingTopology::RollingDescriptor& rolling_descriptor=(*rolling_descriptor_it);
-		if(!rolling_descriptor.strips.empty() && !rolling_descriptor.breaks.empty())
+		if(!rolling_descriptor.strips.empty())
 		{
 			for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
 			{
-				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->start.generator)].push_back(strip_it->start.tangent);
-				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->start.generator)].push_back(strip_it->end.tangent);
-				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->end.generator)].push_back(strip_it->start.tangent);
-				map_of_triples_cutting_spheres[apollota::Triple(rolling_descriptor.a_id, rolling_descriptor.b_id, strip_it->end.generator)].push_back(strip_it->end.tangent);
+				map_of_generators_cutting_spheres[rolling_descriptor.a_id].insert(strip_it->start.tangent);
+				map_of_generators_cutting_spheres[rolling_descriptor.b_id].insert(strip_it->start.tangent);
+				map_of_generators_cutting_spheres[strip_it->start.generator].insert(strip_it->start.tangent);
+				map_of_generators_cutting_spheres[strip_it->end.generator].insert(strip_it->start.tangent);
+				map_of_generators_cutting_spheres[rolling_descriptor.a_id].insert(strip_it->end.tangent);
+				map_of_generators_cutting_spheres[rolling_descriptor.b_id].insert(strip_it->end.tangent);
+				map_of_generators_cutting_spheres[strip_it->start.generator].insert(strip_it->end.tangent);
+				map_of_generators_cutting_spheres[strip_it->end.generator].insert(strip_it->end.tangent);
 			}
 		}
 	}
@@ -321,16 +328,18 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				opengl_printer.add_color(0x00FFFF);
 				if(strip_it->start.generator<std::min(rolling_descriptor.a_id, rolling_descriptor.b_id))
 				{
-					const std::vector<apollota::SimpleSphere>& cutting_spheres=map_of_triples_cutting_spheres[apollota::Triple(strip_it->start.generator, rolling_descriptor.a_id, rolling_descriptor.b_id)];
 					SubdividedSphericalTriangle sst(strip_it->start.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->start.generator], 3);
-					sst.cut(cutting_spheres);
+					sst.cut(map_of_generators_cutting_spheres[strip_it->start.generator]);
+					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
+					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
 					sst.draw(opengl_printer);
 				}
 				if(strip_it->end.generator<std::min(rolling_descriptor.a_id, rolling_descriptor.b_id))
 				{
-					const std::vector<apollota::SimpleSphere>& cutting_spheres=map_of_triples_cutting_spheres[apollota::Triple(strip_it->end.generator, rolling_descriptor.a_id, rolling_descriptor.b_id)];
 					SubdividedSphericalTriangle sst(strip_it->end.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->end.generator], 3);
-					sst.cut(cutting_spheres);
+					sst.cut(map_of_generators_cutting_spheres[strip_it->end.generator]);
+					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
+					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
 					sst.draw(opengl_printer);
 				}
 			}

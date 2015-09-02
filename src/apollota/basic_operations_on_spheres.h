@@ -35,6 +35,24 @@ bool spheres_equal(const InputSphereTypeA& a, const InputSphereTypeB& b, const d
 	return (equal(a.x, b.x, epsilon) && equal(a.y, b.y, epsilon) && equal(a.z, b.z, epsilon) && equal(a.r, b.r, epsilon));
 }
 
+template<typename InputSphereTypeA, typename InputSphereTypeB>
+bool spheres_less(const InputSphereTypeA& a, const InputSphereTypeB& b)
+{
+	if(less(a.x, b.x)) { return true; }
+	else if(greater(a.x, b.x)) { return false; }
+
+	if(less(a.y, b.y)) { return true; }
+	else if(greater(a.y, b.y)) { return false; }
+
+	if(less(a.z, b.z)) { return true; }
+	else if(greater(a.z, b.z)) { return false; }
+
+	if(less(a.r, b.r)) { return true; }
+	else if(greater(a.r, b.r)) { return false; }
+
+	return false;
+}
+
 template<typename InputPointType, typename InputSphereType>
 double minimal_distance_from_point_to_sphere(const InputPointType& a, const InputSphereType& b)
 {
@@ -132,6 +150,11 @@ struct SimpleSphere
 	bool operator==(const SimpleSphere& b) const
 	{
 		return spheres_equal(*this, b, default_comparison_epsilon());
+	}
+
+	bool operator<(const SimpleSphere& b) const
+	{
+		return spheres_less(*this, b);
 	}
 };
 

@@ -37,6 +37,21 @@ bool points_equal(const InputPointTypeA& a, const InputPointTypeB& b)
 	return (equal(a.x, b.x) && equal(a.y, b.y) && equal(a.z, b.z));
 }
 
+template<typename InputPointTypeA, typename InputPointTypeB>
+bool points_less(const InputPointTypeA& a, const InputPointTypeB& b)
+{
+	if(less(a.x, b.x)) { return true; }
+	else if(greater(a.x, b.x)) { return false; }
+
+	if(less(a.y, b.y)) { return true; }
+	else if(greater(a.y, b.y)) { return false; }
+
+	if(less(a.z, b.z)) { return true; }
+	else if(greater(a.z, b.z)) { return false; }
+
+	return false;
+}
+
 template<typename OutputPointType, typename InputPointType>
 OutputPointType inverted_point(const InputPointType& a)
 {
@@ -290,6 +305,11 @@ struct SimplePoint
 	bool operator==(const SimplePoint& b) const
 	{
 		return points_equal(*this, b);
+	}
+
+	bool operator<(const SimplePoint& b) const
+	{
+		return points_less(*this, b);
 	}
 
 	SimplePoint operator+(const SimplePoint& b) const
