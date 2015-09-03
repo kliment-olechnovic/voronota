@@ -246,12 +246,15 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
-	pohw.describe_io("stdout", false, true, "drawing script fo PyMol");
+	pohw.describe_io("stdout", false, true, "nothing");
 
 	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
 	const double angle_step=poh.restrict_value_in_range(0.01, 1.0, poh.argument<double>(pohw.describe_option("--angle-step", "number", "angle step in radians for circle approximation"), 0.2));
 	const int depth=poh.restrict_value_in_range(1, 4, poh.argument<int>(pohw.describe_option("--depth", "number", "triangular patches subdivision depth"), 2));
 	const double alpha=poh.argument<double>(pohw.describe_option("--alpha", "number", "alpha opacity value for drawing output"), 1.0);
+	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
+	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
+	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "ses");
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -274,11 +277,6 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 
 	apollota::TriangulationQueries::IDsMap singles_map=apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
 	const apollota::TriangulationQueries::PairsMap pairs_map=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
-
-	auxiliaries::OpenGLPrinter opengl_printer;
-	opengl_printer.add_alpha(alpha);
-
-	opengl_printer.add_color(0xFFFF00);
 
 	std::vector<apollota::RollingTopology::RollingDescriptor> rolling_descriptors;
 	for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_map_it=pairs_map.begin();pairs_map_it!=pairs_map.end();++pairs_map_it)
@@ -313,6 +311,9 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	auxiliaries::OpenGLPrinter opengl_printer;
+	opengl_printer.add_alpha(alpha);
+
 	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
 	{
 		const apollota::RollingTopology::RollingDescriptor& rolling_descriptor=(*rolling_descriptor_it);
@@ -320,7 +321,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
 			{
-				opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0xFF0000);
+				opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0x77FF00);
 				{
 					const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), angle_step);
 					for(std::size_t i=0;i+1<points.size();i++)
@@ -360,7 +361,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		else if(rolling_descriptor.detached)
 		{
 			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, angle_step);
-			opengl_printer.add_color(0x00FF00);
+			opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0x00FF00 : 0x00FF77);
 			for(std::size_t i=0;i+1<points.size();i++)
 			{
 				if(rolling_descriptor.breaks.size()==2)
@@ -379,5 +380,21 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	opengl_printer.print_pymol_script("presurface", false, std::cout);
+	if(!drawing_for_pymol.empty())
+	{
+		std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			opengl_printer.print_pymol_script(drawing_name, false, foutput);
+		}
+	}
+
+	if(!drawing_for_scenejs.empty())
+	{
+		std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			opengl_printer.print_scenejs_script(drawing_name, true, foutput);
+		}
+	}
 }
