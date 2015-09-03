@@ -237,11 +237,15 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdout", false, true, "drawing script fo PyMol");
 
 	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
+	const double angle_step=poh.restrict_value_in_range(0.01, 1.0, poh.argument<double>(pohw.describe_option("--angle-step", "number", "angle step in radians for circle approximation"), 0.2));
+	const int depth=poh.restrict_value_in_range(1, 4, poh.argument<int>(pohw.describe_option("--depth", "number", "triangular patches subdivision depth"), 2));
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
+
+	const int parts_from_depth=(1 << depth);
 
 	std::vector<apollota::SimpleSphere> spheres;
 	auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
@@ -303,19 +307,19 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0xFF0000);
 				{
-					const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), 0.1);
+					const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), angle_step);
 					for(std::size_t i=0;i+1<points.size();i++)
 					{
 						if(rolling_descriptor.breaks.size()==2)
 						{
-							SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), 4);
-							SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], 4);
+							SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
+							SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
 							stq1.draw(opengl_printer);
 							stq2.draw(opengl_printer);
 						}
 						else
 						{
-							SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], 8);
+							SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
 							stq.draw(opengl_printer);
 						}
 					}
@@ -324,7 +328,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				opengl_printer.add_color(0x00FFFF);
 				if(strip_it->start.generator<std::min(rolling_descriptor.a_id, rolling_descriptor.b_id))
 				{
-					SubdividedSphericalTriangle sst(strip_it->start.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->start.generator], 3);
+					SubdividedSphericalTriangle sst(strip_it->start.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->start.generator], depth);
 					sst.cut(map_of_generators_cutting_spheres[strip_it->start.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
@@ -332,7 +336,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(strip_it->end.generator<std::min(rolling_descriptor.a_id, rolling_descriptor.b_id))
 				{
-					SubdividedSphericalTriangle sst(strip_it->end.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->end.generator], 3);
+					SubdividedSphericalTriangle sst(strip_it->end.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->end.generator], depth);
 					sst.cut(map_of_generators_cutting_spheres[strip_it->end.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
@@ -342,20 +346,20 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		else if(rolling_descriptor.detached)
 		{
-			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, 0.05);
+			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, angle_step);
 			opengl_printer.add_color(0x00FF00);
 			for(std::size_t i=0;i+1<points.size();i++)
 			{
 				if(rolling_descriptor.breaks.size()==2)
 				{
-					SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), 4);
-					SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], 4);
+					SubdividedToricQuadrangle stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
+					SubdividedToricQuadrangle stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
 					stq1.draw(opengl_printer);
 					stq2.draw(opengl_printer);
 				}
 				else
 				{
-					SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], 8);
+					SubdividedToricQuadrangle stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
 					stq.draw(opengl_printer);
 				}
 			}
