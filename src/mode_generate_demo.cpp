@@ -251,6 +251,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
 	const double angle_step=poh.restrict_value_in_range(0.01, 1.0, poh.argument<double>(pohw.describe_option("--angle-step", "number", "angle step in radians for circle approximation"), 0.2));
 	const int depth=poh.restrict_value_in_range(1, 4, poh.argument<int>(pohw.describe_option("--depth", "number", "triangular patches subdivision depth"), 2));
+	const double alpha=poh.argument<double>(pohw.describe_option("--alpha", "number", "alpha opacity value for drawing output"), 1.0);
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -275,6 +276,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const apollota::TriangulationQueries::PairsMap pairs_map=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
 
 	auxiliaries::OpenGLPrinter opengl_printer;
+	opengl_printer.add_alpha(alpha);
+
 	opengl_printer.add_color(0xFFFF00);
 
 	std::vector<apollota::RollingTopology::RollingDescriptor> rolling_descriptors;
