@@ -19,14 +19,15 @@ public:
 			const apollota::SimpleSphere& b,
 			const apollota::SimpleSphere& c,
 			const std::vector<apollota::SimplePoint>& breaks,
-			const int steps) : center(tangent), probe(tangent.r)
+			const int steps) : center_sphere(tangent)
 	{
+		const apollota::SimplePoint center_point(center_sphere);
 		Triangle t;
-		t.p[0]=(center+((apollota::SimplePoint(a)-center).unit()*probe));
-		t.p[1]=(center+((apollota::SimplePoint(b)-center).unit()*probe));
-		t.p[2]=(center+((apollota::SimplePoint(c)-center).unit()*probe));
+		t.p[0]=(center_point+((apollota::SimplePoint(a)-center_point).unit()*tangent.r));
+		t.p[1]=(center_point+((apollota::SimplePoint(b)-center_point).unit()*tangent.r));
+		t.p[2]=(center_point+((apollota::SimplePoint(c)-center_point).unit()*tangent.r));
 		apollota::SimplePoint mp=(t.p[0]+t.p[1]+t.p[2])*(1/3.0);
-		mp=apollota::SimplePoint(tangent)+(apollota::sub_of_points<apollota::SimplePoint>(mp, center).unit()*tangent.r);
+		mp=apollota::SimplePoint(tangent)+((mp-center_point).unit()*tangent.r);
 		if(breaks.size()==2)
 		{
 			triangles.push_back(Triangle(t.p[0], breaks[0], mp));
@@ -45,7 +46,6 @@ public:
 	{
 		if(!cutting_spheres.empty())
 		{
-			const apollota::SimpleSphere center_sphere(center, probe);
 			for(typename ContainerOfSpheres::const_iterator cutting_sphere_it=cutting_spheres.begin();cutting_sphere_it!=cutting_spheres.end();++cutting_sphere_it)
 			{
 				const apollota::SimpleSphere& cutting_sphere=(*cutting_sphere_it);
@@ -135,7 +135,7 @@ public:
 			vertices[2]=t.p[2];
 			for(int i=0;i<3;i++)
 			{
-				normals[i]=(vertices[i]-center).unit();
+				normals[i]=(vertices[i]-center_sphere).unit();
 				if(concave)
 				{
 					normals[i]=normals[i].inverted();
@@ -164,6 +164,7 @@ private:
 
 	void subdivide(const int steps)
 	{
+		const apollota::SimplePoint center_point(center_sphere);
 		for(int step=0;step<steps;step++)
 		{
 			std::list<Triangle> new_triangles;
@@ -171,9 +172,9 @@ private:
 			{
 				const Triangle& t=(*triangle_it);
 				Triangle m;
-				m.p[0]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[0]-center, t.p[1]-center, 2)[1];
-				m.p[1]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[0]-center, t.p[2]-center, 2)[1];
-				m.p[2]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center, t.p[1]-center, t.p[2]-center, 2)[1];
+				m.p[0]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[0]-center_point, t.p[1]-center_point, 2)[1];
+				m.p[1]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[0]-center_point, t.p[2]-center_point, 2)[1];
+				m.p[2]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[1]-center_point, t.p[2]-center_point, 2)[1];
 				new_triangles.push_back(m);
 				{
 					Triangle s=m;
@@ -195,8 +196,7 @@ private:
 		}
 	}
 
-	apollota::SimplePoint center;
-	double probe;
+	apollota::SimpleSphere center_sphere;
 	std::list<Triangle> triangles;
 	std::set<apollota::SimpleSphere> used_cutting_spheres;
 };
