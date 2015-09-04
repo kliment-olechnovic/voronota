@@ -92,13 +92,14 @@ public:
 	template<typename InputPointType>
 	void transform(const InputPointType& new_center_point, const double scale)
 	{
-		const apollota::SimplePoint center_point(center_sphere_);
+		const apollota::SimplePoint old_center_point(center_sphere_);
+		center_sphere_=apollota::SimpleSphere(new_center_point, center_sphere_.r*scale);
 		for(std::list<Triangle>::iterator triangle_it=triangles_.begin();triangle_it!=triangles_.end();++triangle_it)
 		{
 			Triangle& t=(*triangle_it);
 			for(int i=0;i<3;i++)
 			{
-				t.p[i]=apollota::sum_of_points<apollota::SimplePoint>(new_center_point, ((t.p[i]-center_point)*scale));
+				t.p[i]=apollota::sum_of_points<apollota::SimplePoint>(new_center_point, ((t.p[i]-old_center_point)*scale));
 			}
 		}
 	}
@@ -317,6 +318,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=poh.restrict_value_in_range(0.01, 14.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
 	const double angle_step=poh.restrict_value_in_range(0.01, 1.0, poh.argument<double>(pohw.describe_option("--angle-step", "number", "angle step in radians for circle approximation"), 0.2));
 	const int depth=poh.restrict_value_in_range(1, 4, poh.argument<int>(pohw.describe_option("--depth", "number", "triangular patches subdivision depth"), 2));
+	const int sih_depth=poh.restrict_value_in_range(0, 4, poh.argument<int>(pohw.describe_option("--sih-depth", "number", "spherical surface optimization depth"), 2));
 	const double alpha=poh.argument<double>(pohw.describe_option("--alpha", "number", "alpha opacity value for drawing output"), 1.0);
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
@@ -357,6 +359,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	std::set<std::size_t> set_of_all_generators;
+	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
+	{
+		set_of_all_generators.insert(rolling_descriptor_it->a_id);
+		set_of_all_generators.insert(rolling_descriptor_it->b_id);
+	}
+
 	std::vector< std::set<apollota::SimpleSphere> > map_of_generators_cutting_spheres(spheres.size());
 	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
 	{
@@ -379,6 +388,28 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 
 	auxiliaries::OpenGLPrinter opengl_printer;
 	opengl_printer.add_alpha(alpha);
+
+	{
+		const SubdividedSphericalTriangulation start_sst(sih_depth);
+		for(apollota::TriangulationQueries::IDsMap::const_iterator singles_map_it=singles_map.begin();singles_map_it!=singles_map.end();++singles_map_it)
+		{
+			const std::set<std::size_t>& neighbors=singles_map_it->second;
+			if(!neighbors.empty() && set_of_all_generators.count(singles_map_it->first)>0)
+			{
+				SubdividedSphericalTriangulation sst=start_sst;
+				sst.transform(spheres[singles_map_it->first], spheres[singles_map_it->first].r+probe);
+				std::set<apollota::SimpleSphere> cutting_spheres;
+				for(std::set<std::size_t>::const_iterator neighbor_it=neighbors.begin();neighbor_it!=neighbors.end();++neighbor_it)
+				{
+					cutting_spheres.insert(apollota::SimpleSphere(spheres[*neighbor_it], spheres[*neighbor_it].r+probe));
+				}
+				sst.cut(cutting_spheres);
+				sst.transform(sst.center_sphere(), (sst.center_sphere().r-probe)/sst.center_sphere().r);
+				opengl_printer.add_color(0xFF33FF);
+				sst.draw(opengl_printer, false);
+			}
+		}
+	}
 
 	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
 	{
