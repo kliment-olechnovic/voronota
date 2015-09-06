@@ -194,7 +194,7 @@ public:
 		}
 	}
 
-	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const bool concave)
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const bool concave, const bool mesh)
 	{
 		std::vector<apollota::SimplePoint> vertices(3);
 		std::vector<apollota::SimplePoint> normals(3);
@@ -212,7 +212,14 @@ public:
 					normals[i]=normals[i].inverted();
 				}
 			}
-			opengl_printer.add_triangle_strip(vertices, normals);
+			if(mesh)
+			{
+				opengl_printer.add_line_loop(vertices);
+			}
+			else
+			{
+				opengl_printer.add_triangle_strip(vertices, normals);
+			}
 		}
 	}
 
@@ -294,7 +301,7 @@ public:
 				steps);
 	}
 
-	void draw(auxiliaries::OpenGLPrinter& opengl_printer)
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const bool mesh)
 	{
 		std::vector<apollota::SimplePoint> vertices;
 		vertices.reserve(points_.first.size()*2);
@@ -307,7 +314,22 @@ public:
 			normals.push_back((centers_.first-points_.first[i]).unit());
 			normals.push_back((centers_.second-points_.second[i]).unit());
 		}
-		opengl_printer.add_triangle_strip(vertices, normals);
+		if(mesh)
+		{
+			std::vector<apollota::SimplePoint> q(4);
+			for(std::size_t i=0;i+3<vertices.size();i+=2)
+			{
+				q[0]=vertices[i];
+				q[1]=vertices[i+1];
+				q[2]=vertices[i+3];
+				q[3]=vertices[i+2];
+				opengl_printer.add_line_loop(q);
+			}
+		}
+		else
+		{
+			opengl_printer.add_triangle_strip(vertices, normals);
+		}
 	}
 
 private:
@@ -331,6 +353,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "ses");
+	const bool mesh=poh.contains_option(pohw.describe_option("--mesh", "", "flag to draw mesh"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -414,7 +437,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				sst.cut(cutting_spheres);
 				sst.transform(sst.center_sphere(), (sst.center_sphere().r-probe)/sst.center_sphere().r);
 				opengl_printer.add_color(0xFF33FF);
-				sst.draw(opengl_printer, false);
+				sst.draw(opengl_printer, false, mesh);
 			}
 		}
 	}
@@ -435,13 +458,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 						{
 							SubdividedToricQuadrangulation stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
 							SubdividedToricQuadrangulation stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
-							stq1.draw(opengl_printer);
-							stq2.draw(opengl_printer);
+							stq1.draw(opengl_printer, mesh);
+							stq2.draw(opengl_printer, mesh);
 						}
 						else
 						{
 							SubdividedToricQuadrangulation stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
-							stq.draw(opengl_printer);
+							stq.draw(opengl_printer, mesh);
 						}
 					}
 				}
@@ -452,14 +475,14 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 					sst.cut(map_of_generators_cutting_spheres[strip_it->start.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
-					sst.draw(opengl_printer, true);
+					sst.draw(opengl_printer, true, mesh);
 				}
 				{
 					SubdividedSphericalTriangulation sst(strip_it->end.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->end.generator], rolling_descriptor.breaks, depth);
 					sst.cut(map_of_generators_cutting_spheres[strip_it->end.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
-					sst.draw(opengl_printer, true);
+					sst.draw(opengl_printer, true, mesh);
 				}
 			}
 		}
@@ -473,13 +496,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					SubdividedToricQuadrangulation stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
 					SubdividedToricQuadrangulation stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
-					stq1.draw(opengl_printer);
-					stq2.draw(opengl_printer);
+					stq1.draw(opengl_printer, mesh);
+					stq2.draw(opengl_printer, mesh);
 				}
 				else
 				{
 					SubdividedToricQuadrangulation stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
-					stq.draw(opengl_printer);
+					stq.draw(opengl_printer, mesh);
 				}
 			}
 		}
