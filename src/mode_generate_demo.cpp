@@ -10,13 +10,6 @@
 namespace
 {
 
-unsigned int color_integer_from_id(const int id)
-{
-	const long generator=123456789;
-	const long limiter=0xFFFFFF;
-	return static_cast<unsigned int>((static_cast<long>(abs(id)+1)*generator)%limiter);
-}
-
 class SubdividedSphericalTriangulation
 {
 public:
@@ -39,26 +32,26 @@ public:
 		vertices.push_back(apollota::SimplePoint( 0, t,-1).unit());
 		vertices.push_back(apollota::SimplePoint( 0,-t,-1).unit());
 
-		triangles_.push_back(Triangle(vertices[0], vertices[8], vertices[4], 0));
-		triangles_.push_back(Triangle(vertices[1], vertices[10], vertices[7], 0));
-		triangles_.push_back(Triangle(vertices[2], vertices[9], vertices[11], 0));
-		triangles_.push_back(Triangle(vertices[7], vertices[3], vertices[1], 0));
-		triangles_.push_back(Triangle(vertices[0], vertices[5], vertices[10], 0));
-		triangles_.push_back(Triangle(vertices[3], vertices[9], vertices[6], 0));
-		triangles_.push_back(Triangle(vertices[3], vertices[11], vertices[9], 0));
-		triangles_.push_back(Triangle(vertices[8], vertices[6], vertices[4], 0));
-		triangles_.push_back(Triangle(vertices[2], vertices[4], vertices[9], 0));
-		triangles_.push_back(Triangle(vertices[3], vertices[7], vertices[11], 0));
-		triangles_.push_back(Triangle(vertices[4], vertices[2], vertices[0], 0));
-		triangles_.push_back(Triangle(vertices[9], vertices[4], vertices[6], 0));
-		triangles_.push_back(Triangle(vertices[2], vertices[11], vertices[5], 0));
-		triangles_.push_back(Triangle(vertices[0], vertices[10], vertices[8], 0));
-		triangles_.push_back(Triangle(vertices[5], vertices[0], vertices[2], 0));
-		triangles_.push_back(Triangle(vertices[10], vertices[5], vertices[7], 0));
-		triangles_.push_back(Triangle(vertices[1], vertices[6], vertices[8], 0));
-		triangles_.push_back(Triangle(vertices[1], vertices[8], vertices[10], 0));
-		triangles_.push_back(Triangle(vertices[6], vertices[1], vertices[3], 0));
-		triangles_.push_back(Triangle(vertices[11], vertices[7], vertices[5], 0));
+		triangles_.push_back(Triangle(vertices[0], vertices[8], vertices[4]));
+		triangles_.push_back(Triangle(vertices[1], vertices[10], vertices[7]));
+		triangles_.push_back(Triangle(vertices[2], vertices[9], vertices[11]));
+		triangles_.push_back(Triangle(vertices[7], vertices[3], vertices[1]));
+		triangles_.push_back(Triangle(vertices[0], vertices[5], vertices[10]));
+		triangles_.push_back(Triangle(vertices[3], vertices[9], vertices[6]));
+		triangles_.push_back(Triangle(vertices[3], vertices[11], vertices[9]));
+		triangles_.push_back(Triangle(vertices[8], vertices[6], vertices[4]));
+		triangles_.push_back(Triangle(vertices[2], vertices[4], vertices[9]));
+		triangles_.push_back(Triangle(vertices[3], vertices[7], vertices[11]));
+		triangles_.push_back(Triangle(vertices[4], vertices[2], vertices[0]));
+		triangles_.push_back(Triangle(vertices[9], vertices[4], vertices[6]));
+		triangles_.push_back(Triangle(vertices[2], vertices[11], vertices[5]));
+		triangles_.push_back(Triangle(vertices[0], vertices[10], vertices[8]));
+		triangles_.push_back(Triangle(vertices[5], vertices[0], vertices[2]));
+		triangles_.push_back(Triangle(vertices[10], vertices[5], vertices[7]));
+		triangles_.push_back(Triangle(vertices[1], vertices[6], vertices[8]));
+		triangles_.push_back(Triangle(vertices[1], vertices[8], vertices[10]));
+		triangles_.push_back(Triangle(vertices[6], vertices[1], vertices[3]));
+		triangles_.push_back(Triangle(vertices[11], vertices[7], vertices[5]));
 
 		subdivide(steps);
 	}
@@ -85,15 +78,15 @@ public:
 
 		if(breaks.size()==2)
 		{
-			triangles_.push_back(Triangle(t.p[0], breaks[0], t_mp, 0));
-			triangles_.push_back(Triangle(breaks[0], t_side_mp, t_mp, 0));
-			triangles_.push_back(Triangle(t_side_mp, breaks[1], t_mp, 1));
-			triangles_.push_back(Triangle(breaks[1], t.p[1], t_mp, 1));
+			triangles_.push_back(Triangle(t.p[0], breaks[0], t_mp));
+			triangles_.push_back(Triangle(breaks[0], t_side_mp, t_mp));
+			triangles_.push_back(Triangle(t_side_mp, breaks[1], t_mp));
+			triangles_.push_back(Triangle(breaks[1], t.p[1], t_mp));
 		}
 		else
 		{
-			triangles_.push_back(Triangle(t.p[0], t_side_mp, t_mp, 0));
-			triangles_.push_back(Triangle(t_side_mp, t.p[1], t_mp, 1));
+			triangles_.push_back(Triangle(t.p[0], t_side_mp, t_mp));
+			triangles_.push_back(Triangle(t_side_mp, t.p[1], t_mp));
 		}
 
 		subdivide(steps-1);
@@ -185,12 +178,12 @@ public:
 									}
 									if(points_in.size()==1)
 									{
-										triangles_.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1], t.id));
+										triangles_.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1]));
 									}
 									else if(points_in.size()==2)
 									{
-										triangles_.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1], t.id));
-										triangles_.insert(triangle_it, Triangle(points_in[0], points_in[1], points_on[1], t.id));
+										triangles_.insert(triangle_it, Triangle(points_in[0], points_on[0], points_on[1]));
+										triangles_.insert(triangle_it, Triangle(points_in[0], points_in[1], points_on[1]));
 									}
 								}
 							}
@@ -201,7 +194,7 @@ public:
 		}
 	}
 
-	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const bool concave, const std::vector<unsigned int>& colors)
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const bool concave)
 	{
 		std::vector<apollota::SimplePoint> vertices(3);
 		std::vector<apollota::SimplePoint> normals(3);
@@ -219,10 +212,6 @@ public:
 					normals[i]=normals[i].inverted();
 				}
 			}
-			if(static_cast<std::size_t>(t.id)<colors.size())
-			{
-				opengl_printer.add_color(colors[t.id]);
-			}
 			opengl_printer.add_triangle_strip(vertices, normals);
 		}
 	}
@@ -231,17 +220,12 @@ private:
 	struct Triangle
 	{
 		apollota::SimplePoint p[3];
-		int id;
 
-		Triangle() : id(0)
+		Triangle()
 		{
 		}
 
-		Triangle(const int id) : id(id)
-		{
-		}
-
-		Triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c, const int id) : id(id)
+		Triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c)
 		{
 			p[0]=a;
 			p[1]=b;
@@ -258,7 +242,7 @@ private:
 			for(std::list<Triangle>::const_iterator triangle_it=triangles_.begin();triangle_it!=triangles_.end();++triangle_it)
 			{
 				const Triangle& t=(*triangle_it);
-				Triangle m(t.id);
+				Triangle m;
 				m.p[0]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[0]-center_point, t.p[1]-center_point, 2)[1];
 				m.p[1]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[0]-center_point, t.p[2]-center_point, 2)[1];
 				m.p[2]=apollota::RollingTopology::construct_circular_arc_approximation_from_start_and_end(center_point, t.p[1]-center_point, t.p[2]-center_point, 2)[1];
@@ -310,48 +294,20 @@ public:
 				steps);
 	}
 
-	void draw(auxiliaries::OpenGLPrinter& opengl_printer, const std::vector<unsigned int>& colors)
+	void draw(auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		const std::size_t N=std::min(points_.first.size(), points_.second.size());
-		const std::size_t mid_i=N/2;
-
+		std::vector<apollota::SimplePoint> vertices;
+		vertices.reserve(points_.first.size()*2);
+		std::vector<apollota::SimplePoint> normals;
+		normals.reserve(vertices.size());
+		for(std::size_t i=0;i<std::min(points_.first.size(), points_.second.size());i++)
 		{
-			std::vector<apollota::SimplePoint> vertices;
-			vertices.reserve(points_.first.size());
-			std::vector<apollota::SimplePoint> normals;
-			normals.reserve(vertices.size());
-			for(std::size_t i=0;i<=mid_i;i++)
-			{
-				vertices.push_back(points_.first[i]);
-				vertices.push_back(points_.second[i]);
-				normals.push_back((centers_.first-points_.first[i]).unit());
-				normals.push_back((centers_.second-points_.second[i]).unit());
-			}
-			if(colors.size()==2)
-			{
-				opengl_printer.add_color(colors[0]);
-			}
-			opengl_printer.add_triangle_strip(vertices, normals);
+			vertices.push_back(points_.first[i]);
+			vertices.push_back(points_.second[i]);
+			normals.push_back((centers_.first-points_.first[i]).unit());
+			normals.push_back((centers_.second-points_.second[i]).unit());
 		}
-
-		{
-			std::vector<apollota::SimplePoint> vertices;
-			vertices.reserve(points_.first.size());
-			std::vector<apollota::SimplePoint> normals;
-			normals.reserve(vertices.size());
-			for(std::size_t i=mid_i;i<N;i++)
-			{
-				vertices.push_back(points_.first[i]);
-				vertices.push_back(points_.second[i]);
-				normals.push_back((centers_.first-points_.first[i]).unit());
-				normals.push_back((centers_.second-points_.second[i]).unit());
-			}
-			if(colors.size()==2)
-			{
-				opengl_printer.add_color(colors[1]);
-			}
-			opengl_printer.add_triangle_strip(vertices, normals);
-		}
+		opengl_printer.add_triangle_strip(vertices, normals);
 	}
 
 private:
@@ -375,7 +331,6 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "ses");
-	const bool color_by_id=poh.contains_option(pohw.describe_option("--color-by-id", "", "flag to color by ball id"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -458,16 +413,8 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				sst.cut(cutting_spheres);
 				sst.transform(sst.center_sphere(), (sst.center_sphere().r-probe)/sst.center_sphere().r);
-				std::vector<unsigned int> colors;
-				if(color_by_id)
-				{
-					colors.push_back(color_integer_from_id(singles_map_it->first));
-				}
-				else
-				{
-					opengl_printer.add_color(0xFF33FF);
-				}
-				sst.draw(opengl_printer, false, colors);
+				opengl_printer.add_color(0xFF33FF);
+				sst.draw(opengl_printer, false);
 			}
 		}
 	}
@@ -475,16 +422,6 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::vector<apollota::RollingTopology::RollingDescriptor>::const_iterator rolling_descriptor_it=rolling_descriptors.begin();rolling_descriptor_it!=rolling_descriptors.end();++rolling_descriptor_it)
 	{
 		const apollota::RollingTopology::RollingDescriptor& rolling_descriptor=(*rolling_descriptor_it);
-		std::vector<unsigned int> colors;
-		std::vector<unsigned int> colors_double_a;
-		std::vector<unsigned int> colors_double_b;
-		if(color_by_id)
-		{
-			colors.push_back(color_integer_from_id(rolling_descriptor.a_id));
-			colors.push_back(color_integer_from_id(rolling_descriptor.b_id));
-			colors_double_a.resize(2, colors[0]);
-			colors_double_b.resize(2, colors[1]);
-		}
 		if(!rolling_descriptor.strips.empty())
 		{
 			for(std::list<apollota::RollingTopology::RollingStrip>::const_iterator strip_it=rolling_descriptor.strips.begin();strip_it!=rolling_descriptor.strips.end();++strip_it)
@@ -498,13 +435,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 						{
 							SubdividedToricQuadrangulation stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
 							SubdividedToricQuadrangulation stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
-							stq1.draw(opengl_printer, colors_double_a);
-							stq2.draw(opengl_printer, colors_double_b);
+							stq1.draw(opengl_printer);
+							stq2.draw(opengl_printer);
 						}
 						else
 						{
 							SubdividedToricQuadrangulation stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
-							stq.draw(opengl_printer, colors);
+							stq.draw(opengl_printer);
 						}
 					}
 				}
@@ -515,14 +452,14 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 					sst.cut(map_of_generators_cutting_spheres[strip_it->start.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
-					sst.draw(opengl_printer, true, colors);
+					sst.draw(opengl_printer, true);
 				}
 				{
 					SubdividedSphericalTriangulation sst(strip_it->end.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->end.generator], rolling_descriptor.breaks, depth);
 					sst.cut(map_of_generators_cutting_spheres[strip_it->end.generator]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.a_id]);
 					sst.cut(map_of_generators_cutting_spheres[rolling_descriptor.b_id]);
-					sst.draw(opengl_printer, true, colors);
+					sst.draw(opengl_printer, true);
 				}
 			}
 		}
@@ -536,13 +473,13 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					SubdividedToricQuadrangulation stq1(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], apollota::SimpleSphere(rolling_descriptor.breaks[0], 0.0), parts_from_depth/2);
 					SubdividedToricQuadrangulation stq2(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), apollota::SimpleSphere(rolling_descriptor.breaks[1], 0.0), spheres[rolling_descriptor.b_id], parts_from_depth/2);
-					stq1.draw(opengl_printer, colors_double_a);
-					stq2.draw(opengl_printer, colors_double_b);
+					stq1.draw(opengl_printer);
+					stq2.draw(opengl_printer);
 				}
 				else
 				{
 					SubdividedToricQuadrangulation stq(apollota::SimpleSphere(points[i], probe), apollota::SimpleSphere(points[i+1], probe), spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], parts_from_depth);
-					stq.draw(opengl_printer, colors);
+					stq.draw(opengl_printer);
 				}
 			}
 		}
