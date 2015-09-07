@@ -355,6 +355,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "ses");
 	const bool mesh=poh.contains_option(pohw.describe_option("--mesh", "", "flag to draw mesh"));
 	const bool trajectory=poh.contains_option(pohw.describe_option("--trajectory", "", "flag to draw rolling probe center trajectory"));
+	const unsigned int solid_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--solid-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0x0"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -438,7 +439,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				sst.cut(cutting_spheres);
 				sst.transform(sst.center_sphere(), (sst.center_sphere().r-probe)/sst.center_sphere().r);
-				opengl_printer.add_color(0xFF33FF);
+				opengl_printer.add_color(solid_color>0 ? solid_color : 0xFF33FF);
 				sst.draw(opengl_printer, false, mesh);
 			}
 		}
@@ -454,12 +455,12 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), angle_step);
 				if(trajectory)
 				{
-					opengl_printer.add_color(0xFF7700);
+					opengl_printer.add_color(solid_color>0 ? solid_color : 0xFF7700);
 					opengl_printer.add_line_strip(points);
 				}
 				else
 				{
-					opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0x77FF00);
+					opengl_printer.add_color(solid_color>0 ? solid_color : (rolling_descriptor.breaks.empty() ? 0xFFFF00 : 0x77FF00));
 					for(std::size_t i=0;i+1<points.size();i++)
 					{
 						if(rolling_descriptor.breaks.size()==2)
@@ -476,7 +477,7 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 						}
 					}
 
-					opengl_printer.add_color(0x00FFFF);
+					opengl_printer.add_color(solid_color>0 ? solid_color : 0x00FFFF);
 					{
 						SubdividedSphericalTriangulation sst(strip_it->start.tangent, spheres[rolling_descriptor.a_id], spheres[rolling_descriptor.b_id], spheres[strip_it->start.generator], rolling_descriptor.breaks, depth);
 						sst.cut(map_of_generators_cutting_spheres[strip_it->start.generator]);
@@ -499,12 +500,12 @@ void generate_demo(const auxiliaries::ProgramOptionsHandler& poh)
 			const std::vector<apollota::SimplePoint> points=apollota::RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, angle_step);
 			if(trajectory)
 			{
-				opengl_printer.add_color(0xFF7700);
+				opengl_printer.add_color(solid_color>0 ? solid_color : 0xFF7700);
 				opengl_printer.add_line_strip(points);
 			}
 			else
 			{
-				opengl_printer.add_color(rolling_descriptor.breaks.empty() ? 0x00FF00 : 0x00FF77);
+				opengl_printer.add_color(solid_color>0 ? solid_color : (rolling_descriptor.breaks.empty() ? 0x00FF00 : 0x00FF77));
 				for(std::size_t i=0;i+1<points.size();i++)
 				{
 					if(rolling_descriptor.breaks.size()==2)
