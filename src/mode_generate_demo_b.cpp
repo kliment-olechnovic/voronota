@@ -1,5 +1,6 @@
 #include "apollota/spheres_boundary_construction.h"
 #include "apollota/triangulation_queries.h"
+#include "apollota/interpolation.h"
 
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/opengl_printer.h"
@@ -14,8 +15,9 @@ struct EdgeCurveParameters
 	std::vector<apollota::SimplePoint> p;
 	std::vector<double> w;
 
-	EdgeCurveParameters() : valid(false), p(3), w(3, 1)
+	EdgeCurveParameters() : valid(false), p(3), w(3, 1.0)
 	{
+		w[1]=0.0;
 	}
 };
 
@@ -127,15 +129,31 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 		ecp.p[0]=start_point;
 		ecp.p[1]=middle_point.second;
 		ecp.p[2]=end_point;
+		ecp.w[1]=0.0;
+		ecp.valid=true;
 		if(middle_point.first)
 		{
-			//
+			const apollota::SimplePoint plane_normal=apollota::plane_normal_from_three_points<apollota::SimplePoint>(gate_balls[0], gate_balls[1], gate_balls[2]);
+			const int halfspaces[2]={apollota::halfspace_of_point(gate_balls[0], plane_normal, start_sphere), apollota::halfspace_of_point(gate_balls[0], plane_normal, end_sphere)};
+			std::vector<apollota::SimpleSphere> tangent_spheres;
+			if(halfspaces[0]!=halfspaces[1] && halfspaces[0]!=0 && halfspaces[1]!=0)
+			{
+				tangent_spheres=apollota::TangentSphereOfThreeSpheres::calculate(gate_balls[0], gate_balls[1], gate_balls[2]);
+			}
+			else
+			{
+				tangent_spheres=apollota::TangentSphereOfThreeSpheres::calculate(gate_balls[0], gate_balls[1], gate_balls[2], (start_sphere.r+end_sphere.r)/2.0);
+			}
+			for(std::size_t i=0;i<tangent_spheres.size();i++)
+			{
+				const apollota::SimplePoint barycentric_coordinates=calculate_barycentric_coordinates(ecp.p[0], ecp.p[1], ecp.p[2], apollota::SimplePoint(tangent_spheres[i]));
+				if(barycentric_coordinates.x>0.0 && barycentric_coordinates.y>0.0 && barycentric_coordinates.z>0.0)
+				{
+					ecp.w[1]=(barycentric_coordinates.y/2*sqrt(barycentric_coordinates.x*barycentric_coordinates.z));
+					return ecp;
+				}
+			}
 		}
-		else
-		{
-			ecp.w[1]=0.0;
-		}
-		ecp.valid=true;
 	}
 	return ecp;
 }
@@ -228,6 +246,9 @@ void generate_demo_b(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					opengl_printer.add_color(0xFF0000);
 					opengl_printer.add_line_strip(ecp.p);
+//					ecp.w[1]=3.0;
+					opengl_printer.add_color(0xFF00FF);
+					opengl_printer.add_line_strip(apollota::rational_bezier_curve_points(ecp.p, ecp.w, 10));
 				}
 			}
 		}

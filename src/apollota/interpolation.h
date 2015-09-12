@@ -114,13 +114,37 @@ inline SimplePoint bezier_curve_point_de_casteljau(const std::vector<SimplePoint
 	return buffer.at(0);
 }
 
-inline std::vector<SimplePoint> bezier_curve_points_de_casteljau(const std::vector<SimplePoint>& controls, unsigned int n)
+inline std::vector<SimplePoint> bezier_curve_points(const std::vector<SimplePoint>& controls, unsigned int n, const bool de_casteljau=true)
 {
 	std::vector<SimplePoint> result(n+1);
 	for(std::size_t i=0;i<(n+1);i++)
 	{
 		const double t=static_cast<double>(i)/static_cast<double>(n);
-		result[i]=bezier_curve_point_de_casteljau(controls, t);
+		result[i]=(de_casteljau ? bezier_curve_point_de_casteljau(controls, t) : bezier_curve_point(controls, t));
+	}
+	return result;
+}
+
+inline SimplePoint rational_bezier_curve_point(const std::vector<SimplePoint>& controls, const std::vector<double>& weights, const double t)
+{
+	const std::size_t size=std::min(controls.size(), weights.size());
+	SimplePoint numerator;
+	double denominator=0.0;
+	for(std::size_t i=0;i<size;i++)
+	{
+		numerator=numerator+(controls[i]*(bernstein_polynomial(size-1, i, t)*weights[i]));
+		denominator+=(bernstein_polynomial(size-1, i, t)*weights[i]);
+	}
+	return (numerator*(1.0/denominator));
+}
+
+inline std::vector<SimplePoint> rational_bezier_curve_points(const std::vector<SimplePoint>& controls, const std::vector<double>& weights, unsigned int n)
+{
+	std::vector<SimplePoint> result(n+1);
+	for(std::size_t i=0;i<(n+1);i++)
+	{
+		const double t=static_cast<double>(i)/static_cast<double>(n);
+		result[i]=rational_bezier_curve_point(controls, weights, t);
 	}
 	return result;
 }
