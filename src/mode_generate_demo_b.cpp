@@ -14,6 +14,7 @@ struct EdgeCurveParameters
 	bool valid;
 	std::vector<apollota::SimplePoint> p;
 	std::vector<double> w;
+	apollota::SimplePoint reference;
 
 	EdgeCurveParameters() : valid(false), p(3), w(3, 1.0)
 	{
@@ -130,6 +131,7 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 		ecp.p[1]=middle_point.second;
 		ecp.p[2]=end_point;
 		ecp.w[1]=0.0;
+		ecp.reference=ecp.p[1];
 		ecp.valid=true;
 		if(middle_point.first)
 		{
@@ -149,7 +151,8 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 				const apollota::SimplePoint barycentric_coordinates=calculate_barycentric_coordinates(ecp.p[0], ecp.p[1], ecp.p[2], apollota::SimplePoint(tangent_spheres[i]));
 				if(barycentric_coordinates.x>0.0 && barycentric_coordinates.y>0.0 && barycentric_coordinates.z>0.0)
 				{
-					ecp.w[1]=(barycentric_coordinates.y/2*sqrt(barycentric_coordinates.x*barycentric_coordinates.z));
+					ecp.w[1]=(barycentric_coordinates.y/(2*sqrt(barycentric_coordinates.x*barycentric_coordinates.z)));
+					ecp.reference=apollota::SimplePoint(tangent_spheres[i]);
 					return ecp;
 				}
 			}
@@ -238,17 +241,16 @@ void generate_demo_b(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			if(i<vertices_graph[i][j] && selected_vertex_ids.count(vertices_graph[i][j])>0)
 			{
-				opengl_printer.add_color(0x00FF00);
-				opengl_printer.add_line_strip(vertices_vector[i].second, vertices_vector[vertices_graph[i][j]].second);
-
-				EdgeCurveParameters ecp=calculate_edge_curve_parameters(spheres, vertices_vector, apollota::Pair(i, vertices_graph[i][j]));
+//				opengl_printer.add_color(0x00FF00);
+//				opengl_printer.add_line_strip(vertices_vector[i].second, vertices_vector[vertices_graph[i][j]].second);
+				const EdgeCurveParameters ecp=calculate_edge_curve_parameters(spheres, vertices_vector, apollota::Pair(i, vertices_graph[i][j]));
 				if(ecp.valid)
 				{
-					opengl_printer.add_color(0xFF0000);
-					opengl_printer.add_line_strip(ecp.p);
-//					ecp.w[1]=3.0;
+//					opengl_printer.add_color(0xFF0000);
+//					opengl_printer.add_line_strip(ecp.p);
 					opengl_printer.add_color(0xFF00FF);
 					opengl_printer.add_line_strip(apollota::rational_bezier_curve_points(ecp.p, ecp.w, 10));
+//					opengl_printer.add_sphere(apollota::SimpleSphere(ecp.reference, 0.02));
 				}
 			}
 		}
