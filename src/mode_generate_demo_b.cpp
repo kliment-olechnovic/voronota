@@ -39,21 +39,19 @@ std::pair<bool, apollota::Triple> get_common_triple_of_two_quadruples(const apol
 	return std::pair<bool, apollota::Triple>(false, apollota::Triple());
 }
 
-EdgeCurveParameters calculate_edge_curve_parameters(
+std::pair<bool, apollota::SimplePoint> calculate_middle_control_point(
 		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::Triangulation::VerticesVector& vertices_vector,
-		const apollota::Pair& vertices_ids)
+		const apollota::Triple& t,
+		const apollota::SimplePoint& start,
+		const apollota::SimplePoint& end)
 {
 	static const double pi=acos(-1.0);
-	EdgeCurveParameters ecp;
-	const std::pair<bool, apollota::Triple> common_triple=get_common_triple_of_two_quadruples(vertices_vector[vertices_ids.get(0)].first, vertices_vector[vertices_ids.get(1)].first);
-	if(common_triple.first)
+	if(!(spheres[t.get(0)].r==spheres[t.get(1)].r && spheres[t.get(0)].r==spheres[t.get(2)].r))
 	{
-		const apollota::Triple& t=common_triple.second;
-		apollota::SimplePoint p[3]={apollota::SimplePoint(vertices_vector[vertices_ids.get(0)].second), apollota::SimplePoint(vertices_vector[vertices_ids.get(1)].second), apollota::SimplePoint()};
+		const apollota::SimplePoint p[2]={start, end};
 		const apollota::SimplePoint d[2]={(p[1]-p[0]).unit(), (p[0]-p[1]).unit()};
 		apollota::SimplePoint v[2];
-		double a[3]={0.0, 0.0, 0.0};
+		double a[2]={0.0, 0.0};
 		for(int i=0;i<2;i++)
 		{
 			const std::vector<apollota::SimpleSphere> c=apollota::TangentSphereOfThreeSpheres::calculate(
@@ -77,22 +75,57 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 				a[i]=0.0;
 			}
 		}
-		if((a[0]+a[1])<pi)
+
+		if(a[0]==0.0 || a[1]==0.0)
 		{
-			if(a[0]==0.0 || a[1]==0.0)
-			{
-				p[2]=(p[0]+p[1])*0.5;
-			}
-			else
-			{
-				a[2]=pi-(a[0]+a[1]);
-				p[2]=p[0]+(v[0]*((p[1]-p[0]).module()*(sin(a[1]/sin(a[2])))));
-			}
-			ecp.p[0]=p[0];
-			ecp.p[1]=p[2];
-			ecp.p[2]=p[1];
-			ecp.valid=true;
+			return std::make_pair(false, (p[0]+p[1])*0.5);
 		}
+
+		const double a2=pi-(a[0]+a[1]);
+		if(a2>0.0)
+		{
+			const double a2=pi-(a[0]+a[1]);
+			return std::make_pair(true, (p[0]+(v[0]*((p[1]-p[0]).module()*(sin(a[1]/sin(a2)))))));
+		}
+	}
+	return std::make_pair(false, (start+end)*0.5);
+}
+
+apollota::SimplePoint calculate_barycentric_coordinates(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c, const apollota::SimplePoint& p)
+{
+	const apollota::SimplePoint v0=(b-a);
+	const apollota::SimplePoint v1=(c-a);
+	const apollota::SimplePoint v2=(p-a);
+	const double d00=(v0*v0);
+	const double d01=(v0*v1);
+	const double d11=(v1*v1);
+	const double d20=(v2*v0);
+	const double d21=(v2*v1);
+	const double denom=(d00*d11-d01*d01);
+	const double v=(d11*d20-d01*d21)/denom;
+	const double w=(d00*d21-d01*d20)/denom;
+	const double u=1.0-v-w;
+	return apollota::SimplePoint(u, v, w);
+}
+
+EdgeCurveParameters calculate_edge_curve_parameters(
+		const std::vector<apollota::SimpleSphere>& spheres,
+		const apollota::Triangulation::VerticesVector& vertices_vector,
+		const apollota::Pair& vertices_ids)
+{
+	EdgeCurveParameters ecp;
+	const std::pair<bool, apollota::Triple> common_triple=get_common_triple_of_two_quadruples(vertices_vector[vertices_ids.get(0)].first, vertices_vector[vertices_ids.get(1)].first);
+	if(common_triple.first)
+	{
+		const apollota::SimpleSphere& start_sphere=vertices_vector[vertices_ids.get(0)].second;
+		const apollota::SimpleSphere& end_sphere=vertices_vector[vertices_ids.get(1)].second;
+		const apollota::SimplePoint start_point(start_sphere);
+		const apollota::SimplePoint end_point(end_sphere);
+		const std::pair<bool, apollota::SimplePoint> middle_point=calculate_middle_control_point(spheres, common_triple.second, start_point, end_point);
+		ecp.p[0]=start_point;
+		ecp.p[1]=middle_point.second;
+		ecp.p[2]=end_point;
+		ecp.valid=true;
 	}
 	return ecp;
 }
