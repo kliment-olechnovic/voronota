@@ -40,13 +40,14 @@ std::pair<bool, apollota::Triple> get_common_triple_of_two_quadruples(const apol
 }
 
 std::pair<bool, apollota::SimplePoint> calculate_middle_control_point(
-		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::Triple& t,
+		const apollota::SimpleSphere& b0,
+		const apollota::SimpleSphere& b1,
+		const apollota::SimpleSphere& b2,
 		const apollota::SimplePoint& start,
 		const apollota::SimplePoint& end)
 {
 	static const double pi=acos(-1.0);
-	if(!(spheres[t.get(0)].r==spheres[t.get(1)].r && spheres[t.get(0)].r==spheres[t.get(2)].r))
+	if(!(b0.r==b1.r && b0.r==b2.r))
 	{
 		const apollota::SimplePoint p[2]={start, end};
 		const apollota::SimplePoint d[2]={(p[1]-p[0]).unit(), (p[0]-p[1]).unit()};
@@ -55,9 +56,9 @@ std::pair<bool, apollota::SimplePoint> calculate_middle_control_point(
 		for(int i=0;i<2;i++)
 		{
 			const std::vector<apollota::SimpleSphere> c=apollota::TangentSphereOfThreeSpheres::calculate(
-					apollota::SimpleSphere((apollota::SimplePoint(spheres[t.get(0)])-p[i]).unit(), 0.0),
-					apollota::SimpleSphere((apollota::SimplePoint(spheres[t.get(1)])-p[i]).unit(), 0.0),
-					apollota::SimpleSphere((apollota::SimplePoint(spheres[t.get(2)])-p[i]).unit(), 0.0));
+					apollota::SimpleSphere((apollota::SimplePoint(b0)-p[i]).unit(), 0.0),
+					apollota::SimpleSphere((apollota::SimplePoint(b1)-p[i]).unit(), 0.0),
+					apollota::SimpleSphere((apollota::SimplePoint(b2)-p[i]).unit(), 0.0));
 			if(c.size()==1)
 			{
 				v[i]=apollota::SimplePoint(c[0]).unit();
@@ -117,14 +118,23 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 	const std::pair<bool, apollota::Triple> common_triple=get_common_triple_of_two_quadruples(vertices_vector[vertices_ids.get(0)].first, vertices_vector[vertices_ids.get(1)].first);
 	if(common_triple.first)
 	{
+		const apollota::SimpleSphere gate_balls[3]={spheres[common_triple.second.get(0)], spheres[common_triple.second.get(1)], spheres[common_triple.second.get(2)]};
 		const apollota::SimpleSphere& start_sphere=vertices_vector[vertices_ids.get(0)].second;
 		const apollota::SimpleSphere& end_sphere=vertices_vector[vertices_ids.get(1)].second;
 		const apollota::SimplePoint start_point(start_sphere);
 		const apollota::SimplePoint end_point(end_sphere);
-		const std::pair<bool, apollota::SimplePoint> middle_point=calculate_middle_control_point(spheres, common_triple.second, start_point, end_point);
+		const std::pair<bool, apollota::SimplePoint> middle_point=calculate_middle_control_point(gate_balls[0], gate_balls[1], gate_balls[2], start_point, end_point);
 		ecp.p[0]=start_point;
 		ecp.p[1]=middle_point.second;
 		ecp.p[2]=end_point;
+		if(middle_point.first)
+		{
+			//
+		}
+		else
+		{
+			ecp.w[1]=0.0;
+		}
 		ecp.valid=true;
 	}
 	return ecp;
