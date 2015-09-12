@@ -24,6 +24,10 @@ struct EdgeCurveParameters
 
 std::pair<bool, apollota::Triple> get_common_triple_of_two_quadruples(const apollota::Quadruple& q1, const apollota::Quadruple& q2)
 {
+	if(q1==q2)
+	{
+		return std::make_pair(true, q1.exclude(3));
+	}
 	for(unsigned int i=0;i<4;i++)
 	{
 		if(!q2.contains(q1.get(i)))
@@ -31,15 +35,15 @@ std::pair<bool, apollota::Triple> get_common_triple_of_two_quadruples(const apol
 			apollota::Triple t=q1.exclude(i);
 			if(q2.contains(t.get(0)) && q2.contains(t.get(1)) && q2.contains(t.get(2)))
 			{
-				return std::pair<bool, apollota::Triple>(true, t);
+				return std::make_pair(true, t);
 			}
 			else
 			{
-				return std::pair<bool, apollota::Triple>(false, apollota::Triple());
+				return std::make_pair(false, apollota::Triple());
 			}
 		}
 	}
-	return std::pair<bool, apollota::Triple>(false, apollota::Triple());
+	return std::make_pair(false, apollota::Triple());
 }
 
 std::pair<bool, apollota::SimplePoint> calculate_middle_control_point(
