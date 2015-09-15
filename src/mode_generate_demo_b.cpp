@@ -209,18 +209,18 @@ void generate_demo_b(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const apollota::Pair& pair=pairs_vertices_it->first;
 		const std::set<std::size_t>& pair_vertices_set=pairs_vertices_it->second;
-		std::map< std::size_t, std::vector<std::size_t> > pair_vertices_graph;
+		std::map< std::size_t, std::set<std::size_t> > pair_vertices_graph;
 		for(std::set<std::size_t>::const_iterator pair_vertices_it=pair_vertices_set.begin();pair_vertices_it!=pair_vertices_set.end();++pair_vertices_it)
 		{
 			const std::size_t id1=(*pair_vertices_it);
 			const std::vector<std::size_t>& all_neighhbors=vertices_graph[id1];
-			std::vector<std::size_t>& selected_neighbors=pair_vertices_graph[id1];
+			std::set<std::size_t>& selected_neighbors=pair_vertices_graph[id1];
 			for(std::vector<std::size_t>::const_iterator all_neighhbors_it=all_neighhbors.begin();all_neighhbors_it!=all_neighhbors.end();++all_neighhbors_it)
 			{
 				const std::size_t id2=(*all_neighhbors_it);
 				if(id1!=id2 && pair_vertices_set.count(id2)>0)
 				{
-					selected_neighbors.push_back(id2);
+					selected_neighbors.insert(id2);
 				}
 			}
 			if(selected_neighbors.size()>2)
