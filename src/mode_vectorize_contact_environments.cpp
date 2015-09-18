@@ -20,16 +20,31 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 
 	const std::string names_file=poh.argument<std::string>(pohw.describe_option("--names-file", "string", "file path to environment names list", true), "");
 	const bool binarize=poh.contains_option(pohw.describe_option("--binarize", "", "flag to binarize output"));
+	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to use inter-residue contacts"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
+	}
+	if(inter_residue)
+	{
+		std::map<CRADsPair, double> map_of_reduced_contacts;
+		for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			const CRADsPair& raw_crads=it->first;
+			const CRADsPair crads(raw_crads.a.without_atom(), raw_crads.b.without_atom());
+			if(!(crads.a==crads.b))
+			{
+				map_of_reduced_contacts[crads]=it->second;
+			}
+		}
+		map_of_contacts=map_of_reduced_contacts;
 	}
 
 	std::set<CRAD> refined_set_of_names;
@@ -41,7 +56,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 		}
 		for(std::set<CRAD>::const_iterator it=set_of_names.begin();it!=set_of_names.end();++it)
 		{
-			refined_set_of_names.insert(generalize_crad(*it));
+			refined_set_of_names.insert(inter_residue ? generalize_crad(*it).without_atom() : generalize_crad(*it));
 		}
 	}
 
