@@ -10,6 +10,12 @@ namespace
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
+std::string generate_generalized_crad_file_name(const CRAD& crad, const std::string& prefix)
+{
+	const CRAD generalized_crad=generalize_crad(crad);
+	return (prefix+generalized_crad.resName+"_"+generalized_crad.name);
+}
+
 }
 
 void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& poh)
@@ -19,8 +25,11 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 	pohw.describe_io("stdout", false, true, "table of environments");
 
 	const std::string names_file=poh.argument<std::string>(pohw.describe_option("--names-file", "string", "file path to environment names list", true), "");
-	const bool binarize=poh.contains_option(pohw.describe_option("--binarize", "", "flag to binarize output"));
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to use inter-residue contacts"));
+	const bool normalize=poh.contains_option(pohw.describe_option("--normalize", "", "flag to normalize output"));
+	const bool binarize=poh.contains_option(pohw.describe_option("--binarize", "", "flag to binarize output"));
+	const std::string output_files_prefix=poh.argument<std::string>(pohw.describe_option("--output-files-prefix", "string", "file path prefix for per-type output"), "");
+	const bool append=poh.contains_option(pohw.describe_option("--append", "", "flag to append to per-type output files"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -94,26 +103,62 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 		}
 	}
 
+	std::map<std::string, std::ofstream*> map_of_output_file_streams;
+
 	for(std::map<CRAD, std::vector<double> >::const_iterator it=map_of_environments.begin();it!=map_of_environments.end();++it)
 	{
 		const CRAD& crad=it->first;
 		const std::vector<double>& environment=it->second;
-		int environment_diversity=0;
+		double sum_of_areas=0.0;
 		for(std::size_t i=0;i<environment.size();i++)
 		{
-			if(environment[i]>0.0)
-			{
-				environment_diversity++;
-			}
+			sum_of_areas+=environment[i];
 		}
-		if(environment_diversity>0)
+		if(sum_of_areas>0.0)
 		{
-			std::cout << crad << " " << generalize_crad(crad) << " " << environment_diversity;
+			std::cout << crad;
 			for(std::size_t i=0;i<environment.size();i++)
 			{
-				std::cout << " " << (binarize ? (environment[i]>0.0 ? 1.0 : 0.0) : environment[i]);
+				double output_value=environment[i];
+				if(binarize)
+				{
+					output_value=(output_value>0.0 ? 1.0 : 0.0);
+				}
+				else if(normalize)
+				{
+					output_value=(output_value/sum_of_areas);
+				}
+				std::cout << " " << output_value;
 			}
 			std::cout << "\n";
+			if(!output_files_prefix.empty())
+			{
+				const std::string output_file_name=generate_generalized_crad_file_name(crad, output_files_prefix);
+				std::map<std::string, std::ofstream*>::iterator map_of_output_file_streams_it=map_of_output_file_streams.find(output_file_name);
+				if(map_of_output_file_streams_it==map_of_output_file_streams.end())
+				{
+					map_of_output_file_streams_it=map_of_output_file_streams.insert(std::make_pair(output_file_name, new std::ofstream(output_file_name.c_str(), (append ? std::ios::app : std::ios::out)))).first;
+				}
+				std::ofstream& foutput=(*(map_of_output_file_streams_it->second));
+				for(std::size_t i=0;i<environment.size();i++)
+				{
+					double output_value=environment[i];
+					if(binarize)
+					{
+						output_value=(output_value>0.0 ? 1.0 : 0.0);
+					}
+					else if(normalize)
+					{
+						output_value=(output_value/sum_of_areas);
+					}
+					foutput << output_value << ((i+1<environment.size()) ? " " : "\n");
+				}
+			}
 		}
+	}
+
+	for(std::map<std::string, std::ofstream*>::iterator it=map_of_output_file_streams.begin();it!=map_of_output_file_streams.end();++it)
+	{
+		delete (it->second);
 	}
 }
