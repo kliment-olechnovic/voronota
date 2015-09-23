@@ -30,6 +30,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_points(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
+void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -74,6 +75,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("vectorize-contacts", ModeDescriptor::FunctionPtr(vectorize_contacts)));
 	list_of_modes.push_back(ModeDescriptor("vectorize-points", ModeDescriptor::FunctionPtr(vectorize_points)));
 	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
+	list_of_modes.push_back(ModeDescriptor("vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
 	return list_of_modes;
 }
 
