@@ -140,6 +140,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 					map_of_output_file_streams_it=map_of_output_file_streams.insert(std::make_pair(output_file_name, new std::ofstream(output_file_name.c_str(), (append ? std::ios::app : std::ios::out)))).first;
 				}
 				std::ofstream& foutput=(*(map_of_output_file_streams_it->second));
+				foutput << std::fixed;
 				for(std::size_t i=0;i<environment.size();i++)
 				{
 					double output_value=environment[i];
@@ -150,6 +151,21 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 					else if(normalize)
 					{
 						output_value=(output_value/sum_of_areas);
+					}
+					if(binarize)
+					{
+						foutput.precision(0);
+					}
+					else
+					{
+						if(fabs(output_value)<0.005)
+						{
+							foutput.precision(0);
+						}
+						else
+						{
+							foutput.precision(2);
+						}
 					}
 					foutput << output_value << ((i+1<environment.size()) ? " " : "\n");
 				}
