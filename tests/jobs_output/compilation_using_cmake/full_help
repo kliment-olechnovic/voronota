@@ -25,6 +25,7 @@ compare-contacts
 vectorize-contacts
 vectorize-points
 score-scores
+vectorize-contact-environments
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -321,4 +322,15 @@ Command 'score-scores' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  pairs of reference and testable scores files
 stdout  ->  global results
+
+Command 'vectorize-contact-environments' options:
+--names-file                    string   *  file path to environment names list
+--inter-residue                             flag to use inter-residue contacts
+--normalize                                 flag to normalize output
+--binarize                                  flag to binarize output
+--output-files-prefix           string      file path prefix for per-type output
+--append                                    flag to append to per-type output files
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
+stdout  ->  table of environments
 

@@ -145,6 +145,11 @@
 <li><a href="#input-stream-22">Input stream:</a></li>
 <li><a href="#output-stream-22">Output stream:</a></li>
 </ul></li>
+<li><a href="#command-vectorize-contact-environments">Command 'vectorize-contact-environments'</a><ul>
+<li><a href="#command-line-arguments-23">Command line arguments:</a></li>
+<li><a href="#input-stream-23">Input stream:</a></li>
+<li><a href="#output-stream-23">Output stream:</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
 <li><a href="#cad-score-method-wrapper-script">CAD-score method wrapper script</a></li>
@@ -287,6 +292,7 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <li>vectorize-contacts</li>
 <li>vectorize-points</li>
 <li>score-scores</li>
+<li>vectorize-contact-environments</li>
 </ul>
 <h2 id="command-get-balls-from-atoms-file"><a href="#TOC">Command 'get-balls-from-atoms-file'</a></h2>
 <h3 id="command-line-arguments"><a href="#TOC">Command line arguments:</a></h3>
@@ -1902,6 +1908,66 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>pairs of reference and testable scores files</p>
 <h3 id="output-stream-22"><a href="#TOC">Output stream:</a></h3>
 <p>global results</p>
+<h2 id="command-vectorize-contact-environments"><a href="#TOC">Command 'vectorize-contact-environments'</a></h2>
+<h3 id="command-line-arguments-23"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--names-file</td>
+<td align="left">string</td>
+<td align="left">*</td>
+<td align="left">file path to environment names list</td>
+</tr>
+<tr class="even">
+<td align="left">--inter-residue</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use inter-residue contacts</td>
+</tr>
+<tr class="odd">
+<td align="left">--normalize</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to normalize output</td>
+</tr>
+<tr class="even">
+<td align="left">--binarize</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to binarize output</td>
+</tr>
+<tr class="odd">
+<td align="left">--output-files-prefix</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path prefix for per-type output</td>
+</tr>
+<tr class="even">
+<td align="left">--append</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to append to per-type output files</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-23"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area')</p>
+<h3 id="output-stream-23"><a href="#TOC">Output stream:</a></h3>
+<p>table of environments</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="cad-score-method-wrapper-script"><a href="#TOC">CAD-score method wrapper script</a></h2>
 <p>The 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script command line arguments are:</p>
