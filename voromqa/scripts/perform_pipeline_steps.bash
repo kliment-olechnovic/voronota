@@ -354,3 +354,9 @@ then
 	submit_step secondary_structure_energy_profile concatenated_secondary_structure_energy_profiles \
 	  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_secondary_structure_energy_profiles -i $OUTPUTDIR/scheduling/input_list_for__concatenated_secondary_structure_energy_profiles"
 fi
+
+if [[ $STEPNAMES == *"[vectorized_environments]"* ]]
+then
+	submit_step raw_contacts vectorized_environments \
+	  "$BINDIR/calc_vectorized_environments_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+fi
