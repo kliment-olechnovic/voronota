@@ -360,3 +360,14 @@ then
 	submit_step raw_contacts vectorized_environments \
 	  "$BINDIR/calc_vectorized_environments_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
 fi
+
+if [[ $STEPNAMES == *"[concatenated_vectorized_environments]"* ]]
+then
+	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/vectorized_environments_by_residue/XXXXXXX_|' > $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments
+	for RESNAME in ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL
+	do
+		cat $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments | sed "s/XXXXXXX/$RESNAME/" > $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME
+		submit_step vectorized_environments concatenated_vectorized_environments \
+		  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_vectorized_environments__for_$RESNAME -i $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME"
+	done
+fi
