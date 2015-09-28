@@ -8,8 +8,9 @@ OUTPUT_FILE=""
 HEADER=false
 SORT=false
 TABULATE=false
+COMPRESS=false
 
-while getopts "i:o:hst" OPTION
+while getopts "i:o:hstz" OPTION
 do
 	case $OPTION in
 	i)
@@ -26,6 +27,9 @@ do
 		;;
 	t)
 		TABULATE=true
+		;;
+	z)
+		COMPRESS=true
 		;;
 	esac
 done
@@ -58,3 +62,8 @@ then
 fi
 
 mv $TMPDIR/output $OUTPUT_FILE
+
+if $COMPRESS
+then
+	bzip2 $OUTPUT_FILE
+fi

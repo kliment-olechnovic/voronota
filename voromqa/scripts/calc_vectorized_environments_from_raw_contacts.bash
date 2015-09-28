@@ -17,7 +17,8 @@ mkdir -p $WORKDIR/vectorized_environments_by_residue
 
 cat $WORKDIR/raw_contacts \
 | $BINDIR/voronota query-contacts \
-  --match-min-seq-sep 2 \
+  --match-min-seq-sep 7 \
+  --no-solvent \
 | $BINDIR/voronota vectorize-contact-environments \
   --names-file $BINDIR/environment_names \
   --inter-residue \
