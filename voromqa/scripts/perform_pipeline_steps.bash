@@ -368,6 +368,6 @@ then
 	do
 		cat $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments | sed "s/XXXXXXX/$RESNAME/" > $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME
 		submit_step vectorized_environments concatenated_vectorized_environments \
-		  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_vectorized_environments__for_$RESNAME -i $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME"
+		  "$BINDIR/concatenate_files_from_list_of_files.bash -z -o $OUTPUTDIR/concatenated_vectorized_environments__for_$RESNAME -i $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME"
 	done
 fi
