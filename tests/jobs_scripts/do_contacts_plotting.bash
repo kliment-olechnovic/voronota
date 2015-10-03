@@ -20,4 +20,6 @@ cat $INPUTDIR/complex/target.pdb \
   --no-contraction \
   --svg-output $SUBDIR/plot.svg \
   --axis-output $SUBDIR/plot_axis \
-  --points-output $SUBDIR/plot_points
+  --points-output $SUBDIR/plot_points \
+  --patterns-output $SUBDIR/plot_patterns \
+  --binarize-patterns
