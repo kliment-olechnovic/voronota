@@ -371,3 +371,16 @@ then
 		  "$BINDIR/concatenate_files_from_list_of_files.bash -z -o $OUTPUTDIR/concatenated_vectorized_environments__for_$RESNAME -i $OUTPUTDIR/scheduling/input_list_for__concatenated_vectorized_environments__for_$RESNAME"
 	done
 fi
+
+if [[ $STEPNAMES == *"[contact_plot_patterns]"* ]]
+then
+	submit_step raw_contacts contact_plot_patterns \
+	  "$BINDIR/calc_contact_plot_patterns_from_raw_contacts.bash -d" $OUTPUTDIR/scheduling/input_list_for__entries_operations
+fi
+
+if [[ $STEPNAMES == *"[concatenated_contact_plot_patterns]"* ]]
+then
+	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/contact_plot_patterns|' > $OUTPUTDIR/scheduling/input_list_for__concatenated_contact_plot_patterns
+	submit_step contact_plot_patterns concatenated_contact_plot_patterns \
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_contact_plot_patterns -i $OUTPUTDIR/scheduling/input_list_for__concatenated_contact_plot_patterns"
+fi
