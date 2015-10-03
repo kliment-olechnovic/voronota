@@ -228,11 +228,12 @@ Command 'plot-contacts' options:
 --default-color                 string      color string in SVG-acceptable format
 --adjuncts-rgb                              flag to use RGB color values from adjuncts
 --no-contraction                            flag to not contract gaps
+--svg-output                    string      file path to output plot of contacts in SVG format
 --axis-output                   string      file path to output axis
 --points-output                 string      file path to output points
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
-stdout  ->  plot of contacts in SVG format
+stdout  ->  nothing
 
 Command 'score-contacts-potential' options:
 --input-file-list                           flag to read file list from stdin

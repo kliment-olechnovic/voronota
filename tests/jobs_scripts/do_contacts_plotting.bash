@@ -13,5 +13,11 @@ cat $INPUTDIR/complex/target.pdb \
 | $VORONOTA query-contacts --match-min-seq-sep 2 --match-max-seq-sep 10 --set-adjuncts 'r=0;g=1;b=1' \
 | $VORONOTA query-contacts --match-min-seq-sep 11 --set-adjuncts 'r=1;g=0;b=0' \
 | $VORONOTA query-contacts --no-same-chain --set-adjuncts 'r=1;g=0;b=1' \
-| $VORONOTA plot-contacts --background-color black --default-color white --adjuncts-rgb --no-contraction --axis-output $SUBDIR/plot_axis --points-output $SUBDIR/plot_points \
-> $SUBDIR/plot.svg
+| $VORONOTA plot-contacts \
+  --background-color black \
+  --default-color white \
+  --adjuncts-rgb \
+  --no-contraction \
+  --svg-output $SUBDIR/plot.svg \
+  --axis-output $SUBDIR/plot_axis \
+  --points-output $SUBDIR/plot_points
