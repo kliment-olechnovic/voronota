@@ -20,12 +20,13 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
-	pohw.describe_io("stdout", false, true, "plot of contacts in SVG format");
+	pohw.describe_io("stdout", false, true, "nothing");
 
 	const std::string background_color=poh.argument<std::string>(pohw.describe_option("--background-color", "string", "color string in SVG-acceptable format"), "#000000");
 	const std::string default_color=poh.argument<std::string>(pohw.describe_option("--default-color", "string", "color string in SVG-acceptable format"), "#FFFFFF");
 	const bool adjuncts_rgb=poh.contains_option(pohw.describe_option("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
 	const bool no_contraction=poh.contains_option(pohw.describe_option("--no-contraction", "", "flag to not contract gaps"));
+	const std::string svg_output=poh.argument<std::string>(pohw.describe_option("--svg-output", "string", "file path to output plot of contacts in SVG format"), "");
 	const std::string axis_output=poh.argument<std::string>(pohw.describe_option("--axis-output", "string", "file path to output axis"), "");
 	const std::string points_output=poh.argument<std::string>(pohw.describe_option("--points-output", "string", "file path to output points"), "");
 
@@ -81,25 +82,32 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::size_t max_coordinate=(axis.rbegin()->second+1);
 
-	SVGWriter svg(max_coordinate, max_coordinate);
-	svg.add_rect(0, 0, max_coordinate, max_coordinate, background_color);
-	for(std::map<CRADsPair, ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	if(!svg_output.empty())
 	{
-		const std::size_t x=axis[it->first.a];
-		const std::size_t y=axis[it->first.b];
-		std::string color=default_color;
-		const std::map<std::string, double>& adjuncts=it->second.props.adjuncts;
-		if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
+		std::ofstream output(svg_output.c_str(), std::ios::out);
+		if(output.good())
 		{
-			const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
-			const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
-			const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
-			color=SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
+			SVGWriter svg(max_coordinate, max_coordinate);
+			svg.add_rect(0, 0, max_coordinate, max_coordinate, background_color);
+			for(std::map<CRADsPair, ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			{
+				const std::size_t x=axis[it->first.a];
+				const std::size_t y=axis[it->first.b];
+				std::string color=default_color;
+				const std::map<std::string, double>& adjuncts=it->second.props.adjuncts;
+				if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
+				{
+					const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
+					const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
+					const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
+					color=SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
+				}
+				svg.add_rect(x, y, 1, 1, color);
+				svg.add_rect(y, x, 1, 1, color);
+			}
+			svg.write(output);
 		}
-		svg.add_rect(x, y, 1, 1, color);
-		svg.add_rect(y, x, 1, 1, color);
 	}
-	svg.write(std::cout);
 
 	if(!axis_output.empty())
 	{
