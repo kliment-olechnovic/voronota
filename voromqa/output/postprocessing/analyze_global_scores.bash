@@ -7,7 +7,7 @@ MAINSCORE=$3
 
 if [ -z "$MAINSCORE" ]
 then
-	MAINSCORE="qscore_atom"
+	MAINSCORE="qscore_atom_we"
 fi
 
 function analyze
