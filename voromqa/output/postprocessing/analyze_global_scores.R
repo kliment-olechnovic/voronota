@@ -100,6 +100,8 @@ if(plot_per_target)
 }
 
 r=c();
+models_testscore_zscores=c();
+models_refscorescore_zscores=c();
 
 for(target in targets)
 {
@@ -134,6 +136,9 @@ for(target in targets)
 			plot(x=st$refscore, y=st$testscore, xlim=refscore_limits, ylim=testscore_limits,
 					xlab="Reference score", ylab="Test score", main=paste(target, "       cor=", format(cor_testscore_vs_refscore, digits=2), sep=""));
 		}
+		
+		models_testscore_zscores=c(models_testscore_zscores, (st$testscore[sel_models]-mean(st$testscore[sel_models]))/sd(st$testscore[sel_models]));
+		models_refscorescore_zscores=c(models_refscorescore_zscores, (st$refscore[sel_models]-mean(st$refscore[sel_models]))/sd(st$refscore[sel_models]));
 	}
 }
 
@@ -149,7 +154,6 @@ r_summary=data.frame(
 
 write.table(r_summary, file=paste(output_prefix, "results_summary", sep=""), row.names=FALSE, quote=FALSE);
 
-
 pdf(paste(output_prefix, "plots_summary.pdf", sep=""));
 
 testscore_range=c(min(c(r$target_testscore, r$model_best_testscore)), max(c(r$target_testscore, r$model_best_testscore)));
@@ -160,4 +164,14 @@ refscore_range=c(min(c(r$model_best_refscore, r$model_refscore_of_best_testscore
 plot(x=refscore_range, y=refscore_range, type="l", xlab="Best reference score", ylab="Reference score corresponding to the best test score", main="");
 points(r$model_best_refscore, r$model_refscore_of_best_testscore);
 
-plot(t$refscore, t$testscore, xlab="Reference score", ylab="Test score", main="");
+plot(t$refscore, t$testscore, xlab="Reference score", ylab="Test score", main="", col=densCols(t$refscore, t$testscore));
+
+plot(models_refscorescore_zscores, models_testscore_zscores, xlab="Reference score Z-score", ylab="Test score Z-score", main="", col=densCols(models_refscorescore_zscores, models_testscore_zscores));
+
+
+png(paste(output_prefix, "correlation_of_scores.png", sep=""), height=5, width=6, units="in", res=300);
+t_without_targets=t[which(t$model!="target"),];
+plot(t_without_targets$refscore, t_without_targets$testscore, xlab="Reference score", ylab="Test score", main=paste("cor. =", cor(t_without_targets$refscore, t_without_targets$testscore)), col=densCols(t_without_targets$refscore, t_without_targets$testscore));
+
+png(paste(output_prefix, "correlation_of_zscores.png", sep=""), height=5, width=6, units="in", res=300);
+plot(models_refscorescore_zscores, models_testscore_zscores, xlab="Reference score Z-score", ylab="Test score Z-score", main=paste("cor. =", cor(models_refscorescore_zscores, models_testscore_zscores)), col=densCols(models_refscorescore_zscores, models_testscore_zscores));
