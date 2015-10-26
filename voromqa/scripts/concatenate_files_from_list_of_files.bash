@@ -9,8 +9,9 @@ HEADER=false
 SORT=false
 TABULATE=false
 COMPRESS=false
+ANNOTATE=false
 
-while getopts "i:o:hstz" OPTION
+while getopts "i:o:hstza" OPTION
 do
 	case $OPTION in
 	i)
@@ -31,10 +32,22 @@ do
 	z)
 		COMPRESS=true
 		;;
+	a)
+		ANNOTATE=true
+		;;
 	esac
 done
 
-(cat $INPUT_FILE_LIST | xargs -L 100 -P 1 cat) > $TMPDIR/output
+if $ANNOTATE
+then
+	cat $INPUT_FILE_LIST | while read INPUT_FILE
+	do
+		echo "${INPUT_FILE}:"
+		cat $INPUT_FILE
+	done > $TMPDIR/output
+else
+	(cat $INPUT_FILE_LIST | xargs -L 100 -P 1 cat) > $TMPDIR/output
+fi
 
 if $HEADER
 then

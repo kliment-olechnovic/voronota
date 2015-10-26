@@ -382,5 +382,5 @@ if [[ $STEPNAMES == *"[concatenated_contact_plot_patterns]"* ]]
 then
 	cat $OUTPUTDIR/list_of_balls | sed 's|/balls$|/contact_plot_patterns|' > $OUTPUTDIR/scheduling/input_list_for__concatenated_contact_plot_patterns
 	submit_step contact_plot_patterns concatenated_contact_plot_patterns \
-	  "$BINDIR/concatenate_files_from_list_of_files.bash -o $OUTPUTDIR/concatenated_contact_plot_patterns -i $OUTPUTDIR/scheduling/input_list_for__concatenated_contact_plot_patterns"
+	  "$BINDIR/concatenate_files_from_list_of_files.bash -a -o $OUTPUTDIR/concatenated_contact_plot_patterns -i $OUTPUTDIR/scheduling/input_list_for__concatenated_contact_plot_patterns"
 fi
