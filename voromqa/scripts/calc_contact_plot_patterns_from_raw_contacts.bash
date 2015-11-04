@@ -25,5 +25,5 @@ cat $WORKDIR/raw_contacts \
   --no-contraction \
   --patterns-output $WORKDIR/contact_plot_patterns
 
-( cat $WORKDIR/contact_plot_patterns | tr '\n' ' ' ; echo ) > $WORKDIR/contact_plot_patterns_in_line
+( cat $WORKDIR/contact_plot_patterns | awk '{print $3}' | tr '\n' ' ' ; echo ) > $WORKDIR/contact_plot_patterns_in_line
 mv $WORKDIR/contact_plot_patterns_in_line $WORKDIR/contact_plot_patterns

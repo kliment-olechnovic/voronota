@@ -114,6 +114,16 @@ std::bitset<49> get_pattern_from_coordinates(
 	return pattern;
 }
 
+std::map<int, CRAD> construct_reversed_axis_map(const std::map<CRAD, std::size_t>& axis)
+{
+	std::map<int, CRAD> reversed_axis_map;
+	for(std::map<CRAD, std::size_t>::const_iterator axis_it=axis.begin();axis_it!=axis.end();++axis_it)
+	{
+		reversed_axis_map[static_cast<int>(axis_it->second)]=axis_it->first;
+	}
+	return reversed_axis_map;
+}
+
 }
 
 void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -234,6 +244,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const std::map< int, std::pair<int, int> > map_of_chains_intervals=construct_map_of_chains_intervals(axis);
 			const std::set< std::pair<int, int> > points=collect_points(axis, map_of_contacts);
+			std::map<int, CRAD> reversed_axis_map=construct_reversed_axis_map(axis);
 			for(std::set< std::pair<int, int> >::const_iterator points_it=points.begin();points_it!=points.end();++points_it)
 			{
 				const std::bitset<49> pattern=get_pattern_from_coordinates(map_of_chains_intervals, points, points_it->first, points_it->second);
@@ -245,7 +256,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 					else
 					{
-						output << pattern.to_ulong();
+						output << reversed_axis_map[points_it->first] << " " << reversed_axis_map[points_it->second] << " " << pattern.to_ulong();
 					}
 					output << "\n";
 				}
