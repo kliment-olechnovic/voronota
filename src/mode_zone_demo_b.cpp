@@ -1,6 +1,6 @@
 #include "apollota/spheres_boundary_construction.h"
 #include "apollota/triangulation_queries.h"
-#include "apollota/interpolation.h"
+#include "apollota/polynomial_curves.h"
 
 #include "auxiliaries/io_utilities.h"
 #include "auxiliaries/opengl_printer.h"
@@ -99,23 +99,6 @@ std::pair<bool, apollota::SimplePoint> calculate_middle_control_point(
 	return std::make_pair(false, (start+end)*0.5);
 }
 
-apollota::SimplePoint calculate_barycentric_coordinates(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c, const apollota::SimplePoint& p)
-{
-	const apollota::SimplePoint v0=(b-a);
-	const apollota::SimplePoint v1=(c-a);
-	const apollota::SimplePoint v2=(p-a);
-	const double d00=(v0*v0);
-	const double d01=(v0*v1);
-	const double d11=(v1*v1);
-	const double d20=(v2*v0);
-	const double d21=(v2*v1);
-	const double denom=(d00*d11-d01*d01);
-	const double v=(d11*d20-d01*d21)/denom;
-	const double w=(d00*d21-d01*d20)/denom;
-	const double u=1.0-v-w;
-	return apollota::SimplePoint(u, v, w);
-}
-
 EdgeCurveParameters calculate_edge_curve_parameters(
 		const std::vector<apollota::SimpleSphere>& spheres,
 		const apollota::Triangulation::VerticesVector& vertices_vector,
@@ -152,7 +135,7 @@ EdgeCurveParameters calculate_edge_curve_parameters(
 			}
 			for(std::size_t i=0;i<tangent_spheres.size();i++)
 			{
-				const apollota::SimplePoint barycentric_coordinates=calculate_barycentric_coordinates(ecp.p[0], ecp.p[1], ecp.p[2], apollota::SimplePoint(tangent_spheres[i]));
+				const apollota::SimplePoint barycentric_coordinates=apollota::barycentric_coordinates(ecp.p[0], ecp.p[1], ecp.p[2], apollota::SimplePoint(tangent_spheres[i]));
 				if(barycentric_coordinates.x>0.0 && barycentric_coordinates.y>0.0 && barycentric_coordinates.z>0.0)
 				{
 					ecp.w[1]=(barycentric_coordinates.y/(2*sqrt(barycentric_coordinates.x*barycentric_coordinates.z)));

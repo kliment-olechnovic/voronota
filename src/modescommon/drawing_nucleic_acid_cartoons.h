@@ -1,7 +1,7 @@
 #ifndef DRAWING_NUCLEIC_ACID_CARTOONS_H_
 #define DRAWING_NUCLEIC_ACID_CARTOONS_H_
 
-#include "../apollota/interpolation.h"
+#include "../apollota/polynomial_curves.h"
 
 #include "drawing_utilities.h"
 #include "drawing_cylinder.h"
