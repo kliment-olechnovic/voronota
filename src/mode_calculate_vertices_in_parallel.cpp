@@ -136,8 +136,6 @@ public:
 		}
 		else
 		{
-			const int QUADRUPLES_MAP_DATA_TAG=1;
-
 			result.input_spheres.clear();
 			std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
 			{
@@ -165,6 +163,7 @@ public:
 			result.number_of_initialized_parts=distributed_ids.size();
 
 			{
+				const int QUADRUPLES_MAP_DATA_TAG=1;
 				std::vector<double> plain_vector;
 				if(mpi_handle.rank()==0)
 				{
@@ -208,7 +207,7 @@ private:
 	class MPIHandle
 	{
 	public:
-		MPIHandle(const std::vector<std::string>& argv) :
+		explicit MPIHandle(const std::vector<std::string>& argv) :
 			abort_on_destruction_(true),
 			argc_(static_cast<int>(argv.size())),
 			argv_(0),
@@ -265,6 +264,9 @@ private:
 		}
 
 	private:
+		MPIHandle(const MPIHandle&);
+		MPIHandle& operator=(const MPIHandle&);
+
 		bool abort_on_destruction_;
 		int argc_;
 		char** argv_;
