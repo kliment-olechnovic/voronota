@@ -249,6 +249,7 @@ public:
 
 		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
 		{
+			const std::string atom_site_prefix="_atom_site.";
 			Data data;
 			while(file_stream.good())
 			{
@@ -258,7 +259,7 @@ public:
 				{
 					std::vector<std::string> header;
 					token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
-					while(token_status && token.find("_atom_site.")==0)
+					while(token_status && token.compare(0, atom_site_prefix.size(), atom_site_prefix)==0)
 					{
 						header.push_back(token);
 						token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
@@ -405,6 +406,7 @@ public:
 
 		static Data read_data_from_file_stream(std::istream& file_stream)
 		{
+			const std::string header_prefix="  #  RESIDUE AA STRUCTURE";
 			Data data;
 			bool records_started=false;
 			while(file_stream.good())
@@ -415,7 +417,7 @@ public:
 				{
 					if(!records_started)
 					{
-						if(line.find("  #  RESIDUE AA STRUCTURE")==0)
+						if(line.compare(0, header_prefix.size(), header_prefix)==0)
 						{
 							records_started=true;
 						}
