@@ -210,7 +210,7 @@ public:
 								}
 								split_remainders[minimal_distance_to_group.second].push_back(*full_remainder_it);
 							}
-							for(std::map<int, ConstrainedContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();split_remainders_it++)
+							for(std::map<int, ConstrainedContactRemainder::Remainder>::const_iterator split_remainders_it=split_remainders.begin();split_remainders_it!=split_remainders.end();++split_remainders_it)
 							{
 								if(split_remainders_it->first!=0)
 								{
