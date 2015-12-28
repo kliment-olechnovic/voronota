@@ -251,7 +251,7 @@ OutputPointType any_normal_of_vector(const InputPointType& a)
 	}
 	else
 	{
-		return custom_point<OutputPointType>(1, 0, 0);
+		return custom_point<OutputPointType>(0, 0, 1);
 	}
 }
 

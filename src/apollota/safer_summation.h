@@ -8,8 +8,8 @@ inline double safer_sum(const double v0, const double v1)
 {
 	double sum=0.0;
 	double c=0.0;
-	double y=0.0;
-	double t=0.0;
+	double y;
+	double t;
 
 	y=v0-c;
 	t=sum+y;
@@ -17,9 +17,7 @@ inline double safer_sum(const double v0, const double v1)
 	sum=t;
 
 	y=v1-c;
-	t=sum+y;
-	c=(t-sum)-y;
-	sum=t;
+	sum=sum+y;
 
 	return sum;
 }
@@ -28,8 +26,8 @@ inline double safer_sum(const double v0, const double v1, const double v2)
 {
 	double sum=0.0;
 	double c=0.0;
-	double y=0.0;
-	double t=0.0;
+	double y;
+	double t;
 
 	y=v0-c;
 	t=sum+y;
@@ -42,9 +40,7 @@ inline double safer_sum(const double v0, const double v1, const double v2)
 	sum=t;
 
 	y=v2-c;
-	t=sum+y;
-	c=(t-sum)-y;
-	sum=t;
+	sum=sum+y;
 
 	return sum;
 }
@@ -53,8 +49,8 @@ inline double safer_sum(const double v0, const double v1, const double v2, const
 {
 	double sum=0.0;
 	double c=0.0;
-	double y=0.0;
-	double t=0.0;
+	double y;
+	double t;
 
 	y=v0-c;
 	t=sum+y;
@@ -72,9 +68,7 @@ inline double safer_sum(const double v0, const double v1, const double v2, const
 	sum=t;
 
 	y=v3-c;
-	t=sum+y;
-	c=(t-sum)-y;
-	sum=t;
+	sum=sum+y;
 
 	return sum;
 }
@@ -83,8 +77,8 @@ inline double safer_sum(const double v0, const double v1, const double v2, const
 {
 	double sum=0.0;
 	double c=0.0;
-	double y=0.0;
-	double t=0.0;
+	double y;
+	double t;
 
 	y=v0-c;
 	t=sum+y;
@@ -112,9 +106,7 @@ inline double safer_sum(const double v0, const double v1, const double v2, const
 	sum=t;
 
 	y=v5-c;
-	t=sum+y;
-	c=(t-sum)-y;
-	sum=t;
+	sum=sum+y;
 
 	return sum;
 }
