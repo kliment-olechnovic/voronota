@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 SUBDIR=$OUTPUTDIR/contacts_plotting
 mkdir -p $SUBDIR
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 SUBDIR=$OUTPUTDIR/points_vectorizing
 mkdir -p $SUBDIR
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 DIR=$OUTPUTDIR/basic_triangulation_and_contacts
 
 ##############################################################

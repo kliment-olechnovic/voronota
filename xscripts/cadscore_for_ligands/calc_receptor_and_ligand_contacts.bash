@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 readonly ZEROARG=$0
 RECEPTOR_FILE=""
 LIGAND_FILE=""

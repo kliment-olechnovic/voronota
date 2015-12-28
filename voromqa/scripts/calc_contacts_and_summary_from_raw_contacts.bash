@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 WORKDIR=""
 MULTAREAS=false
 WITH_MOCK_SOLVENT=false

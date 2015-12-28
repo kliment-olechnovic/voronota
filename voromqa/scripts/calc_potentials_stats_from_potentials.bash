@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 INPUT_SEARCH_DIR=""
 OUTPUTDIR=""
 

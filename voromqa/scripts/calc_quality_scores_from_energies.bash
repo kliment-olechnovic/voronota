@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 WORKDIR=""
 ENERGIES_STATS_FILE=""
 
