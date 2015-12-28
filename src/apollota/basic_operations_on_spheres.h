@@ -138,7 +138,7 @@ struct SimpleSphere
 	}
 
 	template<typename InputSphereType>
-	SimpleSphere(const InputSphereType& input_sphere) : x(input_sphere.x), y(input_sphere.y), z(input_sphere.z), r(input_sphere.r)
+	explicit SimpleSphere(const InputSphereType& input_sphere) : x(input_sphere.x), y(input_sphere.y), z(input_sphere.z), r(input_sphere.r)
 	{
 	}
 

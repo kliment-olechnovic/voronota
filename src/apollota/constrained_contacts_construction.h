@@ -378,7 +378,7 @@ private:
 			SimplePoint mc;
 			for(std::size_t i=0;i<spheres.size();i++)
 			{
-				mc=mc+spheres[i];
+				mc=mc+SimplePoint(spheres[i]);
 			}
 			mc=mc*(1.0/static_cast<double>(spheres.size()));
 

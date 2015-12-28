@@ -762,7 +762,7 @@ private:
 		{
 			const Face& face;
 
-			NodeCheckerForValidE(const Face& target) : face(target)
+			explicit NodeCheckerForValidE(const Face& target) : face(target)
 			{
 			}
 
@@ -811,7 +811,7 @@ private:
 		{
 			if(admittance[i]>0)
 			{
-				center=center+spheres[i];
+				center=center+SimplePoint(spheres[i]);
 				count++;
 			}
 		}

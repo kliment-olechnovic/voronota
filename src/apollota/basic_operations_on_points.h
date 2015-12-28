@@ -298,7 +298,7 @@ struct SimplePoint
 	}
 
 	template<typename InputPointType>
-	SimplePoint(const InputPointType& input_point) : x(input_point.x), y(input_point.y), z(input_point.z)
+	explicit SimplePoint(const InputPointType& input_point) : x(input_point.x), y(input_point.y), z(input_point.z)
 	{
 	}
 
