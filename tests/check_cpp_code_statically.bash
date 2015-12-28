@@ -9,4 +9,4 @@ rm ./voronota_package.tar.gz
 
 trap "rm -r ./voronota_package" EXIT
 
-cppcheck --enable=all --force --verbose --quiet ./voronota_package/src/
+cppcheck --enable=all --force --quiet ./voronota_package/src/
