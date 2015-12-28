@@ -11,7 +11,7 @@ namespace auxiliaries
 class AtomRadiusAssigner
 {
 public:
-	AtomRadiusAssigner(const double default_radius) : default_radius(default_radius)
+	explicit AtomRadiusAssigner(const double default_radius) : default_radius(default_radius)
 	{
 	}
 
