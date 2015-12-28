@@ -12,7 +12,7 @@ namespace auxiliaries
 class XMLWriter
 {
 public:
-	XMLWriter(const std::string& type) : type_(type)
+	explicit XMLWriter(const std::string& type) : type_(type)
 	{
 	}
 
