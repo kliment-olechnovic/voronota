@@ -41,7 +41,7 @@ public:
 		}
 		else
 		{
-			return p;
+			return custom_point_from_object<OutputPointType>(p);
 		}
 	}
 

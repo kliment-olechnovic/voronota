@@ -19,7 +19,7 @@ public:
 	class Exception : public std::runtime_error
 	{
 	public:
-		Exception(const std::string& msg) : std::runtime_error(msg)
+		explicit Exception(const std::string& msg) : std::runtime_error(msg)
 		{
 		}
 	};
@@ -36,11 +36,11 @@ public:
 			for(std::size_t i=0;i<original_argv_.size();i++)
 			{
 				const std::string& str=original_argv_[i];
-				if(i>0 && str.find("--")==0)
+				if(i>0 && str.compare(0, 2, "--")==0)
 				{
 					options_[str]="";
 				}
-				else if(i>1 && original_argv_[i-1].find("--")==0)
+				else if(i>1 && original_argv_[i-1].compare(0, 2, "--")==0)
 				{
 					options_[original_argv_[i-1]]=str;
 				}
@@ -79,7 +79,7 @@ public:
 
 	void set_option(const std::string& name)
 	{
-		if(name.find("--")==0)
+		if(name.compare(0, 2, "--")==0)
 		{
 			options_[name]="";
 		}
@@ -88,7 +88,7 @@ public:
 	template<typename T>
 	void set_option_with_argument(const std::string& name, const T value)
 	{
-		if(name.find("--")==0)
+		if(name.compare(0, 2, "--")==0)
 		{
 			std::ostringstream output;
 			output << value;
@@ -248,14 +248,14 @@ public:
 	class Exception : public std::runtime_error
 	{
 	public:
-		Exception(const std::string& msg) : std::runtime_error(msg)
+		explicit Exception(const std::string& msg) : std::runtime_error(msg)
 		{
 		}
 	};
 
 	const ProgramOptionsHandler& poh;
 
-	ProgramOptionsHandlerWrapper(const ProgramOptionsHandler& poh) : poh(poh)
+	explicit ProgramOptionsHandlerWrapper(const ProgramOptionsHandler& poh) : poh(poh)
 	{
 	}
 

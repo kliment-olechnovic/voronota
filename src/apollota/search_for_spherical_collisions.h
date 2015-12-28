@@ -70,7 +70,7 @@ private:
 	{
 		const SimpleSphere& target;
 
-		NodeCheckerForCollisions(const SimpleSphere& target) : target(target) {}
+		explicit NodeCheckerForCollisions(const SimpleSphere& target) : target(target) {}
 
 		bool operator()(const SimpleSphere& sphere) const
 		{
@@ -83,7 +83,7 @@ private:
 		const SimpleSphere& target;
 		const bool one_hit_is_enough;
 
-		LeafCheckerForCollisions(const SimpleSphere& target) : target(target), one_hit_is_enough(true) {}
+		explicit LeafCheckerForCollisions(const SimpleSphere& target) : target(target), one_hit_is_enough(true) {}
 
 		LeafCheckerForCollisions(const SimpleSphere& target, const bool one_hit_is_enough) : target(target), one_hit_is_enough(one_hit_is_enough) {}
 

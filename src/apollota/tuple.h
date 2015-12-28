@@ -27,7 +27,7 @@ public:
 		}
 	}
 
-	Tuple(const std::vector<std::size_t>& values)
+	explicit Tuple(const std::vector<std::size_t>& values)
 	{
 		for(unsigned int i=0;i<N && i<values.size();i++)
 		{

@@ -29,7 +29,7 @@ public:
 	{
 	}
 
-	ChainResidueAtomDescriptor(const std::string& chainID) : serial(null_num()), chainID(chainID), resSeq(null_num())
+	explicit ChainResidueAtomDescriptor(const std::string& chainID) : serial(null_num()), chainID(chainID), resSeq(null_num())
 	{
 	}
 

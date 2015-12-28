@@ -10,7 +10,7 @@ namespace apollota
 class SubdividedIcosahedron
 {
 public:
-	SubdividedIcosahedron(const int depth) : center_(0, 0, 0)
+	explicit SubdividedIcosahedron(const int depth) : center_(0, 0, 0)
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 

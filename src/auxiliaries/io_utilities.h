@@ -22,7 +22,7 @@ public:
 	{
 	}
 
-	IOUtilities(const char line_delimiter) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(' ')
+	explicit IOUtilities(const char line_delimiter) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(' ')
 	{
 	}
 
@@ -309,7 +309,7 @@ private:
 	{
 		char pair_separator;
 
-		write_map_element(const char pair_separator) : pair_separator(pair_separator)
+		explicit write_map_element(const char pair_separator) : pair_separator(pair_separator)
 		{
 		}
 
