@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 SUBDIR=$OUTPUTDIR/cadscore_script
 mkdir -p $SUBDIR
 

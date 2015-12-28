@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 WORKDIR=""
 CENTRALITY_OPTION=""
 WITH_MOCK_SOLVENT=false

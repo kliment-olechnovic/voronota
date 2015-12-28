@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 BINDIR=""
 INPUT_LIST_FILE=""
 OUTPUTDIR=""

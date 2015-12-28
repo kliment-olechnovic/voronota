@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 INPUT_FILE_LIST=""
 RANDOMIZE=""
 INPUT_CONTRIBUTIONS=""

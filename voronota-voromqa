@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 readonly ZEROARG=$0
 INFILE=""
 OUTFILE_ATOM_SCORES=""

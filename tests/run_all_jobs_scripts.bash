@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 cd $(dirname "$0")
 
 ../package.bash voronota_package

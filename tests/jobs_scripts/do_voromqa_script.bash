@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 SUBDIR=$OUTPUTDIR/voromqa_script
 mkdir -p $SUBDIR
 

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 readonly ZEROARG=$0
 CLUSTERS_DIR=""
 LIGANDS_FILES_LIST=""

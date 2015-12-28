@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 SUBDIR=$OUTPUTDIR/solvent_mocking
 mkdir -p $SUBDIR
 

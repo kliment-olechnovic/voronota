@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 readonly ZEROARG=$0
 CLUSTERS_DIR=""
 HELP_MODE=false

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set +e
-
 readonly ZEROARG=$0
 LIGANDS_FILES_LIST=""=""
 OUTPUT_DIR=""
