@@ -2,8 +2,8 @@
 
 cd $(dirname "$0")
 
-ADDITION_TO_PATH=""
-ADDITION_TO_LD_LIBRARY_PATH=""
+ADDITION_TO_PATH="/usr/lib64/openmpi/bin"
+ADDITION_TO_LD_LIBRARY_PATH="/usr/lib64/openmpi/lib"
 
 while getopts "b:l:" OPTION
 do
@@ -17,12 +17,12 @@ do
 	esac
 done
 
-if [ -n "$ADDITION_TO_PATH" ]
+if [ -n "$ADDITION_TO_PATH" ] && [ -d "$ADDITION_TO_PATH" ]
 then
 	export PATH=${ADDITION_TO_PATH}:${PATH}
 fi
 
-if [ -n "$ADDITION_TO_LD_LIBRARY_PATH" ]
+if [ -n "$ADDITION_TO_LD_LIBRARY_PATH" ] && [ -d "$ADDITION_TO_LD_LIBRARY_PATH" ]
 then
 	export LD_LIBRARY_PATH=${ADDITION_TO_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}
 fi
