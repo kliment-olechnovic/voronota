@@ -119,6 +119,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
 	const std::string renaming_map=poh.argument<std::string>(pohw.describe_option("--renaming-map", "string", "file path to input atoms renaming map"), "");
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
+	const bool inter_residue_after=poh.contains_option(pohw.describe_option("--inter-residue-after", "", "flag to convert output to inter-residue contacts"));
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of contacts"));
 	enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
@@ -273,16 +274,30 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		if(update_mode)
-		{
-			auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
-		}
-		else
+		const bool inter_residue_summation_needed=(!inter_residue && inter_residue_after);
+		if(!update_mode && !inter_residue_summation_needed)
 		{
 			for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 			{
 				std::cout << it->first << " " << it->second->second << "\n";
 			}
+		}
+		else
+		{
+			if(!update_mode)
+			{
+				std::map< CRADsPair, ContactValue > map_of_selected_contacts;
+				for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+				{
+					map_of_selected_contacts.insert(*(it->second));
+				}
+				map_of_contacts=map_of_selected_contacts;
+			}
+			if(inter_residue_summation_needed)
+			{
+				sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
+			}
+			auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 		}
 	}
 }

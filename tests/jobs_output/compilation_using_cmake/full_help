@@ -188,6 +188,7 @@ Command 'query-contacts' options:
 --set-external-adjuncts-name    string      name for external adjuncts
 --renaming-map                  string      file path to input atoms renaming map
 --inter-residue                             flag to convert input to inter-residue contacts
+--inter-residue-after                       flag to convert output to inter-residue contacts
 --summing-exceptions            string      file path to input inter-residue summing exceptions annotations
 --summarize                                 flag to output only summary of contacts
 --preserve-graphics                         flag to preserve graphics in output
