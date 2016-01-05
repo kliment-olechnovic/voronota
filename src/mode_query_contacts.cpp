@@ -37,6 +37,49 @@ std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file
 	return set_of_hbplus_crad_pairs;
 }
 
+void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, ContactValue>& map_of_contacts)
+{
+	const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
+	if(!renaming_map_of_crads.empty())
+	{
+		std::map< CRADsPair, ContactValue > map_of_renamed_contacts;
+		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		{
+			CRAD crads[2]={it->first.a, it->first.b};
+			for(int i=0;i<2;i++)
+			{
+				CRAD& crad=crads[i];
+				std::map<CRAD, CRAD>::const_iterator renaming_it=renaming_map_of_crads.find(crad.without_numbering());
+				if(renaming_it!=renaming_map_of_crads.end())
+				{
+					crad.resName=renaming_it->second.resName;
+					crad.name=renaming_it->second.name;
+				}
+			}
+			map_of_renamed_contacts[CRADsPair(crads[0], crads[1])].add(it->second);
+		}
+		map_of_contacts=map_of_renamed_contacts;
+	}
+}
+
+void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, ContactValue>& map_of_contacts)
+{
+	const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
+	std::map< CRADsPair, ContactValue > map_of_reduced_contacts;
+	for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const CRADsPair& raw_crads=it->first;
+		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
+		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.b, summing_exceptions_set_of_crads));
+		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()));
+		if(!(crads.a==crads.b))
+		{
+			map_of_reduced_contacts[crads].add(it->second);
+		}
+	}
+	map_of_contacts=map_of_reduced_contacts;
+}
+
 }
 
 void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -94,45 +137,12 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!renaming_map.empty())
 	{
-		const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
-		if(!renaming_map_of_crads.empty())
-		{
-			std::map< CRADsPair, ContactValue > map_of_renamed_contacts;
-			for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-			{
-				CRAD crads[2]={it->first.a, it->first.b};
-				for(int i=0;i<2;i++)
-				{
-					CRAD& crad=crads[i];
-					std::map<CRAD, CRAD>::const_iterator renaming_it=renaming_map_of_crads.find(crad.without_numbering());
-					if(renaming_it!=renaming_map_of_crads.end())
-					{
-						crad.resName=renaming_it->second.resName;
-						crad.name=renaming_it->second.name;
-					}
-				}
-				map_of_renamed_contacts[CRADsPair(crads[0], crads[1])].add(it->second);
-			}
-			map_of_contacts=map_of_renamed_contacts;
-		}
+		apply_renaming_map_on_contacts(renaming_map, map_of_contacts);
 	}
 
 	if(inter_residue)
 	{
-		const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
-		std::map< CRADsPair, ContactValue > map_of_reduced_contacts;
-		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-		{
-			const CRADsPair& raw_crads=it->first;
-			const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
-			const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.b, summing_exceptions_set_of_crads));
-			const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()));
-			if(!(crads.a==crads.b))
-			{
-				map_of_reduced_contacts[crads].add(it->second);
-			}
-		}
-		map_of_contacts=map_of_reduced_contacts;
+		sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
 	}
 
 	std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator> selected_contacts;
