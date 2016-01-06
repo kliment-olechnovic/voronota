@@ -71,7 +71,7 @@ void sum_contacts_into_inter_residue_contacts(const std::string& summing_excepti
 		const CRADsPair& raw_crads=it->first;
 		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
 		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.b, summing_exceptions_set_of_crads));
-		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()));
+		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()), raw_crads.reversed_display);
 		if(!(crads.a==crads.b))
 		{
 			map_of_reduced_contacts[crads].add(it->second);
@@ -289,7 +289,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				std::map< CRADsPair, ContactValue > map_of_selected_contacts;
 				for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 				{
-					map_of_selected_contacts.insert(*(it->second));
+					map_of_selected_contacts.insert(std::make_pair(it->first, it->second->second));
 				}
 				map_of_contacts=map_of_selected_contacts;
 			}
