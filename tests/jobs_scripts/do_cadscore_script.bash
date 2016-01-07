@@ -36,6 +36,14 @@ do
 	  -M $SUBDIR/$INFILEBASENAME/interface_contacts \
 	  -a $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  -b $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
-	  -s 1 \
+	  -s 1
+done > /dev/null
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  -T $SUBDIR/target/interface_contacts \
+	  -M $SUBDIR/$INFILEBASENAME/interface_contacts \
 	| sed "s/^CAD-score global score =/$INFILEBASENAME/"
 done > $SUBDIR/interface_global_scores
