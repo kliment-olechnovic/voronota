@@ -2013,10 +2013,9 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="cad-score-method-wrapper-script"><a href="#TOC">CAD-score method wrapper script</a></h2>
 <p>The 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script command line arguments are:</p>
-<pre><code>[-t input_target_file.pdb]
-[-m input_model_file.pdb]
-[-T input_target_contacts_file]
-[-M input_model_contacts_file]
+<pre><code>-t input_target_file.pdb
+-m input_model_file.pdb
+[-q contacts_query_parameters_string]
 [-a output_residue_scores_on_target_file.pdb]
 [-b output_residue_scores_on_model_file.pdb]
 [-s residue_scores_smoothing_window_size]
