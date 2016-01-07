@@ -1,26 +1,34 @@
 #!/bin/bash
 
 readonly ZEROARG=$0
-INFILE_TARGET=""
-INFILE_MODEL=""
+INFILE_TARGET_PDB=""
+INFILE_MODEL_PDB=""
+INFILE_TARGET_CONTACTS=""
+INFILE_MODEL_CONTACTS=""
 OUTFILE_RESIDUE_SCORES_ON_TARGET=""
 OUTFILE_RESIDUE_SCORES_ON_MODEL=""
 SMOOTHING_WINDOW="1"
 HELP_MODE=false
 
-while getopts "t:m:T:M:s:h" OPTION
+while getopts "t:m:T:M:a:b:s:h" OPTION
 do
 	case $OPTION in
 	t)
-		INFILE_TARGET=$OPTARG
+		INFILE_TARGET_PDB=$OPTARG
 		;;
 	m)
-		INFILE_MODEL=$OPTARG
+		INFILE_MODEL_PDB=$OPTARG
 		;;
 	T)
-		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
+		INFILE_TARGET_CONTACTS=$OPTARG
 		;;
 	M)
+		INFILE_MODEL_CONTACTS=$OPTARG
+		;;
+	a)
+		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
+		;;
+	b)
 		OUTFILE_RESIDUE_SCORES_ON_MODEL=$OPTARG
 		;;
 	s)
@@ -32,14 +40,16 @@ do
 	esac
 done
 
-if [ -z "$INFILE_TARGET" ] || [ -z "$INFILE_MODEL" ] || $HELP_MODE
+if [ -z "$INFILE_TARGET_PDB" ] || [ -z "$INFILE_MODEL_PDB" ] || $HELP_MODE
 then
 cat >&2 << EOF
 Script parameters:
     -t input_target_file.pdb
     -m input_model_file.pdb
-    [-T output_residue_scores_on_target_file.pdb]
-    [-M output_residue_scores_on_model_file.pdb]
+    [-T input_target_contacts_file]
+    [-M input_model_contacts_file]
+    [-a output_residue_scores_on_target_file.pdb]
+    [-b output_residue_scores_on_model_file.pdb]
     [-s residue_scores_smoothing_window_size]
 EOF
 exit 1
@@ -55,13 +65,13 @@ fi
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
-if [ ! -s "$INFILE_TARGET" ]
+if [ ! -s "$INFILE_TARGET_PDB" ]
 then
 	echo >&2 "Error: input target file does not exist or is empty"
 	exit 1
 fi
 
-if [ ! -s "$INFILE_MODEL" ]
+if [ ! -s "$INFILE_MODEL_PDB" ]
 then
 	echo >&2 "Error: input model file does not exist or is empty"
 	exit 1
@@ -70,8 +80,18 @@ fi
 readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
-cp $INFILE_TARGET $TMPDIR/target
-cp $INFILE_MODEL $TMPDIR/model
+cp $INFILE_TARGET_PDB $TMPDIR/target
+cp $INFILE_MODEL_PDB $TMPDIR/model
+
+if [ -s "$INFILE_TARGET_CONTACTS" ]
+then
+	cp $INFILE_TARGET_CONTACTS $TMPDIR/target.contacts
+fi
+
+if [ -s "$INFILE_MODEL_CONTACTS" ]
+then
+	cp $INFILE_MODEL_CONTACTS $TMPDIR/model.contacts
+fi
 
 for WORKFILE in $TMPDIR/target $TMPDIR/model
 do
@@ -82,20 +102,25 @@ do
 	| voronota query-balls \
 	  --drop-adjuncts \
 	  --drop-altloc-indicators \
-	| tee $WORKFILE.balls \
-	| voronota calculate-contacts \
-	  --annotated \
-	| voronota query-contacts \
-	  --match-min-seq-sep 1 \
-	  --no-solvent \
-	| voronota query-contacts \
-	  --match-first 'A<C>' \
-	  --match-second 'A<N>' \
-	  --match-max-seq-sep 1 \
-	  --match-max-dist 1.6 \
-	  --invert \
-	| awk '{print $1 " " $2 " " $3}' \
-	> $WORKFILE.contacts
+	> $WORKFILE.balls
+	
+	if [ ! -s "$WORKFILE.contacts" ]
+	then
+		cat $WORKFILE.balls \
+		| voronota calculate-contacts \
+		  --annotated \
+		| voronota query-contacts \
+		  --match-min-seq-sep 1 \
+		  --no-solvent \
+		| voronota query-contacts \
+		  --match-first 'A<C>' \
+		  --match-second 'A<N>' \
+		  --match-max-seq-sep 1 \
+		  --match-max-dist 1.6 \
+		  --invert \
+		| awk '{print $1 " " $2 " " $3}' \
+		> $WORKFILE.contacts
+	fi
 done
 
 cat $TMPDIR/model.contacts \
