@@ -3,14 +3,13 @@
 readonly ZEROARG=$0
 INFILE_TARGET_PDB=""
 INFILE_MODEL_PDB=""
-INFILE_TARGET_CONTACTS=""
-INFILE_MODEL_CONTACTS=""
+QUERY_PARAMETERS=""
 OUTFILE_RESIDUE_SCORES_ON_TARGET=""
 OUTFILE_RESIDUE_SCORES_ON_MODEL=""
 SMOOTHING_WINDOW="1"
 HELP_MODE=false
 
-while getopts "t:m:T:M:a:b:s:h" OPTION
+while getopts "t:m:q:a:b:s:h" OPTION
 do
 	case $OPTION in
 	t)
@@ -19,11 +18,8 @@ do
 	m)
 		INFILE_MODEL_PDB=$OPTARG
 		;;
-	T)
-		INFILE_TARGET_CONTACTS=$OPTARG
-		;;
-	M)
-		INFILE_MODEL_CONTACTS=$OPTARG
+	q)
+		QUERY_PARAMETERS="$OPTARG"
 		;;
 	a)
 		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
@@ -40,14 +36,13 @@ do
 	esac
 done
 
-if [ -z "$INFILE_TARGET_PDB$INFILE_TARGET_CONTACTS" ] || [ -z "$INFILE_MODEL_PDB$INFILE_MODEL_CONTACTS" ] || $HELP_MODE
+if [ -z "$INFILE_TARGET_PDB" ] || [ -z "$INFILE_MODEL_PDB" ] || $HELP_MODE
 then
 cat >&2 << EOF
 Script parameters:
-    [-t input_target_file.pdb]
-    [-m input_model_file.pdb]
-    [-T input_target_contacts_file]
-    [-M input_model_contacts_file]
+    -t input_target_file.pdb
+    -m input_model_file.pdb
+    [-q contacts_query_parameters_string]
     [-a output_residue_scores_on_target_file.pdb]
     [-b output_residue_scores_on_model_file.pdb]
     [-s residue_scores_smoothing_window_size]
@@ -65,83 +60,61 @@ fi
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
-if [ -n "$INFILE_TARGET_PDB" ] && [ ! -s "$INFILE_TARGET_PDB" ]
+if [ ! -s "$INFILE_TARGET_PDB" ]
 then
 	echo >&2 "Error: input target file does not exist"
 	exit 1
 fi
 
-if [ -n "$INFILE_TARGET_CONTACTS" ] && [ ! -s "$INFILE_TARGET_CONTACTS" ]
-then
-	echo >&2 "Error: input target contacts file does not exist"
-	exit 1
-fi
-
-if [ -n "$INFILE_MODEL_PDB" ] && [ ! -s "$INFILE_MODEL_PDB" ]
+if [ ! -s "$INFILE_MODEL_PDB" ]
 then
 	echo >&2 "Error: input model file does not exist"
-	exit 1
-fi
-
-if [ -n "$INFILE_MODEL_CONTACTS" ] && [ ! -s "$INFILE_MODEL_CONTACTS" ]
-then
-	echo >&2 "Error: input model contacts file does not exist"
 	exit 1
 fi
 
 readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
-if [ -s "$INFILE_TARGET_PDB" ]
-then
-	cp $INFILE_TARGET_PDB $TMPDIR/target
-fi
-
-if [ -s "$INFILE_MODEL_PDB" ]
-then
-	cp $INFILE_MODEL_PDB $TMPDIR/model
-fi
-
-if [ -s "$INFILE_TARGET_CONTACTS" ]
-then
-	cp $INFILE_TARGET_CONTACTS $TMPDIR/target.contacts
-fi
-
-if [ -s "$INFILE_MODEL_CONTACTS" ]
-then
-	cp $INFILE_MODEL_CONTACTS $TMPDIR/model.contacts
-fi
+cp $INFILE_TARGET_PDB $TMPDIR/target
+cp $INFILE_MODEL_PDB $TMPDIR/model
 
 for WORKFILE in $TMPDIR/target $TMPDIR/model
 do
-	if [ -s "$WORKFILE" ]
-	then
-		cat $WORKFILE \
-		| voronota get-balls-from-atoms-file \
-		  --annotated \
-		  --radii-file <(voronota-resources radii) \
-		| voronota query-balls \
-		  --drop-adjuncts \
-		  --drop-altloc-indicators \
-		> $WORKFILE.balls
+	cat $WORKFILE \
+	| voronota get-balls-from-atoms-file \
+	  --annotated \
+	  --radii-file <(voronota-resources radii) \
+	| voronota query-balls \
+	  --drop-adjuncts \
+	  --drop-altloc-indicators \
+	> $WORKFILE.balls
 	
-		if [ ! -s "$WORKFILE.contacts" ]
-		then
-			cat $WORKFILE.balls \
-			| voronota calculate-contacts \
-			  --annotated \
-			| voronota query-contacts \
-			  --match-min-seq-sep 1 \
-			  --no-solvent \
-			| voronota query-contacts \
-			  --match-first 'A<C>' \
-			  --match-second 'A<N>' \
-			  --match-max-seq-sep 1 \
-			  --match-max-dist 1.6 \
-			  --invert \
-			| awk '{print $1 " " $2 " " $3}' \
-			> $WORKFILE.contacts
-		fi
+	if [ ! -s "$WORKFILE.balls" ]
+	then
+		echo >&2 "Error: no atoms for $(basename $WORKFILE)"
+		exit 1
+	fi
+
+	cat $WORKFILE.balls \
+	| voronota calculate-contacts \
+	  --annotated \
+	| voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	  --no-solvent \
+	| voronota query-contacts \
+	  --match-first 'A<C>' \
+	  --match-second 'A<N>' \
+	  --match-max-seq-sep 1 \
+	  --match-max-dist 1.6 \
+	  --invert \
+	| voronota query-contacts $QUERY_PARAMETERS \
+	| awk '{print $1 " " $2 " " $3}' \
+	> $WORKFILE.contacts
+	
+	if [ ! -s "$WORKFILE.contacts" ]
+	then
+		echo >&2 "Error: no contacts for $(basename $WORKFILE)"
+		exit 1
 	fi
 done
 
@@ -155,7 +128,7 @@ cat $TMPDIR/model.contacts \
 | awk '{print $2}' \
 > $TMPDIR/global_cad_score
 
-if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ] && [ -s "$TMPDIR/target.balls" ]
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_TARGET)
 	cat $TMPDIR/target.balls \
@@ -168,7 +141,7 @@ then
 	> /dev/null
 fi
 
-if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ] && [ -s "$TMPDIR/model.balls" ]
+if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_MODEL)
 	cat $TMPDIR/model.balls \
