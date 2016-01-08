@@ -136,7 +136,7 @@ cat $SUBDIR/balls \
 > $SUBDIR/match_far_central_contacts
 
 cat $SUBDIR/contacts \
-| $VORONOTA query-contacts-simulating-unfolding --max-seq-sep 6 \
+| $VORONOTA x-query-contacts-simulating-unfolding --max-seq-sep 6 \
 > $SUBDIR/roughly_unfolded_contacts
 
 cat $SUBDIR/contacts \
