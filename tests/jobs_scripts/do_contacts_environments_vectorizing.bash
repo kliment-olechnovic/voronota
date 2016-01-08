@@ -178,7 +178,7 @@ cat $INPUTDIR/single/structure.pdb \
 > $SUBDIR/contacts
 
 cat $SUBDIR/contacts \
-| $VORONOTA vectorize-contact-environments \
+| $VORONOTA x-vectorize-contact-environments \
   --names-file $SUBDIR/environment_names \
   --inter-residue \
   --normalize \
@@ -187,7 +187,7 @@ cat $SUBDIR/contacts \
 > $SUBDIR/vectorized_environments_of_all_residues
 
 cat $SUBDIR/contacts \
-| $VORONOTA vectorize-contact-environments \
+| $VORONOTA x-vectorize-contact-environments \
   --names-file $SUBDIR/environment_names \
   --binarize \
 > $SUBDIR/binarized_vectorized_environments_of_all_atoms

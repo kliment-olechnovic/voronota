@@ -22,7 +22,7 @@ done
 if $WITH_MOCK_SOLVENT
 then
 	cat $WORKDIR/balls \
-	| $BINDIR/voronota calculate-mock-solvent \
+	| $BINDIR/voronota x-calculate-mock-solvent \
 	  --solvent-distance 0.8 \
 	| $BINDIR/voronota calculate-contacts \
 	  --annotated $CENTRALITY_OPTION \

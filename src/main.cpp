@@ -11,14 +11,12 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
-void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
 void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
 void draw_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
 void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
 void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
@@ -30,6 +28,9 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_points(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
+
+void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
+void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
@@ -56,14 +57,12 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices", ModeDescriptor::FunctionPtr(calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("calculate-vertices-in-parallel", ModeDescriptor::FunctionPtr(calculate_vertices_in_parallel)));
 	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
-	list_of_modes.push_back(ModeDescriptor("calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
 	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-balls-sequences-pairings-stats", ModeDescriptor::FunctionPtr(query_balls_sequences_pairings_stats)));
 	list_of_modes.push_back(ModeDescriptor("write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
 	list_of_modes.push_back(ModeDescriptor("draw-balls", ModeDescriptor::FunctionPtr(draw_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
-	list_of_modes.push_back(ModeDescriptor("query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
 	list_of_modes.push_back(ModeDescriptor("draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
 	list_of_modes.push_back(ModeDescriptor("plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
@@ -75,7 +74,15 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("vectorize-contacts", ModeDescriptor::FunctionPtr(vectorize_contacts)));
 	list_of_modes.push_back(ModeDescriptor("vectorize-points", ModeDescriptor::FunctionPtr(vectorize_points)));
 	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
-	list_of_modes.push_back(ModeDescriptor("vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
+	return list_of_modes;
+}
+
+std::vector<ModeDescriptor> get_list_of_xmodes()
+{
+	std::vector<ModeDescriptor> list_of_modes;
+	list_of_modes.push_back(ModeDescriptor("x-calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
+	list_of_modes.push_back(ModeDescriptor("x-query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
+	list_of_modes.push_back(ModeDescriptor("x-vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
 	return list_of_modes;
 }
 
@@ -99,6 +106,7 @@ void print_error_message(const std::string& mode, const std::string& message)
 int main(const int argc, const char** argv)
 {
 	const std::string mode=(argc>1 ? std::string(argv[1]) : std::string());
+	const bool xmode=(!mode.empty() && mode[0]=='x');
 
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
@@ -106,9 +114,9 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		const std::vector<ModeDescriptor> list_of_modes=get_list_of_modes();
-
 		auxiliaries::ProgramOptionsHandler poh(argc, argv);
+
+		const bool help=poh.contains_option("--help");
 
 		{
 			const std::string output_precision_option_name="--stdout-precision";
@@ -120,34 +128,46 @@ int main(const int argc, const char** argv)
 			}
 		}
 
-		const bool help=poh.contains_option("--help");
-
-		if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
+		if(!xmode)
 		{
-			std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
-			if(!help)
+			const std::vector<ModeDescriptor> list_of_modes=get_list_of_modes();
+			if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
 			{
-				return 0;
+				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
+				return (help ? 1 : 0);
+			}
+			else
+			{
+				std::ostream& output=std::cout;
+				output << version() << "\n\n";
+				output << "Commands:\n\n";
+				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
+				{
+					output << it->name << "\n";
+				}
+				output << "\n";
+				if(help)
+				{
+					for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
+					{
+						output << "Command '" << it->name << "' options:\n";
+						it->func_ptr(poh);
+						output << "\n";
+					}
+				}
 			}
 		}
 		else
 		{
-			std::ostream& output=std::cout;
-			output << version() << "\n\n";
-			output << "Commands:\n\n";
-			for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
+			const std::vector<ModeDescriptor> list_of_modes=get_list_of_xmodes();
+			if(!mode.empty() && std::count(list_of_modes.begin(), list_of_modes.end(), mode)>0)
 			{
-				output << it->name << "\n";
+				std::find(list_of_modes.begin(), list_of_modes.end(), mode)->func_ptr(poh);
+				return (help ? 1 : 0);
 			}
-			output << "\n";
-			if(help)
+			else
 			{
-				for(std::vector<ModeDescriptor>::const_iterator it=list_of_modes.begin();it!=list_of_modes.end();++it)
-				{
-					output << "Command '" << it->name << "' options:\n";
-					it->func_ptr(poh);
-					output << "\n";
-				}
+				throw std::runtime_error("Invalid xmode.");
 			}
 		}
 

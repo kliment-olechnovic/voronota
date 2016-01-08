@@ -6,14 +6,12 @@ get-balls-from-atoms-file
 calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
-calculate-mock-solvent
 query-balls
 query-balls-sequences-pairings-stats
 write-balls-to-atoms-file
 draw-balls
 query-contacts
 query-contacts-depth-values
-query-contacts-simulating-unfolding
 draw-contacts
 plot-contacts
 score-contacts-potential
@@ -25,7 +23,6 @@ compare-contacts
 vectorize-contacts
 vectorize-points
 score-scores
-vectorize-contact-environments
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -83,14 +80,6 @@ stdin   <-  list of balls
 stdout  ->  list of contacts
               (default mode line format: 'b1 b2 area')
               (annotated mode line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
-
-Command 'calculate-mock-solvent' options:
---solvent-radius                number      solvent atom radius
---solvent-distance              number      min distance from non-solvent atoms to solvent atoms
---sih-depth                     number      spherical surface optimization depth
---help                                      flag to print usage help to stdout and exit
-stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
-stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-balls' options:
 --match                         string      selection
@@ -200,12 +189,6 @@ Command 'query-contacts-depth-values' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of contacts (line format: 'annotation1 annotation2')
 stdout  ->  list of depth values (line format: 'annotation depth')
-
-Command 'query-contacts-simulating-unfolding' options:
---max-seq-sep                   number   *  maximum untouchable residue sequence separation
---help                                      flag to print usage help to stdout and exit
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')
-stdout  ->  list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')
 
 Command 'draw-contacts' options:
 --drawing-for-pymol             string      file path to output drawing as pymol script
@@ -329,15 +312,4 @@ Command 'score-scores' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  pairs of reference and testable scores files
 stdout  ->  global results
-
-Command 'vectorize-contact-environments' options:
---names-file                    string   *  file path to environment names list
---inter-residue                             flag to use inter-residue contacts
---normalize                                 flag to normalize output
---binarize                                  flag to binarize output
---output-files-prefix           string      file path prefix for per-type output
---append                                    flag to append to per-type output files
---help                                      flag to print usage help to stdout and exit
-stdin   <-  list of contacts (line format: 'annotation1 annotation2 area')
-stdout  ->  table of environments
 

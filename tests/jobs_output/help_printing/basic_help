@@ -6,14 +6,12 @@ get-balls-from-atoms-file
 calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
-calculate-mock-solvent
 query-balls
 query-balls-sequences-pairings-stats
 write-balls-to-atoms-file
 draw-balls
 query-contacts
 query-contacts-depth-values
-query-contacts-simulating-unfolding
 draw-contacts
 plot-contacts
 score-contacts-potential
@@ -25,5 +23,4 @@ compare-contacts
 vectorize-contacts
 vectorize-points
 score-scores
-vectorize-contact-environments
 
