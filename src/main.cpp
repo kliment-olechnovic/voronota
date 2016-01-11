@@ -13,7 +13,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
-void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh);
+void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void draw_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
@@ -29,9 +29,10 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_points(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
 
-void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh);
+void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
+void wrapped_get_balls_from_atoms_file_and_calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -83,6 +84,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
 	list_of_modes.push_back(ModeDescriptor("x-vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
+	list_of_modes.push_back(ModeDescriptor("x-wrapped-get-balls-from-atoms-file-and-calculate-vertices", ModeDescriptor::FunctionPtr(wrapped_get_balls_from_atoms_file_and_calculate_vertices)));
 	return list_of_modes;
 }
 

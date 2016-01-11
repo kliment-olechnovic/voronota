@@ -13,20 +13,6 @@
 namespace
 {
 
-bool add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, auxiliaries::AtomRadiusAssigner& atom_radius_assigner)
-{
-	std::string resName;
-	std::string name;
-	double radius=0.0;
-	input >> resName >> name >> radius;
-	if(!input.fail())
-	{
-		atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
-		return true;
-	}
-	return false;
-}
-
 std::string refine_empty_string(const std::string& x)
 {
 	return (x.empty() ? std::string(".") : x);
@@ -80,7 +66,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 

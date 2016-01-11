@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
 namespace auxiliaries
 {
@@ -51,6 +52,20 @@ public:
 			}
 		}
 		return default_radius;
+	}
+
+	static bool add_descriptor_and_radius_from_stream_to_atom_radius_assigner(std::istream& input, AtomRadiusAssigner& atom_radius_assigner)
+	{
+		std::string resName;
+		std::string name;
+		double radius=0.0;
+		input >> resName >> name >> radius;
+		if(!input.fail())
+		{
+			atom_radius_assigner.add_radius_by_descriptor(resName, name, radius);
+			return true;
+		}
+		return false;
 	}
 
 private:
