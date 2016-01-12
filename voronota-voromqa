@@ -37,8 +37,8 @@ then
 cat >&2 << EOF
 Script parameters:
     -i input_file.pdb
-    [-a output_atom_scores_file.pdb]
-    [-r output_residue_scores_file.pdb]
+    [-a output_atom_scores_file]
+    [-r output_residue_scores_file]
     [-s residue_scores_smoothing_window_size]
 EOF
 exit 1
@@ -124,27 +124,13 @@ cat $TMPDIR/atom_energies \
 if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
-	cat $TMPDIR/balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPDIR/atom_quality_scores \
-	  --set-external-adjuncts-name aqscore \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTFILE_ATOM_SCORES \
-	  --pdb-output-b-factor aqscore \
-	> /dev/null
+	cp $TMPDIR/atom_quality_scores "$OUTFILE_ATOM_SCORES"
 fi
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
-	cat $TMPDIR/balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPDIR/residue_quality_scores \
-	  --set-external-adjuncts-name rqscore \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTFILE_RESIDUE_SCORES \
-	  --pdb-output-b-factor rqscore \
-	> /dev/null
+	cp $TMPDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
 fi
 
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ]
@@ -161,5 +147,4 @@ then
 	> /dev/null
 fi
 
-cat $TMPDIR/global_quality_score \
-| sed 's/^/VoroMQA global score = /'
+echo $INFILE $(cat $TMPDIR/global_quality_score)

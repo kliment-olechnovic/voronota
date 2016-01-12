@@ -8,9 +8,8 @@ do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-voromqa \
 	  -i $INFILE \
-	  -a $SUBDIR/$INFILEBASENAME/atom_scores.pdb \
-	  -r $SUBDIR/$INFILEBASENAME/residue_scores.pdb \
+	  -a $SUBDIR/$INFILEBASENAME/atom_scores \
+	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
 	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
-	  -s 5 \
-	| sed "s/^VoroMQA global score =/$INFILEBASENAME/"
+	  -s 5
 done > $SUBDIR/global_scores
