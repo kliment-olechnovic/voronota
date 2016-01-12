@@ -7,9 +7,10 @@ ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="1"
+CONTACTS_CASH_DIRECTORY=""
 HELP_MODE=false
 
-while getopts "t:m:a:c:r:s:h" OPTION
+while getopts "t:m:a:c:r:s:C:h" OPTION
 do
 	case $OPTION in
 	t)
@@ -30,6 +31,9 @@ do
 	s)
 		SMOOTHING_WINDOW=$OPTARG
 		;;
+	C)
+		CONTACTS_CASH_DIRECTORY=$OPTARG
+		;;
 	h)
 		HELP_MODE=true
 		;;
@@ -46,6 +50,7 @@ Script parameters:
     [-c contacts_query_parameters_string]
     [-r output_residue_scores_file]
     [-s residue_scores_smoothing_window_size]
+    [-C cache_directory]
 EOF
 exit 1
 fi
@@ -96,20 +101,39 @@ do
 		echo >&2 "Error: no atoms for $(basename $WORKFILE)"
 		exit 1
 	fi
+	
+	BALLS_MD5=""
+	if [ -n "$CONTACTS_CASH_DIRECTORY" ]
+	then
+		BALLS_MD5=$(cat $WORKFILE.balls | md5sum | awk '{print $1}')
+		if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CASH_DIRECTORY/$BALLS_MD5" ]
+		then
+			cp $CONTACTS_CASH_DIRECTORY/$BALLS_MD5 $WORKFILE.all_contacts
+		fi
+	fi
 
-	cat $WORKFILE.balls \
-	| voronota calculate-contacts \
-	  --annotated \
-	| voronota query-contacts \
-	  --match-min-seq-sep 1 \
-	  --no-solvent \
-	| voronota query-contacts \
-	  --match-first 'A<C>' \
-	  --match-second 'A<N>' \
-	  --match-max-seq-sep 1 \
-	  --match-max-dist 1.6 \
-	  --invert \
-	> $WORKFILE.all_contacts
+	if [ ! -s "$WORKFILE.all_contacts" ]
+	then
+		cat $WORKFILE.balls \
+		| voronota calculate-contacts \
+		  --annotated \
+		| voronota query-contacts \
+		  --match-min-seq-sep 1 \
+		  --no-solvent \
+		| voronota query-contacts \
+		  --match-first 'A<C>' \
+		  --match-second 'A<N>' \
+		  --match-max-seq-sep 1 \
+		  --match-max-dist 1.6 \
+		  --invert \
+		> $WORKFILE.all_contacts
+		
+		if [ -n "$CONTACTS_CASH_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
+		then
+			mkdir -p $CONTACTS_CASH_DIRECTORY
+			cp $WORKFILE.all_contacts $CONTACTS_CASH_DIRECTORY/$BALLS_MD5
+		fi
+	fi
 	
 	cat $WORKFILE.all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \

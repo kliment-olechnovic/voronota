@@ -10,7 +10,8 @@ do
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
-	  -s 1
+	  -s 1 \
+	  -C $SUBDIR/cache
 done > $SUBDIR/global_scores
 
 for INFILE in $INPUTDIR/complex/*.pdb
@@ -21,5 +22,8 @@ do
 	  -m $INFILE \
 	  -c "--no-same-chain" \
 	  -r $SUBDIR/$INFILEBASENAME/interface_residue_scores \
-	  -s 1
+	  -s 1 \
+	  -C $SUBDIR/cache
 done > $SUBDIR/interface_global_scores
+
+rm -r $SUBDIR/cache
