@@ -3,13 +3,13 @@
 readonly ZEROARG=$0
 INFILE_TARGET_PDB=""
 INFILE_MODEL_PDB=""
-QUERY_PARAMETERS=""
-OUTFILE_RESIDUE_SCORES_ON_TARGET=""
-OUTFILE_RESIDUE_SCORES_ON_MODEL=""
+ATOMS_QUERY_PARAMETERS=""
+CONTACTS_QUERY_PARAMETERS=""
+OUTFILE_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="1"
 HELP_MODE=false
 
-while getopts "t:m:q:a:b:s:h" OPTION
+while getopts "t:m:a:c:r:s:h" OPTION
 do
 	case $OPTION in
 	t)
@@ -18,14 +18,14 @@ do
 	m)
 		INFILE_MODEL_PDB=$OPTARG
 		;;
-	q)
-		QUERY_PARAMETERS="$OPTARG"
-		;;
 	a)
-		OUTFILE_RESIDUE_SCORES_ON_TARGET=$OPTARG
+		ATOMS_QUERY_PARAMETERS="$OPTARG"
 		;;
-	b)
-		OUTFILE_RESIDUE_SCORES_ON_MODEL=$OPTARG
+	c)
+		CONTACTS_QUERY_PARAMETERS="$OPTARG"
+		;;
+	r)
+		OUTFILE_RESIDUE_SCORES=$OPTARG
 		;;
 	s)
 		SMOOTHING_WINDOW=$OPTARG
@@ -42,9 +42,9 @@ cat >&2 << EOF
 Script parameters:
     -t input_target_file.pdb
     -m input_model_file.pdb
-    [-q contacts_query_parameters_string]
-    [-a output_residue_scores_on_target_file.pdb]
-    [-b output_residue_scores_on_model_file.pdb]
+    [-a atoms_query_parameters_string]
+    [-c contacts_query_parameters_string]
+    [-r output_residue_scores_file]
     [-s residue_scores_smoothing_window_size]
 EOF
 exit 1
@@ -84,9 +84,11 @@ do
 	| voronota get-balls-from-atoms-file \
 	  --annotated \
 	  --radii-file <(voronota-resources radii) \
+	  --include-heteroatoms \
 	| voronota query-balls \
-	  --drop-adjuncts \
 	  --drop-altloc-indicators \
+	  --drop-atom-serials \
+	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
 	> $WORKFILE.balls
 	
 	if [ ! -s "$WORKFILE.balls" ]
@@ -107,7 +109,10 @@ do
 	  --match-max-seq-sep 1 \
 	  --match-max-dist 1.6 \
 	  --invert \
-	| voronota query-contacts $QUERY_PARAMETERS \
+	> $WORKFILE.all_contacts
+	
+	cat $WORKFILE.all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
 	| awk '{print $1 " " $2 " " $3}' \
 	> $WORKFILE.contacts
 	
@@ -124,35 +129,12 @@ cat $TMPDIR/model.contacts \
   --smoothing-window $SMOOTHING_WINDOW \
   --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
   --depth 0 \
-| grep "residue_level_global" \
-| awk '{print $2}' \
-> $TMPDIR/global_cad_score
+> $TMPDIR/global_cad_scores
 
-if [ -n "$OUTFILE_RESIDUE_SCORES_ON_TARGET" ]
+if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
-	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_TARGET)
-	cat $TMPDIR/target.balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
-	  --set-external-adjuncts-name rcadscore \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_TARGET \
-	  --pdb-output-b-factor rcadscore \
-	> /dev/null
+	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+	cp $TMPDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
 fi
 
-if [ -n "$OUTFILE_RESIDUE_SCORES_ON_MODEL" ]
-then
-	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES_ON_MODEL)
-	cat $TMPDIR/model.balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPDIR/smoothed_residue_cad_scores \
-	  --set-external-adjuncts-name rcadscore \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output $OUTFILE_RESIDUE_SCORES_ON_MODEL \
-	  --pdb-output-b-factor rcadscore \
-	> /dev/null
-fi
-
-cat $TMPDIR/global_cad_score \
-| sed 's/^/CAD-score global score = /'
+echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $(cat $TMPDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}')
