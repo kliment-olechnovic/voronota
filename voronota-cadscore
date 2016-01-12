@@ -114,6 +114,8 @@ do
 
 	if [ ! -s "$WORKFILE.all_contacts" ]
 	then
+		MAIN_CHAIN_ATOMS_DESCRIPTOR="A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>"
+		
 		cat $WORKFILE.balls \
 		| voronota calculate-contacts \
 		  --annotated \
@@ -127,9 +129,13 @@ do
 		  --match-max-dist 1.6 \
 		  --invert \
 		| voronota query-contacts \
-		  --match-first-not "A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>" \
-		  --match-second-not "A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>" \
+		  --match-first-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --match-second-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
 		  --set-tags 'SS' \
+		| voronota query-contacts \
+		  --match-first $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --match-second $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --set-tags 'MM' \
 		> $WORKFILE.all_contacts
 		
 		if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
