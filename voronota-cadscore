@@ -126,6 +126,10 @@ do
 		  --match-max-seq-sep 1 \
 		  --match-max-dist 1.6 \
 		  --invert \
+		| voronota query-contacts \
+		  --match-first-not "A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>" \
+		  --match-second-not "A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>" \
+		  --set-tags 'SS' \
 		> $WORKFILE.all_contacts
 		
 		if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
