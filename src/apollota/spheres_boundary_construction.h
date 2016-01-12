@@ -29,15 +29,16 @@ inline std::vector<SimpleSphere> construct_artificial_boundary(const std::vector
 		}
 		const double r=std::max(b.r, 0.0);
 		const double shift=std::max(coordinate_shift, 0.0)+(r*2.0)+1.0;
+		const double shift_more=shift+1.0;
 		result.reserve(8);
-		result.push_back(SimpleSphere(a.x-shift, a.y-shift, a.z-shift, r));
+		result.push_back(SimpleSphere(a.x-shift_more, a.y-shift_more, a.z-shift_more, r));
 		result.push_back(SimpleSphere(a.x-shift, a.y-shift, b.z+shift, r));
 		result.push_back(SimpleSphere(a.x-shift, b.y+shift, a.z-shift, r));
 		result.push_back(SimpleSphere(a.x-shift, b.y+shift, b.z+shift, r));
 		result.push_back(SimpleSphere(b.x+shift, a.y-shift, a.z-shift, r));
 		result.push_back(SimpleSphere(b.x+shift, a.y-shift, b.z+shift, r));
 		result.push_back(SimpleSphere(b.x+shift, b.y+shift, a.z-shift, r));
-		result.push_back(SimpleSphere(b.x+shift, b.y+shift, b.z+shift, r));
+		result.push_back(SimpleSphere(b.x+shift_more, b.y+shift_more, b.z+shift_more, r));
 	}
 	return result;
 }
