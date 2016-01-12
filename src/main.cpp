@@ -108,7 +108,9 @@ void print_error_message(const std::string& mode, const std::string& message)
 int main(const int argc, const char** argv)
 {
 	const std::string mode=(argc>1 ? std::string(argv[1]) : std::string());
-	const bool xmode=(!mode.empty() && mode[0]=='x');
+
+	const std::string xmode_prefix="x-";
+	const bool xmode=(mode.compare(0, xmode_prefix.size(), xmode_prefix)==0);
 
 	std::cin.exceptions(std::istream::badbit);
 	std::cout.exceptions(std::ostream::badbit);
