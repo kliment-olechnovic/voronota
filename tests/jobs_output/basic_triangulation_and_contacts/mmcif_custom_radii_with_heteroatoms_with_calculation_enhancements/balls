@@ -1769,11 +1769,11 @@
 40.89 21.807 52.325 1.92 # 1769 A 227 ILE CG1 . .
 41.99 19.549 52.392 1.92 # 1770 A 227 ILE CG2 . .
 39.386 21.715 52.092 1.92 # 1771 A 227 ILE CD1 . .
--2.012 -2.241 4.21 2.01 # artificial hull ball
+-3.012 -3.241 3.21 2.01 # artificial hull ball
 -2.012 -2.241 70.745 2.01 # artificial hull ball
 -2.012 63.572 4.21 2.01 # artificial hull ball
 -2.012 63.572 70.745 2.01 # artificial hull ball
 53.11 -2.241 4.21 2.01 # artificial hull ball
 53.11 -2.241 70.745 2.01 # artificial hull ball
 53.11 63.572 4.21 2.01 # artificial hull ball
-53.11 63.572 70.745 2.01 # artificial hull ball
+54.11 64.572 71.745 2.01 # artificial hull ball
