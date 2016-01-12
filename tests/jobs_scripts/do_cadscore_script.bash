@@ -36,4 +36,14 @@ do
 	  -C $SUBDIR/cache
 done > $SUBDIR/global_scores_SS
 
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  -t $INPUTDIR/complex/target.pdb \
+	  -m $INFILE \
+	  -c "--match-tags-not MM" \
+	  -C $SUBDIR/cache
+done > $SUBDIR/global_scores_AS
+
 rm -r $SUBDIR/cache
