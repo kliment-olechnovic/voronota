@@ -7,7 +7,7 @@ ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="1"
-CONTACTS_CASH_DIRECTORY=""
+CONTACTS_CACHE_DIRECTORY=""
 HELP_MODE=false
 
 while getopts "t:m:a:c:r:s:C:h" OPTION
@@ -32,7 +32,7 @@ do
 		SMOOTHING_WINDOW=$OPTARG
 		;;
 	C)
-		CONTACTS_CASH_DIRECTORY=$OPTARG
+		CONTACTS_CACHE_DIRECTORY=$OPTARG
 		;;
 	h)
 		HELP_MODE=true
@@ -103,12 +103,12 @@ do
 	fi
 	
 	BALLS_MD5=""
-	if [ -n "$CONTACTS_CASH_DIRECTORY" ]
+	if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 	then
 		BALLS_MD5=$(cat $WORKFILE.balls | md5sum | awk '{print $1}')
-		if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CASH_DIRECTORY/$BALLS_MD5" ]
+		if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
 		then
-			cp $CONTACTS_CASH_DIRECTORY/$BALLS_MD5 $WORKFILE.all_contacts
+			cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $WORKFILE.all_contacts
 		fi
 	fi
 
@@ -128,10 +128,10 @@ do
 		  --invert \
 		> $WORKFILE.all_contacts
 		
-		if [ -n "$CONTACTS_CASH_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
+		if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 		then
-			mkdir -p $CONTACTS_CASH_DIRECTORY
-			cp $WORKFILE.all_contacts $CONTACTS_CASH_DIRECTORY/$BALLS_MD5
+			mkdir -p $CONTACTS_CACHE_DIRECTORY
+			cp $WORKFILE.all_contacts $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
 		fi
 	fi
 	
