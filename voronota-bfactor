@@ -62,7 +62,7 @@ cat $INPUT_PDB_FILE \
   --drop-altloc-indicators \
   --set-external-adjuncts $INPUT_SCORES_FILE \
   --set-external-adjuncts-name score \
-| voronota write-balls-to-atoms-file \
+| voronota x-write-balls-to-atoms-file \
   --pdb-output $TMPDIR/result \
   --pdb-output-b-factor score \
 > /dev/null

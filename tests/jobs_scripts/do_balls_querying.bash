@@ -51,7 +51,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls --set-adjuncts 'ssc=100' \
 | $VORONOTA query-balls --match-tags 'helix' --set-adjuncts 'ssc=50' \
 | $VORONOTA query-balls --match-tags 'sheet' --set-adjuncts 'ssc=0' \
-| $VORONOTA write-balls-to-atoms-file \
+| $VORONOTA x-write-balls-to-atoms-file \
   --pdb-output $SUBDIR/balls_with_dssp_info.pdb \
   --pdb-output-b-factor ssc \
   --pdb-output-template $INPUTDIR/single/structure.pdb \
@@ -75,14 +75,14 @@ echo $SUBDIR/balls \
 
 cat $SUBDIR/balls \
 | $VORONOTA query-balls --match 'R<CRO>' \
-| $VORONOTA draw-balls \
+| $VORONOTA x-draw-balls \
   --representation vdw \
   --drawing-for-pymol $SUBDIR/drawing_matched_balls_for_pymol.py \
   --drawing-for-scenejs $SUBDIR/drawing_matched_balls_for_scenejs \
   --drawing-name CRO_balls \
   --default-color '0x00FFFF' \
   --use-labels \
-| $VORONOTA draw-balls \
+| $VORONOTA x-draw-balls \
   --representation vdw \
   --drawing-for-pymol $SUBDIR/drawing_matched_balls_colored_randomly_for_pymol.py \
   --drawing-name CRO_balls_colored_randomly \
@@ -90,7 +90,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls --match-tags 'el=C' --set-adjuncts 'r=0.8;g=0.8;b=0.8' \
 | $VORONOTA query-balls --match-tags 'el=N' --set-adjuncts 'r=0.2;g=0.2;b=1.0' \
 | $VORONOTA query-balls --match-tags 'el=O' --set-adjuncts 'r=1.0;g=0.2;b=0.2' \
-| $VORONOTA draw-balls \
+| $VORONOTA x-draw-balls \
   --representation sticks \
   --drawing-for-pymol $SUBDIR/drawing_matched_sticks_for_pymol.py \
   --drawing-for-scenejs $SUBDIR/drawing_matched_sticks_for_scenejs \
@@ -98,7 +98,7 @@ cat $SUBDIR/balls \
   --default-color '0x00FF00' \
   --adjuncts-rgb \
   --use-labels \
-| $VORONOTA draw-balls \
+| $VORONOTA x-draw-balls \
   --representation sticks \
   --drawing-for-pymol $SUBDIR/drawing_matched_sticks_colored_by_tf_for_pymol.py \
   --drawing-name CRO_sticks_colored_by_tf \
@@ -111,7 +111,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls \
   --set-seq-pos-adjunct \
   --set-dssp-info <(dssp $INPUTDIR/single/structure.pdb) \
-| $VORONOTA draw-balls \
+| $VORONOTA x-draw-balls \
   --representation cartoon \
   --drawing-for-pymol $SUBDIR/cartoon_for_pymol.py \
   --drawing-name cartoon \

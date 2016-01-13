@@ -140,7 +140,7 @@ then
 	| voronota query-balls \
 	  --set-external-adjuncts <(awk '{print $1 " " (10*(1-$2))}' $TMPDIR/residue_quality_scores) \
 	  --set-external-adjuncts-name rqscore \
-	| voronota write-balls-to-atoms-file \
+	| voronota x-write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
 	  --pdb-output-template $TMPDIR/extracted_input_file \
