@@ -139,6 +139,7 @@
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
 <li><a href="#cad-score-method-wrapper-script">CAD-score method wrapper script</a></li>
 <li><a href="#voromqa-method-wrapper-script">VoroMQA method wrapper script</a></li>
+<li><a href="#b-factor-writing-utility-wrapper-script">B-factor writing utility wrapper script</a></li>
 </ul></li>
 </ul>
 </div>
@@ -1877,6 +1878,11 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 [-a output_atom_scores_file]
 [-r output_residue_scores_file]
 [-s residue_scores_smoothing_window_size]
+</code></pre>
+<h2 id="b-factor-writing-utility-wrapper-script"><a href="#TOC">B-factor writing utility wrapper script</a></h2>
+<p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
+<pre><code>-p input_structure_file.pdb
+-s input_scores_file
 </code></pre>
 </body>
 </html>
