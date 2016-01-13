@@ -18,5 +18,5 @@ done
 mkdir -p $OUTPUTDIR
 
 find $INPUT_SEARCH_DIR -type f -name potential -not -empty \
-| $BINDIR/voronota score-contacts-potentials-stats \
+| $BINDIR/voronota x-score-contacts-potentials-stats \
 > $OUTPUTDIR/potential_means_and_sds

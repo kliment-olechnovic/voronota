@@ -140,5 +140,5 @@ cat $SUBDIR/contacts \
 > $SUBDIR/roughly_unfolded_contacts
 
 cat $SUBDIR/contacts \
-| $VORONOTA query-contacts-depth-values \
+| $VORONOTA x-query-contacts-depth-values \
 > $SUBDIR/contacts_depth_values

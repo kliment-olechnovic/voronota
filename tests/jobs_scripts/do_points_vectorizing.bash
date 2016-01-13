@@ -13,7 +13,7 @@ done
 
 find $SUBDIR/ -type f -name "*.points" \
 | sort \
-| $VORONOTA vectorize-points \
+| $VORONOTA x-vectorize-points \
   --RMSD-matrix $SUBDIR/rmsd_matrix \
   --consensus-list $SUBDIR/consensus_list \
   --clustering-output $SUBDIR/clusters \

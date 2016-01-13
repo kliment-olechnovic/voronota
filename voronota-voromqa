@@ -107,7 +107,7 @@ cat $TMPDIR/extracted_input_file \
 > /dev/null
 
 cat $TMPDIR/contacts \
-| voronota query-contacts-depth-values \
+| voronota x-query-contacts-depth-values \
 > $TMPDIR/depth_values
 
 cat $TMPDIR/atom_energies \

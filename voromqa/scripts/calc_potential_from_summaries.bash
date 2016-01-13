@@ -38,12 +38,12 @@ else
 fi
 
 cat $OUTPUTDIR/list \
-| $BINDIR/voronota score-contacts-potential \
+| $BINDIR/voronota x-score-contacts-potential \
   --input-file-list \
   --contributions-file $OUTPUTDIR/contributions \
   --single-areas-file $OUTPUTDIR/single_areas \
 | tee $OUTPUTDIR/summary \
-| $BINDIR/voronota score-contacts-potential $INPUT_CONTRIBUTIONS $FIXED_TYPES_OPTION \
+| $BINDIR/voronota x-score-contacts-potential $INPUT_CONTRIBUTIONS $FIXED_TYPES_OPTION \
   --potential-file $OUTPUTDIR/potential \
   --probabilities-file $OUTPUTDIR/probabilities \
 > /dev/null

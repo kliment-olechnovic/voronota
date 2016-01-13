@@ -16,7 +16,7 @@ do
 done
 
 cat $WORKDIR/contacts \
-| $BINDIR/voronota query-contacts-depth-values \
+| $BINDIR/voronota x-query-contacts-depth-values \
 > $WORKDIR/depth_values
 
 cat $WORKDIR/atom_energies \

@@ -18,5 +18,5 @@ done
 mkdir -p $OUTPUTDIR
 
 (cat $INPUT_FILE_LIST | xargs -L 100 -P 1 cat) \
-| $BINDIR/voronota score-contacts-energy-stats \
+| $BINDIR/voronota x-score-contacts-energy-stats \
 > $OUTPUTDIR/energy_means_and_sds
