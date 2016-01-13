@@ -39,6 +39,12 @@ The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-b
 EOF
 ./voronota-voromqa -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
 
+echo -e "\n## B-factor writing utility wrapper script\n"
+cat << EOF
+The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file.
+EOF
+./voronota-bfactor -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+
 } > $TMPDIR/documentation.markdown
 
 cat > $TMPDIR/include_in_header.html << 'EOF'
