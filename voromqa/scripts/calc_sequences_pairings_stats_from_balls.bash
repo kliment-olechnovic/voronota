@@ -18,5 +18,5 @@ done
 mkdir -p $OUTPUTDIR
 
 cat $INPUT_FILE_LIST \
-| $BINDIR/voronota query-balls-sequences-pairings-stats \
+| $BINDIR/voronota x-query-balls-sequences-pairings-stats \
 > $OUTPUTDIR/pairings_probabilities

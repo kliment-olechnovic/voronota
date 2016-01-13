@@ -7,20 +7,13 @@ calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
 query-balls
-query-balls-sequences-pairings-stats
 write-balls-to-atoms-file
 draw-balls
 query-contacts
-query-contacts-depth-values
 draw-contacts
 plot-contacts
-score-contacts-potential
-score-contacts-potentials-stats
 score-contacts-energy
-score-contacts-energy-stats
 score-contacts-quality
 compare-contacts
-vectorize-contacts
-vectorize-points
 score-scores
 

@@ -41,13 +41,13 @@ do
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
 	| tee $SUBDIR/$INFILEBASENAME.contacts \
-	| $VORONOTA score-contacts-potential \
+	| $VORONOTA x-score-contacts-potential \
 	  --multiply-areas 0.5 \
 	> $SUBDIR/$INFILEBASENAME.summary
 done
 
 find $SUBDIR/ -type f -name "*.summary" \
-| $VORONOTA score-contacts-potential \
+| $VORONOTA x-score-contacts-potential \
   --input-file-list \
   --contributions-file $SUBDIR/contributions \
   --potential-file $SUBDIR/potential \
@@ -57,25 +57,25 @@ find $SUBDIR/ -type f -name "*.summary" \
 > $SUBDIR/summary
 
 cat $SUBDIR/summary \
-| $VORONOTA score-contacts-potential \
+| $VORONOTA x-score-contacts-potential \
   --input-contributions $SUBDIR/contributions \
   --input-fixed-types <(cat $SUBDIR/potential | awk '{print $1 " " $2 " " $3}') \
   --potential-file $SUBDIR/potentialfromsummary \
 > /dev/null
 
 echo $SUBDIR/*.balls \
-| $VORONOTA query-balls-sequences-pairings-stats \
+| $VORONOTA x-query-balls-sequences-pairings-stats \
 > $SUBDIR/sequences_pairings_stats
 
 cat $SUBDIR/summary \
-| $VORONOTA score-contacts-potential \
+| $VORONOTA x-score-contacts-potential \
   --input-contributions $SUBDIR/contributions \
   --input-seq-pairs-stats $SUBDIR/sequences_pairings_stats \
   --potential-file $SUBDIR/potentialadjustedtoseqpairingsstat \
 > /dev/null
 
 echo "$SUBDIR/potential $SUBDIR/potentialfromsummary" \
-| $VORONOTA score-contacts-potentials-stats \
+| $VORONOTA x-score-contacts-potentials-stats \
 > $SUBDIR/potentials_stats
 
 for INFILE in $SUBDIR/*.contacts
@@ -91,7 +91,7 @@ do
 	> $SUBDIR/$INFILEBASENAME.globalenergy
 	
 	cat $INFILE \
-	| $VORONOTA query-contacts-depth-values \
+	| $VORONOTA x-query-contacts-depth-values \
 	> $SUBDIR/$INFILEBASENAME.depthvalues
 	
 	cat $SUBDIR/$INFILEBASENAME.atomenergies \
@@ -108,7 +108,7 @@ do
 done
 
 cat $SUBDIR/*.atomenergies \
-| $VORONOTA score-contacts-energy-stats \
+| $VORONOTA x-score-contacts-energy-stats \
 > $SUBDIR/means_and_sds
 
 for INFILE in $SUBDIR/model*.contacts

@@ -70,7 +70,7 @@ c<E>r<1>a<1767>R<ILE>A<O> 45.09 20.176 51.246 1.49 . .
 EOF
 
 echo $SUBDIR/balls \
-| $VORONOTA query-balls-sequences-pairings-stats \
+| $VORONOTA x-query-balls-sequences-pairings-stats \
 > $SUBDIR/sequences_pairings_stats
 
 cat $SUBDIR/balls \

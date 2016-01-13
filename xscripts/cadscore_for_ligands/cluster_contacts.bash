@@ -47,7 +47,7 @@ command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not
 mkdir -p $OUTPUT_DIR
 
 find $INPUT_DIR -type f \
-| voronota vectorize-contacts \
+| voronota x-vectorize-contacts \
   --clustering-output $OUTPUT_DIR/list_of_clusters.txt \
   --clustering-threshold $CLUSTERING_THRESHOLD \
   --consensus-list $OUTPUT_DIR/list_of_consensus_scores.txt \

@@ -21,7 +21,7 @@ done
 
 find $SUBDIR/ -type f -name "*.contacts" \
 | sort \
-| $VORONOTA vectorize-contacts \
+| $VORONOTA x-vectorize-contacts \
   --CAD-score-matrix $SUBDIR/cadscore_matrix \
   --distance-matrix $SUBDIR/distance_matrix \
   --consensus-list $SUBDIR/consensus_list \
@@ -31,7 +31,7 @@ find $SUBDIR/ -type f -name "*.contacts" \
 
 find $SUBDIR/ -type f -name "*.contacts" \
 | sort \
-| $VORONOTA vectorize-contacts \
+| $VORONOTA x-vectorize-contacts \
   --transpose \
 > $SUBDIR/contacts_vectors_transposed
 

@@ -68,7 +68,7 @@ cat ${RAW_CONTACTS_FILE}_filtered \
   --set-tags 'sep2' \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
 | tr ';' '_' \
-| $BINDIR/voronota score-contacts-potential $MULTAREAS_OPTION \
+| $BINDIR/voronota x-score-contacts-potential $MULTAREAS_OPTION \
   --contributions-file $WORKDIR/contributions \
   --single-areas-file $WORKDIR/single_areas \
 > $WORKDIR/summary

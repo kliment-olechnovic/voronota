@@ -55,7 +55,7 @@ done
 mkdir -p $OUTPUT_DIR
 
 find $TMPDIR -type f \
-| voronota vectorize-points \
+| voronota x-vectorize-points \
   --clustering-output $OUTPUT_DIR/list_of_clusters.txt \
   --clustering-threshold $CLUSTERING_THRESHOLD \
   --consensus-list $OUTPUT_DIR/list_of_consensus_scores.txt \
