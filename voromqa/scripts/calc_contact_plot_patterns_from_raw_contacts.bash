@@ -19,7 +19,7 @@ cat $WORKDIR/raw_contacts \
   --match-second-not 'A<C,CA,N,O>' \
 | $BINDIR/voronota query-contacts \
   --inter-residue \
-| $BINDIR/voronota plot-contacts \
+| $BINDIR/voronota x-plot-contacts \
   --no-contraction \
   --patterns-output $WORKDIR/contact_plot_patterns
 

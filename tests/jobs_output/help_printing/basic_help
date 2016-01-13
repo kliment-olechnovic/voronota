@@ -7,11 +7,7 @@ calculate-vertices
 calculate-vertices-in-parallel
 calculate-contacts
 query-balls
-write-balls-to-atoms-file
-draw-balls
 query-contacts
-draw-contacts
-plot-contacts
 score-contacts-energy
 score-contacts-quality
 compare-contacts

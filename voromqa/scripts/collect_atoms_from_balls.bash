@@ -17,6 +17,6 @@ cat $WORKDIR/balls \
   --drop-adjuncts \
 | $BINDIR/voronota query-balls \
   --set-adjuncts "oc=1;tf=0" \
-| $BINDIR/voronota write-balls-to-atoms-file \
+| $BINDIR/voronota x-write-balls-to-atoms-file \
   --pdb-output $WORKDIR/atoms.pdb \
 > /dev/null
