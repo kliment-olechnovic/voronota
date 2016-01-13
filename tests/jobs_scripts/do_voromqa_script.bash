@@ -6,10 +6,22 @@ mkdir -p $SUBDIR
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
+
 	$VORONOTADIR/voronota-voromqa \
 	  -i $INFILE \
 	  -a $SUBDIR/$INFILEBASENAME/atom_scores \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
 	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
 	  -s 5
+
+	$VORONOTADIR/voronota-bfactor \
+	  -p $INFILE \
+	  -s $SUBDIR/$INFILEBASENAME/atom_scores \
+	> $SUBDIR/$INFILEBASENAME/atom_scores.pdb
+
+	$VORONOTADIR/voronota-bfactor \
+	  -p $INFILE \
+	  -s $SUBDIR/$INFILEBASENAME/residue_scores \
+	> $SUBDIR/$INFILEBASENAME/residue_scores.pdb
+
 done > $SUBDIR/global_scores
