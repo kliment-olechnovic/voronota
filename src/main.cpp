@@ -13,6 +13,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
 void query_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts(const auxiliaries::ProgramOptionsHandler&);
+void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
@@ -22,7 +23,6 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler&);
 void draw_balls(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
-void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
 void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler&);
@@ -60,6 +60,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("calculate-contacts", ModeDescriptor::FunctionPtr(calculate_contacts)));
 	list_of_modes.push_back(ModeDescriptor("query-balls", ModeDescriptor::FunctionPtr(query_balls)));
 	list_of_modes.push_back(ModeDescriptor("query-contacts", ModeDescriptor::FunctionPtr(query_contacts)));
+	list_of_modes.push_back(ModeDescriptor("draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
@@ -74,7 +75,6 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
 	list_of_modes.push_back(ModeDescriptor("x-draw-balls", ModeDescriptor::FunctionPtr(draw_balls)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
-	list_of_modes.push_back(ModeDescriptor("x-draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
 	list_of_modes.push_back(ModeDescriptor("x-plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-potentials-stats", ModeDescriptor::FunctionPtr(score_contacts_potentials_stats)));
