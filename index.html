@@ -60,25 +60,30 @@
 <li><a href="#input-stream-5">Input stream:</a></li>
 <li><a href="#output-stream-5">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-score-contacts-energy">Command 'score-contacts-energy'</a><ul>
+<li><a href="#command-draw-contacts">Command 'draw-contacts'</a><ul>
 <li><a href="#command-line-arguments-6">Command line arguments:</a></li>
 <li><a href="#input-stream-6">Input stream:</a></li>
 <li><a href="#output-stream-6">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-score-contacts-quality">Command 'score-contacts-quality'</a><ul>
+<li><a href="#command-score-contacts-energy">Command 'score-contacts-energy'</a><ul>
 <li><a href="#command-line-arguments-7">Command line arguments:</a></li>
 <li><a href="#input-stream-7">Input stream:</a></li>
 <li><a href="#output-stream-7">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
+<li><a href="#command-score-contacts-quality">Command 'score-contacts-quality'</a><ul>
 <li><a href="#command-line-arguments-8">Command line arguments:</a></li>
 <li><a href="#input-stream-8">Input stream:</a></li>
 <li><a href="#output-stream-8">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
 <li><a href="#command-line-arguments-9">Command line arguments:</a></li>
 <li><a href="#input-stream-9">Input stream:</a></li>
 <li><a href="#output-stream-9">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-line-arguments-10">Command line arguments:</a></li>
+<li><a href="#input-stream-10">Input stream:</a></li>
+<li><a href="#output-stream-10">Output stream:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
@@ -207,6 +212,7 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <li>calculate-contacts</li>
 <li>query-balls</li>
 <li>query-contacts</li>
+<li>draw-contacts</li>
 <li>score-contacts-energy</li>
 <li>score-contacts-quality</li>
 <li>compare-contacts</li>
@@ -932,8 +938,104 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')</p>
 <h3 id="output-stream-5"><a href="#TOC">Output stream:</a></h3>
 <p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')</p>
-<h2 id="command-score-contacts-energy"><a href="#TOC">Command 'score-contacts-energy'</a></h2>
+<h2 id="command-draw-contacts"><a href="#TOC">Command 'draw-contacts'</a></h2>
 <h3 id="command-line-arguments-6"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--drawing-for-pymol</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as pymol script</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-for-jmol</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as jmol script</td>
+</tr>
+<tr class="odd">
+<td align="left">--drawing-for-scenejs</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output drawing as scenejs script</td>
+</tr>
+<tr class="even">
+<td align="left">--drawing-name</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">graphics object name for drawing output</td>
+</tr>
+<tr class="odd">
+<td align="left">--default-color</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">default color for drawing output, in hex format, white is 0xFFFFFF</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">adjunct name to use for gradient-based coloring</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjunct-gradient-blue</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">blue adjunct gradient value</td>
+</tr>
+<tr class="even">
+<td align="left">--adjunct-gradient-red</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">red adjunct gradient value</td>
+</tr>
+<tr class="odd">
+<td align="left">--adjuncts-rgb</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use RGB color values from adjuncts</td>
+</tr>
+<tr class="even">
+<td align="left">--random-colors</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use random color for each drawn contact</td>
+</tr>
+<tr class="odd">
+<td align="left">--alpha</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">alpha opacity value for drawing output</td>
+</tr>
+<tr class="even">
+<td align="left">--use-labels</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to use labels in drawing if possible</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-6"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')</p>
+<h3 id="output-stream-6"><a href="#TOC">Output stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')</p>
+<h2 id="command-score-contacts-energy"><a href="#TOC">Command 'score-contacts-energy'</a></h2>
+<h3 id="command-line-arguments-7"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -982,12 +1084,12 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-6"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-7"><a href="#TOC">Input stream:</a></h3>
 <p>list of contacts (line format: 'annotation1 annotation2 conditions area')</p>
-<h3 id="output-stream-6"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-7"><a href="#TOC">Output stream:</a></h3>
 <p>global scores</p>
 <h2 id="command-score-contacts-quality"><a href="#TOC">Command 'score-contacts-quality'</a></h2>
-<h3 id="command-line-arguments-7"><a href="#TOC">Command line arguments:</a></h3>
+<h3 id="command-line-arguments-8"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1054,12 +1156,12 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-7"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-8"><a href="#TOC">Input stream:</a></h3>
 <p>list of atom energy descriptors</p>
-<h3 id="output-stream-7"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-8"><a href="#TOC">Output stream:</a></h3>
 <p>weighted average local score</p>
 <h2 id="command-compare-contacts"><a href="#TOC">Command 'compare-contacts'</a></h2>
-<h3 id="command-line-arguments-8"><a href="#TOC">Command line arguments:</a></h3>
+<h3 id="command-line-arguments-9"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1132,12 +1234,12 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-8"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-9"><a href="#TOC">Input stream:</a></h3>
 <p>list of model contacts (line format: 'annotation1 annotation2 area')</p>
-<h3 id="output-stream-8"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
 <p>global scores (atom-level and residue-level)</p>
 <h2 id="command-score-scores"><a href="#TOC">Command 'score-scores'</a></h2>
-<h3 id="command-line-arguments-9"><a href="#TOC">Command line arguments:</a></h3>
+<h3 id="command-line-arguments-10"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1186,9 +1288,9 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-9"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-10"><a href="#TOC">Input stream:</a></h3>
 <p>pairs of reference and testable scores files</p>
-<h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
 <p>global results</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="cad-score-method-script"><a href="#TOC">CAD-score method script</a></h2>

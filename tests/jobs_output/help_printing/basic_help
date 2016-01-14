@@ -8,6 +8,7 @@ calculate-vertices-in-parallel
 calculate-contacts
 query-balls
 query-contacts
+draw-contacts
 score-contacts-energy
 score-contacts-quality
 compare-contacts
