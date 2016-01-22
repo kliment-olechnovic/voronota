@@ -1,7 +1,0 @@
-Used configuration:
-sequence separation for potential calculation: sep1=1:6, sep2=7:N
-sequence separation for energies scoring: sep2=2:N
-contacts centrality tagging
-contributions ratios from CASP models
-
-In models global scoring results tables final version ofthe quality score is in column "qscore_atom_we".
