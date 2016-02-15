@@ -4,10 +4,12 @@ readonly ZEROARG=$0
 INFILE_PDB=""
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
+DRAWING_OUTPUT=""
+DRAWING_PARAMETERS=""
 CONTACTS_CACHE_DIRECTORY=""
 HELP_MODE=false
 
-while getopts "i:a:c:C:h" OPTION
+while getopts "i:a:c:d:g:C:h" OPTION
 do
 	case $OPTION in
 	i)
@@ -18,6 +20,12 @@ do
 		;;
 	c)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
+		;;
+	d)
+		DRAWING_OUTPUT=$OPTARG
+		;;
+	g)
+		DRAWING_PARAMETERS=$OPTARG
 		;;
 	C)
 		CONTACTS_CACHE_DIRECTORY=$OPTARG
@@ -35,6 +43,8 @@ Script parameters:
     -i input_file.pdb
     [-a atoms_query_parameters_string]
     [-c contacts_query_parameters_string]
+    [-d drawing_for_pymol.py]
+    [-g drawing_parameters_string]
     [-C cache_directory]
 EOF
 exit 1
@@ -86,14 +96,35 @@ then
 	fi
 fi
 
+if [ -n "$DRAWING_OUTPUT" ] && [ -s "$TMPDIR/all_contacts" ]
+then
+	GRAPHICS_TOKEN=$(cat $TMPDIR/all_contacts | head -1 | awk '{print $8}')
+	if [ -z "$GRAPHICS_TOKEN" ]
+	then
+		rm $TMPDIR/all_contacts
+	fi
+fi
+
 if [ ! -s "$TMPDIR/all_contacts" ]
 then
-	cat $TMPDIR/balls \
-	| voronota calculate-contacts \
-	  --annotated \
-	| voronota query-contacts \
-	  --match-min-seq-sep 1 \
-	> $TMPDIR/all_contacts
+	if [ -n "$DRAWING_OUTPUT" ]
+	then
+		cat $TMPDIR/balls \
+		| voronota calculate-contacts \
+		  --annotated \
+		  --draw \
+		| voronota query-contacts \
+		  --match-min-seq-sep 1 \
+		  --preserve-graphics \
+		> $TMPDIR/all_contacts
+	else
+		cat $TMPDIR/balls \
+		| voronota calculate-contacts \
+		  --annotated \
+		| voronota query-contacts \
+		  --match-min-seq-sep 1 \
+		> $TMPDIR/all_contacts
+	fi
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
@@ -102,6 +133,17 @@ then
 	fi
 fi
 
-cat $TMPDIR/all_contacts \
-| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-| column -t
+if [ -n "$DRAWING_OUTPUT" ]
+then
+	cat $TMPDIR/all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	  --preserve-graphics \
+	| voronota draw-contacts $DRAWING_PARAMETERS \
+	  --drawing-for-pymol $DRAWING_OUTPUT \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| column -t
+else
+	cat $TMPDIR/all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| column -t
+fi
