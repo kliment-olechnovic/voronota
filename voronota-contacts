@@ -113,6 +113,7 @@ then
 		| voronota calculate-contacts \
 		  --annotated \
 		  --draw \
+		  --tag-centrality \
 		| voronota query-contacts \
 		  --match-min-seq-sep 1 \
 		  --preserve-graphics \
@@ -121,6 +122,7 @@ then
 		cat $TMPDIR/balls \
 		| voronota calculate-contacts \
 		  --annotated \
+		  --tag-centrality \
 		| voronota query-contacts \
 		  --match-min-seq-sep 1 \
 		> $TMPDIR/all_contacts
