@@ -84,7 +84,6 @@ cat $INFILE_PDB \
   --include-heteroatoms \
 | voronota query-balls \
   --drop-altloc-indicators \
-  --drop-atom-serials \
 | voronota query-balls $ATOMS_QUERY_PARAMETERS \
 > $TMPDIR/balls
 
