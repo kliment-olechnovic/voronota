@@ -3,14 +3,15 @@
 readonly ZEROARG=$0
 INFILE_PDB=""
 ATOMS_QUERY_PARAMETERS=""
-CONTACTS_QUERY_PARAMETERS=""
+CONTACTS_QUERY_FIRST_PARAMETERS=""
+CONTACTS_QUERY_SECOND_PARAMETERS=""
 DRAWING_OUTPUT=""
 DRAWING_PARAMETERS=""
 CONTACTS_CACHE_DIRECTORY=""
 WIREFRAME_DRAWING=false
 HELP_MODE=false
 
-while getopts "i:a:c:d:g:C:wh" OPTION
+while getopts "i:a:m:c:d:g:C:wh" OPTION
 do
 	case $OPTION in
 	i)
@@ -19,8 +20,11 @@ do
 	a)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
 		;;
+	m)
+		CONTACTS_QUERY_FIRST_PARAMETERS="$OPTARG"
+		;;
 	c)
-		CONTACTS_QUERY_PARAMETERS="$OPTARG"
+		CONTACTS_QUERY_SECOND_PARAMETERS="$OPTARG"
 		;;
 	d)
 		DRAWING_OUTPUT=$OPTARG
@@ -142,7 +146,9 @@ fi
 if [ -n "$DRAWING_OUTPUT" ]
 then
 	cat $TMPDIR/all_contacts \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| voronota query-contacts $CONTACTS_QUERY_FIRST_PARAMETERS \
+	  --preserve-graphics \
+	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS \
 	  --preserve-graphics \
 	> $TMPDIR/all_contacts_for_drawing
 	
@@ -158,10 +164,14 @@ then
 	cat $TMPDIR/all_contacts_for_drawing \
 	| voronota draw-contacts $DRAWING_PARAMETERS \
 	  --drawing-for-pymol $DRAWING_OUTPUT \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	> /dev/null
+	
+	cat $TMPDIR/all_contacts_for_drawing \
+	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " " $6}' \
 	| column -t
 else
 	cat $TMPDIR/all_contacts \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| voronota query-contacts $CONTACTS_QUERY_FIRST_PARAMETERS \
+	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS \
 	| column -t
 fi
