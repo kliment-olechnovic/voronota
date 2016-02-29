@@ -7,9 +7,10 @@ CONTACTS_QUERY_PARAMETERS=""
 DRAWING_OUTPUT=""
 DRAWING_PARAMETERS=""
 CONTACTS_CACHE_DIRECTORY=""
+WIREFRAME_DRAWING=false
 HELP_MODE=false
 
-while getopts "i:a:c:d:g:C:h" OPTION
+while getopts "i:a:c:d:g:C:wh" OPTION
 do
 	case $OPTION in
 	i)
@@ -29,6 +30,9 @@ do
 		;;
 	C)
 		CONTACTS_CACHE_DIRECTORY=$OPTARG
+		;;
+	w)
+		WIREFRAME_DRAWING=true
 		;;
 	h)
 		HELP_MODE=true
@@ -140,6 +144,18 @@ then
 	cat $TMPDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
 	  --preserve-graphics \
+	> $TMPDIR/all_contacts_for_drawing
+	
+	if $WIREFRAME_DRAWING
+	then
+		cat $TMPDIR/all_contacts_for_drawing \
+		| sed 's|_tfanc \S\+ \S\+ \S\+ \S\+ \S\+ \S\+|_lloop|g' \
+		| sed 's|_tstrip \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+||g' \
+		> $TMPDIR/all_contacts_for_drawing_wireframe
+		mv $TMPDIR/all_contacts_for_drawing_wireframe $TMPDIR/all_contacts_for_drawing
+	fi
+	
+	cat $TMPDIR/all_contacts_for_drawing \
 	| voronota draw-contacts $DRAWING_PARAMETERS \
 	  --drawing-for-pymol $DRAWING_OUTPUT \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \

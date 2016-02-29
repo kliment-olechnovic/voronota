@@ -22,6 +22,16 @@ $VORONOTADIR/voronota-contacts \
 $VORONOTADIR/voronota-contacts \
   -i $INPUTDIR/single/structure.pdb \
   -a "--match r<1:50>" \
+  -c "--inter-residue --match-first R<LYS>" \
+  -w \
+  -d $SUBDIR/contacts1_wireframe_drawing.py \
+  -g "--default-color 0xFF00FF --drawing-name contacts1_wireframe" \
+  -C $SUBDIR/cache \
+> /dev/null
+
+$VORONOTADIR/voronota-contacts \
+  -i $INPUTDIR/single/structure.pdb \
+  -a "--match r<1:50>" \
   -c "--inter-residue --match-first R<LEU>" \
   -C $SUBDIR/cache \
 > $SUBDIR/contacts2
