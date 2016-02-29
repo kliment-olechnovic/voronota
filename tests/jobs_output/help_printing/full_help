@@ -134,6 +134,8 @@ Command 'query-contacts' options:
 --set-adjuncts                  string      set adjuncts instead of filtering
 --set-external-adjuncts         string      file path to input external adjuncts
 --set-external-adjuncts-name    string      name for external adjuncts
+--set-external-means            string      file path to input external values for averaging
+--set-external-means-name       string      name for external means
 --renaming-map                  string      file path to input atoms renaming map
 --inter-residue                             flag to convert input to inter-residue contacts
 --inter-residue-after                       flag to convert output to inter-residue contacts
