@@ -142,3 +142,11 @@ cat $SUBDIR/contacts \
 cat $SUBDIR/contacts \
 | $VORONOTA x-query-contacts-depth-values \
 > $SUBDIR/contacts_depth_values
+
+cat $SUBDIR/contacts \
+| $VORONOTA query-contacts \
+  --set-external-means <(cat $SUBDIR/balls | awk '{print $1 " " NR}') \
+  --set-external-means-name 'emm' \
+| $VORONOTA query-contacts \
+  --match-adjuncts 'emm=500:600' \
+> $SUBDIR/set_external_means_and_match_adjuncts

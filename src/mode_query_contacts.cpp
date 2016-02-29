@@ -117,6 +117,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-adjuncts", "string", "set adjuncts instead of filtering"), "");
 	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
+	const std::string set_external_means=poh.argument<std::string>(pohw.describe_option("--set-external-means", "string", "file path to input external values for averaging"), "");
+	const std::string set_external_means_name=poh.argument<std::string>(pohw.describe_option("--set-external-means-name", "string", "name for external means"), "em");
 	const std::string renaming_map=poh.argument<std::string>(pohw.describe_option("--renaming-map", "string", "file path to input atoms renaming map"), "");
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 	const bool inter_residue_after=poh.contains_option(pohw.describe_option("--inter-residue-after", "", "flag to convert output to inter-residue contacts"));
@@ -191,10 +193,11 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_hbplus_tags.empty() || !set_distance_bins_tags.empty());
+	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_external_means.empty() || !set_hbplus_tags.empty() || !set_distance_bins_tags.empty());
 	if(update_mode && !selected_contacts.empty())
 	{
 		const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_values_for_averaging=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_means);
 		const std::set<CRADsPair> set_of_hbplus_crad_pairs=init_set_of_hbplus_crad_pairs(set_hbplus_tags, inter_residue_hbplus_tags);
 		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
 
@@ -225,6 +228,18 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					if(adjunct_value_it!=map_of_external_adjunct_values.end())
 					{
 						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					}
+				}
+				if(!map_of_external_values_for_averaging.empty())
+				{
+					std::map< CRAD, double >::const_iterator value_a_it=map_of_external_values_for_averaging.find(it->first.a);
+					std::map< CRAD, double >::const_iterator value_b_it=map_of_external_values_for_averaging.find(it->first.b);
+					if(value_a_it!=map_of_external_values_for_averaging.end() || value_b_it!=map_of_external_values_for_averaging.end())
+					{
+						const double value_a=(value_a_it!=map_of_external_values_for_averaging.end() ? value_a_it->second : 0.0);
+						const double value_b=(value_b_it!=map_of_external_values_for_averaging.end() ? value_b_it->second : 0.0);
+						const double mult=((value_a_it!=map_of_external_values_for_averaging.end() && value_b_it!=map_of_external_values_for_averaging.end()) ? 0.5 : 1.0);
+						it->second.props.adjuncts[set_external_means_name]=(value_a+value_b)*mult;
 					}
 				}
 				if(!set_of_hbplus_crad_pairs.empty())
