@@ -65,5 +65,18 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	for(std::set<CRADsPair>::const_iterator it=set_of_contacts.begin();it!=set_of_contacts.end();++it)
+	{
+		const CRADsPair& crads=(*it);
+		if(crads.a!=CRAD::solvent() && map_crad_to_depth.find(crads.a)==map_crad_to_depth.end())
+		{
+			map_crad_to_depth[crads.a]=1;
+		}
+		if(crads.b!=CRAD::solvent() && map_crad_to_depth.find(crads.b)==map_crad_to_depth.end())
+		{
+			map_crad_to_depth[crads.b]=1;
+		}
+	}
+
 	auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
 }
