@@ -9,6 +9,11 @@ voronota-voromqa \
   -i $INFILE \
   -a $TMPDIR/iscores
 
+voronota-bfactor \
+  -p $INFILE \
+  -s $TMPDIR/iscores \
+> $TMPDIR/struct.pdb
+
 voronota-contacts \
   -i $INFILE \
   -m "--set-external-means $TMPDIR/iscores" \
@@ -17,4 +22,8 @@ voronota-contacts \
   -d $TMPDIR/ifaces.py \
 > /dev/null
 
-pymol $TMPDIR/ifaces.py
+cat > $TMPDIR/script.pml << EOF
+spectrum b, red_white_blue, minimum=0, maximum=1
+EOF
+
+pymol $TMPDIR/ifaces.py $TMPDIR/struct.pdb $TMPDIR/script.pml
