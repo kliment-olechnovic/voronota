@@ -8,9 +8,10 @@ CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="1"
 CONTACTS_CACHE_DIRECTORY=""
+MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "t:m:a:c:r:s:C:h" OPTION
+while getopts "t:m:a:c:r:s:C:qh" OPTION
 do
 	case $OPTION in
 	t)
@@ -33,6 +34,9 @@ do
 		;;
 	C)
 		CONTACTS_CACHE_DIRECTORY=$OPTARG
+		;;
+	q)
+		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
 	h)
 		HELP_MODE=true
@@ -87,7 +91,7 @@ for WORKFILE in $TMPDIR/target $TMPDIR/model
 do
 	cat $WORKFILE \
 	| voronota get-balls-from-atoms-file \
-	  --annotated \
+	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
 	  --radii-file <(voronota-resources radii) \
 	  --include-heteroatoms \
 	| voronota query-balls \

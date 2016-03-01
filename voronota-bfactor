@@ -3,9 +3,10 @@
 readonly ZEROARG=$0
 INPUT_PDB_FILE=""
 INPUT_SCORES_FILE=""
+MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "p:s:h" OPTION
+while getopts "p:s:qh" OPTION
 do
 	case $OPTION in
 	p)
@@ -13,6 +14,9 @@ do
 		;;
 	s)
 		INPUT_SCORES_FILE=$OPTARG
+		;;
+	q)
+		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
 	h)
 		HELP_MODE=true
@@ -56,7 +60,7 @@ trap "rm -r $TMPDIR" EXIT
 
 cat $INPUT_PDB_FILE \
 | voronota get-balls-from-atoms-file \
-  --annotated \
+  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --include-heteroatoms \
 | voronota query-balls \
   --drop-altloc-indicators \
