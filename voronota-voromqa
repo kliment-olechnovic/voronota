@@ -6,10 +6,11 @@ OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="5"
+CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "i:a:r:c:s:qh" OPTION
+while getopts "i:a:r:c:s:C:qh" OPTION
 do
 	case $OPTION in
 	i)
@@ -26,6 +27,9 @@ do
 		;;
 	s)
 		SMOOTHING_WINDOW=$OPTARG
+		;;
+	C)
+		CONTACTS_CACHE_DIRECTORY=$OPTARG
 		;;
 	q)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
@@ -44,6 +48,7 @@ Script parameters:
     [-a output_atom_scores_file]
     [-r output_residue_scores_file]
     [-s residue_scores_smoothing_window_size]
+    [-C cache_directory]
 EOF
 exit 1
 fi
@@ -82,26 +87,56 @@ cat $TMPDIR/extracted_input_file \
 | voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
-| tee $TMPDIR/balls \
-| voronota calculate-contacts \
-  --annotated \
-  --tag-centrality \
-| voronota query-contacts \
-  --match-min-seq-sep 1 \
-| voronota query-contacts \
-  --match-first 'A<C>' \
-  --match-second 'A<N>' \
-  --match-max-seq-sep 1 \
-  --match-max-dist 1.6 \
-  --invert \
-| voronota query-contacts \
-  --match-min-seq-sep 1 \
-  --match-max-seq-sep 1 \
-  --set-tags 'sep1' \
-| voronota query-contacts \
-  --match-min-seq-sep 2 \
-  --no-solvent \
-  --set-tags 'sep2' \
+> $TMPDIR/balls
+
+if [ ! -s "$TMPDIR/balls" ]
+then
+	echo >&2 "Error: no atoms in input file"
+	exit 1
+fi
+
+BALLS_MD5=""
+if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
+then
+	BALLS_MD5=$(cat $TMPDIR/balls | md5sum | awk '{print $1}')
+	if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+	then
+		cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPDIR/all_contacts
+	fi
+fi
+
+if [ ! -s "$TMPDIR/all_contacts" ]
+then
+	cat $TMPDIR/balls \
+	| voronota calculate-contacts \
+	  --annotated \
+	  --tag-centrality \
+	| voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	| voronota query-contacts \
+	  --match-first 'A<C>' \
+	  --match-second 'A<N>' \
+	  --match-max-seq-sep 1 \
+	  --match-max-dist 1.6 \
+	  --invert \
+	| voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	  --match-max-seq-sep 1 \
+	  --set-tags 'sep1' \
+	| voronota query-contacts \
+	  --match-min-seq-sep 2 \
+	  --no-solvent \
+	  --set-tags 'sep2' \
+	> $TMPDIR/all_contacts
+	
+	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
+	then
+		mkdir -p $CONTACTS_CACHE_DIRECTORY
+		cp $TMPDIR/all_contacts $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
+	fi
+fi
+
+cat $TMPDIR/all_contacts \
 | awk '{print $1 " " $2 " " $5 " " $3}' \
 | tr ';' '_' \
 | tee $TMPDIR/contacts \
