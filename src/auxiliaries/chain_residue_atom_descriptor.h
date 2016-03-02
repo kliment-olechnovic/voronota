@@ -67,12 +67,24 @@ public:
 		static const MarkerNaming mn;
 		ChainResidueAtomDescriptor v;
 		std::string refined_input_str=input_str;
-		for(std::size_t i=0;i<refined_input_str.size();i++)
 		{
-			char& s=refined_input_str[i];
-			if(s==vend || s==vbegin)
+			char last_bracket='?';
+			for(std::size_t i=0;i<refined_input_str.size();i++)
 			{
-				s=' ';
+				char& s=refined_input_str[i];
+				if(s==vend || s==vbegin)
+				{
+					if(s==last_bracket)
+					{
+						return (std::string("Invalid bracketing in descriptor string '")+input_str+"'.");
+					}
+					last_bracket=s;
+					s=' ';
+				}
+			}
+			if(last_bracket!=vend)
+			{
+				return (std::string("Incomplete bracketing in descriptor string '")+input_str+"'.");
 			}
 		}
 		std::istringstream input(refined_input_str);
