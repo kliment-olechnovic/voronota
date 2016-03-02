@@ -200,18 +200,16 @@ if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
 then
 	cat $TMPDIR/balls \
 	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
-	| awk '{print $1 " 1"}' \
+	| awk '{print $1}' \
 	> $TMPDIR/selection_by_atoms_query
 	
 	cat $TMPDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| voronota x-query-contacts-depth-values \
-	| awk '{print $1 " 1"}' \
+	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq \
 	> $TMPDIR/selection_by_contacts_query
 	
 	join -e EMPTY <(sort $TMPDIR/selection_by_atoms_query) <(sort $TMPDIR/selection_by_contacts_query) \
 	| grep -v EMPTY \
-	| awk '{print $1 " 1"}' \
 	> $TMPDIR/selection_by_queries
 	
 	join -e EMPTY <(sort $TMPDIR/depth_values) <(sort $TMPDIR/selection_by_queries) \

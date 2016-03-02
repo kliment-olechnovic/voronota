@@ -12,7 +12,8 @@ do
 	  -a $SUBDIR/$INFILEBASENAME/atom_scores \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
 	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
-	  -s 5
+	  -s 5 \
+	  -m '--no-same-chain --no-solvent'
 
 	$VORONOTADIR/voronota-bfactor \
 	  -p $INFILE \
