@@ -109,14 +109,16 @@ BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 then
 	BALLS_MD5=$(cat $TMPDIR/balls | md5sum | awk '{print $1}')
-	if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+	if [ -n "$BALLS_MD5" ] && [ -d "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
 	then
-		cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPDIR/all_contacts
+		cp -r $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPDIR/foundation
 	fi
 fi
 
-if [ ! -s "$TMPDIR/all_contacts" ]
+if [ ! -d "$TMPDIR/foundation" ]
 then
+	mkdir -p $TMPDIR/foundation
+	
 	cat $TMPDIR/balls \
 	| voronota calculate-contacts \
 	  --annotated \
@@ -137,34 +139,32 @@ then
 	  --match-min-seq-sep 2 \
 	  --no-solvent \
 	  --set-tags 'sep2' \
-	> $TMPDIR/all_contacts
+	| tee $TMPDIR/foundation/all_contacts \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| tee $TMPDIR/contacts \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources energy_potential) \
+	  --atom-scores-file $TMPDIR/foundation/atom_energies \
+	> /dev/null
+	
+	cat $TMPDIR/contacts \
+	| voronota x-query-contacts-depth-values \
+	> $TMPDIR/foundation/depth_values
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
 		mkdir -p $CONTACTS_CACHE_DIRECTORY
-		cp $TMPDIR/all_contacts $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
+		cp -r $TMPDIR/foundation $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
 	fi
 fi
 
-cat $TMPDIR/all_contacts \
-| awk '{print $1 " " $2 " " $5 " " $3}' \
-| tr ';' '_' \
-| tee $TMPDIR/contacts \
-| voronota score-contacts-energy \
-  --potential-file <(voronota-resources energy_potential) \
-  --atom-scores-file $TMPDIR/atom_energies \
-> /dev/null
-
-cat $TMPDIR/contacts \
-| voronota x-query-contacts-depth-values \
-> $TMPDIR/depth_values
-
-cat $TMPDIR/atom_energies \
+cat $TMPDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
   --means-and-sds-file <(voronota-resources energy_means_and_sds) \
-  --external-weights-file $TMPDIR/depth_values \
+  --external-weights-file $TMPDIR/foundation/depth_values \
   --smoothing-window $SMOOTHING_WINDOW \
   --atom-scores-file $TMPDIR/atom_quality_scores \
   --residue-scores-file $TMPDIR/residue_quality_scores \
@@ -203,7 +203,7 @@ then
 	| awk '{print $1}' \
 	> $TMPDIR/selection_by_atoms_query
 	
-	cat $TMPDIR/all_contacts \
+	cat $TMPDIR/foundation/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
 	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
 	> $TMPDIR/selection_by_contacts_query
@@ -212,7 +212,7 @@ then
 	| grep -v EMPTY \
 	> $TMPDIR/selection_by_queries
 	
-	join -e EMPTY <(sort $TMPDIR/depth_values) <(sort $TMPDIR/selection_by_queries) \
+	join -e EMPTY <(sort $TMPDIR/foundation/depth_values) <(sort $TMPDIR/selection_by_queries) \
 	| grep -v EMPTY \
 	| awk '{print $1 " " $2}' \
 	> $TMPDIR/scoring_domain
