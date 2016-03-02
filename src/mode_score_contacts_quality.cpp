@@ -38,7 +38,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string mean_and_sds_file=poh.argument<std::string>(pohw.describe_option("--means-and-sds-file", "string", "file path to input atomic mean and sd parameters"), "");
 	const double mean_shift=poh.argument<double>(pohw.describe_option("--mean-shift", "number", "mean shift in standard deviations"), 0.0);
 	const std::string external_weights_file=poh.argument<std::string>(pohw.describe_option("--external-weights-file", "string", "file path to input external weights for global scoring"), "");
-	const unsigned int smoothing_window=poh.argument<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue quality scores along sequence"), 0);
+	const std::vector<unsigned int> smoothing_windows=poh.argument_vector<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue quality scores along sequence"), ',', std::vector<unsigned int>(1, 0));
 	const std::string atom_scores_file=poh.argument<std::string>(pohw.describe_option("--atom-scores-file", "string", "file path to output atom scores"), "");
 	const std::string residue_scores_file=poh.argument<std::string>(pohw.describe_option("--residue-scores-file", "string", "file path to output residue scores"), "");
 
@@ -92,8 +92,37 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!residue_scores_file.empty())
 	{
-		const std::map<CRAD, double> residue_quality_scores=auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
-		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
+		const std::map<CRAD, double> raw_residue_quality_scores=average_atom_scores_by_residue(atom_quality_scores);
+		if(smoothing_windows.empty() || (smoothing_windows.size()==1 && smoothing_windows.front()==0))
+		{
+			auxiliaries::IOUtilities().write_map_to_file(raw_residue_quality_scores, residue_scores_file);
+		}
+		else if(smoothing_windows.size()==1)
+		{
+			auxiliaries::IOUtilities().write_map_to_file(auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(raw_residue_quality_scores, smoothing_windows.front()), residue_scores_file);
+		}
+		else
+		{
+			std::ofstream foutput(residue_scores_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				std::vector< std::map<CRAD, double> > residue_quality_scores(smoothing_windows.size());
+				for(std::size_t i=0;i<smoothing_windows.size();i++)
+				{
+					residue_quality_scores[i]=auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(raw_residue_quality_scores, smoothing_windows[i]);
+				}
+				const std::map<CRAD, double>& axis=residue_quality_scores.front();
+				for(std::map<CRAD, double>::const_iterator it=axis.begin();it!=axis.end();++it)
+				{
+					foutput << (it->first);
+					for(std::size_t i=0;i<residue_quality_scores.size();i++)
+					{
+						foutput << " " << residue_quality_scores[i][it->first];
+					}
+					foutput << "\n";
+				}
+			}
+		}
 	}
 
 	std::cout << (sum_of_weights>0.0 ? sum_of_weighted_scores/sum_of_weights : 0.0) << "\n";

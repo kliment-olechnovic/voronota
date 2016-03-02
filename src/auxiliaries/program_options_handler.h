@@ -167,6 +167,19 @@ public:
 		return result;
 	}
 
+	template<typename T>
+	std::vector<T> argument_vector(const std::string& name, const char delimiter, const std::vector<T>& default_value) const
+	{
+		if(contains_option(name))
+		{
+			return argument_vector<T>(name, delimiter);
+		}
+		else
+		{
+			return default_value;
+		}
+	}
+
 	void remove_option(const std::string& name)
 	{
 		options_.erase(name);
