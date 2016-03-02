@@ -205,7 +205,7 @@ then
 	
 	cat $TMPDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq \
+	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
 	> $TMPDIR/selection_by_contacts_query
 	
 	join -e EMPTY <(sort $TMPDIR/selection_by_atoms_query) <(sort $TMPDIR/selection_by_contacts_query) \
