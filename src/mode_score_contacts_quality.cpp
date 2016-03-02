@@ -90,9 +90,9 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
 
-	const std::map<CRAD, double> residue_quality_scores=auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
 	if(!residue_scores_file.empty())
 	{
+		const std::map<CRAD, double> residue_quality_scores=auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(average_atom_scores_by_residue(atom_quality_scores), smoothing_window);
 		auxiliaries::IOUtilities().write_map_to_file(residue_quality_scores, residue_scores_file);
 	}
 
