@@ -4,6 +4,7 @@ readonly ZEROARG=$0
 INFILE=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
+OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
@@ -12,7 +13,7 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "i:a:r:c:s:l:m:C:qh" OPTION
+while getopts "i:a:r:d:c:s:l:m:C:qh" OPTION
 do
 	case $OPTION in
 	i)
@@ -23,6 +24,9 @@ do
 		;;
 	r)
 		OUTFILE_RESIDUE_SCORES=$OPTARG
+		;;
+	d)
+		OUTFILE_ATOM_DEPTHS=$OPTARG
 		;;
 	c)
 		OUTFILE_CAMEO_RESIDUE_SCORES=$OPTARG
@@ -180,6 +184,12 @@ if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
 	cp $TMPDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
+fi
+
+if [ -n "$OUTFILE_ATOM_DEPTHS" ]
+then
+	mkdir -p $(dirname $OUTFILE_ATOM_DEPTHS)
+	cp $TMPDIR/foundation/depth_values "$OUTFILE_ATOM_DEPTHS"
 fi
 
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ]
