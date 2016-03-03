@@ -280,14 +280,18 @@ for(chain in chains)
 	if(chain!=".") { title=paste("VoroMQA local scores for chain ", chain, sep=""); }
 	st=t[which(t$V1==chain),];
 	resnums=st$V2; v1=st$V8; v2=st$V9; N=length(v1);
+	mask=rep(0, N);
 	plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
 	if(identical(v1, v2))
 	{
-		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l"); }; i=i+1; }
+		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l"); mask[i]=1; mask[i+1]=1; }; i=i+1; }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], cex=0.7); }
 	} else
 	{
 		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l", col=rgb(0.7, 0.7, 0.7), lwd=1); }; i=i+1; }
-		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v2[i], v2[i+1]), type="l", col=rgb(0.0, 0.0, 0.0), lwd=3); }; i=i+1; }
+		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v2[i], v2[i+1]), type="l", col=rgb(0.0, 0.0, 0.0), lwd=3); mask[i]=1; mask[i+1]=1; }; i=i+1; }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], col=rgb(0.7, 0.7, 0.7), cex=0.7); }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v2[sel], col=rgb(0.0, 0.0, 0.0), cex=0.9); }
 	}
 }
 dev.off();
