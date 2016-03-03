@@ -266,11 +266,23 @@ cat $TMPDIR/residue_quality_scores_for_plot \
 | voronota x-expand-descriptors \
 > $TMPDIR/table_for_plot
 
-R --slave --vanilla --args "$TMPDIR/table_for_plot" "$OUTFILE_PLOT" << 'EOF' > /dev/null
+HIGHLIGHTS_PARAM="none"
+if [ -s "$TMPDIR/scoring_table" ]
+then
+	cat $TMPDIR/scoring_table \
+	| awk '{print $1}' | voronota x-expand-descriptors \
+	| awk '{print $1 " " $2}' | sort | uniq \
+	> $TMPDIR/highlights_for_plot
+	HIGHLIGHTS_PARAM="$TMPDIR/highlights_for_plot"
+fi
+
+R --slave --vanilla --args "$TMPDIR/table_for_plot" "$OUTFILE_PLOT" "$HIGHLIGHTS_PARAM" << 'EOF' > /dev/null
 args=commandArgs(TRUE);
 infile=args[1];
 outfile=args[2];
+higlights=args[3];
 t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+h=c(); if(higlights!="none") { h=read.table(higlights, header=FALSE, stringsAsFactors=FALSE); h=h[order(h$V2),]}
 chains=sort(union(t$V1, t$V1));
 png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
 par(mfrow=c(length(chains),1));
@@ -282,16 +294,32 @@ for(chain in chains)
 	resnums=st$V2; v1=st$V8; v2=st$V9; N=length(v1);
 	mask=rep(0, N);
 	plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
+	h_lwd=5; h_cex=0.8;
 	if(identical(v1, v2))
 	{
 		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l"); mask[i]=1; mask[i+1]=1; }; i=i+1; }
-		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], cex=0.7); }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], pch=16, cex=0.5); }
+		h_lwd=3; h_cex=0.7;
 	} else
 	{
 		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l", col=rgb(0.7, 0.7, 0.7), lwd=1); }; i=i+1; }
 		i=1; while(i<N) { if((resnums[i+1]-resnums[i])<2) { points(c(resnums[i], resnums[i+1]), c(v2[i], v2[i+1]), type="l", col=rgb(0.0, 0.0, 0.0), lwd=3); mask[i]=1; mask[i+1]=1; }; i=i+1; }
-		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], col=rgb(0.7, 0.7, 0.7), cex=0.7); }
-		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v2[sel], col=rgb(0.0, 0.0, 0.0), cex=0.9); }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v1[sel], col=rgb(0.7, 0.7, 0.7), pch=16, cex=0.5); }
+		sel=which(mask==0); if(length(sel)>0) { points(resnums[sel], v2[sel], col=rgb(0.0, 0.0, 0.0), pch=16, cex=0.7); }
+	}
+	if(length(h)>0)
+	{
+		sel=which(h$V1==chain);
+		if(length(sel)>0)
+		{
+			h_resnums=h$V2[sel]; h_v2=v2[which(is.element(resnums, h_resnums))]; h_N=length(h_v2);
+			if(length(h_resnums)==h_N)
+			{
+				h_mask=rep(0, h_N);
+				i=1; while(i<h_N) { if((h_resnums[i+1]-h_resnums[i])<2) { points(c(h_resnums[i], h_resnums[i+1]), c(h_v2[i], h_v2[i+1]), type="l", col=rgb(1.0, 0.0, 0.0), lwd=h_lwd); h_mask[i]=1; h_mask[i+1]=1; }; i=i+1; }
+				sel=which(h_mask==0); if(length(sel)>0) { points(h_resnums[sel], h_v2[sel], pch=16, cex=h_cex, col=rgb(1.0, 0.0, 0.0)); }
+			}
+		}
 	}
 }
 dev.off();
