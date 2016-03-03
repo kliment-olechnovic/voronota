@@ -6,6 +6,7 @@ OUTFILE_ATOM_SCORES=""
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
+OUTFILE_PLOT=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
@@ -13,7 +14,7 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "i:a:r:d:c:s:l:m:C:qh" OPTION
+while getopts "i:a:r:d:c:p:s:l:m:C:qh" OPTION
 do
 	case $OPTION in
 	i)
@@ -30,6 +31,9 @@ do
 		;;
 	c)
 		OUTFILE_CAMEO_RESIDUE_SCORES=$OPTARG
+		;;
+	p)
+		OUTFILE_PLOT=$OPTARG
 		;;
 	s)
 		SMOOTHING_WINDOW=$OPTARG
@@ -59,6 +63,7 @@ Script parameters:
     -i input_file.pdb
     [-a output_atom_scores_file]
     [-r output_residue_scores_file]
+    [-p output_residue_scores_plot_file.png]
     [-s residue_scores_smoothing_window_size]
     [-l atoms_query_parameters_string]
     [-m contacts_query_parameters_string]
@@ -240,6 +245,59 @@ then
 		echo "unavailable"
 	fi
 	} > $TMPDIR/global_quality_score_of_selection
+fi
+
+if [ -n "$OUTFILE_PLOT" ]
+then
+	if command -v R &> /dev/null
+	then
+
+cat $TMPDIR/foundation/atom_energies \
+| voronota score-contacts-quality \
+  --default-mean -0.34 \
+  --default-sd 0.19 \
+  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
+  --external-weights-file $TMPDIR/foundation/depth_values \
+  --smoothing-window "0,$SMOOTHING_WINDOW" \
+  --residue-scores-file $TMPDIR/residue_quality_scores_for_plot \
+> /dev/null
+
+cat $TMPDIR/residue_quality_scores_for_plot \
+| voronota x-expand-descriptors \
+> $TMPDIR/table_for_plot
+
+R --slave --vanilla --args "$TMPDIR/table_for_plot" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
+args=commandArgs(TRUE);
+infile=args[1];
+outfile=args[2];
+t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+chains=sort(union(t$V1, t$V1));
+png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
+par(mfrow=c(length(chains),1));
+for(chain in chains)
+{
+	title="VoroMQA local scores for the unnamed chain";
+	if(chain!=".") { title=paste("VoroMQA local scores for chain ", chain, sep=""); }
+	st=t[which(t$V1==chain),];
+	resnums=st$V2;
+	v1=st$V8;
+	v2=st$V9;
+	plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
+	if(identical(v1, v2))
+	{
+		points(resnums, v1, type="l");
+	} else
+	{
+		points(resnums, v1, type="l", col=rgb(0.7, 0.7, 0.7), lwd=1);
+		points(resnums, v2, type="l", col=rgb(0.0, 0.0, 0.0), lwd=3);
+	}
+}
+dev.off();
+EOF
+
+	else
+		echo >&2 "Plot was not created because 'R' command was not found."
+	fi
 fi
 
 if [ -s "$TMPDIR/global_quality_score_of_selection" ]
