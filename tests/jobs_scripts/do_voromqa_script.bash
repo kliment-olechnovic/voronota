@@ -12,6 +12,7 @@ do
 	  -a $SUBDIR/$INFILEBASENAME/atom_scores \
 	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
 	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
+	  -z $SUBDIR/$INFILEBASENAME/colored_map.svg \
 	  -s 5 \
 	  -m '--no-same-chain --no-solvent'
 
