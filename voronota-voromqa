@@ -7,6 +7,7 @@ OUTFILE_RESIDUE_SCORES=""
 OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
+OUTFILE_MAP=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
@@ -14,7 +15,7 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "i:a:r:d:c:p:s:l:m:C:qh" OPTION
+while getopts "i:a:r:d:c:p:z:s:l:m:C:qh" OPTION
 do
 	case $OPTION in
 	i)
@@ -34,6 +35,9 @@ do
 		;;
 	p)
 		OUTFILE_PLOT=$OPTARG
+		;;
+	z)
+		OUTFILE_MAP=$OPTARG
 		;;
 	s)
 		SMOOTHING_WINDOW=$OPTARG
@@ -251,6 +255,8 @@ if [ -n "$OUTFILE_PLOT" ]
 then
 	if command -v R &> /dev/null
 	then
+	
+mkdir -p $(dirname $OUTFILE_PLOT)
 
 cat $TMPDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
@@ -321,6 +327,31 @@ EOF
 	else
 		echo >&2 "Plot was not created because 'R' command was not found."
 	fi
+fi
+
+if [ -n "$OUTFILE_MAP" ]
+then
+	mkdir -p $(dirname $OUTFILE_MAP)
+	cat $TMPDIR/foundation/all_contacts \
+	| voronota query-contacts \
+	  --drop-adjuncts \
+	  --set-external-means $TMPDIR/atom_quality_scores \
+	| voronota query-contacts \
+	  --no-solvent \
+	  --match-adjuncts em=0:1 \
+	| sed 's|em=||' \
+	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " em=" ($3*$6)}' \
+	| voronota query-contacts \
+	  --inter-residue \
+	| sed 's|em=||' \
+	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " em=" ($6/$3)}' \
+	| voronota x-plot-contacts \
+	  --adjunct-gradient em \
+	  --adjunct-gradient-blue 1 \
+	  --adjunct-gradient-red 0 \
+	  --svg-output $TMPDIR/map.svg \
+	> /dev/null
+	mv $TMPDIR/map.svg $OUTFILE_MAP
 fi
 
 if [ -s "$TMPDIR/global_quality_score_of_selection" ]
