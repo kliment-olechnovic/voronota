@@ -130,10 +130,13 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
-	pohw.describe_io("stdout", false, true, "nothing");
+	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
 
 	const std::string background_color=poh.argument<std::string>(pohw.describe_option("--background-color", "string", "color string in SVG-acceptable format"), "#000000");
 	const std::string default_color=poh.argument<std::string>(pohw.describe_option("--default-color", "string", "color string in SVG-acceptable format"), "#FFFFFF");
+	const std::string adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
+	const double adjunct_gradient_blue=poh.argument<double>(pohw.describe_option("--adjunct-gradient-blue", "number", "blue adjunct gradient value"), 0.0);
+	const double adjunct_gradient_red=poh.argument<double>(pohw.describe_option("--adjunct-gradient-red", "number", "red adjunct gradient value"), 1.0);
 	const bool adjuncts_rgb=poh.contains_option(pohw.describe_option("--adjuncts-rgb", "", "flag to use RGB color values from adjuncts"));
 	const bool no_contraction=poh.contains_option(pohw.describe_option("--no-contraction", "", "flag to not contract gaps"));
 	const std::string svg_output=poh.argument<std::string>(pohw.describe_option("--svg-output", "string", "file path to output plot of contacts in SVG format"), "");
@@ -206,7 +209,14 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t y=axis[it->first.b];
 				std::string color=default_color;
 				const std::map<std::string, double>& adjuncts=it->second.props.adjuncts;
-				if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
+				if(!adjunct_gradient.empty() && adjunct_gradient_blue!=adjunct_gradient_red)
+				{
+					if(adjuncts.count(adjunct_gradient)==1)
+					{
+						color=SVGWriter::color_from_blue_white_red_gradient(adjuncts.find(adjunct_gradient)->second, adjunct_gradient_blue, adjunct_gradient_red);
+					}
+				}
+				else if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
 				{
 					const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
 					const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
@@ -263,4 +273,6 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 	}
+
+	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 }

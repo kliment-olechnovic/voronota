@@ -22,6 +22,43 @@ public:
 		return output.str();
 	}
 
+	static std::string color_from_blue_white_red_gradient(const double input_value, const double blue_value, const double red_value)
+	{
+		double value=input_value;
+		if(blue_value<red_value)
+		{
+			value=(value-blue_value)/(red_value-blue_value);
+		}
+		else
+		{
+			value=1.0-((value-red_value)/(blue_value-red_value));
+		}
+		double r=0;
+		double g=0;
+		double b=0;
+		if(value<0.0)
+		{
+			b=1.0;
+		}
+		else if(value>1.0)
+		{
+			r=1.0;
+		}
+		else if(value<=0.5)
+		{
+			b=1.0;
+			r=(value/0.5);
+			g=r;
+		}
+		else if(value>0.5)
+		{
+			r=1.0;
+			b=(1.0-(value-0.5)/0.5);
+			g=b;
+		}
+		return color_from_red_green_blue_components(r, g, b, 255.0);
+	}
+
 	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& color)
 	{
 		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("fill", color));
