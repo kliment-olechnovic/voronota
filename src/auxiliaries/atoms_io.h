@@ -574,6 +574,7 @@ private:
 		return ((record.record_name=="ATOM" || (include_heteroatoms && record.record_name=="HETATM")) &&
 				(record.altLoc.empty() || record.altLoc=="A" || record.altLoc==".") &&
 				(include_hydrogens || record.name.find("H")!=0) &&
+				(include_hydrogens || (record.element!="H" && record.element!="D")) &&
 				record.resName!="HOH");
 	}
 
