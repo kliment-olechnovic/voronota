@@ -257,7 +257,7 @@ then
 		cat $TMPDIR/scoring_table \
 		| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
 	else
-		echo "unavailable"
+		echo "0"
 	fi
 	} > $TMPDIR/global_quality_score_of_selection
 fi
@@ -365,9 +365,13 @@ then
 	mv $TMPDIR/map.svg $OUTFILE_MAP
 fi
 
+{
+echo $INFILE $(cat $TMPDIR/global_quality_score) $(cat $TMPDIR/balls | wc -l)
+
 if [ -s "$TMPDIR/global_quality_score_of_selection" ]
 then
-	echo $INFILE $(cat $TMPDIR/global_quality_score) 'selection' $(cat $TMPDIR/global_quality_score_of_selection)
-else
-	echo $INFILE $(cat $TMPDIR/global_quality_score)
+	echo 'selection' $(cat $TMPDIR/global_quality_score_of_selection) $(cat $TMPDIR/scoring_table | wc -l)
 fi
+} \
+| tr '\n' ' '
+echo
