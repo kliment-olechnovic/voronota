@@ -15,46 +15,60 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "i:a:r:d:c:p:z:s:l:m:C:qh" OPTION
+while [[ $# > 0 ]]
 do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
 	case $OPTION in
-	i)
-		INFILE=$OPTARG
+	-i)
+		INFILE="$OPTARG"
+		shift
 		;;
-	a)
-		OUTFILE_ATOM_SCORES=$OPTARG
+	-a)
+		OUTFILE_ATOM_SCORES="$OPTARG"
+		shift
 		;;
-	r)
-		OUTFILE_RESIDUE_SCORES=$OPTARG
+	-r)
+		OUTFILE_RESIDUE_SCORES="$OPTARG"
+		shift
 		;;
-	d)
-		OUTFILE_ATOM_DEPTHS=$OPTARG
+	-d)
+		OUTFILE_ATOM_DEPTHS="$OPTARG"
+		shift
 		;;
-	c)
-		OUTFILE_CAMEO_RESIDUE_SCORES=$OPTARG
+	-c)
+		OUTFILE_CAMEO_RESIDUE_SCORES="$OPTARG"
+		shift
 		;;
-	p)
-		OUTFILE_PLOT=$OPTARG
+	-p)
+		OUTFILE_PLOT="$OPTARG"
+		shift
 		;;
-	z)
-		OUTFILE_MAP=$OPTARG
+	-z)
+		OUTFILE_MAP="$OPTARG"
+		shift
 		;;
-	s)
-		SMOOTHING_WINDOW=$OPTARG
+	-s)
+		SMOOTHING_WINDOW="$OPTARG"
+		shift
 		;;
-	l)
+	-l)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
+		shift
 		;;
-	m)
+	-m)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
+		shift
 		;;
-	C)
-		CONTACTS_CACHE_DIRECTORY=$OPTARG
+	-C)
+		CONTACTS_CACHE_DIRECTORY="$OPTARG"
+		shift
 		;;
-	q)
+	-q)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	h)
+	-h)
 		HELP_MODE=true
 		;;
 	esac
