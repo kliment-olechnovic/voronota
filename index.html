@@ -1316,15 +1316,21 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 [-C cache_directory]
 </code></pre>
 <h2 id="voromqa-method-script"><a href="#TOC">VoroMQA method script</a></h2>
-<p>The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script command line arguments are:</p>
-<pre><code>-i input_file.pdb
-[-a output_atom_scores_file]
-[-r output_residue_scores_file]
-[-p output_residue_scores_plot_file.png]
-[-s residue_scores_smoothing_window_size]
-[-l atoms_query_parameters_string]
-[-m contacts_query_parameters_string]
-[-C cache_directory]
+<p>The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
+<pre><code>Script parameters:
+    --input | -i                   string   *  input structure file in PDB format
+    --output-atom-scores           string      file to output atom scores
+    --output-residue-scores        string      file to output residue scores
+    --output-residue-scores-plot   string      PNG image file for residue scores plot, requires R
+    --smoothing-window             number      residue scores smoothing window size
+    --atoms-query                  string      atoms query commands to define selection
+    --contacts-query               string      contacts query commands to define selection
+    --multiple-models                          flag to handle multiple models in PDB file
+    --cache-dir                    string      path to cache directory
+    --help | -h                                flag to display help message and exit
+
+Script standard output:
+    {input file path} {VoroMQA global score} {number of atoms}
 </code></pre>
 <h2 id="b-factor-writing-utility-script"><a href="#TOC">B-factor writing utility script</a></h2>
 <p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
