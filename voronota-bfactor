@@ -6,19 +6,24 @@ INPUT_SCORES_FILE=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "p:s:qh" OPTION
+while [[ $# > 0 ]]
 do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
 	case $OPTION in
-	p)
-		INPUT_PDB_FILE=$OPTARG
+	-p)
+		INPUT_PDB_FILE="$OPTARG"
+		shift
 		;;
-	s)
-		INPUT_SCORES_FILE=$OPTARG
+	-s)
+		INPUT_SCORES_FILE="$OPTARG"
+		shift
 		;;
-	q)
+	-q)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	h)
+	-h)
 		HELP_MODE=true
 		;;
 	esac

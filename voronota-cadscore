@@ -11,34 +11,44 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
-while getopts "t:m:a:c:r:s:C:qh" OPTION
+while [[ $# > 0 ]]
 do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
 	case $OPTION in
-	t)
-		INFILE_TARGET_PDB=$OPTARG
+	-t)
+		INFILE_TARGET_PDB="$OPTARG"
+		shift
 		;;
-	m)
-		INFILE_MODEL_PDB=$OPTARG
+	-m)
+		INFILE_MODEL_PDB="$OPTARG"
+		shift
 		;;
-	a)
+	-a)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
+		shift
 		;;
-	c)
+	-c)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
+		shift
 		;;
-	r)
-		OUTFILE_RESIDUE_SCORES=$OPTARG
+	-r)
+		OUTFILE_RESIDUE_SCORES="$OPTARG"
+		shift
 		;;
-	s)
-		SMOOTHING_WINDOW=$OPTARG
+	-s)
+		SMOOTHING_WINDOW="$OPTARG"
+		shift
 		;;
-	C)
-		CONTACTS_CACHE_DIRECTORY=$OPTARG
+	-C)
+		CONTACTS_CACHE_DIRECTORY="$OPTARG"
+		shift
 		;;
-	q)
+	-q)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	h)
+	-h)
 		HELP_MODE=true
 		;;
 	esac
