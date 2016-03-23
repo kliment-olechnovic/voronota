@@ -21,54 +21,54 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	-i)
+	-i|--input)
 		INFILE="$OPTARG"
 		shift
 		;;
-	-a)
+	--output-atom-scores)
 		OUTFILE_ATOM_SCORES="$OPTARG"
 		shift
 		;;
-	-r)
+	--output-residue-scores)
 		OUTFILE_RESIDUE_SCORES="$OPTARG"
 		shift
 		;;
-	-d)
+	--output-atom-depth-values)
 		OUTFILE_ATOM_DEPTHS="$OPTARG"
 		shift
 		;;
-	-c)
+	--output-residue-scores-for-CAMEO)
 		OUTFILE_CAMEO_RESIDUE_SCORES="$OPTARG"
 		shift
 		;;
-	-p)
+	--output-residue-scores-plot)
 		OUTFILE_PLOT="$OPTARG"
 		shift
 		;;
-	-z)
+	--output-contacts-map-svg)
 		OUTFILE_MAP="$OPTARG"
 		shift
 		;;
-	-s)
+	--smoothing-window)
 		SMOOTHING_WINDOW="$OPTARG"
 		shift
 		;;
-	-l)
+	--atoms-query)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-m)
+	--contacts-query)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-C)
+	--cache-dir)
 		CONTACTS_CACHE_DIRECTORY="$OPTARG"
 		shift
 		;;
-	-q)
+	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	-h)
+	-h|--help)
 		HELP_MODE=true
 		;;
 	esac
@@ -77,15 +77,24 @@ done
 if [ -z "$INFILE" ] || $HELP_MODE
 then
 cat >&2 << EOF
+
+The 'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
+
 Script parameters:
-    -i input_file.pdb
-    [-a output_atom_scores_file]
-    [-r output_residue_scores_file]
-    [-p output_residue_scores_plot_file.png]
-    [-s residue_scores_smoothing_window_size]
-    [-l atoms_query_parameters_string]
-    [-m contacts_query_parameters_string]
-    [-C cache_directory]
+    --input | -i                   string   *  input structure file in PDB format
+    --output-atom-scores           string      file to output atom scores
+    --output-residue-scores        string      file to output residue scores
+    --output-residue-scores-plot   string      PNG image file for residue scores plot, requires R
+    --smoothing-window             number      residue scores smoothing window size
+    --atoms-query                  string      atoms query commands to define selection
+    --contacts-query               string      contacts query commands to define selection
+    --multiple-models                          flag to handle multiple models in PDB file
+    --cache-dir                    string      path to cache directory
+    --help | -h                                flag to display help message and exit
+
+Script standard output:
+    {input file path} {VoroMQA global score} {number of atoms}
+
 EOF
 exit 1
 fi

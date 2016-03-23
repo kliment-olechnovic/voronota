@@ -8,13 +8,13 @@ do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 
 	$VORONOTADIR/voronota-voromqa \
-	  -i $INFILE \
-	  -a $SUBDIR/$INFILEBASENAME/atom_scores \
-	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
-	  -c $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
-	  -z $SUBDIR/$INFILEBASENAME/colored_map.svg \
-	  -s 5 \
-	  -m '--no-same-chain --no-solvent'
+	  --input $INFILE \
+	  --output-atom-scores $SUBDIR/$INFILEBASENAME/atom_scores \
+	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
+	  --output-residue-scores-for-CAMEO $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
+	  --output-contacts-map-svg $SUBDIR/$INFILEBASENAME/colored_map.svg \
+	  --smoothing-window 5 \
+	  --contacts-query '--no-same-chain --no-solvent'
 
 	$VORONOTADIR/voronota-bfactor \
 	  -p $INFILE \

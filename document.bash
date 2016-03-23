@@ -36,8 +36,9 @@ EOF
 echo -e "\n## VoroMQA method script\n"
 cat << EOF
 The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota.
+The script interface is presented below:
 EOF
-./voronota-voromqa -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+./voronota-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
 echo -e "\n## B-factor writing utility script\n"
 cat << EOF
