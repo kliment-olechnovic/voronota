@@ -1319,9 +1319,11 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Script parameters:
     --input | -i                   string   *  input structure file in PDB format
-    --output-atom-scores           string      file to output atom scores
-    --output-residue-scores        string      file to output residue scores
-    --output-residue-scores-plot   string      PNG image file for residue scores plot, requires R
+    --output-atom-scores           string      output text file with atom scores
+    --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
+    --output-residue-scores        string      output text file with residue scores
+    --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
+    --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
     --smoothing-window             number      residue scores smoothing window size
     --atoms-query                  string      atoms query commands to define selection
     --contacts-query               string      contacts query commands to define selection
