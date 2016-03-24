@@ -358,56 +358,102 @@ cat $TMPLDIR/residue_quality_scores_for_plot \
 | voronota x-expand-descriptors \
 > $TMPLDIR/table_for_plot
 
-R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
-args=commandArgs(TRUE);
-infile=args[1];
-outfile=args[2];
-t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
-chains=sort(union(t$V1, t$V1));
-png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
-par(mfrow=c(length(chains),1));
-for(chain in chains)
-{
-	title=ifelse(chain==".", "VoroMQA local scores for the unnamed chain", paste("VoroMQA local scores for chain ", chain, sep=""));
-	st=t[which(t$V1==chain),]; resnums=st$V2; v1=st$V8; v2=st$V9; N=length(v1);
-	mask=rep(0, N);
-	plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
-	duplicate=identical(v1, v2);
-	thin_color=ifelse(duplicate, rgb(0.0, 0.0, 0.0), rgb(0.7, 0.7, 0.7));
-	i=1;
-	while(i<N)
+BACK_FILE="none"
+if [ -s "$TMPLDIR/selection_by_queries" ]
+then
+	cat $TMPLDIR/selection_by_queries \
+	| voronota x-expand-descriptors \
+	| awk '{print $1 " " $2}' | sort | uniq \
+	> $TMPLDIR/back_table_for_plot
+	if [ -s "$TMPLDIR/back_table_for_plot" ]
+	then
+		BACK_FILE="$TMPLDIR/back_table_for_plot"
+	fi
+fi
+
+R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
+	args=commandArgs(TRUE);
+	infile=args[1];
+	back_infile=args[2];
+	outfile=args[3];
+	
+	t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+	chains=sort(union(t$V1, t$V1));
+	
+	back_t=c();
+	if(back_infile!="none")
 	{
-		if((resnums[i+1]-resnums[i])<2)
+		back_t=read.table(back_infile, header=FALSE, stringsAsFactors=FALSE);
+	}
+	
+	png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
+	par(mfrow=c(length(chains),1));
+	
+	for(chain in chains)
+	{
+		title=ifelse(chain==".", "VoroMQA local scores for the unnamed chain", paste("VoroMQA local scores for chain ", chain, sep=""));
+		
+		st=t[which(t$V1==chain),];
+		resnums=st$V2;
+		v1=st$V8;
+		v2=st$V9;
+		N=length(v1);
+		mask=rep(0, N);
+		duplicate=identical(v1, v2);
+		
+		thick_color=rgb(0.0, 0.0, 0.0);
+		thick_color_back=rgb(1.0, 0.0, 0.0);
+		thin_color=ifelse(duplicate, thick_color, rgb(0.7, 0.7, 0.7));
+		thin_color_back=ifelse(duplicate, thick_color_back, rgb(1.0, 0.7, 0.7));
+	
+		plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
+		
+		back_resnums=c();
+		if(length(back_t)>0)
 		{
-			points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l", col=thin_color, lwd=1);
-			mask[i]=1; mask[i+1]=1;
+			back_resnums=back_t$V2[which(back_t$V1==chain)];
 		}
-		i=i+1;
-	}
-	sel=which(mask==0);
-	if(length(sel)>0)
-	{
-		points(resnums[sel], v1[sel], col=rgb(0.7, 0.7, 0.7), pch=16, cex=0.5);
-	}
-	if(duplicate==FALSE)
-	{
+		
+		resnums_col=rep(thin_color, N);
+		resnums_col[which(is.element(resnums, back_resnums))]=thin_color_back;
 		i=1;
 		while(i<N)
 		{
 			if((resnums[i+1]-resnums[i])<2)
 			{
-				points(c(resnums[i], resnums[i+1]), c(v2[i], v2[i+1]), type="l", col=rgb(0.0, 0.0, 0.0), lwd=3);
+				points(c(resnums[i], resnums[i+1]), c(v1[i], v1[i+1]), type="l", col=c(resnums_col[i], resnums_col[i+1]), lwd=1);
+				mask[i]=1; mask[i+1]=1;
 			}
 			i=i+1;
 		}
 		sel=which(mask==0);
 		if(length(sel)>0)
 		{
-			points(resnums[sel], v2[sel], col=rgb(0.0, 0.0, 0.0), pch=16, cex=0.7);
+			points(resnums[sel], v1[sel], col=resnums_col[sel], pch=16, cex=0.5);
+		}
+		
+		if(duplicate==FALSE)
+		{
+			resnums_col=rep(thick_color, N);
+			resnums_col[which(is.element(resnums, back_resnums))]=thick_color_back;
+			i=1;
+			while(i<N)
+			{
+				if((resnums[i+1]-resnums[i])<2)
+				{
+					points(c(resnums[i], resnums[i+1]), c(v2[i], v2[i+1]), type="l", col=c(resnums_col[i], resnums_col[i+1]), lwd=3);
+				}
+				i=i+1;
+			}
+			sel=which(mask==0);
+			if(length(sel)>0)
+			{
+				points(resnums[sel], v2[sel], col=resnums_col[sel], pch=16, cex=0.7);
+			}
 		}
 	}
-}
-dev.off();
+	
+	dev.off();
 EOF
 fi
 
