@@ -109,6 +109,11 @@ fi
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 
+if [ -n "$OUTFILE_PLOT" ]
+then
+	command -v R &> /dev/null || { echo >&2 "Warning: 'R' command is not available, therefore the resudue scores plot is not produced"; OUTFILE_PLOT=""; }
+fi
+
 readonly TMPDIR=$(mktemp -d)
 trap "rm -r $TMPDIR" EXIT
 
@@ -287,9 +292,7 @@ fi
 
 if [ -n "$OUTFILE_PLOT" ]
 then
-	if command -v R &> /dev/null
-	then
-	
+
 mkdir -p $(dirname $OUTFILE_PLOT)
 
 cat $TMPDIR/foundation/atom_energies \
@@ -357,10 +360,6 @@ for(chain in chains)
 }
 dev.off();
 EOF
-
-	else
-		echo >&2 "Plot was not created because 'R' command was not found."
-	fi
 fi
 
 if [ -n "$OUTFILE_MAP" ]
