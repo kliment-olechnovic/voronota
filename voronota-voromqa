@@ -3,7 +3,9 @@
 readonly ZEROARG=$0
 INFILE=""
 OUTFILE_ATOM_SCORES=""
+OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
+OUTFILE_RESIDUE_SCORES_PDB=""
 OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
@@ -29,8 +31,16 @@ do
 		OUTFILE_ATOM_SCORES="$OPTARG"
 		shift
 		;;
+	--output-atom-scores-pdb)
+		OUTFILE_ATOM_SCORES_PDB="$OPTARG"
+		shift
+		;;
 	--output-residue-scores)
 		OUTFILE_RESIDUE_SCORES="$OPTARG"
+		shift
+		;;
+	--output-residue-scores-pdb)
+		OUTFILE_RESIDUE_SCORES_PDB="$OPTARG"
 		shift
 		;;
 	--output-atom-depth-values)
@@ -82,9 +92,11 @@ The 'voronota-voromqa' script is an implementation of VoroMQA method using Voron
 
 Script parameters:
     --input | -i                   string   *  input structure file in PDB format
-    --output-atom-scores           string      file to output atom scores
-    --output-residue-scores        string      file to output residue scores
-    --output-residue-scores-plot   string      PNG image file for residue scores plot, requires R
+    --output-atom-scores           string      output text file with atom scores
+    --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
+    --output-residue-scores        string      output text file with residue scores
+    --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
+    --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
     --smoothing-window             number      residue scores smoothing window size
     --atoms-query                  string      atoms query commands to define selection
     --contacts-query               string      contacts query commands to define selection
@@ -232,6 +244,43 @@ if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
 	cp $TMPDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
+fi
+
+if [ -n "$OUTFILE_ATOM_SCORES_PDB" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
+then
+	cat $INFILE_CONTENTS_EXTRACTED \
+	| voronota get-balls-from-atoms-file \
+	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
+	  --include-heteroatoms \
+	> $TMPDIR/balls_unstripped
+	
+	if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
+	then
+		mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
+		cat $TMPDIR/balls_unstripped \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-external-adjuncts $TMPDIR/atom_quality_scores \
+		  --set-external-adjuncts-name score \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
+	
+	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
+	then
+		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB")
+		cat $TMPDIR/balls_unstripped \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-external-adjuncts $TMPDIR/residue_quality_scores \
+		  --set-external-adjuncts-name score \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
 fi
 
 if [ -n "$OUTFILE_ATOM_DEPTHS" ]
