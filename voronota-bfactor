@@ -60,8 +60,8 @@ then
 	exit 1
 fi
 
-readonly TMPDIR=$(mktemp -d)
-trap "rm -r $TMPDIR" EXIT
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
 
 cat $INPUT_PDB_FILE \
 | voronota get-balls-from-atoms-file \
@@ -72,8 +72,8 @@ cat $INPUT_PDB_FILE \
   --set-external-adjuncts $INPUT_SCORES_FILE \
   --set-external-adjuncts-name score \
 | voronota x-write-balls-to-atoms-file \
-  --pdb-output $TMPDIR/result \
+  --pdb-output $TMPLDIR/result \
   --pdb-output-b-factor score \
 > /dev/null
 
-cat $TMPDIR/result
+cat $TMPLDIR/result

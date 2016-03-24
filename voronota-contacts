@@ -88,8 +88,8 @@ then
 	exit 1
 fi
 
-readonly TMPDIR=$(mktemp -d)
-trap "rm -r $TMPDIR" EXIT
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
 
 cat $INFILE_PDB \
 | voronota get-balls-from-atoms-file \
@@ -99,9 +99,9 @@ cat $INFILE_PDB \
 | voronota query-balls \
   --drop-altloc-indicators \
 | voronota query-balls $ATOMS_QUERY_PARAMETERS \
-> $TMPDIR/balls
+> $TMPLDIR/balls
 
-if [ ! -s "$TMPDIR/balls" ]
+if [ ! -s "$TMPLDIR/balls" ]
 then
 	echo >&2 "Error: no atoms in input file"
 	exit 1
@@ -110,27 +110,27 @@ fi
 BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 then
-	BALLS_MD5=$(cat $TMPDIR/balls | md5sum | awk '{print $1}')
+	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
 	if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
 	then
-		cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPDIR/all_contacts
+		cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/all_contacts
 	fi
 fi
 
-if [ -n "$DRAWING_OUTPUT" ] && [ -s "$TMPDIR/all_contacts" ]
+if [ -n "$DRAWING_OUTPUT" ] && [ -s "$TMPLDIR/all_contacts" ]
 then
-	GRAPHICS_TOKEN=$(cat $TMPDIR/all_contacts | head -1 | awk '{print $8}')
+	GRAPHICS_TOKEN=$(cat $TMPLDIR/all_contacts | head -1 | awk '{print $8}')
 	if [ -z "$GRAPHICS_TOKEN" ]
 	then
-		rm $TMPDIR/all_contacts
+		rm $TMPLDIR/all_contacts
 	fi
 fi
 
-if [ ! -s "$TMPDIR/all_contacts" ]
+if [ ! -s "$TMPLDIR/all_contacts" ]
 then
 	if [ -n "$DRAWING_OUTPUT" ]
 	then
-		cat $TMPDIR/balls \
+		cat $TMPLDIR/balls \
 		| voronota calculate-contacts \
 		  --annotated \
 		  --draw \
@@ -138,52 +138,52 @@ then
 		| voronota query-contacts \
 		  --match-min-seq-sep 1 \
 		  --preserve-graphics \
-		> $TMPDIR/all_contacts
+		> $TMPLDIR/all_contacts
 	else
-		cat $TMPDIR/balls \
+		cat $TMPLDIR/balls \
 		| voronota calculate-contacts \
 		  --annotated \
 		  --tag-centrality \
 		| voronota query-contacts \
 		  --match-min-seq-sep 1 \
-		> $TMPDIR/all_contacts
+		> $TMPLDIR/all_contacts
 	fi
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
 		mkdir -p $CONTACTS_CACHE_DIRECTORY
-		cp $TMPDIR/all_contacts $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
+		cp $TMPLDIR/all_contacts $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
 	fi
 fi
 
 if [ -n "$DRAWING_OUTPUT" ]
 then
-	cat $TMPDIR/all_contacts \
+	cat $TMPLDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_FIRST_PARAMETERS \
 	  --preserve-graphics \
 	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS \
 	  --preserve-graphics \
-	> $TMPDIR/all_contacts_for_drawing
+	> $TMPLDIR/all_contacts_for_drawing
 	
 	if $WIREFRAME_DRAWING
 	then
-		cat $TMPDIR/all_contacts_for_drawing \
+		cat $TMPLDIR/all_contacts_for_drawing \
 		| sed 's|_tfanc \S\+ \S\+ \S\+ \S\+ \S\+ \S\+|_lloop|g' \
 		| sed 's|_tstrip \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+ \S\+||g' \
-		> $TMPDIR/all_contacts_for_drawing_wireframe
-		mv $TMPDIR/all_contacts_for_drawing_wireframe $TMPDIR/all_contacts_for_drawing
+		> $TMPLDIR/all_contacts_for_drawing_wireframe
+		mv $TMPLDIR/all_contacts_for_drawing_wireframe $TMPLDIR/all_contacts_for_drawing
 	fi
 	
-	cat $TMPDIR/all_contacts_for_drawing \
+	cat $TMPLDIR/all_contacts_for_drawing \
 	| voronota draw-contacts $DRAWING_PARAMETERS \
 	  --drawing-for-pymol $DRAWING_OUTPUT \
 	> /dev/null
 	
-	cat $TMPDIR/all_contacts_for_drawing \
+	cat $TMPLDIR/all_contacts_for_drawing \
 	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " " $6}' \
 	| column -t
 else
-	cat $TMPDIR/all_contacts \
+	cat $TMPLDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_FIRST_PARAMETERS \
 	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS \
 	| column -t
