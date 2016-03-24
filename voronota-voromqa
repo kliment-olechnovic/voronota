@@ -13,7 +13,7 @@ OUTFILE_MAP=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
-CONTACTS_CACHE_DIRECTORY=""
+CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
 
@@ -72,7 +72,7 @@ do
 		shift
 		;;
 	--cache-dir)
-		CONTACTS_CACHE_DIRECTORY="$OPTARG"
+		CACHE_DIRECTORY="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -170,12 +170,12 @@ then
 fi
 
 BALLS_MD5=""
-if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
+if [ -n "$CACHE_DIRECTORY" ]
 then
 	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
-	if [ -n "$BALLS_MD5" ] && [ -d "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
+	if [ -n "$BALLS_MD5" ] && [ -d "$CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
 	then
-		cp -r $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/foundation
+		cp -r $CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/foundation
 	fi
 fi
 
@@ -216,10 +216,10 @@ then
 	| voronota x-query-contacts-depth-values \
 	> $TMPLDIR/foundation/depth_values
 	
-	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
+	if [ -n "$CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
-		mkdir -p $CONTACTS_CACHE_DIRECTORY
-		cp -r $TMPLDIR/foundation $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
+		mkdir -p $CACHE_DIRECTORY
+		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
 fi
 
