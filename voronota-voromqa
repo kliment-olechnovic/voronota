@@ -234,6 +234,42 @@ cat $TMPLDIR/foundation/atom_energies \
   --residue-scores-file $TMPLDIR/residue_quality_scores \
 > $TMPLDIR/global_quality_score
 
+if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
+then
+	cat $TMPLDIR/balls \
+	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
+	| awk '{print $1}' \
+	> $TMPLDIR/selection_by_atoms_query
+	
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
+	> $TMPLDIR/selection_by_contacts_query
+	
+	join -e EMPTY <(sort $TMPLDIR/selection_by_atoms_query) <(sort $TMPLDIR/selection_by_contacts_query) \
+	| grep -v EMPTY \
+	> $TMPLDIR/selection_by_queries
+	
+	join -e EMPTY <(sort $TMPLDIR/foundation/depth_values) <(sort $TMPLDIR/selection_by_queries) \
+	| grep -v EMPTY \
+	| awk '{print $1 " " $2}' \
+	> $TMPLDIR/scoring_domain
+	
+	join -e EMPTY <(sort $TMPLDIR/scoring_domain) <(sort $TMPLDIR/atom_quality_scores) \
+	| grep -v EMPTY \
+	> $TMPLDIR/scoring_table
+	
+	{
+	if [ -s "$TMPLDIR/scoring_table" ]
+	then
+		cat $TMPLDIR/scoring_table \
+		| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
+	else
+		echo "0"
+	fi
+	} > $TMPLDIR/global_quality_score_of_selection
+fi
+
 if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
@@ -301,42 +337,6 @@ then
 	  --pdb-output-b-factor rqscore \
 	  --pdb-output-template $INFILE_CONTENTS_EXTRACTED \
 	> /dev/null
-fi
-
-if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
-then
-	cat $TMPLDIR/balls \
-	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
-	| awk '{print $1}' \
-	> $TMPLDIR/selection_by_atoms_query
-	
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
-	> $TMPLDIR/selection_by_contacts_query
-	
-	join -e EMPTY <(sort $TMPLDIR/selection_by_atoms_query) <(sort $TMPLDIR/selection_by_contacts_query) \
-	| grep -v EMPTY \
-	> $TMPLDIR/selection_by_queries
-	
-	join -e EMPTY <(sort $TMPLDIR/foundation/depth_values) <(sort $TMPLDIR/selection_by_queries) \
-	| grep -v EMPTY \
-	| awk '{print $1 " " $2}' \
-	> $TMPLDIR/scoring_domain
-	
-	join -e EMPTY <(sort $TMPLDIR/scoring_domain) <(sort $TMPLDIR/atom_quality_scores) \
-	| grep -v EMPTY \
-	> $TMPLDIR/scoring_table
-	
-	{
-	if [ -s "$TMPLDIR/scoring_table" ]
-	then
-		cat $TMPLDIR/scoring_table \
-		| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
-	else
-		echo "0"
-	fi
-	} > $TMPLDIR/global_quality_score_of_selection
 fi
 
 if [ -n "$OUTFILE_PLOT" ]
