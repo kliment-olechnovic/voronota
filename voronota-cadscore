@@ -91,13 +91,13 @@ then
 	exit 1
 fi
 
-readonly TMPDIR=$(mktemp -d)
-trap "rm -r $TMPDIR" EXIT
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
 
-cp $INFILE_TARGET_PDB $TMPDIR/target
-cp $INFILE_MODEL_PDB $TMPDIR/model
+cp $INFILE_TARGET_PDB $TMPLDIR/target
+cp $INFILE_MODEL_PDB $TMPLDIR/model
 
-for WORKFILE in $TMPDIR/target $TMPDIR/model
+for WORKFILE in $TMPLDIR/target $TMPLDIR/model
 do
 	cat $WORKFILE \
 	| voronota get-balls-from-atoms-file \
@@ -171,18 +171,18 @@ do
 	fi
 done
 
-cat $TMPDIR/model.contacts \
+cat $TMPLDIR/model.contacts \
 | voronota compare-contacts \
-  --target-contacts-file $TMPDIR/target.contacts \
+  --target-contacts-file $TMPLDIR/target.contacts \
   --smoothing-window $SMOOTHING_WINDOW \
-  --smoothed-scores-file $TMPDIR/smoothed_residue_cad_scores \
+  --smoothed-scores-file $TMPLDIR/smoothed_residue_cad_scores \
   --depth 0 \
-> $TMPDIR/global_cad_scores
+> $TMPLDIR/global_cad_scores
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
-	cp $TMPDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
+	cp $TMPLDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
 fi
 
-echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $(cat $TMPDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}')
+echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $(cat $TMPLDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}')

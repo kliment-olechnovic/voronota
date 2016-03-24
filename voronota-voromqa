@@ -126,13 +126,13 @@ then
 	command -v R &> /dev/null || { echo >&2 "Warning: 'R' command is not available, therefore the resudue scores plot is not produced"; OUTFILE_PLOT=""; }
 fi
 
-readonly TMPDIR=$(mktemp -d)
-trap "rm -r $TMPDIR" EXIT
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
 
 INFILE_CONTENTS=$INFILE
 if [[ "$INFILE" == *"://"* ]]
 then
-	INFILE_CONTENTS=$TMPDIR/downloaded_input_file
+	INFILE_CONTENTS=$TMPLDIR/downloaded_input_file
 	curl -s "$INFILE" > $INFILE_CONTENTS
 fi
 
@@ -145,7 +145,7 @@ fi
 INFILE_CONTENTS_EXTRACTED=$INFILE_CONTENTS
 if [[ "$INFILE" == *".gz" ]]
 then
-	INFILE_CONTENTS_EXTRACTED=$TMPDIR/extracted_input_file
+	INFILE_CONTENTS_EXTRACTED=$TMPLDIR/extracted_input_file
 	zcat $INFILE_CONTENTS > $INFILE_CONTENTS_EXTRACTED
 	if [ ! -s "$INFILE_CONTENTS_EXTRACTED" ]
 	then
@@ -161,9 +161,9 @@ cat $INFILE_CONTENTS_EXTRACTED \
 | voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
-> $TMPDIR/balls
+> $TMPLDIR/balls
 
-if [ ! -s "$TMPDIR/balls" ]
+if [ ! -s "$TMPLDIR/balls" ]
 then
 	echo >&2 "Error: no atoms in input file"
 	exit 1
@@ -172,18 +172,18 @@ fi
 BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 then
-	BALLS_MD5=$(cat $TMPDIR/balls | md5sum | awk '{print $1}')
+	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
 	if [ -n "$BALLS_MD5" ] && [ -d "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
 	then
-		cp -r $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPDIR/foundation
+		cp -r $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/foundation
 	fi
 fi
 
-if [ ! -d "$TMPDIR/foundation" ]
+if [ ! -d "$TMPLDIR/foundation" ]
 then
-	mkdir -p $TMPDIR/foundation
+	mkdir -p $TMPLDIR/foundation
 	
-	cat $TMPDIR/balls \
+	cat $TMPLDIR/balls \
 	| voronota calculate-contacts \
 	  --annotated \
 	  --tag-centrality \
@@ -203,47 +203,47 @@ then
 	  --match-min-seq-sep 2 \
 	  --no-solvent \
 	  --set-tags 'sep2' \
-	| tee $TMPDIR/foundation/all_contacts \
+	| tee $TMPLDIR/foundation/all_contacts \
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
-	| tee $TMPDIR/contacts \
+	| tee $TMPLDIR/contacts \
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
-	  --atom-scores-file $TMPDIR/foundation/atom_energies \
+	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
 	
-	cat $TMPDIR/contacts \
+	cat $TMPLDIR/contacts \
 	| voronota x-query-contacts-depth-values \
-	> $TMPDIR/foundation/depth_values
+	> $TMPLDIR/foundation/depth_values
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
 		mkdir -p $CONTACTS_CACHE_DIRECTORY
-		cp -r $TMPDIR/foundation $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
+		cp -r $TMPLDIR/foundation $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5
 	fi
 fi
 
-cat $TMPDIR/foundation/atom_energies \
+cat $TMPLDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
   --means-and-sds-file <(voronota-resources energy_means_and_sds) \
-  --external-weights-file $TMPDIR/foundation/depth_values \
+  --external-weights-file $TMPLDIR/foundation/depth_values \
   --smoothing-window $SMOOTHING_WINDOW \
-  --atom-scores-file $TMPDIR/atom_quality_scores \
-  --residue-scores-file $TMPDIR/residue_quality_scores \
-> $TMPDIR/global_quality_score
+  --atom-scores-file $TMPLDIR/atom_quality_scores \
+  --residue-scores-file $TMPLDIR/residue_quality_scores \
+> $TMPLDIR/global_quality_score
 
 if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
-	cp $TMPDIR/atom_quality_scores "$OUTFILE_ATOM_SCORES"
+	cp $TMPLDIR/atom_quality_scores "$OUTFILE_ATOM_SCORES"
 fi
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
-	cp $TMPDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
+	cp $TMPLDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
 fi
 
 if [ -n "$OUTFILE_ATOM_SCORES_PDB" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
@@ -252,15 +252,15 @@ then
 	| voronota get-balls-from-atoms-file \
 	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
 	  --include-heteroatoms \
-	> $TMPDIR/balls_unstripped
+	> $TMPLDIR/balls_unstripped
 	
 	if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
 	then
 		mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
-		cat $TMPDIR/balls_unstripped \
+		cat $TMPLDIR/balls_unstripped \
 		| voronota query-balls \
 		  --drop-altloc-indicators \
-		  --set-external-adjuncts $TMPDIR/atom_quality_scores \
+		  --set-external-adjuncts $TMPLDIR/atom_quality_scores \
 		  --set-external-adjuncts-name score \
 		| voronota x-write-balls-to-atoms-file \
 		  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
@@ -271,10 +271,10 @@ then
 	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
 	then
 		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB")
-		cat $TMPDIR/balls_unstripped \
+		cat $TMPLDIR/balls_unstripped \
 		| voronota query-balls \
 		  --drop-altloc-indicators \
-		  --set-external-adjuncts $TMPDIR/residue_quality_scores \
+		  --set-external-adjuncts $TMPLDIR/residue_quality_scores \
 		  --set-external-adjuncts-name score \
 		| voronota x-write-balls-to-atoms-file \
 		  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB" \
@@ -286,15 +286,15 @@ fi
 if [ -n "$OUTFILE_ATOM_DEPTHS" ]
 then
 	mkdir -p $(dirname $OUTFILE_ATOM_DEPTHS)
-	cp $TMPDIR/foundation/depth_values "$OUTFILE_ATOM_DEPTHS"
+	cp $TMPLDIR/foundation/depth_values "$OUTFILE_ATOM_DEPTHS"
 fi
 
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ]
 then
 	mkdir -p $(dirname $OUTFILE_CAMEO_RESIDUE_SCORES)
-	cat $TMPDIR/balls \
+	cat $TMPLDIR/balls \
 	| voronota query-balls \
-	  --set-external-adjuncts <(awk '{print $1 " " (10*(1-$2))}' $TMPDIR/residue_quality_scores) \
+	  --set-external-adjuncts <(awk '{print $1 " " (10*(1-$2))}' $TMPLDIR/residue_quality_scores) \
 	  --set-external-adjuncts-name rqscore \
 	| voronota x-write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
@@ -305,38 +305,38 @@ fi
 
 if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
 then
-	cat $TMPDIR/balls \
+	cat $TMPLDIR/balls \
 	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
 	| awk '{print $1}' \
-	> $TMPDIR/selection_by_atoms_query
+	> $TMPLDIR/selection_by_atoms_query
 	
-	cat $TMPDIR/foundation/all_contacts \
+	cat $TMPLDIR/foundation/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
 	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
-	> $TMPDIR/selection_by_contacts_query
+	> $TMPLDIR/selection_by_contacts_query
 	
-	join -e EMPTY <(sort $TMPDIR/selection_by_atoms_query) <(sort $TMPDIR/selection_by_contacts_query) \
+	join -e EMPTY <(sort $TMPLDIR/selection_by_atoms_query) <(sort $TMPLDIR/selection_by_contacts_query) \
 	| grep -v EMPTY \
-	> $TMPDIR/selection_by_queries
+	> $TMPLDIR/selection_by_queries
 	
-	join -e EMPTY <(sort $TMPDIR/foundation/depth_values) <(sort $TMPDIR/selection_by_queries) \
+	join -e EMPTY <(sort $TMPLDIR/foundation/depth_values) <(sort $TMPLDIR/selection_by_queries) \
 	| grep -v EMPTY \
 	| awk '{print $1 " " $2}' \
-	> $TMPDIR/scoring_domain
+	> $TMPLDIR/scoring_domain
 	
-	join -e EMPTY <(sort $TMPDIR/scoring_domain) <(sort $TMPDIR/atom_quality_scores) \
+	join -e EMPTY <(sort $TMPLDIR/scoring_domain) <(sort $TMPLDIR/atom_quality_scores) \
 	| grep -v EMPTY \
-	> $TMPDIR/scoring_table
+	> $TMPLDIR/scoring_table
 	
 	{
-	if [ -s "$TMPDIR/scoring_table" ]
+	if [ -s "$TMPLDIR/scoring_table" ]
 	then
-		cat $TMPDIR/scoring_table \
+		cat $TMPLDIR/scoring_table \
 		| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
 	else
 		echo "0"
 	fi
-	} > $TMPDIR/global_quality_score_of_selection
+	} > $TMPLDIR/global_quality_score_of_selection
 fi
 
 if [ -n "$OUTFILE_PLOT" ]
@@ -344,21 +344,21 @@ then
 
 mkdir -p $(dirname $OUTFILE_PLOT)
 
-cat $TMPDIR/foundation/atom_energies \
+cat $TMPLDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
   --means-and-sds-file <(voronota-resources energy_means_and_sds) \
-  --external-weights-file $TMPDIR/foundation/depth_values \
+  --external-weights-file $TMPLDIR/foundation/depth_values \
   --smoothing-window "0,$SMOOTHING_WINDOW" \
-  --residue-scores-file $TMPDIR/residue_quality_scores_for_plot \
+  --residue-scores-file $TMPLDIR/residue_quality_scores_for_plot \
 > /dev/null
 
-cat $TMPDIR/residue_quality_scores_for_plot \
+cat $TMPLDIR/residue_quality_scores_for_plot \
 | voronota x-expand-descriptors \
-> $TMPDIR/table_for_plot
+> $TMPLDIR/table_for_plot
 
-R --slave --vanilla --args "$TMPDIR/table_for_plot" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
+R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
 args=commandArgs(TRUE);
 infile=args[1];
 outfile=args[2];
@@ -414,10 +414,10 @@ fi
 if [ -n "$OUTFILE_MAP" ]
 then
 	mkdir -p $(dirname $OUTFILE_MAP)
-	cat $TMPDIR/foundation/all_contacts \
+	cat $TMPLDIR/foundation/all_contacts \
 	| voronota query-contacts \
 	  --drop-adjuncts \
-	  --set-external-means $TMPDIR/atom_quality_scores \
+	  --set-external-means $TMPLDIR/atom_quality_scores \
 	| voronota query-contacts \
 	  --no-solvent \
 	  --match-adjuncts em=0:1 \
@@ -431,17 +431,17 @@ then
 	  --adjunct-gradient em \
 	  --adjunct-gradient-blue 1 \
 	  --adjunct-gradient-red 0 \
-	  --svg-output $TMPDIR/map.svg \
+	  --svg-output $TMPLDIR/map.svg \
 	> /dev/null
-	mv $TMPDIR/map.svg $OUTFILE_MAP
+	mv $TMPLDIR/map.svg $OUTFILE_MAP
 fi
 
 {
-echo $INFILE $(cat $TMPDIR/global_quality_score) $(cat $TMPDIR/balls | wc -l)
+echo $INFILE $(cat $TMPLDIR/global_quality_score) $(cat $TMPLDIR/balls | wc -l)
 
-if [ -s "$TMPDIR/global_quality_score_of_selection" ]
+if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
 then
-	echo 'selection' $(cat $TMPDIR/global_quality_score_of_selection) $(cat $TMPDIR/scoring_table | wc -l)
+	echo 'selection' $(cat $TMPLDIR/global_quality_score_of_selection) $(cat $TMPLDIR/scoring_table | wc -l)
 fi
 } \
 | tr '\n' ' '
