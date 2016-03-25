@@ -243,6 +243,9 @@ cat $TMPLDIR/foundation/atom_energies \
 if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
 then
 	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --set-external-adjuncts $TMPLDIR/foundation/depth_values \
+	  --set-external-adjuncts-name depth \
 	| voronota query-balls $ATOMS_QUERY_PARAMETERS \
 	| awk '{print $1}' \
 	> $TMPLDIR/selection_by_atoms_query
