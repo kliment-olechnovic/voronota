@@ -269,13 +269,13 @@ then
 	> $TMPLDIR/scoring_table
 	
 	{
-	if [ -s "$TMPLDIR/scoring_table" ]
-	then
-		cat $TMPLDIR/scoring_table \
-		| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
-	else
-		echo "0"
-	fi
+		if [ -s "$TMPLDIR/scoring_table" ]
+		then
+			cat $TMPLDIR/scoring_table \
+			| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
+		else
+			echo "0"
+		fi
 	} > $TMPLDIR/global_quality_score_of_selection
 fi
 
@@ -303,24 +303,21 @@ fi
 if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
 then
 	mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
-
 	cat $TMPLDIR/balls \
 	| voronota query-balls \
 	  --drop-altloc-indicators \
 	  --set-adjuncts 'oc=1' \
 	  --set-external-adjuncts $TMPLDIR/atom_quality_scores \
 	  --set-external-adjuncts-name score \
-	> $TMPLDIR/balls_with_atom_scores
-
+	| \
 	{
 		if [ -s "$TMPLDIR/selection_by_queries" ]
 		then
-			cat $TMPLDIR/balls_with_atom_scores \
-			| voronota query-balls \
+			voronota query-balls \
 			  --match-external-annotations $TMPLDIR/selection_by_queries \
 			  --set-adjuncts 'oc=2'
 		else
-			cat $TMPLDIR/balls_with_atom_scores
+			cat
 		fi
 	} \
 	| voronota x-write-balls-to-atoms-file \
