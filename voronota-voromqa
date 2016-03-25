@@ -511,12 +511,14 @@ then
 fi
 
 {
-echo $INFILE $(cat $TMPLDIR/global_quality_score) $(cat $TMPLDIR/balls | wc -l)
-
-if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
+echo $INFILE
+cat $TMPLDIR/global_quality_score
+cat $TMPLDIR/balls | wc -l
+if [ -s "$TMPLDIR/global_quality_score_of_selection" ] && [ -s "$TMPLDIR/scoring_table" ]
 then
-	echo $(cat $TMPLDIR/global_quality_score_of_selection) $(cat $TMPLDIR/scoring_table | wc -l)
+	cat $TMPLDIR/global_quality_score_of_selection
+	cat $TMPLDIR/scoring_table | wc -l
 fi
 } \
-| tr '\n' ' '
-echo
+| tr '\n' ' ' \
+| sed 's/\s$/\n/'
