@@ -1321,18 +1321,19 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
     --input | -i                   string   *  input structure file in PDB format
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
+    --smoothing-window             number      residue scores smoothing window size, default is 5
     --output-residue-scores        string      output text file with residue scores
     --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
     --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
-    --smoothing-window             number      residue scores smoothing window size
     --atoms-query                  string      atoms query commands to define selection
     --contacts-query               string      contacts query commands to define selection
+    --output-selected-scores       string      output text file with selected atom scores
     --multiple-models                          flag to handle multiple models in PDB file
     --cache-dir                    string      path to cache directory
     --help | -h                                flag to display help message and exit
 
 Script standard output:
-    {input file path} {VoroMQA global score} {number of atoms}
+    {input file path} {global score} {number of atoms} [ {selection score} {number of selected atoms} ]
 </code></pre>
 <h2 id="b-factor-writing-utility-script"><a href="#TOC">B-factor writing utility script</a></h2>
 <p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
