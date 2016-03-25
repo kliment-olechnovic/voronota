@@ -303,12 +303,26 @@ fi
 if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
 then
 	mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
+
 	cat $TMPLDIR/balls \
 	| voronota query-balls \
 	  --drop-altloc-indicators \
 	  --set-adjuncts 'oc=1' \
 	  --set-external-adjuncts $TMPLDIR/atom_quality_scores \
 	  --set-external-adjuncts-name score \
+	> $TMPLDIR/balls_with_atom_scores
+
+	{
+		if [ -s "$TMPLDIR/selection_by_queries" ]
+		then
+			cat $TMPLDIR/balls_with_atom_scores \
+			| voronota query-balls \
+			  --match-external-annotations $TMPLDIR/selection_by_queries \
+			  --set-adjuncts 'oc=2'
+		else
+			cat $TMPLDIR/balls_with_atom_scores
+		fi
+	} \
 	| voronota x-write-balls-to-atoms-file \
 	  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
 	  --pdb-output-b-factor score \
