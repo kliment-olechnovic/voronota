@@ -2,6 +2,7 @@
 
 readonly ZEROARG=$0
 INFILE=""
+SEQUENCE=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
@@ -26,6 +27,10 @@ do
 	case $OPTION in
 	-i|--input)
 		INFILE="$OPTARG"
+		shift
+		;;
+	--sequence)
+		SEQUENCE="$OPTARG"
 		shift
 		;;
 	--output-atom-scores)
@@ -182,6 +187,21 @@ cat $INFILE_CONTENTS_EXTRACTED_PDB \
 | voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
+| \
+{
+	if [ -s "$SEQUENCE" ]
+	then
+		voronota query-balls \
+		  --set-ref-seq-num-adjunct "$SEQUENCE" \
+		  --ref-seq-alignment $TMPLDIR/sequence_alignment \
+		| voronota query-balls \
+		  --renumber-from-adjunct refseq \
+		| voronota query-balls \
+		  --drop-adjuncts
+	else
+		cat
+	fi
+} \
 > $TMPLDIR/balls
 
 if [ ! -s "$TMPLDIR/balls" ]
