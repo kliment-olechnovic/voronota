@@ -13,6 +13,7 @@ OUTFILE_MAP=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
+OUTFILE_SELECTED_ATOM_SCORES=""
 CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 HELP_MODE=false
@@ -71,6 +72,10 @@ do
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
+	--output-selected-scores)
+		OUTFILE_SELECTED_ATOM_SCORES="$OPTARG"
+		shift
+		;;
 	--cache-dir)
 		CACHE_DIRECTORY="$OPTARG"
 		shift
@@ -94,18 +99,19 @@ Script parameters:
     --input | -i                   string   *  input structure file in PDB format
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
+    --smoothing-window             number      residue scores smoothing window size, default is 5
     --output-residue-scores        string      output text file with residue scores
     --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
     --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
-    --smoothing-window             number      residue scores smoothing window size
     --atoms-query                  string      atoms query commands to define selection
     --contacts-query               string      contacts query commands to define selection
+    --output-selected-scores       string      output text file with selected atom scores
     --multiple-models                          flag to handle multiple models in PDB file
     --cache-dir                    string      path to cache directory
     --help | -h                                flag to display help message and exit
 
 Script standard output:
-    {input file path} {VoroMQA global score} {number of atoms}
+    {input file path} {global score} {number of atoms} [ {selection score} {number of selected atoms} ]
 
 EOF
 exit 1
@@ -272,14 +278,23 @@ fi
 
 if [ -n "$OUTFILE_ATOM_SCORES" ]
 then
-	mkdir -p $(dirname $OUTFILE_ATOM_SCORES)
+	mkdir -p $(dirname "$OUTFILE_ATOM_SCORES")
 	cp $TMPLDIR/atom_quality_scores "$OUTFILE_ATOM_SCORES"
 fi
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ]
 then
-	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES")
 	cp $TMPLDIR/residue_quality_scores "$OUTFILE_RESIDUE_SCORES"
+fi
+
+if [ -n "$OUTFILE_SELECTED_ATOM_SCORES" ] && [ -f "$TMPLDIR/scoring_table" ]
+then
+	mkdir -p $(dirname "$OUTFILE_SELECTED_ATOM_SCORES")
+	cat $TMPLDIR/scoring_table \
+	| awk '{print $1 " " $3}' \
+	| sort -V \
+	> "$OUTFILE_SELECTED_ATOM_SCORES"
 fi
 
 if [ -n "$OUTFILE_ATOM_SCORES_PDB" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
@@ -487,7 +502,7 @@ echo $INFILE $(cat $TMPLDIR/global_quality_score) $(cat $TMPLDIR/balls | wc -l)
 
 if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
 then
-	echo 'selection' $(cat $TMPLDIR/global_quality_score_of_selection) $(cat $TMPLDIR/scoring_table | wc -l)
+	echo $(cat $TMPLDIR/global_quality_score_of_selection) $(cat $TMPLDIR/scoring_table | wc -l)
 fi
 } \
 | tr '\n' ' '
