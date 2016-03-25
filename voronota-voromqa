@@ -240,6 +240,12 @@ cat $TMPLDIR/foundation/atom_energies \
   --residue-scores-file $TMPLDIR/residue_quality_scores \
 > $TMPLDIR/global_quality_score
 
+if [ ! -s "$TMPLDIR/global_quality_score" ] || [ ! -s "$TMPLDIR/atom_quality_scores" ] || [ ! -s "$TMPLDIR/residue_quality_scores" ]
+then
+	echo >&2 "Error: failed to calculate scores"
+	exit 1
+fi
+
 if [ -n "$ATOMS_QUERY_PARAMETERS" ] || [ -n "$CONTACTS_QUERY_PARAMETERS" ]
 then
 	cat $TMPLDIR/balls \
