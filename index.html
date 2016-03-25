@@ -88,9 +88,9 @@
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
 <li><a href="#cad-score-method-script">CAD-score method script</a></li>
-<li><a href="#voromqa-method-script">VoroMQA method script</a></li>
 <li><a href="#b-factor-writing-utility-script">B-factor writing utility script</a></li>
 <li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
+<li><a href="#voromqa-method-script">VoroMQA method script</a></li>
 </ul></li>
 </ul>
 </div>
@@ -1315,6 +1315,20 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 [-s residue_scores_smoothing_window_size]
 [-C cache_directory]
 </code></pre>
+<h2 id="b-factor-writing-utility-script"><a href="#TOC">B-factor writing utility script</a></h2>
+<p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
+<pre><code>-p input_structure_file.pdb
+-s input_scores_file
+</code></pre>
+<h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
+<p>The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls). The script command line arguments are:</p>
+<pre><code>-i input_file.pdb
+[-a atoms_query_parameters_string]
+[-c contacts_query_parameters_string]
+[-d drawing_for_pymol.py]
+[-g drawing_parameters_string]
+[-C cache_directory]
+</code></pre>
 <h2 id="voromqa-method-script"><a href="#TOC">VoroMQA method script</a></h2>
 <p>The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Script parameters:
@@ -1334,20 +1348,6 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 
 Script standard output:
     {input file path} {global score} {number of atoms} [ {selection score} {number of selected atoms} ]
-</code></pre>
-<h2 id="b-factor-writing-utility-script"><a href="#TOC">B-factor writing utility script</a></h2>
-<p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
-<pre><code>-p input_structure_file.pdb
--s input_scores_file
-</code></pre>
-<h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
-<p>The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls). The script command line arguments are:</p>
-<pre><code>-i input_file.pdb
-[-a atoms_query_parameters_string]
-[-c contacts_query_parameters_string]
-[-d drawing_for_pymol.py]
-[-g drawing_parameters_string]
-[-C cache_directory]
 </code></pre>
 </body>
 </html>
