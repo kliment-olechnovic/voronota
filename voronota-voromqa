@@ -129,7 +129,7 @@ command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resou
 
 if [ -n "$OUTFILE_PLOT" ]
 then
-	command -v R &> /dev/null || { echo >&2 "Warning: 'R' command is not available, therefore the resudue scores plot is not produced"; OUTFILE_PLOT=""; }
+	command -v R &> /dev/null || { echo >&2 "Warning: 'R' command is not available, therefore the residue scores plot is not produced"; OUTFILE_PLOT=""; }
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -160,7 +160,22 @@ then
 	fi
 fi
 
-cat $INFILE_CONTENTS_EXTRACTED \
+INFILE_CONTENTS_EXTRACTED_PDB=$INFILE_CONTENTS_EXTRACTED
+if [[ "$INFILE_CONTENTS_EXTRACTED" == *".cif" ]]
+then
+	INFILE_CONTENTS_EXTRACTED_PDB=$TMPLDIR/extracted_input_file_pdb
+	cat $INFILE_CONTENTS_EXTRACTED \
+	| voronota get-balls-from-atoms-file --annotated --mmcif \
+	| voronota x-write-balls-to-atoms-file --pdb-output $INFILE_CONTENTS_EXTRACTED_PDB \
+	> /dev/null
+	if [ ! -s "$INFILE_CONTENTS_EXTRACTED_PDB" ]
+	then
+		echo >&2 "Error: failed to read mmCIF file"
+		exit 1
+	fi
+fi
+
+cat $INFILE_CONTENTS_EXTRACTED_PDB \
 | voronota get-balls-from-atoms-file \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --radii-file <(voronota-resources radii) \
@@ -363,7 +378,7 @@ then
 	| voronota x-write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
-	  --pdb-output-template $INFILE_CONTENTS_EXTRACTED \
+	  --pdb-output-template $INFILE_CONTENTS_EXTRACTED_PDB \
 	> /dev/null
 fi
 
