@@ -297,41 +297,34 @@ then
 	> "$OUTFILE_SELECTED_ATOM_SCORES"
 fi
 
-if [ -n "$OUTFILE_ATOM_SCORES_PDB" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
+if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
 then
-	cat $INFILE_CONTENTS_EXTRACTED \
-	| voronota get-balls-from-atoms-file \
-	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
-	  --include-heteroatoms \
-	> $TMPLDIR/balls_unstripped
-	
-	if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
-	then
-		mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
-		cat $TMPLDIR/balls_unstripped \
-		| voronota query-balls \
-		  --drop-altloc-indicators \
-		  --set-external-adjuncts $TMPLDIR/atom_quality_scores \
-		  --set-external-adjuncts-name score \
-		| voronota x-write-balls-to-atoms-file \
-		  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
-		  --pdb-output-b-factor score \
-		> /dev/null
-	fi
-	
-	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
-	then
-		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB")
-		cat $TMPLDIR/balls_unstripped \
-		| voronota query-balls \
-		  --drop-altloc-indicators \
-		  --set-external-adjuncts $TMPLDIR/residue_quality_scores \
-		  --set-external-adjuncts-name score \
-		| voronota x-write-balls-to-atoms-file \
-		  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB" \
-		  --pdb-output-b-factor score \
-		> /dev/null
-	fi
+	mkdir -p $(dirname "$OUTFILE_ATOM_SCORES_PDB")
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts $TMPLDIR/atom_quality_scores \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_RESIDUE_SCORES_PDB" ]
+then
+	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB")
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts $TMPLDIR/residue_quality_scores \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB" \
+	  --pdb-output-b-factor score \
+	> /dev/null
 fi
 
 if [ -n "$OUTFILE_ATOM_DEPTHS" ]
