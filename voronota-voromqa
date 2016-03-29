@@ -2,7 +2,8 @@
 
 readonly ZEROARG=$0
 INFILE=""
-SEQUENCE=""
+REFERENCE_SEQUENCE=""
+OUTFILE_SEQUENCE_ALIGNMENT=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
@@ -29,8 +30,12 @@ do
 		INFILE="$OPTARG"
 		shift
 		;;
-	--sequence)
-		SEQUENCE="$OPTARG"
+	--reference-sequence)
+		REFERENCE_SEQUENCE="$OPTARG"
+		shift
+		;;
+	--output-sequence-alignment)
+		OUTFILE_SEQUENCE_ALIGNMENT="$OPTARG"
 		shift
 		;;
 	--output-atom-scores)
@@ -100,22 +105,26 @@ cat >&2 << EOF
 
 The 'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
 
-Script parameters:
+Basic options:
     --input | -i                   string   *  input structure file in PDB format
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
-    --smoothing-window             number      residue scores smoothing window size, default is 5
     --output-residue-scores        string      output text file with residue scores
     --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
     --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --cache-dir                    string      path to cache directory
+    --smoothing-window             number      residue scores smoothing window size, default is 5
     --atoms-query                  string      atoms query commands to define selection
     --contacts-query               string      contacts query commands to define selection
     --output-selected-scores       string      output text file with selected atom scores
+    --reference-sequence           string      sequence file for residue renumbering
+    --output-sequence-alignment    string      output text file with sequence alignment
     --multiple-models                          flag to handle multiple models in PDB file
-    --cache-dir                    string      path to cache directory
-    --help | -h                                flag to display help message and exit
 
-Script standard output:
+Standard output:
     {input file path} {global score} {number of atoms} [ {selection score} {number of selected atoms} ]
 
 EOF
@@ -189,10 +198,10 @@ cat $INFILE_CONTENTS_EXTRACTED_PDB \
   --drop-altloc-indicators \
 | \
 {
-	if [ -s "$SEQUENCE" ]
+	if [ -s "$REFERENCE_SEQUENCE" ]
 	then
 		voronota query-balls \
-		  --set-ref-seq-num-adjunct "$SEQUENCE" \
+		  --set-ref-seq-num-adjunct "$REFERENCE_SEQUENCE" \
 		  --ref-seq-alignment $TMPLDIR/sequence_alignment \
 		| voronota query-balls \
 		  --renumber-from-adjunct refseq \
@@ -203,6 +212,11 @@ cat $INFILE_CONTENTS_EXTRACTED_PDB \
 	fi
 } \
 > $TMPLDIR/balls
+
+if [ -n "$OUTFILE_SEQUENCE_ALIGNMENT" ] && [ -f "$TMPLDIR/sequence_alignment" ]
+then
+	cp "$TMPLDIR/sequence_alignment" "$OUTFILE_SEQUENCE_ALIGNMENT"
+fi
 
 if [ ! -s "$TMPLDIR/balls" ]
 then
