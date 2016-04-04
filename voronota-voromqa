@@ -18,6 +18,7 @@ CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_SELECTED_ATOM_SCORES=""
 CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
+UNTEACHING_DIRECTORY=""
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -88,6 +89,10 @@ do
 		;;
 	--cache-dir)
 		CACHE_DIRECTORY="$OPTARG"
+		shift
+		;;
+	--unteaching-dir)
+		UNTEACHING_DIRECTORY="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -276,6 +281,42 @@ then
 		mkdir -p $CACHE_DIRECTORY
 		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
+fi
+
+if [ -n "$UNTEACHING_DIRECTORY" ] && [ -s "$UNTEACHING_DIRECTORY/contact_areas" ] && [ -s "$UNTEACHING_DIRECTORY/contact_categories" ]
+then
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --chains-summary-output $TMPLDIR/chains_counts \
+	> /dev/null
+
+	{
+		cat $UNTEACHING_DIRECTORY/contact_areas
+		
+		cat $TMPLDIR/foundation/all_contacts \
+		| voronota query-contacts \
+		  --match-min-seq-sep 2 \
+		  --match-max-seq-sep 6 \
+		  --set-tags 'sep1' \
+		| sed 's/sep1;sep2/sep1/' \
+		| awk '{print $1 " " $2 " " $5 " " $3}' \
+		| tr ';' '_' \
+		| voronota x-score-contacts-potential \
+		  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
+		| awk '{print $1 " " $2 " " $3 " -" $4}'
+	} \
+	| voronota x-score-contacts-potential \
+	  --input-contributions $UNTEACHING_DIRECTORY/contact_categories \
+	  --potential-file $TMPLDIR/untaught_potential \
+	> /dev/null
+
+	cat $TMPLDIR/foundation/all_contacts \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| voronota score-contacts-energy \
+	  --potential-file $TMPLDIR/untaught_potential \
+	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
+	> /dev/null
 fi
 
 cat $TMPLDIR/foundation/atom_energies \
