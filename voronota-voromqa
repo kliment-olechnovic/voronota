@@ -101,6 +101,10 @@ do
 	-h|--help)
 		HELP_MODE=true
 		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
 	esac
 done
 
