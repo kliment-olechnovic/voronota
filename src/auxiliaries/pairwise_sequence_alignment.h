@@ -69,7 +69,7 @@ public:
 				{
 					const typename T::value_type& v1=seq1[i-1];
 					const typename T::value_type& v2=seq2[j-1];
-					const int match_score=scores_matrix[i-1][j-1]+scorer.match(v1, v2);
+					const int match_score=scores_matrix[i-1][j-1]+scorer.match(v1, v2)+(((i==1 && j==1) || (i==seq1.size() && j==seq2.size())) ? -1 : 0);
 					const int deletion_score=scores_matrix[i-1][j]+(directions_matrix[i-1][j]!=1 ? scorer.gap_start() : scorer.gap_extension());
 					const int insertion_score=scores_matrix[i][j-1]+(directions_matrix[i][j-1]!=2 ? scorer.gap_start() : scorer.gap_extension());
 					const int max_score=std::max(match_score, std::max(deletion_score, insertion_score));
