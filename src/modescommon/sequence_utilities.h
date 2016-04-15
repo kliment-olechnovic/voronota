@@ -72,7 +72,7 @@ public:
 			const std::string seq=convert_residue_sequence_container_to_string(residue_sequence_vector);
 			if(residue_sequence_vector.size()==seq.size())
 			{
-				const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(reference_sequence, seq, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1));
+				const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(reference_sequence, seq, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1), false, 0);
 				for(std::size_t i=0;i<alignment.size();i++)
 				{
 					const std::pair<int, int>& p=alignment[i];
@@ -100,7 +100,7 @@ public:
 		if(max_seq_size>0)
 		{
 			int matches=0.0;
-			const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(seq_a, seq_b, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1));
+			const std::vector< std::pair<int, int> >& alignment=auxiliaries::PairwiseSequenceAlignment::construct_sequence_alignment(seq_a, seq_b, auxiliaries::PairwiseSequenceAlignment::SimpleScorer(10, -10, -11, -1), false, 0);
 			for(std::size_t i=0;i<alignment.size();i++)
 			{
 				const std::pair<int, int>& p=alignment[i];

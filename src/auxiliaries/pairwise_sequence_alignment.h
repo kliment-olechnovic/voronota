@@ -45,7 +45,7 @@ public:
 	};
 
 	template<typename T, typename Scorer>
-	static std::vector< std::pair<int, int> > construct_sequence_alignment(const T& seq1, const T& seq2, const Scorer& scorer, const bool local=false, int* result_score=0)
+	static std::vector< std::pair<int, int> > construct_sequence_alignment(const T& seq1, const T& seq2, const Scorer& scorer, const bool local, int* result_score)
 	{
 		std::vector< std::pair<int, int> > alignment;
 		if(!seq1.empty() && !seq2.empty())
