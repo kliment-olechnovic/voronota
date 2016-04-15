@@ -20,6 +20,7 @@ CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
 REBUILD_SIDECHAINS_COMMAND=""
+MORE_LOGGING=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -102,6 +103,9 @@ do
 		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--more-logging)
+		MORE_LOGGING=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -271,6 +275,11 @@ cat $INFILE_CONTENTS_EXTRACTED \
 	fi
 } \
 > $TMPLDIR/balls
+
+if $MORE_LOGGING && [ -f "$TMPLDIR/sequence_alignment" ]
+then
+	cat >&2 "$TMPLDIR/sequence_alignment"
+fi
 
 if [ -n "$OUTFILE_SEQUENCE_ALIGNMENT" ] && [ -f "$TMPLDIR/sequence_alignment" ]
 then
