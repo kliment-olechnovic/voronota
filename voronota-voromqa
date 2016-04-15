@@ -19,6 +19,7 @@ OUTFILE_SELECTED_ATOM_SCORES=""
 CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
+REBUILD_SIDECHAINS_COMMAND=""
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -95,6 +96,10 @@ do
 		UNTEACHING_DIRECTORY="$OPTARG"
 		shift
 		;;
+	--rebuild-sidechains)
+		REBUILD_SIDECHAINS_COMMAND="$OPTARG"
+		shift
+		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
@@ -152,6 +157,18 @@ then
 	exit 1
 fi
 
+if [ -n "$REBUILD_SIDECHAINS_COMMAND" ] && [ -n "$MULTIPLE_MODELS_CHAINS_OPTION" ]
+then
+	echo >&2 "Error: '--rebuild-side-chains' and '--multiple-models' cannot be used together"
+	exit 1
+fi
+
+if [ -n "$REBUILD_SIDECHAINS_COMMAND" ] && [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ]
+then
+	echo >&2 "Error: '--rebuild-sidechains' and '--output-residue-scores-for-CAMEO' cannot be used together"
+	exit 1
+fi
+
 if [ -z "$REFERENCE_SEQUENCE" ] && [ -n "$OUTFILE_SEQUENCE_ALIGNMENT" ]
 then
 	echo >&2 "Error: '--output-sequence-alignment' cannot be used without '--reference-sequence'"
@@ -170,7 +187,12 @@ command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resou
 
 if [ -n "$OUTFILE_PLOT" ]
 then
-	command -v R &> /dev/null || { echo >&2 "Warning: 'R' command is not available, therefore the residue scores plot is not produced"; OUTFILE_PLOT=""; }
+	command -v R &> /dev/null || { echo >&2 "Error: 'R' command, needed for plotting, is not available"; exit 1; }
+fi
+
+if [ -n "$REBUILD_SIDECHAINS_COMMAND" ]
+then
+	command -v $REBUILD_SIDECHAINS_COMMAND &> /dev/null || { echo >&2 "Error: '$REBUILD_SIDECHAINS_COMMAND' command, requested for rebuilding side-chains, is not available"; exit 1; }
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -217,6 +239,31 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		  --ref-seq-alignment $TMPLDIR/sequence_alignment \
 		| voronota query-balls \
 		  --renumber-from-adjunct refseq \
+		| voronota query-balls \
+		  --drop-adjuncts
+	else
+		cat
+	fi
+} \
+| \
+{
+	if [ -n "$REBUILD_SIDECHAINS_COMMAND" ]
+	then
+		voronota query-balls \
+		  --match 'A<CA,C,N,O,OXT>' \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output $TMPLDIR/atoms_stripped.pdb \
+		> /dev/null
+
+		$REBUILD_SIDECHAINS_COMMAND -h \
+		  -i $TMPLDIR/atoms_stripped.pdb \
+		  -o $TMPLDIR/atoms_rebuilt.pdb \
+		> /dev/null
+
+		cat $TMPLDIR/atoms_rebuilt.pdb \
+		| voronota get-balls-from-atoms-file \
+		  --annotated \
+		  --radii-file <(voronota-resources radii) \
 		| voronota query-balls \
 		  --drop-adjuncts
 	else
