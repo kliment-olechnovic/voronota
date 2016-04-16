@@ -12,6 +12,7 @@ OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
 OUTFILE_MAP=""
+OUTFILE_SCORES_FOR_CASP=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
@@ -71,6 +72,10 @@ do
 		;;
 	--output-contacts-map-svg)
 		OUTFILE_MAP="$OPTARG"
+		shift
+		;;
+	--output-scores-for-CASP)
+		OUTFILE_SCORES_FOR_CASP="$OPTARG"
 		shift
 		;;
 	--smoothing-window)
@@ -176,6 +181,12 @@ fi
 if [ -z "$REFERENCE_SEQUENCE" ] && [ -n "$OUTFILE_SEQUENCE_ALIGNMENT" ]
 then
 	echo >&2 "Error: '--output-sequence-alignment' cannot be used without '--reference-sequence'"
+	exit 1
+fi
+
+if [ -z "$REFERENCE_SEQUENCE" ] && [ -n "$OUTFILE_SCORES_FOR_CASP" ]
+then
+	echo >&2 "Error: '--output-scores-for-CASP' cannot be used without '--reference-sequence'"
 	exit 1
 fi
 
@@ -414,16 +425,16 @@ then
 	| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | grep -v solvent \
 	> $TMPLDIR/selection_by_contacts_query
 	
-	join -e EMPTY <(sort $TMPLDIR/selection_by_atoms_query) <(sort $TMPLDIR/selection_by_contacts_query) \
+	join -e EMPTY <(sort -k 1b,1 $TMPLDIR/selection_by_atoms_query) <(sort -k 1b,1 $TMPLDIR/selection_by_contacts_query) \
 	| grep -v EMPTY \
 	> $TMPLDIR/selection_by_queries
 	
-	join -e EMPTY <(sort $TMPLDIR/foundation/depth_values) <(sort $TMPLDIR/selection_by_queries) \
+	join -e EMPTY <(sort -k 1b,1 $TMPLDIR/foundation/depth_values) <(sort -k 1b,1 $TMPLDIR/selection_by_queries) \
 	| grep -v EMPTY \
 	| awk '{print $1 " " $2}' \
 	> $TMPLDIR/scoring_domain
 	
-	join -e EMPTY <(sort $TMPLDIR/scoring_domain) <(sort $TMPLDIR/atom_quality_scores) \
+	join -e EMPTY <(sort -k 1b,1 $TMPLDIR/scoring_domain) <(sort -k 1b,1 $TMPLDIR/atom_quality_scores) \
 	| grep -v EMPTY \
 	> $TMPLDIR/scoring_table
 	
@@ -661,6 +672,11 @@ then
 	  --svg-output $TMPLDIR/map.svg \
 	> /dev/null
 	mv $TMPLDIR/map.svg $OUTFILE_MAP
+fi
+
+if [ -n "$OUTFILE_SCORES_FOR_CASP" ] && [ -s "$TMPLDIR/sequence_alignment" ]
+then
+	REFERENCE_SEQUENCE_LENGTH=$(cat $TMPLDIR/sequence_alignment | head -1 | tr -d '-' | tr -d ' ' | tr -d '\n' | tr -d '\t' | wc -c)
 fi
 
 {
