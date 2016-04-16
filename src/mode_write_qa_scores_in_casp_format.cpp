@@ -34,7 +34,7 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 	const double global_score=poh.argument<double>("--global-score");
 	const int sequence_length=poh.argument<int>("--sequence-length");
 	const std::string local_scores=poh.argument<std::string>("--local-scores");
-	const int wrap_size=poh.argument<int>("--wrap-size", 60);
+	const int wrap_size=poh.argument<int>("--wrap-size", 20);
 	const double completeness_threshold=poh.argument<double>("--completeness-threshold", 0.85);
 
 	if(name.empty() || global_score<0.0 || global_score>1.0 || sequence_length<3 || wrap_size<1 || completeness_threshold>0.99)
@@ -50,23 +50,12 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 	}
 
 	std::map<int, double> map_of_position_scores;
+	for(std::map<CRAD, double>::const_iterator it=map_of_crad_scores.begin();it!=map_of_crad_scores.end();++it)
 	{
-		std::string primary_chainID="";
-		for(std::map<CRAD, double>::const_iterator it=map_of_crad_scores.begin();it!=map_of_crad_scores.end();++it)
+		const int pos=it->first.resSeq;
+		if(pos>=1 && pos<=sequence_length && map_of_position_scores.count(pos)==0)
 		{
-			const std::string& chainID=it->first.chainID;
-			if(primary_chainID.empty())
-			{
-				primary_chainID=chainID;
-			}
-			if(chainID==primary_chainID)
-			{
-				const int pos=it->first.resSeq;
-				if(pos>=1 && pos<=sequence_length && map_of_position_scores.count(pos)==0)
-				{
-					map_of_position_scores[pos]=(it->second);
-				}
-			}
+			map_of_position_scores[pos]=(it->second);
 		}
 	}
 
