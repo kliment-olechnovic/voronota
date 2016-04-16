@@ -682,7 +682,7 @@ then
 	  --global-score "$(cat $TMPLDIR/global_quality_score)" \
 	  --sequence-length "$(cat $TMPLDIR/sequence_alignment | head -1 | tr -d '-' | tr -d ' ' | tr -d '\n' | tr -d '\t' | wc -c)" \
 	  --local-scores "$TMPLDIR/residue_quality_scores" \
-	  --wrap_size 60 \
+	  --wrap_size 20 \
 	  --completeness-threshold 0.85 \
 	> "$OUTFILE_SCORES_FOR_CASP"
 fi
