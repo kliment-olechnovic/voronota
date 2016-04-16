@@ -676,7 +676,15 @@ fi
 
 if [ -n "$OUTFILE_SCORES_FOR_CASP" ] && [ -s "$TMPLDIR/sequence_alignment" ]
 then
-	REFERENCE_SEQUENCE_LENGTH=$(cat $TMPLDIR/sequence_alignment | head -1 | tr -d '-' | tr -d ' ' | tr -d '\n' | tr -d '\t' | wc -c)
+	mkdir -p $(dirname "$OUTFILE_SCORES_FOR_CASP")
+	voronota x-write-qa-scores-in-casp-format \
+	  --name "$(basename $INFILE)" \
+	  --global-score "$(cat $TMPLDIR/global_quality_score)" \
+	  --sequence-length "$(cat $TMPLDIR/sequence_alignment | head -1 | tr -d '-' | tr -d ' ' | tr -d '\n' | tr -d '\t' | wc -c)" \
+	  --local-scores "$TMPLDIR/residue_quality_scores" \
+	  --wrap_size 60 \
+	  --completeness-threshold 0.85 \
+	> "$OUTFILE_SCORES_FOR_CASP"
 fi
 
 {
