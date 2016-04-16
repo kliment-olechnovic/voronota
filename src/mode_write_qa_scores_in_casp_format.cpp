@@ -46,22 +46,33 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 
 	if(map_of_crad_scores.empty())
 	{
-		throw std::runtime_error("No local score.");
+		throw std::runtime_error("No local scores.");
 	}
 
 	std::map<int, double> map_of_position_scores;
-	for(std::map<CRAD, double>::const_iterator it=map_of_crad_scores.begin();it!=map_of_crad_scores.end();++it)
 	{
-		const int pos=it->first.resSeq;
-		if(pos>=1 && pos<=sequence_length && map_of_position_scores.count(pos)==0)
+		std::string primary_chainID="";
+		for(std::map<CRAD, double>::const_iterator it=map_of_crad_scores.begin();it!=map_of_crad_scores.end();++it)
 		{
-			map_of_position_scores[pos]=(it->second);
+			const std::string& chainID=it->first.chainID;
+			if(primary_chainID.empty())
+			{
+				primary_chainID=chainID;
+			}
+			if(chainID==primary_chainID)
+			{
+				const int pos=it->first.resSeq;
+				if(pos>=1 && pos<=sequence_length && map_of_position_scores.count(pos)==0)
+				{
+					map_of_position_scores[pos]=(it->second);
+				}
+			}
 		}
 	}
 
 	if(map_of_position_scores.empty())
 	{
-		throw std::runtime_error("No local score in required range.");
+		throw std::runtime_error("No local scores in required range.");
 	}
 
 	const double local_scores_completeness=static_cast<double>(map_of_position_scores.size())/static_cast<double>(sequence_length);
