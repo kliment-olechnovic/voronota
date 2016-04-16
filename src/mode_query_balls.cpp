@@ -246,7 +246,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
 		const std::string reference_sequence=SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
-		const std::map<CRAD, double> sequence_mapping=SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+		const std::map<CRAD, int> sequence_mapping=SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
 
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
@@ -308,10 +308,10 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!sequence_mapping.empty())
 			{
-				const std::map<CRAD, double>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
+				const std::map<CRAD, int>::const_iterator sm_it=sequence_mapping.find(crad.without_atom());
 				if(sm_it!=sequence_mapping.end())
 				{
-					value.props.adjuncts["refseq"]=sm_it->second;
+					value.props.adjuncts["refseq"]=static_cast<double>(sm_it->second);
 				}
 			}
 		}

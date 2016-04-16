@@ -63,10 +63,9 @@ public:
 		return seq;
 	}
 
-	static std::map<auxiliaries::ChainResidueAtomDescriptor, double> construct_sequence_mapping(const std::vector<auxiliaries::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const std::string& ref_seq_alignment_output_filename)
+	static std::map<auxiliaries::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<auxiliaries::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const std::string& ref_seq_alignment_output_filename)
 	{
-		typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-		std::map<CRAD, double> result;
+		std::map<auxiliaries::ChainResidueAtomDescriptor, int> result;
 		if(!residue_sequence_vector.empty() && !reference_sequence.empty())
 		{
 			const std::string seq=convert_residue_sequence_container_to_string(residue_sequence_vector);
@@ -78,7 +77,7 @@ public:
 					const std::pair<int, int>& p=alignment[i];
 					if(p.first>=0 && p.second>=0)
 					{
-						result[residue_sequence_vector.at(p.second)]=static_cast<double>(p.first+1);
+						result[residue_sequence_vector.at(p.second)]=(p.first+1);
 					}
 				}
 				if(!ref_seq_alignment_output_filename.empty())
