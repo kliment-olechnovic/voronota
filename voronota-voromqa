@@ -148,7 +148,7 @@ Advanced options:
     --multiple-models                          flag to handle multiple models in PDB file
 
 Standard output:
-    {input file path} {global score} {number of atoms} [ {selection score} {number of selected atoms} ]
+    {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
 
 EOF
 exit 1
@@ -690,6 +690,7 @@ fi
 {
 echo $INFILE
 cat $TMPLDIR/global_quality_score
+cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
 cat $TMPLDIR/balls | wc -l
 if [ -s "$TMPLDIR/global_quality_score_of_selection" ] && [ -s "$TMPLDIR/scoring_table" ]
 then
