@@ -36,6 +36,7 @@ do
 	$VORONOTADIR/voronota-voromqa \
 	  --input $INFILE \
 	  --reference-sequence $SUBDIR/reference_sequence \
+	  --rebuild-sidechains Scwrl4 \
 	  --output-sequence-alignment $SUBDIR/$INFILEBASENAME/sequence_alignment \
 	  --output-scores-for-CASP $SUBDIR/$INFILEBASENAME/casp_qa_scores
 	
