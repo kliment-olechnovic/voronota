@@ -126,7 +126,7 @@ if [ -z "$INFILE" ] || $HELP_MODE
 then
 cat >&2 << EOF
 
-The 'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
+'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
 
 Basic options:
     --input | -i                   string   *  input structure file in PDB format
@@ -140,14 +140,14 @@ Basic options:
 Advanced options:
     --cache-dir                    string      path to cache directory
     --smoothing-window             number      residue scores smoothing window size, default is 5
-    --atoms-query                  string      atoms query commands to define selection
-    --contacts-query               string      contacts query commands to define selection
+    --atoms-query                  string      atoms query parameters to define selection
+    --contacts-query               string      contacts query parameters to define selection
     --output-selected-scores       string      output text file with selected atom scores
     --reference-sequence           string      sequence file for residue renumbering
     --output-sequence-alignment    string      output text file with sequence alignment
     --multiple-models                          flag to handle multiple models in PDB file
 
-Standard output:
+Standard output (one line):
     {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
 
 EOF
