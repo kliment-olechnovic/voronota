@@ -22,6 +22,8 @@ do
 	  --input-model $INFILE \
 	  --contacts-query "--no-same-chain" \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
+	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
+	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
 	  --smoothing-window 1 \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/interface_global_scores
