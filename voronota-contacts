@@ -18,42 +18,46 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	-i)
+	-i|--input)
 		INFILE_PDB="$OPTARG"
 		shift
 		;;
-	-a)
+	--atoms-query)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-m)
+	--contacts-query-additional)
 		CONTACTS_QUERY_FIRST_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-c)
+	--contacts-query)
 		CONTACTS_QUERY_SECOND_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-d)
+	--output-drawing)
 		DRAWING_OUTPUT="$OPTARG"
 		shift
 		;;
-	-g)
+	--drawing-parameters)
 		DRAWING_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-C)
+	--cache-dir)
 		CONTACTS_CACHE_DIRECTORY="$OPTARG"
 		shift
 		;;
-	-q)
+	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	-w)
+	--wireframe-drawing)
 		WIREFRAME_DRAWING=true
 		;;
 	-h)
 		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
 		;;
 	esac
 done
@@ -61,13 +65,27 @@ done
 if [ -z "$INFILE_PDB" ] || $HELP_MODE
 then
 cat >&2 << EOF
-Script parameters:
-    -i input_file.pdb
-    [-a atoms_query_parameters_string]
-    [-c contacts_query_parameters_string]
-    [-d drawing_for_pymol.py]
-    [-g drawing_parameters_string]
-    [-C cache_directory]
+
+'voronota-contacts' script provides a way for calculating and querying interatomic contacts
+with just one command (without the need to construct a pipeline from 'voronota' calls).
+
+Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --atoms-query                  string      atoms query commands
+    --contacts-query               string      contacts query commands
+    --contacts-query-additional    string      additional contacts query commands
+    --cache-dir                    string      path to cache directory
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --output-drawing               string      output file with drawing script for PyMol
+    --drawing-parameters           string      drawing parameters
+    --wireframe-drawing                        flag to draw wireframe representation of contacts
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (multiple lines):
+    {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
+
 EOF
 exit 1
 fi

@@ -43,9 +43,9 @@ EOF
 
 echo -e "\n## Contacts calculation convenience script\n"
 cat << EOF
-The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).
+'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).
 EOF
-./voronota-contacts -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+./voronota-contacts -h 2>&1 | tail -n +4 | sed 's/^/    /'
 
 } > $TMPDIR/documentation.markdown
 

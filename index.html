@@ -1349,13 +1349,23 @@ Standard output:
     {target file path} {model file path} {global score} {number of residues}
 </code></pre>
 <h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
-<p>The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls). The script command line arguments are:</p>
-<pre><code>-i input_file.pdb
-[-a atoms_query_parameters_string]
-[-c contacts_query_parameters_string]
-[-d drawing_for_pymol.py]
-[-g drawing_parameters_string]
-[-C cache_directory]
+<p>'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
+<pre><code>Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --atoms-query                  string      atoms query commands
+    --contacts-query               string      contacts query commands
+    --contacts-query-additional    string      additional contacts query commands
+    --cache-dir                    string      path to cache directory
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --output-drawing               string      output file with drawing script for PyMol
+    --drawing-parameters           string      drawing parameters
+    --wireframe-drawing                        flag to draw wireframe representation of contacts
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (multiple lines):
+    {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
 </code></pre>
 </body>
 </html>
