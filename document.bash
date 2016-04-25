@@ -27,30 +27,25 @@ echo -e "# Command reference"
 
 echo -e "# Wrapper scripts"
 
+echo -e "\n## VoroMQA method script\n"
+cat << EOF
+'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota.
+The script interface is presented below:
+EOF
+./voronota-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
 echo -e "\n## CAD-score method script\n"
 cat << EOF
-The 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota.
+'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota.
+The script interface is presented below:
 EOF
-./voronota-cadscore -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
-
-echo -e "\n## B-factor writing utility script\n"
-cat << EOF
-The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file.
-EOF
-./voronota-bfactor -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
+./voronota-cadscore -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
 echo -e "\n## Contacts calculation convenience script\n"
 cat << EOF
 The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).
 EOF
 ./voronota-contacts -h 2>&1 | sed 's/^Script.*/The script command line arguments are:\n/'
-
-echo -e "\n## VoroMQA method script\n"
-cat << EOF
-The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota.
-The script interface is presented below:
-EOF
-./voronota-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
 } > $TMPDIR/documentation.markdown
 

@@ -87,10 +87,9 @@
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
-<li><a href="#cad-score-method-script">CAD-score method script</a></li>
-<li><a href="#b-factor-writing-utility-script">B-factor writing utility script</a></li>
-<li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
 <li><a href="#voromqa-method-script">VoroMQA method script</a></li>
+<li><a href="#cad-score-method-script">CAD-score method script</a></li>
+<li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
 </ul></li>
 </ul>
 </div>
@@ -1305,32 +1304,8 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
 <p>global results</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
-<h2 id="cad-score-method-script"><a href="#TOC">CAD-score method script</a></h2>
-<p>The 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script command line arguments are:</p>
-<pre><code>-t input_target_file.pdb
--m input_model_file.pdb
-[-a atoms_query_parameters_string]
-[-c contacts_query_parameters_string]
-[-r output_residue_scores_file]
-[-s residue_scores_smoothing_window_size]
-[-C cache_directory]
-</code></pre>
-<h2 id="b-factor-writing-utility-script"><a href="#TOC">B-factor writing utility script</a></h2>
-<p>The 'voronota-bfactor' script is a utility for writing atom and residue scores (produced by CAD-score and VoroMQA scripts) as B-factor values in a PDB file. The script command line arguments are:</p>
-<pre><code>-p input_structure_file.pdb
--s input_scores_file
-</code></pre>
-<h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
-<p>The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls). The script command line arguments are:</p>
-<pre><code>-i input_file.pdb
-[-a atoms_query_parameters_string]
-[-c contacts_query_parameters_string]
-[-d drawing_for_pymol.py]
-[-g drawing_parameters_string]
-[-C cache_directory]
-</code></pre>
 <h2 id="voromqa-method-script"><a href="#TOC">VoroMQA method script</a></h2>
-<p>The 'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
+<p>'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
     --input | -i                   string   *  input structure file in PDB format
     --output-atom-scores           string      output text file with atom scores
@@ -1352,6 +1327,35 @@ Advanced options:
 
 Standard output:
     {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
+</code></pre>
+<h2 id="cad-score-method-script"><a href="#TOC">CAD-score method script</a></h2>
+<p>'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script interface is presented below:</p>
+<pre><code>Basic options:
+    --input-target | -t             string   *  input target structure file in PDB format
+    --input-model | -m              string   *  input model structure file in PDB format
+    --output-residue-scores         string      output text file with residue scores
+    --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
+    --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
+    --smoothing-window              number      residue scores smoothing window size, default is 1
+    --cache-dir                     string      path to cache directory
+    --help | -h                                 flag to display help message and exit
+
+Advanced options:
+    --atoms-query                   string      atoms query commands
+    --contacts-query                string      contacts query commands
+    --multiple-models                           flag to handle multiple models in PDB file
+
+Standard output:
+    {target file path} {model file path} {global score} {number of residues}
+</code></pre>
+<h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
+<p>The 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls). The script command line arguments are:</p>
+<pre><code>-i input_file.pdb
+[-a atoms_query_parameters_string]
+[-c contacts_query_parameters_string]
+[-d drawing_for_pymol.py]
+[-g drawing_parameters_string]
+[-C cache_directory]
 </code></pre>
 </body>
 </html>

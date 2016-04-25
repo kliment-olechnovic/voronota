@@ -9,41 +9,41 @@ do
 	$VORONOTADIR/voronota-cadscore \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
-	  -r $SUBDIR/$INFILEBASENAME/residue_scores \
-	  -s 1 \
-	  -C $SUBDIR/cache
+	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
+	  --smoothing-window 1 \
+	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores
 
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  -t $INPUTDIR/complex/target.pdb \
-	  -m $INFILE \
-	  -c "--no-same-chain" \
-	  -r $SUBDIR/$INFILEBASENAME/interface_residue_scores \
-	  -s 1 \
-	  -C $SUBDIR/cache
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--no-same-chain" \
+	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
+	  --smoothing-window 1 \
+	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/interface_global_scores
 
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  -t $INPUTDIR/complex/target.pdb \
-	  -m $INFILE \
-	  -c "--match-tags SS" \
-	  -C $SUBDIR/cache
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags SS" \
+	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_SS
 
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  -t $INPUTDIR/complex/target.pdb \
-	  -m $INFILE \
-	  -c "--match-tags-not MM" \
-	  -C $SUBDIR/cache
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags-not MM" \
+	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_AS
 
 rm -r $SUBDIR/cache
