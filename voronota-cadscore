@@ -72,7 +72,7 @@ if [ -z "$INFILE_TARGET_PDB" ] || [ -z "$INFILE_MODEL_PDB" ] || $HELP_MODE
 then
 cat >&2 << EOF
 
-The 'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
+'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
 
 Basic options:
     --input-target | -t             string   *  input target structure file in PDB format
@@ -85,11 +85,11 @@ Basic options:
     --help | -h                                 flag to display help message and exit
 
 Advanced options:
-    --atoms-query                   string      atoms query commands
-    --contacts-query                string      contacts query commands
+    --atoms-query                   string      atoms query parameters
+    --contacts-query                string      contacts query parameters
     --multiple-models                           flag to handle multiple models in PDB file
 
-Standard output:
+Standard output (one line):
     {target file path} {model file path} {global score} {number of residues}
 
 EOF
