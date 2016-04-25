@@ -6,6 +6,8 @@ INFILE_MODEL_PDB=""
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_RESIDUE_SCORES=""
+OUTFILE_RESIDUE_SCORES_PDB_TARGET=""
+OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
 SMOOTHING_WINDOW="1"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
@@ -17,39 +19,51 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	-t)
+	-t|--input-target)
 		INFILE_TARGET_PDB="$OPTARG"
 		shift
 		;;
-	-m)
+	-m|--input-model)
 		INFILE_MODEL_PDB="$OPTARG"
 		shift
 		;;
-	-a)
+	--atoms-query)
 		ATOMS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-c)
+	--contacts-query)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
-	-r)
+	--output-residue-scores)
 		OUTFILE_RESIDUE_SCORES="$OPTARG"
 		shift
 		;;
-	-s)
+	--output-residue-scores-pdb-t)
+		OUTFILE_RESIDUE_SCORES_PDB_TARGET="$OPTARG"
+		shift
+		;;
+	--output-residue-scores-pdb-m)
+		OUTFILE_RESIDUE_SCORES_PDB_MODEL="$OPTARG"
+		shift
+		;;
+	--smoothing-window)
 		SMOOTHING_WINDOW="$OPTARG"
 		shift
 		;;
-	-C)
+	--cache-dir)
 		CONTACTS_CACHE_DIRECTORY="$OPTARG"
 		shift
 		;;
-	-q)
+	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	-h)
+	-h|--help)
 		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
 		;;
 	esac
 done
@@ -57,14 +71,27 @@ done
 if [ -z "$INFILE_TARGET_PDB" ] || [ -z "$INFILE_MODEL_PDB" ] || $HELP_MODE
 then
 cat >&2 << EOF
-Script parameters:
-    -t input_target_file.pdb
-    -m input_model_file.pdb
-    [-a atoms_query_parameters_string]
-    [-c contacts_query_parameters_string]
-    [-r output_residue_scores_file]
-    [-s residue_scores_smoothing_window_size]
-    [-C cache_directory]
+
+The 'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
+
+Basic options:
+    --input-target | -t             string   *  input target structure file in PDB format
+    --input-model | -m              string   *  input model structure file in PDB format
+    --output-residue-scores         string      output text file with residue scores
+    --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
+    --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
+    --smoothing-window              number      residue scores smoothing window size, default is 1
+    --cache-dir                     string      path to cache directory
+    --help | -h                                 flag to display help message and exit
+
+Advanced options:
+    --atoms-query                   string      atoms query commands
+    --contacts-query                string      contacts query commands
+    --multiple-models                           flag to handle multiple models in PDB file
+
+Standard output:
+    {target file path} {model file path} {global score} {number of residues}
+
 EOF
 exit 1
 fi
@@ -185,4 +212,32 @@ then
 	cp $TMPLDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
 fi
 
-echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $(cat $TMPLDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}')
+if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ]
+then
+	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_TARGET")
+	cat $TMPLDIR/target.balls \
+	| voronota query-balls \
+	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
+then
+	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_MODEL")
+	cat $TMPLDIR/model.balls \
+	| voronota query-balls \
+	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+fi
+
+echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
+  $(cat $TMPLDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}') \
+  $(cat $TMPLDIR/smoothed_residue_cad_scores | wc -l)
