@@ -242,6 +242,9 @@ cat $INFILE_CONTENTS_EXTRACTED \
 | voronota get-balls-from-atoms-file \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --radii-file <(voronota-resources radii) \
+  --include-heteroatoms \
+| voronota query-balls \
+  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>' \
 | voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
