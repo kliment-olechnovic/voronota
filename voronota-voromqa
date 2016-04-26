@@ -13,6 +13,7 @@ OUTFILE_CAMEO_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
 OUTFILE_MAP=""
 OUTFILE_SCORES_FOR_CASP=""
+OUTDIR_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
@@ -76,6 +77,10 @@ do
 		;;
 	--output-scores-for-CASP)
 		OUTFILE_SCORES_FOR_CASP="$OPTARG"
+		shift
+		;;
+	--outdir-summary-for-potential)
+		OUTDIR_SUMMARY_FOR_POTENTIAL="$OPTARG"
 		shift
 		;;
 	--smoothing-window)
@@ -358,6 +363,30 @@ then
 		mkdir -p $CACHE_DIRECTORY
 		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
+fi
+
+if [ -n "$OUTDIR_SUMMARY_FOR_POTENTIAL" ]
+then
+	mkdir -p "$OUTDIR_SUMMARY_FOR_POTENTIAL"
+
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --chains-summary-output $TMPLDIR/chains_counts \
+	> /dev/null
+
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts \
+	  --match-min-seq-sep 2 \
+	  --match-max-seq-sep 6 \
+	  --set-tags 'sep1' \
+	| sed 's/sep1;sep2/sep1/' \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| voronota x-score-contacts-potential \
+	  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
+	> "$OUTDIR_SUMMARY_FOR_POTENTIAL/$(basename $INFILE .gz)"
+
+	exit 0
 fi
 
 if [ -n "$UNTEACHING_DIRECTORY" ] && [ -s "$UNTEACHING_DIRECTORY/contact_areas" ] && [ -s "$UNTEACHING_DIRECTORY/contact_categories" ]
