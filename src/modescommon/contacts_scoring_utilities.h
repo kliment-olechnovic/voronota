@@ -112,6 +112,22 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	{
 		crad.name="O";
 	}
+	else if(crad.resName=="MSE")
+	{
+		crad.resName="MET";
+		if(crad.name=="SE")
+		{
+			crad.name="SD";
+		}
+	}
+	else if(crad.resName=="SEC")
+	{
+		crad.resName="CYS";
+		if(crad.name=="SE")
+		{
+			crad.name="SG";
+		}
+	}
 	return crad;
 }
 
