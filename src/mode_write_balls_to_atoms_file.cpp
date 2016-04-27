@@ -56,7 +56,7 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 		{
 			if(tags_it->find("el=")!=std::string::npos)
 			{
-				atom_record.element=tags_it->substr(3, 1);
+				atom_record.element=tags_it->substr(3, 2);
 			}
 		}
 	}
