@@ -17,7 +17,8 @@ do
 	  --output-residue-scores-for-CAMEO $SUBDIR/$INFILEBASENAME/cameo_residue_scores.pdb \
 	  --output-contacts-map-svg $SUBDIR/$INFILEBASENAME/colored_map.svg \
 	  --contacts-query '--no-same-chain --no-solvent' \
-	  --output-selected-scores $SUBDIR/$INFILEBASENAME/selected_atom_scores
+	  --output-selected-scores $SUBDIR/$INFILEBASENAME/selected_atom_scores \
+	  --output-balls $SUBDIR/$INFILEBASENAME/balls
 
 done > $SUBDIR/global_scores
 
