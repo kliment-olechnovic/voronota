@@ -4,6 +4,7 @@ readonly ZEROARG=$0
 INFILE=""
 REFERENCE_SEQUENCE=""
 OUTFILE_SEQUENCE_ALIGNMENT=""
+OUTFILE_BALLS=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
@@ -37,6 +38,10 @@ do
 		;;
 	--reference-sequence)
 		REFERENCE_SEQUENCE="$OPTARG"
+		shift
+		;;
+	--output-balls)
+		OUTFILE_BALLS="$OPTARG"
 		shift
 		;;
 	--output-sequence-alignment)
@@ -309,6 +314,12 @@ if [ ! -s "$TMPLDIR/balls" ]
 then
 	echo >&2 "Error: no atoms in input file"
 	exit 1
+fi
+
+if [ -n "$OUTFILE_BALLS" ]
+then
+	mkdir -p $(dirname $OUTFILE_BALLS)
+	cp "$TMPLDIR/balls" "$OUTFILE_BALLS"
 fi
 
 BALLS_MD5=""
