@@ -585,7 +585,7 @@ cat $TMPLDIR/foundation/atom_energies \
   --default-sd 0.19 \
   --means-and-sds-file <(voronota-resources energy_means_and_sds) \
   --external-weights-file $TMPLDIR/foundation/depth_values \
-  --smoothing-window "0,$SMOOTHING_WINDOW" \
+  --smoothing-window "$(echo "0,$SMOOTHING_WINDOW" | sed 's|^0,\(.\+,.\+\).*|\1|')" \
   --residue-scores-file $TMPLDIR/residue_quality_scores_for_plot \
 > /dev/null
 
