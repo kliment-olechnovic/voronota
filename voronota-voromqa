@@ -674,6 +674,7 @@ R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT
 		thin_color_back=ifelse(duplicate, thick_color_back, rgb(1.0, 0.7, 0.7));
 	
 		plot(c(min(resnums),max(resnums)), c(0, 1), type="n", main=title, xlab="Residue number", ylab="Score");
+		points(c(min(resnums)-50,max(resnums)+50), c(0.5, 0.5), type="l");
 		
 		back_resnums=c();
 		if(length(back_t)>0)
