@@ -24,6 +24,9 @@ CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
 REBUILD_SIDECHAINS_COMMAND=""
+SCREENSHOT_WIDTH="320"
+SCREENSHOT_HEIGHT="320"
+PLOT_MODE="normal"
 MORE_LOGGING=false
 HELP_MODE=false
 
@@ -121,8 +124,19 @@ do
 		REBUILD_SIDECHAINS_COMMAND="$OPTARG"
 		shift
 		;;
+	--screenshot-width)
+		SCREENSHOT_WIDTH="$OPTARG"
+		shift
+		;;
+	--screenshot-height)
+		SCREENSHOT_HEIGHT="$OPTARG"
+		shift
+		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--small-plot)
+		PLOT_MODE="small"
 		;;
 	--more-logging)
 		MORE_LOGGING=true
@@ -616,11 +630,12 @@ then
 	fi
 fi
 
-R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT" << 'EOF' &> /dev/null
+R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT" "$PLOT_MODE" << 'EOF' &> /dev/null
 	args=commandArgs(TRUE);
 	infile=args[1];
 	back_infile=args[2];
 	outfile=args[3];
+	plot_mode=args[4];
 	
 	t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
 	chains=sort(union(t$V1, t$V1));
@@ -631,9 +646,16 @@ R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT
 		back_t=read.table(back_infile, header=FALSE, stringsAsFactors=FALSE);
 	}
 	
-	png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
-	par(mfrow=c(length(chains),1));
-	
+	if(plot_mode=="small")
+	{
+		png(filename=outfile, width=8*length(chains), height=4, units="in", res=80);
+		par(mfcol=c(1, length(chains)));
+	} else
+	{
+		png(filename=outfile, width=10, height=5*length(chains), units="in", res=200);
+		par(mfrow=c(length(chains), 1));
+	}
+
 	for(chain in chains)
 	{
 		title=ifelse(chain==".", "VoroMQA local scores for the unnamed chain", paste("VoroMQA local scores for chain ", chain, sep=""));
@@ -755,7 +777,7 @@ then
 	
 	mkdir -p $(dirname "$OUTFILE_SCREENSHOT")
 
-pymol -W 400 -H 400 -p -c "$TMPLDIR/structure_for_screenshot.pdb" &> /dev/null << EOF
+pymol -W "$SCREENSHOT_WIDTH" -H "$SCREENSHOT_HEIGHT" -p -c "$TMPLDIR/structure_for_screenshot.pdb" &> /dev/null << EOF
 	hide all
 	show cartoon
 	spectrum b, red_white_blue, minimum=0, maximum=1
