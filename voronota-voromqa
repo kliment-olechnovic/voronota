@@ -653,7 +653,7 @@ R --slave --vanilla --args "$TMPLDIR/table_for_plot" "$BACK_FILE" "$OUTFILE_PLOT
 	
 	if(plot_mode=="small")
 	{
-		png(filename=outfile, width=8*length(chains), height=2.5, units="in", res=90);
+		png(filename=outfile, width=8*length(chains), height=2.5, units="in", res=80);
 		par(mfcol=c(1, length(chains)));
 		par(mar=c(2.7,3,1,1));
 	} else
