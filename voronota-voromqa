@@ -13,6 +13,7 @@ OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
 OUTFILE_MAP=""
+OUTFILE_SCREENSHOT=""
 OUTFILE_SCORES_FOR_CASP=""
 OUTDIR_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
@@ -78,6 +79,10 @@ do
 		;;
 	--output-contacts-map-svg)
 		OUTFILE_MAP="$OPTARG"
+		shift
+		;;
+	--output-screenshot)
+		OUTFILE_SCREENSHOT="$OPTARG"
 		shift
 		;;
 	--output-scores-for-CASP)
@@ -213,6 +218,11 @@ command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resou
 if [ -n "$OUTFILE_PLOT" ]
 then
 	command -v R &> /dev/null || { echo >&2 "Error: 'R' command, needed for plotting, is not available"; exit 1; }
+fi
+
+if [ -n "$OUTFILE_SCREENSHOT" ]
+then
+	command -v pymol &> /dev/null || { echo >&2 "Error: 'pymol' command, needed for making screenshots, is not available"; exit 1; }
 fi
 
 if [ -n "$REBUILD_SIDECHAINS_COMMAND" ]
@@ -728,6 +738,34 @@ then
 	  --wrap_size 20 \
 	  --completeness-threshold 0.85 \
 	> "$OUTFILE_SCORES_FOR_CASP"
+fi
+
+if [ -n "$OUTFILE_SCREENSHOT" ]
+then
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts "$TMPLDIR/residue_quality_scores" \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$TMPLDIR/structure_for_screenshot.pdb" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+	
+	mkdir -p $(dirname "$OUTFILE_SCREENSHOT")
+
+pymol -W 400 -H 400 -p -c "$TMPLDIR/structure_for_screenshot.pdb" &> /dev/null << EOF
+	hide all
+	show cartoon
+	spectrum b, red_white_blue, minimum=0, maximum=1
+	orient
+	center
+	zoom complete=1
+	save $OUTFILE_SCREENSHOT
+	quit
+EOF
+
 fi
 
 {
