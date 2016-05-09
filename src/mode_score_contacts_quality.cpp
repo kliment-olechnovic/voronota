@@ -25,6 +25,74 @@ std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, doubl
 	return average_scores;
 }
 
+std::vector< std::vector<double> > calculate_tail_cut_scores(const std::map<CRAD, double>& atom_scores, const std::map<CRAD, double>& external_weights, const double tail_cut_limit)
+{
+	typedef std::pair<double, double> Value;
+
+	std::vector< std::vector<double> > result;
+
+	if(tail_cut_limit<0)
+	{
+		return result;
+	}
+
+	std::map<CRAD, Value> residue_data;
+	Value full_value(0.0, 0.0);
+	for(std::map<CRAD, double>::const_iterator it=atom_scores.begin();it!=atom_scores.end();++it)
+	{
+		Value& value=residue_data[it->first.without_atom()];
+		std::map<CRAD, double>::const_iterator external_weights_it=external_weights.find(it->first);
+		const double external_weight=(external_weights_it!=external_weights.end() ? external_weights_it->second : 1.0);
+		value.first+=external_weight;
+		value.second+=external_weight*(it->second);
+		full_value.first+=external_weight;
+		full_value.second+=external_weight*(it->second);
+	}
+
+	std::vector< std::vector<Value> > tail_cuts_data(tail_cut_limit+1, std::vector<Value>(tail_cut_limit+1, full_value));
+	{
+		int pos=0;
+		for(std::map<CRAD, Value>::const_iterator it=residue_data.begin();it!=residue_data.end() && pos<tail_cut_limit;++it)
+		{
+			for(int i=pos;i<tail_cut_limit;i++)
+			{
+				for(int j=0;j<=tail_cut_limit;j++)
+				{
+					tail_cuts_data[i+1][j].first-=it->second.first;
+					tail_cuts_data[i+1][j].second-=it->second.second;
+				}
+			}
+			pos++;
+		}
+	}
+	{
+		int pos=0;
+		for(std::map<CRAD, Value>::const_reverse_iterator it=residue_data.rbegin();it!=residue_data.rend() && pos<tail_cut_limit;++it)
+		{
+			for(int i=pos;i<tail_cut_limit;i++)
+			{
+				for(int j=0;j<=tail_cut_limit;j++)
+				{
+					tail_cuts_data[j][i+1].first-=it->second.first;
+					tail_cuts_data[j][i+1].second-=it->second.second;
+				}
+			}
+			pos++;
+		}
+	}
+
+	result=std::vector< std::vector<double> >(tail_cuts_data.size(), std::vector<double>(tail_cuts_data.front().size(), 0.0));
+	for(int i=0;i<=tail_cut_limit;i++)
+	{
+		for(int j=0;j<=tail_cut_limit;j++)
+		{
+			result[i][j]=(tail_cuts_data[i][j].first>0.0 ? (tail_cuts_data[i][j].second/tail_cuts_data[i][j].first) : 0.0);
+		}
+	}
+
+	return result;
+}
+
 }
 
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
@@ -41,6 +109,8 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::vector<unsigned int> smoothing_windows=poh.argument_vector<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue quality scores along sequence"), ',', std::vector<unsigned int>(1, 0));
 	const std::string atom_scores_file=poh.argument<std::string>(pohw.describe_option("--atom-scores-file", "string", "file path to output atom scores"), "");
 	const std::string residue_scores_file=poh.argument<std::string>(pohw.describe_option("--residue-scores-file", "string", "file path to output residue scores"), "");
+	const std::string tail_cut_scores_file=poh.argument<std::string>(pohw.describe_option("--tail-cut-scores-file", "string", "file path to output tail cutting scores"), "");
+	const double tail_cut_limit=poh.argument<int>(pohw.describe_option("--tail-cut-limit", "number", "maximum tail length to cut"), 10);
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -120,6 +190,25 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 						foutput << " " << residue_quality_scores[i][it->first];
 					}
 					foutput << "\n";
+				}
+			}
+		}
+	}
+
+	if(!tail_cut_scores_file.empty())
+	{
+		const std::vector< std::vector<double> > tail_cut_scores=calculate_tail_cut_scores(atom_quality_scores, external_weights, tail_cut_limit);
+		if(!tail_cut_scores.empty())
+		{
+			std::ofstream foutput(tail_cut_scores_file.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				for(std::size_t i=0;i<tail_cut_scores.size();i++)
+				{
+					for(std::size_t j=0;j<tail_cut_scores[i].size();j++)
+					{
+						foutput << i << " " << j << " " << tail_cut_scores[i][j] << "\n";
+					}
 				}
 			}
 		}
