@@ -15,6 +15,7 @@ OUTFILE_PLOT=""
 OUTFILE_MAP=""
 OUTFILE_SCREENSHOT=""
 OUTFILE_SCORES_FOR_CASP=""
+OUTFILE_TAIL_CUT_SCORES=""
 OUTDIR_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
@@ -24,6 +25,7 @@ CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
 REBUILD_SIDECHAINS_COMMAND=""
+TAIL_CUT_LIMIT="10"
 SCREENSHOT_WIDTH="500"
 SCREENSHOT_HEIGHT="500"
 SCREENSHOT_BACKGROUND="black"
@@ -93,6 +95,10 @@ do
 		OUTFILE_SCORES_FOR_CASP="$OPTARG"
 		shift
 		;;
+	--output-tail-cut-scores)
+		OUTFILE_TAIL_CUT_SCORES="$OPTARG"
+		shift
+		;;
 	--outdir-summary-for-potential)
 		OUTDIR_SUMMARY_FOR_POTENTIAL="$OPTARG"
 		shift
@@ -123,6 +129,10 @@ do
 		;;
 	--rebuild-sidechains)
 		REBUILD_SIDECHAINS_COMMAND="$OPTARG"
+		shift
+		;;
+	--tail-cut-limit)
+		TAIL_CUT_LIMIT="$OPTARG"
 		shift
 		;;
 	--screenshot-width)
@@ -774,6 +784,21 @@ then
 	  --wrap_size 20 \
 	  --completeness-threshold 0.85 \
 	> "$OUTFILE_SCORES_FOR_CASP"
+fi
+
+if [ -n "$OUTFILE_TAIL_CUT_SCORES" ]
+then
+	mkdir -p $(dirname $OUTFILE_TAIL_CUT_SCORES)
+	
+	cat $TMPLDIR/foundation/atom_energies \
+	| voronota score-contacts-quality \
+	  --default-mean -0.34 \
+	  --default-sd 0.19 \
+	  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
+	  --external-weights-file "$TMPLDIR/foundation/depth_values" \
+	  --tail-cut-limit "$TAIL_CUT_LIMIT" \
+	  --tail-cut-scores-file "$OUTFILE_TAIL_CUT_SCORES" \
+	> /dev/null
 fi
 
 if [ -n "$OUTFILE_SCREENSHOT" ]
