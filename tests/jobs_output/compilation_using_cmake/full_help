@@ -182,8 +182,6 @@ Command 'score-contacts-quality' options:
 --smoothing-window              number      window to smooth residue quality scores along sequence
 --atom-scores-file              string      file path to output atom scores
 --residue-scores-file           string      file path to output residue scores
---tail-cut-scores-file          string      file path to output tail cutting scores
---tail-cut-limit                number      maximum tail length to cut
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of atom energy descriptors
 stdout  ->  weighted average local score
