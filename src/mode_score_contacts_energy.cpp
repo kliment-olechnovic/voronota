@@ -3,17 +3,6 @@
 
 #include "modescommon/contacts_scoring_utilities.h"
 
-namespace
-{
-
-inline bool check_crads_pair_for_peptide_bond(const CRADsPair& crads)
-{
-	return (((crads.a.name=="C" && crads.b.name=="N" && crads.a.resSeq<crads.b.resSeq) || (crads.a.name=="N" && crads.b.name=="C" && crads.b.resSeq<crads.a.resSeq))
-			&& CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
-}
-
-}
-
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
