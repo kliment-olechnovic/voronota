@@ -36,6 +36,7 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 	const std::string local_scores=poh.argument<std::string>("--local-scores");
 	const int wrap_size=poh.argument<int>("--wrap-size", 20);
 	const double completeness_threshold=poh.argument<double>("--completeness-threshold", 0.85);
+	const std::string converted_local_scores=poh.argument<std::string>("--converted-local-scores", "");
 
 	if(name.empty() || global_score<0.0 || global_score>1.0 || sequence_length<3 || wrap_size<1 || completeness_threshold>0.99)
 	{
@@ -85,4 +86,16 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 		}
 	}
 	std::cout << "\n";
+
+	if(!converted_local_scores.empty())
+	{
+		std::ofstream foutput(converted_local_scores.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			for(std::map<CRAD, double>::const_iterator it=map_of_crad_scores.begin();it!=map_of_crad_scores.end();++it)
+			{
+				foutput << (it->first) << " " << rescale_local_score(it->second) << "\n";
+			}
+		}
+	}
 }

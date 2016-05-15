@@ -15,6 +15,7 @@ OUTFILE_PLOT=""
 OUTFILE_MAP=""
 OUTFILE_SCREENSHOT=""
 OUTFILE_SCORES_FOR_CASP=""
+OUTFILE_SCORES_FOR_CASP_PDB=""
 OUTDIR_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
@@ -91,6 +92,10 @@ do
 		;;
 	--output-scores-for-CASP)
 		OUTFILE_SCORES_FOR_CASP="$OPTARG"
+		shift
+		;;
+	--output-scores-for-CASP-pdb)
+		OUTFILE_SCORES_FOR_CASP_PDB="$OPTARG"
 		shift
 		;;
 	--outdir-summary-for-potential)
@@ -221,6 +226,12 @@ fi
 if [ -z "$REFERENCE_SEQUENCE" ] && [ -n "$OUTFILE_SCORES_FOR_CASP" ]
 then
 	echo >&2 "Error: '--output-scores-for-CASP' cannot be used without '--reference-sequence'"
+	exit 1
+fi
+
+if [ -z "$OUTFILE_SCORES_FOR_CASP" ] && [ -n "$OUTFILE_SCORES_FOR_CASP_PDB" ]
+then
+	echo >&2 "Error: '--output-scores-for-CASP-pdb' cannot be used without '--output-scores-for-CASP'"
 	exit 1
 fi
 
@@ -773,7 +784,23 @@ then
 	  --local-scores "$TMPLDIR/residue_quality_scores" \
 	  --wrap_size 20 \
 	  --completeness-threshold 0.85 \
+	  --converted-local-scores "$TMPLDIR/residue_quality_scores_for_casp" \
 	> "$OUTFILE_SCORES_FOR_CASP"
+	
+	if [ -n "$OUTFILE_SCORES_FOR_CASP_PDB" ]
+	then
+		mkdir -p $(dirname "$OUTFILE_SCORES_FOR_CASP_PDB")
+		cat $TMPLDIR/balls \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-adjuncts 'oc=1' \
+		  --set-external-adjuncts "$TMPLDIR/residue_quality_scores_for_casp" \
+		  --set-external-adjuncts-name score \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output "$OUTFILE_SCORES_FOR_CASP_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
 fi
 
 if [ -n "$OUTFILE_SCREENSHOT" ]
