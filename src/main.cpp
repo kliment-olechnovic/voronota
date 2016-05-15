@@ -35,6 +35,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
 void wrapped_get_balls_from_atoms_file_and_calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void expand_descriptors(const auxiliaries::ProgramOptionsHandler&);
 void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler&);
+void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -89,6 +90,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-wrapped-get-balls-from-atoms-file-and-calculate-vertices", ModeDescriptor::FunctionPtr(wrapped_get_balls_from_atoms_file_and_calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("x-expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	list_of_modes.push_back(ModeDescriptor("x-write-qa-scores-in-casp-format", ModeDescriptor::FunctionPtr(write_qa_scores_in_casp_format)));
+	list_of_modes.push_back(ModeDescriptor("x-score-contacts-global-energy-by-cuts", ModeDescriptor::FunctionPtr(score_contacts_global_energy_by_cuts)));
 	return list_of_modes;
 }
 
