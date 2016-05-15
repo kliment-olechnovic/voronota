@@ -39,7 +39,8 @@ do
 	  --reference-sequence $SUBDIR/reference_sequence \
 	  --rebuild-sidechains Scwrl4 \
 	  --output-sequence-alignment $SUBDIR/$INFILEBASENAME/sequence_alignment \
-	  --output-scores-for-CASP $SUBDIR/$INFILEBASENAME/casp_qa_scores
+	  --output-scores-for-CASP $SUBDIR/$INFILEBASENAME/casp_qa_scores \
+	  --output-scores-for-CASP-pdb $SUBDIR/$INFILEBASENAME/casp_qa_scores.pdb
 	
 	cat $SUBDIR/$INFILEBASENAME/casp_qa_scores | tr '\t' '\n' > $SUBDIR/$INFILEBASENAME/casp_qa_scores_wrapped
 	mv $SUBDIR/$INFILEBASENAME/casp_qa_scores_wrapped $SUBDIR/$INFILEBASENAME/casp_qa_scores
