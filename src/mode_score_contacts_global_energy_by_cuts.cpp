@@ -79,6 +79,49 @@ std::map<InteractionName, double> exclude_residues_from_contacts(const std::map<
 	return result;
 }
 
+EnergyDescriptor calculate_global_energy(const std::map<InteractionName, double>& map_of_potential_values, const int ignorable_max_seq_sep, const std::map<InteractionName, double>& map_of_contacts)
+{
+	std::map<CRADsPair, EnergyDescriptor> inter_atom_energy_descriptors;
+	for(std::map<InteractionName, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		const CRADsPair& crads=it->first.crads;
+		EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
+		if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
+		{
+			ed.total_area=(it->second);
+			ed.contacts_count=1;
+			std::map<InteractionName, double>::const_iterator potential_value_it=
+					map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
+			if(potential_value_it!=map_of_potential_values.end())
+			{
+				ed.energy=ed.total_area*(potential_value_it->second);
+			}
+			else
+			{
+				ed.strange_area=ed.total_area;
+			}
+		}
+	}
+	EnergyDescriptor global_ed;
+	for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+	{
+		global_ed.add(it->second);
+	}
+	return global_ed;
+}
+
+template<typename Set, typename Element>
+void update_limited_set(Set& set, const unsigned long limit, const Element& element)
+{
+	set.insert(element);
+	if(limit>0 && set.size()>limit)
+	{
+		typename Set::iterator it=set.end();
+		--it;
+		set.erase(it);
+	}
+}
+
 }
 
 void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -89,10 +132,8 @@ void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandl
 
 	const std::string potential_file=poh.argument<std::string>(pohw.describe_option("--potential-file", "string", "file path to input potential values", true), "");
 	const int ignorable_max_seq_sep=poh.argument<int>(pohw.describe_option("--ignorable-max-seq-sep", "number", "maximum residue sequence separation for ignorable contacts"), 1);
-	const int max_cut_from_start=poh.argument<int>(pohw.describe_option("--max-cut-from-start", "number", "maximum number of residues to cut from start"), 10);
-	const int max_cut_from_end=poh.argument<int>(pohw.describe_option("--max-cut-from-end", "number", "maximum number of residues to cut from end"), 10);
-	const int cut_step=poh.argument<int>(pohw.describe_option("--cut-step", "number", "cut length increasing step"), 1);
-	const unsigned long limit_results=poh.argument<unsigned long>(pohw.describe_option("--limit-results", "number", "maximum number of results to print"), 5);
+	const int cut_step=std::max(1, poh.argument<int>(pohw.describe_option("--cut-step", "number", "big cut length increasing step"), 10));
+	const unsigned long limit_results=poh.argument<unsigned long>(pohw.describe_option("--limit-results", "number", "maximum number of results to print"), 1);
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -112,55 +153,53 @@ void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandl
 	}
 
 	const std::vector<CRAD> sequence=collect_sequence_from_contacts(map_of_contacts);
+	if(sequence.empty())
+	{
+		throw std::runtime_error("Empty sequence.");
+	}
+
+	const int sequence_length=(sequence.back().resSeq-sequence.front().resSeq+1);
+	const int min_length_after_cuts=std::max(10, sequence_length/5);
 
 	std::set< std::pair<double, std::pair<int, int> > > result_set;
 
-	for(int cut_from_start=0;cut_from_start<=max_cut_from_start;cut_from_start+=cut_step)
+	for(int cut_from_start=0;cut_from_start<sequence_length;cut_from_start+=cut_step)
 	{
-		for(int cut_from_end=0;cut_from_end<=max_cut_from_end;cut_from_end+=cut_step)
+		for(int cut_from_end=0;cut_from_end<sequence_length;cut_from_end+=cut_step)
 		{
-			const std::map<InteractionName, double> reduced_map_of_contacts=
-					exclude_residues_from_contacts(
-							map_of_contacts,
-							collect_head_and_tail_of_sequence(sequence, cut_from_start, cut_from_end),
-							3.0);
-
-			if(!reduced_map_of_contacts.empty())
+			if((cut_from_start+cut_from_end+min_length_after_cuts)<sequence_length)
 			{
-				std::map<CRADsPair, EnergyDescriptor> inter_atom_energy_descriptors;
-				for(std::map<InteractionName, double>::const_iterator it=reduced_map_of_contacts.begin();it!=reduced_map_of_contacts.end();++it)
+				const std::map<InteractionName, double> reduced_map_of_contacts=exclude_residues_from_contacts(map_of_contacts, collect_head_and_tail_of_sequence(sequence, cut_from_start, cut_from_end), 3.0);
+				if(!reduced_map_of_contacts.empty())
 				{
-					const CRADsPair& crads=it->first.crads;
-					EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-					if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
+					const EnergyDescriptor global_ed=calculate_global_energy(map_of_potential_values, ignorable_max_seq_sep, reduced_map_of_contacts);
+					if(global_ed.total_area>0)
 					{
-						ed.total_area=(it->second);
-						ed.contacts_count=1;
-						std::map<InteractionName, double>::const_iterator potential_value_it=
-								map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
-						if(potential_value_it!=map_of_potential_values.end())
-						{
-							ed.energy=ed.total_area*(potential_value_it->second);
-						}
-						else
-						{
-							ed.strange_area=ed.total_area;
-						}
+						update_limited_set(result_set, limit_results, std::make_pair((global_ed.energy/global_ed.total_area), std::make_pair(cut_from_start, cut_from_end)));
 					}
 				}
+			}
+		}
+	}
 
-				EnergyDescriptor global_ed;
-				for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
+	if(cut_step>1 && !result_set.empty())
+	{
+		int best_so_far_cut_from_start=result_set.begin()->second.first;
+		int best_so_far_cut_from_end=result_set.begin()->second.second;
+		for(int cut_from_start=std::max(0, best_so_far_cut_from_start-cut_step);cut_from_start<std::min(sequence_length, best_so_far_cut_from_start+cut_step);cut_from_start++)
+		{
+			for(int cut_from_end=std::max(0, best_so_far_cut_from_end-cut_step);cut_from_end<std::min(sequence_length, best_so_far_cut_from_end+cut_step);cut_from_end++)
+			{
+				if((cut_from_start+cut_from_end+min_length_after_cuts)<sequence_length)
 				{
-					global_ed.add(it->second);
-				}
-				if(global_ed.total_area>0)
-				{
-					const double normalized_energy=(global_ed.energy/global_ed.total_area);
-					result_set.insert(std::make_pair(normalized_energy, std::make_pair(cut_from_start, cut_from_end)));
-					if(limit_results>0 && result_set.size()>limit_results)
+					const std::map<InteractionName, double> reduced_map_of_contacts=exclude_residues_from_contacts(map_of_contacts, collect_head_and_tail_of_sequence(sequence, cut_from_start, cut_from_end), 3.0);
+					if(!reduced_map_of_contacts.empty())
 					{
-						result_set.erase(--result_set.end());
+						const EnergyDescriptor global_ed=calculate_global_energy(map_of_potential_values, ignorable_max_seq_sep, reduced_map_of_contacts);
+						if(global_ed.total_area>0)
+						{
+							update_limited_set(result_set, limit_results, std::make_pair((global_ed.energy/global_ed.total_area), std::make_pair(cut_from_start, cut_from_end)));
+						}
 					}
 				}
 			}
