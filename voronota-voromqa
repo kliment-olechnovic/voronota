@@ -192,7 +192,7 @@ Advanced options:
     --atoms-query                  string      atoms query parameters to define selection
     --contacts-query               string      contacts query parameters to define selection
     --output-selected-scores       string      output text file with selected atom scores
-    --reference-sequence           string      sequence file for residue renumbering
+    --reference-sequence           string      sequence file or string for residue renumbering
     --output-sequence-alignment    string      output text file with sequence alignment
     --multiple-models                          flag to handle multiple models in PDB file
 
@@ -278,6 +278,18 @@ fi
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
+
+if [ -n "$REFERENCE_SEQUENCE" ] && [ ! -s "$REFERENCE_SEQUENCE" ]
+then
+	if [ "$REFERENCE_SEQUENCE" == "$(echo $REFERENCE_SEQUENCE | tr -dc '[:upper:]')" ]
+	then
+		echo "$REFERENCE_SEQUENCE" > "$TMPLDIR/reference_sequence_file"
+		REFERENCE_SEQUENCE="$TMPLDIR/reference_sequence_file"
+	else
+		echo >&2 "Error: invalid reference sequence"
+		exit 1
+	fi
+fi
 
 INFILE_CONTENTS=$INFILE
 if [[ "$INFILE" == *"://"* ]]
