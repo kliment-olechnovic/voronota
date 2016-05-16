@@ -17,6 +17,7 @@ OUTFILE_SCREENSHOT=""
 OUTFILE_SCORES_FOR_CASP=""
 OUTFILE_SCORES_FOR_CASP_PDB=""
 OUTFILE_SCORES_FOR_CASP_LOG=""
+OUTFILE_CUTTING_SUGGESTIONS=""
 OUTDIR_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
@@ -101,6 +102,10 @@ do
 		;;
 	--output-scores-for-CASP-log)
 		OUTFILE_SCORES_FOR_CASP_LOG="$OPTARG"
+		shift
+		;;
+	--output-cutting-suggestions)
+		OUTFILE_CUTTING_SUGGESTIONS="$OPTARG"
 		shift
 		;;
 	--outdir-summary-for-potential)
@@ -425,6 +430,20 @@ then
 		mkdir -p $CACHE_DIRECTORY
 		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
+fi
+
+if [ -n "$OUTFILE_CUTTING_SUGGESTIONS" ]
+then
+	mkdir -p $(dirname "$OUTFILE_CUTTING_SUGGESTIONS")
+	cat $TMPLDIR/foundation/all_contacts \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| tee $TMPLDIR/contacts \
+	| voronota x-score-contacts-global-energy-by-cuts \
+	  --potential-file <(voronota-resources energy_potential) \
+	  --limit-results 10 \
+	| column -t \
+	> "$OUTFILE_CUTTING_SUGGESTIONS"
 fi
 
 if [ -n "$OUTDIR_SUMMARY_FOR_POTENTIAL" ]
