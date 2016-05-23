@@ -32,6 +32,7 @@ SCREENSHOT_HEIGHT="500"
 SCREENSHOT_BACKGROUND="black"
 PLOT_MODE="normal"
 NEGLECT_SAS=false
+REINTERPRET_SAS=false
 MORE_LOGGING=false
 HELP_MODE=false
 
@@ -161,6 +162,9 @@ do
 		;;
 	--neglect-SAS)
 		NEGLECT_SAS=true
+		;;
+	--reinterpret-SAS)
+		REINTERPRET_SAS=true
 		;;
 	--more-logging)
 		MORE_LOGGING=true
@@ -456,6 +460,17 @@ then
 	| sed 's|c<solvent>\s\+.\s\+\S\+$|c<solvent> . 0.001|' \
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
+	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
+	> /dev/null
+fi
+
+if $REINTERPRET_SAS
+then
+	cat $TMPLDIR/foundation/all_contacts \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources energy_potential | voronota x-simulate-potential-for-membrane-proteins) \
 	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
 fi
