@@ -8,7 +8,6 @@ namespace
 {
 
 typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::AtomsIO::DSSPReader::DSSPRecord DSSPRecord;
 
 inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_record(const CRAD& crad, const BallValue& value, const std::string& temperature_factor_adjunct_name)
 {
