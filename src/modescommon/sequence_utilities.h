@@ -29,9 +29,17 @@ public:
 				{
 					std::string token;
 					sinput >> token;
-					if(!token.empty())
+					for(std::size_t i=0;i<token.size();i++)
 					{
-						result+=token;
+						const char c=token[i];
+						if(c>='A' && c<='Z')
+						{
+							result.append(1, c);
+						}
+						else if(c>='a' && c<='z')
+						{
+							result.append(1, c-('a'-'A'));
+						}
 					}
 				}
 			}

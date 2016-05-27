@@ -289,7 +289,7 @@ trap "rm -r $TMPLDIR" EXIT
 
 if [ -n "$REFERENCE_SEQUENCE" ] && [ ! -s "$REFERENCE_SEQUENCE" ]
 then
-	if [ "$REFERENCE_SEQUENCE" == "$(echo $REFERENCE_SEQUENCE | tr -dc '[:upper:]')" ]
+	if [ "$REFERENCE_SEQUENCE" == "$(echo $REFERENCE_SEQUENCE | tr -dc '[:alpha:]')" ]
 	then
 		echo "$REFERENCE_SEQUENCE" > "$TMPLDIR/reference_sequence_file"
 		REFERENCE_SEQUENCE="$TMPLDIR/reference_sequence_file"
