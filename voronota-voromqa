@@ -5,6 +5,7 @@ INFILE=""
 REFERENCE_SEQUENCE=""
 OUTFILE_SEQUENCE_ALIGNMENT=""
 OUTFILE_BALLS=""
+OUTFILE_CONTACTS=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
@@ -52,6 +53,10 @@ do
 		;;
 	--output-balls)
 		OUTFILE_BALLS="$OPTARG"
+		shift
+		;;
+	--output-contacts)
+		OUTFILE_CONTACTS="$OPTARG"
 		shift
 		;;
 	--output-sequence-alignment)
@@ -450,6 +455,12 @@ then
 		mkdir -p $CACHE_DIRECTORY
 		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
+fi
+
+if [ -n "$OUTFILE_CONTACTS" ]
+then
+	mkdir -p $(dirname $OUTFILE_CONTACTS)
+	cp "$TMPLDIR/foundation/all_contacts" "$OUTFILE_CONTACTS"
 fi
 
 if $NEGLECT_SAS
