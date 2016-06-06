@@ -38,6 +38,7 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler&);
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler&);
+void query_balls_clashes(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -95,6 +96,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-global-energy-by-cuts", ModeDescriptor::FunctionPtr(score_contacts_global_energy_by_cuts)));
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-solvation-values", ModeDescriptor::FunctionPtr(query_contacts_solvation_values)));
+	list_of_modes.push_back(ModeDescriptor("x-query-balls-clashes", ModeDescriptor::FunctionPtr(query_balls_clashes)));
 	return list_of_modes;
 }
 

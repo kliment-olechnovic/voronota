@@ -120,3 +120,10 @@ cat $SUBDIR/balls \
   --adjunct-gradient seqpos \
   --rainbow-gradient \
 > /dev/null
+
+cat $SUBDIR/balls \
+| $VORONOTA x-query-balls-clashes \
+  --clash-distance 2.2 \
+  --init-radius-for-BSH 3.5 \
+| egrep -v 'A<C>.*A<N>|A<N>.*A<C>' \
+> $SUBDIR/balls_clashes
