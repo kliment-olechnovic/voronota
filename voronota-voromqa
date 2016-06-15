@@ -268,12 +268,6 @@ then
 	exit 1
 fi
 
-if $PRINT_ENERGY_OF_CONTACTS_SELECTION && [ -z "$CONTACTS_QUERY_PARAMETERS" ]
-then
-	echo >&2 "Error: '--print-energy-of-contacts-selection' cannot be used without '--contacts-query'"
-	exit 1
-fi
-
 if [[ "$ZEROARG" == *"/"* ]]
 then
 	cd $(dirname $ZEROARG)
@@ -936,7 +930,7 @@ EOF
 
 fi
 
-if $PRINT_ENERGY_OF_CONTACTS_SELECTION && [ -n "$CONTACTS_QUERY_PARAMETERS" ]
+if $PRINT_ENERGY_OF_CONTACTS_SELECTION
 then
 	cat $TMPLDIR/foundation/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
