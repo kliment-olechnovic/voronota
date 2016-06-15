@@ -35,6 +35,7 @@ PLOT_MODE="normal"
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
+PRINT_ENERGY_OF_CONTACTS_SELECTION=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -174,6 +175,9 @@ do
 	--more-logging)
 		MORE_LOGGING=true
 		;;
+	--print-energy-of-contacts-selection)
+		PRINT_ENERGY_OF_CONTACTS_SELECTION=true
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -261,6 +265,12 @@ fi
 if [ -z "$OUTFILE_SCORES_FOR_CASP" ] && [ -n "$OUTFILE_SCORES_FOR_CASP_LOG" ]
 then
 	echo >&2 "Error: '--output-scores-for-CASP-log' cannot be used without '--output-scores-for-CASP'"
+	exit 1
+fi
+
+if $PRINT_ENERGY_OF_CONTACTS_SELECTION && [ -z "$CONTACTS_QUERY_PARAMETERS" ]
+then
+	echo >&2 "Error: '--print-energy-of-contacts-selection' cannot be used without '--contacts-query'"
 	exit 1
 fi
 
@@ -926,6 +936,18 @@ EOF
 
 fi
 
+if $PRINT_ENERGY_OF_CONTACTS_SELECTION && [ -n "$CONTACTS_QUERY_PARAMETERS" ]
+then
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources energy_potential) \
+	| awk '{print $5 " " $2 " " $3 " " $4 " " ($4/($2+$3))}' \
+	> $TMPLDIR/energy_descriptor_of_contacts_selection
+fi
+
 {
 echo $INFILE
 cat $TMPLDIR/global_quality_score
@@ -934,6 +956,10 @@ cat $TMPLDIR/balls | wc -l
 if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
 then
 	cat $TMPLDIR/global_quality_score_of_selection
+fi
+if [ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ]
+then
+	cat $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
 } \
 | tr '\n' ' ' \
