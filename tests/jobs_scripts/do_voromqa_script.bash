@@ -18,7 +18,8 @@ do
 	  --output-contacts-map-svg $SUBDIR/$INFILEBASENAME/colored_map.svg \
 	  --contacts-query '--no-same-chain --no-solvent' \
 	  --output-selected-scores $SUBDIR/$INFILEBASENAME/selected_atom_scores \
-	  --output-balls $SUBDIR/$INFILEBASENAME/balls
+	  --output-balls $SUBDIR/$INFILEBASENAME/balls \
+	  --print-energy-of-contacts-selection
 
 done > $SUBDIR/global_scores
 
