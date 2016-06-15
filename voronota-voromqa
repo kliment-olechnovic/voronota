@@ -607,9 +607,10 @@ then
 	{
 		if [ -s "$TMPLDIR/scoring_table" ]
 		then
-			cat $TMPLDIR/scoring_table \
-			| awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
+			cat $TMPLDIR/scoring_table | awk '{sum+=$2;wsum+=($2*$3)} END {print (wsum/sum)}'
+			cat $TMPLDIR/scoring_table | wc -l
 		else
+			echo "0"
 			echo "0"
 		fi
 	} > $TMPLDIR/global_quality_score_of_selection
@@ -930,10 +931,9 @@ echo $INFILE
 cat $TMPLDIR/global_quality_score
 cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
 cat $TMPLDIR/balls | wc -l
-if [ -s "$TMPLDIR/global_quality_score_of_selection" ] && [ -s "$TMPLDIR/scoring_table" ]
+if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
 then
 	cat $TMPLDIR/global_quality_score_of_selection
-	cat $TMPLDIR/scoring_table | wc -l
 fi
 } \
 | tr '\n' ' ' \
