@@ -95,6 +95,21 @@ fi
 
 cat "$TMPLDIR/balls" \
 | voronota x-query-balls-clashes \
+  --clash-distance 6.0 \
+| awk '{print $1 " " $2 " 1 " $3 " . ."}' \
+| voronota query-contacts \
+  --no-same-chain \
+| wc -l \
+> "$TMPLDIR/touching_magnitude"
+
+if [ "$(cat $TMPLDIR/touching_magnitude)" -eq "0" ]
+then
+	echo >&2 "Error: chains are not in contact"
+	exit 1
+fi
+
+cat "$TMPLDIR/balls" \
+| voronota x-query-balls-clashes \
   --clash-distance 3.0 \
 | awk '{print $1 " " $2 " 1 " $3 " . ."}' \
 | voronota query-contacts \
@@ -143,6 +158,12 @@ cat "$TMPLDIR/iface_selection" \
 
 echo $(cat "$TMPLDIR/iface_selection1" | wc -l) $(cat "$TMPLDIR/iface_selection2" | wc -l) \
 > "$TMPLDIR/selection_summary"
+
+if [ "$(cat $TMPLDIR/selection_summary | awk '{print ($1+$2)}')" -eq "0" ]
+then
+	echo >&2 "Error: chains are not in contact"
+	exit 1
+fi
 
 voronota-voromqa "${ADDITIONAL_VOROMQA_OPTIONS[@]}" \
   --cache-dir "$TMPLDIR/cache" \
@@ -239,7 +260,10 @@ voronota-voromqa "${ADDITIONAL_VOROMQA_OPTIONS[@]}" \
 	echo    chain2_sas_energy        $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $10}')
 	echo    chain2_sas_norm_energy   $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $11}')
 	
-} > "$TMPLDIR/result"
+} \
+| sed 's/^\(.*\)$/\1 0/' \
+| awk '{print $1 " " $2}' \
+> "$TMPLDIR/result"
 
 if [ -n "$OUTFILE_TABLE" ]
 then
