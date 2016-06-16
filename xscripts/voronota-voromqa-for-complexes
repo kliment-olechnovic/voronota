@@ -3,6 +3,7 @@
 readonly ZEROARG="$0"
 INFILE=""
 REBUILD_SIDECHAINS_COMMAND=""
+OUTFILE_TABLE=""
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -17,6 +18,10 @@ do
 		;;
 	--rebuild-sidechains)
 		REBUILD_SIDECHAINS_COMMAND="$OPTARG"
+		shift
+		;;
+	--output-table)
+		OUTFILE_TABLE="$OPTARG"
 		shift
 		;;
 	-h|--help)
@@ -35,6 +40,7 @@ cat >&2 << EOF
 
 Options:
     --input | -i                   string   *  input structure file in PDB format
+    --output-table                 string      output table file
     --help | -h                                flag to display help message and exit
 
 EOF
@@ -173,11 +179,76 @@ voronota-voromqa "${ADDITIONAL_VOROMQA_OPTIONS[@]}" \
   --print-energy-of-contacts-selection \
 > "$TMPLDIR/voromqa_results_sas_global2"
 
-cat "$TMPLDIR/clashes_summary"
-cat "$TMPLDIR/selection_summary"
+{
+	echo    input                    $INFILE
+	
+	echo    clashes                  $(cat $TMPLDIR/clashes_summary | awk '{print $1}')
+	echo    clashed_atoms            $(cat $TMPLDIR/clashes_summary | awk '{print $2}')
+	
+	echo    iface_atoms1             $(cat $TMPLDIR/selection_summary | awk '{print $1}')
+	echo    iface_atoms2             $(cat $TMPLDIR/selection_summary | awk '{print $2}')
+	
+	echo    full_voromqa             $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $2}')
+	echo    full_residues            $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $3}')
+	echo    full_atoms               $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $4}')
+	echo    full_iface_voromqa       $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $5}')
+	echo    full_iface_atoms         $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $6}')
+	echo    full_iface_contacts      $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $7}')
+	echo    full_iface_area          $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $8}')
+	echo    full_iface_xarea         $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $9}')
+	echo    full_iface_energy        $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $10}')
+	echo    full_iface_norm_energy   $(cat $TMPLDIR/voromqa_results_iface_global | awk '{print $11}')
+	echo    full_sas_voromqa         $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $5}')
+	echo    full_sas_contacts        $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $7}')
+	echo    full_sas_area            $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $8}')
+	echo    full_sas_xarea           $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $9}')
+	echo    full_sas_energy          $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $10}')
+	echo    full_sas_norm_energy     $(cat $TMPLDIR/voromqa_results_sas_global | awk '{print $11}')
+	
+	echo    chain1_voromqa           $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $2}')
+	echo    chain1_residues          $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $3}')
+	echo    chain1_atoms             $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $4}')
+	echo    chain1_iface_voromqa     $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $5}')
+	echo    chain1_iface_atoms       $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $6}')
+	echo    chain1_iface_contacts    $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $7}')
+	echo    chain1_iface_area        $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $8}')
+	echo    chain1_iface_xarea       $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $9}')
+	echo    chain1_iface_energy      $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $10}')
+	echo    chain1_iface_norm_energy $(cat $TMPLDIR/voromqa_results_iface_global1 | awk '{print $11}')
+	echo    chain1_sas_voromqa       $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $5}')
+	echo    chain1_sas_contacts      $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $7}')
+	echo    chain1_sas_area          $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $8}')
+	echo    chain1_sas_xarea         $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $9}')
+	echo    chain1_sas_energy        $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $10}')
+	echo    chain1_sas_norm_energy   $(cat $TMPLDIR/voromqa_results_sas_global1 | awk '{print $11}')
+	
+	echo    chain2_voromqa           $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $2}')
+	echo    chain2_residues          $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $3}')
+	echo    chain2_atoms             $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $4}')
+	echo    chain2_iface_voromqa     $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $5}')
+	echo    chain2_iface_atoms       $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $6}')
+	echo    chain2_iface_contacts    $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $7}')
+	echo    chain2_iface_area        $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $8}')
+	echo    chain2_iface_xarea       $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $9}')
+	echo    chain2_iface_energy      $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $10}')
+	echo    chain2_iface_norm_energy $(cat $TMPLDIR/voromqa_results_iface_global2 | awk '{print $11}')
+	echo    chain2_sas_voromqa       $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $5}')
+	echo    chain2_sas_contacts      $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $7}')
+	echo    chain2_sas_area          $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $8}')
+	echo    chain2_sas_xarea         $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $9}')
+	echo    chain2_sas_energy        $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $10}')
+	echo    chain2_sas_norm_energy   $(cat $TMPLDIR/voromqa_results_sas_global2 | awk '{print $11}')
+	
+} > "$TMPLDIR/result"
 
-for FNAME in $TMPLDIR/voromqa_results_*_global*
-do
-	echo $FNAME
-	cat $FNAME
-done | column -t
+if [ -n "$OUTFILE_TABLE" ]
+then
+	{
+		cat $TMPLDIR/result | awk '{print $1}' | tr '\n' ' '
+		echo
+		cat $TMPLDIR/result | awk '{print $2}' | tr '\n' ' '
+		echo
+	} | column -t > "$OUTFILE_TABLE"
+fi
+
+cat "$TMPLDIR/result" | column -t
