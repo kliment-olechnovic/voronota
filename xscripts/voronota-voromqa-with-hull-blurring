@@ -34,6 +34,7 @@ SCREENSHOT_BACKGROUND="black"
 PLOT_MODE="normal"
 HULL_BLURRING_OUTPUT=""
 HULL_BLURRING_DEPTH="3"
+HULL_BLURRING_REFERENCE=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -168,6 +169,10 @@ do
 		;;
 	--hull-blurring-depth)
 		HULL_BLURRING_DEPTH="$OPTARG"
+		shift
+		;;
+	--hull-blurring-reference)
+		HULL_BLURRING_REFERENCE="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -550,6 +555,27 @@ then
 	  --pdb-output "${HULL_BLURRING_OUTPUT}_residue_energies.pdb" \
 	  --pdb-output-b-factor score \
 	> /dev/null
+	
+	if [ -n "$HULL_BLURRING_REFERENCE" ]
+	then
+		cat "$HULL_BLURRING_REFERENCE" \
+		| voronota get-balls-from-atoms-file \
+		  --annotated \
+		| voronota query-balls \
+		  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>&A<CA>' \
+		| voronota query-balls \
+		  --drop-adjuncts \
+		  --drop-altloc-indicators \
+		| voronota query-balls \
+		  --set-adjuncts 'score=0' \
+		  --set-external-adjuncts <(cat "${HULL_BLURRING_OUTPUT}_residue_energies" | awk '{if($4>0){print $1 " " ($4/$3)}}') \
+		  --set-external-adjuncts-name score \
+		| awk '{print $1 " " $7}' \
+		| sed 's/ score=/ /' \
+		| voronota x-expand-descriptors \
+		| awk '{print $1 " " $2 " " $6 " " $8}' \
+		> "${HULL_BLURRING_OUTPUT}_residue_profile"
+	fi
 	
 	exit 0
 fi
