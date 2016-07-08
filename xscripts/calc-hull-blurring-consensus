@@ -57,9 +57,9 @@ do
 	fi
 done
 
-cat "$OUTDIR/singles/$(basename $FIRSTFILE)/hbo_residue_profile" | awk '{print $1 " " $2 " " $3 " 1 " $4}' > "$TMPLDIR/accumulation"
+cat "$OUTDIR/singles/$(basename $FIRSTFILE)/hbo_residue_profile" | awk '{print $1 " " $2 " " $3 " 0 0"}' > "$TMPLDIR/accumulation"
 
-cat "$INLIST" | tail -n +2 | while read INFILE
+cat "$INLIST" | while read INFILE
 do
 	paste "$TMPLDIR/accumulation" <(cat "$OUTDIR/singles/$(basename $INFILE)/hbo_residue_profile" | awk '{print $4}') \
 	| awk '{print $1 " " $2 " " $3 " " ($4+1) " " ($5+$6)}' \
