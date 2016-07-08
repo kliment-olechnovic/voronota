@@ -79,6 +79,9 @@ t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
 png(filename=paste(output_prefix, "hist.png", sep=""), width=5, height=5, units="in", res=200);
 hist(t$V4, breaks=seq(0, 0.5, 0.01), xlab="Normalized energy", main="Histogram of normalized energy");
 dev.off();
+png(filename=paste(output_prefix, "wave.png", sep=""), width=15, height=5, units="in", res=200);
+plot(t$V4, ylab="Normalized energy", type="l");
+dev.off();
 EOF
 
 cat "$OUTDIR/hbo_residue_profile_consensus" \
