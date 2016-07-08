@@ -3,11 +3,21 @@
 readonly ZEROARG=$0
 OUTDIR="$1"
 INLIST="$2"
+INMODE="$3"
 
 if [ -z "$INLIST" ] || [ -z "$OUTDIR" ]
 then
 	echo >&2 "Error: missing arguments"
 	exit 1
+fi
+
+if [ "$INMODE" == "single" ]
+then
+	TMPLIST=$(mktemp)
+	echo "$INLIST" > "$TMPLIST"
+	$0 "$OUTDIR" "$TMPLIST"
+	rm "$TMPLIST"
+	exit 0
 fi
 
 if [ ! -s "$INLIST" ]
