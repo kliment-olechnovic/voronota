@@ -120,3 +120,22 @@ cat $TMPLDIR/balls \
   --pdb-output-b-factor score \
   --pdb-output-template "$INFILE" \
 > /dev/null
+
+R --vanilla --args "$OUTDIR/residue_profile" "$OUTDIR/residue_profile_" &> /dev/null << 'EOF'
+args=commandArgs(TRUE);
+infile=args[1];
+output_prefix=args[2];
+t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+##########
+b=t$V4
+v=t$V5;
+d0=density(v);
+d1=density(v[which(b<0.5)]);
+d2=density(v[which(b>0.5)]);
+d_y_max=max(c(d0$y, d1$y, d2$y));
+png(filename=paste(output_prefix, "density.png", sep=""), width=5, height=5, units="in", res=200);
+plot(d0, ylim=c(0, d_y_max), xlab="Probability", main="Densities of probabilities");
+lines(d1$x, d1$y, col="blue");
+lines(d2$x, d2$y, col="red");
+dev.off();
+EOF
