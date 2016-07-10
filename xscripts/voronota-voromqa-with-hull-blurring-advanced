@@ -477,169 +477,6 @@ then
 	cp "$TMPLDIR/foundation/all_contacts" "$OUTFILE_CONTACTS"
 fi
 
-if [ -n "$HULL_BLURRING_OUTPUT_DIR" ]
-then
-	mkdir -p "$HULL_BLURRING_OUTPUT_DIR"
-	
-	{
-		echo "c<solvent>"
-		cat $TMPLDIR/foundation/depth_values \
-		| egrep ' 1$' \
-		| awk '{print $1}'
-	} > $TMPLDIR/exposure_ids
-
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts \
-	  --match-external-first $TMPLDIR/exposure_ids \
-	  --match-external-second $TMPLDIR/exposure_ids \
-	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0.001"}}' \
-	| tr ';' '_' \
-	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential) \
-	  --depth $HULL_BLURRING_DEPTH \
-	  --atom-scores-file $TMPLDIR/exposure_atom_energies \
-	> /dev/null
-	
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts \
-	  --match-second 'c<solvent>' \
-	| voronota query-contacts \
-	  --drop-adjuncts \
-	  --set-adjuncts 'ta=0;te=0' \
-	| voronota query-contacts \
-	  --set-external-adjuncts-name 'ta' \
-	  --set-external-adjuncts <(cat $TMPLDIR/exposure_atom_energies | awk '{print $1 " c<solvent> " $2}') \
-	| voronota query-contacts \
-	  --set-external-adjuncts-name 'te' \
-	  --set-external-adjuncts <(cat $TMPLDIR/exposure_atom_energies | awk '{print $1 " c<solvent> " $4}') \
-	| tee $TMPLDIR/exposure_atom_contacts_energies \
-	| voronota query-contacts \
-	  --inter-residue \
-	> "$TMPLDIR/exposure_residue_contacts_energies"
-	
-	cat $TMPLDIR/exposure_atom_contacts_energies \
-	| sed 's/ ta=/ /' \
-	| sed 's/;te=/ /' \
-	| awk '{print $1 " " $3 " " $6 " " $7}' \
-	> "$HULL_BLURRING_OUTPUT_DIR/atom_energies"
-	
-	cat $TMPLDIR/exposure_residue_contacts_energies \
-	| sed 's/ ta=/ /' \
-	| sed 's/;te=/ /' \
-	| awk '{print $1 " " $3 " " $6 " " $7}' \
-	> "$HULL_BLURRING_OUTPUT_DIR/residue_energies"
-	
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --drop-altloc-indicators \
-	  --set-adjuncts 'oc=1' \
-	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/atom_energies" | awk '{print $1 " " ($4/$3)}') \
-	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
-	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/atom_energies.pdb" \
-	  --pdb-output-b-factor score \
-	> /dev/null
-	
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --drop-altloc-indicators \
-	  --set-adjuncts 'oc=1' \
-	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " ($4/$3)}') \
-	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
-	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/residue_energies.pdb" \
-	  --pdb-output-b-factor score \
-	> /dev/null
-	
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>&A<CA>' \
-	| voronota query-balls \
-	  --drop-adjuncts \
-	  --drop-altloc-indicators \
-	| voronota query-balls \
-	  --set-adjuncts 'sas=0' \
-	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " $2}') \
-	  --set-external-adjuncts-name sas \
-	| voronota query-balls \
-	  --set-adjuncts 'score=0' \
-	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " ($4/$3)}') \
-	  --set-external-adjuncts-name score \
-	| awk '{print $1 " " $7}' \
-	| sed 's/.sas=/ /' \
-	| sed 's/.score=/ /' \
-	| voronota x-expand-descriptors \
-	| awk '{print $1 " " $2 " " $6 " " $8 " " $9}' \
-	> "$HULL_BLURRING_OUTPUT_DIR/residue_profile"
-	
-R --vanilla --args "$HULL_BLURRING_OUTPUT_DIR/residue_profile" "$HULL_BLURRING_OUTPUT_DIR/residue_profile_" &> /dev/null << 'EOF'
-args=commandArgs(TRUE);
-infile=args[1];
-output_prefix=args[2];
-t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
-sas_sel=which(t$V4>0);
-##########
-v=t$V5[sas_sel];
-centers=sort(kmeans(x=v, centers=2, iter.max=100)$centers[,1]);
-split=mean(centers[1:2]);
-s=(pnorm((v-split)*qnorm(0.75)/(centers[2]-split)));
-t$V6=rep(0, length(t$V5));
-t$V6[sas_sel]=s;
-write.table(t, paste(output_prefix, "with_probabilities", sep=""), quote=FALSE, row.names=FALSE, col.names=FALSE);
-##########
-png(filename=paste(output_prefix, "energies_to_probabilities.png", sep=""), width=5, height=5, units="in", res=200);
-plot(v, s, ylim=c(0, 1), xlab="Normalized energy", ylab="Interface probability");
-lines(c(split, split), c(0, 1), col="red");
-lines(c(min(v), max(v)), c(0.5, 0.5), col="red");
-dev.off();
-##########
-png(filename=paste(output_prefix, "wave_of_probabilities.png", sep=""), width=15, height=5, units="in", res=200);
-plot(t$V6, ylim=c(0, 1), ylab="Interface probability", type="l");
-lines(c(1, length(t$V6)), c(0.5, 0.5), col="red");
-dev.off();
-##########
-d0=density(v);
-d1=density(v[which(v<split)]);
-d2=density(v[which(v>split)]);
-d_y_max=max(c(d0$y, d1$y, d2$y));
-png(filename=paste(output_prefix, "density.png", sep=""), width=5, height=5, units="in", res=200);
-plot(d0, ylim=c(0, d_y_max), xlab="Normalized energy", main="Histogram of normalized energy");
-lines(d1$x, d1$y, col="blue");
-lines(d2$x, d2$y, col="green");
-lines(c(split, split), c(0, d_y_max), col="red");
-lines(c(centers[1], centers[1]), c(0, d_y_max), col="blue");
-lines(c(centers[2], centers[2]), c(0, d_y_max), col="green");
-dev.off();
-EOF
-
-mv "$HULL_BLURRING_OUTPUT_DIR/residue_profile_with_probabilities" "$HULL_BLURRING_OUTPUT_DIR/residue_profile"
-
-	cat "$HULL_BLURRING_OUTPUT_DIR/residue_profile" \
-	| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " $6}' \
-	| sed 's/c<\.>//' \
-	> "$TMPLDIR/residue_profile_probabilities_adjuncts"
-
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --drop-altloc-indicators \
-	  --set-adjuncts 'oc=1' \
-	  --set-external-adjuncts "$TMPLDIR/residue_profile_probabilities_adjuncts" \
-	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
-	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/residue_profile_probabilities.pdb" \
-	  --pdb-output-b-factor score \
-	> /dev/null
-	
-cat > "$HULL_BLURRING_OUTPUT_DIR/show_colored_surface.pml" << 'EOF'
-hide all
-show surface
-spectrum b, blue_white_red, all, 0.25, 0.75
-zoom
-EOF
-	
-	exit 0
-fi
-
 if $NEGLECT_SAS
 then
 	cat $TMPLDIR/foundation/all_contacts \
@@ -1131,3 +968,165 @@ fi
 } \
 | tr '\n' ' ' \
 | sed 's/\s$/\n/'
+
+if [ -n "$HULL_BLURRING_OUTPUT_DIR" ]
+then
+	mkdir -p "$HULL_BLURRING_OUTPUT_DIR"
+	
+	{
+		echo "c<solvent>"
+		cat $TMPLDIR/foundation/depth_values \
+		| egrep ' 1$' \
+		| awk '{print $1}'
+	} > $TMPLDIR/exposure_ids
+
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts \
+	  --match-external-first $TMPLDIR/exposure_ids \
+	  --match-external-second $TMPLDIR/exposure_ids \
+	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0.001"}}' \
+	| tr ';' '_' \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources energy_potential) \
+	  --depth $HULL_BLURRING_DEPTH \
+	  --atom-scores-file $TMPLDIR/exposure_atom_energies \
+	> /dev/null
+	
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts \
+	  --match-second 'c<solvent>' \
+	| voronota query-contacts \
+	  --drop-adjuncts \
+	  --set-adjuncts 'ta=0;te=0' \
+	| voronota query-contacts \
+	  --set-external-adjuncts-name 'ta' \
+	  --set-external-adjuncts <(cat $TMPLDIR/exposure_atom_energies | awk '{print $1 " c<solvent> " $2}') \
+	| voronota query-contacts \
+	  --set-external-adjuncts-name 'te' \
+	  --set-external-adjuncts <(cat $TMPLDIR/exposure_atom_energies | awk '{print $1 " c<solvent> " $4}') \
+	| tee $TMPLDIR/exposure_atom_contacts_energies \
+	| voronota query-contacts \
+	  --inter-residue \
+	> "$TMPLDIR/exposure_residue_contacts_energies"
+	
+	cat $TMPLDIR/exposure_atom_contacts_energies \
+	| sed 's/ ta=/ /' \
+	| sed 's/;te=/ /' \
+	| awk '{print $1 " " $3 " " $6 " " $7}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/atom_energies"
+	
+	cat $TMPLDIR/exposure_residue_contacts_energies \
+	| sed 's/ ta=/ /' \
+	| sed 's/;te=/ /' \
+	| awk '{print $1 " " $3 " " $6 " " $7}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/residue_energies"
+	
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/atom_energies" | awk '{print $1 " " ($4/$3)}') \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/atom_energies.pdb" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+	
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " ($4/$3)}') \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/residue_energies.pdb" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+	
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>&A<CA>' \
+	| voronota query-balls \
+	  --drop-adjuncts \
+	  --drop-altloc-indicators \
+	| voronota query-balls \
+	  --set-adjuncts 'sas=0' \
+	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " $2}') \
+	  --set-external-adjuncts-name sas \
+	| voronota query-balls \
+	  --set-adjuncts 'score=0' \
+	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/residue_energies" | awk '{print $1 " " ($4/$3)}') \
+	  --set-external-adjuncts-name score \
+	| awk '{print $1 " " $7}' \
+	| sed 's/.sas=/ /' \
+	| sed 's/.score=/ /' \
+	| voronota x-expand-descriptors \
+	| awk '{print $1 " " $2 " " $6 " " $8 " " $9}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/residue_profile"
+	
+R --vanilla --args "$HULL_BLURRING_OUTPUT_DIR/residue_profile" "$HULL_BLURRING_OUTPUT_DIR/residue_profile_" &> /dev/null << 'EOF'
+args=commandArgs(TRUE);
+infile=args[1];
+output_prefix=args[2];
+t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
+sas_sel=which(t$V4>0);
+##########
+v=t$V5[sas_sel];
+centers=sort(kmeans(x=v, centers=2, iter.max=100)$centers[,1]);
+split=mean(centers[1:2]);
+s=(pnorm((v-split)*qnorm(0.75)/(centers[2]-split)));
+t$V6=rep(0, length(t$V5));
+t$V6[sas_sel]=s;
+write.table(t, paste(output_prefix, "with_probabilities", sep=""), quote=FALSE, row.names=FALSE, col.names=FALSE);
+##########
+png(filename=paste(output_prefix, "energies_to_probabilities.png", sep=""), width=5, height=5, units="in", res=200);
+plot(v, s, ylim=c(0, 1), xlab="Normalized energy", ylab="Interface probability");
+lines(c(split, split), c(0, 1), col="red");
+lines(c(min(v), max(v)), c(0.5, 0.5), col="red");
+dev.off();
+##########
+png(filename=paste(output_prefix, "wave_of_probabilities.png", sep=""), width=15, height=5, units="in", res=200);
+plot(t$V6, ylim=c(0, 1), ylab="Interface probability", type="l");
+lines(c(1, length(t$V6)), c(0.5, 0.5), col="red");
+dev.off();
+##########
+d0=density(v);
+d1=density(v[which(v<split)]);
+d2=density(v[which(v>split)]);
+d_y_max=max(c(d0$y, d1$y, d2$y));
+png(filename=paste(output_prefix, "density.png", sep=""), width=5, height=5, units="in", res=200);
+plot(d0, ylim=c(0, d_y_max), xlab="Normalized energy", main="Histogram of normalized energy");
+lines(d1$x, d1$y, col="blue");
+lines(d2$x, d2$y, col="green");
+lines(c(split, split), c(0, d_y_max), col="red");
+lines(c(centers[1], centers[1]), c(0, d_y_max), col="blue");
+lines(c(centers[2], centers[2]), c(0, d_y_max), col="green");
+dev.off();
+EOF
+
+mv "$HULL_BLURRING_OUTPUT_DIR/residue_profile_with_probabilities" "$HULL_BLURRING_OUTPUT_DIR/residue_profile"
+
+	cat "$HULL_BLURRING_OUTPUT_DIR/residue_profile" \
+	| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " $6}' \
+	| sed 's/c<\.>//' \
+	> "$TMPLDIR/residue_profile_probabilities_adjuncts"
+
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts "$TMPLDIR/residue_profile_probabilities_adjuncts" \
+	  --set-external-adjuncts-name score \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/residue_profile_probabilities.pdb" \
+	  --pdb-output-b-factor score \
+	> /dev/null
+	
+cat > "$HULL_BLURRING_OUTPUT_DIR/show_colored_surface.pml" << 'EOF'
+hide all
+show surface
+spectrum b, blue_white_red, all, 0.25, 0.75
+zoom
+EOF
+
+fi
