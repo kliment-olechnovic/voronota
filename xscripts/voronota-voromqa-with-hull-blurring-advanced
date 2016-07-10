@@ -583,8 +583,9 @@ v=t$V5[sas_sel];
 centers=sort(kmeans(x=v, centers=2, iter.max=100)$centers[,1]);
 split=mean(centers[1:2]);
 s=(pnorm((v-split)*qnorm(0.75)/(centers[2]-split)));
-t$V5[sas_sel]=s;
-write.table(t, paste(output_prefix, "probabilities", sep=""), quote=FALSE, row.names=FALSE, col.names=FALSE);
+t$V6=rep(0, length(t$V5));
+t$V6[sas_sel]=s;
+write.table(t, paste(output_prefix, "with_probabilities", sep=""), quote=FALSE, row.names=FALSE, col.names=FALSE);
 ##########
 png(filename=paste(output_prefix, "energies_to_probabilities.png", sep=""), width=5, height=5, units="in", res=200);
 plot(v, s, ylim=c(0, 1), xlab="Normalized energy", ylab="Interface probability");
@@ -593,8 +594,8 @@ lines(c(min(v), max(v)), c(0.5, 0.5), col="red");
 dev.off();
 ##########
 png(filename=paste(output_prefix, "wave_of_probabilities.png", sep=""), width=15, height=5, units="in", res=200);
-plot(t$V5, ylim=c(0, 1), ylab="Interface probability", type="l");
-lines(c(1, length(t$V5)), c(0.5, 0.5), col="red");
+plot(t$V6, ylim=c(0, 1), ylab="Interface probability", type="l");
+lines(c(1, length(t$V6)), c(0.5, 0.5), col="red");
 dev.off();
 ##########
 d0=density(v);
@@ -611,8 +612,10 @@ lines(c(centers[2], centers[2]), c(0, d_y_max), col="green");
 dev.off();
 EOF
 
-	cat "$HULL_BLURRING_OUTPUT_DIR/residue_profile_probabilities" \
-	| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " $5}' \
+mv "$HULL_BLURRING_OUTPUT_DIR/residue_profile_with_probabilities" "$HULL_BLURRING_OUTPUT_DIR/residue_profile"
+
+	cat "$HULL_BLURRING_OUTPUT_DIR/residue_profile" \
+	| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " $6}' \
 	| sed 's/c<\.>//' \
 	> "$TMPLDIR/residue_profile_probabilities_adjuncts"
 
