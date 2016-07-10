@@ -113,7 +113,10 @@ cat $TMPLDIR/balls \
   --set-external-adjuncts "$TMPLDIR/residue_profile_adjuncts" \
   --set-external-adjuncts-name score \
 | voronota x-write-balls-to-atoms-file \
-  --pdb-output "$OUTDIR/complex_with_probabilities.pdb" \
+  --pdb-output "$OUTDIR/complex_with_probabilities_refined.pdb" \
+  --pdb-output-b-factor score \
+| voronota x-write-balls-to-atoms-file \
+  --pdb-output "$OUTDIR/complex_with_probabilities_unrefined.pdb" \
   --pdb-output-b-factor score \
   --pdb-output-template "$INFILE" \
 > /dev/null
