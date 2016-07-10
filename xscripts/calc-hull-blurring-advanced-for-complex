@@ -1,0 +1,119 @@
+#!/bin/bash
+
+readonly ZEROARG="$0"
+INFILE="$1"
+OUTDIR="$2"
+
+if [ -z "$INFILE" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: missing input file"
+	exit 1
+fi
+
+if [[ "$ZEROARG" == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-voromqa-with-hull-blurring-advanced &> /dev/null || { echo >&2 "Error: 'voronota-voromqa-with-hull-blurring-advanced' executable not in binaries path"; exit 1; }
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat "$INFILE" \
+| voronota get-balls-from-atoms-file --annotated \
+| tee "$TMPLDIR/balls" \
+| voronota x-expand-descriptors \
+| awk '{print $1}' \
+| egrep -v '^\.' \
+| sort \
+| uniq \
+> "$TMPLDIR/chains"
+
+if [ "$(cat $TMPLDIR/chains | wc -l)" -lt "2" ]
+then
+	echo >&2 "Error: input file does not contain two or more chains"
+	exit 1
+fi
+
+mkdir -p "$OUTDIR"
+
+voronota-voromqa-with-hull-blurring-advanced \
+  --input "$INFILE" \
+  --output-contacts "$TMPLDIR/contacts" \
+  --hull-blurring-output-dir "$OUTDIR/complex_output" \
+> /dev/null
+
+cat "$TMPLDIR/contacts" \
+| voronota query-contacts \
+  --no-same-chain \
+  --no-solvent \
+  --inter-residue \
+| awk '{print $1 " " $2}' \
+| tr ' ' '\n' \
+| sort \
+| uniq \
+> "$TMPLDIR/interface_residue_ids"
+
+cat "$TMPLDIR/chains" | while read CHAIN
+do
+	CHAIN_INFILE="$TMPLDIR/chain_${CHAIN}_atoms.pdb"
+	CHAIN_OUTDIR="$OUTDIR/chain_${CHAIN}_output"
+	
+	cat "$TMPLDIR/balls" \
+	| voronota query-balls \
+	  --match "c<${CHAIN}>" \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$CHAIN_INFILE" \
+	> /dev/null
+	
+	voronota-voromqa-with-hull-blurring-advanced \
+	  --input "$CHAIN_INFILE" \
+	  --hull-blurring-output-dir "$CHAIN_OUTDIR" \
+	> /dev/null
+	
+	cat "$CHAIN_OUTDIR/residue_profile" >> "$TMPLDIR/all_chains_residue_profile"
+done
+
+cat "$TMPLDIR/all_chains_residue_profile" \
+| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " $6}' \
+> "$TMPLDIR/all_chains_residue_profile_adjuncts"
+
+cat $TMPLDIR/balls \
+| voronota query-balls \
+  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>&A<CA>' \
+| voronota query-balls \
+  --drop-adjuncts \
+  --drop-altloc-indicators \
+| voronota query-balls \
+  --set-adjuncts 'iface=0' \
+  --set-external-adjuncts <(cat "$TMPLDIR/interface_residue_ids" | awk '{print $1 " 1"}') \
+  --set-external-adjuncts-name iface \
+| voronota query-balls \
+  --set-adjuncts 'score=0' \
+  --set-external-adjuncts "$TMPLDIR/all_chains_residue_profile_adjuncts" \
+  --set-external-adjuncts-name score \
+| awk '{print $1 " " $7}' \
+| sed 's/.iface=/ /' \
+| sed 's/.score=/ /' \
+| voronota x-expand-descriptors \
+| awk '{print $1 " " $2 " " $6 " " $8 " " $9}' \
+> "$OUTDIR/residue_profile"
+
+cat "$OUTDIR/residue_profile" \
+| awk '{print "c<" $1 ">r<" $2 ">R<" $3 "> " ($4*$5)}' \
+> "$TMPLDIR/residue_profile_adjuncts"
+
+cat $TMPLDIR/balls \
+| voronota query-balls \
+  --drop-altloc-indicators \
+  --set-adjuncts 'score=0' \
+  --set-external-adjuncts "$TMPLDIR/residue_profile_adjuncts" \
+  --set-external-adjuncts-name score \
+| voronota x-write-balls-to-atoms-file \
+  --pdb-output "$OUTDIR/complex_with_probabilities.pdb" \
+  --pdb-output-b-factor score \
+  --pdb-output-template "$INFILE" \
+> /dev/null
