@@ -140,7 +140,7 @@ lines(d2$x, d2$y, col="red");
 dev.off();
 EOF
 
-mkdir -p $OUTDIR/classification_scoring"
+mkdir -p "$OUTDIR/classification_scoring"
 
 cat "$OUTDIR/residue_profile" | awk '{print $1 "_" $2 "_" $3 " " $4}' > "$TMPLDIR/scores_references"
 cat "$OUTDIR/residue_profile" | awk '{print $1 "_" $2 "_" $3 " " $5}' > "$TMPLDIR/scores_test"
