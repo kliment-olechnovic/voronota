@@ -121,12 +121,13 @@ cat $TMPLDIR/balls \
   --pdb-output-template "$INFILE" \
 > /dev/null
 
-R --vanilla --args "$OUTDIR/residue_profile" "$OUTDIR/residue_profile_" &> /dev/null << 'EOF'
+cat "$OUTDIR/residue_profile" | egrep -v ' 0 0$' > "$TMPLDIR/residue_profile_not_buried"
+
+R --vanilla --args "$TMPLDIR/residue_profile_not_buried" "$OUTDIR/residue_profile_not_buried_" &> /dev/null << 'EOF'
 args=commandArgs(TRUE);
 infile=args[1];
 output_prefix=args[2];
 t=read.table(infile, header=FALSE, stringsAsFactors=FALSE);
-##########
 b=t$V4
 v=t$V5;
 d0=density(v);
@@ -142,8 +143,8 @@ EOF
 
 mkdir -p "$OUTDIR/classification_scoring"
 
-cat "$OUTDIR/residue_profile" | awk '{print $1 "_" $2 "_" $3 " " $4}' > "$TMPLDIR/scores_references"
-cat "$OUTDIR/residue_profile" | awk '{print $1 "_" $2 "_" $3 " " $5}' > "$TMPLDIR/scores_test"
+cat "$TMPLDIR/residue_profile_not_buried" | awk '{print $1 "_" $2 "_" $3 " " $4}' > "$TMPLDIR/scores_references"
+cat "$TMPLDIR/residue_profile_not_buried" | awk '{print $1 "_" $2 "_" $3 " " $5}' > "$TMPLDIR/scores_test"
 echo "$TMPLDIR/scores_references" "$TMPLDIR/scores_test" \
 | voronota score-scores \
   --reference-threshold 0.5 \
