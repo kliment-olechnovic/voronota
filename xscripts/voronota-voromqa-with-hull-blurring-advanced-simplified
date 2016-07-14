@@ -994,10 +994,10 @@ then
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
 	  --depth $HULL_BLURRING_DEPTH \
-	  --atom-scores-file $TMPLDIR/exposure_atom_energies \
+	  --atom-scores-file $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
 	> /dev/null
 	
-	cat $TMPLDIR/exposure_atom_energies \
+	cat $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
 	| voronota score-contacts-quality \
 	  --default-mean 0.192 \
 	  --default-sd 0.206 \
