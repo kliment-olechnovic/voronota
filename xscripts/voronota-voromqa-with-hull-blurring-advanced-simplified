@@ -986,11 +986,11 @@ then
 		| awk '{print $1}'
 	} > $TMPLDIR/exposure_ids
 
-	cat $TMPLDIR/foundation/all_contacts \
+	cat $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
 	  --match-external-first $TMPLDIR/exposure_ids \
 	  --match-external-second $TMPLDIR/exposure_ids \
-	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0.001"}}' \
+	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0"}}' \
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
