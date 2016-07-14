@@ -440,6 +440,7 @@ then
 	| voronota calculate-contacts \
 	  --annotated \
 	  --tag-centrality \
+	| tee $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
 	  --match-min-seq-sep 1 \
 	| voronota query-contacts \
