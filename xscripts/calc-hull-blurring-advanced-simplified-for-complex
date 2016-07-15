@@ -1,0 +1,59 @@
+#!/bin/bash
+
+readonly ZEROARG="$0"
+INFILE="$1"
+OUTDIR="$2"
+
+if [ -z "$INFILE" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: missing input file"
+	exit 1
+fi
+
+if [[ "$ZEROARG" == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-voromqa-with-hull-blurring-advanced-simplified &> /dev/null || { echo >&2 "Error: 'voronota-voromqa-with-hull-blurring-advanced' executable not in binaries path"; exit 1; }
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat "$INFILE" \
+| voronota get-balls-from-atoms-file --annotated \
+| tee "$TMPLDIR/balls" \
+| voronota x-expand-descriptors \
+| awk '{print $1}' \
+| egrep -v '^\.' \
+| sort \
+| uniq \
+> "$TMPLDIR/chains"
+
+if [ "$(cat $TMPLDIR/chains | wc -l)" -lt "2" ]
+then
+	echo >&2 "Error: input file does not contain two or more chains"
+	exit 1
+fi
+
+mkdir -p "$OUTDIR"
+
+cat "$TMPLDIR/chains" | while read CHAIN
+do
+	CHAIN_INFILE="$TMPLDIR/chain_${CHAIN}_atoms.pdb"
+	CHAIN_OUTDIR="$OUTDIR/chain_${CHAIN}_output"
+	
+	cat "$TMPLDIR/balls" \
+	| voronota query-balls \
+	  --match "c<${CHAIN}>" \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$CHAIN_INFILE" \
+	> /dev/null
+	
+	voronota-voromqa-with-hull-blurring-advanced-simplified \
+	  --input "$CHAIN_INFILE" \
+	  --hull-blurring-output-dir "$CHAIN_OUTDIR" \
+	> /dev/null
+done
