@@ -34,6 +34,8 @@ SCREENSHOT_BACKGROUND="black"
 PLOT_MODE="normal"
 HULL_BLURRING_OUTPUT_DIR=""
 HULL_BLURRING_DEPTH="3"
+HULL_BLURRING_MEAN="0.192"
+HULL_BLURRING_SD="0.206"
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -168,6 +170,14 @@ do
 		;;
 	--hull-blurring-depth)
 		HULL_BLURRING_DEPTH="$OPTARG"
+		shift
+		;;
+	--hull-blurring-mean)
+		HULL_BLURRING_MEAN="$OPTARG"
+		shift
+		;;
+	--hull-blurring-sd)
+		HULL_BLURRING_SD="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -995,8 +1005,8 @@ then
 	
 	cat $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
 	| voronota score-contacts-quality \
-	  --default-mean 0.192 \
-	  --default-sd 0.206 \
+	  --default-mean $HULL_BLURRING_MEAN \
+	  --default-sd $HULL_BLURRING_SD \
 	  --smoothing-window "0,3,5,10" \
 	  --residue-scores-file $TMPLDIR/exposure_residue_quality_scores \
 	> /dev/null
