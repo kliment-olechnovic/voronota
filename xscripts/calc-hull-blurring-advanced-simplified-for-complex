@@ -38,22 +38,48 @@ then
 	exit 1
 fi
 
-mkdir -p "$OUTDIR"
-
 cat "$TMPLDIR/chains" | while read CHAIN
 do
-	CHAIN_INFILE="$TMPLDIR/chain_${CHAIN}_atoms.pdb"
 	CHAIN_OUTDIR="$OUTDIR/chain_${CHAIN}_output"
-	
-	cat "$TMPLDIR/balls" \
-	| voronota query-balls \
-	  --match "c<${CHAIN}>" \
-	| voronota x-write-balls-to-atoms-file \
-	  --pdb-output "$CHAIN_INFILE" \
-	> /dev/null
+	if [ ! -d "$CHAIN_OUTDIR" ]
+	then
+		mkdir -p "$CHAIN_OUTDIR"
+		
+		CHAIN_INFILE="$TMPLDIR/chain_${CHAIN}_atoms.pdb"
+		
+		cat "$TMPLDIR/balls" \
+		| voronota query-balls \
+		  --match "c<${CHAIN}>" \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output "$CHAIN_INFILE" \
+		> /dev/null
+		
+		voronota-voromqa-with-hull-blurring-advanced-simplified \
+		  --input "$CHAIN_INFILE" \
+		  --hull-blurring-output-dir "$CHAIN_OUTDIR" \
+		> /dev/null
+	fi
+done
+
+COMPLEX_OUTDIR="$OUTDIR/complex_output"
+if [ ! -d "$COMPLEX_OUTDIR" ]
+then
+	mkdir -p "$COMPLEX_OUTDIR"
 	
 	voronota-voromqa-with-hull-blurring-advanced-simplified \
-	  --input "$CHAIN_INFILE" \
-	  --hull-blurring-output-dir "$CHAIN_OUTDIR" \
+	  --input "$INFILE" \
+	  --output-contacts "$COMPLEX_OUTDIR/contacts" \
+	  --hull-blurring-output-dir "$COMPLEX_OUTDIR" \
 	> /dev/null
-done
+	
+	cat "$COMPLEX_OUTDIR/contacts" \
+	| voronota query-contacts \
+	  --no-same-chain \
+	  --no-solvent \
+	  --inter-residue \
+	| awk '{print $1 " " $2}' \
+	| tr ' ' '\n' \
+	| sort \
+	| uniq \
+	> "$COMPLEX_OUTDIR/interface_residue_ids"
+fi
