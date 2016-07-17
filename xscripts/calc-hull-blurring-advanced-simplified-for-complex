@@ -83,3 +83,24 @@ then
 	| uniq \
 	> "$COMPLEX_OUTDIR/interface_residue_ids"
 fi
+
+LEVELS_OUTDIR="$OUTDIR/interface_levels_output"
+if [ ! -d "$LEVELS_OUTDIR" ]
+then
+	mkdir -p "$LEVELS_OUTDIR"
+	
+	for LEVEL in 5 10 20
+	do
+		cat "$COMPLEX_OUTDIR/contacts" \
+		| voronota query-contacts \
+		  --no-same-chain \
+		  --no-solvent \
+		  --inter-residue \
+		  --match-min-area $LEVEL \
+		| awk '{print $1 " " $2}' \
+		| tr ' ' '\n' \
+		| sort \
+		| uniq \
+		> "$LEVELS_OUTDIR/interface_residue_ids_level_$LEVEL"
+	done
+fi
