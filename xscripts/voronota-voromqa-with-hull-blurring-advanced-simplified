@@ -33,9 +33,6 @@ SCREENSHOT_HEIGHT="500"
 SCREENSHOT_BACKGROUND="black"
 PLOT_MODE="normal"
 HULL_BLURRING_OUTPUT_DIR=""
-HULL_BLURRING_DEPTH="3"
-HULL_BLURRING_MEAN="0.13"
-HULL_BLURRING_SD="0.13"
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -166,18 +163,6 @@ do
 		;;
 	--hull-blurring-output-dir)
 		HULL_BLURRING_OUTPUT_DIR="$OPTARG"
-		shift
-		;;
-	--hull-blurring-depth)
-		HULL_BLURRING_DEPTH="$OPTARG"
-		shift
-		;;
-	--hull-blurring-mean)
-		HULL_BLURRING_MEAN="$OPTARG"
-		shift
-		;;
-	--hull-blurring-sd)
-		HULL_BLURRING_SD="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -999,30 +984,68 @@ then
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
-	  --depth $HULL_BLURRING_DEPTH \
+	  --depth 3 \
 	  --atom-scores-file $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
 	> /dev/null
 	
 	cat $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
 	| voronota score-contacts-quality \
-	  --default-mean $HULL_BLURRING_MEAN \
-	  --default-sd $HULL_BLURRING_SD \
+	  --default-mean 0.13 \
+	  --default-sd 0.13 \
 	  --smoothing-window 0 \
-	  --residue-scores-file $TMPLDIR/exposure_residue_quality_scores \
+	  --residue-scores-file $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v1 \
 	> /dev/null
-
-	cat $TMPLDIR/exposure_residue_quality_scores \
+	
+	cat $HULL_BLURRING_OUTPUT_DIR/surface_atom_energies \
+	| awk '{print $1 " 1 0 " $4 " " $5}' \
+	| voronota score-contacts-quality \
+	  --default-mean 180 \
+	  --default-sd 180 \
+	  --smoothing-window 0 \
+	  --residue-scores-file $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v2 \
+	> /dev/null
+	
+	cat $TMPLDIR/foundation/atom_energies \
+	| voronota score-contacts-quality \
+	  --default-mean -0.34 \
+	  --default-sd 0.19 \
+	  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
+	  --external-weights-file $TMPLDIR/foundation/depth_values \
+	  --smoothing-window 0 \
+	  --residue-scores-file $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v0 \
+	> /dev/null
+	
+	join -e EMPTY <(sort -k 1b,1 $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v2) <(sort -k 1b,1 $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v0) \
+	| grep -v EMPTY \
+	> "$HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined"
+	
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v1 \
 	| awk '{print $1 " " (1-$2)}' \
-	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_energy"
+	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_v1"
+	
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v2 \
+	| awk '{print $1 " " (1-$2)}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_v2"
+	
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined \
+	| awk '{print $1 " " (1-$3)}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_v0"
 
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --drop-altloc-indicators \
-	  --set-adjuncts 'oc=1' \
-	  --set-external-adjuncts <(cat "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_energy" | awk '{print $1 " " $2}') \
-	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
-	  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_energy.pdb" \
-	  --pdb-output-b-factor score \
-	> /dev/null
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined \
+	| awk '{print $1 " " sqrt((1-$2)*(1-$3))}' \
+	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_combined"
+
+	find $HULL_BLURRING_OUTPUT_DIR/ -name 'probabilities_based_on_residue_quality_scores_*' | egrep -v '*.pdb$'| while read PROBABILITIES_FILE
+	do
+		cat $TMPLDIR/balls \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-adjuncts 'oc=1' \
+		  --set-external-adjuncts <(cat "$PROBABILITIES_FILE" | awk '{print $1 " " $2}') \
+		  --set-external-adjuncts-name score \
+		| voronota x-write-balls-to-atoms-file \
+		  --pdb-output "$PROBABILITIES_FILE.pdb" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	done
 fi
