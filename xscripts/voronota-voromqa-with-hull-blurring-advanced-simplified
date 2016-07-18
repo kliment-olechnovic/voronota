@@ -1017,7 +1017,7 @@ then
 	
 	join -e EMPTY <(sort -k 1b,1 $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v2) <(sort -k 1b,1 $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v0) \
 	| grep -v EMPTY \
-	> "$HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined"
+	> "$HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined_v0_v2"
 	
 	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_v1 \
 	| awk '{print $1 " " (1-$2)}' \
@@ -1027,16 +1027,23 @@ then
 	| awk '{print $1 " " (1-$2)}' \
 	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_v2"
 	
-	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined \
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined_v0_v2 \
 	| awk '{print $1 " " (1-$3)}' \
 	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_v0"
 
-	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined \
+	cat $HULL_BLURRING_OUTPUT_DIR/residue_quality_scores_combined_v0_v2 \
 	| awk '{print $1 " " sqrt((1-$2)*(1-$3))}' \
-	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_combined"
+	> "$HULL_BLURRING_OUTPUT_DIR/probabilities_based_on_residue_quality_scores_combined_v0_v2"
 
-	find $HULL_BLURRING_OUTPUT_DIR/ -name 'probabilities_based_on_residue_quality_scores_*' | egrep -v '*.pdb$'| while read PROBABILITIES_FILE
+	find $HULL_BLURRING_OUTPUT_DIR/ -name 'probabilities_based_on_residue_quality_scores_*' | while read PROBABILITIES_FILE
 	do
+		BASENAME=$(basename "$PROBABILITIES_FILE")
+		
+		cat "$PROBABILITIES_FILE" \
+		| voronota x-expand-descriptors \
+		| awk '{printf("%s%s %.2f\n", $1, $2, $8)}' \
+		> "$HULL_BLURRING_OUTPUT_DIR/casp_formatted_$BASENAME"
+		
 		cat $TMPLDIR/balls \
 		| voronota query-balls \
 		  --drop-altloc-indicators \
@@ -1044,7 +1051,7 @@ then
 		  --set-external-adjuncts <(cat "$PROBABILITIES_FILE" | awk '{print $1 " " $2}') \
 		  --set-external-adjuncts-name score \
 		| voronota x-write-balls-to-atoms-file \
-		  --pdb-output "$PROBABILITIES_FILE.pdb" \
+		  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/pdb_formatted_$BASENAME.pdb" \
 		  --pdb-output-b-factor score \
 		> /dev/null
 	done
