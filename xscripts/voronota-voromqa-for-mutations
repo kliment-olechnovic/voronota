@@ -1120,17 +1120,27 @@ then
 	  --clash-distance "$CLASHES_DISTANCE" \
 	> "$CLASHES_OUTPUT_DIR/all_clashes"
 	
-	cat "$CLASHES_OUTPUT_DIR/all_clashes" \
-	| awk '{print $1 " " $2 " 1 " $3 " . ."}' \
-	| voronota query-contacts \
-	  --match-min-seq-sep 2 \
-	  --match-first 'A<C,CA,CB,CD,CD1,CD2,CE,CE1,CE2,CE3,CG,CG1,CG2,CH2,CZ,CZ2,CZ3>' \
+	{
+		cat "$CLASHES_OUTPUT_DIR/all_clashes" \
+		| awk '{print $1 " " $2 " 1 " $3 " . ."}' \
+		| voronota query-contacts \
+		  --match-first 'A<CB,CD,CD1,CD2,CE,CE1,CE2,CE3,CG,CG1,CG2,CH2,CZ,CZ2,CZ3>'
+
+		cat "$CLASHES_OUTPUT_DIR/all_clashes" \
+		| awk '{print $1 " " $2 " 1 " $3 " . ."}' \
+		| voronota query-contacts \
+		  --match-min-seq-sep 2 \
+		  --match-first 'A<C,CA>'
+	} \
 	| awk '{print $1 " " $2 " " $4}' \
+	| sort \
+	| uniq \
 	> "$CLASHES_OUTPUT_DIR/certain_clashes"
 	
-	echo \
-	  $(cat "$CLASHES_OUTPUT_DIR/certain_clashes" | awk '{print $1 " " $2}' | tr ' ' '\n' | grep 'A<C' | sort | uniq | wc -l) \
-	  $(cat "$TMPLDIR/balls" | grep 'A<C' | wc -l) \
-	| awk '{print ($1/$2) " " $1 " " $2}' \
-	> "$CLASHES_OUTPUT_DIR/certain_clashed_atoms_ratio"
+	cat "$CLASHES_OUTPUT_DIR/certain_clashes" \
+	| awk '{print $1 " " $2}' \
+	| tr ' ' '\n' \
+	| sort \
+	| uniq \
+	> "$CLASHES_OUTPUT_DIR/certain_clashed_atoms"
 fi
