@@ -1143,4 +1143,16 @@ then
 	| sort \
 	| uniq \
 	> "$CLASHES_OUTPUT_DIR/certain_clashed_atoms"
+	
+	cat "$TMPLDIR/balls" \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts "score=0" \
+	| voronota query-balls \
+	  --match-external-annotations "$CLASHES_OUTPUT_DIR/certain_clashed_atoms" \
+	  --set-adjuncts "score=1" \
+	| voronota x-write-balls-to-atoms-file \
+	  --pdb-output "$CLASHES_OUTPUT_DIR/certain_clashed_atoms.pdb" \
+	  --pdb-output-b-factor score \
+	> /dev/null
 fi
