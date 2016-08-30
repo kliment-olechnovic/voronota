@@ -35,6 +35,8 @@ PLOT_MODE="normal"
 HULL_BLURRING_OUTPUT_DIR=""
 MUTATION_QUERY=""
 MUTATION_GOAL=""
+CLASHES_OUTPUT_DIR=""
+CLASHES_DISTANCE="3.0"
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -173,6 +175,14 @@ do
 		;;
 	--mutation-goal)
 		MUTATION_GOAL="$OPTARG"
+		shift
+		;;
+	--clashes-output-dir)
+		CLASHES_OUTPUT_DIR="$OPTARG"
+		shift
+		;;
+	--clashes-distance)
+		CLASHES_DISTANCE="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -1099,4 +1109,28 @@ then
 		  --pdb-output-b-factor score \
 		> /dev/null
 	done
+fi
+
+if [ -n "$CLASHES_OUTPUT_DIR" ]
+then
+	mkdir -p "$CLASHES_OUTPUT_DIR"
+	
+	cat "$TMPLDIR/balls" \
+	| voronota x-query-balls-clashes \
+	  --clash-distance "$CLASHES_DISTANCE" \
+	> "$CLASHES_OUTPUT_DIR/all_clashes"
+	
+	cat "$CLASHES_OUTPUT_DIR/all_clashes" \
+	| awk '{print $1 " " $2 " 1 " $3 " . ."}' \
+	| voronota query-contacts \
+	  --match-min-seq-sep 2 \
+	  --match-first 'A<C,CA,CB,CD,CD1,CD2,CE,CE1,CE2,CE3,CG,CG1,CG2,CH2,CZ,CZ2,CZ3>' \
+	| awk '{print $1 " " $2 " " $4}' \
+	> "$CLASHES_OUTPUT_DIR/certain_clashes"
+	
+	echo \
+	  $(cat "$CLASHES_OUTPUT_DIR/certain_clashes" | awk '{print $1 " " $2}' | tr ' ' '\n' | grep 'A<C' | sort | uniq | wc -l) \
+	  $(cat "$TMPLDIR/balls" | grep 'A<C' | wc -l) \
+	| awk '{print ($1/$2) " " $1 " " $2}' \
+	> "$CLASHES_OUTPUT_DIR/certain_clashed_atoms_ratio"
 fi
