@@ -51,7 +51,8 @@ You can also build using CMake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
 run the sequence of commands:
 
-    mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
+    cmake ./
+    make
 
 ## Enabling OpenMP
 

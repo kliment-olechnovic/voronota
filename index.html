@@ -109,7 +109,8 @@
 </code></pre>
 <h2 id="using-cmake"><a href="#TOC">Using CMake</a></h2>
 <p>You can also build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
-<pre><code>mkdir build ; cd build ; cmake ../ ; make ; cd ../ ; mv build/voronota voronota
+<pre><code>cmake ./
+make
 </code></pre>
 <h2 id="enabling-openmp"><a href="#TOC">Enabling OpenMP</a></h2>
 <p>To enable the usage of OpenMP for parallel processing when building using C++ compiler directly, add &quot;-fopenmp&quot; option:</p>
