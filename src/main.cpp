@@ -18,6 +18,7 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
+void expand_descriptors(const auxiliaries::ProgramOptionsHandler&);
 
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
 void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler&);
@@ -33,7 +34,6 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
 void wrapped_get_balls_from_atoms_file_and_calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
-void expand_descriptors(const auxiliaries::ProgramOptionsHandler&);
 void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler&);
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
@@ -71,6 +71,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
+	list_of_modes.push_back(ModeDescriptor("expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	return list_of_modes;
 }
 
@@ -91,7 +92,6 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
 	list_of_modes.push_back(ModeDescriptor("x-vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
 	list_of_modes.push_back(ModeDescriptor("x-wrapped-get-balls-from-atoms-file-and-calculate-vertices", ModeDescriptor::FunctionPtr(wrapped_get_balls_from_atoms_file_and_calculate_vertices)));
-	list_of_modes.push_back(ModeDescriptor("x-expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	list_of_modes.push_back(ModeDescriptor("x-write-qa-scores-in-casp-format", ModeDescriptor::FunctionPtr(write_qa_scores_in_casp_format)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-global-energy-by-cuts", ModeDescriptor::FunctionPtr(score_contacts_global_energy_by_cuts)));
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
@@ -102,7 +102,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 
 std::string version()
 {
-	static const std::string str="Voronota version 1.12";
+	static const std::string str="Voronota version 1.13";
 	return str;
 }
 
