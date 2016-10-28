@@ -126,7 +126,7 @@ do
 	> $SUBDIR/$INFILEBASENAME.globalcadscore
 done
 
-$VORONOTA score-scores \
+$VORONOTA x-score-scores \
   --reference-threshold 0.4 \
   --testable-step 0.01 \
   --outcomes-file $SUBDIR/localclassification \

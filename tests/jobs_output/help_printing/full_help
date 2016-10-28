@@ -12,7 +12,6 @@ draw-contacts
 score-contacts-energy
 score-contacts-quality
 compare-contacts
-score-scores
 expand-descriptors
 
 Command 'get-balls-from-atoms-file' options:
@@ -200,16 +199,6 @@ Command 'compare-contacts' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  global scores (atom-level and residue-level)
-
-Command 'score-scores' options:
---reference-threshold           number      reference scores classification threshold
---testable-step                 number      testable scores threshold step
---outcomes-file                 string      file path to output lines of 'threshold TP TN FP FN'
---ROC-curve-file                string      file path to output ROC curve
---PR-curve-file                 string      file path to output PR curve
---help                                      flag to print usage help to stdout and exit
-stdin   <-  pairs of reference and testable scores files
-stdout  ->  global results
 
 Command 'expand-descriptors' options:
 --help                                      flag to print usage help to stdout and exit

@@ -17,7 +17,6 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
 void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
-void score_scores(const auxiliaries::ProgramOptionsHandler&);
 void expand_descriptors(const auxiliaries::ProgramOptionsHandler&);
 
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
@@ -39,6 +38,7 @@ void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandl
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_clashes(const auxiliaries::ProgramOptionsHandler&);
+void score_scores(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -70,7 +70,6 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
-	list_of_modes.push_back(ModeDescriptor("score-scores", ModeDescriptor::FunctionPtr(score_scores)));
 	list_of_modes.push_back(ModeDescriptor("expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	return list_of_modes;
 }
@@ -97,6 +96,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-solvation-values", ModeDescriptor::FunctionPtr(query_contacts_solvation_values)));
 	list_of_modes.push_back(ModeDescriptor("x-query-balls-clashes", ModeDescriptor::FunctionPtr(query_balls_clashes)));
+	list_of_modes.push_back(ModeDescriptor("x-score-scores", ModeDescriptor::FunctionPtr(score_scores)));
 	return list_of_modes;
 }
 
