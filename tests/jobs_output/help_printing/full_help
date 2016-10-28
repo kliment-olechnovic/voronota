@@ -1,4 +1,4 @@
-Voronota version 1.12
+Voronota version 1.13
 
 Commands:
 
@@ -13,6 +13,7 @@ score-contacts-energy
 score-contacts-quality
 compare-contacts
 score-scores
+expand-descriptors
 
 Command 'get-balls-from-atoms-file' options:
 --annotated                                 flag to enable annotated mode
@@ -209,4 +210,9 @@ Command 'score-scores' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  pairs of reference and testable scores files
 stdout  ->  global results
+
+Command 'expand-descriptors' options:
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  any text containing atom descriptors
+stdout  ->  text with each atom descriptor expanded to 'chainID resSeq iCode serial altLoc resName name'
 

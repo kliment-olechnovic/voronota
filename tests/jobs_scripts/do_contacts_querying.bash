@@ -159,6 +159,6 @@ cat $SUBDIR/contacts \
 > $SUBDIR/set_external_means_and_match_adjuncts
 
 cat $SUBDIR/match_external_first_and_second \
-| $VORONOTA x-expand-descriptors \
+| $VORONOTA expand-descriptors \
 | column -t \
 > $SUBDIR/match_external_first_and_second_with_descriptors_expanded

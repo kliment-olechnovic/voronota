@@ -724,14 +724,14 @@ cat $TMPLDIR/foundation/atom_energies \
 > /dev/null
 
 cat $TMPLDIR/residue_quality_scores_for_plot \
-| voronota x-expand-descriptors \
+| voronota expand-descriptors \
 > $TMPLDIR/table_for_plot
 
 BACK_FILE="none"
 if [ -s "$TMPLDIR/selection_by_queries" ]
 then
 	cat $TMPLDIR/selection_by_queries \
-	| voronota x-expand-descriptors \
+	| voronota expand-descriptors \
 	| awk '{print $1 " " $2}' | sort | uniq \
 	> $TMPLDIR/back_table_for_plot
 	if [ -s "$TMPLDIR/back_table_for_plot" ]
@@ -1040,7 +1040,7 @@ then
 		BASENAME=$(basename "$PROBABILITIES_FILE")
 		
 		cat "$PROBABILITIES_FILE" \
-		| voronota x-expand-descriptors \
+		| voronota expand-descriptors \
 		| awk '{printf("%s%s %.2f\n", $1, $2, $8)}' \
 		> "$HULL_BLURRING_OUTPUT_DIR/casp_formatted_$BASENAME"
 		

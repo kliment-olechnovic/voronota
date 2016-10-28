@@ -81,7 +81,7 @@ trap "rm -r $TMPLDIR" EXIT
 cat "$INFILE" \
 | voronota get-balls-from-atoms-file --annotated \
 | tee "$TMPLDIR/balls" \
-| voronota x-expand-descriptors \
+| voronota expand-descriptors \
 | awk '{print $1}' \
 | sort \
 | uniq \
@@ -143,7 +143,7 @@ voronota-voromqa "${ADDITIONAL_VOROMQA_OPTIONS[@]}" \
 > "$TMPLDIR/voromqa_results_iface_global"
 
 cat "$TMPLDIR/voromqa_results_iface_local" \
-| voronota x-expand-descriptors \
+| voronota expand-descriptors \
 | awk '{print "c<" $1 ">r<" $2 ">i<" $3 ">R<" $6 ">A<" $7 ">"}' \
 | sed 's/i<\.>//' \
 > "$TMPLDIR/iface_selection"

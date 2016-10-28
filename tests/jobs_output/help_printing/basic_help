@@ -1,4 +1,4 @@
-Voronota version 1.12
+Voronota version 1.13
 
 Commands:
 
@@ -13,4 +13,5 @@ score-contacts-energy
 score-contacts-quality
 compare-contacts
 score-scores
+expand-descriptors
 
