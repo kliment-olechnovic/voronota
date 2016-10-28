@@ -80,15 +80,10 @@
 <li><a href="#input-stream-9">Input stream:</a></li>
 <li><a href="#output-stream-9">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-score-scores">Command 'score-scores'</a><ul>
+<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
 <li><a href="#command-line-arguments-10">Command line arguments:</a></li>
 <li><a href="#input-stream-10">Input stream:</a></li>
 <li><a href="#output-stream-10">Output stream:</a></li>
-</ul></li>
-<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
-<li><a href="#command-line-arguments-11">Command line arguments:</a></li>
-<li><a href="#input-stream-11">Input stream:</a></li>
-<li><a href="#output-stream-11">Output stream:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
@@ -220,7 +215,6 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <li>score-contacts-energy</li>
 <li>score-contacts-quality</li>
 <li>compare-contacts</li>
-<li>score-scores</li>
 <li>expand-descriptors</li>
 </ul>
 <h2 id="command-get-balls-from-atoms-file"><a href="#TOC">Command 'get-balls-from-atoms-file'</a></h2>
@@ -1255,7 +1249,7 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>list of model contacts (line format: 'annotation1 annotation2 area')</p>
 <h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
 <p>global scores (atom-level and residue-level)</p>
-<h2 id="command-score-scores"><a href="#TOC">Command 'score-scores'</a></h2>
+<h2 id="command-expand-descriptors"><a href="#TOC">Command 'expand-descriptors'</a></h2>
 <h3 id="command-line-arguments-10"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
@@ -1268,36 +1262,6 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">--reference-threshold</td>
-<td align="left">number</td>
-<td align="left"></td>
-<td align="left">reference scores classification threshold</td>
-</tr>
-<tr class="even">
-<td align="left">--testable-step</td>
-<td align="left">number</td>
-<td align="left"></td>
-<td align="left">testable scores threshold step</td>
-</tr>
-<tr class="odd">
-<td align="left">--outcomes-file</td>
-<td align="left">string</td>
-<td align="left"></td>
-<td align="left">file path to output lines of 'threshold TP TN FP FN'</td>
-</tr>
-<tr class="even">
-<td align="left">--ROC-curve-file</td>
-<td align="left">string</td>
-<td align="left"></td>
-<td align="left">file path to output ROC curve</td>
-</tr>
-<tr class="odd">
-<td align="left">--PR-curve-file</td>
-<td align="left">string</td>
-<td align="left"></td>
-<td align="left">file path to output PR curve</td>
-</tr>
-<tr class="even">
 <td align="left">--help</td>
 <td align="left"></td>
 <td align="left"></td>
@@ -1306,32 +1270,8 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tbody>
 </table>
 <h3 id="input-stream-10"><a href="#TOC">Input stream:</a></h3>
-<p>pairs of reference and testable scores files</p>
-<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
-<p>global results</p>
-<h2 id="command-expand-descriptors"><a href="#TOC">Command 'expand-descriptors'</a></h2>
-<h3 id="command-line-arguments-11"><a href="#TOC">Command line arguments:</a></h3>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Name</th>
-<th align="left">Type</th>
-<th align="left"></th>
-<th align="left">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">--help</td>
-<td align="left"></td>
-<td align="left"></td>
-<td align="left">flag to print usage help to stdout and exit</td>
-</tr>
-</tbody>
-</table>
-<h3 id="input-stream-11"><a href="#TOC">Input stream:</a></h3>
 <p>any text containing atom descriptors</p>
-<h3 id="output-stream-11"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
 <p>text with each atom descriptor expanded to 'chainID resSeq iCode serial altLoc resName name'</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="voromqa-method-script"><a href="#TOC">VoroMQA method script</a></h2>
