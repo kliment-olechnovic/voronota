@@ -7,3 +7,13 @@ syntax: regexp
 ^build$
 syntax: regexp
 ^tmp$
+syntax: regexp
+^CMakeFiles$
+syntax: regexp
+^cmake_install\.cmake$
+syntax: regexp
+^CMakeCache\.txt$
+syntax: regexp
+^install_manifest\.txt$
+syntax: regexp
+^Makefile$
