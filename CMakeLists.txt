@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(VORONOTA)
+project(Voronota)
 
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/src/*.h)
