@@ -41,13 +41,13 @@ do
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
 	| tee $SUBDIR/$INFILEBASENAME.contacts \
-	| $VORONOTA x-score-contacts-potential \
+	| $VORONOTA score-contacts-potential \
 	  --multiply-areas 0.5 \
 	> $SUBDIR/$INFILEBASENAME.summary
 done
 
 find $SUBDIR/ -type f -name "*.summary" \
-| $VORONOTA x-score-contacts-potential \
+| $VORONOTA score-contacts-potential \
   --input-file-list \
   --contributions-file $SUBDIR/contributions \
   --potential-file $SUBDIR/potential \
@@ -57,7 +57,7 @@ find $SUBDIR/ -type f -name "*.summary" \
 > $SUBDIR/summary
 
 cat $SUBDIR/summary \
-| $VORONOTA x-score-contacts-potential \
+| $VORONOTA score-contacts-potential \
   --input-contributions $SUBDIR/contributions \
   --input-fixed-types <(cat $SUBDIR/potential | awk '{print $1 " " $2 " " $3}') \
   --potential-file $SUBDIR/potentialfromsummary \
@@ -68,7 +68,7 @@ echo $SUBDIR/*.balls \
 > $SUBDIR/sequences_pairings_stats
 
 cat $SUBDIR/summary \
-| $VORONOTA x-score-contacts-potential \
+| $VORONOTA score-contacts-potential \
   --input-contributions $SUBDIR/contributions \
   --input-seq-pairs-stats $SUBDIR/sequences_pairings_stats \
   --potential-file $SUBDIR/potentialadjustedtoseqpairingsstat \
@@ -148,10 +148,10 @@ do
 	| $VORONOTA query-balls \
 	  --set-external-adjuncts $SUBDIR/$INFILEBASENAME.atomqscores \
 	  --set-external-adjuncts-name aqscore \
-	| $VORONOTA x-write-balls-to-atoms-file \
+	| $VORONOTA write-balls-to-atoms-file \
 	  --pdb-output $SUBDIR/$INFILEBASENAME.residueqscores.pdb \
 	  --pdb-output-b-factor rqscore \
-	| $VORONOTA x-write-balls-to-atoms-file \
+	| $VORONOTA write-balls-to-atoms-file \
 	  --pdb-output $SUBDIR/$INFILEBASENAME.atomqscores.pdb \
 	  --pdb-output-b-factor aqscore \
 	> /dev/null
@@ -164,10 +164,10 @@ cat $SUBDIR/target.balls \
 | $VORONOTA query-balls \
   --set-external-adjuncts $SUBDIR/model2.residuecadscores \
   --set-external-adjuncts-name m2rcadscores \
-| $VORONOTA x-write-balls-to-atoms-file \
+| $VORONOTA write-balls-to-atoms-file \
   --pdb-output $SUBDIR/target.m1residuecadscores.pdb \
   --pdb-output-b-factor m1rcadscores \
-| $VORONOTA x-write-balls-to-atoms-file \
+| $VORONOTA write-balls-to-atoms-file \
   --pdb-output $SUBDIR/target.m2residuecadscores.pdb \
   --pdb-output-b-factor m2rcadscores \
 > /dev/null

@@ -369,7 +369,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 	then
 		voronota query-balls \
 		  --match 'A<CA,C,N,O,OXT>' \
-		| voronota x-write-balls-to-atoms-file \
+		| voronota write-balls-to-atoms-file \
 		  --pdb-output $TMPLDIR/atoms_stripped.pdb \
 		> /dev/null
 
@@ -526,7 +526,7 @@ then
 	| sed 's/sep1;sep2/sep1/' \
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
-	| voronota x-score-contacts-potential \
+	| voronota score-contacts-potential \
 	  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
 	> "$OUTDIR_SUMMARY_FOR_POTENTIAL/$(basename $INFILE .gz)"
 
@@ -551,11 +551,11 @@ then
 		| sed 's/sep1;sep2/sep1/' \
 		| awk '{print $1 " " $2 " " $5 " " $3}' \
 		| tr ';' '_' \
-		| voronota x-score-contacts-potential \
+		| voronota score-contacts-potential \
 		  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
 		| awk '{print $1 " " $2 " " $3 " -" $4}'
 	} \
-	| voronota x-score-contacts-potential \
+	| voronota score-contacts-potential \
 	  --input-contributions $UNTEACHING_DIRECTORY/contact_categories \
 	  --potential-file $TMPLDIR/untaught_potential \
 	> /dev/null
@@ -667,7 +667,7 @@ then
 			cat
 		fi
 	} \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output "$OUTFILE_ATOM_SCORES_PDB" \
 	  --pdb-output-b-factor score \
 	> /dev/null
@@ -682,7 +682,7 @@ then
 	  --set-adjuncts 'oc=1' \
 	  --set-external-adjuncts $TMPLDIR/residue_quality_scores \
 	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB" \
 	  --pdb-output-b-factor score \
 	> /dev/null
@@ -701,7 +701,7 @@ then
 	| voronota query-balls \
 	  --set-external-adjuncts <(awk '{print $1 " " (10*(1-$2))}' $TMPLDIR/residue_quality_scores) \
 	  --set-external-adjuncts-name rqscore \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
 	  --pdb-output-template $INFILE_CONTENTS_EXTRACTED \
@@ -900,7 +900,7 @@ then
 		  --set-adjuncts 'oc=1' \
 		  --set-external-adjuncts "$TMPLDIR/residue_quality_scores_for_casp" \
 		  --set-external-adjuncts-name score \
-		| voronota x-write-balls-to-atoms-file \
+		| voronota write-balls-to-atoms-file \
 		  --pdb-output "$OUTFILE_SCORES_FOR_CASP_PDB" \
 		  --pdb-output-b-factor score \
 		> /dev/null
@@ -915,7 +915,7 @@ then
 	  --set-adjuncts 'oc=1' \
 	  --set-external-adjuncts "$TMPLDIR/residue_quality_scores" \
 	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output "$TMPLDIR/structure_for_screenshot.pdb" \
 	  --pdb-output-b-factor score \
 	> /dev/null
@@ -1050,7 +1050,7 @@ then
 		  --set-adjuncts 'oc=1' \
 		  --set-external-adjuncts <(cat "$PROBABILITIES_FILE" | awk '{print $1 " " $2}') \
 		  --set-external-adjuncts-name score \
-		| voronota x-write-balls-to-atoms-file \
+		| voronota write-balls-to-atoms-file \
 		  --pdb-output "$HULL_BLURRING_OUTPUT_DIR/pdb_formatted_$BASENAME.pdb" \
 		  --pdb-output-b-factor score \
 		> /dev/null

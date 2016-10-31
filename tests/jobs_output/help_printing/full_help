@@ -11,7 +11,10 @@ query-contacts
 draw-contacts
 score-contacts-energy
 score-contacts-quality
+score-contacts-potential
 compare-contacts
+write-balls-to-atoms-file
+query-balls-clashes
 expand-descriptors
 
 Command 'get-balls-from-atoms-file' options:
@@ -186,6 +189,21 @@ Command 'score-contacts-quality' options:
 stdin   <-  list of atom energy descriptors
 stdout  ->  weighted average local score
 
+Command 'score-contacts-potential' options:
+--input-file-list                           flag to read file list from stdin
+--input-contributions           string      file path to input contact types contributions
+--input-fixed-types             string      file path to input fixed types
+--input-seq-pairs-stats         string      file path to input sequence pairings statistics
+--potential-file                string      file path to output potential values
+--probabilities-file            string      file path to output observed and expected probabilities
+--single-areas-file             string      file path to output single type total areas
+--contributions-file            string      file path to output contact types contributions
+--multiply-areas                number      coefficient to multiply output areas
+--toggling-list                 string      list of toggling subtags
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of contacts (line format: 'annotation1 annotation2 conditions area')
+stdout  ->  line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')
+
 Command 'compare-contacts' options:
 --target-contacts-file          string   *  file path to input target contacts
 --inter-atom-scores-file        string      file path to output inter-atom scores
@@ -199,6 +217,21 @@ Command 'compare-contacts' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')
 stdout  ->  global scores (atom-level and residue-level)
+
+Command 'write-balls-to-atoms-file' options:
+--pdb-output                    string      file path to output query result in PDB format
+--pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
+--pdb-output-template           string      file path to input template for B-factor insertions
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
+stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
+
+Command 'query-balls-clashes' options:
+--clash-distance                number      clash distance threshold in angstroms, default is 3.0
+--init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  list of balls (line format: 'annotation x y z r')
+stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance')
 
 Command 'expand-descriptors' options:
 --help                                      flag to print usage help to stdout and exit

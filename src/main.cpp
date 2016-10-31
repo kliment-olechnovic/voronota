@@ -69,7 +69,10 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("draw-contacts", ModeDescriptor::FunctionPtr(draw_contacts)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-energy", ModeDescriptor::FunctionPtr(score_contacts_energy)));
 	list_of_modes.push_back(ModeDescriptor("score-contacts-quality", ModeDescriptor::FunctionPtr(score_contacts_quality)));
+	list_of_modes.push_back(ModeDescriptor("score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
+	list_of_modes.push_back(ModeDescriptor("write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
+	list_of_modes.push_back(ModeDescriptor("query-balls-clashes", ModeDescriptor::FunctionPtr(query_balls_clashes)));
 	list_of_modes.push_back(ModeDescriptor("expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	return list_of_modes;
 }
@@ -78,11 +81,9 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 {
 	std::vector<ModeDescriptor> list_of_modes;
 	list_of_modes.push_back(ModeDescriptor("x-query-balls-sequences-pairings-stats", ModeDescriptor::FunctionPtr(query_balls_sequences_pairings_stats)));
-	list_of_modes.push_back(ModeDescriptor("x-write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
 	list_of_modes.push_back(ModeDescriptor("x-draw-balls", ModeDescriptor::FunctionPtr(draw_balls)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-depth-values", ModeDescriptor::FunctionPtr(query_contacts_depth_values)));
 	list_of_modes.push_back(ModeDescriptor("x-plot-contacts", ModeDescriptor::FunctionPtr(plot_contacts)));
-	list_of_modes.push_back(ModeDescriptor("x-score-contacts-potential", ModeDescriptor::FunctionPtr(score_contacts_potential)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-potentials-stats", ModeDescriptor::FunctionPtr(score_contacts_potentials_stats)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-energy-stats", ModeDescriptor::FunctionPtr(score_contacts_energy_stats)));
 	list_of_modes.push_back(ModeDescriptor("x-vectorize-contacts", ModeDescriptor::FunctionPtr(vectorize_contacts)));
@@ -95,7 +96,6 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-global-energy-by-cuts", ModeDescriptor::FunctionPtr(score_contacts_global_energy_by_cuts)));
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-solvation-values", ModeDescriptor::FunctionPtr(query_contacts_solvation_values)));
-	list_of_modes.push_back(ModeDescriptor("x-query-balls-clashes", ModeDescriptor::FunctionPtr(query_balls_clashes)));
 	list_of_modes.push_back(ModeDescriptor("x-score-scores", ModeDescriptor::FunctionPtr(score_scores)));
 	return list_of_modes;
 }

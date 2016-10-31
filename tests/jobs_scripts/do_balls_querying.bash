@@ -51,7 +51,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls --set-adjuncts 'ssc=100' \
 | $VORONOTA query-balls --match-tags 'helix' --set-adjuncts 'ssc=50' \
 | $VORONOTA query-balls --match-tags 'sheet' --set-adjuncts 'ssc=0' \
-| $VORONOTA x-write-balls-to-atoms-file \
+| $VORONOTA write-balls-to-atoms-file \
   --pdb-output $SUBDIR/balls_with_dssp_info.pdb \
   --pdb-output-b-factor ssc \
   --pdb-output-template $INPUTDIR/single/structure.pdb \
@@ -122,7 +122,7 @@ cat $SUBDIR/balls \
 > /dev/null
 
 cat $SUBDIR/balls \
-| $VORONOTA x-query-balls-clashes \
+| $VORONOTA query-balls-clashes \
   --clash-distance 2.2 \
   --init-radius-for-BSH 3.5 \
 | egrep -v 'A<C>.*A<N>|A<N>.*A<C>' \
