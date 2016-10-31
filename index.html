@@ -75,15 +75,30 @@
 <li><a href="#input-stream-8">Input stream:</a></li>
 <li><a href="#output-stream-8">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
+<li><a href="#command-score-contacts-potential">Command 'score-contacts-potential'</a><ul>
 <li><a href="#command-line-arguments-9">Command line arguments:</a></li>
 <li><a href="#input-stream-9">Input stream:</a></li>
 <li><a href="#output-stream-9">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
+<li><a href="#command-compare-contacts">Command 'compare-contacts'</a><ul>
 <li><a href="#command-line-arguments-10">Command line arguments:</a></li>
 <li><a href="#input-stream-10">Input stream:</a></li>
 <li><a href="#output-stream-10">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-write-balls-to-atoms-file">Command 'write-balls-to-atoms-file'</a><ul>
+<li><a href="#command-line-arguments-11">Command line arguments:</a></li>
+<li><a href="#input-stream-11">Input stream:</a></li>
+<li><a href="#output-stream-11">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-query-balls-clashes">Command 'query-balls-clashes'</a><ul>
+<li><a href="#command-line-arguments-12">Command line arguments:</a></li>
+<li><a href="#input-stream-12">Input stream:</a></li>
+<li><a href="#output-stream-12">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
+<li><a href="#command-line-arguments-13">Command line arguments:</a></li>
+<li><a href="#input-stream-13">Input stream:</a></li>
+<li><a href="#output-stream-13">Output stream:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
@@ -215,7 +230,10 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <li>draw-contacts</li>
 <li>score-contacts-energy</li>
 <li>score-contacts-quality</li>
+<li>score-contacts-potential</li>
 <li>compare-contacts</li>
+<li>write-balls-to-atoms-file</li>
+<li>query-balls-clashes</li>
 <li>expand-descriptors</li>
 </ul>
 <h2 id="command-get-balls-from-atoms-file"><a href="#TOC">Command 'get-balls-from-atoms-file'</a></h2>
@@ -1172,8 +1190,92 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>list of atom energy descriptors</p>
 <h3 id="output-stream-8"><a href="#TOC">Output stream:</a></h3>
 <p>weighted average local score</p>
-<h2 id="command-compare-contacts"><a href="#TOC">Command 'compare-contacts'</a></h2>
+<h2 id="command-score-contacts-potential"><a href="#TOC">Command 'score-contacts-potential'</a></h2>
 <h3 id="command-line-arguments-9"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--input-file-list</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to read file list from stdin</td>
+</tr>
+<tr class="even">
+<td align="left">--input-contributions</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input contact types contributions</td>
+</tr>
+<tr class="odd">
+<td align="left">--input-fixed-types</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input fixed types</td>
+</tr>
+<tr class="even">
+<td align="left">--input-seq-pairs-stats</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input sequence pairings statistics</td>
+</tr>
+<tr class="odd">
+<td align="left">--potential-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output potential values</td>
+</tr>
+<tr class="even">
+<td align="left">--probabilities-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output observed and expected probabilities</td>
+</tr>
+<tr class="odd">
+<td align="left">--single-areas-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output single type total areas</td>
+</tr>
+<tr class="even">
+<td align="left">--contributions-file</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output contact types contributions</td>
+</tr>
+<tr class="odd">
+<td align="left">--multiply-areas</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">coefficient to multiply output areas</td>
+</tr>
+<tr class="even">
+<td align="left">--toggling-list</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">list of toggling subtags</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-9"><a href="#TOC">Input stream:</a></h3>
+<p>list of contacts (line format: 'annotation1 annotation2 conditions area')</p>
+<h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
+<p>line of contact type area summaries (line format: 'annotation1 annotation2 conditions area')</p>
+<h2 id="command-compare-contacts"><a href="#TOC">Command 'compare-contacts'</a></h2>
+<h3 id="command-line-arguments-10"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1246,12 +1348,90 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-9"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-10"><a href="#TOC">Input stream:</a></h3>
 <p>list of model contacts (line format: 'annotation1 annotation2 area')</p>
-<h3 id="output-stream-9"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
 <p>global scores (atom-level and residue-level)</p>
+<h2 id="command-write-balls-to-atoms-file"><a href="#TOC">Command 'write-balls-to-atoms-file'</a></h2>
+<h3 id="command-line-arguments-11"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--pdb-output</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to output query result in PDB format</td>
+</tr>
+<tr class="even">
+<td align="left">--pdb-output-b-factor</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">name of adjunct to output as B-factor in PDB format</td>
+</tr>
+<tr class="odd">
+<td align="left">--pdb-output-template</td>
+<td align="left">string</td>
+<td align="left"></td>
+<td align="left">file path to input template for B-factor insertions</td>
+</tr>
+<tr class="even">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-11"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h3 id="output-stream-11"><a href="#TOC">Output stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r tags adjuncts')</p>
+<h2 id="command-query-balls-clashes"><a href="#TOC">Command 'query-balls-clashes'</a></h2>
+<h3 id="command-line-arguments-12"><a href="#TOC">Command line arguments:</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left"></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">--clash-distance</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">clash distance threshold in angstroms, default is 3.0</td>
+</tr>
+<tr class="even">
+<td align="left">--init-radius-for-BSH</td>
+<td align="left">number</td>
+<td align="left"></td>
+<td align="left">initial radius for bounding sphere hierarchy</td>
+</tr>
+<tr class="odd">
+<td align="left">--help</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">flag to print usage help to stdout and exit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-stream-12"><a href="#TOC">Input stream:</a></h3>
+<p>list of balls (line format: 'annotation x y z r')</p>
+<h3 id="output-stream-12"><a href="#TOC">Output stream:</a></h3>
+<p>list of clashes (line format: 'annotation1 annotation2 distance')</p>
 <h2 id="command-expand-descriptors"><a href="#TOC">Command 'expand-descriptors'</a></h2>
-<h3 id="command-line-arguments-10"><a href="#TOC">Command line arguments:</a></h3>
+<h3 id="command-line-arguments-13"><a href="#TOC">Command line arguments:</a></h3>
 <table>
 <thead>
 <tr class="header">
@@ -1270,9 +1450,9 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 </tr>
 </tbody>
 </table>
-<h3 id="input-stream-10"><a href="#TOC">Input stream:</a></h3>
+<h3 id="input-stream-13"><a href="#TOC">Input stream:</a></h3>
 <p>any text containing atom descriptors</p>
-<h3 id="output-stream-10"><a href="#TOC">Output stream:</a></h3>
+<h3 id="output-stream-13"><a href="#TOC">Output stream:</a></h3>
 <p>text with each atom descriptor expanded to 'chainID resSeq iCode serial altLoc resName name'</p>
 <h1 id="wrapper-scripts"><a href="#TOC">Wrapper scripts</a></h1>
 <h2 id="voromqa-method-script"><a href="#TOC">VoroMQA method script</a></h2>

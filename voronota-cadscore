@@ -219,7 +219,7 @@ then
 	| voronota query-balls \
 	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
 	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" \
 	  --pdb-output-b-factor score \
 	> /dev/null
@@ -232,7 +232,7 @@ then
 	| voronota query-balls \
 	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
 	  --set-external-adjuncts-name score \
-	| voronota x-write-balls-to-atoms-file \
+	| voronota write-balls-to-atoms-file \
 	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" \
 	  --pdb-output-b-factor score \
 	> /dev/null

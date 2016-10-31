@@ -94,7 +94,7 @@ then
 fi
 
 cat "$TMPLDIR/balls" \
-| voronota x-query-balls-clashes \
+| voronota query-balls-clashes \
   --clash-distance 6.0 \
 | awk '{print $1 " " $2 " 1 " $3 " . ."}' \
 | voronota query-contacts \
@@ -109,7 +109,7 @@ then
 fi
 
 cat "$TMPLDIR/balls" \
-| voronota x-query-balls-clashes \
+| voronota query-balls-clashes \
   --clash-distance 3.0 \
 | awk '{print $1 " " $2 " 1 " $3 " . ."}' \
 | voronota query-contacts \
@@ -121,17 +121,17 @@ echo $(cat $TMPLDIR/clashes | wc -l) $(cat $TMPLDIR/clashes | awk '{print $1 " "
 > "$TMPLDIR/clashes_summary"
 
 cat "$TMPLDIR/balls" \
-| voronota x-write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms.pdb" \
+| voronota write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms.pdb" \
 > /dev/null
 
 cat "$TMPLDIR/balls" \
 | voronota query-balls --match "c<$(head -1 $TMPLDIR/chains)>" \
-| voronota x-write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms1.pdb" \
+| voronota write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms1.pdb" \
 > "$TMPLDIR/balls1"
 
 cat "$TMPLDIR/balls" \
 | voronota query-balls --match "c<$(tail -1 $TMPLDIR/chains)>" \
-| voronota x-write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms2.pdb" \
+| voronota write-balls-to-atoms-file --pdb-output "$TMPLDIR/atoms2.pdb" \
 > "$TMPLDIR/balls2"
 
 voronota-voromqa "${ADDITIONAL_VOROMQA_OPTIONS[@]}" \

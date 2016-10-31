@@ -11,7 +11,7 @@ cat $INPUTDIR/single/structure.pdb \
 > $TMPDIR/balls
 
 cat $TMPDIR/balls \
-| $VORONOTA x-write-balls-to-atoms-file --pdb-output $TMPDIR/refined.pdb \
+| $VORONOTA write-balls-to-atoms-file --pdb-output $TMPDIR/refined.pdb \
 > /dev/null
 
 cd $TMPDIR

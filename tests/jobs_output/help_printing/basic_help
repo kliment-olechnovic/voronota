@@ -11,6 +11,9 @@ query-contacts
 draw-contacts
 score-contacts-energy
 score-contacts-quality
+score-contacts-potential
 compare-contacts
+write-balls-to-atoms-file
+query-balls-clashes
 expand-descriptors
 
