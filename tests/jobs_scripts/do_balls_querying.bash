@@ -127,3 +127,49 @@ cat $SUBDIR/balls \
   --init-radius-for-BSH 3.5 \
 | egrep -v 'A<C>.*A<N>|A<N>.*A<C>' \
 > $SUBDIR/balls_clashes
+
+{
+cat << 'EOF'
+MODEL        1
+ATOM     25  N   VAL A  23      34.647  24.659 104.854  1.00 37.32           N  
+ATOM     26  CA  VAL A  23      33.353  25.304 105.184  1.00 30.15           C  
+ATOM     27  C   VAL A  23      32.461  25.468 103.960  1.00 27.72           C  
+ATOM     28  O   VAL A  23      32.884  25.999 102.917  1.00 27.64           O  
+ATOM     29  CB  VAL A  23      33.559  26.673 105.868  1.00 28.16           C  
+ATOM     30  CG1 VAL A  23      32.238  27.414 106.098  1.00 27.02           C  
+ATOM     31  CG2 VAL A  23      34.293  26.485 107.187  1.00 29.70           C  
+ATOM     32  N   LEU A  24      31.211  25.029 104.098  1.00 22.93           N  
+ATOM     33  CA  LEU A  24      30.243  25.151 103.028  1.00 20.72           C  
+ATOM     34  C   LEU A  24      29.559  26.500 103.248  1.00 24.20           C  
+ATOM     35  O   LEU A  24      29.076  26.756 104.350  1.00 23.10           O  
+ATOM     36  CB  LEU A  24      29.245  24.014 103.083  1.00 22.26           C  
+ATOM     37  CG  LEU A  24      29.807  22.621 102.885  1.00 22.78           C  
+ATOM     38  CD1 LEU A  24      28.818  21.585 103.406  1.00 24.90           C  
+ATOM     39  CD2 LEU A  24      30.078  22.410 101.402  1.00 23.56           C
+ENDMDL                                                                          
+MODEL        2                                                                  
+ATOM    136  N   THR A  37      15.765  -1.125 116.204  1.00 18.84           N  
+ATOM    137  CA  THR A  37      15.928  -2.515 116.621  1.00 18.88           C  
+ATOM    138  C   THR A  37      16.177  -3.359 115.406  1.00 19.06           C  
+ATOM    139  O   THR A  37      16.290  -2.845 114.283  1.00 19.19           O  
+ATOM    140  CB  THR A  37      14.688  -2.991 117.424  1.00 22.18           C  
+ATOM    141  OG1 THR A  37      14.994  -4.243 118.097  1.00 22.52           O  
+ATOM    142  CG2 THR A  37      13.494  -3.170 116.500  1.00 24.26           C  
+ATOM    143  N   VAL A  38      16.317  -4.669 115.633  1.00 20.57           N  
+ATOM    144  CA  VAL A  38      16.605  -5.614 114.588  1.00 22.49           C  
+ATOM    145  C   VAL A  38      15.664  -6.780 114.808  1.00 21.42           C  
+ATOM    146  O   VAL A  38      15.619  -7.341 115.900  1.00 24.84           O  
+ATOM    147  CB  VAL A  38      18.074  -6.093 114.630  1.00 21.65           C  
+ATOM    148  CG1 VAL A  38      18.354  -7.041 113.472  1.00 25.79           C  
+ATOM    149  CG2 VAL A  38      19.053  -4.900 114.625  1.00 24.15           C  
+ENDMDL
+EOF
+} \
+| $VORONOTA get-balls-from-atoms-file \
+  --annotated \
+  --multimodel-chains \
+| $VORONOTA query-balls \
+  --match 'A<C,CA,N,O>' \
+| $VORONOTA write-balls-to-atoms-file \
+  --pdb-output $SUBDIR/multimodel_query_result.pdb \
+> $SUBDIR/multimodel_query_result
