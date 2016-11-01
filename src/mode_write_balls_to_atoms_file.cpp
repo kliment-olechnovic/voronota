@@ -62,6 +62,22 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 	return atom_record;
 }
 
+inline int decode_model_number_from_chain_id(const std::string& chainID)
+{
+	int model_number=1;
+	if(chainID.size()>1)
+	{
+		std::istringstream input(chainID.substr(1));
+		int value=0;
+		input >> value;
+		if(!input.fail() && value>0)
+		{
+			model_number=value;
+		}
+	}
+	return model_number;
+}
+
 }
 
 void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
@@ -93,9 +109,28 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			std::ofstream foutput(pdb_output.c_str(), std::ios::out);
 			if(foutput.good())
 			{
+				std::map< int, std::vector<std::size_t> > models;
 				for(std::size_t i=0;i<list_of_balls.size();i++)
 				{
-					foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[i].first, list_of_balls[i].second, pdb_output_b_factor)) << "\n";
+					models[decode_model_number_from_chain_id(list_of_balls[i].first.chainID)].push_back(i);
+				}
+				for(std::map< int, std::vector<std::size_t> >::const_iterator models_it=models.begin();models_it!=models.end();++models_it)
+				{
+					if(models.size()>1)
+					{
+						std::ostringstream line_output;
+						line_output << "MODEL" << std::right << std::setw(9) << models_it->first;
+						foutput << line_output.str() << "\n";
+					}
+					for(std::size_t j=0;j<models_it->second.size();j++)
+					{
+						const std::size_t i=models_it->second[j];
+						foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[i].first, list_of_balls[i].second, pdb_output_b_factor)) << "\n";
+					}
+					if(models.size()>1)
+					{
+						foutput << "ENDMDL\n";
+					}
 				}
 			}
 		}
