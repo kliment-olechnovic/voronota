@@ -220,12 +220,6 @@ EOF
 exit 1
 fi
 
-if [ -n "$REFERENCE_SEQUENCE" ] && [ -n "$MULTIPLE_MODELS_CHAINS_OPTION" ]
-then
-	echo >&2 "Error: '--reference-sequence' and '--multiple-models' cannot be used together"
-	exit 1
-fi
-
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ] && [ -n "$MULTIPLE_MODELS_CHAINS_OPTION" ]
 then
 	echo >&2 "Error: '--output-residue-scores-for-CAMEO' and '--multiple-models' cannot be used together"
