@@ -911,6 +911,7 @@ then
 	mkdir -p $(dirname "$OUTFILE_SCREENSHOT")
 
 pymol -W "$SCREENSHOT_WIDTH" -H "$SCREENSHOT_HEIGHT" -p -c "$TMPLDIR/structure_for_screenshot.pdb" &> /dev/null << EOF
+	set all_states, on
 	hide all
 	bg_color $SCREENSHOT_BACKGROUND
 	show cartoon
