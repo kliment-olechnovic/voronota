@@ -3,6 +3,7 @@
 readonly ZEROARG=$0
 INFILE=""
 REFERENCE_SEQUENCE=""
+INPUT_FILTER_QUERY_PARAMETERS=""
 OUTFILE_SEQUENCE_ALIGNMENT=""
 OUTFILE_BALLS=""
 OUTFILE_CONTACTS=""
@@ -50,6 +51,10 @@ do
 		;;
 	--reference-sequence)
 		REFERENCE_SEQUENCE="$OPTARG"
+		shift
+		;;
+	--input-filter-query)
+		INPUT_FILTER_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
 	--output-balls)
@@ -337,6 +342,15 @@ cat $INFILE_CONTENTS_EXTRACTED \
 | voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
+| \
+{
+	if [ -n "$INPUT_FILTER_QUERY_PARAMETERS" ]
+	then
+		voronota query-balls $INPUT_FILTER_QUERY_PARAMETERS
+	else
+		cat
+	fi
+} \
 | \
 {
 	if [ -s "$REFERENCE_SEQUENCE" ]
