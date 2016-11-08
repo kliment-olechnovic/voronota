@@ -16,7 +16,7 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r')");
-	pohw.describe_io("stdout", false, true, "list of clashes (line format: 'annotation1 annotation2 distance')");
+	pohw.describe_io("stdout", false, true, "list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')");
 
 	const double clash_distance=poh.argument<double>(pohw.describe_option("--clash-distance", "number", "clash distance threshold in angstroms, default is 3.0"), 3.0);
 	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
@@ -46,7 +46,7 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
-	std::map<CRADsPair, double> map_of_clashes;
+	std::map< CRADsPair, std::pair<double, double> > map_of_clashes;
 
 	for(std::size_t i=0;i<spheres.size();i++)
 	{
@@ -56,18 +56,22 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 			if(collisions[j]!=i)
 			{
 				const double distance=apollota::distance_from_point_to_point(spheres[i], spheres[collisions[j]]);
+				const double distance_between_balls=apollota::minimal_distance_from_sphere_to_sphere(list_of_balls[i].second, list_of_balls[collisions[j]].second);
 				if(distance<clash_distance)
 				{
 					const CRAD& crad_a=list_of_balls[i].first;
 					const CRAD& crad_b=list_of_balls[collisions[j]].first;
 					if(!(crad_a.chainID==crad_b.chainID && crad_a.resSeq==crad_b.resSeq && crad_a.iCode==crad_b.iCode))
 					{
-						map_of_clashes[CRADsPair(crad_a, crad_b)]=distance;
+						map_of_clashes[CRADsPair(crad_a, crad_b)]=std::make_pair(distance, distance_between_balls);
 					}
 				}
 			}
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(map_of_clashes, std::cout);
+	for(std::map< CRADsPair, std::pair<double, double> >::const_iterator it=map_of_clashes.begin();it!=map_of_clashes.end();++it)
+	{
+		std::cout << it->first << " " << it->second.first << " " << it->second.second << "\n";
+	}
 }

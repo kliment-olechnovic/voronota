@@ -231,7 +231,7 @@ Command 'query-balls-clashes' options:
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r')
-stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance')
+stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')
 
 Command 'expand-descriptors' options:
 --help                                      flag to print usage help to stdout and exit
