@@ -41,6 +41,11 @@ inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_recor
 			atom_record.occupancy=oc_it->second;
 			atom_record.occupancy_valid=true;
 		}
+		else
+		{
+			atom_record.occupancy=1.0;
+			atom_record.occupancy_valid=true;
+		}
 	}
 	{
 		const std::map<std::string, double>::const_iterator tf_it=value.props.adjuncts.find(temperature_factor_adjunct_name);
