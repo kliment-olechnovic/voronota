@@ -231,7 +231,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!input_ball_records.empty())
 	{
-		const apollota::TriangulationQueries::PairsMap pairs_vertices=(draw ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
+		const apollota::TriangulationQueries::PairsMap pairs_vertices=((draw || tag_peripherial) ? apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::PairsMap());
 		const apollota::TriangulationQueries::IDsMap ids_vertices=(draw ? apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector) : apollota::TriangulationQueries::IDsMap());
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 		const apollota::TriangulationQueries::PairsMap pairs_neighbors=(tag_centrality ? apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map) : apollota::TriangulationQueries::PairsMap());
