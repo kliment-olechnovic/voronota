@@ -112,6 +112,33 @@ bool check_inter_atom_contact_centrality(
 	return true;
 }
 
+bool check_inter_atom_contact_peripherial(
+		const std::vector<apollota::SimpleSphere>& spheres,
+		const apollota::Triangulation::VerticesVector& vertices_vector,
+		const apollota::TriangulationQueries::PairsMap& pairs_vertices,
+		const std::size_t a_id,
+		const std::size_t b_id,
+		const double probe)
+{
+	if(a_id<spheres.size() && b_id<spheres.size())
+	{
+		apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(a_id, b_id));
+		if(pairs_vertices_it!=pairs_vertices.end())
+		{
+			const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
+			for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();vertices_ids_it!=vertices_ids.end();++vertices_ids_it)
+			{
+				const std::size_t vertex_id=(*vertices_ids_it);
+				if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 bool identify_mock_solvent(const auxiliaries::ChainResidueAtomDescriptor& crad)
 {
 	return (crad.name=="w" && crad.resName=="w");
@@ -136,6 +163,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool add_mirrored=poh.contains_option(pohw.describe_option("--add-mirrored", "", "flag to add mirrored contacts to non-annnotated output"));
 	const bool draw=poh.contains_option(pohw.describe_option("--draw", "", "flag to output graphics for annotated contacts"));
 	const bool tag_centrality=poh.contains_option(pohw.describe_option("--tag-centrality", "", "flag to tag contacts centrality"));
+	const bool tag_peripherial=poh.contains_option(pohw.describe_option("--tag-peripherial", "", "flag to tag peripherial contacts"));
 	const std::string volumes_output=poh.argument<std::string>(pohw.describe_option("--volumes-output", "string", "file path to output constrained cells volumes"), "");
 
 	if(!pohw.assert_or_print_help(false))
@@ -247,6 +275,10 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					if(tag_centrality && crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() && crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
 					{
 						value.props.tags.insert("central");
+					}
+					if(tag_peripherial && crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() && crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_peripherial(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe))
+					{
+						value.props.tags.insert("peripherial");
 					}
 					output_map_of_contacts[auxiliaries::ChainResidueAtomDescriptorsPair(crad_a, crad_b)].add(value);
 				}
