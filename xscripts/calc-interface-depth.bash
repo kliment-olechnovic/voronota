@@ -47,6 +47,7 @@ Options:
     --input | -i                   string   *  input structure file in PDB format
     --chain-name                   string   *  chain name of interest
     --output-dir                   string   *  output directory
+    --probe                        number      probe radius, default is 1.4
     --help | -h                                flag to display help message and exit
 
 EOF
