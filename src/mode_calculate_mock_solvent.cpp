@@ -9,6 +9,7 @@
 #include "auxiliaries/chain_residue_atom_descriptor.h"
 
 #include "modescommon/ball_value.h"
+#include "modescommon/mock_solvent_utilities.h"
 
 void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -78,10 +79,10 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
 		const BallValue value=apollota::custom_sphere<BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
-		auxiliaries::ChainResidueAtomDescriptor crad("w");
+		auxiliaries::ChainResidueAtomDescriptor crad(mock_solvent_name());
 		crad.resSeq=(i+1);
-		crad.resName="w";
-		crad.name="w";
+		crad.resName=mock_solvent_name();
+		crad.name=mock_solvent_name();
 		ball_records.push_back(std::make_pair(crad, value));
 	}
 
