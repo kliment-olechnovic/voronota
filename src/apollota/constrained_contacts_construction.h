@@ -13,33 +13,6 @@ namespace apollota
 class ConstrainedContactsConstruction
 {
 public:
-	struct ContactRemainderDescriptorFull
-	{
-		ConstrainedContactRemainder::Remainder remainder;
-
-		void feed(const ConstrainedContactRemainder::Remainder& input)
-		{
-			remainder.insert(remainder.end(), input.begin(), input.end());
-		}
-	};
-
-	struct ContactRemainderDescriptorSummary
-	{
-		double area;
-
-		ContactRemainderDescriptorSummary() : area(0.0)
-		{
-		}
-
-		void feed(const ConstrainedContactRemainder::Remainder& input)
-		{
-			for(ConstrainedContactRemainder::Remainder::const_iterator it=input.begin();it!=input.end();++it)
-			{
-				area+=triangle_area(it->p[0], it->p[1], it->p[2]);
-			}
-		}
-	};
-
 	static std::map<Pair, double> construct_contacts(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
