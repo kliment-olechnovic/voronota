@@ -223,7 +223,7 @@ public:
 		return true;
 	}
 
-	static VerticesGraph construct_vertices_graph(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+	static VerticesGraph construct_vertices_graph(const std::vector<SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 	{
 		typedef std::tr1::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
 
@@ -1099,7 +1099,7 @@ private:
 		return std::max(default_comparison_epsilon(), 0.001);
 	}
 
-	static QuadruplesMap collect_invalid_tangent_spheres_of_valid_quadruples(const std::vector<apollota::SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
+	static QuadruplesMap collect_invalid_tangent_spheres_of_valid_quadruples(const std::vector<SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 	{
 		QuadruplesMap result;
 		for(QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
@@ -1126,7 +1126,7 @@ private:
 	}
 
 	static void update_vertices_graph(
-			const std::vector<apollota::SimpleSphere>& spheres,
+			const std::vector<SimpleSphere>& spheres,
 			const VerticesVector& all_vertices_vector,
 			const Triple& triple,
 			const std::size_t vi,
@@ -1170,7 +1170,7 @@ private:
 
 
 	static void update_vertices_graph(
-			const std::vector<apollota::SimpleSphere>& spheres,
+			const std::vector<SimpleSphere>& spheres,
 			const VerticesVector& all_vertices_vector,
 			const Triple& triple,
 			const std::vector<std::size_t>& triple_vertices_ids,
