@@ -6,7 +6,7 @@ mkdir -p $SUBDIR
 cat $INPUTDIR/single/structure.pdb \
 | $VORONOTA get-balls-from-atoms-file --radii-file $VORONOTADIR/resources/radii --include-heteroatoms --annotated \
 | tee $SUBDIR/balls \
-| $VORONOTA calculate-contacts --annotated --volumes-output $SUBDIR/volumes \
+| $VORONOTA calculate-contacts --annotated --volumes-output $SUBDIR/volumes --old-contacts-output $SUBDIR/oldcontacts \
 > $SUBDIR/contacts
 
 cat $SUBDIR/contacts \
@@ -22,10 +22,20 @@ cat $SUBDIR/contacts \
 | column -t \
 > $SUBDIR/match_first_and_second_resnames
 
+cat $SUBDIR/oldcontacts \
+| $VORONOTA query-contacts --inter-residue --match-first 'R<THR>' --match-second 'R<ARG>' \
+| column -t \
+> $SUBDIR/match_first_and_second_resnames_on_old
+
 cat $SUBDIR/contacts \
 | $VORONOTA query-contacts --inter-residue-after --match-first 'R<THR>' --match-second 'R<ARG>' \
 | column -t \
 > $SUBDIR/match_first_and_second_resnames_combined_after
+
+cat $SUBDIR/oldcontacts \
+| $VORONOTA query-contacts --inter-residue-after --match-first 'R<THR>' --match-second 'R<ARG>' \
+| column -t \
+> $SUBDIR/match_first_and_second_resnames_combined_after_on_old
 
 cat $SUBDIR/contacts \
 | $VORONOTA query-contacts \
