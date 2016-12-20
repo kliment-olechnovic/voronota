@@ -11,6 +11,7 @@ OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
 SMOOTHING_WINDOW="1"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
+OLD_CONTACTS_MODE=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -57,6 +58,9 @@ do
 		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--old-contacts-mode)
+		OLD_CONTACTS_MODE=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -147,9 +151,16 @@ do
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 	then
 		BALLS_MD5=$(cat $WORKFILE.balls | md5sum | awk '{print $1}')
-		if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+		if [ -n "$BALLS_MD5" ]
 		then
-			cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $WORKFILE.all_contacts
+			if $OLD_CONTACTS_MODE
+			then
+				BALLS_MD5=$(echo $BALLS_MD5 old | md5sum | awk '{print $1}')
+			fi
+			if [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+			then
+				cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $WORKFILE.all_contacts
+			fi
 		fi
 	fi
 
@@ -158,8 +169,20 @@ do
 		MAIN_CHAIN_ATOMS_DESCRIPTOR="A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>"
 		
 		cat $WORKFILE.balls \
-		| voronota calculate-contacts \
-		  --annotated \
+		| \
+		{
+			if $OLD_CONTACTS_MODE
+			then
+				voronota calculate-contacts \
+				  --annotated \
+				  --old-contacts-output $WORKFILE.old_contacts \
+				> /dev/null
+				cat $WORKFILE.old_contacts
+			else
+				voronota calculate-contacts \
+				  --annotated
+			fi
+		} \
 		| voronota query-contacts \
 		  --match-min-seq-sep 1 \
 		  --no-solvent \

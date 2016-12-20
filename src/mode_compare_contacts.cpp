@@ -112,7 +112,7 @@ std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(c
 	std::map<CRAD, CADDescriptor> result;
 	for(std::map<CRAD, CADDescriptor>::const_iterator it=input_map.begin();it!=input_map.end();++it)
 	{
-		if(it->second.target_area_sum>0.0)
+		if(it->second.target_area_sum>0.0 && it->first.altLoc!="m")
 		{
 			result[it->first]=it->second;
 		}
