@@ -200,6 +200,19 @@ do
 		  --match-first $MAIN_CHAIN_ATOMS_DESCRIPTOR \
 		  --match-second $MAIN_CHAIN_ATOMS_DESCRIPTOR \
 		  --set-tags 'MM' \
+		| voronota query-contacts \
+		  --match-first-not 'l<m>' \
+		  --match-second $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --set-tags 'AM' \
+		| voronota query-contacts \
+		  --match-first-not 'l<m>' \
+		  --match-second-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --set-tags 'AS' \
+		| voronota query-contacts \
+		  --match-first $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --match-first-not 'l<m>' \
+		  --match-second-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
+		  --set-tags 'MS' \
 		> $WORKFILE.all_contacts
 		
 		if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
