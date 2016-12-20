@@ -44,9 +44,39 @@ do
 	$VORONOTADIR/voronota-cadscore \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags-not MM" \
+	  --contacts-query "--match-tags MM" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_MM
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags AM" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_AM
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags AS" \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_AS
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags MS" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_MS
 
 rm -r $SUBDIR/cache
 
@@ -100,8 +130,41 @@ do
 	  --old-contacts-mode \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags-not MM" \
+	  --contacts-query "--match-tags MM" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_MM
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --old-contacts-mode \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags AM" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_AM
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --old-contacts-mode \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags AS" \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_AS
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+	$VORONOTADIR/voronota-cadscore \
+	  --old-contacts-mode \
+	  --input-target $INPUTDIR/complex/target.pdb \
+	  --input-model $INFILE \
+	  --contacts-query "--match-tags MS" \
+	  --cache-dir $SUBDIR/cache
+done > $SUBDIR/global_scores_MS
 
 rm -r $SUBDIR/cache
