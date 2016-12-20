@@ -66,6 +66,7 @@ Command 'calculate-contacts' options:
 --draw                                      flag to output graphics for annotated contacts
 --tag-centrality                            flag to tag contacts centrality
 --tag-peripherial                           flag to tag peripherial contacts
+--old-contacts-output           string      file path to output spherical contacts
 --volumes-output                string      file path to output constrained cells volumes
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls

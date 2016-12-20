@@ -4,6 +4,7 @@
 #include "apollota/constrained_contacts_construction.h"
 #include "apollota/constrained_contacts_utilities.h"
 #include "apollota/spheres_boundary_construction.h"
+#include "apollota/spherical_contacts_construction.h"
 
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/chain_residue_atom_descriptor.h"
@@ -31,6 +32,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool draw=poh.contains_option(pohw.describe_option("--draw", "", "flag to output graphics for annotated contacts"));
 	const bool tag_centrality=poh.contains_option(pohw.describe_option("--tag-centrality", "", "flag to tag contacts centrality"));
 	const bool tag_peripherial=poh.contains_option(pohw.describe_option("--tag-peripherial", "", "flag to tag peripherial contacts"));
+	const std::string old_contacts_output=poh.argument<std::string>(pohw.describe_option("--old-contacts-output", "string", "file path to output spherical contacts"), "");
 	const std::string volumes_output=poh.argument<std::string>(pohw.describe_option("--volumes-output", "string", "file path to output constrained cells volumes"), "");
 
 	if(!pohw.assert_or_print_help(false))
@@ -217,6 +219,73 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+		}
+	}
+
+	if(!old_contacts_output.empty() && mock_solvent_ids.empty())
+	{
+		std::ofstream foutput(old_contacts_output.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			const std::vector< std::vector<std::size_t> > graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(vertices_vector), input_spheres_count);
+			std::map<std::pair<std::size_t, std::size_t>, double> old_interactions_map;
+			apollota::SphericalContactsConstruction sc_construction(sih_depth);
+			for(std::size_t i=0;i<graph.size();i++)
+			{
+				const apollota::SphericalContactsConstruction::Result sc_result=sc_construction.construct_contacts(probe, spheres, i, graph[i]);
+				for(std::map<std::size_t, double>::const_iterator it=sc_result.areas.begin();it!=sc_result.areas.end();++it)
+				{
+					old_interactions_map[std::pair<std::size_t, std::size_t>(i, it->first)]=it->second;
+				}
+			}
+			if(!input_ball_records.empty())
+			{
+				std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue > output_map_of_contacts;
+				for(std::map<std::pair<std::size_t, std::size_t>, double>::const_iterator it=old_interactions_map.begin();it!=old_interactions_map.end();++it)
+				{
+					const double area=it->second;
+					if(area>0.0)
+					{
+						const std::size_t a_id=it->first.first;
+						const std::size_t b_id=it->first.second;
+						auxiliaries::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
+						auxiliaries::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
+						if(crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent())
+						{
+							if(a_id==b_id)
+							{
+								crad_b=auxiliaries::ChainResidueAtomDescriptor::solvent();
+							}
+							ContactValue value;
+							value.area=area;
+							if(a_id!=b_id)
+							{
+								value.dist=apollota::distance_from_point_to_point(spheres[a_id], spheres[b_id]);
+							}
+							else
+							{
+								value.dist=(spheres[a_id].r+(probe*3.0));
+							}
+							if(crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent())
+							{
+								crad_b.altLoc="m";
+							}
+							output_map_of_contacts[std::make_pair(crad_a, crad_b)].add(value);
+						}
+					}
+				}
+				for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+				{
+					foutput << it->first.first << " " << it->first.second << " " << it->second << "\n";
+				}
+			}
+			else
+			{
+				for(std::map<std::pair<std::size_t, std::size_t>, double>::const_iterator it=old_interactions_map.begin();it!=old_interactions_map.end();++it)
+				{
+					foutput << it->first.first << " " << it->first.second << " " << it->second << "\n";
+				}
+			}
 		}
 	}
 }
