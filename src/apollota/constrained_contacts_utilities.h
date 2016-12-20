@@ -9,9 +9,9 @@ namespace apollota
 
 template<typename OpenGLPrinter>
 std::string draw_inter_atom_contact(
-		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::Triangulation::VerticesVector& vertices_vector,
-		const apollota::TriangulationQueries::PairsMap& pairs_vertices,
+		const std::vector<SimpleSphere>& spheres,
+		const Triangulation::VerticesVector& vertices_vector,
+		const TriangulationQueries::PairsMap& pairs_vertices,
 		const std::size_t a_id,
 		const std::size_t b_id,
 		const double probe,
@@ -21,19 +21,19 @@ std::string draw_inter_atom_contact(
 	OpenGLPrinter opengl_printer;
 	if(a_id<spheres.size() && b_id<spheres.size())
 	{
-		apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(a_id, b_id));
+		TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(Pair(a_id, b_id));
 		if(pairs_vertices_it!=pairs_vertices.end())
 		{
-			const std::list<apollota::ConstrainedContactContour::Contour> contours=apollota::ConstrainedContactContour::construct_contact_contours(
+			const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(
 					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections);
-			for(std::list<apollota::ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
+			for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 			{
-				const apollota::ConstrainedContactContour::Contour& contour=(*contours_it);
-				const std::vector<apollota::SimplePoint> outline=apollota::ConstrainedContactContour::collect_points_from_contour(contour);
+				const ConstrainedContactContour::Contour& contour=(*contours_it);
+				const std::vector<SimplePoint> outline=ConstrainedContactContour::collect_points_from_contour(contour);
 				opengl_printer.add_triangle_fan(
-						apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(apollota::mass_center<apollota::SimplePoint>(outline.begin(), outline.end()), spheres[a_id], spheres[b_id]),
+						HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a_id], spheres[b_id]),
 						outline,
-						apollota::sub_of_points<apollota::SimplePoint>(spheres[b_id], spheres[a_id]).unit());
+						sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit());
 			}
 		}
 	}
@@ -42,29 +42,29 @@ std::string draw_inter_atom_contact(
 
 template<typename OpenGLPrinter>
 std::string draw_solvent_contact(
-		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::Triangulation::VerticesVector& vertices_vector,
-		const apollota::TriangulationQueries::IDsMap& ids_vertices,
+		const std::vector<SimpleSphere>& spheres,
+		const Triangulation::VerticesVector& vertices_vector,
+		const TriangulationQueries::IDsMap& ids_vertices,
 		const std::size_t a_id,
 		const double probe,
-		const apollota::SubdividedIcosahedron& sih)
+		const SubdividedIcosahedron& sih)
 {
 	OpenGLPrinter opengl_printer;
 	if(a_id<spheres.size())
 	{
-		apollota::TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(a_id);
+		TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(a_id);
 		if(ids_vertices_it!=ids_vertices.end())
 		{
-			const apollota::ConstrainedContactRemainder::Remainder remainder=apollota::ConstrainedContactRemainder::construct_contact_remainder(
+			const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(
 					spheres, vertices_vector, ids_vertices_it->second, a_id, probe, sih);
-			for(apollota::ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+			for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
 			{
-				std::vector<apollota::SimplePoint> ts(3);
-				std::vector<apollota::SimplePoint> ns(3);
+				std::vector<SimplePoint> ts(3);
+				std::vector<SimplePoint> ns(3);
 				for(int i=0;i<3;i++)
 				{
 					ts[i]=remainder_it->p[i];
-					ns[i]=apollota::sub_of_points<apollota::SimplePoint>(ts[i], spheres[a_id]).unit();
+					ns[i]=sub_of_points<SimplePoint>(ts[i], spheres[a_id]).unit();
 				}
 				opengl_printer.add_triangle_strip(ts, ns);
 			}
@@ -74,29 +74,29 @@ std::string draw_solvent_contact(
 }
 
 bool check_inter_atom_contact_centrality(
-		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::TriangulationQueries::PairsMap& pairs_neighbors,
+		const std::vector<SimpleSphere>& spheres,
+		const TriangulationQueries::PairsMap& pairs_neighbors,
 		const std::size_t a_id,
 		const std::size_t b_id)
 {
 	if(a_id<spheres.size() && b_id<spheres.size())
 	{
-		apollota::TriangulationQueries::PairsMap::const_iterator pairs_neighbors_it=pairs_neighbors.find(apollota::Pair(a_id, b_id));
+		TriangulationQueries::PairsMap::const_iterator pairs_neighbors_it=pairs_neighbors.find(Pair(a_id, b_id));
 		if(pairs_neighbors_it!=pairs_neighbors.end())
 		{
 			const std::set<std::size_t>& neighbors=pairs_neighbors_it->second;
 			if(!neighbors.empty())
 			{
-				const apollota::SimplePoint pa(spheres[a_id]);
-				const apollota::SimplePoint pb(spheres[b_id]);
+				const SimplePoint pa(spheres[a_id]);
+				const SimplePoint pb(spheres[b_id]);
 				const double ra=spheres[a_id].r;
 				const double rb=spheres[b_id].r;
-				const double distance_to_a_or_b=((apollota::distance_from_point_to_point(pa, pb)-ra-rb)*0.5);
-				const apollota::SimplePoint p=(pa+((pb-pa).unit()*(ra+distance_to_a_or_b)));
+				const double distance_to_a_or_b=((distance_from_point_to_point(pa, pb)-ra-rb)*0.5);
+				const SimplePoint p=(pa+((pb-pa).unit()*(ra+distance_to_a_or_b)));
 				for(std::set<std::size_t>::const_iterator neighbors_it=neighbors.begin();neighbors_it!=neighbors.end();++neighbors_it)
 				{
 					const std::size_t c_id=(*neighbors_it);
-					if(c_id<spheres.size() && apollota::minimal_distance_from_point_to_sphere(p, spheres[c_id])<distance_to_a_or_b)
+					if(c_id<spheres.size() && minimal_distance_from_point_to_sphere(p, spheres[c_id])<distance_to_a_or_b)
 					{
 						return false;
 					}
@@ -108,16 +108,16 @@ bool check_inter_atom_contact_centrality(
 }
 
 bool check_inter_atom_contact_peripherial(
-		const std::vector<apollota::SimpleSphere>& spheres,
-		const apollota::Triangulation::VerticesVector& vertices_vector,
-		const apollota::TriangulationQueries::PairsMap& pairs_vertices,
+		const std::vector<SimpleSphere>& spheres,
+		const Triangulation::VerticesVector& vertices_vector,
+		const TriangulationQueries::PairsMap& pairs_vertices,
 		const std::size_t a_id,
 		const std::size_t b_id,
 		const double probe)
 {
 	if(a_id<spheres.size() && b_id<spheres.size())
 	{
-		apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(apollota::Pair(a_id, b_id));
+		TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(Pair(a_id, b_id));
 		if(pairs_vertices_it!=pairs_vertices.end())
 		{
 			const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
