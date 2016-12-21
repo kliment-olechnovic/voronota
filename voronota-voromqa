@@ -33,6 +33,10 @@ SCREENSHOT_WIDTH="500"
 SCREENSHOT_HEIGHT="500"
 SCREENSHOT_BACKGROUND="black"
 PLOT_MODE="normal"
+SURFACE_CRAVING_ATOMS_OUTPUT=""
+SURFACE_CRAVING_ATOMS_OUTPUT_PDB=""
+SURFACE_CRAVING_RESIDUES_OUTPUT=""
+SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -163,6 +167,22 @@ do
 		;;
 	--screenshot-background)
 		SCREENSHOT_BACKGROUND="$OPTARG"
+		shift
+		;;
+	--surface-craving-atoms-output)
+		SURFACE_CRAVING_ATOMS_OUTPUT="$OPTARG"
+		shift
+		;;
+	--surface-craving-atoms-output-pdb)
+		SURFACE_CRAVING_ATOMS_OUTPUT_PDB="$OPTARG"
+		shift
+		;;
+	--surface-craving-residues-output)
+		SURFACE_CRAVING_RESIDUES_OUTPUT="$OPTARG"
+		shift
+		;;
+	--surface-craving-residues-output-pdb)
+		SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -433,6 +453,7 @@ then
 	| voronota calculate-contacts \
 	  --annotated \
 	  --tag-centrality \
+	| tee $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
 	  --match-min-seq-sep 1 \
 	| voronota query-contacts \
@@ -967,3 +988,86 @@ fi
 } \
 | tr '\n' ' ' \
 | sed 's/\s$/\n/'
+
+if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
+then
+	{
+		echo "c<solvent>"
+		cat $TMPLDIR/foundation/depth_values \
+		| egrep ' 1$' \
+		| awk '{print $1}'
+	} > $TMPLDIR/exposure_ids
+
+	cat $TMPLDIR/foundation/raw_contacts \
+	| voronota query-contacts \
+	  --match-external-first $TMPLDIR/exposure_ids \
+	  --match-external-second $TMPLDIR/exposure_ids \
+	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0"}}' \
+	| tr ';' '_' \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources energy_potential) \
+	  --depth 3 \
+	  --atom-scores-file $TMPLDIR/surface_atom_energies \
+	> /dev/null
+	
+	cat $TMPLDIR/surface_atom_energies \
+	| voronota score-contacts-quality \
+	  --default-mean 0.13 \
+	  --default-sd 0.13 \
+	  --smoothing-window 0 \
+	  --atom-scores-file $TMPLDIR/surface_atom_quality_scores \
+	  --residue-scores-file $TMPLDIR/surface_residue_quality_scores \
+	> /dev/null
+	
+	cat $TMPLDIR/surface_atom_quality_scores \
+	| awk '{print $1 " " (1-$2)}' \
+	> $TMPLDIR/surface_atom_craving_scores
+	
+	cat $TMPLDIR/surface_residue_quality_scores \
+	| awk '{print $1 " " (1-$2)}' \
+	> $TMPLDIR/surface_residue_craving_scores
+	
+	if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ]
+	then
+		mkdir -p $(dirname "$SURFACE_CRAVING_ATOMS_OUTPUT")
+		cp $TMPLDIR/surface_atom_craving_scores "$SURFACE_CRAVING_ATOMS_OUTPUT"
+	fi
+	
+	if [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ]
+	then
+		mkdir -p $(dirname "$SURFACE_CRAVING_RESIDUES_OUTPUT")
+		cp $TMPLDIR/surface_residue_craving_scores "$SURFACE_CRAVING_RESIDUES_OUTPUT"
+	fi
+	
+	if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ]
+	then
+		mkdir -p $(dirname "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB")
+		
+		cat $TMPLDIR/balls \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-adjuncts 'oc=1' \
+		  --set-external-adjuncts $TMPLDIR/surface_atom_craving_scores \
+		  --set-external-adjuncts-name score \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
+	
+	if [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
+	then
+		mkdir -p $(dirname "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")
+		
+		cat $TMPLDIR/balls \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-adjuncts 'oc=1' \
+		  --set-external-adjuncts $TMPLDIR/surface_residue_craving_scores \
+		  --set-external-adjuncts-name score \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
+fi

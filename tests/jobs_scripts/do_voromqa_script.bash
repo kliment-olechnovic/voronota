@@ -48,3 +48,15 @@ do
 	mv $SUBDIR/$INFILEBASENAME/casp_qa_scores_wrapped $SUBDIR/$INFILEBASENAME/casp_qa_scores
 
 done > $SUBDIR/global_scores_using_reference_sequence
+
+for INFILE in $INPUTDIR/complex/*.pdb
+do
+	INFILEBASENAME=$(basename $INFILE .pdb)
+
+	$VORONOTADIR/voronota-voromqa \
+	  --input $INFILE \
+	  --input-filter-query '--match c<A>' \
+	  --surface-craving-atoms-output-pdb $SUBDIR/$INFILEBASENAME/surface_craving_atoms_for_chainA.pdb \
+	  --surface-craving-residues-output-pdb $SUBDIR/$INFILEBASENAME/surface_craving_residues_for_chainA.pdb
+
+done > $SUBDIR/global_scores_for_chainA
