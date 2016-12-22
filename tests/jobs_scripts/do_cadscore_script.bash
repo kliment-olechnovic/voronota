@@ -89,7 +89,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
@@ -101,7 +101,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--no-same-chain" \
@@ -116,7 +116,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--match-tags SS" \
@@ -127,7 +127,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--match-tags MM" \
@@ -138,7 +138,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--match-tags AM" \
@@ -149,7 +149,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--match-tags AS" \
@@ -160,7 +160,7 @@ for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
 	$VORONOTADIR/voronota-cadscore \
-	  --old-contacts-mode \
+	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
 	  --contacts-query "--match-tags MS" \

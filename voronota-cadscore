@@ -11,7 +11,7 @@ OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
 SMOOTHING_WINDOW="0"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
-OLD_CONTACTS_MODE=false
+OLD_REGIME=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -59,8 +59,8 @@ do
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
-	--old-contacts-mode)
-		OLD_CONTACTS_MODE=true
+	--old-regime)
+		OLD_REGIME=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -92,6 +92,7 @@ Basic options:
 Advanced options:
     --contacts-query                string      contacts query parameters
     --multiple-models                           flag to handle multiple models in PDB file
+    --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
 Standard output (one line):
     {target file path} {model file path} {global score} {number of residues}
@@ -153,7 +154,7 @@ do
 		BALLS_MD5=$(cat $WORKFILE.balls | md5sum | awk '{print $1}')
 		if [ -n "$BALLS_MD5" ]
 		then
-			if $OLD_CONTACTS_MODE
+			if $OLD_REGIME
 			then
 				BALLS_MD5=$(echo $BALLS_MD5 old | md5sum | awk '{print $1}')
 			fi
@@ -171,7 +172,7 @@ do
 		cat $WORKFILE.balls \
 		| \
 		{
-			if $OLD_CONTACTS_MODE
+			if $OLD_REGIME
 			then
 				voronota calculate-contacts \
 				  --annotated \
