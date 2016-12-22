@@ -158,26 +158,25 @@ fi
 
 if [ ! -s "$TMPLDIR/all_contacts" ]
 then
-	if [ -n "$DRAWING_OUTPUT" ]
-	then
-		cat $TMPLDIR/balls \
-		| voronota calculate-contacts \
-		  --annotated \
-		  --draw \
-		  --tag-centrality \
-		| voronota query-contacts \
-		  --match-min-seq-sep 1 \
-		  --preserve-graphics \
-		> $TMPLDIR/all_contacts
-	else
-		cat $TMPLDIR/balls \
-		| voronota calculate-contacts \
-		  --annotated \
-		  --tag-centrality \
-		| voronota query-contacts \
-		  --match-min-seq-sep 1 \
-		> $TMPLDIR/all_contacts
-	fi
+	cat $TMPLDIR/balls \
+	| \
+	{
+		if [ -n "$DRAWING_OUTPUT" ]
+		then
+			voronota calculate-contacts \
+			  --annotated \
+			  --draw \
+			  --tag-centrality
+		else
+			voronota calculate-contacts \
+			  --annotated \
+			  --tag-centrality
+		fi
+	} \
+	| voronota query-contacts \
+	  --match-min-seq-sep 1 \
+	  --preserve-graphics \
+	> $TMPLDIR/all_contacts
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
