@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd $(dirname "$0")
-
 VERSIONID=$(cat ./src/main.cpp | grep '"Voronota version ' | sed 's/.*"Voronota version \(\S\+\)";/\1/')
 
 readonly TMPLDIR=$(mktemp -d)
@@ -11,9 +9,6 @@ cp -r ./src "$TMPLDIR/"
 cp ./voronota-resources ./voronota-voromqa ./voronota-contacts ./voronota-cadscore "$TMPLDIR/"
 
 cd $TMPLDIR
-
-echo $VERSIONID
-ls -1
 
 {
 cat << 'EOF'
@@ -26,8 +21,6 @@ EOF
 } \
 | sed "s/VERSIONID/$VERSIONID/" \
 > "./configure.ac"
-
-cat "./configure.ac"
 
 {
 cat << EOF
