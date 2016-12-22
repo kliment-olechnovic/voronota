@@ -154,8 +154,23 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-cp $INFILE_TARGET_PDB $TMPLDIR/target
-cp $INFILE_MODEL_PDB $TMPLDIR/model
+{
+	if [[ "$INFILE_TARGET_PDB" == *".gz" ]]
+	then
+		zcat "$INFILE_TARGET_PDB"
+	else
+		cat "$INFILE_TARGET_PDB"
+	fi
+} > $TMPLDIR/target
+
+{
+	if [[ "$INFILE_MODEL_PDB" == *".gz" ]]
+	then
+		zcat "$INFILE_MODEL_PDB"
+	else
+		cat "$INFILE_MODEL_PDB"
+	fi
+} > $TMPLDIR/model
 
 for WORKFILE in $TMPLDIR/target $TMPLDIR/model
 do
