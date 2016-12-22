@@ -5,6 +5,8 @@ INFILE_TARGET_PDB=""
 INFILE_MODEL_PDB=""
 INPUT_FILTER_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
+CONTACTS_QUERY_BY_CODE=""
+CONTACTS_QUERY_INTER_CHAIN=false
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_RESIDUE_SCORES_PDB_TARGET=""
 OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
@@ -35,6 +37,13 @@ do
 	--contacts-query)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
 		shift
+		;;
+	--contacts-query-by-code)
+		CONTACTS_QUERY_BY_CODE="$OPTARG"
+		shift
+		;;
+	--contacts-query-inter-chain)
+		CONTACTS_QUERY_INTER_CHAIN=true
 		;;
 	--output-residue-scores)
 		OUTFILE_RESIDUE_SCORES="$OPTARG"
@@ -86,11 +95,13 @@ Basic options:
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
     --smoothing-window              number      residue scores smoothing window size, default is 1
+    --contacts-query                string      contacts query parameters
+    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --contacts-query-inter-chain                flag to consider only inter-chain contacts
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
 
 Advanced options:
-    --contacts-query                string      contacts query parameters
     --multiple-models                           flag to handle multiple models in PDB file
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
@@ -120,6 +131,18 @@ fi
 if [ ! -s "$INFILE_MODEL_PDB" ]
 then
 	echo >&2 "Error: input model file does not exist"
+	exit 1
+fi
+
+if [ -n "$CONTACTS_QUERY_BY_CODE" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AA" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AS" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "SS" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AM" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "MM" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
+then
+	echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
 	exit 1
 fi
 
@@ -194,6 +217,8 @@ do
 		  --match-max-dist 1.6 \
 		  --invert \
 		| voronota query-contacts \
+		  --set-tags 'AA' \
+		| voronota query-contacts \
 		  --match-first-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
 		  --match-second-not $MAIN_CHAIN_ATOMS_DESCRIPTOR \
 		  --set-tags 'SS' \
@@ -225,6 +250,24 @@ do
 	
 	cat $WORKFILE.all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| \
+	{
+		if [ -n "$CONTACTS_QUERY_BY_CODE" ]
+		then
+			voronota query-contacts --match-tags "$CONTACTS_QUERY_BY_CODE"
+		else
+			cat
+		fi
+	} \
+	| \
+	{
+		if $CONTACTS_QUERY_INTER_CHAIN
+		then
+			voronota query-contacts --no-same-chain
+		else
+			cat
+		fi
+	} \
 	| awk '{print $1 " " $2 " " $3}' \
 	> $WORKFILE.contacts
 	

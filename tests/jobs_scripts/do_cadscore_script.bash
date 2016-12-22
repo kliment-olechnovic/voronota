@@ -104,7 +104,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--no-same-chain" \
+	  --contacts-query-inter-chain \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
 	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
@@ -119,7 +119,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags SS" \
+	  --contacts-query-by-code SS \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_SS
 
@@ -130,7 +130,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags MM" \
+	  --contacts-query-by-code MM \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_MM
 
@@ -141,7 +141,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags AM" \
+	  --contacts-query-by-code AM \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_AM
 
@@ -152,7 +152,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags AS" \
+	  --contacts-query-by-code AS \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_AS
 
@@ -163,7 +163,7 @@ do
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
-	  --contacts-query "--match-tags MS" \
+	  --contacts-query-by-code MS \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores_MS
 
