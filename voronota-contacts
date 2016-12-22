@@ -1,5 +1,33 @@
 #!/bin/bash
 
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-contacts' script provides a way for calculating and querying interatomic contacts
+with just one command (without the need to construct a pipeline from 'voronota' calls).
+
+Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
+    --contacts-query               string      contacts query parameters
+    --contacts-query-additional    string      additional contacts query parameters
+    --cache-dir                    string      path to cache directory
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --output-drawing               string      output file with drawing script for PyMol
+    --drawing-parameters           string      drawing parameters
+    --wireframe-drawing                        flag to draw wireframe representation of contacts
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (multiple lines):
+    {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
+
+EOF
+exit 1
+}
+
 readonly ZEROARG=$0
 INFILE_PDB=""
 INPUT_FILTER_QUERY_PARAMETERS=""
@@ -64,30 +92,7 @@ done
 
 if [ -z "$INFILE_PDB" ] || $HELP_MODE
 then
-cat >&2 << EOF
-
-'voronota-contacts' script provides a way for calculating and querying interatomic contacts
-with just one command (without the need to construct a pipeline from 'voronota' calls).
-
-Basic options:
-    --input | -i                   string   *  input structure file in PDB format
-    --input-filter-query           string      input atoms filtering query parameters
-    --contacts-query               string      contacts query parameters
-    --contacts-query-additional    string      additional contacts query parameters
-    --cache-dir                    string      path to cache directory
-    --help | -h                                flag to display help message and exit
-
-Advanced options:
-    --output-drawing               string      output file with drawing script for PyMol
-    --drawing-parameters           string      drawing parameters
-    --wireframe-drawing                        flag to draw wireframe representation of contacts
-    --multiple-models                          flag to handle multiple models in PDB file
-
-Standard output (multiple lines):
-    {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
-
-EOF
-exit 1
+	print_help_and_exit
 fi
 
 if [[ $ZEROARG == *"/"* ]]

@@ -1,5 +1,38 @@
 #!/bin/bash
 
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
+
+Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
+    --output-atom-scores           string      output text file with atom scores
+    --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
+    --output-residue-scores        string      output text file with residue scores
+    --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
+    --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --cache-dir                    string      path to cache directory
+    --smoothing-window             number      residue scores smoothing window size, default is 5
+    --atoms-query                  string      atoms query parameters to define selection
+    --contacts-query               string      contacts query parameters to define selection
+    --output-selected-scores       string      output text file with selected atom scores
+    --reference-sequence           string      sequence file or string for residue renumbering
+    --output-sequence-alignment    string      output text file with sequence alignment
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (one line):
+    {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
+
+EOF
+exit 1
+}
+
 readonly ZEROARG=$0
 INFILE=""
 REFERENCE_SEQUENCE=""
@@ -215,35 +248,7 @@ done
 
 if [ -z "$INFILE" ] || $HELP_MODE
 then
-cat >&2 << EOF
-
-'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
-
-Basic options:
-    --input | -i                   string   *  input structure file in PDB format
-    --input-filter-query           string      input atoms filtering query parameters
-    --output-atom-scores           string      output text file with atom scores
-    --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
-    --output-residue-scores        string      output text file with residue scores
-    --output-residue-scores-pdb    string      output PDB file with residue scores as B-factors
-    --output-residue-scores-plot   string      output PNG image file with residue scores plot, requires R
-    --help | -h                                flag to display help message and exit
-
-Advanced options:
-    --cache-dir                    string      path to cache directory
-    --smoothing-window             number      residue scores smoothing window size, default is 5
-    --atoms-query                  string      atoms query parameters to define selection
-    --contacts-query               string      contacts query parameters to define selection
-    --output-selected-scores       string      output text file with selected atom scores
-    --reference-sequence           string      sequence file or string for residue renumbering
-    --output-sequence-alignment    string      output text file with sequence alignment
-    --multiple-models                          flag to handle multiple models in PDB file
-
-Standard output (one line):
-    {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
-
-EOF
-exit 1
+	print_help_and_exit
 fi
 
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ] && [ -n "$MULTIPLE_MODELS_CHAINS_OPTION" ]

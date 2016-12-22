@@ -1,5 +1,36 @@
 #!/bin/bash
 
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
+
+Basic options:
+    --input-target | -t             string   *  input target structure file in PDB format
+    --input-model | -m              string   *  input model structure file in PDB format
+    --input-filter-query            string      input atoms filtering query parameters
+    --output-residue-scores         string      output text file with residue scores
+    --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
+    --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
+    --smoothing-window              number      residue scores smoothing window size, default is 1
+    --contacts-query                string      contacts query parameters
+    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --contacts-query-inter-chain                flag to consider only inter-chain contacts
+    --cache-dir                     string      path to cache directory
+    --help | -h                                 flag to display help message and exit
+
+Advanced options:
+    --multiple-models                           flag to handle multiple models in PDB file
+    --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
+
+Standard output (one line):
+    {target file path} {model file path} {global score} {number of residues}
+
+EOF
+exit 1
+}
+
 readonly ZEROARG=$0
 INFILE_TARGET_PDB=""
 INFILE_MODEL_PDB=""
@@ -83,33 +114,7 @@ done
 
 if [ -z "$INFILE_TARGET_PDB" ] || [ -z "$INFILE_MODEL_PDB" ] || $HELP_MODE
 then
-cat >&2 << EOF
-
-'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
-
-Basic options:
-    --input-target | -t             string   *  input target structure file in PDB format
-    --input-model | -m              string   *  input model structure file in PDB format
-    --input-filter-query            string      input atoms filtering query parameters
-    --output-residue-scores         string      output text file with residue scores
-    --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
-    --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
-    --smoothing-window              number      residue scores smoothing window size, default is 1
-    --contacts-query                string      contacts query parameters
-    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
-    --contacts-query-inter-chain                flag to consider only inter-chain contacts
-    --cache-dir                     string      path to cache directory
-    --help | -h                                 flag to display help message and exit
-
-Advanced options:
-    --multiple-models                           flag to handle multiple models in PDB file
-    --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
-
-Standard output (one line):
-    {target file path} {model file path} {global score} {number of residues}
-
-EOF
-exit 1
+	print_help_and_exit
 fi
 
 if [[ $ZEROARG == *"/"* ]]
