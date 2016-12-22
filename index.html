@@ -1502,11 +1502,13 @@ Standard output (one line):
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
     --smoothing-window              number      residue scores smoothing window size, default is 1
+    --contacts-query                string      contacts query parameters
+    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --contacts-query-inter-chain                flag to consider only inter-chain contacts
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
 
 Advanced options:
-    --contacts-query                string      contacts query parameters
     --multiple-models                           flag to handle multiple models in PDB file
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
