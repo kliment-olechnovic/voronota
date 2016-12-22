@@ -2,7 +2,7 @@
 
 readonly ZEROARG=$0
 INFILE_PDB=""
-ATOMS_QUERY_PARAMETERS=""
+INPUT_FILTER_QUERY_PARAMETERS=""
 CONTACTS_QUERY_FIRST_PARAMETERS=""
 CONTACTS_QUERY_SECOND_PARAMETERS=""
 DRAWING_OUTPUT=""
@@ -22,8 +22,8 @@ do
 		INFILE_PDB="$OPTARG"
 		shift
 		;;
-	--atoms-query)
-		ATOMS_QUERY_PARAMETERS="$OPTARG"
+	--input-filter-query)
+		INPUT_FILTER_QUERY_PARAMETERS="$OPTARG"
 		shift
 		;;
 	--contacts-query-additional)
@@ -71,7 +71,7 @@ with just one command (without the need to construct a pipeline from 'voronota' 
 
 Basic options:
     --input | -i                   string   *  input structure file in PDB format
-    --atoms-query                  string      atoms query parameters
+    --input-filter-query           string      input atoms filtering query parameters
     --contacts-query               string      contacts query parameters
     --contacts-query-additional    string      additional contacts query parameters
     --cache-dir                    string      path to cache directory
@@ -116,7 +116,7 @@ cat $INFILE_PDB \
   --include-heteroatoms \
 | voronota query-balls \
   --drop-altloc-indicators \
-| voronota query-balls $ATOMS_QUERY_PARAMETERS \
+| voronota query-balls $INPUT_FILTER_QUERY_PARAMETERS \
 > $TMPLDIR/balls
 
 if [ ! -s "$TMPLDIR/balls" ]

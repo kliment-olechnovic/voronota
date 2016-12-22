@@ -221,6 +221,7 @@ cat >&2 << EOF
 
 Basic options:
     --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
     --output-residue-scores        string      output text file with residue scores

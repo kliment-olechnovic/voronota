@@ -1471,6 +1471,7 @@ c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.
 <p>'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
     --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
     --output-residue-scores        string      output text file with residue scores
@@ -1496,6 +1497,7 @@ Standard output (one line):
 <pre><code>Basic options:
     --input-target | -t             string   *  input target structure file in PDB format
     --input-model | -m              string   *  input model structure file in PDB format
+    --input-filter-query            string      input atoms filtering query parameters
     --output-residue-scores         string      output text file with residue scores
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
@@ -1504,7 +1506,6 @@ Standard output (one line):
     --help | -h                                 flag to display help message and exit
 
 Advanced options:
-    --atoms-query                   string      atoms query parameters
     --contacts-query                string      contacts query parameters
     --multiple-models                           flag to handle multiple models in PDB file
 
@@ -1515,7 +1516,7 @@ Standard output (one line):
 <p>'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
 <pre><code>Basic options:
     --input | -i                   string   *  input structure file in PDB format
-    --atoms-query                  string      atoms query parameters
+    --input-filter-query           string      input atoms filtering query parameters
     --contacts-query               string      contacts query parameters
     --contacts-query-additional    string      additional contacts query parameters
     --cache-dir                    string      path to cache directory
