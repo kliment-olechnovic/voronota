@@ -125,7 +125,7 @@ cat $SUBDIR/balls \
 | $VORONOTA query-balls-clashes \
   --clash-distance 2.2 \
   --init-radius-for-BSH 3.5 \
-| egrep -v 'A<C>.*A<N>|A<N>.*A<C>' \
+  --min-seq-sep 2 \
 > $SUBDIR/balls_clashes
 
 {
