@@ -23,6 +23,7 @@ cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
 cp voronota-cadscore $PACKAGE_NAME/voronota-cadscore
 cp voronota-voromqa $PACKAGE_NAME/voronota-voromqa
 cp voronota-contacts $PACKAGE_NAME/voronota-contacts
+cp voronota-volumes $PACKAGE_NAME/voronota-volumes
 cp voronota $PACKAGE_NAME/voronota
 
 ./stock.bash
