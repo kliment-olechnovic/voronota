@@ -1,0 +1,180 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-volumes' script provides a way for calculating and querying atomic volumes
+with just one command (without the need to construct a pipeline from 'voronota' calls).
+
+Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
+    --cache-dir                    string      path to cache directory
+    --sum-at-end                               flag to print sum of areas as the last line in output
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --atoms-query                  string      atoms query parameters
+    --per-residue                              flag to output per-residue results
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (multiple lines):
+    {name} {volume}
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+INFILE=""
+INPUT_FILTER_QUERY_PARAMETERS=""
+ATOMS_QUERY_PARAMETERS=""
+CACHE_DIRECTORY=""
+MULTIPLE_MODELS_CHAINS_OPTION=""
+SUM_AT_END=false
+PER_RESIDUE=false
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--input-filter-query)
+		INPUT_FILTER_QUERY_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--atoms-query)
+		ATOMS_QUERY_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--cache-dir)
+		CACHE_DIRECTORY="$OPTARG"
+		shift
+		;;
+	--multiple-models)
+		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--sum-at-end)
+		SUM_AT_END=true
+		;;
+	--per-residue)
+		PER_RESIDUE=true
+		;;
+	-h)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || $HELP_MODE
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file does not exist"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+	if [[ "$INFILE" == *".gz" ]]
+	then
+		zcat "$INFILE"
+	else
+		cat "$INFILE"
+	fi
+} \
+| voronota get-balls-from-atoms-file \
+  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
+  --radii-file <(voronota-resources radii) \
+  --include-heteroatoms \
+| voronota query-balls \
+  --drop-altloc-indicators \
+| voronota query-balls $INPUT_FILTER_QUERY_PARAMETERS \
+> $TMPLDIR/balls
+
+if [ ! -s "$TMPLDIR/balls" ]
+then
+	echo >&2 "Error: no atoms in input file"
+	exit 1
+fi
+
+BALLS_MD5=""
+if [ -n "$CACHE_DIRECTORY" ]
+then
+	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
+	if [ -n "$BALLS_MD5" ]
+	then
+		BALLS_MD5="${BALLS_MD5}.voronota.volumes"
+		if [ -s "$CACHE_DIRECTORY/$BALLS_MD5" ]
+		then
+			cp $CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/all_volumes
+		fi
+	fi
+fi
+
+if [ ! -s "$TMPLDIR/all_volumes" ]
+then
+	cat $TMPLDIR/balls \
+	| voronota calculate-contacts \
+	  --annotated \
+	  --volumes-output $TMPLDIR/all_volumes \
+	> /dev/null
+
+	if [ -n "$CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
+	then
+		mkdir -p $CACHE_DIRECTORY
+		cp $TMPLDIR/all_volumes $CACHE_DIRECTORY/$BALLS_MD5
+	fi
+fi
+
+cat $TMPLDIR/all_volumes \
+| awk '{print $1 " c<volume> " $2 " 1 . ."}' \
+| voronota query-contacts \
+  --match-external-first <(cat $TMPLDIR/balls | voronota query-balls $ATOMS_QUERY_PARAMETERS) \
+| \
+{
+	if $PER_RESIDUE
+	then
+		voronota query-contacts --inter-residue --match-second 'c<volume>'
+	else
+		voronota query-contacts --match-second 'c<volume>'
+	fi
+} \
+> $TMPLDIR/result_as_contacts
+
+{
+cat $TMPLDIR/result_as_contacts
+if $SUM_AT_END
+then
+	cat $TMPLDIR/result_as_contacts \
+	| voronota query-contacts --summarize	
+fi
+} \
+| awk '{print $1 " " $3}' \
+| column -t
