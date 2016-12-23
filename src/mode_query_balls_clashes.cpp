@@ -19,6 +19,7 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdout", false, true, "list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')");
 
 	const double clash_distance=poh.argument<double>(pohw.describe_option("--clash-distance", "number", "clash distance threshold in angstroms, default is 3.0"), 3.0);
+	const int min_sequence_separation=poh.argument<int>(pohw.describe_option("--min-seq-sep", "number", "minimum residue sequence separation, default is 2"), 2);
 	const double init_radius_for_BSH=poh.argument<double>(pohw.describe_option("--init-radius-for-BSH", "number", "initial radius for bounding sphere hierarchy"), 3.5);
 
 	if(!pohw.assert_or_print_help(false))
@@ -61,7 +62,7 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					const CRAD& crad_a=list_of_balls[i].first;
 					const CRAD& crad_b=list_of_balls[collisions[j]].first;
-					if(!(crad_a.chainID==crad_b.chainID && crad_a.resSeq==crad_b.resSeq && crad_a.iCode==crad_b.iCode))
+					if(CRAD::match_with_sequence_separation_interval(crad_a, crad_b, min_sequence_separation, CRAD::null_num(), true))
 					{
 						map_of_clashes[CRADsPair(crad_a, crad_b)]=std::make_pair(distance, distance_between_balls);
 					}

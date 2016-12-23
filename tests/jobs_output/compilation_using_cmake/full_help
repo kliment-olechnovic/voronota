@@ -230,6 +230,7 @@ stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')
 
 Command 'query-balls-clashes' options:
 --clash-distance                number      clash distance threshold in angstroms, default is 3.0
+--min-seq-sep                   number      minimum residue sequence separation, default is 2
 --init-radius-for-BSH           number      initial radius for bounding sphere hierarchy
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r')
