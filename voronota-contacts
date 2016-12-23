@@ -13,6 +13,7 @@ Basic options:
     --contacts-query               string      contacts query parameters
     --contacts-query-additional    string      additional contacts query parameters
     --cache-dir                    string      path to cache directory
+    --sum-at-end                               flag to print sum of areas as the last line in output
     --help | -h                                flag to display help message and exit
 
 Advanced options:
@@ -37,6 +38,7 @@ DRAWING_OUTPUT=""
 DRAWING_PARAMETERS=""
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
+SUM_AT_END=false
 WIREFRAME_DRAWING=false
 HELP_MODE=false
 
@@ -76,6 +78,9 @@ do
 		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--sum-at-end)
+		SUM_AT_END=true
 		;;
 	--wireframe-drawing)
 		WIREFRAME_DRAWING=true
@@ -185,6 +190,7 @@ then
 	fi
 fi
 
+{
 if [ -n "$DRAWING_OUTPUT" ]
 then
 	cat $TMPLDIR/all_contacts \
@@ -209,11 +215,19 @@ then
 	> /dev/null
 	
 	cat $TMPLDIR/all_contacts_for_drawing \
-	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " " $6}' \
-	| column -t
+	| awk '{print $1 " " $2 " " $3 " " $4 " " $5 " " $6}'
 else
 	cat $TMPLDIR/all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_FIRST_PARAMETERS \
-	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS \
-	| column -t
+	| voronota query-contacts $CONTACTS_QUERY_SECOND_PARAMETERS
 fi
+} > $TMPLDIR/result_contacts
+
+{
+cat $TMPLDIR/result_contacts
+if $SUM_AT_END
+then
+	cat $TMPLDIR/result_contacts \
+	| voronota query-contacts --summarize	
+fi
+} | column -t

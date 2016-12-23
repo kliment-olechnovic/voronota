@@ -17,6 +17,7 @@ $VORONOTADIR/voronota-contacts \
   --output-drawing $SUBDIR/contacts1_drawing.py \
   --drawing-parameters "--default-color 0x00FFFF --drawing-name contacts1" \
   --cache-dir $SUBDIR/cache \
+  --sum-at-end \
 > $SUBDIR/contacts1
 
 $VORONOTADIR/voronota-contacts \
@@ -34,6 +35,7 @@ $VORONOTADIR/voronota-contacts \
   --input-filter-query "--match r<1:50>" \
   --contacts-query "--inter-residue --match-first R<LEU>" \
   --cache-dir $SUBDIR/cache \
+  --sum-at-end \
 > $SUBDIR/contacts2
 
 rm -r $SUBDIR/cache
