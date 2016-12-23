@@ -445,9 +445,13 @@ BALLS_MD5=""
 if [ -n "$CACHE_DIRECTORY" ]
 then
 	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
-	if [ -n "$BALLS_MD5" ] && [ -d "$CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
+	if [ -n "$BALLS_MD5" ]
 	then
-		cp -r $CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/foundation
+		BALLS_MD5="${BALLS_MD5}.voronota.voromqa"
+		if [ -d "$CACHE_DIRECTORY/$BALLS_MD5" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/all_contacts" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/atom_energies" ] && [ -s "$CACHE_DIRECTORY/$BALLS_MD5/depth_values" ]
+		then
+			cp -r $CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/foundation
+		fi
 	fi
 fi
 
