@@ -146,9 +146,13 @@ BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 then
 	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
-	if [ -n "$BALLS_MD5" ] && [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+	if [ -n "$BALLS_MD5" ]
 	then
-		cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/all_contacts
+		BALLS_MD5="${BALLS_MD5}.voronota.contacts"
+		if [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
+		then
+			cp $CONTACTS_CACHE_DIRECTORY/$BALLS_MD5 $TMPLDIR/all_contacts
+		fi
 	fi
 fi
 

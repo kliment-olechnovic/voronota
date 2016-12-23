@@ -199,7 +199,9 @@ do
 		then
 			if $OLD_REGIME
 			then
-				BALLS_MD5=$(echo $BALLS_MD5 old | md5sum | awk '{print $1}')
+				BALLS_MD5="${BALLS_MD5}.voronota.cadscore.old"
+			else
+				BALLS_MD5="${BALLS_MD5}.voronota.cadscore"
 			fi
 			if [ -s "$CONTACTS_CACHE_DIRECTORY/$BALLS_MD5" ]
 			then
