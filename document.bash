@@ -47,6 +47,12 @@ cat << EOF
 EOF
 ./voronota-contacts -h 2>&1 | tail -n +4 | sed 's/^/    /'
 
+echo -e "\n## Volumes calculation convenience script\n"
+cat << EOF
+'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).
+EOF
+./voronota-volumes -h 2>&1 | tail -n +4 | sed 's/^/    /'
+
 } > $TMPDIR/documentation.markdown
 
 cat > $TMPDIR/include_in_header.html << 'EOF'

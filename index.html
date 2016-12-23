@@ -105,6 +105,7 @@
 <li><a href="#voromqa-method-script">VoroMQA method script</a></li>
 <li><a href="#cad-score-method-script">CAD-score method script</a></li>
 <li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
+<li><a href="#volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
 </ul></li>
 </ul>
 </div>
@@ -1540,6 +1541,23 @@ Advanced options:
 
 Standard output (multiple lines):
     {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
+</code></pre>
+<h2 id="volumes-calculation-convenience-script"><a href="#TOC">Volumes calculation convenience script</a></h2>
+<p>'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
+<pre><code>Basic options:
+    --input | -i                   string   *  input structure file in PDB format
+    --input-filter-query           string      input atoms filtering query parameters
+    --cache-dir                    string      path to cache directory
+    --sum-at-end                               flag to print sum of areas as the last line in output
+    --help | -h                                flag to display help message and exit
+
+Advanced options:
+    --atoms-query                  string      atoms query parameters
+    --per-residue                              flag to output per-residue results
+    --multiple-models                          flag to handle multiple models in PDB file
+
+Standard output (multiple lines):
+    {name} {volume}
 </code></pre>
 </body>
 </html>
