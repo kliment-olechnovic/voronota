@@ -7,7 +7,7 @@ trap "rm -r $TMPDIR" EXIT
 
 {
 
-cat ./README.markdown
+cat ./intro.markdown
 
 echo -e "# Command reference"
 
@@ -19,11 +19,12 @@ echo -e "# Command reference"
 ./voronota --help \
 | grep 'Command ' -A 999999 \
 | sed "s/^Command\s\+'\(\S\+\)'.*/## Command '\1'\n\n### Command line arguments:\n\nCOMMAND_OPTIONS_TABLE_HEADER1\nCOMMAND_OPTIONS_TABLE_HEADER2/" \
-| sed 's/COMMAND_OPTIONS_TABLE_HEADER1/Name                            Type        Description/' \
-| sed 's/COMMAND_OPTIONS_TABLE_HEADER2/------------------------------- ------ ---- ------------------------------------------------------------------------/' \
-| sed 's/^stdin   <-\s*/\n### Input stream:\n\n/' \
-| sed 's/^stdout  ->\s*/\n### Output stream:\n\n/' \
-| sed 's/^\s\+(\(.\+\))/\n* \1/'
+| sed 's/COMMAND_OPTIONS_TABLE_HEADER1/    Name                            Type        Description/' \
+| sed 's/COMMAND_OPTIONS_TABLE_HEADER2/    ------------------------------- ------ ---- ------------------------------------------------------------------------/' \
+| sed 's/^\(--[[:alpha:]]\S*\)/    \1/' \
+| sed 's/^stdin   <-\s*/\n### Input stream:\n\n    /' \
+| sed 's/^stdout  ->\s*/\n### Output stream:\n\n    /' \
+| sed 's/^\s\+(\(.\+\))/\n        \1/'
 
 echo -e "# Wrapper scripts"
 
@@ -66,3 +67,5 @@ EOF
 echo "<h1>$(./voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
 
 pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./index.html
+
+cp $TMPDIR/documentation.markdown ./README.markdown
