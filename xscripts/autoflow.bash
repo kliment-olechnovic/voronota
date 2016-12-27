@@ -6,7 +6,7 @@ readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
 cp -r ./src "$TMPLDIR/"
-cp ./voronota-resources ./voronota-voromqa ./voronota-contacts ./voronota-cadscore "$TMPLDIR/"
+cp ./voronota-resources ./voronota-voromqa ./voronota-contacts ./voronota-cadscore ./voronota-volumes "$TMPLDIR/"
 
 cd $TMPLDIR
 
@@ -26,7 +26,7 @@ EOF
 cat << EOF
 bin_PROGRAMS = voronota
 voronota_SOURCES = $(find src/ -type f | tr '\n' ' ')
-dist_bin_SCRIPTS = voronota-resources voronota-voromqa voronota-contacts voronota-cadscore
+dist_bin_SCRIPTS = voronota-resources voronota-voromqa voronota-contacts voronota-cadscore voronota-volumes
 EOF
 } \
 > "./Makefile.am"
