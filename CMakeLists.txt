@@ -16,4 +16,4 @@ endif()
 add_executable(voronota ${sources} ${headers})
 
 install(TARGETS voronota RUNTIME DESTINATION bin)
-install(PROGRAMS voronota-cadscore voronota-contacts voronota-resources voronota-voromqa DESTINATION bin)
+install(PROGRAMS voronota-cadscore voronota-contacts voronota-resources voronota-voromqa voronota-volumes DESTINATION bin)
