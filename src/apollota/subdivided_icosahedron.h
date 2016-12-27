@@ -52,43 +52,8 @@ public:
 		{
 			grow();
 		}
-
-		max_edge_length_=calc_max_edge_length();
 	}
 
-	const SimplePoint center() const
-	{
-		return center_;
-	}
-
-	const std::vector<SimplePoint>& vertices() const
-	{
-		return vertices_;
-	}
-
-	const std::vector<Triple>& triples() const
-	{
-		return triples_;
-	}
-
-	template<typename PointType>
-	void fit_into_sphere(const PointType& center, const double radius)
-	{
-		const SimplePoint new_center=custom_point_from_object<SimplePoint>(center);
-		for(std::size_t i=0;i<vertices_.size();i++)
-		{
-			vertices_[i]=new_center+((vertices_[i]-center_).unit()*radius);
-		}
-		center_=new_center;
-		max_edge_length_=calc_max_edge_length();
-	}
-
-	double max_edge_length() const
-	{
-		return max_edge_length_;
-	}
-
-private:
 	void grow()
 	{
 		typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
@@ -135,10 +100,36 @@ private:
 		return max_length;
 	}
 
+	template<typename PointType>
+	void fit_into_sphere(const PointType& center, const double radius)
+	{
+		const SimplePoint new_center=custom_point_from_object<SimplePoint>(center);
+		for(std::size_t i=0;i<vertices_.size();i++)
+		{
+			vertices_[i]=new_center+((vertices_[i]-center_).unit()*radius);
+		}
+		center_=new_center;
+	}
+
+	const SimplePoint center() const
+	{
+		return center_;
+	}
+
+	const std::vector<SimplePoint>& vertices() const
+	{
+		return vertices_;
+	}
+
+	const std::vector<Triple>& triples() const
+	{
+		return triples_;
+	}
+
+private:
 	SimplePoint center_;
 	std::vector<SimplePoint> vertices_;
 	std::vector<Triple> triples_;
-	double max_edge_length_;
 };
 
 }
