@@ -1508,9 +1508,10 @@ Standard output (one line):
     --output-residue-scores         string      output text file with residue scores
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
-    --smoothing-window              number      residue scores smoothing window size, default is 1
+    --smoothing-window              number      residue scores smoothing window size, default is 0
     --contacts-query                string      contacts query parameters
     --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --output-coded-global-scores    string      output text file with all coded global scores
     --contacts-query-inter-chain                flag to consider only inter-chain contacts
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
@@ -1520,7 +1521,7 @@ Advanced options:
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
 Standard output (one line):
-    {target file path} {model file path} {global score} {number of residues}
+    {target file path} {model file path} {global score} {number of residue scores}
 </code></pre>
 <h2 id="contacts-calculation-convenience-script"><a href="#TOC">Contacts calculation convenience script</a></h2>
 <p>'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
