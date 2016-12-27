@@ -10,6 +10,7 @@ do
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
+	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores
@@ -24,6 +25,7 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
 	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
+	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/interface_global_scores
@@ -93,6 +95,7 @@ do
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
+	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/global_scores
@@ -108,6 +111,7 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
 	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
+	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache
 done > $SUBDIR/interface_global_scores

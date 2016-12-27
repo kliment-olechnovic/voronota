@@ -13,9 +13,10 @@ Basic options:
     --output-residue-scores         string      output text file with residue scores
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
-    --smoothing-window              number      residue scores smoothing window size, default is 1
+    --smoothing-window              number      residue scores smoothing window size, default is 0
     --contacts-query                string      contacts query parameters
     --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --output-coded-global-scores    string      output text file with all coded global scores
     --contacts-query-inter-chain                flag to consider only inter-chain contacts
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
@@ -25,7 +26,7 @@ Advanced options:
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
 Standard output (one line):
-    {target file path} {model file path} {global score} {number of residues}
+    {target file path} {model file path} {global score} {number of residue scores}
 
 EOF
 exit 1
@@ -41,6 +42,7 @@ CONTACTS_QUERY_INTER_CHAIN=false
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_RESIDUE_SCORES_PDB_TARGET=""
 OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
+OUTFILE_CODED_GLOBAL_SCORES=""
 SMOOTHING_WINDOW="0"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
@@ -86,6 +88,10 @@ do
 		;;
 	--output-residue-scores-pdb-m)
 		OUTFILE_RESIDUE_SCORES_PDB_MODEL="$OPTARG"
+		shift
+		;;
+	--output-coded-global-scores)
+		OUTFILE_CODED_GLOBAL_SCORES="$OPTARG"
 		shift
 		;;
 	--smoothing-window)
@@ -274,15 +280,6 @@ do
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
 	| \
 	{
-		if [ -n "$CONTACTS_QUERY_BY_CODE" ]
-		then
-			voronota query-contacts --match-tags "$CONTACTS_QUERY_BY_CODE"
-		else
-			cat
-		fi
-	} \
-	| \
-	{
 		if $CONTACTS_QUERY_INTER_CHAIN
 		then
 			voronota query-contacts --no-same-chain
@@ -290,7 +287,16 @@ do
 			cat
 		fi
 	} \
-	| awk '{print $1 " " $2 " " $3}' \
+	| tee $WORKFILE.all_contacts_filtered_not_by_code \
+	| \
+	{
+		if [ -n "$CONTACTS_QUERY_BY_CODE" ]
+		then
+			voronota query-contacts --match-tags "$CONTACTS_QUERY_BY_CODE"
+		else
+			cat
+		fi
+	} \
 	> $WORKFILE.contacts
 	
 	if [ ! -s "$WORKFILE.contacts" ]
@@ -343,3 +349,25 @@ fi
 echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
   $(cat $TMPLDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}') \
   $(cat $TMPLDIR/smoothed_residue_cad_scores | wc -l)
+
+if [ -n "$OUTFILE_CODED_GLOBAL_SCORES" ]
+then
+	mkdir -p $(dirname "$OUTFILE_CODED_GLOBAL_SCORES")
+	for QCODE in AA AS SS AM MM MS
+	do
+		cat $TMPLDIR/model.all_contacts_filtered_not_by_code \
+		| voronota query-contacts --match-tags "$QCODE" \
+		| voronota compare-contacts \
+		  --target-contacts-file <(cat $TMPLDIR/target.all_contacts_filtered_not_by_code | voronota query-contacts --match-tags "$QCODE") \
+		  --depth 0 \
+		| grep 'residue_level_global' \
+		> $TMPLDIR/coded_global_score_$QCODE
+		
+		if [ -s "$TMPLDIR/coded_global_score_$QCODE" ]
+		then
+			echo $QCODE $(cat $TMPLDIR/coded_global_score_$QCODE  | awk '{print $2}')
+		else
+			echo $QCODE "0"
+		fi
+	done > "$OUTFILE_CODED_GLOBAL_SCORES"
+fi
