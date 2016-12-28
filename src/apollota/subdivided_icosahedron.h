@@ -12,7 +12,7 @@ namespace apollota
 class SubdividedIcosahedron
 {
 public:
-	explicit SubdividedIcosahedron(const int depth) : center_(0, 0, 0)
+	explicit SubdividedIcosahedron(const int depth) : fitted_into_sphere_(false), center_(0, 0, 0), radius_(1.0)
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 
@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	void grow(const std::size_t selected_vertex_id)
+	void grow(const std::size_t selected_vertex_id, bool fit_into_current_sphere)
 	{
 		typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
 		const bool valid_selected_vertex_id=(selected_vertex_id<vertices_.size());
@@ -82,6 +82,10 @@ public:
 					{
 						middle_point_ids[j]=vertices_.size();
 						vertices_.push_back(((vertices_[pair.get(0)]+vertices_[pair.get(1)])*(0.5)).unit());
+						if(fit_into_current_sphere && fitted_into_sphere_)
+						{
+							vertices_.back()=(center_+((vertices_.back()-center_).unit()*radius_));
+						}
 						pairs_vertices[pair]=middle_point_ids[j];
 					}
 					else
@@ -101,7 +105,7 @@ public:
 
 	void grow()
 	{
-		grow(vertices_.size());
+		grow(vertices_.size(), false);
 	}
 
 	double calc_max_edge_length() const
@@ -125,12 +129,24 @@ public:
 		{
 			vertices_[i]=new_center+((vertices_[i]-center_).unit()*radius);
 		}
+		fitted_into_sphere_=true;
 		center_=new_center;
+		radius_=radius;
+	}
+
+	bool fitted_into_sphere() const
+	{
+		return fitted_into_sphere_;
 	}
 
 	const SimplePoint center() const
 	{
 		return center_;
+	}
+
+	double radius() const
+	{
+		return radius_;
 	}
 
 	const std::vector<SimplePoint>& vertices() const
@@ -149,7 +165,9 @@ public:
 	}
 
 private:
+	bool fitted_into_sphere_;
 	SimplePoint center_;
+	double radius_;
 	std::vector<SimplePoint> vertices_;
 	std::vector<Triple> triples_;
 	std::vector< std::pair<std::size_t, std::size_t> > history_of_growth_;
