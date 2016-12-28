@@ -40,6 +40,7 @@ void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler&);
 void query_balls_clashes(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
 void ses_demo(const auxiliaries::ProgramOptionsHandler&);
+void rotational_optimization_demo(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -99,6 +100,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-solvation-values", ModeDescriptor::FunctionPtr(query_contacts_solvation_values)));
 	list_of_modes.push_back(ModeDescriptor("x-score-scores", ModeDescriptor::FunctionPtr(score_scores)));
 	list_of_modes.push_back(ModeDescriptor("x-ses-demo", ModeDescriptor::FunctionPtr(ses_demo)));
+	list_of_modes.push_back(ModeDescriptor("x-rotational-optimization-demo", ModeDescriptor::FunctionPtr(rotational_optimization_demo)));
 	return list_of_modes;
 }
 
