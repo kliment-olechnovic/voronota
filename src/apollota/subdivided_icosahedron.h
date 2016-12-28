@@ -1,6 +1,8 @@
 #ifndef APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 #define APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 
+#include <tr1/unordered_map>
+
 #include "basic_operations_on_points.h"
 #include "tuple.h"
 
@@ -48,43 +50,58 @@ public:
 		triples_.push_back(Triple(6, 1, 3));
 		triples_.push_back(Triple(11, 7, 5));
 
+		history_of_growth_.push_back(std::make_pair(vertices_.size(), triples_.size()));
+
 		for(int i=0;i<depth;i++)
 		{
 			grow();
 		}
 	}
 
-	void grow()
+	void grow(const std::size_t selected_vertex_id)
 	{
 		typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
+		const bool valid_selected_vertex_id=(selected_vertex_id<vertices_.size());
 		PairsMap pairs_vertices;
 		std::vector<Triple> new_triples;
-		new_triples.reserve(triples_.size()*4);
+		if(!valid_selected_vertex_id)
+		{
+			new_triples.reserve(triples_.size()*4);
+		}
 		std::size_t middle_point_ids[3]={0, 0, 0};
 		for(std::size_t i=0;i<triples_.size();i++)
 		{
 			const Triple& triple=triples_[i];
-			for(int j=0;j<3;j++)
+			if(!valid_selected_vertex_id || triple.contains(selected_vertex_id))
 			{
-				const Pair pair=triple.exclude(j);
-				PairsMap::const_iterator it=pairs_vertices.find(pair);
-				if(it==pairs_vertices.end())
+				for(int j=0;j<3;j++)
 				{
-					middle_point_ids[j]=vertices_.size();
-					vertices_.push_back(((vertices_[pair.get(0)]+vertices_[pair.get(1)])*(0.5)).unit());
-					pairs_vertices[pair]=middle_point_ids[j];
+					const Pair pair=triple.exclude(j);
+					PairsMap::const_iterator it=pairs_vertices.find(pair);
+					if(it==pairs_vertices.end())
+					{
+						middle_point_ids[j]=vertices_.size();
+						vertices_.push_back(((vertices_[pair.get(0)]+vertices_[pair.get(1)])*(0.5)).unit());
+						pairs_vertices[pair]=middle_point_ids[j];
+					}
+					else
+					{
+						middle_point_ids[j]=it->second;
+					}
 				}
-				else
-				{
-					middle_point_ids[j]=it->second;
-				}
+				new_triples.push_back(Triple(triple.get(0), middle_point_ids[1], middle_point_ids[2]));
+				new_triples.push_back(Triple(triple.get(1), middle_point_ids[0], middle_point_ids[2]));
+				new_triples.push_back(Triple(triple.get(2), middle_point_ids[0], middle_point_ids[1]));
+				new_triples.push_back(Triple(middle_point_ids[0], middle_point_ids[1], middle_point_ids[2]));
 			}
-			new_triples.push_back(Triple(triple.get(0), middle_point_ids[1], middle_point_ids[2]));
-			new_triples.push_back(Triple(triple.get(1), middle_point_ids[0], middle_point_ids[2]));
-			new_triples.push_back(Triple(triple.get(2), middle_point_ids[0], middle_point_ids[1]));
-			new_triples.push_back(Triple(middle_point_ids[0], middle_point_ids[1], middle_point_ids[2]));
 		}
 		triples_=new_triples;
+		history_of_growth_.push_back(std::make_pair(vertices_.size(), triples_.size()));
+	}
+
+	void grow()
+	{
+		grow(vertices_.size());
 	}
 
 	double calc_max_edge_length() const
@@ -126,10 +143,16 @@ public:
 		return triples_;
 	}
 
+	const std::vector< std::pair<std::size_t, std::size_t> > history_of_growth() const
+	{
+		return history_of_growth_;
+	}
+
 private:
 	SimplePoint center_;
 	std::vector<SimplePoint> vertices_;
 	std::vector<Triple> triples_;
+	std::vector< std::pair<std::size_t, std::size_t> > history_of_growth_;
 };
 
 }
