@@ -46,8 +46,8 @@ ScoredShift estimate_best_scored_shift(
 		const double width,
 		std::vector< std::pair<double, double> >& buffer_for_projections)
 {
-	static std::vector< std::pair<int, double> > bins(100);
-	const int bins_n=static_cast<int>(bins.size());
+	const double length_step=0.5;
+	static std::vector< std::pair<int, double> > bins(1000);
 
 	for(std::size_t i=0;i<points_and_scores.size();i++)
 	{
@@ -57,7 +57,8 @@ ScoredShift estimate_best_scored_shift(
 	std::sort(buffer_for_projections.begin(), buffer_for_projections.end());
 
 	const double full_length=(buffer_for_projections.back().first-buffer_for_projections.front().first);
-	const double length_step=(full_length/static_cast<double>(bins_n));
+	bins.resize(static_cast<std::size_t>(ceil(full_length/length_step)));
+	const int bins_n=static_cast<int>(bins.size());
 	const int width_half_bins_n=static_cast<int>(floor(width*0.5/length_step+0.5));
 
 	for(std::size_t i=0;i<bins.size();i++)
@@ -74,12 +75,16 @@ ScoredShift estimate_best_scored_shift(
 		bins[bin_pos].second+=buffer_for_projections[i].second;
 	}
 
+	double sum_of_all_bin_values=0.0;
+	int count_of_all_bin_values=0;
 	for(std::size_t i=0;i<bins.size();i++)
 	{
 		if(bins[i].first>0)
 		{
 			bins[i].second=bins[i].second/static_cast<double>(bins[i].first);
 			bins[i].first=1;
+			sum_of_all_bin_values+=bins[i].second;
+			count_of_all_bin_values+=bins[i].first;
 		}
 	}
 
@@ -88,16 +93,18 @@ ScoredShift estimate_best_scored_shift(
 	bool best_initialized=false;
 	for(int i=0;i<bins_n;i++)
 	{
-		double score=0.0;
+		int count_in=0;
+		double sum_in=0.0;
 		for(int j=(0-width_half_bins_n);j<=width_half_bins_n;j++)
 		{
 			const int p=(i+j);
 			if(p>=0 && p<bins_n)
 			{
-				score+=bins[p].second;
+				count_in+=bins[p].first;
+				sum_in+=bins[p].second;
 			}
 		}
-		score=score/static_cast<int>(width_half_bins_n*2+1);
+		const double score=sum_in;
 		if(!best_initialized || best_score<score)
 		{
 			best_score=score;
