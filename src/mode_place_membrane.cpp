@@ -44,62 +44,77 @@ ScoredShift estimate_best_scored_shift(
 		const std::vector<PointAndScore>& points_and_scores,
 		const apollota::SimplePoint& direction,
 		const double width,
-		std::vector< std::pair<double, std::size_t> >& buffer_for_projections)
+		std::vector< std::pair<double, double> >& buffer_for_projections)
 {
+	static std::vector< std::pair<int, double> > bins(100);
+	const int bins_n=static_cast<int>(bins.size());
+
 	for(std::size_t i=0;i<points_and_scores.size();i++)
 	{
 		buffer_for_projections[i].first=points_and_scores[i].point*direction;
-		buffer_for_projections[i].second=i;
+		buffer_for_projections[i].second=points_and_scores[i].score;
 	}
 	std::sort(buffer_for_projections.begin(), buffer_for_projections.end());
-	ScoredShift best_scored_shift;
-	ScoredShift current_scored_shift;
-	std::size_t i_end=0;
-	for(std::size_t i=0;i<buffer_for_projections.size() && i_end<buffer_for_projections.size();i++)
+
+	const double full_length=(buffer_for_projections.back().first-buffer_for_projections.front().first);
+	const double length_step=(full_length/static_cast<double>(bins_n));
+	const int width_half_bins_n=static_cast<int>(floor(width*0.5/length_step+0.5));
+
+	for(std::size_t i=0;i<bins.size();i++)
 	{
-		if(i==0)
+		bins[i].first=0;
+		bins[i].second=0.0;
+	}
+
+	for(std::size_t i=0;i<buffer_for_projections.size();i++)
+	{
+		int bin_pos=static_cast<int>(floor((buffer_for_projections[i].first-buffer_for_projections.front().first)/length_step));
+		bin_pos=std::min(std::max(bin_pos, 0), bins_n-1);
+		bins[bin_pos].first++;
+		bins[bin_pos].second+=buffer_for_projections[i].second;
+	}
+
+	for(std::size_t i=0;i<bins.size();i++)
+	{
+		if(bins[i].first>0)
 		{
-			current_scored_shift.shift=buffer_for_projections[i].first+width*0.5;
-			current_scored_shift.score=0.0;
-			for(std::size_t j=0;j<buffer_for_projections.size();j++)
-			{
-				if(buffer_for_projections[j].first-buffer_for_projections[i].first<width)
-				{
-					current_scored_shift.score+=points_and_scores[buffer_for_projections[j].second].score;
-					i_end=j;
-				}
-				else
-				{
-					current_scored_shift.score+=(1.0-points_and_scores[buffer_for_projections[j].second].score);
-				}
-			}
-			best_scored_shift=current_scored_shift;
-		}
-		else
-		{
-			current_scored_shift.shift=buffer_for_projections[i].first+width*0.5;
-			const double prev_score=points_and_scores[buffer_for_projections[i-1].second].score;
-			current_scored_shift.score-=prev_score;
-			current_scored_shift.score+=(1.0-prev_score);
-			for(std::size_t j=(i_end+1);j<buffer_for_projections.size() && (buffer_for_projections[j].first-buffer_for_projections[i].first<width);j++)
-			{
-				const double next_score=points_and_scores[buffer_for_projections[j].second].score;
-				current_scored_shift.score+=next_score;
-				current_scored_shift.score-=(1.0-next_score);
-				i_end=j;
-			}
-			if(current_scored_shift.score>best_scored_shift.score)
-			{
-				best_scored_shift=current_scored_shift;
-			}
+			bins[i].second=bins[i].second/static_cast<double>(bins[i].first);
+			bins[i].first=1;
 		}
 	}
-	return best_scored_shift;
+
+	double best_score=0.0;
+	int best_score_i=0;
+	bool best_initialized=false;
+	for(int i=0;i<bins_n;i++)
+	{
+		double score=0.0;
+		for(int j=(0-width_half_bins_n);j<=width_half_bins_n;j++)
+		{
+			const int p=(i+j);
+			if(p>=0 && p<bins_n)
+			{
+				score+=bins[p].second;
+			}
+		}
+		score=score/static_cast<int>(width_half_bins_n*2+1);
+		if(!best_initialized || best_score<score)
+		{
+			best_score=score;
+			best_score_i=i;
+			best_initialized=true;
+		}
+	}
+
+	ScoredShift result;
+	result.score=best_score;
+	result.shift=buffer_for_projections.front().first+(static_cast<double>(best_score_i)*(full_length/static_cast<double>(bins_n)));
+	return result;
 }
 
 MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width)
 {
-	std::vector< std::pair<double, std::size_t> > buffer_for_projections(points_and_scores.size());
+	std::vector< std::pair<double, double> > buffer_for_projections(points_and_scores.size());
 	apollota::SubdividedIcosahedron sih(3);
 	sih.fit_into_sphere(apollota::SimplePoint(0, 0, 0), 1);
 	std::size_t best_id=0;
