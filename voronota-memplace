@@ -19,7 +19,7 @@ Advanced options:
     --width-extension              number      membrane width extension, default is 0
 
 Standard output (one line):
-    {input file path} {membrane placement score} {position coordinates} {direction coordinates}
+    {input file path} {width} {width extension} {membrane placement score} {position coordinates} {direction coordinates}
 
 EOF
 exit 1
@@ -171,6 +171,8 @@ cat "$TMPLDIR/balls" \
 
 {
 echo "$INFILE"
+cat "$TMPLDIR/mplace" | egrep '^width ' | awk '{print $2}'
+cat "$TMPLDIR/mplace" | egrep '^width_extension ' | awk '{print $2}'
 cat "$TMPLDIR/mplace" | egrep '^score ' | awk '{print $2}'
 cat "$TMPLDIR/mplace" | egrep '^position ' | awk '{print $2 " " $3 " " $4}'
 cat "$TMPLDIR/mplace" | egrep '^direction ' | awk '{print $2 " " $3 " " $4}'
