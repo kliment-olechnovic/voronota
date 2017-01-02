@@ -18,8 +18,8 @@ Basic options:
 Advanced options:
     --width-extension              number      membrane width extension, default is 0
 
-Standard output:
-    membrane placement position and direction
+Standard output (one line):
+    {input file path} {membrane placement score} {position coordinates} {direction coordinates}
 
 EOF
 exit 1
@@ -168,7 +168,14 @@ cat "$TMPLDIR/balls" \
   --pdb-output "$TMPLDIR/statuses.pdb" \
 > /dev/null
 
-cat "$TMPLDIR/mplace" | egrep -v '^number_of_' | column -t
+
+{
+echo "$INFILE"
+cat "$TMPLDIR/mplace" | egrep '^score ' | awk '{print $2}'
+cat "$TMPLDIR/mplace" | egrep '^position ' | awk '{print $2 " " $3 " " $4}'
+cat "$TMPLDIR/mplace" | egrep '^direction ' | awk '{print $2 " " $3 " " $4}'
+} | tr '\n' ' '
+echo
 
 if [ -n "$OUTPUT_STATUSES_PDB" ]
 then
