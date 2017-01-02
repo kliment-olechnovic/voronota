@@ -44,6 +44,7 @@ ScoredShift estimate_best_scored_shift(
 		const std::vector<PointAndScore>& points_and_scores,
 		const apollota::SimplePoint& direction,
 		const double width,
+		const double width_extension,
 		std::vector< std::pair<double, double> >& buffer_for_projections)
 {
 	const double length_step=0.5;
@@ -60,6 +61,7 @@ ScoredShift estimate_best_scored_shift(
 	bins.resize(static_cast<std::size_t>(ceil(full_length/length_step)));
 	const int bins_n=static_cast<int>(bins.size());
 	const int width_half_bins_n=static_cast<int>(floor(width*0.5/length_step+0.5));
+	const int extended_width_half_bins_n=static_cast<int>(floor((width+width_extension)*0.5/length_step+0.5));
 
 	for(std::size_t i=0;i<bins.size();i++)
 	{
@@ -102,7 +104,33 @@ ScoredShift estimate_best_scored_shift(
 				sum_in+=bins[p].second;
 			}
 		}
-		const double score=static_cast<double>(count_of_all_bin_values-count_in)-(sum_of_all_bin_values-sum_in)+sum_in;
+
+		int count_in_extension=0;
+		double sum_in_extension=0.0;
+		for(int j=(0-extended_width_half_bins_n);j<(0-width_half_bins_n);j++)
+		{
+			const int p=(i+j);
+			if(p>=0 && p<bins_n)
+			{
+				count_in_extension+=bins[p].first;
+				sum_in_extension+=bins[p].second;
+			}
+		}
+		for(int j=(width_half_bins_n+1);j<=extended_width_half_bins_n;j++)
+		{
+			const int p=(i+j);
+			if(p>=0 && p<bins_n)
+			{
+				count_in_extension+=bins[p].first;
+				sum_in_extension+=bins[p].second;
+			}
+		}
+
+		const double score=
+				static_cast<double>(count_of_all_bin_values-count_in-count_in_extension)
+				-(sum_of_all_bin_values-sum_in-sum_in_extension)
+				+sum_in
+				+(static_cast<double>(count_in_extension)*0.5);
 		if(!best_initialized || best_score<score)
 		{
 			best_score=score;
@@ -117,7 +145,7 @@ ScoredShift estimate_best_scored_shift(
 	return result;
 }
 
-MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width)
+MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension)
 {
 	std::vector< std::pair<double, double> > buffer_for_projections(points_and_scores.size());
 	apollota::SubdividedIcosahedron sih(3);
@@ -138,7 +166,7 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 		}
 		for(std::size_t i=start_id;i<sih.vertices().size();i++)
 		{
-			const ScoredShift scored_shift=estimate_best_scored_shift(points_and_scores, sih.vertices()[i].unit(), width, buffer_for_projections);
+			const ScoredShift scored_shift=estimate_best_scored_shift(points_and_scores, sih.vertices()[i].unit(), width, width_extension, buffer_for_projections);
 			if(number_of_checks==0 || scored_shift.score>best_scored_shift.score)
 			{
 				best_id=i;
@@ -154,7 +182,7 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 	return MembranePlacement(best_direction*best_scored_shift.shift, best_direction);
 }
 
-MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width)
+MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension)
 {
 	apollota::SimplePoint original_center(0, 0, 0);
 	for(std::size_t i=0;i<points_and_scores.size();i++)
@@ -169,7 +197,7 @@ MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& 
 		translated_points_and_scores[i].point=(points_and_scores[i].point-original_center);
 	}
 
-	const MembranePlacement translated_membrane_placement=estimate_translated_membrane_placement(translated_points_and_scores, width);
+	const MembranePlacement translated_membrane_placement=estimate_translated_membrane_placement(translated_points_and_scores, width, width_extension);
 
 	return MembranePlacement(original_center+translated_membrane_placement.position, translated_membrane_placement.normal);
 }
@@ -183,7 +211,8 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
 	const std::string scores_file=poh.argument<std::string>(pohw.describe_option("--scores-file", "string", "file path to input atom scores", true), "");
-	const double membrane_width=poh.argument<double>(pohw.describe_option("--membrane-width", "number", "full membrane width", true));
+	const double membrane_width=poh.argument<double>(pohw.describe_option("--membrane-width", "number", "membrane width", true));
+	const double membrane_width_extension=poh.argument<double>(pohw.describe_option("--membrane-width-extension", "number", "membrane width extension"), 0.0);
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -219,7 +248,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const MembranePlacement membrane_placement=estimate_membrane_placement(points_and_scores, membrane_width);
+	const MembranePlacement membrane_placement=estimate_membrane_placement(points_and_scores, membrane_width, membrane_width_extension);
 
 	std::cerr << "direction " << membrane_placement.normal.x << " " << membrane_placement.normal.y << " " << membrane_placement.normal.z << "\n";
 
