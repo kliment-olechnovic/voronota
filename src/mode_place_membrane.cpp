@@ -22,10 +22,11 @@ struct PointAndScore
 
 struct MembranePlacement
 {
+	double score;
 	apollota::SimplePoint position;
 	apollota::SimplePoint normal;
 
-	MembranePlacement(const apollota::SimplePoint& position, const apollota::SimplePoint& normal) : position(position), normal(normal)
+	MembranePlacement(const double score, const apollota::SimplePoint& position, const apollota::SimplePoint& normal) : score(score), position(position), normal(normal)
 	{
 	}
 };
@@ -179,7 +180,7 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 	logstream << "number_of_cycles " << number_of_cycles << "\n";
 	logstream << "number_of_checks " << number_of_checks << "\n";
 	const apollota::SimplePoint best_direction=sih.vertices()[best_id].unit();
-	return MembranePlacement(best_direction*best_scored_shift.shift, best_direction);
+	return MembranePlacement(best_scored_shift.score/static_cast<double>(points_and_scores.size()), best_direction*best_scored_shift.shift, best_direction);
 }
 
 MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension, std::ostream& logstream)
@@ -199,7 +200,7 @@ MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& 
 
 	const MembranePlacement translated_membrane_placement=estimate_translated_membrane_placement(translated_points_and_scores, width, width_extension, logstream);
 
-	return MembranePlacement(original_center+translated_membrane_placement.position, translated_membrane_placement.normal);
+	return MembranePlacement(translated_membrane_placement.score, original_center+translated_membrane_placement.position, translated_membrane_placement.normal);
 }
 
 }
@@ -253,6 +254,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const MembranePlacement membrane_placement=estimate_membrane_placement(points_and_scores, membrane_width, membrane_width_extension, logstream);
 
+	logstream << "score " << membrane_placement.score << "\n";
 	logstream << "position " << membrane_placement.position.x << " " << membrane_placement.position.y << " " << membrane_placement.position.z << "\n";
 	logstream << "direction " << membrane_placement.normal.x << " " << membrane_placement.normal.y << " " << membrane_placement.normal.z << "\n";
 
