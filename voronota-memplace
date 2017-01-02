@@ -17,6 +17,8 @@ Basic options:
 
 Advanced options:
     --width-extension              number      membrane width extension, default is 0
+    --optimize-width                           flag to optimize width
+    --optimize-width-extension                 flag to optimize width extension
 
 Standard output (one line):
     {input file path} {width} {width extension} {membrane placement score} {position coordinates} {direction coordinates}
@@ -32,6 +34,8 @@ WIDTH="30"
 WIDTH_EXTENSION="0"
 OUTPUT_STATUSES_PDB=""
 CACHE_DIRECTORY=""
+OPTIMIZE_WIDTH=""
+OPTIMIZE_WIDTH_EXTENSION=""
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -63,6 +67,12 @@ do
 	--cache-dir)
 		CACHE_DIRECTORY="$OPTARG"
 		shift
+		;;
+	--optimize-width)
+		OPTIMIZE_WIDTH="--optimize-width"
+		;;
+	--optimize-width-extension)
+		OPTIMIZE_WIDTH_EXTENSION="--optimize-width-extension"
 		;;
 	-h)
 		HELP_MODE=true
@@ -159,8 +169,8 @@ fi
 
 cat "$TMPLDIR/balls" \
 | ./voronota x-place-membrane \
-  --membrane-width "$WIDTH" \
-  --membrane-width-extension "$WIDTH_EXTENSION" \
+  --membrane-width "$WIDTH" $OPTIMIZE_WIDTH \
+  --membrane-width-extension "$WIDTH_EXTENSION" $OPTIMIZE_WIDTH_EXTENSION \
   --scores-file <(cat "$TMPLDIR/all_mscores" | awk '{ if($2<0.75) {print $1 " 0"} else {print $1 " 1"} }') \
   --placement-output "$TMPLDIR/mplace" \
 | ./voronota write-balls-to-atoms-file \

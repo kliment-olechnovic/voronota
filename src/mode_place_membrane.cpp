@@ -158,7 +158,7 @@ ScoredShift estimate_best_scored_shift(
 	return result;
 }
 
-MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension, std::ostream& logstream)
+MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension)
 {
 	std::vector< std::pair<double, double> > buffer_for_projections(points_and_scores.size());
 	apollota::SubdividedIcosahedron sih(3);
@@ -189,13 +189,11 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 		}
 		number_of_cycles++;
 	}
-	logstream << "number_of_cycles " << number_of_cycles << "\n";
-	logstream << "number_of_checks " << number_of_checks << "\n";
 	const apollota::SimplePoint best_direction=sih.vertices()[best_id].unit();
 	return MembranePlacement(width, width_extension, best_scored_shift.score/static_cast<double>(points_and_scores.size()), best_direction*best_scored_shift.shift, best_direction);
 }
 
-MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension, std::ostream& logstream)
+MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension, const bool optimize_width, const bool optimize_width_extension)
 {
 	apollota::SimplePoint original_center(0, 0, 0);
 	for(std::size_t i=0;i<points_and_scores.size();i++)
@@ -210,9 +208,30 @@ MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& 
 		translated_points_and_scores[i].point=(points_and_scores[i].point-original_center);
 	}
 
-	const MembranePlacement translated_membrane_placement=estimate_translated_membrane_placement(translated_points_and_scores, width, width_extension, logstream);
-
-	return MembranePlacement(width, width_extension, translated_membrane_placement.score, original_center+translated_membrane_placement.position, translated_membrane_placement.normal);
+	std::vector<MembranePlacement> best_result;
+	{
+		const double width_step=5.0;
+		const double width_extension_step=5.0;
+		const double width_start=(optimize_width ? 10.0 : width);
+		const double width_extension_start=(optimize_width_extension ? 0.0 : width_extension);
+		for(double current_width=width_start;current_width<=width;current_width+=width_step)
+		{
+			for(double current_width_extension=width_extension_start;current_width_extension<=width_extension;current_width_extension+=width_extension_step)
+			{
+				const MembranePlacement translated_membrane_placement=estimate_translated_membrane_placement(translated_points_and_scores, current_width, current_width_extension);
+				if(best_result.empty())
+				{
+					best_result.push_back(translated_membrane_placement);
+				}
+				else if(best_result[0].score<translated_membrane_placement.score)
+				{
+					best_result[0]=translated_membrane_placement;
+				}
+			}
+		}
+	}
+	const MembranePlacement translated_membrane_placement=(best_result.empty() ? estimate_translated_membrane_placement(translated_points_and_scores, width, width_extension) : best_result[0]);
+	return MembranePlacement(translated_membrane_placement.width, translated_membrane_placement.width_extension, translated_membrane_placement.score, original_center+translated_membrane_placement.position, translated_membrane_placement.normal);
 }
 
 }
@@ -226,6 +245,8 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string scores_file=poh.argument<std::string>(pohw.describe_option("--scores-file", "string", "file path to input atom scores", true), "");
 	const double membrane_width=poh.argument<double>(pohw.describe_option("--membrane-width", "number", "membrane width", true));
 	const double membrane_width_extension=poh.argument<double>(pohw.describe_option("--membrane-width-extension", "number", "membrane width extension"), 0.0);
+	const bool optimize_width=poh.contains_option(pohw.describe_option("--optimize-width", "", "flag to optimize width"));
+	const bool optimize_width_extension=poh.contains_option(pohw.describe_option("--optimize-width-extension", "", "flag to optimize width extension"));
 	const std::string placement_output=poh.argument<std::string>(pohw.describe_option("--placement-output", "string", "file path to output placement results"), "");
 
 	if(!pohw.assert_or_print_help(false))
@@ -264,7 +285,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::ostringstream logstream;
 
-	const MembranePlacement membrane_placement=estimate_membrane_placement(points_and_scores, membrane_width, membrane_width_extension, logstream);
+	const MembranePlacement membrane_placement=estimate_membrane_placement(points_and_scores, membrane_width, membrane_width_extension, optimize_width, optimize_width_extension);
 
 	logstream << "width " << membrane_placement.width << "\n";
 	logstream << "width_extension " << membrane_placement.width_extension << "\n";
@@ -283,7 +304,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		if(fabs((apollota::SimplePoint(list_of_balls[i].second)-membrane_placement.position)*membrane_placement.normal.unit())<(membrane_width*0.5))
+		if(fabs((apollota::SimplePoint(list_of_balls[i].second)-membrane_placement.position)*membrane_placement.normal.unit())<(membrane_placement.width*0.5))
 		{
 			list_of_balls[i].second.props.update_adjuncts("membrane=1");
 		}
