@@ -75,16 +75,14 @@ ScoredShift estimate_best_scored_shift(
 		bins[bin_pos].second+=buffer_for_projections[i].second;
 	}
 
-	double sum_of_all_bin_values=0.0;
 	int count_of_all_bin_values=0;
+	double sum_of_all_bin_values=0.0;
 	for(std::size_t i=0;i<bins.size();i++)
 	{
 		if(bins[i].first>0)
 		{
-			bins[i].second=bins[i].second/static_cast<double>(bins[i].first);
-			bins[i].first=1;
-			sum_of_all_bin_values+=bins[i].second;
 			count_of_all_bin_values+=bins[i].first;
+			sum_of_all_bin_values+=bins[i].second;
 		}
 	}
 
@@ -104,7 +102,7 @@ ScoredShift estimate_best_scored_shift(
 				sum_in+=bins[p].second;
 			}
 		}
-		const double score=sum_in;
+		const double score=static_cast<double>(count_of_all_bin_values-count_in)-(sum_of_all_bin_values-sum_in)+sum_in;
 		if(!best_initialized || best_score<score)
 		{
 			best_score=score;
