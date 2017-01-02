@@ -168,7 +168,7 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 	double last_cycle_best_score=0.0;
 	int number_of_cycles=0;
 	int number_of_checks=0;
-	while(number_of_cycles<2 || (best_scored_shift.score-last_cycle_best_score)>0.0001)
+	while(number_of_cycles<2 || (best_scored_shift.score-last_cycle_best_score)>0.0001 || number_of_cycles>10000)
 	{
 		std::size_t start_id=0;
 		if(number_of_cycles>0)
