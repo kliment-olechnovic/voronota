@@ -218,7 +218,7 @@ do
 
 	if [ ! -s "$WORKFILE.all_contacts" ]
 	then
-		MAIN_CHAIN_ATOMS_DESCRIPTOR="A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>"
+		MAIN_CHAIN_ATOMS_DESCRIPTOR="A<CA,C,N,O,OXT>|A<OP3,O3P,P,OP1,O1P,OP2,O2P,O5',O5*,C5',C5*,C4',C4*,O4',O4*,C3',C3*,O3',O3*,C2',C2*,O2',O2*,C1',C1*>"
 		
 		cat $WORKFILE.balls \
 		| \
