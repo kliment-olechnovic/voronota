@@ -62,6 +62,7 @@ public:
 		return result;
 	}
 
+private:
 	static void cut_contact_remainder(const SimpleSphere& sphere, const std::pair<int, SimpleSphere>& projection_parameters, Remainder& remainder)
 	{
 		int marks[3]={0, 0, 0};
@@ -121,7 +122,6 @@ public:
 		}
 	}
 
-private:
 	static bool check_remainder_possible(
 			const Triangulation::VerticesVector& vertices_vector,
 			const std::set<std::size_t>& vertices_ids,
