@@ -272,7 +272,7 @@ private:
 	{
 		Rotation rotation(axis, 0);
 		const SimplePoint first_point=any_normal_of_vector<SimplePoint>(rotation.axis)*base.r;
-		const double angle_step=std::max(std::min(360*(step/(2*Rotation::pi()*base.r)), 60.0), 5.0);
+		const double angle_step=std::max(std::min(360*(step/(2*pi_value()*base.r)), 60.0), 5.0);
 		result.push_back(PointRecord(sum_of_points<SimplePoint>(base, first_point), a_id, a_id));
 		for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
 		{

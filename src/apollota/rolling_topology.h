@@ -164,7 +164,7 @@ public:
 				SimplePoint(rolling_descriptor.circle),
 				rolling_descriptor.axis,
 				any_normal_of_vector<SimplePoint>(rolling_descriptor.axis)*rolling_descriptor.circle.r,
-				Rotation::pi()*2,
+				pi_value()*2,
 				angle_step);
 	}
 
@@ -193,10 +193,10 @@ public:
 	{
 		SimplePoint axis=(start_vector&end_vector).unit();
 		double angle=directed_angle(SimplePoint(0, 0, 0), start_vector, end_vector, axis);
-		if(angle>Rotation::pi())
+		if(angle>pi_value())
 		{
 			axis=axis.inverted();
-			angle=(Rotation::pi()*2-angle);
+			angle=(pi_value()*2-angle);
 		}
 		return construct_circular_arc_approximation_from_axis_and_start(base, axis, start_vector, angle, steps);
 	}
