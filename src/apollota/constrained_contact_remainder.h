@@ -84,7 +84,7 @@ private:
 				int s2=(s0==2 ? 1 : 2);
 				SimplePoint c01;
 				SimplePoint c02;
-				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				if(intersect_line_segment_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_line_segment_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
 					if(projection_parameters.first>0)
 					{
@@ -102,7 +102,7 @@ private:
 				int s2=(s0==2 ? 1 : 2);
 				SimplePoint c01;
 				SimplePoint c02;
-				if(intersect_vector_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_vector_with_sphere(sphere, it->p[s0], it->p[s2], c02))
+				if(intersect_line_segment_with_sphere(sphere, it->p[s0], it->p[s1], c01) && intersect_line_segment_with_sphere(sphere, it->p[s0], it->p[s2], c02))
 				{
 					if(projection_parameters.first>0)
 					{
@@ -193,50 +193,6 @@ private:
 			result.push_back(TriangleRecord(sih.vertices()[t.get(0)], sih.vertices()[t.get(1)], sih.vertices()[t.get(2)], 0, 0, 0));
 		}
 		return result;
-	}
-
-	static bool intersect_vector_with_sphere(const SimpleSphere& sphere, const SimplePoint& a, const SimplePoint& b, SimplePoint& c)
-	{
-		if(sphere.r<=0.0)
-		{
-			return false;
-		}
-		const double d_oa=distance_from_point_to_point(a, sphere);
-		const double d_ob=distance_from_point_to_point(b, sphere);
-		if((d_oa<sphere.r && d_ob<sphere.r) || (d_oa>sphere.r && d_ob>sphere.r))
-		{
-			return false;
-		}
-		else if(d_oa>sphere.r && d_ob<sphere.r)
-		{
-			return intersect_vector_with_sphere(sphere, b, a, c);
-		}
-		else
-		{
-			const double angle_oac=min_angle(a, sphere, b);
-			if(equal(angle_oac, 0.0) || equal(angle_oac, pi_value()))
-			{
-				c=SimplePoint(sphere)+((b-SimplePoint(sphere)).unit()*d_ob);
-			}
-			else
-			{
-				const double k=sin(angle_oac)/sphere.r;
-				double sin_aio=k*d_oa;
-				if(sin_aio<-1.0)
-				{
-					sin_aio=-1.0;
-				}
-				else if(sin_aio>1.0)
-				{
-					sin_aio=1.0;
-				}
-				const double angle_aco=asin(sin_aio);
-				const double angle_aoc=pi_value()-(angle_oac+angle_aco);
-				const double d_ai=sin(angle_aoc)/k;
-				c=a+((b-a).unit()*d_ai);
-			}
-			return true;
-		}
 	}
 
 	static SimplePoint project_point_on_sphere(const SimpleSphere& sphere, const SimplePoint& p)

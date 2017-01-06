@@ -122,6 +122,51 @@ OutputSphereType intersection_circle_of_two_spheres(const InputSphereTypeA& a, c
 	return custom_sphere_from_point<OutputSphereType>(ap+(cv.unit()*(a.r*cos_g)), a.r*sin_g);
 }
 
+template<typename InputSphereType>
+bool intersect_line_segment_with_sphere(const InputSphereType& sphere, const SimplePoint& a, const SimplePoint& b, SimplePoint& c)
+{
+	if(sphere.r<=0.0)
+	{
+		return false;
+	}
+	const double d_oa=distance_from_point_to_point(a, sphere);
+	const double d_ob=distance_from_point_to_point(b, sphere);
+	if((d_oa<sphere.r && d_ob<sphere.r) || (d_oa>sphere.r && d_ob>sphere.r))
+	{
+		return false;
+	}
+	else if(d_oa>sphere.r && d_ob<sphere.r)
+	{
+		return intersect_line_segment_with_sphere(sphere, b, a, c);
+	}
+	else
+	{
+		const double angle_oac=min_angle(a, sphere, b);
+		if(equal(angle_oac, 0.0) || equal(angle_oac, pi_value()))
+		{
+			c=SimplePoint(sphere)+((b-SimplePoint(sphere)).unit()*d_ob);
+		}
+		else
+		{
+			const double k=sin(angle_oac)/sphere.r;
+			double sin_aio=k*d_oa;
+			if(sin_aio<-1.0)
+			{
+				sin_aio=-1.0;
+			}
+			else if(sin_aio>1.0)
+			{
+				sin_aio=1.0;
+			}
+			const double angle_aco=asin(sin_aio);
+			const double angle_aoc=pi_value()-(angle_oac+angle_aco);
+			const double d_ai=sin(angle_aoc)/k;
+			c=a+((b-a).unit()*d_ai);
+		}
+		return true;
+	}
+}
+
 struct SimpleSphere
 {
 	double x;
