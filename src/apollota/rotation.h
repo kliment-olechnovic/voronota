@@ -23,17 +23,12 @@ public:
 	{
 	}
 
-	static double pi()
-	{
-		return 3.14159265358979323846;
-	}
-
 	template<typename OutputPointType, typename InputPointType>
 	OutputPointType rotate(const InputPointType& p) const
 	{
 		if(axis.module()>0)
 		{
-			const double radians_angle_half=(angle_in_radians ? (angle*0.5) : (angle*pi()/360.0));
+			const double radians_angle_half=(angle_in_radians ? (angle*0.5) : (angle*pi_value()/360.0));
 			const Quaternion q1=quaternion_from_value_and_point(cos(radians_angle_half), axis.unit()*sin(radians_angle_half));
 			const Quaternion q2=quaternion_from_value_and_point(0, p);
 			const Quaternion q3=((q1*q2)*(!q1));

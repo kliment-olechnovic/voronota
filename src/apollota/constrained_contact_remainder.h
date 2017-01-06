@@ -3,7 +3,6 @@
 
 #include "triangulation.h"
 #include "subdivided_icosahedron.h"
-#include "rotation.h"
 
 namespace apollota
 {
@@ -215,7 +214,7 @@ private:
 		else
 		{
 			const double angle_oac=min_angle(a, sphere, b);
-			if(equal(angle_oac, 0.0) || equal(angle_oac, Rotation::pi()))
+			if(equal(angle_oac, 0.0) || equal(angle_oac, pi_value()))
 			{
 				c=SimplePoint(sphere)+((b-SimplePoint(sphere)).unit()*d_ob);
 			}
@@ -232,7 +231,7 @@ private:
 					sin_aio=1.0;
 				}
 				const double angle_aco=asin(sin_aio);
-				const double angle_aoc=Rotation::pi()-(angle_oac+angle_aco);
+				const double angle_aoc=pi_value()-(angle_oac+angle_aco);
 				const double d_ai=sin(angle_aoc)/k;
 				c=a+((b-a).unit()*d_ai);
 			}

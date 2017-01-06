@@ -191,10 +191,15 @@ static double min_angle(const InputPointO& o, const InputPointA& a, const InputP
 	return acos(cos_val);
 }
 
+inline double pi_value()
+{
+	static const double pi=acos(-1.0);
+	return pi;
+}
+
 template<typename InputPointO, typename InputPointA, typename InputPointB, typename InputPointC>
 static double directed_angle(const InputPointO& o, const InputPointA& a, const InputPointB& b, const InputPointC& c)
 {
-	static const double pi=acos(-1.0);
 	const double angle=min_angle(o, a, b);
 	const PODPoint n=cross_product<PODPoint>(unit_point<PODPoint>(sub_of_points<PODPoint>(a, o)), unit_point<PODPoint>(sub_of_points<PODPoint>(b, o)));
 	if(dot_product(sub_of_points<PODPoint>(c, o), n)>=0)
@@ -203,7 +208,7 @@ static double directed_angle(const InputPointO& o, const InputPointA& a, const I
 	}
 	else
 	{
-		return (pi*2-angle);
+		return (pi_value()*2-angle);
 	}
 }
 
