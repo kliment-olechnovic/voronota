@@ -28,12 +28,8 @@ std::string draw_inter_atom_contact(
 					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections);
 			for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 			{
-				const ConstrainedContactContour::Contour& contour=(*contours_it);
-				const std::vector<SimplePoint> outline=ConstrainedContactContour::collect_points_from_contour(contour);
-				opengl_printer.add_triangle_fan(
-						HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a_id], spheres[b_id]),
-						outline,
-						sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit());
+				const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id]);
+				opengl_printer.add_triangle_fan(d.center, d.outline, sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit());
 			}
 		}
 	}
