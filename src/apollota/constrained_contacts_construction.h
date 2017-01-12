@@ -40,21 +40,20 @@ public:
 					const ConstrainedContactContour::Contour& contour=(*contours_it);
 					if(!contour.empty())
 					{
-						const std::vector<SimplePoint> outline=ConstrainedContactContour::collect_points_from_contour(contour);
-						const SimplePoint center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(outline.begin(), outline.end()), spheres[a], spheres[b]);
-						for(std::size_t i=0;i<outline.size();i++)
+						const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(contour, spheres[a], spheres[b]);
+						for(std::size_t i=0;i<d.outline.size();i++)
 						{
-							const std::size_t second_index=((i+1<outline.size()) ? (i+1) : 0);
-							sum+=triangle_area(center, outline[i], outline[second_index]);
+							const std::size_t second_index=((i+1<d.outline.size()) ? (i+1) : 0);
+							sum+=triangle_area(d.center, d.outline[i], d.outline[second_index]);
 							if(volumes_bundle.first)
 							{
 								if(a_is_not_mock_solvent)
 								{
-									volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], center, outline[i], outline[second_index]));
+									volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], d.center, d.outline[i], d.outline[second_index]));
 								}
 								if(b_is_not_mock_solvent)
 								{
-									volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], center, outline[i], outline[second_index]));
+									volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], d.center, d.outline[i], d.outline[second_index]));
 								}
 							}
 						}

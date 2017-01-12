@@ -27,6 +27,17 @@ public:
 
 	typedef std::list<PointRecord> Contour;
 
+	struct ContourAreaDescriptor
+	{
+		std::vector<SimplePoint> outline;
+		SimplePoint center;
+		bool star_domain;
+
+		ContourAreaDescriptor() : star_domain(false)
+		{
+		}
+	};
+
 	static std::list<Contour> construct_contact_contours(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::VerticesVector& vertices_vector,
@@ -138,18 +149,15 @@ public:
 		return result;
 	}
 
-	static std::vector<SimplePoint> collect_points_from_contour(const Contour& contour)
+	static ContourAreaDescriptor construct_contour_area_descriptor(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2)
 	{
-		std::vector<SimplePoint> result;
-		if(!contour.empty())
+		ContourAreaDescriptor d;
+		d.outline=collect_points_from_contour(contour);
+		if(!d.outline.empty())
 		{
-			result.reserve(contour.size());
-			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
-			{
-				result.push_back(jt->p);
-			}
+			d.center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(d.outline.begin(), d.outline.end()), sphere1, sphere2);
 		}
-		return result;
+		return d;
 	}
 
 private:
@@ -565,6 +573,20 @@ private:
 			list.push_back(*list.begin());
 			list.pop_front();
 		}
+	}
+
+	static std::vector<SimplePoint> collect_points_from_contour(const Contour& contour)
+	{
+		std::vector<SimplePoint> result;
+		if(!contour.empty())
+		{
+			result.reserve(contour.size());
+			for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
+			{
+				result.push_back(jt->p);
+			}
+		}
+		return result;
 	}
 };
 
