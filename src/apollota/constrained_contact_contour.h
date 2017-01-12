@@ -156,6 +156,7 @@ public:
 		if(!d.outline.empty())
 		{
 			d.center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(d.outline.begin(), d.outline.end()), sphere1, sphere2);
+			d.star_domain=check_star_domain(d.outline, d.center);
 		}
 		return d;
 	}
@@ -587,6 +588,33 @@ private:
 			}
 		}
 		return result;
+	}
+
+	static bool check_star_domain(const std::vector<SimplePoint>& outline, const SimplePoint& center)
+	{
+		bool star_domain=(outline.size()>2);
+		for(std::size_t i0=0;i0<outline.size() && star_domain;i0++)
+		{
+			std::size_t i1=(i0+1);
+			std::size_t i2=(i0+2);
+			if(i1>=outline.size())
+			{
+				i1=0;
+				i2=1;
+			}
+			if(i2>=outline.size())
+			{
+				i2=0;
+			}
+			const SimplePoint v0=(outline[i0]-center).unit();
+			const SimplePoint v1=(outline[i1]-center).unit();
+			const SimplePoint v2=(outline[i2]-center).unit();
+			if(dot_product(v0, v1)<dot_product(v0, v2))
+			{
+				star_domain=false;
+			}
+		}
+		return star_domain;
 	}
 };
 
