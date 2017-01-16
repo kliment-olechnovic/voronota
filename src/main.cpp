@@ -42,6 +42,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler&);
 void ses_demo(const auxiliaries::ProgramOptionsHandler&);
 void rotational_optimization_demo(const auxiliaries::ProgramOptionsHandler&);
 void place_membrane(const auxiliaries::ProgramOptionsHandler&);
+void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
 
 struct ModeDescriptor
 {
@@ -103,6 +104,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-ses-demo", ModeDescriptor::FunctionPtr(ses_demo)));
 	list_of_modes.push_back(ModeDescriptor("x-rotational-optimization-demo", ModeDescriptor::FunctionPtr(rotational_optimization_demo)));
 	list_of_modes.push_back(ModeDescriptor("x-place-membrane", ModeDescriptor::FunctionPtr(place_membrane)));
+	list_of_modes.push_back(ModeDescriptor("x-demo-polygon-triangulation", ModeDescriptor::FunctionPtr(demo_polygon_triangulation)));
 	return list_of_modes;
 }
 

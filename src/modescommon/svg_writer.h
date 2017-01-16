@@ -59,9 +59,21 @@ public:
 		return color_from_red_green_blue_components(r, g, b, 255.0);
 	}
 
-	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& color)
+	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& fill)
 	{
-		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("fill", color));
+		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("fill", fill));
+		return (*this);
+	}
+
+	SVGWriter& add_circle(const unsigned int cx, const unsigned int cy, const unsigned int r, const std::string& fill)
+	{
+		add_child(XMLWriter("circle").set("cx", cx).set("cy", cy).set("r", r).set("fill", fill));
+		return (*this);
+	}
+
+	SVGWriter& add_line(const unsigned int x1, const unsigned int y1, const unsigned int x2, const unsigned int y2, const std::string& stroke)
+	{
+		add_child(XMLWriter("line").set("x1", x1).set("y1", y1).set("x2", x2).set("y2", y2).set("stroke", stroke));
 		return (*this);
 	}
 };
