@@ -10,13 +10,6 @@ namespace
 
 typedef apollota::SimplePoint Point;
 
-template<typename T>
-inline T& operator>>(T& input, Point& p)
-{
-	input >> p.x >> p.y >> p.z;
-	return input;
-}
-
 double calc_rmsd(const std::vector<Point>& a, const std::vector<Point>& b)
 {
 	if(a.size()!=b.size())

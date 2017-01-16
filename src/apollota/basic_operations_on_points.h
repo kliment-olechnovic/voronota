@@ -358,6 +358,20 @@ struct SimplePoint
 	}
 };
 
+template<typename T>
+inline T& operator<<(T& output, const SimplePoint& p)
+{
+	output << p.x << " " << p.y << " " << p.z;
+	return output;
+}
+
+template<typename T>
+inline T& operator>>(T& input, SimplePoint& p)
+{
+	input >> p.x >> p.y >> p.z;
+	return input;
+}
+
 }
 
 #endif /* APOLLOTA_BASIC_OPERATIONS_ON_POINTS_H_ */
