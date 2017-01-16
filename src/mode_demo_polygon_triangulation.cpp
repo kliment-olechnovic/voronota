@@ -45,7 +45,6 @@ std::vector<double> calc_convexity(const std::vector<apollota::SimplePoint>& poi
 {
 	std::vector<double> convexity;
 	convexity.reserve(points.size());
-	double sum_of_angles=0.0;
 	for(std::vector<apollota::SimplePoint>::const_iterator it=points.begin();it!=points.end();++it)
 	{
 		const double v=calc_convexity(
@@ -54,9 +53,21 @@ std::vector<double> calc_convexity(const std::vector<apollota::SimplePoint>& poi
 				*it,
 				*get_next_iter_in_cycle<std::vector<apollota::SimplePoint>::const_iterator>(points.begin(), points.end(), it));
 		convexity.push_back(v);
-		sum_of_angles+=v;
 	}
-	inverted=(sum_of_angles<0.0);
+	std::vector<apollota::SimplePoint>::const_iterator min_x_it=points.begin();
+	std::vector<apollota::SimplePoint>::const_iterator min_y_it=points.begin();
+	for(std::vector<apollota::SimplePoint>::const_iterator it=points.begin();it!=points.end();++it)
+	{
+		if((it->x)<(min_x_it->x))
+		{
+			min_x_it=it;
+		}
+		if((it->y)<(min_y_it->y))
+		{
+			min_y_it=it;
+		}
+	}
+	inverted=(convexity[min_x_it-points.begin()]<0.0 || convexity[min_y_it-points.begin()]<0.0);
 	if(inverted)
 	{
 		for(std::size_t i=0;i<convexity.size();i++)
