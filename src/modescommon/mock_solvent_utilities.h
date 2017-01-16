@@ -6,12 +6,12 @@
 namespace
 {
 
-std::string mock_solvent_name()
+inline std::string mock_solvent_name()
 {
 	return std::string("w");
 }
 
-bool identify_mock_solvent(const auxiliaries::ChainResidueAtomDescriptor& crad)
+inline bool identify_mock_solvent(const auxiliaries::ChainResidueAtomDescriptor& crad)
 {
 	return (crad.name==mock_solvent_name() && crad.resName==mock_solvent_name());
 }
