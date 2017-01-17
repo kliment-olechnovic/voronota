@@ -41,19 +41,41 @@ public:
 					if(!contour.empty())
 					{
 						const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(contour, spheres[a], spheres[b], false);
-						for(std::size_t i=0;i<d.outline.size();i++)
+						if(d.star_domain || d.simple_polygon_triangulation.empty())
 						{
-							const std::size_t second_index=((i+1<d.outline.size()) ? (i+1) : 0);
-							sum+=triangle_area(d.center, d.outline[i], d.outline[second_index]);
-							if(volumes_bundle.first)
+							for(std::size_t i=0;i<d.outline.size();i++)
 							{
-								if(a_is_not_mock_solvent)
+								const std::size_t second_index=((i+1<d.outline.size()) ? (i+1) : 0);
+								sum+=triangle_area(d.center, d.outline[i], d.outline[second_index]);
+								if(volumes_bundle.first)
 								{
-									volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], d.center, d.outline[i], d.outline[second_index]));
+									if(a_is_not_mock_solvent)
+									{
+										volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], d.center, d.outline[i], d.outline[second_index]));
+									}
+									if(b_is_not_mock_solvent)
+									{
+										volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], d.center, d.outline[i], d.outline[second_index]));
+									}
 								}
-								if(b_is_not_mock_solvent)
+							}
+						}
+						else
+						{
+							for(std::size_t i=0;i<d.simple_polygon_triangulation.size();i++)
+							{
+								const Triple& t=d.simple_polygon_triangulation[i];
+								sum+=triangle_area(d.outline[t.get(0)], d.outline[t.get(1)], d.outline[t.get(2)]);
+								if(volumes_bundle.first)
 								{
-									volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], d.center, d.outline[i], d.outline[second_index]));
+									if(a_is_not_mock_solvent)
+									{
+										volumes_bundle.second[a]+=fabs(signed_volume_of_tetrahedron(spheres[a], d.outline[t.get(0)], d.outline[t.get(1)], d.outline[t.get(2)]));
+									}
+									if(b_is_not_mock_solvent)
+									{
+										volumes_bundle.second[b]+=fabs(signed_volume_of_tetrahedron(spheres[b], d.outline[t.get(0)], d.outline[t.get(1)], d.outline[t.get(2)]));
+									}
 								}
 							}
 						}
