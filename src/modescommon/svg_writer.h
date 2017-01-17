@@ -65,15 +65,15 @@ public:
 		return (*this);
 	}
 
-	SVGWriter& add_circle(const unsigned int cx, const unsigned int cy, const unsigned int r, const std::string& fill)
+	SVGWriter& add_circle(const unsigned int cx, const unsigned int cy, const unsigned int r, const std::string& style)
 	{
-		add_child(XMLWriter("circle").set("cx", cx).set("cy", cy).set("r", r).set("fill", fill));
+		add_child(XMLWriter("circle").set("cx", cx).set("cy", cy).set("r", r).set("style", style));
 		return (*this);
 	}
 
-	SVGWriter& add_line(const unsigned int x1, const unsigned int y1, const unsigned int x2, const unsigned int y2, const std::string& stroke)
+	SVGWriter& add_line(const unsigned int x1, const unsigned int y1, const unsigned int x2, const unsigned int y2, const std::string& style)
 	{
-		add_child(XMLWriter("line").set("x1", x1).set("y1", y1).set("x2", x2).set("y2", y2).set("stroke", stroke));
+		add_child(XMLWriter("line").set("x1", x1).set("y1", y1).set("x2", x2).set("y2", y2).set("style", style));
 		return (*this);
 	}
 };
