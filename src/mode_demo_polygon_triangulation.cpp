@@ -11,134 +11,186 @@
 namespace
 {
 
-template<typename Iter>
-Iter get_prev_iter_in_cycle(Iter begin, Iter end, Iter it)
+class SimplePolygonUtilities
 {
-	Iter result=it;
-	if(result==begin)
+public:
+	struct ConvexityInfo
 	{
-		result=end;
-	}
-	--result;
-	return result;
-}
+		std::vector<apollota::SimplePoint> points;
+		std::vector<double> convexity;
+		apollota::SimplePoint normal;
+	};
 
-template<typename Iter>
-Iter get_next_iter_in_cycle(Iter begin, Iter end, Iter it)
-{
-	Iter result=it;
-	++result;
-	if(result==end)
+	struct TriangulationInfo
 	{
-		result=begin;
-	}
-	return result;
-}
+		ConvexityInfo convexity_info;
+		std::vector<apollota::Triple> triangulation;
+	};
 
-double calc_convexity(const apollota::SimplePoint& normal, const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c)
-{
-	const bool convex=((((b-a)&(c-b))*normal)>=0.0);
-	return (apollota::min_angle(b, a, c)*(convex ? 1.0 : -1.0));
-}
-
-std::vector<double> calc_convexity(const std::vector<apollota::SimplePoint>& points, const apollota::SimplePoint& normal, bool& inverted)
-{
-	std::vector<double> convexity;
-	convexity.reserve(points.size());
-	for(std::vector<apollota::SimplePoint>::const_iterator it=points.begin();it!=points.end();++it)
+	static ConvexityInfo calc_polygon_convexity(const std::vector<apollota::SimplePoint>& points, const apollota::SimplePoint& normal)
 	{
-		const double v=calc_convexity(
-				normal,
-				*get_prev_iter_in_cycle<std::vector<apollota::SimplePoint>::const_iterator>(points.begin(), points.end(), it),
-				*it,
-				*get_next_iter_in_cycle<std::vector<apollota::SimplePoint>::const_iterator>(points.begin(), points.end(), it));
-		convexity.push_back(v);
-	}
-	std::vector<apollota::SimplePoint>::const_iterator min_x_it=points.begin();
-	std::vector<apollota::SimplePoint>::const_iterator min_y_it=points.begin();
-	for(std::vector<apollota::SimplePoint>::const_iterator it=points.begin();it!=points.end();++it)
-	{
-		if((it->x)<(min_x_it->x))
+		ConvexityInfo result;
+		if(points.size()<3)
 		{
-			min_x_it=it;
+			return result;
 		}
-		if((it->y)<(min_y_it->y))
+		result.normal=normal.unit();
+		result.points=flatten_points(points, result.normal);
+		result.convexity.reserve(result.points.size());
+		for(std::vector<apollota::SimplePoint>::const_iterator it=result.points.begin();it!=result.points.end();++it)
 		{
-			min_y_it=it;
+			const double v=calc_convexity(
+					result.normal,
+					*get_prev_iter_in_cycle<std::vector<apollota::SimplePoint>::const_iterator>(result.points.begin(), result.points.end(), it),
+					*it,
+					*get_next_iter_in_cycle<std::vector<apollota::SimplePoint>::const_iterator>(result.points.begin(), result.points.end(), it));
+			result.convexity.push_back(v);
 		}
-	}
-	inverted=(convexity[min_x_it-points.begin()]<0.0 || convexity[min_y_it-points.begin()]<0.0);
-	if(inverted)
-	{
-		for(std::size_t i=0;i<convexity.size();i++)
+		std::size_t min_x_id=0;
+		std::size_t min_y_id=0;
+		std::size_t min_z_id=0;
+		for(std::size_t i=0;i<result.points.size();i++)
 		{
-			convexity[i]=(0.0-convexity[i]);
-		}
-	}
-	return convexity;
-}
-
-bool check_point_between_rays(const apollota::SimplePoint& o, const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& p)
-{
-	const apollota::SimplePoint oa=(a-o).unit();
-	const apollota::SimplePoint ob=(b-o).unit();
-	const apollota::SimplePoint op=(p-o).unit();
-	const double cos_aob=oa*ob;
-	const double cos_aop=oa*op;
-	const double cos_pob=op*ob;
-	return (cos_aop>cos_aob && cos_pob>cos_aob);
-}
-
-bool check_point_in_triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c, const apollota::SimplePoint& p)
-{
-	return (check_point_between_rays(a, b, c, p) && check_point_between_rays(b, a, c, p) && check_point_between_rays(c, a, b, p));
-}
-
-std::vector<apollota::Triple> triangulate_simple_polygon(const std::vector<apollota::SimplePoint>& points, const apollota::SimplePoint& unchecked_normal)
-{
-	bool convexity_inverted=false;
-	std::vector<double> convexity=calc_convexity(points, unchecked_normal, convexity_inverted);
-	const apollota::SimplePoint checked_normal=(convexity_inverted ? unchecked_normal.inverted() : unchecked_normal);
-	std::list<std::size_t> polygon_ids;
-	for(std::size_t i=0;i<points.size();i++)
-	{
-		polygon_ids.push_back(i);
-	}
-	std::vector<apollota::Triple> results;
-	bool ended=false;
-	while(!ended)
-	{
-		bool ear_found=false;
-		for(std::list<std::size_t>::iterator it=polygon_ids.begin();it!=polygon_ids.end() && !ear_found;++it)
-		{
-			if(convexity[*it]>0.0)
+			if(result.points[i].x<result.points[min_x_id].x)
 			{
-				std::list<std::size_t>::iterator prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
-				std::list<std::size_t>::iterator next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
-				bool empty=true;
-				for(std::size_t i=0;i<convexity.size() && empty;i++)
-				{
-					if(convexity[i]<=0.0)
-					{
-						empty=!check_point_in_triangle(points[*prev_it], points[*it], points[*next_it], points[i]);
-					}
-				}
-				if(empty)
-				{
-					ear_found=true;
-					results.push_back(apollota::Triple(*prev_it, *it, *next_it));
-					polygon_ids.erase(it);
-					std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
-					std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
-					convexity[*prev_it]=calc_convexity(checked_normal, points[*prev_prev_it], points[*prev_it], points[*next_it]);
-					convexity[*next_it]=calc_convexity(checked_normal, points[*prev_it], points[*next_it], points[*next_next_it]);
-				}
+				min_x_id=i;
+			}
+			if(result.points[i].y<result.points[min_y_id].y)
+			{
+				min_y_id=i;
+			}
+			if(result.points[i].z<result.points[min_z_id].z)
+			{
+				min_z_id=i;
 			}
 		}
-		ended=!ear_found;
+		if(result.convexity[min_x_id]<0.0 || result.convexity[min_y_id]<0.0 || result.convexity[min_z_id]<0.0)
+		{
+			result.normal=result.normal.inverted();
+			for(std::size_t i=0;i<result.convexity.size();i++)
+			{
+				result.convexity[i]=(0.0-result.convexity[i]);
+			}
+		}
+		return result;
 	}
-	return results;
-}
+
+	static TriangulationInfo triangulate_simple_polygon(const std::vector<apollota::SimplePoint>& points, const apollota::SimplePoint& normal)
+	{
+		TriangulationInfo result;
+		if(points.size()<3)
+		{
+			return result;
+		}
+		result.convexity_info=calc_polygon_convexity(points, normal);
+		if(result.convexity_info.convexity.size()!=points.size())
+		{
+			return result;
+		}
+
+		const std::vector<apollota::SimplePoint>& polygon_points=result.convexity_info.points;
+		const apollota::SimplePoint& polygon_normal=result.convexity_info.normal;
+		std::vector<double> polygon_convexity_vector=result.convexity_info.convexity;
+		std::list<std::size_t> polygon_ids;
+		for(std::size_t i=0;i<polygon_points.size();i++)
+		{
+			polygon_ids.push_back(i);
+		}
+
+		bool triangulation_ended=false;
+		while(!triangulation_ended)
+		{
+			bool ear_found=false;
+			for(std::list<std::size_t>::iterator it=polygon_ids.begin();it!=polygon_ids.end() && !ear_found;++it)
+			{
+				if(polygon_convexity_vector[*it]>0.0)
+				{
+					std::list<std::size_t>::iterator prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
+					std::list<std::size_t>::iterator next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
+					bool triangle_is_empty=true;
+					for(std::size_t i=0;i<polygon_convexity_vector.size() && triangle_is_empty;i++)
+					{
+						if(polygon_convexity_vector[i]<=0.0)
+						{
+							triangle_is_empty=!check_point_in_triangle(polygon_points[*prev_it], polygon_points[*it], polygon_points[*next_it], polygon_points[i]);
+						}
+					}
+					if(triangle_is_empty)
+					{
+						ear_found=true;
+						result.triangulation.push_back(apollota::Triple(*prev_it, *it, *next_it));
+						polygon_ids.erase(it);
+						std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
+						std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
+						polygon_convexity_vector[*prev_it]=calc_convexity(polygon_normal, polygon_points[*prev_prev_it], polygon_points[*prev_it], polygon_points[*next_it]);
+						polygon_convexity_vector[*next_it]=calc_convexity(polygon_normal, polygon_points[*prev_it], polygon_points[*next_it], polygon_points[*next_next_it]);
+					}
+				}
+			}
+			triangulation_ended=!ear_found;
+		}
+
+		return result;
+	}
+
+private:
+	static std::vector<apollota::SimplePoint> flatten_points(const std::vector<apollota::SimplePoint>& points, const apollota::SimplePoint& normal)
+	{
+		std::vector<apollota::SimplePoint> result(points.size());
+		for(std::size_t i=0;i<points.size();i++)
+		{
+			const double dist_to_plane=(points[i]-points[0])*normal;
+			result[i]=(points[i]-(normal*dist_to_plane));
+		}
+		return result;
+	}
+
+	template<typename Iter>
+	static Iter get_prev_iter_in_cycle(Iter begin, Iter end, Iter it)
+	{
+		Iter result=it;
+		if(result==begin)
+		{
+			result=end;
+		}
+		--result;
+		return result;
+	}
+
+	template<typename Iter>
+	static Iter get_next_iter_in_cycle(Iter begin, Iter end, Iter it)
+	{
+		Iter result=it;
+		++result;
+		if(result==end)
+		{
+			result=begin;
+		}
+		return result;
+	}
+
+	static double calc_convexity(const apollota::SimplePoint& normal, const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c)
+	{
+		const bool convex=((((b-a)&(c-b))*normal)>=0.0);
+		return (apollota::min_angle(b, a, c)*(convex ? 1.0 : -1.0));
+	}
+
+	static bool check_point_between_rays(const apollota::SimplePoint& o, const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& p)
+	{
+		const apollota::SimplePoint oa=(a-o).unit();
+		const apollota::SimplePoint ob=(b-o).unit();
+		const apollota::SimplePoint op=(p-o).unit();
+		const double cos_aob=oa*ob;
+		const double cos_aop=oa*op;
+		const double cos_pob=op*ob;
+		return (cos_aop>cos_aob && cos_pob>cos_aob);
+	}
+
+	static bool check_point_in_triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c, const apollota::SimplePoint& p)
+	{
+		return (check_point_between_rays(a, b, c, p) && check_point_between_rays(b, a, c, p));
+	}
+};
 
 }
 
@@ -190,17 +242,13 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		p=(p-p_min);
 	}
 
-	const apollota::SimplePoint unchecked_normal(0, 0, 1);
-	bool convexity_inverted=false;
-	const std::vector<double> convexity=calc_convexity(points, unchecked_normal, convexity_inverted);
-
-	const std::vector<apollota::Triple> triangulation=triangulate_simple_polygon(points, unchecked_normal);
+	SimplePolygonUtilities::TriangulationInfo result=SimplePolygonUtilities::triangulate_simple_polygon(points, apollota::SimplePoint(0, 0, 1));
 
 	SVGWriter svg(p_max.x-p_min.x, p_max.y-p_min.y);
 	for(std::size_t i=0;i<points.size();i++)
 	{
 		const apollota::SimplePoint& p=points[i];
-		svg.add_circle(p.x, p.y, 10, (convexity[i]<0.0 ? "rgb(255,0,0)" : "rgb(0,255,0)"));
+		svg.add_circle(p.x, p.y, 10, (result.convexity_info.convexity[i]<0.0 ? "rgb(255,0,0)" : "rgb(0,255,0)"));
 	}
 	for(std::size_t i=0;i<points.size();i++)
 	{
@@ -208,9 +256,9 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::SimplePoint& b=points[i+1<points.size() ? i+1 : 0];
 		svg.add_line(a.x, a.y, b.x, b.y, "rgb(0,0,255)");
 	}
-	for(std::size_t i=0;i<triangulation.size();i++)
+	for(std::size_t i=0;i<result.triangulation.size();i++)
 	{
-		const apollota::Triple& t=triangulation[i];
+		const apollota::Triple& t=result.triangulation[i];
 		const apollota::SimplePoint& a=points[t.get(0)];
 		const apollota::SimplePoint& b=points[t.get(1)];
 		const apollota::SimplePoint& c=points[t.get(2)];
