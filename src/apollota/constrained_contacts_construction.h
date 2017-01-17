@@ -40,7 +40,7 @@ public:
 					const ConstrainedContactContour::Contour& contour=(*contours_it);
 					if(!contour.empty())
 					{
-						const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(contour, spheres[a], spheres[b]);
+						const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(contour, spheres[a], spheres[b], false);
 						for(std::size_t i=0;i<d.outline.size();i++)
 						{
 							const std::size_t second_index=((i+1<d.outline.size()) ? (i+1) : 0);
