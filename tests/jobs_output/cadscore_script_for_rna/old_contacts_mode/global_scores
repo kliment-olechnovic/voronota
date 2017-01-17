@@ -1,0 +1,3 @@
+./input/rna/target.pdb ./input/rna/model1.pdb 0.970422 77
+./input/rna/target.pdb ./input/rna/model2.pdb 0.755151 77
+./input/rna/target.pdb ./input/rna/target.pdb 1 77
