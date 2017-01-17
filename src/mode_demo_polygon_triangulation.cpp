@@ -1,4 +1,5 @@
 #include <list>
+#include <set>
 
 #include "apollota/basic_operations_on_points.h"
 #include "apollota/tuple.h"
@@ -96,6 +97,14 @@ public:
 		{
 			polygon_ids.push_back(i);
 		}
+		std::set<std::size_t> polygon_concave_set;
+		for(std::size_t i=0;i<polygon_convexity_vector.size();i++)
+		{
+			if(polygon_convexity_vector[i]<=0.0)
+			{
+				polygon_concave_set.insert(i);
+			}
+		}
 
 		bool triangulation_ended=false;
 		while(!triangulation_ended)
@@ -108,22 +117,36 @@ public:
 					std::list<std::size_t>::iterator prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
 					std::list<std::size_t>::iterator next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
 					bool triangle_is_empty=true;
-					for(std::size_t i=0;i<polygon_convexity_vector.size() && triangle_is_empty;i++)
+					for(std::set<std::size_t>::const_iterator concave_it=polygon_concave_set.begin();concave_it!=polygon_concave_set.end() && triangle_is_empty;++concave_it)
 					{
-						if(polygon_convexity_vector[i]<=0.0)
-						{
-							triangle_is_empty=!check_point_in_triangle(polygon_points[*prev_it], polygon_points[*it], polygon_points[*next_it], polygon_points[i]);
-						}
+						triangle_is_empty=!check_point_in_triangle(polygon_points[*prev_it], polygon_points[*it], polygon_points[*next_it], polygon_points[*concave_it]);
 					}
 					if(triangle_is_empty)
 					{
 						ear_found=true;
 						result.triangulation.push_back(Triple(*prev_it, *it, *next_it));
 						polygon_ids.erase(it);
+						polygon_concave_set.erase(*it);
 						std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
 						std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
 						polygon_convexity_vector[*prev_it]=calc_convexity(polygon_normal, polygon_points[*prev_prev_it], polygon_points[*prev_it], polygon_points[*next_it]);
 						polygon_convexity_vector[*next_it]=calc_convexity(polygon_normal, polygon_points[*prev_it], polygon_points[*next_it], polygon_points[*next_next_it]);
+						if(polygon_convexity_vector[*prev_it]<=0.0)
+						{
+							polygon_concave_set.insert(*prev_it);
+						}
+						else
+						{
+							polygon_concave_set.erase(*prev_it);
+						}
+						if(polygon_convexity_vector[*next_it]<=0.0)
+						{
+							polygon_concave_set.insert(*next_it);
+						}
+						else
+						{
+							polygon_concave_set.erase(*next_it);
+						}
 					}
 				}
 			}
