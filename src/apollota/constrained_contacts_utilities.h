@@ -29,7 +29,24 @@ std::string draw_inter_atom_contact(
 			for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 			{
 				const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
-				opengl_printer.add_triangle_fan(d.center, d.outline, sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit());
+				const SimplePoint normal=sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit();
+				if(d.star_domain || d.simple_polygon_triangulation.empty())
+				{
+					opengl_printer.add_triangle_fan(d.center, d.outline, normal);
+				}
+				else
+				{
+					std::vector<SimplePoint> strip_vertices(3);
+					std::vector<SimplePoint> strip_normals(3, normal);
+					for(std::size_t i=0;i<d.simple_polygon_triangulation.size();i++)
+					{
+						const Triple& t=d.simple_polygon_triangulation[i];
+						strip_vertices[0]=d.outline[t.get(0)];
+						strip_vertices[1]=d.outline[t.get(1)];
+						strip_vertices[2]=d.outline[t.get(2)];
+						opengl_printer.add_triangle_strip(strip_vertices, strip_normals);
+					}
+				}
 			}
 		}
 	}
