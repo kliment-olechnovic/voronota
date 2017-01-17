@@ -106,47 +106,56 @@ public:
 			}
 		}
 
+		std::vector< std::pair<double, std::list<std::size_t>::iterator> > sorted_convex_ids;
+		sorted_convex_ids.reserve(polygon_convexity_vector.size());
 		bool triangulation_ended=false;
 		while(!triangulation_ended)
 		{
-			bool ear_found=false;
-			for(std::list<std::size_t>::iterator it=polygon_ids.begin();it!=polygon_ids.end() && !ear_found;++it)
+			sorted_convex_ids.clear();
+			for(std::list<std::size_t>::iterator it=polygon_ids.begin();it!=polygon_ids.end();++it)
 			{
 				if(polygon_convexity_vector[*it]>0.0)
 				{
-					std::list<std::size_t>::iterator prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
-					std::list<std::size_t>::iterator next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
-					bool triangle_is_empty=true;
-					for(std::set<std::size_t>::const_iterator concave_it=polygon_concave_set.begin();concave_it!=polygon_concave_set.end() && triangle_is_empty;++concave_it)
+					sorted_convex_ids.push_back(std::make_pair(polygon_convexity_vector[*it], it));
+				}
+			}
+			std::sort(sorted_convex_ids.begin(), sorted_convex_ids.end(), custom_pair_comparison<double, std::list<std::size_t>::iterator>());
+			bool ear_found=false;
+			for(std::vector< std::pair<double, std::list<std::size_t>::iterator> >::const_iterator sorted_convex_ids_it=sorted_convex_ids.begin();sorted_convex_ids_it!=sorted_convex_ids.end() && !ear_found;++sorted_convex_ids_it)
+			{
+				std::list<std::size_t>::iterator it=sorted_convex_ids_it->second;
+				std::list<std::size_t>::iterator prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
+				std::list<std::size_t>::iterator next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), it);
+				bool triangle_is_empty=true;
+				for(std::set<std::size_t>::const_iterator concave_it=polygon_concave_set.begin();concave_it!=polygon_concave_set.end() && triangle_is_empty;++concave_it)
+				{
+					triangle_is_empty=!check_point_in_triangle(polygon_points[*prev_it], polygon_points[*it], polygon_points[*next_it], polygon_points[*concave_it]);
+				}
+				if(triangle_is_empty)
+				{
+					ear_found=true;
+					result.triangulation.push_back(Triple(*prev_it, *it, *next_it));
+					polygon_ids.erase(it);
+					polygon_concave_set.erase(*it);
+					std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
+					std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
+					polygon_convexity_vector[*prev_it]=calc_convexity(polygon_normal, polygon_points[*prev_prev_it], polygon_points[*prev_it], polygon_points[*next_it]);
+					polygon_convexity_vector[*next_it]=calc_convexity(polygon_normal, polygon_points[*prev_it], polygon_points[*next_it], polygon_points[*next_next_it]);
+					if(polygon_convexity_vector[*prev_it]<=0.0)
 					{
-						triangle_is_empty=!check_point_in_triangle(polygon_points[*prev_it], polygon_points[*it], polygon_points[*next_it], polygon_points[*concave_it]);
+						polygon_concave_set.insert(*prev_it);
 					}
-					if(triangle_is_empty)
+					else
 					{
-						ear_found=true;
-						result.triangulation.push_back(Triple(*prev_it, *it, *next_it));
-						polygon_ids.erase(it);
-						polygon_concave_set.erase(*it);
-						std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
-						std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
-						polygon_convexity_vector[*prev_it]=calc_convexity(polygon_normal, polygon_points[*prev_prev_it], polygon_points[*prev_it], polygon_points[*next_it]);
-						polygon_convexity_vector[*next_it]=calc_convexity(polygon_normal, polygon_points[*prev_it], polygon_points[*next_it], polygon_points[*next_next_it]);
-						if(polygon_convexity_vector[*prev_it]<=0.0)
-						{
-							polygon_concave_set.insert(*prev_it);
-						}
-						else
-						{
-							polygon_concave_set.erase(*prev_it);
-						}
-						if(polygon_convexity_vector[*next_it]<=0.0)
-						{
-							polygon_concave_set.insert(*next_it);
-						}
-						else
-						{
-							polygon_concave_set.erase(*next_it);
-						}
+						polygon_concave_set.erase(*prev_it);
+					}
+					if(polygon_convexity_vector[*next_it]<=0.0)
+					{
+						polygon_concave_set.insert(*next_it);
+					}
+					else
+					{
+						polygon_concave_set.erase(*next_it);
 					}
 				}
 			}
@@ -213,6 +222,15 @@ private:
 	{
 		return (check_point_between_rays(a, b, c, p) && check_point_between_rays(b, a, c, p));
 	}
+
+	template<typename T1, typename T2>
+	struct custom_pair_comparison
+	{
+		bool operator()(const std::pair<T1, T2>& a, const std::pair<T1, T2>& b)
+		{
+			return (a.first<b.first);
+		}
+	};
 };
 
 }
