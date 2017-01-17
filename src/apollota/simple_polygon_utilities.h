@@ -45,25 +45,20 @@ public:
 					*get_next_iter_in_cycle<std::vector<SimplePoint>::const_iterator>(result.points.begin(), result.points.end(), it));
 			result.convexity.push_back(v);
 		}
-		std::size_t min_x_id=0;
-		std::size_t min_y_id=0;
-		std::size_t min_z_id=0;
-		for(std::size_t i=0;i<result.points.size();i++)
+		std::size_t max_dist_id=0;
 		{
-			if(result.points[i].x<result.points[min_x_id].x)
+			double max_dist=distance_from_point_to_point(result.points[0], result.points[max_dist_id]);
+			for(std::size_t i=0;i<result.points.size();i++)
 			{
-				min_x_id=i;
-			}
-			if(result.points[i].y<result.points[min_y_id].y)
-			{
-				min_y_id=i;
-			}
-			if(result.points[i].z<result.points[min_z_id].z)
-			{
-				min_z_id=i;
+				const double dist=distance_from_point_to_point(result.points[0], result.points[i]);
+				if(dist>max_dist)
+				{
+					max_dist_id=i;
+					max_dist=dist;
+				}
 			}
 		}
-		if(result.convexity[min_x_id]<0.0 || result.convexity[min_y_id]<0.0 || result.convexity[min_z_id]<0.0)
+		if(result.convexity[max_dist_id]<0.0)
 		{
 			result.normal=result.normal.inverted();
 			for(std::size_t i=0;i<result.convexity.size();i++)
