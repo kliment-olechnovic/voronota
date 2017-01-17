@@ -7,6 +7,7 @@
 #include "triangulation.h"
 #include "hyperboloid_between_two_spheres.h"
 #include "rotation.h"
+#include "simple_polygon_utilities.h"
 
 namespace apollota
 {
@@ -32,6 +33,7 @@ public:
 		std::vector<SimplePoint> outline;
 		SimplePoint center;
 		bool star_domain;
+		std::vector<Triple> simple_polygon_triangulation;
 
 		ContourAreaDescriptor() : star_domain(false)
 		{
@@ -149,14 +151,25 @@ public:
 		return result;
 	}
 
-	static ContourAreaDescriptor construct_contour_area_descriptor(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2)
+	static ContourAreaDescriptor construct_contour_area_descriptor(const Contour& contour, const SimpleSphere& sphere1, const SimpleSphere& sphere2, const bool check_and_handle_non_star_domain)
 	{
 		ContourAreaDescriptor d;
 		d.outline=collect_points_from_contour(contour);
 		if(!d.outline.empty())
 		{
 			d.center=HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(mass_center<SimplePoint>(d.outline.begin(), d.outline.end()), sphere1, sphere2);
-			d.star_domain=check_star_domain(d.outline, d.center);
+			if(check_and_handle_non_star_domain)
+			{
+				d.star_domain=check_star_domain(d.outline, d.center);
+				if(!d.star_domain)
+				{
+					d.simple_polygon_triangulation=SimplePolygonUtilities::triangulate_simple_polygon(d.outline, sub_of_points<SimplePoint>(sphere1, sphere2)).triangulation;
+				}
+			}
+			else
+			{
+				d.star_domain=true;
+			}
 		}
 		return d;
 	}

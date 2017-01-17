@@ -28,7 +28,7 @@ std::string draw_inter_atom_contact(
 					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections);
 			for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 			{
-				const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id]);
+				const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
 				opengl_printer.add_triangle_fan(d.center, d.outline, sub_of_points<SimplePoint>(spheres[b_id], spheres[a_id]).unit());
 			}
 		}
