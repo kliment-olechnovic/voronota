@@ -202,7 +202,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const std::size_t max_coordinate=(axis.rbegin()->second+1);
 			SVGWriter svg(max_coordinate, max_coordinate);
-			svg.add_rect(0, 0, max_coordinate, max_coordinate, background_color);
+			svg.add_rect(0, 0, max_coordinate, max_coordinate, std::string("fill:")+background_color);
 			for(std::map<CRADsPair, ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
 				const std::size_t x=axis[it->first.a];
@@ -223,8 +223,8 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
 					color=SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
 				}
-				svg.add_rect(x, y, 1, 1, color);
-				svg.add_rect(y, x, 1, 1, color);
+				svg.add_rect(x, y, 1, 1, std::string("fill:")+color);
+				svg.add_rect(y, x, 1, 1, std::string("fill:")+color);
 			}
 			svg.write(output);
 		}

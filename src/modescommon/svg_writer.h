@@ -59,9 +59,9 @@ public:
 		return color_from_red_green_blue_components(r, g, b, 255.0);
 	}
 
-	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& fill)
+	SVGWriter& add_rect(const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const std::string& style)
 	{
-		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("fill", fill));
+		add_child(XMLWriter("rect").set("x", x).set("y", y).set("width", width).set("height", height).set("style", style));
 		return (*this);
 	}
 
