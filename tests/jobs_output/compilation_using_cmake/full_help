@@ -104,7 +104,7 @@ Command 'query-balls' options:
 --ref-seq-alignment             string      file path to output alignment with reference
 --seq-output                    string      file path to output query result sequence string
 --chains-summary-output         string      file path to output chains summary
---chains-seq-identity           number      sequence identity threshold for chains summary
+--chains-seq-identity           number      sequence identity threshold for chains summary, default is 0.9
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r tags adjuncts')
 stdout  ->  list of balls (line format: 'annotation x y z r tags adjuncts')

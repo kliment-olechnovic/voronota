@@ -70,7 +70,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string ref_seq_alignment=poh.argument<std::string>(pohw.describe_option("--ref-seq-alignment", "string", "file path to output alignment with reference"), "");
 	const std::string seq_output=poh.argument<std::string>(pohw.describe_option("--seq-output", "string", "file path to output query result sequence string"), "");
 	const std::string chains_summary_output=poh.argument<std::string>(pohw.describe_option("--chains-summary-output", "string", "file path to output chains summary"), "");
-	const double chains_seq_identity=poh.argument<double>(pohw.describe_option("--chains-seq-identity", "number", "sequence identity threshold for chains summary"), 0.9);
+	const double chains_seq_identity=poh.argument<double>(pohw.describe_option("--chains-seq-identity", "number", "sequence identity threshold for chains summary, default is 0.9"), 0.9);
 
 	if(!pohw.assert_or_print_help(false))
 	{
