@@ -360,7 +360,7 @@ Using "--help" option without specific command results in printing help for all 
     --ref-seq-alignment             string      file path to output alignment with reference
     --seq-output                    string      file path to output query result sequence string
     --chains-summary-output         string      file path to output chains summary
-    --chains-seq-identity           number      sequence identity threshold for chains summary
+    --chains-seq-identity           number      sequence identity threshold for chains summary, default is 0.9
     --help                                      flag to print usage help to stdout and exit
 
 ### Input stream:
