@@ -226,11 +226,12 @@ inline void multiple_draw_triangle_lines(auxiliaries::OpenGLPrinter& opengl_prin
 void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
-	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
+	pohw.describe_io("stdin", true, false, "nothing");
 	pohw.describe_io("stdout", false, true, "nothing");
 
-	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.4));
+	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 3.0));
 	const int depth=poh.restrict_value_in_range(0, 6, poh.argument<int>(pohw.describe_option("--probe", "number", "probe radius"), 3));
+	const std::string name_prefix=poh.argument<std::string>(pohw.describe_option("--name-prefix", "string", "name prefix"), "");
 	const std::string output_prefix=poh.argument<std::string>(pohw.describe_option("--output-prefix", "string", "output prefix"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -239,115 +240,97 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
-	if(spheres.size()<2)
+	spheres.push_back(apollota::SimpleSphere(0, 0, 0, 1));
+	spheres.push_back(apollota::SimpleSphere(2, 0, 0, 0.5));
+	spheres.push_back(apollota::SimpleSphere(1.5, 2, 0, 0.3));
+	spheres.push_back(apollota::SimpleSphere(0.5, 0, 2, 0.75));
+
+	int colors_of_singles[4]={0xFF0000, 0x00FF00, 0x0000FF, 0x888888};
+
+	int colors_of_pairs[4][4];
+	colors_of_pairs[0][1]=0xFFFF00;
+	colors_of_pairs[0][2]=0xFF00FF;
+	colors_of_pairs[0][3]=0xFF8888;
+	colors_of_pairs[1][2]=0x00FFFF;
+	colors_of_pairs[1][3]=0x88FF88;
+	colors_of_pairs[2][3]=0x8888FF;
+	for(int i=0;i<4;i++)
 	{
-		throw std::runtime_error("Less than 2 balls provided to stdin.");
+		for(int j=i+1;j<4;j++)
+		{
+			colors_of_pairs[j][i]=colors_of_pairs[i][j];
+		}
+		colors_of_pairs[i][i]=colors_of_singles[i];
 	}
 
+	for(int i=0;i<4;i++)
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
-		opengl_printer.add_color(0xFF0000);
-		opengl_printer.add_sphere(spheres[0]);
-		opengl_printer.add_color(0x00FF00);
-		opengl_printer.add_sphere(spheres[1]);
+		opengl_printer.add_color(colors_of_singles[i]);
+		opengl_printer.add_sphere(spheres[i]);
 
-		std::ofstream foutput((output_prefix+"balls_ab.py").c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			opengl_printer.print_pymol_script("balls_ab", true, foutput);
-		}
+		std::ostringstream name;
+		name << name_prefix << "ball_" << i;
+		std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+		opengl_printer.print_pymol_script(name.str(), true, foutput);
 	}
 
-	const TriangleList full_face_ab=init_spheres_intersection_hyperboloid_triangles(
-			apollota::SimpleSphere(spheres[0], spheres[0].r+probe),
-			apollota::SimpleSphere(spheres[1], spheres[1].r+probe),
-			depth);
-
+	for(int i=0;i<4;i++)
 	{
-		auxiliaries::OpenGLPrinter opengl_printer;
-		opengl_printer.add_color(0xFFFF00);
-		multiple_draw_triangle(opengl_printer, full_face_ab, std::make_pair(spheres[0], spheres[1]));
-
-		std::ofstream foutput((output_prefix+"full_face_ab.py").c_str(), std::ios::out);
-		if(foutput.good())
+		for(int j=i+1;j<4;j++)
 		{
-			opengl_printer.print_pymol_script("full_face_ab", true, foutput);
-		}
-	}
+			const TriangleList full_face=init_spheres_intersection_hyperboloid_triangles(
+					apollota::SimpleSphere(spheres[i], spheres[i].r+probe),
+					apollota::SimpleSphere(spheres[j], spheres[j].r+probe),
+					depth);
 
-	{
-		auxiliaries::OpenGLPrinter opengl_printer;
-		opengl_printer.add_color(0x333333);
-		multiple_draw_triangle_lines(opengl_printer, full_face_ab);
-
-		std::ofstream foutput((output_prefix+"full_face_mesh.py").c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			opengl_printer.print_pymol_script("full_face_mesh", true, foutput);
-		}
-	}
-
-	if(spheres.size()>=3)
-	{
-		{
-			auxiliaries::OpenGLPrinter opengl_printer;
-			opengl_printer.add_color(0xFF0000);
-			opengl_printer.add_sphere(spheres[0]);
-			opengl_printer.add_color(0x00FF00);
-			opengl_printer.add_sphere(spheres[1]);
-			opengl_printer.add_color(0x0000FF);
-			opengl_printer.add_sphere(spheres[2]);
-
-			std::ofstream foutput((output_prefix+"balls_abc.py").c_str(), std::ios::out);
-			if(foutput.good())
 			{
-				opengl_printer.print_pymol_script("balls_abc", true, foutput);
+				auxiliaries::OpenGLPrinter opengl_printer;
+				opengl_printer.add_color(colors_of_pairs[i][j]);
+				multiple_draw_triangle(opengl_printer, full_face, std::make_pair(spheres[i], spheres[j]));
+
+				std::ostringstream name;
+				name << name_prefix << "face_" << i << "_" << j;
+				std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+				opengl_printer.print_pymol_script(name.str(), true, foutput);
 			}
-		}
 
-		const TriangleList full_face_ac=init_spheres_intersection_hyperboloid_triangles(
-				apollota::SimpleSphere(spheres[0], spheres[0].r+probe),
-				apollota::SimpleSphere(spheres[2], spheres[2].r+probe),
-				depth);
-
-		{
-			auxiliaries::OpenGLPrinter opengl_printer;
-			opengl_printer.add_color(0xFF00FF);
-			multiple_draw_triangle(opengl_printer, full_face_ac, std::make_pair(spheres[0], spheres[2]));
-
-			std::ofstream foutput((output_prefix+"full_face_ac.py").c_str(), std::ios::out);
-			if(foutput.good())
+			for(int m=0;m<4;m++)
 			{
-				opengl_printer.print_pymol_script("full_face_ac", true, foutput);
-			}
-		}
+				if(m!=i && m!=j)
+				{
+					const TriangleList cut_face_m=multiple_cut_triangle_with_hyperboloid(full_face, spheres[i], spheres[m]).first;
 
-		const TriangleList cut_face_ab_c=multiple_cut_triangle_with_hyperboloid(full_face_ab, spheres[0], spheres[2]).first;
+					{
+						auxiliaries::OpenGLPrinter opengl_printer;
+						opengl_printer.add_color(colors_of_pairs[i][j]);
+						multiple_draw_triangle(opengl_printer, cut_face_m, std::make_pair(spheres[i], spheres[j]));
 
-		{
-			auxiliaries::OpenGLPrinter opengl_printer;
-			opengl_printer.add_color(0xFFFF00);
-			multiple_draw_triangle(opengl_printer, cut_face_ab_c, std::make_pair(spheres[0], spheres[1]));
+						std::ostringstream name;
+						name << name_prefix << "cut_a_" << i << "_" << j << "_" << m;
+						std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+						opengl_printer.print_pymol_script(name.str(), true, foutput);
+					}
 
-			std::ofstream foutput((output_prefix+"cut_face_ab_c.py").c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				opengl_printer.print_pymol_script("cut_face_ab_c", true, foutput);
-			}
-		}
+					for(int n=0;n<4;n++)
+					{
+						if(n!=i && n!=j && n>m)
+						{
+							const TriangleList cut_face_m_n=multiple_cut_triangle_with_hyperboloid(cut_face_m, spheres[i], spheres[n]).first;
 
-		const TriangleList cut_face_ac_b=multiple_cut_triangle_with_hyperboloid(full_face_ac, spheres[0], spheres[1]).first;
+							{
+								auxiliaries::OpenGLPrinter opengl_printer;
+								opengl_printer.add_color(colors_of_pairs[i][j]);
+								multiple_draw_triangle(opengl_printer, cut_face_m_n, std::make_pair(spheres[i], spheres[j]));
 
-		{
-			auxiliaries::OpenGLPrinter opengl_printer;
-			opengl_printer.add_color(0xFF00FF);
-			multiple_draw_triangle(opengl_printer, cut_face_ac_b, std::make_pair(spheres[0], spheres[1]));
-
-			std::ofstream foutput((output_prefix+"cut_face_ac_b.py").c_str(), std::ios::out);
-			if(foutput.good())
-			{
-				opengl_printer.print_pymol_script("cut_face_ac_b", true, foutput);
+								std::ostringstream name;
+								name << name_prefix << "cut_b_" << i << "_" << j << "_" << m << "_" << n;
+								std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+								opengl_printer.print_pymol_script(name.str(), true, foutput);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
