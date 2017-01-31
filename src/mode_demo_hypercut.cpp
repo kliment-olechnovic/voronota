@@ -372,4 +372,64 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
 		opengl_printer.print_pymol_script(name.str(), true, foutput);
 	}
+
+	for(int i=0;i<4;i++)
+	{
+		for(int j=0;j<4;j++)
+		{
+			if(i!=j)
+			{
+				const TriangleList full_face=multiple_cut_triangle_with_hyperboloid(init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth), spheres[i], spheres[j]).second;
+
+				{
+					auxiliaries::OpenGLPrinter opengl_printer;
+					opengl_printer.add_color(colors_of_pairs[i][j]);
+					multiple_draw_triangle(opengl_printer, full_face, spheres[i]);
+
+					std::ostringstream name;
+					name << name_prefix << "sf_" << i << "_" << j;
+					std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+					opengl_printer.print_pymol_script(name.str(), true, foutput);
+				}
+
+				for(int m=0;m<4;m++)
+				{
+					if(m!=i && m!=j)
+					{
+						const TriangleList cut_face_m=multiple_cut_triangle_with_hyperboloid(full_face, spheres[j], spheres[m]).first;
+
+						{
+							auxiliaries::OpenGLPrinter opengl_printer;
+							opengl_printer.add_color(colors_of_pairs[i][j]);
+							multiple_draw_triangle(opengl_printer, cut_face_m, spheres[i]);
+
+							std::ostringstream name;
+							name << name_prefix << "sc_a_" << i << "_" << j << "_" << m;
+							std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+							opengl_printer.print_pymol_script(name.str(), true, foutput);
+						}
+
+						for(int n=0;n<4;n++)
+						{
+							if(n!=i && n!=j && n>m)
+							{
+								const TriangleList cut_face_m_n=multiple_cut_triangle_with_hyperboloid(cut_face_m, spheres[j], spheres[n]).first;
+
+								{
+									auxiliaries::OpenGLPrinter opengl_printer;
+									opengl_printer.add_color(colors_of_pairs[i][j]);
+									multiple_draw_triangle(opengl_printer, cut_face_m_n, spheres[i]);
+
+									std::ostringstream name;
+									name << name_prefix << "sc_b_" << i << "_" << j << "_" << m << "_" << n;
+									std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+									opengl_printer.print_pymol_script(name.str(), true, foutput);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
