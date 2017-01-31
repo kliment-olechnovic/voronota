@@ -62,52 +62,55 @@ public:
 				if(!initial_contour.empty())
 				{
 					result.push_back(initial_contour);
-					const SimpleSphere bounding_sphere_of_vertices_centers=construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step);
-					for(std::multimap<double, std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
+					if(!vertices_ids.empty())
 					{
-						const std::size_t c_id=it->second;
-						if(c_id<spheres.size())
+						const SimpleSphere bounding_sphere_of_vertices_centers=construct_bounding_sphere_of_vertices_centers(vertices_vector, vertices_ids, step);
+						for(std::multimap<double, std::size_t>::const_iterator it=neighbor_ids.begin();it!=neighbor_ids.end();++it)
 						{
-							const SimpleSphere& c=spheres[c_id];
-							std::list<Contour>::iterator jt=result.begin();
-							while(jt!=result.end())
+							const std::size_t c_id=it->second;
+							if(c_id<spheres.size())
 							{
-								Contour& contour=(*jt);
-								std::list<Contour> segments;
-								if(cut_and_split_contour(a, c, c_id, contour, segments))
+								const SimpleSphere& c=spheres[c_id];
+								std::list<Contour>::iterator jt=result.begin();
+								while(jt!=result.end())
 								{
-									if(!contour.empty())
+									Contour& contour=(*jt);
+									std::list<Contour> segments;
+									if(cut_and_split_contour(a, c, c_id, contour, segments))
 									{
-										mend_contour(a, b, c, c_id, step, projections, contour);
-										if(check_contour_intersects_sphere(bounding_sphere_of_vertices_centers, contour))
+										if(!contour.empty())
 										{
-											++jt;
+											mend_contour(a, b, c, c_id, step, projections, contour);
+											if(check_contour_intersects_sphere(bounding_sphere_of_vertices_centers, contour))
+											{
+												++jt;
+											}
+											else
+											{
+												jt=result.erase(jt);
+											}
 										}
 										else
 										{
+											if(!segments.empty())
+											{
+												for(std::list<Contour>::iterator st=segments.begin();st!=segments.end();++st)
+												{
+													mend_contour(a, b, c, c_id, step, projections, (*st));
+												}
+												filter_contours_intersecting_sphere(bounding_sphere_of_vertices_centers, segments);
+												if(!segments.empty())
+												{
+													result.splice(jt, segments);
+												}
+											}
 											jt=result.erase(jt);
 										}
 									}
 									else
 									{
-										if(!segments.empty())
-										{
-											for(std::list<Contour>::iterator st=segments.begin();st!=segments.end();++st)
-											{
-												mend_contour(a, b, c, c_id, step, projections, (*st));
-											}
-											filter_contours_intersecting_sphere(bounding_sphere_of_vertices_centers, segments);
-											if(!segments.empty())
-											{
-												result.splice(jt, segments);
-											}
-										}
-										jt=result.erase(jt);
+										++jt;
 									}
-								}
-								else
-								{
-									++jt;
 								}
 							}
 						}
@@ -239,19 +242,26 @@ private:
 			const std::set<std::size_t>& vertices_ids,
 			const double radius_extension)
 	{
-		SimplePoint mc;
-		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		if(!vertices_ids.empty())
 		{
-			mc=mc+SimplePoint(vertices_vector[(*it)].second);
+			SimplePoint mc;
+			for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+			{
+				mc=mc+SimplePoint(vertices_vector[(*it)].second);
+			}
+			mc=mc*(1.0/static_cast<double>(vertices_ids.size()));
+			SimpleSphere result(mc, 0.0);
+			for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+			{
+				result.r=std::max(result.r, distance_from_point_to_point(result, vertices_vector[(*it)].second));
+			}
+			result.r+=radius_extension;
+			return result;
 		}
-		mc=mc*(1.0/static_cast<double>(vertices_ids.size()));
-		SimpleSphere result(mc, 0.0);
-		for(std::set<std::size_t>::const_iterator it=vertices_ids.begin();it!=vertices_ids.end();++it)
+		else
 		{
-			result.r=std::max(result.r, distance_from_point_to_point(result, vertices_vector[(*it)].second));
+			return SimpleSphere();
 		}
-		result.r+=radius_extension;
-		return result;
 	}
 
 	static Contour construct_circular_contour(
