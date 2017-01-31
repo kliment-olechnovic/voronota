@@ -338,7 +338,7 @@ private:
 
 }
 
-void ses_demo(const auxiliaries::ProgramOptionsHandler& poh)
+void demo_ses(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");

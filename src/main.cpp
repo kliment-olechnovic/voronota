@@ -39,7 +39,7 @@ void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandl
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler&);
 void score_scores(const auxiliaries::ProgramOptionsHandler&);
-void ses_demo(const auxiliaries::ProgramOptionsHandler&);
+void demo_ses(const auxiliaries::ProgramOptionsHandler&);
 void rotational_optimization_demo(const auxiliaries::ProgramOptionsHandler&);
 void place_membrane(const auxiliaries::ProgramOptionsHandler&);
 void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh);
@@ -101,7 +101,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-solvation-values", ModeDescriptor::FunctionPtr(query_contacts_solvation_values)));
 	list_of_modes.push_back(ModeDescriptor("x-score-scores", ModeDescriptor::FunctionPtr(score_scores)));
-	list_of_modes.push_back(ModeDescriptor("x-ses-demo", ModeDescriptor::FunctionPtr(ses_demo)));
+	list_of_modes.push_back(ModeDescriptor("x-demo-ses", ModeDescriptor::FunctionPtr(demo_ses)));
 	list_of_modes.push_back(ModeDescriptor("x-rotational-optimization-demo", ModeDescriptor::FunctionPtr(rotational_optimization_demo)));
 	list_of_modes.push_back(ModeDescriptor("x-place-membrane", ModeDescriptor::FunctionPtr(place_membrane)));
 	list_of_modes.push_back(ModeDescriptor("x-demo-polygon-triangulation", ModeDescriptor::FunctionPtr(demo_polygon_triangulation)));
