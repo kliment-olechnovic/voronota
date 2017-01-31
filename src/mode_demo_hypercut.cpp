@@ -229,7 +229,8 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "nothing");
 	pohw.describe_io("stdout", false, true, "nothing");
 
-	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 3.0));
+	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.5));
+	const double big_probe=poh.restrict_value_in_range(probe+0.01, 100.0, poh.argument<double>(pohw.describe_option("--big-probe", "number", "big probe radius"), 3.0));
 	const int depth=poh.restrict_value_in_range(0, 6, poh.argument<int>(pohw.describe_option("--probe", "number", "probe radius"), 3));
 	const std::string name_prefix=poh.argument<std::string>(pohw.describe_option("--name-prefix", "string", "name prefix"), "");
 	const std::string output_prefix=poh.argument<std::string>(pohw.describe_option("--output-prefix", "string", "output prefix"));
@@ -279,6 +280,22 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		for(int j=i+1;j<4;j++)
 		{
+			const TriangleList big_full_face=init_spheres_intersection_hyperboloid_triangles(
+					apollota::SimpleSphere(spheres[i], spheres[i].r+big_probe),
+					apollota::SimpleSphere(spheres[j], spheres[j].r+big_probe),
+					depth);
+
+			{
+				auxiliaries::OpenGLPrinter opengl_printer;
+				opengl_printer.add_color(colors_of_pairs[i][j]);
+				multiple_draw_triangle(opengl_printer, big_full_face, std::make_pair(spheres[i], spheres[j]));
+
+				std::ostringstream name;
+				name << name_prefix << "big_face_" << i << "_" << j;
+				std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+				opengl_printer.print_pymol_script(name.str(), true, foutput);
+			}
+
 			const TriangleList full_face=init_spheres_intersection_hyperboloid_triangles(
 					apollota::SimpleSphere(spheres[i], spheres[i].r+probe),
 					apollota::SimpleSphere(spheres[j], spheres[j].r+probe),
@@ -333,5 +350,26 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
+	}
+
+	for(int i=0;i<4;i++)
+	{
+		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth);
+		for(int j=0;j<4;j++)
+		{
+			if(j!=i)
+			{
+				sface=multiple_cut_triangle_with_hyperboloid(sface, spheres[i], spheres[j]).first;
+			}
+		}
+
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(colors_of_singles[i]);
+		multiple_draw_triangle(opengl_printer, sface, spheres[i]);
+
+		std::ostringstream name;
+		name << name_prefix << "sas_" << i;
+		std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+		opengl_printer.print_pymol_script(name.str(), true, foutput);
 	}
 }
