@@ -231,7 +231,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.5));
 	const double big_probe=poh.restrict_value_in_range(probe+0.01, 100.0, poh.argument<double>(pohw.describe_option("--big-probe", "number", "big probe radius"), 3.0));
-	const int depth=poh.restrict_value_in_range(0, 6, poh.argument<int>(pohw.describe_option("--probe", "number", "probe radius"), 3));
+	const int depth=poh.restrict_value_in_range(0, 6, poh.argument<int>(pohw.describe_option("--depth", "number", "probe radius"), 3));
 	const std::string name_prefix=poh.argument<std::string>(pohw.describe_option("--name-prefix", "string", "name prefix"), "");
 	const std::string output_prefix=poh.argument<std::string>(pohw.describe_option("--output-prefix", "string", "output prefix"));
 
