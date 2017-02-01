@@ -243,7 +243,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	std::vector<apollota::SimpleSphere> spheres;
 	spheres.push_back(apollota::SimpleSphere(0, 0, 0, 1));
 	spheres.push_back(apollota::SimpleSphere(2, 0, 0, 0.5));
-	spheres.push_back(apollota::SimpleSphere(1.5, 2, 0, 0.3));
+	spheres.push_back(apollota::SimpleSphere(1.5, -2, 0, 0.4));
 	spheres.push_back(apollota::SimpleSphere(0.5, 0, 2, 0.75));
 
 	int colors_of_singles[4]={0xFF0000, 0x00FF00, 0x0000FF, 0x888888};
