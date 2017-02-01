@@ -214,6 +214,11 @@ inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Tria
 	draw_triangle(opengl_printer, t, n);
 }
 
+inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const bool n)
+{
+	draw_triangle(opengl_printer, t, ((t.p[1]-t.p[0])&(t.p[2]-t.p[0])).unit()*(n ? 1.0 : -1.0));
+}
+
 template <typename NormalDescriptor>
 inline void multiple_draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const TriangleList& tl, const NormalDescriptor& nd)
 {
@@ -553,6 +558,33 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
+		}
+	}
+
+	for(int i=0;i<=4;i++)
+	{
+		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(0, 0, 0, 1), i);
+
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(0xAAAAAA);
+			multiple_draw_triangle(opengl_printer, sface, true);
+
+			std::ostringstream name;
+			name << name_prefix << "ico_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
+		}
+
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(0x111111);
+			multiple_draw_triangle_lines(opengl_printer, sface);
+
+			std::ostringstream name;
+			name << name_prefix << "ico_w_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
 		}
 	}
 }
