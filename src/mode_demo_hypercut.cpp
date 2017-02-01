@@ -323,6 +323,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 				opengl_printer.print_pymol_script(name.str(), true, foutput);
 			}
 
+			if(i==0 && j==1)
+			{
+				auxiliaries::OpenGLPrinter opengl_printer;
+				opengl_printer.add_color(0x111111);
+				multiple_draw_triangle_lines(opengl_printer, big_full_face);
+
+				std::ostringstream name;
+				name << name_prefix << "zbig_face_" << i << "_" << j;
+				std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+				opengl_printer.print_pymol_script(name.str(), true, foutput);
+			}
+
 			const TriangleList full_face=init_spheres_intersection_hyperboloid_triangles(
 					apollota::SimpleSphere(spheres[i], spheres[i].r+probe),
 					apollota::SimpleSphere(spheres[j], spheres[j].r+probe),
@@ -335,6 +347,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 				std::ostringstream name;
 				name << name_prefix << "face_" << i << "_" << j;
+				std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+				opengl_printer.print_pymol_script(name.str(), true, foutput);
+			}
+
+			if(i==0 && j==1)
+			{
+				auxiliaries::OpenGLPrinter opengl_printer;
+				opengl_printer.add_color(0x111111);
+				multiple_draw_triangle_lines(opengl_printer, full_face);
+
+				std::ostringstream name;
+				name << name_prefix << "zface_" << i << "_" << j;
 				std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
 				opengl_printer.print_pymol_script(name.str(), true, foutput);
 			}
@@ -356,6 +380,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 						opengl_printer.print_pymol_script(name.str(), true, foutput);
 					}
 
+					if(i==0 && j==1)
+					{
+						auxiliaries::OpenGLPrinter opengl_printer;
+						opengl_printer.add_color(0x111111);
+						multiple_draw_triangle_lines(opengl_printer, cut_face_m);
+
+						std::ostringstream name;
+						name << name_prefix << "zcut_a_" << i << "_" << j << "_" << m;
+						std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+						opengl_printer.print_pymol_script(name.str(), true, foutput);
+					}
+
 					for(int n=0;n<4;n++)
 					{
 						if(n!=i && n!=j && n>m)
@@ -369,6 +405,17 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 								std::ostringstream name;
 								name << name_prefix << "cut_b_" << i << "_" << j << "_" << m << "_" << n;
+								std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+								opengl_printer.print_pymol_script(name.str(), true, foutput);
+							}
+
+							{
+								auxiliaries::OpenGLPrinter opengl_printer;
+								opengl_printer.add_color(0x111111);
+								multiple_draw_triangle_lines(opengl_printer, cut_face_m_n);
+
+								std::ostringstream name;
+								name << name_prefix << "zcut_b_" << i << "_" << j << "_" << m << "_" << n;
 								std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
 								opengl_printer.print_pymol_script(name.str(), true, foutput);
 							}
@@ -390,14 +437,27 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 
-		auxiliaries::OpenGLPrinter opengl_printer;
-		opengl_printer.add_color(colors_of_singles[i]);
-		multiple_draw_triangle(opengl_printer, sface, spheres[i]);
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(colors_of_singles[i]);
+			multiple_draw_triangle(opengl_printer, sface, spheres[i]);
 
-		std::ostringstream name;
-		name << name_prefix << "sas_" << i;
-		std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
-		opengl_printer.print_pymol_script(name.str(), true, foutput);
+			std::ostringstream name;
+			name << name_prefix << "sas_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
+		}
+
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(0x111111);
+			multiple_draw_triangle_lines(opengl_printer, sface);
+
+			std::ostringstream name;
+			name << name_prefix << "zsas_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
+		}
 	}
 
 	for(int i=0;i<4;i++)
@@ -419,6 +479,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 					opengl_printer.print_pymol_script(name.str(), true, foutput);
 				}
 
+				if(i==0 && j==1)
+				{
+					auxiliaries::OpenGLPrinter opengl_printer;
+					opengl_printer.add_color(0x111111);
+					multiple_draw_triangle_lines(opengl_printer, full_face);
+
+					std::ostringstream name;
+					name << name_prefix << "zsf_" << i << "_" << j;
+					std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+					opengl_printer.print_pymol_script(name.str(), true, foutput);
+				}
+
 				for(int m=0;m<4;m++)
 				{
 					if(m!=i && m!=j)
@@ -436,6 +508,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 							opengl_printer.print_pymol_script(name.str(), true, foutput);
 						}
 
+						if(i==0 && j==1)
+						{
+							auxiliaries::OpenGLPrinter opengl_printer;
+							opengl_printer.add_color(0x111111);
+							multiple_draw_triangle_lines(opengl_printer, cut_face_m);
+
+							std::ostringstream name;
+							name << name_prefix << "zsc_a_" << i << "_" << j << "_" << m;
+							std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+							opengl_printer.print_pymol_script(name.str(), true, foutput);
+						}
+
 						for(int n=0;n<4;n++)
 						{
 							if(n!=i && n!=j && n>m)
@@ -449,6 +533,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 									std::ostringstream name;
 									name << name_prefix << "sc_b_" << i << "_" << j << "_" << m << "_" << n;
+									std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+									opengl_printer.print_pymol_script(name.str(), true, foutput);
+								}
+
+								if(i==0 && j==1)
+								{
+									auxiliaries::OpenGLPrinter opengl_printer;
+									opengl_printer.add_color(0x111111);
+									multiple_draw_triangle_lines(opengl_printer, cut_face_m_n);
+
+									std::ostringstream name;
+									name << name_prefix << "zsc_b_" << i << "_" << j << "_" << m << "_" << n;
 									std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
 									opengl_printer.print_pymol_script(name.str(), true, foutput);
 								}
