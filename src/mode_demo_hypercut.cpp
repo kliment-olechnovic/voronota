@@ -278,6 +278,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(int i=0;i<4;i++)
 	{
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(colors_of_singles[i]);
+		opengl_printer.add_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r+probe-0.01));
+
+		std::ostringstream name;
+		name << name_prefix << "sball_" << i;
+		std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+		opengl_printer.print_pymol_script(name.str(), true, foutput);
+	}
+
+	for(int i=0;i<4;i++)
+	{
 		for(int j=i+1;j<4;j++)
 		{
 			const TriangleList big_full_face=init_spheres_intersection_hyperboloid_triangles(
@@ -383,7 +395,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 				{
 					auxiliaries::OpenGLPrinter opengl_printer;
-					opengl_printer.add_color(colors_of_pairs[i][j]);
+					opengl_printer.add_color(colors_of_singles[j]);
 					multiple_draw_triangle(opengl_printer, full_face, spheres[i]);
 
 					std::ostringstream name;
@@ -400,7 +412,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 						{
 							auxiliaries::OpenGLPrinter opengl_printer;
-							opengl_printer.add_color(colors_of_pairs[i][j]);
+							opengl_printer.add_color(colors_of_singles[j]);
 							multiple_draw_triangle(opengl_printer, cut_face_m, spheres[i]);
 
 							std::ostringstream name;
@@ -417,7 +429,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 								{
 									auxiliaries::OpenGLPrinter opengl_printer;
-									opengl_printer.add_color(colors_of_pairs[i][j]);
+									opengl_printer.add_color(colors_of_singles[j]);
 									multiple_draw_triangle(opengl_printer, cut_face_m_n, spheres[i]);
 
 									std::ostringstream name;
