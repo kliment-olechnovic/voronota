@@ -196,7 +196,22 @@ inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Tria
 
 inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const std::pair<apollota::SimpleSphere, apollota::SimpleSphere>& ab)
 {
-	draw_triangle(opengl_printer, t, (apollota::SimplePoint(ab.second)-apollota::SimplePoint(ab.first)).unit());
+	Triangle n;
+	for(int i=0;i<3;i++)
+	{
+		const apollota::SimplePoint oa=(apollota::SimplePoint(ab.first)-t.p[i]).unit();
+		const apollota::SimplePoint ob=(apollota::SimplePoint(ab.second)-t.p[i]).unit();
+		const apollota::SimplePoint x=(oa&ob);
+		if(apollota::equal(x.module(), 0.0))
+		{
+			n.p[i]=(apollota::SimplePoint(ab.second)-apollota::SimplePoint(ab.first)).unit();
+		}
+		else
+		{
+			n.p[i]=(x.unit()&((oa+ob)*0.5).unit()).unit();
+		}
+	}
+	draw_triangle(opengl_printer, t, n);
 }
 
 template <typename NormalDescriptor>
