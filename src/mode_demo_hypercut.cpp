@@ -252,6 +252,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=poh.restrict_value_in_range(0.01, 100.0, poh.argument<double>(pohw.describe_option("--probe", "number", "probe radius"), 1.5));
 	const double big_probe=poh.restrict_value_in_range(probe+0.01, 100.0, poh.argument<double>(pohw.describe_option("--big-probe", "number", "big probe radius"), 3.0));
 	const int depth=poh.restrict_value_in_range(0, 6, poh.argument<int>(pohw.describe_option("--depth", "number", "probe radius"), 3));
+	const int balls_count=poh.restrict_value_in_range(3, 4, poh.argument<int>(pohw.describe_option("--balls-count", "number", "number of balls (3 or 4)"), 4));
 	const std::string name_prefix=poh.argument<std::string>(pohw.describe_option("--name-prefix", "string", "name prefix"), "");
 	const std::string output_prefix=poh.argument<std::string>(pohw.describe_option("--output-prefix", "string", "output prefix"));
 
@@ -284,7 +285,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		colors_of_pairs[i][i]=colors_of_singles[i];
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<balls_count;i++)
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(colors_of_singles[i]);
@@ -296,7 +297,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		opengl_printer.print_pymol_script(name.str(), true, foutput);
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<balls_count;i++)
 	{
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(colors_of_singles[i]);
@@ -308,9 +309,9 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		opengl_printer.print_pymol_script(name.str(), true, foutput);
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<balls_count;i++)
 	{
-		for(int j=i+1;j<4;j++)
+		for(int j=i+1;j<balls_count;j++)
 		{
 			const TriangleList big_full_face=init_spheres_intersection_hyperboloid_triangles(
 					apollota::SimpleSphere(spheres[i], spheres[i].r+big_probe),
@@ -368,7 +369,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 				opengl_printer.print_pymol_script(name.str(), true, foutput);
 			}
 
-			for(int m=0;m<4;m++)
+			for(int m=0;m<balls_count;m++)
 			{
 				if(m!=i && m!=j)
 				{
@@ -397,7 +398,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 						opengl_printer.print_pymol_script(name.str(), true, foutput);
 					}
 
-					for(int n=0;n<4;n++)
+					for(int n=0;n<balls_count;n++)
 					{
 						if(n!=i && n!=j && n>m)
 						{
@@ -431,10 +432,10 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<balls_count;i++)
 	{
 		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth);
-		for(int j=0;j<4;j++)
+		for(int j=0;j<balls_count;j++)
 		{
 			if(j!=i)
 			{
@@ -465,9 +466,9 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	for(int i=0;i<4;i++)
+	for(int i=0;i<balls_count;i++)
 	{
-		for(int j=0;j<4;j++)
+		for(int j=0;j<balls_count;j++)
 		{
 			if(i!=j)
 			{
@@ -496,7 +497,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 					opengl_printer.print_pymol_script(name.str(), true, foutput);
 				}
 
-				for(int m=0;m<4;m++)
+				for(int m=0;m<balls_count;m++)
 				{
 					if(m!=i && m!=j)
 					{
@@ -525,7 +526,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 							opengl_printer.print_pymol_script(name.str(), true, foutput);
 						}
 
-						for(int n=0;n<4;n++)
+						for(int n=0;n<balls_count;n++)
 						{
 							if(n!=i && n!=j && n>m)
 							{
