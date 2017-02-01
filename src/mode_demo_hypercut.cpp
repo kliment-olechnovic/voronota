@@ -586,5 +586,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
 			opengl_printer.print_pymol_script(name.str(), true, foutput);
 		}
+
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(0xAAAAAA);
+			multiple_draw_triangle(opengl_printer, sface, true);
+			opengl_printer.add_color(0x111111);
+			multiple_draw_triangle_lines(opengl_printer, sface);
+
+			std::ostringstream name;
+			name << name_prefix << "ico_f_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
+		}
 	}
 }
