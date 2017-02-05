@@ -435,6 +435,18 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 	for(int i=0;i<balls_count;i++)
 	{
 		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth);
+
+		{
+			auxiliaries::OpenGLPrinter opengl_printer;
+			opengl_printer.add_color(0x777777);
+			multiple_draw_triangle_lines(opengl_printer, sface);
+
+			std::ostringstream name;
+			name << name_prefix << "wball_" << i;
+			std::ofstream foutput((output_prefix+name.str()+".py").c_str(), std::ios::out);
+			opengl_printer.print_pymol_script(name.str(), true, foutput);
+		}
+
 		for(int j=0;j<balls_count;j++)
 		{
 			if(j!=i)
