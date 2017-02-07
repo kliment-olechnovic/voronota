@@ -364,11 +364,11 @@ public:
 			AtomRecord record=AtomRecord();
 			record.record_name=get_value_from_table_row(header_map, values_iter, "_atom_site.group_PDB");
 			record.serial=convert_string<int>(get_value_from_table_row(header_map, values_iter, "_atom_site.id"), record.serial_valid);
-			record.name=get_value_from_table_row(header_map, values_iter, "_atom_site.label_atom_id");
+			record.name=get_value_from_table_row(header_map, values_iter, "_atom_site.auth_atom_id");
 			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.label_alt_id"));
-			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.label_comp_id"));
-			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.label_asym_id"));
-			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, "_atom_site.label_seq_id"), record.resSeq_valid);
+			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_comp_id"));
+			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_asym_id"));
+			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_seq_id"), record.resSeq_valid);
 			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.pdbx_PDB_ins_code"));
 			record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_x"), record.x_valid);
 			record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_y"), record.y_valid);
