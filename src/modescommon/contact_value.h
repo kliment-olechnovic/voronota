@@ -10,17 +10,18 @@ struct ContactValue
 {
 	double area;
 	double dist;
+	bool accumulated;
 	PropertiesValue props;
 	std::string graphics;
 
-	ContactValue() : area(0.0), dist(0.0)
+	ContactValue() : area(0.0), dist(0.0), accumulated(false)
 	{
 	}
 
 	void add(const ContactValue& v)
 	{
 		area+=v.area;
-		dist=(dist<=0.0 ? v.dist : std::min(dist, v.dist));
+		dist=(!accumulated ? v.dist : std::min(dist, v.dist));
 		props.tags.insert(v.props.tags.begin(), v.props.tags.end());
 		for(std::map<std::string, double>::const_iterator it=v.props.adjuncts.begin();it!=v.props.adjuncts.end();++it)
 		{
@@ -41,6 +42,7 @@ struct ContactValue
 				graphics+=v.graphics;
 			}
 		}
+		accumulated=true;
 	}
 };
 
