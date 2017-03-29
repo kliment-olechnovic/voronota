@@ -91,122 +91,44 @@
 <p id="result"></p>
 
 <script>
+
+function guarded_split(str)
+{
+	return str.split(/[\s,;]+/).join(',').replace(/^,+|,+$/gm,'');
+}
+
+function guarded_append(start, suffix, value)
+{
+	result=start;
+	if(value)
+	{
+		if(result)
+		{
+			result+="&amp";
+		}
+		result+=suffix+"&lt"+value+"&gt";
+	}
+	return result;
+}
+
 function compose()
 {
 	var output=""
-
-	var val_match_first_chain=document.getElementById("match_first_chain").value;
-	var val_match_first_residue_number=document.getElementById("match_first_residue_number").value;
-	var val_match_first_residue_name=document.getElementById("match_first_residue_name").value;
-	var val_match_first_atom_serial=document.getElementById("match_first_atom_serial").value;
-	var val_match_first_atom_name=document.getElementById("match_first_atom_name").value;
-	val_match_first_chain=val_match_first_chain.split(/[\s,;]+/).join(',');
-	val_match_first_residue_number=val_match_first_residue_number.split(/[\s,;]+/).join(',');
-	val_match_first_residue_name=val_match_first_residue_name.split(/[\s,;]+/).join(',');
-	val_match_first_atom_serial=val_match_first_atom_serial.split(/[\s,;]+/).join(',');
-	val_match_first_atom_name=val_match_first_atom_name.split(/[\s,;]+/).join(',');
-	if(val_match_first_chain || val_match_first_residue_number || val_match_first_residue_name || val_match_first_atom_serial || val_match_first_atom_name)
+	
+	var output_match_first=""
+	output_match_first=guarded_append(output_match_first, "c", guarded_split(document.getElementById("match_first_chain").value));
+	output_match_first=guarded_append(output_match_first, "r", guarded_split(document.getElementById("match_first_residue_number").value));
+	output_match_first=guarded_append(output_match_first, "a", guarded_split(document.getElementById("match_first_atom_serial").value));
+	output_match_first=guarded_append(output_match_first, "R", guarded_split(document.getElementById("match_first_residue_name").value));
+	output_match_first=guarded_append(output_match_first, "A", guarded_split(document.getElementById("match_first_atom_name").value));
+	if(output_match_first)
 	{
-		var output_match_first=""
-		if(val_match_first_chain)
-		{
-			output_match_first+="c&lt"+val_match_first_chain+"&gt";
-		}
-		if(val_match_first_residue_number)
-		{
-			if(output_match_first)
-			{
-				output_match_first+="&amp";
-			}
-			output_match_first+="r&lt"+val_match_first_residue_number+"&gt";
-		}
-		if(val_match_first_atom_serial)
-		{
-			if(output_match_first)
-			{
-				output_match_first+="&amp";
-			}
-			output_match_first+="a&lt"+val_match_first_atom_serial+"&gt";
-		}
-		if(val_match_first_residue_name)
-		{
-			if(output_match_first)
-			{
-				output_match_first+="&amp";
-			}
-			output_match_first+="R&lt"+val_match_first_residue_name+"&gt";
-		}
-		if(val_match_first_atom_name)
-		{
-			if(output_match_first)
-			{
-				output_match_first+="&amp";
-			}
-			output_match_first+="A&lt"+val_match_first_atom_name+"&gt";
-		}
-		if(output_match_first)
-		{
-			output+=" --match-first '"+output_match_first+"'";
-		}
-	}
-
-	var val_match_first_not_chain=document.getElementById("match_first_not_chain").value;
-	var val_match_first_not_residue_number=document.getElementById("match_first_not_residue_number").value;
-	var val_match_first_not_residue_name=document.getElementById("match_first_not_residue_name").value;
-	var val_match_first_not_atom_serial=document.getElementById("match_first_not_atom_serial").value;
-	var val_match_first_not_atom_name=document.getElementById("match_first_not_atom_name").value;
-	val_match_first_not_chain=val_match_first_not_chain.split(/[\s,;]+/).join(',');
-	val_match_first_not_residue_number=val_match_first_not_residue_number.split(/[\s,;]+/).join(',');
-	val_match_first_not_residue_name=val_match_first_not_residue_name.split(/[\s,;]+/).join(',');
-	val_match_first_not_atom_serial=val_match_first_not_atom_serial.split(/[\s,;]+/).join(',');
-	val_match_first_not_atom_name=val_match_first_not_atom_name.split(/[\s,;]+/).join(',');
-	if(val_match_first_not_chain || val_match_first_not_residue_number || val_match_first_not_residue_name || val_match_first_not_atom_serial || val_match_first_not_atom_name)
-	{
-		var output_match_first_not=""
-		if(val_match_first_not_chain)
-		{
-			output_match_first_not+="c&lt"+val_match_first_not_chain+"&gt";
-		}
-		if(val_match_first_not_residue_number)
-		{
-			if(output_match_first_not)
-			{
-				output_match_first_not+="&amp";
-			}
-			output_match_first_not+="r&lt"+val_match_first_not_residue_number+"&gt";
-		}
-		if(val_match_first_not_atom_serial)
-		{
-			if(output_match_first_not)
-			{
-				output_match_first_not+="&amp";
-			}
-			output_match_first_not+="a&lt"+val_match_first_not_atom_serial+"&gt";
-		}
-		if(val_match_first_not_residue_name)
-		{
-			if(output_match_first_not)
-			{
-				output_match_first_not+="&amp";
-			}
-			output_match_first_not+="R&lt"+val_match_first_not_residue_name+"&gt";
-		}
-		if(val_match_first_not_atom_name)
-		{
-			if(output_match_first_not)
-			{
-				output_match_first_not+="&amp";
-			}
-			output_match_first_not+="A&lt"+val_match_first_not_atom_name+"&gt";
-		}
-		if(output_match_first_not)
-		{
-			output+=" --match-first-not '"+output_match_first_not+"'";
-		}
+		output+=" --match-first '"+output_match_first+"'";
 	}
 
 	document.getElementById("result").innerHTML=output;
 }
+
 </script>
 
 </body>
