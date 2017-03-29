@@ -5,9 +5,9 @@
 <form id="query">
 <table>
   <tr>
-    <th colspan="5">Select:</th>
-    <th colspan="3">Filter:</th>
-    <th colspan="2">Match:</th>
+    <td colspan="5">Select:</td>
+    <td colspan="3">Filter:</td>
+    <td colspan="2">Match:</td>
   </tr>
   <tr>
     <td></td>
@@ -88,7 +88,7 @@
 <button onclick="compose()">Compose</button>
 </p>
 
-<p id="result"></p>
+<pre id="result"></pre>
 
 <script>
 
@@ -97,9 +97,9 @@ function guarded_split(str)
 	return str.split(/[\s,;]+/).join(',').replace(/^,+|,+$/gm,'');
 }
 
-function guarded_append(start, suffix, value)
+function guarded_append(main, suffix, value)
 {
-	result=start;
+	result=main;
 	if(value)
 	{
 		if(result)
@@ -107,6 +107,20 @@ function guarded_append(start, suffix, value)
 			result+="&amp";
 		}
 		result+=suffix+"&lt"+value+"&gt";
+	}
+	return result;
+}
+
+function global_append(main, suffix, value)
+{
+	result=main;
+	if(value)
+	{
+		if(result)
+		{
+			result+=" ";
+		}
+		result+=suffix+" '"+value+"'";
 	}
 	return result;
 }
@@ -121,10 +135,7 @@ function compose()
 	output_match_first=guarded_append(output_match_first, "a", guarded_split(document.getElementById("match_first_atom_serial").value));
 	output_match_first=guarded_append(output_match_first, "R", guarded_split(document.getElementById("match_first_residue_name").value));
 	output_match_first=guarded_append(output_match_first, "A", guarded_split(document.getElementById("match_first_atom_name").value));
-	if(output_match_first)
-	{
-		output+=" --match-first '"+output_match_first+"'";
-	}
+	output=global_append(output, "--match-first", output_match_first);
 	
 	var output_match_first_not=""
 	output_match_first_not=guarded_append(output_match_first_not, "c", guarded_split(document.getElementById("match_first_not_chain").value));
@@ -132,10 +143,7 @@ function compose()
 	output_match_first_not=guarded_append(output_match_first_not, "a", guarded_split(document.getElementById("match_first_not_atom_serial").value));
 	output_match_first_not=guarded_append(output_match_first_not, "R", guarded_split(document.getElementById("match_first_not_residue_name").value));
 	output_match_first_not=guarded_append(output_match_first_not, "A", guarded_split(document.getElementById("match_first_not_atom_name").value));
-	if(output_match_first_not)
-	{
-		output+=" --match-first-not '"+output_match_first_not+"'";
-	}
+	output=global_append(output, "--match-first-not", output_match_first_not);
 	
 	var output_match_second=""
 	output_match_second=guarded_append(output_match_second, "c", guarded_split(document.getElementById("match_second_chain").value));
@@ -143,10 +151,7 @@ function compose()
 	output_match_second=guarded_append(output_match_second, "a", guarded_split(document.getElementById("match_second_atom_serial").value));
 	output_match_second=guarded_append(output_match_second, "R", guarded_split(document.getElementById("match_second_residue_name").value));
 	output_match_second=guarded_append(output_match_second, "A", guarded_split(document.getElementById("match_second_atom_name").value));
-	if(output_match_second)
-	{
-		output+=" --match-second '"+output_match_second+"'";
-	}
+	output=global_append(output, "--match-second", output_match_second);
 	
 	var output_match_second_not=""
 	output_match_second_not=guarded_append(output_match_second_not, "c", guarded_split(document.getElementById("match_second_not_chain").value));
@@ -154,10 +159,7 @@ function compose()
 	output_match_second_not=guarded_append(output_match_second_not, "a", guarded_split(document.getElementById("match_second_not_atom_serial").value));
 	output_match_second_not=guarded_append(output_match_second_not, "R", guarded_split(document.getElementById("match_second_not_residue_name").value));
 	output_match_second_not=guarded_append(output_match_second_not, "A", guarded_split(document.getElementById("match_second_not_atom_name").value));
-	if(output_match_second_not)
-	{
-		output+=" --match-second-not '"+output_match_second_not+"'";
-	}
+	output=global_append(output, "--match-second-not", output_match_second_not);
 
 	document.getElementById("result").innerHTML=output;
 }
