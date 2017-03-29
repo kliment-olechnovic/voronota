@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<form id="query">
+<table>
+  <tr>
+    <th colspan="5">Select:</th>
+    <th colspan="3">Filter:</th>
+    <th colspan="2">Match:</th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>left in:<br></td>
+    <td>left out:<br></td>
+    <td>right in:<br></td>
+    <td>right out:<br></td>
+    <td></td>
+    <td>min:</td>
+    <td>max:</td>
+    <td></td>
+    <td>string:</td>
+  </tr>
+  <tr>
+    <td>Chain:</td>
+    <td><input type="text" id="match_first_chain" value=""><br></td>
+    <td><input type="text" id="match_first_not_chain" value=""><br></td>
+    <td><input type="text" id="match_secong_chain" value=""><br></td>
+    <td><input type="text" id="match_second_not_chain" value=""><br></td>
+    <td>Contact area:</td>
+    <td><input type="text" id="match_min_area" value=""><br></td>
+    <td><input type="text" id="match_max_area" value=""><br></td>
+    <td>Tags in:</td>
+    <td><input type="text" id="match_tags" value=""><br></td>
+  </tr>
+  <tr>
+    <td>Residue number:</td>
+    <td><input type="text" id="match_first_residue_number" value=""><br></td>
+    <td><input type="text" id="match_first_not_residue_number" value=""><br></td>
+    <td><input type="text" id="match_secong_residue_number" value=""><br></td>
+    <td><input type="text" id="match_second_not_residue_number" value=""><br></td>
+    <td>Minimal distance:</td>
+    <td><input type="text" id="match_min_dist" value=""><br></td>
+    <td><input type="text" id="match_max_dist" value=""><br></td>
+    <td>Tags out:</td>
+    <td><input type="text" id="match_tags_not" value=""><br></td>
+  </tr>
+  <tr>
+    <td>Residue name:</td>
+    <td><input type="text" id="match_first_residue_name" value=""><br></td>
+    <td><input type="text" id="match_first_not_residue_name" value=""><br></td>
+    <td><input type="text" id="match_secong_residue_name" value=""><br></td>
+    <td><input type="text" id="match_second_not_residue_name" value=""><br></td>
+    <td>Sequence separation:</td>
+    <td><input type="text" id="match_min_seq_sep" value=""><br></td>
+    <td><input type="text" id="match_max_seq_sep" value=""><br></td>
+    <td>Adjuncts in:</td>
+    <td><input type="text" id="match_adjuncts" value=""><br></td>
+  </tr>
+  <tr>
+    <td>Atom serial:</td>
+    <td><input type="text" id="match_first_atom_serial" value=""><br></td>
+    <td><input type="text" id="match_first_not_atom_serial" value=""><br></td>
+    <td><input type="text" id="match_secong_atom_serial" value=""><br></td>
+    <td><input type="text" id="match_second_not_atom_serial" value=""><br></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td>Adjuncts out:</td>
+    <td><input type="text" id="match_adjuncts_not" value=""><br></td>
+  </tr>
+  <tr>
+    <td>Atom name:</td>
+    <td><input type="text" id="match_first_atom_name" value=""><br></td>
+    <td><input type="text" id="match_first_not_atom_name" value=""><br></td>
+    <td><input type="text" id="match_secong_atom_name" value=""><br></td>
+    <td><input type="text" id="match_second_not_atom_name" value=""><br></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+</form>
+
+<p>
+<button onclick="compose()">Compose</button>
+</p>
+
+<p id="result"></p>
+
+<script>
+function compose()
+{
+	var output=""
+
+	var val_match_first_chain=document.getElementById("match_first_chain").value;
+	var val_match_first_residue_number=document.getElementById("match_first_residue_number").value;
+	var val_match_first_residue_name=document.getElementById("match_first_residue_name").value;
+	var val_match_first_atom_serial=document.getElementById("match_first_atom_serial").value;
+	var val_match_first_atom_name=document.getElementById("match_first_atom_name").value;
+	val_match_first_chain=val_match_first_chain.split(/[\s,;]+/).join(',');
+	val_match_first_residue_number=val_match_first_residue_number.split(/[\s,;]+/).join(',');
+	val_match_first_residue_name=val_match_first_residue_name.split(/[\s,;]+/).join(',');
+	val_match_first_atom_serial=val_match_first_atom_serial.split(/[\s,;]+/).join(',');
+	val_match_first_atom_name=val_match_first_atom_name.split(/[\s,;]+/).join(',');
+	if(val_match_first_chain || val_match_first_residue_number || val_match_first_residue_name || val_match_first_atom_serial || val_match_first_atom_name)
+	{
+		var output_match_first=""
+		if(val_match_first_chain)
+		{
+			output_match_first+="c&lt"+val_match_first_chain+"&gt";
+		}
+		if(val_match_first_residue_number)
+		{
+			if(output_match_first)
+			{
+				output_match_first+="&amp";
+			}
+			output_match_first+="r&lt"+val_match_first_residue_number+"&gt";
+		}
+		if(val_match_first_atom_serial)
+		{
+			if(output_match_first)
+			{
+				output_match_first+="&amp";
+			}
+			output_match_first+="a&lt"+val_match_first_atom_serial+"&gt";
+		}
+		if(val_match_first_residue_name)
+		{
+			if(output_match_first)
+			{
+				output_match_first+="&amp";
+			}
+			output_match_first+="R&lt"+val_match_first_residue_name+"&gt";
+		}
+		if(val_match_first_atom_name)
+		{
+			if(output_match_first)
+			{
+				output_match_first+="&amp";
+			}
+			output_match_first+="A&lt"+val_match_first_atom_name+"&gt";
+		}
+		if(output_match_first)
+		{
+			output+=" --match-first '"+output_match_first+"'";
+		}
+	}
+
+	var val_match_first_not_chain=document.getElementById("match_first_not_chain").value;
+	var val_match_first_not_residue_number=document.getElementById("match_first_not_residue_number").value;
+	var val_match_first_not_residue_name=document.getElementById("match_first_not_residue_name").value;
+	var val_match_first_not_atom_serial=document.getElementById("match_first_not_atom_serial").value;
+	var val_match_first_not_atom_name=document.getElementById("match_first_not_atom_name").value;
+	val_match_first_not_chain=val_match_first_not_chain.split(/[\s,;]+/).join(',');
+	val_match_first_not_residue_number=val_match_first_not_residue_number.split(/[\s,;]+/).join(',');
+	val_match_first_not_residue_name=val_match_first_not_residue_name.split(/[\s,;]+/).join(',');
+	val_match_first_not_atom_serial=val_match_first_not_atom_serial.split(/[\s,;]+/).join(',');
+	val_match_first_not_atom_name=val_match_first_not_atom_name.split(/[\s,;]+/).join(',');
+	if(val_match_first_not_chain || val_match_first_not_residue_number || val_match_first_not_residue_name || val_match_first_not_atom_serial || val_match_first_not_atom_name)
+	{
+		var output_match_first_not=""
+		if(val_match_first_not_chain)
+		{
+			output_match_first_not+="c&lt"+val_match_first_not_chain+"&gt";
+		}
+		if(val_match_first_not_residue_number)
+		{
+			if(output_match_first_not)
+			{
+				output_match_first_not+="&amp";
+			}
+			output_match_first_not+="r&lt"+val_match_first_not_residue_number+"&gt";
+		}
+		if(val_match_first_not_atom_serial)
+		{
+			if(output_match_first_not)
+			{
+				output_match_first_not+="&amp";
+			}
+			output_match_first_not+="a&lt"+val_match_first_not_atom_serial+"&gt";
+		}
+		if(val_match_first_not_residue_name)
+		{
+			if(output_match_first_not)
+			{
+				output_match_first_not+="&amp";
+			}
+			output_match_first_not+="R&lt"+val_match_first_not_residue_name+"&gt";
+		}
+		if(val_match_first_not_atom_name)
+		{
+			if(output_match_first_not)
+			{
+				output_match_first_not+="&amp";
+			}
+			output_match_first_not+="A&lt"+val_match_first_not_atom_name+"&gt";
+		}
+		if(output_match_first_not)
+		{
+			output+=" --match-first-not '"+output_match_first_not+"'";
+		}
+	}
+
+	document.getElementById("result").innerHTML=output;
+}
+</script>
+
+</body>
+</html>
