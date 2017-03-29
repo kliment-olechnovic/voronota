@@ -92,12 +92,41 @@
 
 <script>
 
-function guarded_split(str)
+function get_input_generic_value(str)
 {
 	return str.split(/[\s,;]+/).join(',').replace(/^,+|,+$/gm,'');
 }
 
-function guarded_append(main, suffix, value)
+function get_input_float_value(str)
+{
+	if(isNaN(str))
+	{
+		return "";
+	}
+	else
+	{
+		return parseFloat(str);
+	}
+}
+
+function get_input_int_value(str)
+{
+	if(isNaN(str))
+	{
+		return "";
+	}
+	else
+	{
+		return parseInt(str);
+	}
+}
+
+function get_input_logical_value(str)
+{
+	return str.split(/[\s,;]+/).join('&').replace(/^&+|&+$/gm,'').replace(/&+/gm,'&').replace(/&\|/gm,'|').replace(/\|&/gm,'|').replace(/\|+/gm,'|');
+}
+
+function append_to_local_output(main, suffix, value)
 {
 	result=main;
 	if(value)
@@ -111,31 +140,7 @@ function guarded_append(main, suffix, value)
 	return result;
 }
 
-function guarded_parseFloat(str)
-{
-	if(isNaN(str))
-	{
-		return "";
-	}
-	else
-	{
-		return parseFloat(str);
-	}
-}
-
-function guarded_parseInt(str)
-{
-	if(isNaN(str))
-	{
-		return "";
-	}
-	else
-	{
-		return parseInt(str);
-	}
-}
-
-function global_append(main, suffix, value)
+function append_to_global_output(main, suffix, value)
 {
 	result=main;
 	if(value)
@@ -154,51 +159,48 @@ function compose()
 	var output=""
 	
 	var output_match_first=""
-	output_match_first=guarded_append(output_match_first, "c", guarded_split(document.getElementById("match_first_chain").value));
-	output_match_first=guarded_append(output_match_first, "r", guarded_split(document.getElementById("match_first_residue_number").value));
-	output_match_first=guarded_append(output_match_first, "a", guarded_split(document.getElementById("match_first_atom_serial").value));
-	output_match_first=guarded_append(output_match_first, "R", guarded_split(document.getElementById("match_first_residue_name").value));
-	output_match_first=guarded_append(output_match_first, "A", guarded_split(document.getElementById("match_first_atom_name").value));
-	output=global_append(output, "--match-first", output_match_first);
+	output_match_first=append_to_local_output(output_match_first, "c", get_input_generic_value(document.getElementById("match_first_chain").value));
+	output_match_first=append_to_local_output(output_match_first, "r", get_input_generic_value(document.getElementById("match_first_residue_number").value));
+	output_match_first=append_to_local_output(output_match_first, "a", get_input_generic_value(document.getElementById("match_first_atom_serial").value));
+	output_match_first=append_to_local_output(output_match_first, "R", get_input_generic_value(document.getElementById("match_first_residue_name").value));
+	output_match_first=append_to_local_output(output_match_first, "A", get_input_generic_value(document.getElementById("match_first_atom_name").value));
+	output=append_to_global_output(output, "--match-first", output_match_first);
 	
 	var output_match_first_not=""
-	output_match_first_not=guarded_append(output_match_first_not, "c", guarded_split(document.getElementById("match_first_not_chain").value));
-	output_match_first_not=guarded_append(output_match_first_not, "r", guarded_split(document.getElementById("match_first_not_residue_number").value));
-	output_match_first_not=guarded_append(output_match_first_not, "a", guarded_split(document.getElementById("match_first_not_atom_serial").value));
-	output_match_first_not=guarded_append(output_match_first_not, "R", guarded_split(document.getElementById("match_first_not_residue_name").value));
-	output_match_first_not=guarded_append(output_match_first_not, "A", guarded_split(document.getElementById("match_first_not_atom_name").value));
-	output=global_append(output, "--match-first-not", output_match_first_not);
+	output_match_first_not=append_to_local_output(output_match_first_not, "c", get_input_generic_value(document.getElementById("match_first_not_chain").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "r", get_input_generic_value(document.getElementById("match_first_not_residue_number").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "a", get_input_generic_value(document.getElementById("match_first_not_atom_serial").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "R", get_input_generic_value(document.getElementById("match_first_not_residue_name").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "A", get_input_generic_value(document.getElementById("match_first_not_atom_name").value));
+	output=append_to_global_output(output, "--match-first-not", output_match_first_not);
 	
 	var output_match_second=""
-	output_match_second=guarded_append(output_match_second, "c", guarded_split(document.getElementById("match_second_chain").value));
-	output_match_second=guarded_append(output_match_second, "r", guarded_split(document.getElementById("match_second_residue_number").value));
-	output_match_second=guarded_append(output_match_second, "a", guarded_split(document.getElementById("match_second_atom_serial").value));
-	output_match_second=guarded_append(output_match_second, "R", guarded_split(document.getElementById("match_second_residue_name").value));
-	output_match_second=guarded_append(output_match_second, "A", guarded_split(document.getElementById("match_second_atom_name").value));
-	output=global_append(output, "--match-second", output_match_second);
+	output_match_second=append_to_local_output(output_match_second, "c", get_input_generic_value(document.getElementById("match_second_chain").value));
+	output_match_second=append_to_local_output(output_match_second, "r", get_input_generic_value(document.getElementById("match_second_residue_number").value));
+	output_match_second=append_to_local_output(output_match_second, "a", get_input_generic_value(document.getElementById("match_second_atom_serial").value));
+	output_match_second=append_to_local_output(output_match_second, "R", get_input_generic_value(document.getElementById("match_second_residue_name").value));
+	output_match_second=append_to_local_output(output_match_second, "A", get_input_generic_value(document.getElementById("match_second_atom_name").value));
+	output=append_to_global_output(output, "--match-second", output_match_second);
 	
 	var output_match_second_not=""
-	output_match_second_not=guarded_append(output_match_second_not, "c", guarded_split(document.getElementById("match_second_not_chain").value));
-	output_match_second_not=guarded_append(output_match_second_not, "r", guarded_split(document.getElementById("match_second_not_residue_number").value));
-	output_match_second_not=guarded_append(output_match_second_not, "a", guarded_split(document.getElementById("match_second_not_atom_serial").value));
-	output_match_second_not=guarded_append(output_match_second_not, "R", guarded_split(document.getElementById("match_second_not_residue_name").value));
-	output_match_second_not=guarded_append(output_match_second_not, "A", guarded_split(document.getElementById("match_second_not_atom_name").value));
-	output=global_append(output, "--match-second-not", output_match_second_not);
+	output_match_second_not=append_to_local_output(output_match_second_not, "c", get_input_generic_value(document.getElementById("match_second_not_chain").value));
+	output_match_second_not=append_to_local_output(output_match_second_not, "r", get_input_generic_value(document.getElementById("match_second_not_residue_number").value));
+	output_match_second_not=append_to_local_output(output_match_second_not, "a", get_input_generic_value(document.getElementById("match_second_not_atom_serial").value));
+	output_match_second_not=append_to_local_output(output_match_second_not, "R", get_input_generic_value(document.getElementById("match_second_not_residue_name").value));
+	output_match_second_not=append_to_local_output(output_match_second_not, "A", get_input_generic_value(document.getElementById("match_second_not_atom_name").value));
+	output=append_to_global_output(output, "--match-second-not", output_match_second_not);
 	
-	var output_match_min_area=guarded_parseFloat(document.getElementById("match_min_area").value);
-	output=global_append(output, "--match-min-area", output_match_min_area);
-	var output_match_max_area=guarded_parseFloat(document.getElementById("match_max_area").value);
-	output=global_append(output, "--match-max-area", output_match_max_area);
+	output=append_to_global_output(output, "--match-min-area", get_input_float_value(document.getElementById("match_min_area").value));
+	output=append_to_global_output(output, "--match-max-area", get_input_float_value(document.getElementById("match_max_area").value));
 	
-	var output_match_min_dist=guarded_parseFloat(document.getElementById("match_min_dist").value);
-	output=global_append(output, "--match-min-dist", output_match_min_dist);
-	var output_match_max_dist=guarded_parseFloat(document.getElementById("match_max_dist").value);
-	output=global_append(output, "--match-max-dist", output_match_max_dist);
+	output=append_to_global_output(output, "--match-min-dist", get_input_float_value(document.getElementById("match_min_dist").value));
+	output=append_to_global_output(output, "--match-max-dist", get_input_float_value(document.getElementById("match_max_dist").value));
 	
-	var output_match_min_seq_sep=guarded_parseInt(document.getElementById("match_min_seq_sep").value);
-	output=global_append(output, "--match-min-seq-sep", output_match_min_seq_sep);
-	var output_match_max_seq_sep=guarded_parseInt(document.getElementById("match_max_seq_sep").value);
-	output=global_append(output, "--match-max-seq-sep", output_match_max_seq_sep);
+	output=append_to_global_output(output, "--match-min-seq-sep", get_input_int_value(document.getElementById("match_min_seq_sep").value));
+	output=append_to_global_output(output, "--match-max-seq-sep", get_input_int_value(document.getElementById("match_max_seq_sep").value));
+	
+	output=append_to_global_output(output, "--match-tags", get_input_logical_value(document.getElementById("match_tags").value));
+	output=append_to_global_output(output, "--match-tags-not", get_input_logical_value(document.getElementById("match_tags_not").value));
 
 	document.getElementById("result").innerHTML=output;
 }
