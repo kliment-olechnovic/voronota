@@ -25,7 +25,7 @@
     <td>Chain:</td>
     <td><input type="text" id="match_first_chain" value=""><br></td>
     <td><input type="text" id="match_first_not_chain" value=""><br></td>
-    <td><input type="text" id="match_secong_chain" value=""><br></td>
+    <td><input type="text" id="match_second_chain" value=""><br></td>
     <td><input type="text" id="match_second_not_chain" value=""><br></td>
     <td>Contact area:</td>
     <td><input type="text" id="match_min_area" value=""><br></td>
@@ -37,7 +37,7 @@
     <td>Residue number:</td>
     <td><input type="text" id="match_first_residue_number" value=""><br></td>
     <td><input type="text" id="match_first_not_residue_number" value=""><br></td>
-    <td><input type="text" id="match_secong_residue_number" value=""><br></td>
+    <td><input type="text" id="match_second_residue_number" value=""><br></td>
     <td><input type="text" id="match_second_not_residue_number" value=""><br></td>
     <td>Minimal distance:</td>
     <td><input type="text" id="match_min_dist" value=""><br></td>
@@ -49,7 +49,7 @@
     <td>Residue name:</td>
     <td><input type="text" id="match_first_residue_name" value=""><br></td>
     <td><input type="text" id="match_first_not_residue_name" value=""><br></td>
-    <td><input type="text" id="match_secong_residue_name" value=""><br></td>
+    <td><input type="text" id="match_second_residue_name" value=""><br></td>
     <td><input type="text" id="match_second_not_residue_name" value=""><br></td>
     <td>Sequence separation:</td>
     <td><input type="text" id="match_min_seq_sep" value=""><br></td>
@@ -61,7 +61,7 @@
     <td>Atom serial:</td>
     <td><input type="text" id="match_first_atom_serial" value=""><br></td>
     <td><input type="text" id="match_first_not_atom_serial" value=""><br></td>
-    <td><input type="text" id="match_secong_atom_serial" value=""><br></td>
+    <td><input type="text" id="match_second_atom_serial" value=""><br></td>
     <td><input type="text" id="match_second_not_atom_serial" value=""><br></td>
     <td></td>
     <td></td>
@@ -73,7 +73,7 @@
     <td>Atom name:</td>
     <td><input type="text" id="match_first_atom_name" value=""><br></td>
     <td><input type="text" id="match_first_not_atom_name" value=""><br></td>
-    <td><input type="text" id="match_secong_atom_name" value=""><br></td>
+    <td><input type="text" id="match_second_atom_name" value=""><br></td>
     <td><input type="text" id="match_second_not_atom_name" value=""><br></td>
     <td></td>
     <td></td>
@@ -124,6 +124,39 @@ function compose()
 	if(output_match_first)
 	{
 		output+=" --match-first '"+output_match_first+"'";
+	}
+	
+	var output_match_first_not=""
+	output_match_first_not=guarded_append(output_match_first_not, "c", guarded_split(document.getElementById("match_first_not_chain").value));
+	output_match_first_not=guarded_append(output_match_first_not, "r", guarded_split(document.getElementById("match_first_not_residue_number").value));
+	output_match_first_not=guarded_append(output_match_first_not, "a", guarded_split(document.getElementById("match_first_not_atom_serial").value));
+	output_match_first_not=guarded_append(output_match_first_not, "R", guarded_split(document.getElementById("match_first_not_residue_name").value));
+	output_match_first_not=guarded_append(output_match_first_not, "A", guarded_split(document.getElementById("match_first_not_atom_name").value));
+	if(output_match_first_not)
+	{
+		output+=" --match-first-not '"+output_match_first_not+"'";
+	}
+	
+	var output_match_second=""
+	output_match_second=guarded_append(output_match_second, "c", guarded_split(document.getElementById("match_second_chain").value));
+	output_match_second=guarded_append(output_match_second, "r", guarded_split(document.getElementById("match_second_residue_number").value));
+	output_match_second=guarded_append(output_match_second, "a", guarded_split(document.getElementById("match_second_atom_serial").value));
+	output_match_second=guarded_append(output_match_second, "R", guarded_split(document.getElementById("match_second_residue_name").value));
+	output_match_second=guarded_append(output_match_second, "A", guarded_split(document.getElementById("match_second_atom_name").value));
+	if(output_match_second)
+	{
+		output+=" --match-second '"+output_match_second+"'";
+	}
+	
+	var output_match_second_not=""
+	output_match_second_not=guarded_append(output_match_second_not, "c", guarded_split(document.getElementById("match_second_not_chain").value));
+	output_match_second_not=guarded_append(output_match_second_not, "r", guarded_split(document.getElementById("match_second_not_residue_number").value));
+	output_match_second_not=guarded_append(output_match_second_not, "a", guarded_split(document.getElementById("match_second_not_atom_serial").value));
+	output_match_second_not=guarded_append(output_match_second_not, "R", guarded_split(document.getElementById("match_second_not_residue_name").value));
+	output_match_second_not=guarded_append(output_match_second_not, "A", guarded_split(document.getElementById("match_second_not_atom_name").value));
+	if(output_match_second_not)
+	{
+		output+=" --match-second-not '"+output_match_second_not+"'";
 	}
 
 	document.getElementById("result").innerHTML=output;
