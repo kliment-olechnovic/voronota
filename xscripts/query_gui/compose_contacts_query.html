@@ -111,6 +111,30 @@ function guarded_append(main, suffix, value)
 	return result;
 }
 
+function guarded_parseFloat(str)
+{
+	if(isNaN(str))
+	{
+		return "";
+	}
+	else
+	{
+		return parseFloat(str);
+	}
+}
+
+function guarded_parseInt(str)
+{
+	if(isNaN(str))
+	{
+		return "";
+	}
+	else
+	{
+		return parseInt(str);
+	}
+}
+
 function global_append(main, suffix, value)
 {
 	result=main;
@@ -160,6 +184,21 @@ function compose()
 	output_match_second_not=guarded_append(output_match_second_not, "R", guarded_split(document.getElementById("match_second_not_residue_name").value));
 	output_match_second_not=guarded_append(output_match_second_not, "A", guarded_split(document.getElementById("match_second_not_atom_name").value));
 	output=global_append(output, "--match-second-not", output_match_second_not);
+	
+	var output_match_min_area=guarded_parseFloat(document.getElementById("match_min_area").value);
+	output=global_append(output, "--match-min-area", output_match_min_area);
+	var output_match_max_area=guarded_parseFloat(document.getElementById("match_max_area").value);
+	output=global_append(output, "--match-max-area", output_match_max_area);
+	
+	var output_match_min_dist=guarded_parseFloat(document.getElementById("match_min_dist").value);
+	output=global_append(output, "--match-min-dist", output_match_min_dist);
+	var output_match_max_dist=guarded_parseFloat(document.getElementById("match_max_dist").value);
+	output=global_append(output, "--match-max-dist", output_match_max_dist);
+	
+	var output_match_min_seq_sep=guarded_parseInt(document.getElementById("match_min_seq_sep").value);
+	output=global_append(output, "--match-min-seq-sep", output_match_min_seq_sep);
+	var output_match_max_seq_sep=guarded_parseInt(document.getElementById("match_max_seq_sep").value);
+	output=global_append(output, "--match-max-seq-sep", output_match_max_seq_sep);
 
 	document.getElementById("result").innerHTML=output;
 }
