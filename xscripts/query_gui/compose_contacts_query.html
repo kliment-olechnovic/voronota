@@ -123,7 +123,7 @@ function get_input_int_value(str)
 
 function get_input_logical_value(str)
 {
-	return str.split(/[\s,;]+/).join('&').replace(/^&+|&+$/gm,'').replace(/&+/gm,'&').replace(/&\|/gm,'|').replace(/\|&/gm,'|').replace(/\|+/gm,'|');
+	return str.split(/[\s,;]+/).join('&').replace(/&+/gm,'&').replace(/&\|/gm,'|').replace(/\|&/gm,'|').replace(/\|+/gm,'|').replace(/^&+|&+$/gm,'').replace(/^\|+|\|+$/gm,'');
 }
 
 function append_to_local_output(main, suffix, value)
