@@ -124,6 +124,7 @@
 </p>
 
 <p>
+<div id="result_title"></div>
 <input type="text" size="150" id="result" value="" class="background-white">
 </p>
 
@@ -268,7 +269,16 @@ function compose()
 		)
 	);
 
-	document.getElementById("result").value=output;
+	if(output)
+	{
+		document.getElementById("result_title").innerHTML="Generated result:<br>";
+		document.getElementById("result").value=output;
+	}
+	else
+	{
+		document.getElementById("result_title").innerHTML="Not enough valid input to generate anything.<br>";
+		document.getElementById("result").value="";
+	}
 }
 
 </script>
