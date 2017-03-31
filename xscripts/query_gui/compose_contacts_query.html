@@ -17,6 +17,13 @@
 
 <body>
 
+This page allows to easily generate a set of arguments for the 'voronota query-contacts' command.
+
+<hr/>
+
+<table border="0">
+<tr>
+<td>
 <table border="0">
   <tr>
     <td></td>
@@ -60,6 +67,12 @@
     <td><input type="text" size="10" id="match_second_atom_name" value="" title="Example: N,CA,CB" class="background-light-green"><br></td>
     <td><input type="text" size="10" id="match_second_not_atom_name" value="" title="Example: N,CA,CB" class="background-light-green"><br></td>
   </tr>
+</table>
+</td>
+<td>
+
+</td>
+</tr>
 </table>
 
 <hr/>
@@ -126,6 +139,20 @@
 <p>
 <div id="result_title"></div>
 <input type="text" size="150" id="result" value="" class="background-white">
+</p>
+
+<hr/>
+
+<p>
+Some tips:
+<ul>
+	<li>Hover over any input field to see a tool tip with an example of valid input.</li>
+	<li>Any input field can be left empty.</li>
+	<li>Both single values and lists (separated with commas, spaces or semicolons) are accepted in the 'Chain-Residue-Atom' input fields (first five rows of input fields).</li>
+	<li>Integer intervals, denoted using ':' symbol, are accepted in 'Residue number' and 'Atom serial' input fields. <i>a</i>:<i>b</i> means an inclusive interval [<i>a</i>, <i>b</i>].</li>
+	<li>Artificial chain name 'solvent' can be used to query solvent-accessible areas.</li>
+	<li>Multiple tags can be specified in magenta input fields using logical operators '|' and '&'.</li>
+</ul>
 </p>
 
 <script>
@@ -273,11 +300,13 @@ function compose()
 	{
 		document.getElementById("result_title").innerHTML="Generated result:<br>";
 		document.getElementById("result").value=output;
+		document.getElementById("result").style.display="block";
 	}
 	else
 	{
 		document.getElementById("result_title").innerHTML="Not enough valid input to generate anything.<br>";
 		document.getElementById("result").value="";
+		document.getElementById("result").style.display="none";
 	}
 }
 
