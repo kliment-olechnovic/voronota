@@ -2,7 +2,6 @@
 <html>
 <body>
 
-<form id="query">
 <table border="1">
   <tr>
     <td colspan="5">Select:</td>
@@ -82,13 +81,14 @@
     <td><input type="text" size="7" id="match_adjunct_not1_name" value="" title="Example: name3"> = <input type="text" size="5" id="match_adjunct_not1_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct_not1_max" value="" title="Example: 2.5"></td>
   </tr>
 </table>
-</form>
 
 <p>
 <button onclick="compose()">Compose</button>
 </p>
 
-<pre id="result"></pre>
+<p>
+<input type="text" size="150" id="result" value="">
+</p>
 
 <script>
 
@@ -148,9 +148,9 @@ function append_to_local_output(main, suffix, value)
 	{
 		if(result)
 		{
-			result+="&amp";
+			result+="&";
 		}
-		result+=suffix+"&lt"+value+"&gt";
+		result+=suffix+"<"+value+">";
 	}
 	return result;
 }
@@ -231,7 +231,7 @@ function compose()
 		)
 	);
 
-	document.getElementById("result").innerHTML=output;
+	document.getElementById("result").value=output;
 }
 
 </script>
