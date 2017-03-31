@@ -6,7 +6,11 @@
 #include <fstream>
 #include <stdexcept>
 
+#if __cplusplus >= 201103L
+#include <type_traits>
+#else
 #include <tr1/type_traits>
+#endif
 
 namespace auxiliaries
 {
@@ -293,7 +297,12 @@ private:
 	template<typename Container>
 	static inline bool read_line_to_map(std::istream& input, Container& container)
 	{
-		typename std::tr1::remove_const<typename Container::value_type::first_type>::type key;
+#if __cplusplus >= 201103L
+typename std::remove_const<typename Container::value_type::first_type>::type key;
+#else
+typename std::tr1::remove_const<typename Container::value_type::first_type>::type key;
+#endif
+
 		typename Container::value_type::second_type value;
 		input >> key >> value;
 		if(input.fail())

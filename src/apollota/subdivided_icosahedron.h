@@ -1,7 +1,11 @@
 #ifndef APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 #define APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 
+#if __cplusplus >= 201103L
+#include <unordered_map>
+#else
 #include <tr1/unordered_map>
+#endif
 
 #include "basic_operations_on_points.h"
 #include "tuple.h"
@@ -60,7 +64,12 @@ public:
 
 	void grow(const std::size_t selected_vertex_id, bool fit_into_current_sphere)
 	{
-		typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
+#if __cplusplus >= 201103L
+typedef std::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
+#else
+typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
+#endif
+
 		const bool valid_selected_vertex_id=(selected_vertex_id<vertices_.size());
 		PairsMap pairs_vertices;
 		std::vector<Triple> new_triples;

@@ -6,8 +6,13 @@
 #include <map>
 #include <set>
 
+#if __cplusplus >= 201103L
+#include <unordered_map>
+#include <unordered_set>
+#else
 #include <tr1/unordered_map>
 #include <tr1/unordered_set>
+#endif
 
 #include "tuple.h"
 #include "search_for_spherical_collisions.h"
@@ -23,7 +28,13 @@ static const std::size_t npos=static_cast<std::size_t>(-1);
 class Triangulation
 {
 public:
-	typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
+
+#if __cplusplus >= 201103L
+typedef std::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
+#else
+typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
+#endif
+
 	typedef std::vector< std::pair<Quadruple, SimpleSphere> > VerticesVector;
 	typedef std::vector< std::vector<std::size_t> > VerticesGraph;
 
@@ -225,7 +236,11 @@ public:
 
 	static VerticesGraph construct_vertices_graph(const std::vector<SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 	{
-		typedef std::tr1::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
+#if __cplusplus >= 201103L
+typedef std::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
+#else
+typedef std::tr1::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
+#endif
 
 		const VerticesVector valid_vertices_vector=collect_vertices_vector_from_quadruples_map(quadruples_map);
 		const VerticesVector invalid_vertices_vector=collect_vertices_vector_from_quadruples_map(collect_invalid_tangent_spheres_of_valid_quadruples(spheres, quadruples_map));
@@ -717,9 +732,15 @@ private:
 
 		struct LeafCheckerForValidD
 		{
+#if __cplusplus >= 201103L
+typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
+#else
+typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
+#endif
+
 			Face& face;
 			const std::size_t d_number;
-			std::tr1::unordered_set<std::size_t> safety_monitor;
+			SafetyMonitor safety_monitor;
 
 			LeafCheckerForValidD(Face& target, const std::size_t d_number) : face(target), d_number(d_number)
 			{
@@ -907,12 +928,18 @@ private:
 
 	static QuadruplesSearchLog find_valid_quadruples(const BoundingSpheresHierarchy& bsh, const std::vector<int>& admittance, QuadruplesMap& quadruples_map)
 	{
-		typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
+#if __cplusplus >= 201103L
+typedef std::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
+typedef std::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
+#else
+typedef std::tr1::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
+typedef std::tr1::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
+#endif
 
 		QuadruplesSearchLog log=QuadruplesSearchLog();
 
 		std::vector<Face> stack=find_first_valid_faces(bsh, admittance, select_starting_sphere_for_finding_first_valid_faces(bsh, admittance), log.performed_iterations_for_finding_first_faces, false, true);
-		std::tr1::unordered_set<Triple, Triple::HashFunctor> processed_triples_set;
+		TriplesSet processed_triples_set;
 		std::vector<int> spheres_usage_mapping(bsh.leaves_spheres().size(), 0);
 		std::set<std::size_t> ignorable_spheres_ids;
 
