@@ -138,7 +138,7 @@ function get_input_float_value(str)
 {
 	if(isNaN(parseFloat(str)))
 	{
-		return "0";
+		return "";
 	}
 	else
 	{
@@ -181,9 +181,9 @@ function get_input_named_interval_value(val_name, val_min, val_max)
 function append_to_local_output(main, suffix, value)
 {
 	result=main;
-	if(value)
+	if(value!=="")
 	{
-		if(result)
+		if(result!=="")
 		{
 			result+="&";
 		}
@@ -195,9 +195,9 @@ function append_to_local_output(main, suffix, value)
 function append_to_global_output(main, suffix, value)
 {
 	result=main;
-	if(value)
+	if(value!=="")
 	{
-		if(result)
+		if(result!=="")
 		{
 			result+=" ";
 		}
