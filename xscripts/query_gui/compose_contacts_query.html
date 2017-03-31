@@ -3,7 +3,7 @@
 <body>
 
 <form id="query">
-<table>
+<table border="1">
   <tr>
     <td colspan="5">Select:</td>
     <td colspan="3">Filter:</td>
@@ -28,10 +28,10 @@
     <td><input type="text" size="10" id="match_second_chain" value="" title="Example: A,B"><br></td>
     <td><input type="text" size="10" id="match_second_not_chain" value="" title="Example: A,B"><br></td>
     <td>Contact area:</td>
-    <td><input type="text" size="10" id="match_min_area" value="" title="Example: 1.0"><br></td>
-    <td><input type="text" size="10" id="match_max_area" value="" title="Example: 5.0"><br></td>
+    <td><input type="text" size="5" id="match_min_area" value="" title="Example: 1.0"><br></td>
+    <td><input type="text" size="5" id="match_max_area" value="" title="Example: 5.0"><br></td>
     <td>Tags in:</td>
-    <td><input type="text" size="14" id="match_tags" value="" title="Example: tag1&tag2|tag3"><br></td>
+    <td><input type="text" size="20" id="match_tags" value="" title="Example: tag1&tag2|tag3"><br></td>
   </tr>
   <tr>
     <td>Residue number:</td>
@@ -40,10 +40,10 @@
     <td><input type="text" size="10" id="match_second_residue_number" value="" title="Example: 1:50,100"><br></td>
     <td><input type="text" size="10" id="match_second_not_residue_number" value="" title="Example: 1:50,100"><br></td>
     <td>Minimal distance:</td>
-    <td><input type="text" size="10" id="match_min_dist" value="" title="Example: 2.0"><br></td>
-    <td><input type="text" size="10" id="match_max_dist" value="" title="Example: 4.0"><br></td>
+    <td><input type="text" size="5" id="match_min_dist" value="" title="Example: 2.0"><br></td>
+    <td><input type="text" size="5" id="match_max_dist" value="" title="Example: 4.0"><br></td>
     <td>Tags out:</td>
-    <td><input type="text" size="14" id="match_tags_not" value="" title="Example: tag1&tag2|tag3"><br></td>
+    <td><input type="text" size="20" id="match_tags_not" value="" title="Example: tag1&tag2|tag3"><br></td>
   </tr>
   <tr>
     <td>Residue name:</td>
@@ -52,10 +52,10 @@
     <td><input type="text" size="10" id="match_second_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
     <td><input type="text" size="10" id="match_second_not_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
     <td>Sequence separation:</td>
-    <td><input type="text" size="10" id="match_min_seq_sep" value="" title="Example: 2"><br></td>
-    <td><input type="text" size="10" id="match_max_seq_sep" value="" title="Example: 6"><br></td>
-    <td>Adjuncts in:</td>
-    <td><input type="text" size="14" id="match_adjuncts" value="" title="Example: val1=0:30&val2=0.9:1.0|val3=5:10"><br></td>
+    <td><input type="text" size="5" id="match_min_seq_sep" value="" title="Example: 2"><br></td>
+    <td><input type="text" size="5" id="match_max_seq_sep" value="" title="Example: 6"><br></td>
+    <td>Adjunct in:</td>
+    <td><input type="text" size="7" id="match_adjunct1_name" value="" title="Example: name1"> = <input type="text" size="5" id="match_adjunct1_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct1_max" value="" title="Example: 2.5"><br></td>
   </tr>
   <tr>
     <td>Atom serial:</td>
@@ -66,8 +66,8 @@
     <td></td>
     <td></td>
     <td></td>
-    <td>Adjuncts out:</td>
-    <td><input type="text" size="14" id="match_adjuncts_not" value="" title="Example: val1=0:30&val2=0.9:1.0|val3=5:10"><br></td>
+    <td>Adjunct in:</td>
+    <td><input type="text" size="7" id="match_adjunct2_name" value="" title="Example: name2"> = <input type="text" size="5" id="match_adjunct2_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct2_max" value="" title="Example: 2.5"><br></td>
   </tr>
   <tr>
     <td>Atom name:</td>
@@ -78,8 +78,8 @@
     <td></td>
     <td></td>
     <td></td>
-    <td></td>
-    <td></td>
+    <td>Adjunct out:</td>
+    <td><input type="text" size="7" id="match_adjunct_not1_name" value="" title="Example: name3"> = <input type="text" size="5" id="match_adjunct_not1_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct_not1_max" value="" title="Example: 2.5"></td>
   </tr>
 </table>
 </form>
@@ -124,6 +124,21 @@ function get_input_int_value(str)
 function get_input_logical_value(str)
 {
 	return str.split(/[\s,;]+/).join('&').replace(/&+/gm,'&').replace(/&\|/gm,'|').replace(/\|&/gm,'|').replace(/\|+/gm,'|').replace(/^&+|&+$/gm,'').replace(/^\|+|\|+$/gm,'');
+}
+
+function get_input_named_interval_value(val_name, val_min, val_max)
+{
+	var safe_val_name=val_name.replace(/[\s,;&\|]+/gm, '');
+	var safe_val_min=val_min.replace(/[\s,;&\|]+/gm, '');
+	var safe_val_max=val_max.replace(/[\s,;&\|]+/gm, '');
+	if(safe_val_name && safe_val_min && safe_val_max)
+	{
+		return (safe_val_name+"="+safe_val_min+":"+safe_val_max);
+	}
+	else
+	{
+		return "";
+	}
 }
 
 function append_to_local_output(main, suffix, value)
@@ -201,6 +216,20 @@ function compose()
 	
 	output=append_to_global_output(output, "--match-tags", get_input_logical_value(document.getElementById("match_tags").value));
 	output=append_to_global_output(output, "--match-tags-not", get_input_logical_value(document.getElementById("match_tags_not").value));
+	
+	output=append_to_global_output(
+		output, "--match-adjuncts", get_input_logical_value(
+			get_input_named_interval_value(document.getElementById("match_adjunct1_name").value, document.getElementById("match_adjunct1_min").value, document.getElementById("match_adjunct1_max").value)
+			+"&"
+			+get_input_named_interval_value(document.getElementById("match_adjunct2_name").value, document.getElementById("match_adjunct2_min").value, document.getElementById("match_adjunct2_max").value)
+		)
+	);
+	
+	output=append_to_global_output(
+		output, "--match-adjuncts-not", get_input_logical_value(
+			get_input_named_interval_value(document.getElementById("match_adjunct_not1_name").value, document.getElementById("match_adjunct_not1_min").value, document.getElementById("match_adjunct_not1_max").value)
+		)
+	);
 
 	document.getElementById("result").innerHTML=output;
 }
