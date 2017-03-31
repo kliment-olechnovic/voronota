@@ -31,7 +31,7 @@ public:
 			original_argv_.resize(argc);
 			for(int i=0;i<argc;i++)
 			{
-				original_argv_[i]=argv[i];
+				original_argv_[i]=unquote_string(std::string(argv[i]));
 			}
 			for(std::size_t i=0;i<original_argv_.size();i++)
 			{
@@ -208,6 +208,15 @@ private:
 	static const std::string& option_prefix_str()
 	{
 		static const std::string str("--");
+		return str;
+	}
+
+	static std::string unquote_string(const std::string& str)
+	{
+		if(str.size()>2 && str[0]==str[str.size()-1] && (str[0]=='\'' || str[0]=='"'))
+		{
+			return str.substr(1, str.size()-2);
+		}
 		return str;
 	}
 
