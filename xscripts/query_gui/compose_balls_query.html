@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Generating arguments for the 'voronota query-balls'</title>
+<style>
+.background-light-blue {background-color:#B2D9F1;}
+.background-light-magenta {background-color:#FFE0F1;}
+.background-light-gray {background-color:#DDDDDD;}
+.background-white {background-color:#FFFFFF;}
+}
+</style>
+</head>
+
+<body>
+
+This page allows to easily generate a set of arguments for the 'voronota query-balls' command.
+
+<hr/>
+
+<table border="0">
+<tr>
+<td>
+<table border="0">
+  <tr>
+    <td></td>
+    <td>in:<br></td>
+    <td>out:<br></td>
+  </tr>
+  <tr>
+    <td>Chain:</td>
+    <td><input type="text" size="10" id="match_chain" value="" title="Example: A,B" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_not_chain" value="" title="Example: A,B" class="background-light-blue"><br></td>
+  </tr>
+  <tr>
+    <td>Residue number:</td>
+    <td><input type="text" size="10" id="match_residue_number" value="" title="Example: 1:50,100" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_not_residue_number" value="" title="Example: 1:50,100" class="background-light-blue"><br></td>
+  </tr>
+  <tr>
+    <td>Residue name:</td>
+    <td><input type="text" size="10" id="match_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_not_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-blue"><br></td>
+  </tr>
+  <tr>
+    <td>Atom serial:</td>
+    <td><input type="text" size="10" id="match_atom_serial" value="" title="Example: 1:300,350" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_not_atom_serial" value="" title="Example: 1:300,350" class="background-light-blue"><br></td>
+  </tr>
+  <tr>
+    <td>Atom name:</td>
+    <td><input type="text" size="10" id="match_atom_name" value="" title="Example: N,CA,CB" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_not_atom_name" value="" title="Example: N,CA,CB" class="background-light-blue"><br></td>
+  </tr>
+</table>
+</td>
+<td>
+
+</td>
+</tr>
+</table>
+
+<hr/>
+
+<table border="0">
+  <tr>
+    <td>Tags in:</td>
+    <td><input type="text" size="40" id="match_tags" value="" title="Example: tag1&tag2|tag3" class="background-light-magenta"><br></td>
+  </tr>
+  <tr>
+    <td>Tags out:</td>
+    <td><input type="text" size="40" id="match_tags_not" value="" title="Example: tag1&tag2|tag3" class="background-light-magenta"><br></td>
+  </tr>
+</table>
+
+<hr/>
+
+<table border="0">
+  <tr>
+    <td>Adjunct in:</td>
+    <td><input type="text" size="10" id="match_adjunct1_name" value="" title="Example: name1" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct1_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct1_max" value="" title="Example: 2.5" class="background-light-gray"><br></td>
+  </tr>
+  <tr>
+    <td>Adjunct in:</td>
+    <td><input type="text" size="10" id="match_adjunct2_name" value="" title="Example: name2" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct2_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct2_max" value="" title="Example: 2.5" class="background-light-gray"><br></td>
+  </tr>
+  <tr>
+    <td>Adjunct out:</td>
+    <td><input type="text" size="10" id="match_adjunct_not1_name" value="" title="Example: name3" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct_not1_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct_not1_max" value="" title="Example: 2.5" class="background-light-gray"></td>
+  </tr>
+</table>
+
+<hr/>
+
+<p>
+<button onclick="compose()">Generate query arguments</button>
+</p>
+
+<p>
+<div id="result_title"></div>
+<input type="text" size="150" id="result" value="" class="background-white">
+</p>
+
+<hr/>
+
+<p>
+Some tips:
+<ul>
+	<li>Hover over any input field to see a tool tip with an example of valid input.</li>
+	<li>Any input field can be left empty.</li>
+	<li>Both single values and lists (separated with commas, spaces or semicolons) are accepted in the 'Chain-Residue-Atom' input fields (first five rows of input fields).</li>
+	<li>Integer intervals, denoted using ':' symbol, are accepted in 'Residue number' and 'Atom serial' input fields. <i>a</i>:<i>b</i> means an inclusive interval [<i>a</i>, <i>b</i>].</li>
+	<li>Multiple tags can be specified in magenta input fields using logical operators '|' and '&'.</li>
+</ul>
+</p>
+
+<script>
+
+function get_input_generic_value(str)
+{
+	return str.split(/[\s,;]+/).join(',').replace(/^,+|,+$/gm,'');
+}
+
+function get_input_logical_value(str)
+{
+	return str.split(/[\s,;]+/).join('&').replace(/&+/gm,'&').replace(/&\|/gm,'|').replace(/\|&/gm,'|').replace(/\|+/gm,'|').replace(/^&+|&+$/gm,'').replace(/^\|+|\|+$/gm,'');
+}
+
+function get_input_named_interval_value(val_name, val_min, val_max)
+{
+	var safe_val_name=val_name.replace(/[\s,;&\|]+/gm, '');
+	var safe_val_min=val_min.replace(/[\s,;&\|]+/gm, '');
+	var safe_val_max=val_max.replace(/[\s,;&\|]+/gm, '');
+	if(safe_val_name && safe_val_min && safe_val_max)
+	{
+		return (safe_val_name+"="+safe_val_min+":"+safe_val_max);
+	}
+	else
+	{
+		return "";
+	}
+}
+
+function append_to_local_output(main, suffix, value)
+{
+	result=main;
+	if(value!=="")
+	{
+		if(result!=="")
+		{
+			result+="&";
+		}
+		result+=suffix+"<"+value+">";
+	}
+	return result;
+}
+
+function append_to_global_output(main, suffix, value)
+{
+	result=main;
+	if(value!=="")
+	{
+		if(result!=="")
+		{
+			result+=" ";
+		}
+		result+=suffix+" '"+value+"'";
+	}
+	return result;
+}
+
+function compose()
+{
+	var output=""
+	
+	var output_match_first=""
+	output_match_first=append_to_local_output(output_match_first, "c", get_input_generic_value(document.getElementById("match_chain").value));
+	output_match_first=append_to_local_output(output_match_first, "r", get_input_generic_value(document.getElementById("match_residue_number").value));
+	output_match_first=append_to_local_output(output_match_first, "a", get_input_generic_value(document.getElementById("match_atom_serial").value));
+	output_match_first=append_to_local_output(output_match_first, "R", get_input_generic_value(document.getElementById("match_residue_name").value));
+	output_match_first=append_to_local_output(output_match_first, "A", get_input_generic_value(document.getElementById("match_atom_name").value));
+	output=append_to_global_output(output, "--match", output_match_first);
+	
+	var output_match_first_not=""
+	output_match_first_not=append_to_local_output(output_match_first_not, "c", get_input_generic_value(document.getElementById("match_not_chain").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "r", get_input_generic_value(document.getElementById("match_not_residue_number").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "a", get_input_generic_value(document.getElementById("match_not_atom_serial").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "R", get_input_generic_value(document.getElementById("match_not_residue_name").value));
+	output_match_first_not=append_to_local_output(output_match_first_not, "A", get_input_generic_value(document.getElementById("match_not_atom_name").value));
+	output=append_to_global_output(output, "--match-not", output_match_first_not);
+	
+	output=append_to_global_output(output, "--match-tags", get_input_logical_value(document.getElementById("match_tags").value));
+	output=append_to_global_output(output, "--match-tags-not", get_input_logical_value(document.getElementById("match_tags_not").value));
+	
+	output=append_to_global_output(
+		output, "--match-adjuncts", get_input_logical_value(
+			get_input_named_interval_value(document.getElementById("match_adjunct1_name").value, document.getElementById("match_adjunct1_min").value, document.getElementById("match_adjunct1_max").value)
+			+"&"
+			+get_input_named_interval_value(document.getElementById("match_adjunct2_name").value, document.getElementById("match_adjunct2_min").value, document.getElementById("match_adjunct2_max").value)
+		)
+	);
+	
+	output=append_to_global_output(
+		output, "--match-adjuncts-not", get_input_logical_value(
+			get_input_named_interval_value(document.getElementById("match_adjunct_not1_name").value, document.getElementById("match_adjunct_not1_min").value, document.getElementById("match_adjunct_not1_max").value)
+		)
+	);
+
+	if(output)
+	{
+		document.getElementById("result_title").innerHTML="Generated result:<br>";
+		document.getElementById("result").value=output;
+		document.getElementById("result").style.display="block";
+	}
+	else
+	{
+		document.getElementById("result_title").innerHTML="Not enough valid input to generate anything.<br>";
+		document.getElementById("result").value="";
+		document.getElementById("result").style.display="none";
+	}
+}
+
+</script>
+
+</body>
+</html>
