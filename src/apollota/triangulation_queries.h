@@ -9,10 +9,18 @@ namespace apollota
 class TriangulationQueries
 {
 public:
-	typedef std::tr1::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
+
+#if __cplusplus >= 201103L
+typedef std::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
+typedef std::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
+typedef std::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> TriplesMap;
+#else
+typedef std::tr1::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
+typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
+typedef std::tr1::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> TriplesMap;
+#endif
+
 	typedef std::vector< std::vector<std::size_t> > IDsGraph;
-	typedef std::tr1::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
-	typedef std::tr1::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> TriplesMap;
 
 	template<typename QuadruplesMapType>
 	static IDsMap collect_neighbors_map_from_quadruples_map(const QuadruplesMapType& quadruples_map)
