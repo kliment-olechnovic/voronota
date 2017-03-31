@@ -1,5 +1,19 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+<style>
+.background-light-red {background-color: #FFCEBD;}
+.background-light-green {background-color:#DDFFB9;}
+.background-light-blue {background-color:#B2D9F1;}
+.background-light-cyan {background-color:#D2FFF1;}
+.background-light-magenta {background-color:#FFE0F1;}
+.background-light-yellow {background-color:#FFFFE0;}
+.background-light-gray {background-color:#DDDDDD;}
+}
+</style>
+</head>
+
 <body>
 
 <table border="1">
@@ -22,63 +36,63 @@
   </tr>
   <tr>
     <td>Chain:</td>
-    <td><input type="text" size="10" id="match_first_chain" value="" title="Example: A,B"><br></td>
-    <td><input type="text" size="10" id="match_first_not_chain" value="" title="Example: A,B"><br></td>
-    <td><input type="text" size="10" id="match_second_chain" value="" title="Example: A,B"><br></td>
-    <td><input type="text" size="10" id="match_second_not_chain" value="" title="Example: A,B"><br></td>
+    <td><input type="text" size="10" id="match_first_chain" value="" title="Example: A,B" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_first_not_chain" value="" title="Example: A,B" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_second_chain" value="" title="Example: A,B" class="background-light-green"><br></td>
+    <td><input type="text" size="10" id="match_second_not_chain" value="" title="Example: A,B" class="background-light-green"><br></td>
     <td>Contact area:</td>
-    <td><input type="text" size="5" id="match_min_area" value="" title="Example: 1.0"><br></td>
-    <td><input type="text" size="5" id="match_max_area" value="" title="Example: 5.0"><br></td>
+    <td><input type="text" size="5" id="match_min_area" value="" title="Example: 1.0" class="background-light-red"><br></td>
+    <td><input type="text" size="5" id="match_max_area" value="" title="Example: 5.0" class="background-light-red"><br></td>
     <td>Tags in:</td>
-    <td><input type="text" size="20" id="match_tags" value="" title="Example: tag1&tag2|tag3"><br></td>
+    <td><input type="text" size="20" id="match_tags" value="" title="Example: tag1&tag2|tag3" class="background-light-magenta"><br></td>
   </tr>
   <tr>
     <td>Residue number:</td>
-    <td><input type="text" size="10" id="match_first_residue_number" value="" title="Example: 1:50,100"><br></td>
-    <td><input type="text" size="10" id="match_first_not_residue_number" value="" title="Example: 1:50,100"><br></td>
-    <td><input type="text" size="10" id="match_second_residue_number" value="" title="Example: 1:50,100"><br></td>
-    <td><input type="text" size="10" id="match_second_not_residue_number" value="" title="Example: 1:50,100"><br></td>
+    <td><input type="text" size="10" id="match_first_residue_number" value="" title="Example: 1:50,100" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_first_not_residue_number" value="" title="Example: 1:50,100" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_second_residue_number" value="" title="Example: 1:50,100" class="background-light-green"><br></td>
+    <td><input type="text" size="10" id="match_second_not_residue_number" value="" title="Example: 1:50,100" class="background-light-green"><br></td>
     <td>Minimal distance:</td>
-    <td><input type="text" size="5" id="match_min_dist" value="" title="Example: 2.0"><br></td>
-    <td><input type="text" size="5" id="match_max_dist" value="" title="Example: 4.0"><br></td>
+    <td><input type="text" size="5" id="match_min_dist" value="" title="Example: 2.0" class="background-light-cyan"><br></td>
+    <td><input type="text" size="5" id="match_max_dist" value="" title="Example: 4.0" class="background-light-cyan"><br></td>
     <td>Tags out:</td>
-    <td><input type="text" size="20" id="match_tags_not" value="" title="Example: tag1&tag2|tag3"><br></td>
+    <td><input type="text" size="20" id="match_tags_not" value="" title="Example: tag1&tag2|tag3" class="background-light-magenta"><br></td>
   </tr>
   <tr>
     <td>Residue name:</td>
-    <td><input type="text" size="10" id="match_first_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
-    <td><input type="text" size="10" id="match_first_not_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
-    <td><input type="text" size="10" id="match_second_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
-    <td><input type="text" size="10" id="match_second_not_residue_name" value="" title="Example: LEU,VAL,ARG"><br></td>
+    <td><input type="text" size="10" id="match_first_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_first_not_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_second_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-green"><br></td>
+    <td><input type="text" size="10" id="match_second_not_residue_name" value="" title="Example: LEU,VAL,ARG" class="background-light-green"><br></td>
     <td>Sequence separation:</td>
-    <td><input type="text" size="5" id="match_min_seq_sep" value="" title="Example: 2"><br></td>
-    <td><input type="text" size="5" id="match_max_seq_sep" value="" title="Example: 6"><br></td>
+    <td><input type="text" size="5" id="match_min_seq_sep" value="" title="Example: 2" class="background-light-yellow"><br></td>
+    <td><input type="text" size="5" id="match_max_seq_sep" value="" title="Example: 6" class="background-light-yellow"><br></td>
     <td>Adjunct in:</td>
-    <td><input type="text" size="7" id="match_adjunct1_name" value="" title="Example: name1"> = <input type="text" size="5" id="match_adjunct1_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct1_max" value="" title="Example: 2.5"><br></td>
+    <td><input type="text" size="7" id="match_adjunct1_name" value="" title="Example: name1" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct1_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct1_max" value="" title="Example: 2.5" class="background-light-gray"><br></td>
   </tr>
   <tr>
     <td>Atom serial:</td>
-    <td><input type="text" size="10" id="match_first_atom_serial" value="" title="Example: 1:300,350"><br></td>
-    <td><input type="text" size="10" id="match_first_not_atom_serial" value="" title="Example: 1:300,350"><br></td>
-    <td><input type="text" size="10" id="match_second_atom_serial" value="" title="Example: 1:300,350"><br></td>
-    <td><input type="text" size="10" id="match_second_not_atom_serial" value="" title="Example: 1:300,350"><br></td>
+    <td><input type="text" size="10" id="match_first_atom_serial" value="" title="Example: 1:300,350" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_first_not_atom_serial" value="" title="Example: 1:300,350" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_second_atom_serial" value="" title="Example: 1:300,350" class="background-light-green"><br></td>
+    <td><input type="text" size="10" id="match_second_not_atom_serial" value="" title="Example: 1:300,350" class="background-light-green"><br></td>
     <td></td>
     <td></td>
     <td></td>
     <td>Adjunct in:</td>
-    <td><input type="text" size="7" id="match_adjunct2_name" value="" title="Example: name2"> = <input type="text" size="5" id="match_adjunct2_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct2_max" value="" title="Example: 2.5"><br></td>
+    <td><input type="text" size="7" id="match_adjunct2_name" value="" title="Example: name2" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct2_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct2_max" value="" title="Example: 2.5" class="background-light-gray"><br></td>
   </tr>
   <tr>
     <td>Atom name:</td>
-    <td><input type="text" size="10" id="match_first_atom_name" value="" title="Example: N,CA,CB"><br></td>
-    <td><input type="text" size="10" id="match_first_not_atom_name" value="" title="Example: N,CA,CB"><br></td>
-    <td><input type="text" size="10" id="match_second_atom_name" value="" title="Example: N,CA,CB"><br></td>
-    <td><input type="text" size="10" id="match_second_not_atom_name" value="" title="Example: N,CA,CB"><br></td>
+    <td><input type="text" size="10" id="match_first_atom_name" value="" title="Example: N,CA,CB" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_first_not_atom_name" value="" title="Example: N,CA,CB" class="background-light-blue"><br></td>
+    <td><input type="text" size="10" id="match_second_atom_name" value="" title="Example: N,CA,CB" class="background-light-green"><br></td>
+    <td><input type="text" size="10" id="match_second_not_atom_name" value="" title="Example: N,CA,CB" class="background-light-green"><br></td>
     <td></td>
     <td></td>
     <td></td>
     <td>Adjunct out:</td>
-    <td><input type="text" size="7" id="match_adjunct_not1_name" value="" title="Example: name3"> = <input type="text" size="5" id="match_adjunct_not1_min" value="" title="Example: 0.3"> to <input type="text" size="5" id="match_adjunct_not1_max" value="" title="Example: 2.5"></td>
+    <td><input type="text" size="7" id="match_adjunct_not1_name" value="" title="Example: name3" class="background-light-gray"> = <input type="text" size="5" id="match_adjunct_not1_min" value="" title="Example: 0.3" class="background-light-gray"> to <input type="text" size="5" id="match_adjunct_not1_max" value="" title="Example: 2.5" class="background-light-gray"></td>
   </tr>
 </table>
 
