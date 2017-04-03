@@ -31,6 +31,7 @@ cp voronota-resources $PACKAGE_NAME/voronota-resources
 ./voronota-resources radii > $PACKAGE_NAME/radii
 
 ./document.bash
+cp ./README.markdown $PACKAGE_NAME/README.txt
 cp ./index.html $PACKAGE_NAME/README.html
 
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
