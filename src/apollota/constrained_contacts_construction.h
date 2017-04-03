@@ -269,7 +269,7 @@ public:
 			std::vector< std::pair<Pair, ConstrainedContactContour::Contour> >& surface_contours_vector,
 			std::vector<int>& marks)
 	{
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
 #else
 typedef std::tr1::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;

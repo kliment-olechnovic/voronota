@@ -10,7 +10,7 @@ class TriangulationQueries
 {
 public:
 
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::unordered_map<std::size_t, std::set<std::size_t> > IDsMap;
 typedef std::unordered_map<Pair, std::set<std::size_t>, Pair::HashFunctor> PairsMap;
 typedef std::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> TriplesMap;

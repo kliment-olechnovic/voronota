@@ -6,7 +6,19 @@
 #include <fstream>
 #include <stdexcept>
 
+#ifndef DO_NOT_USE_TR1
 #if __cplusplus >= 201103L
+#define DO_NOT_USE_TR1 1
+#elif defined(__clang__) || defined(_MSC_VER)
+#define DO_NOT_USE_TR1 2
+#elif defined(__GNUC__) && __GNUC__ > 4
+#define DO_NOT_USE_TR1 3
+#else
+#define DO_NOT_USE_TR1 0
+#endif
+#endif
+
+#if DO_NOT_USE_TR1 > 0
 #include <type_traits>
 #else
 #include <tr1/type_traits>
@@ -297,7 +309,7 @@ private:
 	template<typename Container>
 	static inline bool read_line_to_map(std::istream& input, Container& container)
 	{
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typename std::remove_const<typename Container::value_type::first_type>::type key;
 #else
 typename std::tr1::remove_const<typename Container::value_type::first_type>::type key;
