@@ -6,7 +6,19 @@
 #include <map>
 #include <set>
 
+#ifndef DO_NOT_USE_TR1
 #if __cplusplus >= 201103L
+#define DO_NOT_USE_TR1 1
+#elif defined(__clang__) || defined(_MSC_VER)
+#define DO_NOT_USE_TR1 2
+#elif defined(__GNUC__) && __GNUC__ > 4
+#define DO_NOT_USE_TR1 3
+#else
+#define DO_NOT_USE_TR1 0
+#endif
+#endif
+
+#if DO_NOT_USE_TR1 > 0
 #include <unordered_map>
 #include <unordered_set>
 #else
@@ -29,7 +41,7 @@ class Triangulation
 {
 public:
 
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
 #else
 typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple::HashFunctor> QuadruplesMap;
@@ -236,7 +248,7 @@ typedef std::tr1::unordered_map<Quadruple, std::vector<SimpleSphere>, Quadruple:
 
 	static VerticesGraph construct_vertices_graph(const std::vector<SimpleSphere>& spheres, const QuadruplesMap& quadruples_map)
 	{
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
 #else
 typedef std::tr1::unordered_map<Triple, std::vector<std::size_t>, Triple::HashFunctor> TriplesVerticesMap;
@@ -732,7 +744,7 @@ private:
 
 		struct LeafCheckerForValidD
 		{
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
 #else
 typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
@@ -928,7 +940,7 @@ typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
 
 	static QuadruplesSearchLog find_valid_quadruples(const BoundingSpheresHierarchy& bsh, const std::vector<int>& admittance, QuadruplesMap& quadruples_map)
 	{
-#if __cplusplus >= 201103L
+#if DO_NOT_USE_TR1 > 0
 typedef std::unordered_map<Triple, std::size_t, Triple::HashFunctor> TriplesMap;
 typedef std::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
 #else
