@@ -34,5 +34,7 @@ cp voronota-resources $PACKAGE_NAME/voronota-resources
 cp ./README.markdown $PACKAGE_NAME/README.txt
 cp ./index.html $PACKAGE_NAME/README.html
 
+cp -r support $PACKAGE_NAME/support
+
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
 rm -r $PACKAGE_NAME
