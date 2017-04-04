@@ -26,6 +26,7 @@
 <li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
 <li><a href="#computing-inter-atom-contacts">Computing inter-atom contacts</a></li>
 <li><a href="#computing-annotated-inter-atom-contacts">Computing annotated inter-atom contacts</a></li>
+<li><a href="#querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</a></li>
 <li><a href="#getting-help-in-command-line">Getting help in command line</a></li>
 </ul></li>
 <li><a href="#command-reference">Command reference</a><ul>
@@ -192,25 +193,52 @@ make
 <pre><code>./voronota get-balls-from-atoms-file --annotated &lt; input.pdb &gt; annotated_balls.txt
 ./voronota calculate-contacts --annotated &lt; annotated_balls.txt &gt; annotated_contacts.txt
 </code></pre>
-<p>In &quot;annotated_contacts.txt&quot; the line format is &quot;annotation1 annotation2 area distance tags adjuncts [graphics]&quot;. The strings 'annotation1' and 'annotation2' describe contacting atoms, the 'area' value is the area of contact between the two atoms, the 'distance' value is the distance between the centers of the contacting atoms. If 'annotation2' contains string &quot;solvent&quot;, then the 'area' value is the solvent-accessible area of the atom described by 'annotation1'. The remaining part of the line is used by Voronota querying and drawing commands that are not covered in this section. Below is a part of some possible &quot;annotated_contacts.txt&quot;:</p>
-<pre><code>c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; 15.908 1.456 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt; 0.167 2.488 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt; 7.025 2.774 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt; 7.021 2.486 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt; 0.624 3.159 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt; 2.849 4.628 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;26&gt;R&lt;GLU&gt;A&lt;CD&gt; 0.008 4.792 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;5&gt;a&lt;27&gt;R&lt;GLU&gt;A&lt;OE1&gt; 11.323 3.932 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;A&gt;r&lt;194&gt;a&lt;1501&gt;R&lt;LEU&gt;A&lt;CD2&gt; 0.021 5.465 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt; c&lt;solvent&gt; 35.440 5.9 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt; 11.608 1.514 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt; 0.327 2.405 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt; 14.170 1.523 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt; 0.820 2.430 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;3&gt;a&lt;7&gt;R&lt;LYS&gt;A&lt;N&gt; 3.902 2.371 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt; 0.081 4.954 . .
-c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt; c&lt;solvent&gt; 16.448 6.1 . .
+<p>In &quot;annotated_contacts.txt&quot; the line format is &quot;annotation1 annotation2 area distance tags adjuncts [graphics]&quot;. The strings 'annotation1' and 'annotation2' describe contacting atoms, the 'area' value is the area of contact between the two atoms, the 'distance' value is the distance between the centers of the contacting atoms. If 'annotation2' contains string &quot;solvent&quot;, then the 'area' value is the solvent-accessible area of the atom described by 'annotation1'. The remaining part of the line is used by Voronota querying and drawing commands that are not covered in this section. Below is a part of some possible &quot;annotated_contacts.txt&quot; (with text fields aligned using &quot;column -t&quot; command):</p>
+<pre><code>c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;        15.908  1.456  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt;         0.167   2.488  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt;         7.025   2.774  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt;        7.021   2.486  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt;        0.624   3.159  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt;       2.849   4.628  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;5&gt;a&lt;26&gt;R&lt;GLU&gt;A&lt;CD&gt;       0.008   4.792  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;5&gt;a&lt;27&gt;R&lt;GLU&gt;A&lt;OE1&gt;      11.323  3.932  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;A&gt;r&lt;194&gt;a&lt;1501&gt;R&lt;LEU&gt;A&lt;CD2&gt;  0.021   5.465  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;1&gt;R&lt;SER&gt;A&lt;N&gt;   c&lt;solvent&gt;                     35.440  5.9    .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;2&gt;a&lt;3&gt;R&lt;SER&gt;A&lt;C&gt;         11.608  1.514  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;2&gt;a&lt;4&gt;R&lt;SER&gt;A&lt;O&gt;         0.327   2.405  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;2&gt;a&lt;5&gt;R&lt;SER&gt;A&lt;CB&gt;        14.170  1.523  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;2&gt;a&lt;6&gt;R&lt;SER&gt;A&lt;OG&gt;        0.820   2.430  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;3&gt;a&lt;7&gt;R&lt;LYS&gt;A&lt;N&gt;         3.902   2.371  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;A&gt;r&lt;5&gt;a&lt;24&gt;R&lt;GLU&gt;A&lt;CB&gt;       0.081   4.954  .  .
+c&lt;A&gt;r&lt;2&gt;a&lt;2&gt;R&lt;SER&gt;A&lt;CA&gt;  c&lt;solvent&gt;                     16.448  6.1    .  .
 </code></pre>
+<p>Each atomic descriptor in the above text can be transformed into a space-separated list (chainID resSeq iCode serial altLoc resName name) using &quot;voronota expand-descriptors&quot; command:</p>
+<pre><code>cat annotated_contacts.txt | voronota expand-descriptors | column -t &gt; expanded_table_of_contacts.txt
+</code></pre>
+<p>Below is a part of some possible &quot;expanded_table_of_contacts.txt&quot;:</p>
+<pre><code>A  2  .  1  .  SER  N   A        2    .  2     .  SER  CA   15.908  1.456  .  .
+A  2  .  1  .  SER  N   A        2    .  3     .  SER  C    0.167   2.488  .  .
+A  2  .  1  .  SER  N   A        2    .  4     .  SER  O    7.025   2.774  .  .
+A  2  .  1  .  SER  N   A        2    .  5     .  SER  CB   7.021   2.486  .  .
+A  2  .  1  .  SER  N   A        2    .  6     .  SER  OG   0.624   3.159  .  .
+A  2  .  1  .  SER  N   A        5    .  24    .  GLU  CB   2.849   4.628  .  .
+A  2  .  1  .  SER  N   A        5    .  26    .  GLU  CD   0.008   4.792  .  .
+A  2  .  1  .  SER  N   A        5    .  27    .  GLU  OE1  11.323  3.932  .  .
+A  2  .  1  .  SER  N   A        194  .  1501  .  LEU  CD2  0.021   5.465  .  .
+A  2  .  1  .  SER  N   solvent  .    .  .     .  .    .    35.440  5.9    .  .
+A  2  .  2  .  SER  CA  A        2    .  3     .  SER  C    11.608  1.514  .  .
+A  2  .  2  .  SER  CA  A        2    .  4     .  SER  O    0.327   2.405  .  .
+A  2  .  2  .  SER  CA  A        2    .  5     .  SER  CB   14.170  1.523  .  .
+A  2  .  2  .  SER  CA  A        2    .  6     .  SER  OG   0.820   2.430  .  .
+A  2  .  2  .  SER  CA  A        3    .  7     .  LYS  N    3.902   2.371  .  .
+A  2  .  2  .  SER  CA  A        5    .  24    .  GLU  CB   0.081   4.954  .  .
+A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .
+</code></pre>
+<h2 id="querying-annotated-inter-atom-contacts"><a href="#TOC">Querying annotated inter-atom contacts</a></h2>
+<p>The &quot;voronota query-contacts&quot; command can be used to query and manipulate computed annotated contacts. For example, below is the command that selects contacts that probably correspond to salt bridges:</p>
+<pre><code>cat annotated_contacts.txt | voronota query-contacts --match-first 'R&lt;ASP,GLU&gt;&amp;A&lt;OD1,OD2,OE1,OE2,OXT&gt;' --match-second 'R&lt;ARG,HIS,LYS&gt;&amp;A&lt;NH1,NH2,ND1,NE2,NZ&gt;' --match-max-dist 4.0
+</code></pre>
+<p>The &quot;support/generate-arguments-for-query-contacts.html&quot; file in the Voronota package provides a graphical interface for generating sets of arguments for the &quot;voronota query-contacts&quot; command: it serves as an interactive documentation. A similar interface for the &quot;voronota query-balls&quot; command is provided by the &quot;support/generate-arguments-for-query-balls.html&quot; file.</p>
 <h2 id="getting-help-in-command-line"><a href="#TOC">Getting help in command line</a></h2>
 <p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>
 <p>Command help is shown when &quot;--help&quot; command line option is present, for example:</p>
