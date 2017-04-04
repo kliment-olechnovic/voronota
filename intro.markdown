@@ -168,25 +168,64 @@ If 'annotation2' contains string "solvent", then the 'area' value is
 the solvent-accessible area of the atom described by 'annotation1'.
 The remaining part of the line is used by Voronota querying
 and drawing commands that are not covered in this section.
-Below is a part of some possible "annotated_contacts.txt":
+Below is a part of some possible "annotated_contacts.txt"
+(with text fields aligned using "column -t" command):
 
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<2>R<SER>A<CA> 15.908 1.456 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<3>R<SER>A<C> 0.167 2.488 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<4>R<SER>A<O> 7.025 2.774 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<5>R<SER>A<CB> 7.021 2.486 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<2>a<6>R<SER>A<OG> 0.624 3.159 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<24>R<GLU>A<CB> 2.849 4.628 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<26>R<GLU>A<CD> 0.008 4.792 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<5>a<27>R<GLU>A<OE1> 11.323 3.932 . .
-    c<A>r<2>a<1>R<SER>A<N> c<A>r<194>a<1501>R<LEU>A<CD2> 0.021 5.465 . .
-    c<A>r<2>a<1>R<SER>A<N> c<solvent> 35.440 5.9 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<3>R<SER>A<C> 11.608 1.514 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<4>R<SER>A<O> 0.327 2.405 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<5>R<SER>A<CB> 14.170 1.523 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<2>a<6>R<SER>A<OG> 0.820 2.430 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<3>a<7>R<LYS>A<N> 3.902 2.371 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<A>r<5>a<24>R<GLU>A<CB> 0.081 4.954 . .
-    c<A>r<2>a<2>R<SER>A<CA> c<solvent> 16.448 6.1 . .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<2>a<2>R<SER>A<CA>        15.908  1.456  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<2>a<3>R<SER>A<C>         0.167   2.488  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<2>a<4>R<SER>A<O>         7.025   2.774  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<2>a<5>R<SER>A<CB>        7.021   2.486  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<2>a<6>R<SER>A<OG>        0.624   3.159  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<5>a<24>R<GLU>A<CB>       2.849   4.628  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<5>a<26>R<GLU>A<CD>       0.008   4.792  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<5>a<27>R<GLU>A<OE1>      11.323  3.932  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<A>r<194>a<1501>R<LEU>A<CD2>  0.021   5.465  .  .
+    c<A>r<2>a<1>R<SER>A<N>   c<solvent>                     35.440  5.9    .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<2>a<3>R<SER>A<C>         11.608  1.514  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<2>a<4>R<SER>A<O>         0.327   2.405  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<2>a<5>R<SER>A<CB>        14.170  1.523  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<2>a<6>R<SER>A<OG>        0.820   2.430  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<3>a<7>R<LYS>A<N>         3.902   2.371  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<A>r<5>a<24>R<GLU>A<CB>       0.081   4.954  .  .
+    c<A>r<2>a<2>R<SER>A<CA>  c<solvent>                     16.448  6.1    .  .
+    
+Each atomic descriptor in the above text can be transformed into a space-separated
+list (chainID resSeq iCode serial altLoc resName name) using "voronota expand-descriptors" command:
+
+    cat annotated_contacts.txt | voronota expand-descriptors | column -t > expanded_table_of_contacts.txt
+
+Below is a part of some possible "expanded_table_of_contacts.txt":
+
+    A  2  .  1  .  SER  N   A        2    .  2     .  SER  CA   15.908  1.456  .  .
+    A  2  .  1  .  SER  N   A        2    .  3     .  SER  C    0.167   2.488  .  .
+    A  2  .  1  .  SER  N   A        2    .  4     .  SER  O    7.025   2.774  .  .
+    A  2  .  1  .  SER  N   A        2    .  5     .  SER  CB   7.021   2.486  .  .
+    A  2  .  1  .  SER  N   A        2    .  6     .  SER  OG   0.624   3.159  .  .
+    A  2  .  1  .  SER  N   A        5    .  24    .  GLU  CB   2.849   4.628  .  .
+    A  2  .  1  .  SER  N   A        5    .  26    .  GLU  CD   0.008   4.792  .  .
+    A  2  .  1  .  SER  N   A        5    .  27    .  GLU  OE1  11.323  3.932  .  .
+    A  2  .  1  .  SER  N   A        194  .  1501  .  LEU  CD2  0.021   5.465  .  .
+    A  2  .  1  .  SER  N   solvent  .    .  .     .  .    .    35.440  5.9    .  .
+    A  2  .  2  .  SER  CA  A        2    .  3     .  SER  C    11.608  1.514  .  .
+    A  2  .  2  .  SER  CA  A        2    .  4     .  SER  O    0.327   2.405  .  .
+    A  2  .  2  .  SER  CA  A        2    .  5     .  SER  CB   14.170  1.523  .  .
+    A  2  .  2  .  SER  CA  A        2    .  6     .  SER  OG   0.820   2.430  .  .
+    A  2  .  2  .  SER  CA  A        3    .  7     .  LYS  N    3.902   2.371  .  .
+    A  2  .  2  .  SER  CA  A        5    .  24    .  GLU  CB   0.081   4.954  .  .
+    A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .
+
+## Querying annotated inter-atom contacts
+
+The "voronota query-contacts" command can be used to query and manipulate computed annotated contacts.
+For example, below is the command that selects contacts that probably correspond to salt bridges:
+
+    cat annotated_contacts.txt | voronota query-contacts --match-first 'R<ASP,GLU>&A<OD1,OD2,OE1,OE2,OXT>' --match-second 'R<ARG,HIS,LYS>&A<NH1,NH2,ND1,NE2,NZ>' --match-max-dist 4.0
+
+The "support/generate-arguments-for-query-contacts.html" file in the Voronota package
+provides a graphical interface for generating sets of arguments for
+the "voronota query-contacts" command: it serves as an interactive documentation.
+A similar interface for the "voronota query-balls" command is provided by
+the "support/generate-arguments-for-query-balls.html" file.
 
 ## Getting help in command line
 
