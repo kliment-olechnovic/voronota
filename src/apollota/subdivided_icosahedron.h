@@ -1,22 +1,12 @@
 #ifndef APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 #define APOLLOTA_SUBDIVIDED_ICOSAHEDRON_H_
 
-#ifndef DO_NOT_USE_TR1
-#if __cplusplus >= 201103L
-#define DO_NOT_USE_TR1 1
-#elif defined(__clang__) || defined(_MSC_VER)
-#define DO_NOT_USE_TR1 2
-#elif defined(__GNUC__) && __GNUC__ > 4
-#define DO_NOT_USE_TR1 3
-#else
-#define DO_NOT_USE_TR1 0
-#endif
-#endif
+#include "../compatability_macros.h"
 
-#if DO_NOT_USE_TR1 > 0
-#include <unordered_map>
-#else
+#if USE_TR1 > 0
 #include <tr1/unordered_map>
+#else
+#include <unordered_map>
 #endif
 
 #include "basic_operations_on_points.h"
@@ -76,10 +66,10 @@ public:
 
 	void grow(const std::size_t selected_vertex_id, bool fit_into_current_sphere)
 	{
-#if DO_NOT_USE_TR1 > 0
-typedef std::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
-#else
+#if USE_TR1 > 0
 typedef std::tr1::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
+#else
+typedef std::unordered_map<Pair, std::size_t, Pair::HashFunctor> PairsMap;
 #endif
 
 		const bool valid_selected_vertex_id=(selected_vertex_id<vertices_.size());
