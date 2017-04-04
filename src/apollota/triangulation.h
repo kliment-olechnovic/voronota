@@ -745,7 +745,7 @@ private:
 		struct LeafCheckerForValidD
 		{
 #if DO_NOT_USE_TR1 > 0
-typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
+typedef std::unordered_set<std::size_t> SafetyMonitor;
 #else
 typedef std::tr1::unordered_set<std::size_t> SafetyMonitor;
 #endif
