@@ -3,6 +3,8 @@
 
 #include <deque>
 
+#include "../compatability_macros.h"
+
 #include "constrained_contact_contour.h"
 #include "constrained_contact_remainder.h"
 #include "triangulation_queries.h"
@@ -269,10 +271,10 @@ public:
 			std::vector< std::pair<Pair, ConstrainedContactContour::Contour> >& surface_contours_vector,
 			std::vector<int>& marks)
 	{
-#if DO_NOT_USE_TR1 > 0
-typedef std::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
-#else
+#if USE_TR1 > 0
 typedef std::tr1::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
+#else
+typedef std::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > PairsIDsMap;
 #endif
 
 		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
