@@ -4,12 +4,12 @@
 #ifndef USE_TR1
 #if __cplusplus >= 201103L
 #define USE_TR1 0
-#elif defined(__clang__) || defined(_MSC_VER)
+#elif defined(__clang__)
 #define USE_TR1 0
-#elif defined(__GNUC__) && __GNUC__ > 4
-#define USE_TR1 0
-#else
+#elif defined(__GNUC__) && __GNUC__ < 5
 #define USE_TR1 1
+#else
+#define USE_TR1 0
 #endif
 #endif
 

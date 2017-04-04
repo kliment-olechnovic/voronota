@@ -21,6 +21,7 @@
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#enabling-openmp">Enabling OpenMP</a></li>
 <li><a href="#enabling-mpi">Enabling MPI</a></li>
+<li><a href="#tr1-usage">TR1 usage</a></li>
 </ul></li>
 <li><a href="#basic-usage-example">Basic usage example</a><ul>
 <li><a href="#computing-voronoi-vertices">Computing Voronoi vertices</a></li>
@@ -137,6 +138,10 @@ make
 <h2 id="enabling-mpi"><a href="#TOC">Enabling MPI</a></h2>
 <p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
+</code></pre>
+<h2 id="tr1-usage"><a href="#TOC">TR1 usage</a></h2>
+<p>Voronota can be built with older, pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails with error messages containing &quot;tr1&quot;, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling:</p>
+<pre><code>g++ -O3 -DUSE_TR1=0 -o voronota src/*.cpp
 </code></pre>
 <h1 id="basic-usage-example"><a href="#TOC">Basic usage example</a></h1>
 <h2 id="computing-voronoi-vertices"><a href="#TOC">Computing Voronoi vertices</a></h2>
