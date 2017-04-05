@@ -6,7 +6,7 @@
 #define USE_TR1 0
 #elif defined(__clang__)
 #define USE_TR1 0
-#elif defined(__GNUC__) && __GNUC__ < 5
+#elif defined(__GNUC__)
 #define USE_TR1 1
 #else
 #define USE_TR1 0
