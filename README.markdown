@@ -71,15 +71,19 @@ can use mpic++ compiler wrapper. You also need to define
 
     mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
 
-## TR1 usage
+## TR1 usage switch
 
-Voronota can be built with older, pre-C++11 compilers that support C++ Technical Report 1 (TR1) features.
+Voronota can be built with pre-C++11 compilers that support C++ Technical Report 1 (TR1) features.
 The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used.
-If compilation fails with error messages containing "tr1", it may mean that these checks failed.
+If compilation fails, it may mean that these checks failed.
 To troubleshoot this, try setting the value of the "USE_TR1" macro
-to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling:
+to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:
 
-    g++ -O3 -DUSE_TR1=0 -o voronota src/*.cpp
+    g++ -O3 -DUSE_TR1=1 -o voronota src/*.cpp
+
+or
+
+    g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota src/*.cpp
 
 
 # Basic usage example
