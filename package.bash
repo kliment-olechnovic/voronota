@@ -16,13 +16,8 @@ rm -r -f $PACKAGE_NAME
 
 mkdir -p $PACKAGE_NAME
 cp -r src $PACKAGE_NAME/src
-cp LICENSE.txt $PACKAGE_NAME/LICENSE.txt
-cp CMakeLists.txt $PACKAGE_NAME/CMakeLists.txt
-cp voronota-cadscore $PACKAGE_NAME/voronota-cadscore
-cp voronota-voromqa $PACKAGE_NAME/voronota-voromqa
-cp voronota-contacts $PACKAGE_NAME/voronota-contacts
-cp voronota-volumes $PACKAGE_NAME/voronota-volumes
-cp voronota $PACKAGE_NAME/voronota
+cp LICENSE.txt CMakeLists.txt $PACKAGE_NAME
+cp voronota-cadscore voronota-voromqa voronota-contacts voronota-volumes $PACKAGE_NAME
 
 ./stock.bash
 cp voronota-resources $PACKAGE_NAME/voronota-resources
@@ -34,5 +29,18 @@ cp ./index.html $PACKAGE_NAME/README.html
 
 cp -r support $PACKAGE_NAME/support
 
+AUTODIST_NAME="voronota-autodist-$VERSIONID"
+rm -r -f $AUTODIST_NAME
+./autodist.bash &> /dev/null
+tar -xf $AUTODIST_NAME.tar.gz
+rm -f $AUTODIST_NAME.tar.gz
+if [ -d "$AUTODIST_NAME" ]
+then
+	cp $(find $AUTODIST_NAME -maxdepth 1 -type f -not -name 'voronota*') $PACKAGE_NAME
+fi
+rm -r -f $AUTODIST_NAME
+
+cp voronota $PACKAGE_NAME/voronota
+
 tar -czf "$PACKAGE_NAME.tar.gz" $PACKAGE_NAME
-rm -r $PACKAGE_NAME
+rm -r -f $PACKAGE_NAME
