@@ -1,8 +1,11 @@
 #!/bin/bash
 
-VERSION_MAJOR=$(cat ./src/main.cpp | grep '"Voronota version ' | sed 's/.*"Voronota version \(\S\+\)";/\1/')
-VERSION_MINOR=$(hg branches | egrep '^default' | tr ':' ' ' | awk '{print $2}')
-VERSIONID="${VERSION_MAJOR}.${VERSION_MINOR}"
+cd $(dirname "$0")
+
+VERSIONID=$(./version.bash)
+
+PACKAGE_NAME_PREFIX="voronota-autodist"
+PACKAGE_NAME="voronota-autodist-$VERSIONID"
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
@@ -14,7 +17,7 @@ cd $TMPLDIR
 
 {
 cat << 'EOF'
-AC_INIT([voronota], [VERSIONID])
+AC_INIT([voronota], [VERSIONID], [kliment@ibt.lt], [PACKAGE_NAME_PREFIX])
 AM_INIT_AUTOMAKE([foreign])
 AC_PROG_CXX
 AC_CONFIG_FILES([Makefile])
@@ -22,6 +25,7 @@ AC_OUTPUT
 EOF
 } \
 | sed "s/VERSIONID/$VERSIONID/" \
+| sed "s/PACKAGE_NAME_PREFIX/$PACKAGE_NAME_PREFIX/" \
 > "./configure.ac"
 
 {
@@ -41,4 +45,4 @@ make maintainer-clean
 make dist
 
 cd -
-cp "$TMPLDIR/voronota-$VERSIONID.tar.gz" "./voronota-$VERSIONID.tar.gz"
+mv "$TMPLDIR/$PACKAGE_NAME.tar.gz" "./$PACKAGE_NAME.tar.gz"
