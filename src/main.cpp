@@ -112,7 +112,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 
 std::string version()
 {
-	static const std::string str="Voronota version 1.16";
+	static const std::string str="Voronota version 1.17";
 	return str;
 }
 
