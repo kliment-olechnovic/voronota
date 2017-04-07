@@ -4,13 +4,11 @@ PACKAGE_NAME=$1
 
 cd $(dirname "$0")
 
-VERSION_MAJOR_STRING=$(./voronota | head -1 | awk '{print $3}')
-VERSION_MINOR_STRING=$(hg branches | egrep '^default' | tr ':' ' ' | awk '{print $2}')
-VERSION_STRING="voronota_$VERSION_MAJOR_STRING.$VERSION_MINOR_STRING"
+VERSIONID=$(./version.bash)
 
 if [ -z "$PACKAGE_NAME" ]
 then
-  PACKAGE_NAME=$VERSION_STRING
+  PACKAGE_NAME="voronota_$VERSIONID"
 fi
 
 rm -f $PACKAGE_NAME.tar.gz
