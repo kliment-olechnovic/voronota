@@ -29,14 +29,14 @@ cp ./index.html $PACKAGE_NAME/README.html
 
 cp -r support $PACKAGE_NAME/support
 
-AUTODIST_NAME="voronota-autodist-$VERSIONID"
+AUTODIST_NAME="voronota-$VERSIONID"
 rm -r -f $AUTODIST_NAME
 ./autodist.bash &> /dev/null
 tar -xf $AUTODIST_NAME.tar.gz
 rm -f $AUTODIST_NAME.tar.gz
 if [ -d "$AUTODIST_NAME" ]
 then
-	cp $(find $AUTODIST_NAME -maxdepth 1 -type f -not -name 'voronota*') $PACKAGE_NAME
+	cp $(find $AUTODIST_NAME -maxdepth 1 -type f -not -name 'voronota') $PACKAGE_NAME
 fi
 rm -r -f $AUTODIST_NAME
 
