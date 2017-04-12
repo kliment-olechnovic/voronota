@@ -4,8 +4,8 @@ cd $(dirname "$0")
 
 VERSIONID=$(./version.bash)
 
-PACKAGE_NAME_PREFIX="voronota-autodist"
-PACKAGE_NAME="voronota-autodist-$VERSIONID"
+PACKAGE_NAME_PREFIX="voronota"
+PACKAGE_NAME="voronota-$VERSIONID"
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
