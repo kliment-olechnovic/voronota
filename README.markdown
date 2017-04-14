@@ -465,7 +465,8 @@ Using "--help" option without specific command results in printing help for all 
     --inter-residue                             flag to convert input to inter-residue contacts
     --inter-residue-after                       flag to convert output to inter-residue contacts
     --summing-exceptions            string      file path to input inter-residue summing exceptions annotations
-    --summarize                                 flag to output only summary of contacts
+    --summarize                                 flag to output only summary of matched contacts
+    --summarize-by-first                        flag to output only summary of matched contacts by first identifier
     --preserve-graphics                         flag to preserve graphics in output
     --help                                      flag to print usage help to stdout and exit
 
