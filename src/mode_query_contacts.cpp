@@ -288,7 +288,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			summary.add(it->second->second);
 			summary.graphics.clear();
 		}
-		std::cout << CRADsPair(CRAD("any"), CRAD("any")) << " " << summary << "\n";
+		std::cout << CRADsPair(CRAD::any(), CRAD::any()) << " " << summary << "\n";
 	}
 	else if(summarize_by_first)
 	{
@@ -300,7 +300,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				if(MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
 				{
-					ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD("any"))];
+					ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
 					cv.add(it->second->second);
 					cv.graphics.clear();
 				}
