@@ -79,6 +79,10 @@ cat $SUBDIR/match_first_and_set_tags \
 > $SUBDIR/match_first_and_set_tags_summary
 
 cat $SUBDIR/match_first_and_set_tags \
+| $VORONOTA query-contacts --match-first 'A<O>' --summarize-by-first \
+> $SUBDIR/match_first_and_set_tags_summary_by_first
+
+cat $SUBDIR/match_first_and_set_tags \
 | $VORONOTA query-contacts --match-tags 'withO' --match-tags-not 'withNZ' \
 | column -t \
 > $SUBDIR/match_tags

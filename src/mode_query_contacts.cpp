@@ -123,7 +123,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag to convert input to inter-residue contacts"));
 	const bool inter_residue_after=poh.contains_option(pohw.describe_option("--inter-residue-after", "", "flag to convert output to inter-residue contacts"));
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
-	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of contacts"));
+	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of matched contacts"));
+	const bool summarize_by_first=poh.contains_option(pohw.describe_option("--summarize-by-first", "", "flag to output only summary of matched contacts by first identifier"));
 	enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -149,11 +150,11 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator> selected_contacts;
-	{
-		const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
-		const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
-		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
 
+	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
+	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
+	{
+		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
 		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
@@ -277,6 +278,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	const bool inter_residue_summation_needed=(!inter_residue && inter_residue_after);
+
 	if(summarize)
 	{
 		ContactValue summary;
@@ -287,9 +290,30 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 		std::cout << CRADsPair(CRAD("any"), CRAD("any")) << " " << summary << "\n";
 	}
+	else if(summarize_by_first)
+	{
+		std::map< CRADsPair, ContactValue > map_of_summaries;
+		for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+		{
+			CRAD crads[2]={it->first.a, it->first.b};
+			for(int i=0;i<2;i++)
+			{
+				if(MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
+				{
+					ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD("any"))];
+					cv.add(it->second->second);
+					cv.graphics.clear();
+				}
+			}
+		}
+		if(inter_residue_summation_needed)
+		{
+			sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_summaries);
+		}
+		auxiliaries::IOUtilities().write_map(map_of_summaries, std::cout);
+	}
 	else
 	{
-		const bool inter_residue_summation_needed=(!inter_residue && inter_residue_after);
 		if(!update_mode && !inter_residue_summation_needed)
 		{
 			for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
