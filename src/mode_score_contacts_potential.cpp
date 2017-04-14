@@ -42,7 +42,7 @@ inline CRAD simplify_crad(const CRAD& input_crad)
 	}
 	else
 	{
-		return CRAD("any");
+		return CRAD::any();
 	}
 }
 
@@ -159,7 +159,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 		}
 
-		map_of_subtags_contributions[InteractionName(CRADsPair(CRAD("any"), CRAD::solvent()), "solvent")]=(sum_of_solvent_areas/sum_of_contact_areas);
+		map_of_subtags_contributions[InteractionName(CRADsPair(CRAD::any(), CRAD::solvent()), "solvent")]=(sum_of_solvent_areas/sum_of_contact_areas);
 	}
 
 	std::map< CRADsPair, std::pair<double, double> > seqsep_modifiers;
@@ -187,7 +187,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	const double solvent_contribution=map_of_subtags_contributions[InteractionName(CRADsPair(CRAD("any"), CRAD::solvent()), "solvent")];
+	const double solvent_contribution=map_of_subtags_contributions[InteractionName(CRADsPair(CRAD::any(), CRAD::solvent()), "solvent")];
 
 	std::map< InteractionName, std::pair<double, double> > result;
 	std::map< InteractionName, std::pair<double, double> > probabilities;
@@ -306,7 +306,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			foutput << InteractionName(CRADsPair(CRAD("nonsolvent"), CRAD("nonsolvent")), ".") << " " << sum_obs_nonsolvent << " " << sum_exp_nonsolvent << "\n";
 			foutput << InteractionName(CRADsPair(CRAD("nonsolvent"), CRAD::solvent()), ".") << " " << sum_obs_solvent << " " << sum_exp_solvent << "\n";
-			foutput << InteractionName(CRADsPair(CRAD("any"), CRAD("any")), ".") << " " << (sum_obs_nonsolvent+sum_obs_solvent) << " " << (sum_exp_nonsolvent+sum_exp_solvent) << "\n";
+			foutput << InteractionName(CRADsPair(CRAD::any(), CRAD::any()), ".") << " " << (sum_obs_nonsolvent+sum_obs_solvent) << " " << (sum_exp_nonsolvent+sum_exp_solvent) << "\n";
 		}
 	}
 

@@ -72,5 +72,5 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 		sum_of_p_exp+=p_exp;
 		std::cout << crads << " " << p_obs << " " << p_exp << "\n";
 	}
-	std::cout << CRADsPair(CRAD("any"), CRAD("any")) << " " << sum_of_p_obs << " " << sum_of_p_exp << "\n";
+	std::cout << CRADsPair(CRAD::any(), CRAD::any()) << " " << sum_of_p_obs << " " << sum_of_p_exp << "\n";
 }
