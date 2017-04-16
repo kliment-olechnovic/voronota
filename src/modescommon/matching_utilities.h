@@ -63,6 +63,55 @@ public:
 		return false;
 	}
 
+	static std::pair<bool, double>  match_crad_with_map_of_crads(const auxiliaries::ChainResidueAtomDescriptor& crad, const std::map<auxiliaries::ChainResidueAtomDescriptor, double>& map_of_crads)
+	{
+		std::map<auxiliaries::ChainResidueAtomDescriptor, double>::const_iterator result_it=map_of_crads.find(crad);
+		if(result_it==map_of_crads.end())
+		{
+			result_it=map_of_crads.find(crad.without_atom());
+		}
+		if(result_it==map_of_crads.end())
+		{
+			for(std::map<auxiliaries::ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
+			{
+				if(crad.contains(it->first))
+				{
+					result_it=it;
+				}
+			}
+		}
+		if(result_it!=map_of_crads.end())
+		{
+			return std::pair<bool, double>(true, result_it->second);
+		}
+		return std::pair<bool, double>(false, 0.0);
+	}
+
+	static std::pair<bool, double>  match_crad_with_map_of_crads_pairs(const auxiliaries::ChainResidueAtomDescriptorsPair& crads_pair, const std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
+	{
+		std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
+		if(result_it==map_of_crads_pairs.end())
+		{
+			result_it=map_of_crads_pairs.find(auxiliaries::ChainResidueAtomDescriptorsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()));
+		}
+		if(result_it==map_of_crads_pairs.end())
+		{
+			for(std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
+			{
+				if((crads_pair.a.contains(it->first.a) && crads_pair.b.contains(it->first.b)) ||
+						(crads_pair.a.contains(it->first.b) && crads_pair.b.contains(it->first.a)))
+				{
+					result_it=it;
+				}
+			}
+		}
+		if(result_it!=map_of_crads_pairs.end())
+		{
+			return std::pair<bool, double>(true, result_it->second);
+		}
+		return std::pair<bool, double>(false, 0.0);
+	}
+
 private:
 	template<typename T, typename F>
 	static bool match_container_with_multiple_values(const T& container, const F& matcher, const std::string& values)

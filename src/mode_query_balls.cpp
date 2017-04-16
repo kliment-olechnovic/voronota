@@ -278,14 +278,10 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!map_of_external_adjunct_values.empty())
 			{
-				std::map<CRAD, double>::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(crad);
-				if(adjunct_value_it==map_of_external_adjunct_values.end())
+				const std::pair<bool, double> adjunct_value=MatchingUtilities::match_crad_with_map_of_crads(crad, map_of_external_adjunct_values);
+				if(adjunct_value.first)
 				{
-					adjunct_value_it=map_of_external_adjunct_values.find(crad.without_atom());
-				}
-				if(adjunct_value_it!=map_of_external_adjunct_values.end())
-				{
-					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
 				}
 			}
 			if(!map_of_dssp_records.empty())
