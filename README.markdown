@@ -591,6 +591,7 @@ Using "--help" option without specific command results in printing help for all 
     --depth                         number      local neighborhood depth
     --smoothing-window              number      window to smooth residue scores along sequence
     --smoothed-scores-file          string      file path to output smoothed residue scores
+    --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
     --detailed-output                           flag to enable detailed output
     --help                                      flag to print usage help to stdout and exit
 

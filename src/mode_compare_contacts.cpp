@@ -71,13 +71,13 @@ inline std::ostream& operator<<(std::ostream& output, const CADDescriptor& cadd)
 	return output;
 }
 
-std::map< CRADsPair, double > summarize_pair_mapping_of_values(const std::map< CRADsPair, double >& map)
+std::map< CRADsPair, double > summarize_pair_mapping_of_values(const std::map< CRADsPair, double >& map, const bool ignore_residue_names)
 {
 	std::map< CRADsPair, double > result;
 	for(std::map< CRADsPair, double >::const_iterator it=map.begin();it!=map.end();++it)
 	{
 		const CRADsPair& crads=it->first;
-		result[CRADsPair(crads.a.without_atom(), crads.b.without_atom())]+=it->second;
+		result[CRADsPair(crads.a.without_some_info(true, true, false, ignore_residue_names), crads.b.without_some_info(true, true, false, ignore_residue_names))]+=it->second;
 	}
 	return result;
 }
@@ -165,6 +165,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const int depth=poh.argument<int>(pohw.describe_option("--depth", "number", "local neighborhood depth"), 0);
 	const unsigned int smoothing_window=poh.argument<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue scores along sequence"), 0);
 	const std::string smoothed_scores_file=poh.argument<std::string>(pohw.describe_option("--smoothed-scores-file", "string", "file path to output smoothed residue scores"), "");
+	const bool ignore_residue_names=poh.contains_option(pohw.describe_option("--ignore-residue-names", "", "flag to consider just residue numbers and ignore residue names"));
 	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -199,7 +200,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	{
 		const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(
-				combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
+				combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names), summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names)));
 		auxiliaries::IOUtilities().write_map_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
 
 		const std::map<CRAD, CADDescriptor> map_of_residue_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
