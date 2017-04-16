@@ -184,31 +184,36 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No target contacts input.");
 	}
 
-	const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(
-			combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
-	auxiliaries::IOUtilities().write_map_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
-
-	const std::map<CRAD, CADDescriptor> map_of_atom_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
-			auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth));
-	auxiliaries::IOUtilities().write_map_to_file(map_of_atom_cad_descriptors, atom_scores_file);
-
-	const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(
-			combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
-	auxiliaries::IOUtilities().write_map_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
-
-	const std::map<CRAD, CADDescriptor> map_of_residue_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
-			auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth));
-	auxiliaries::IOUtilities().write_map_to_file(map_of_residue_cad_descriptors, residue_scores_file);
-
-	if(!smoothed_scores_file.empty())
 	{
-		auxiliaries::IOUtilities().write_map_to_file(
-				auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
-						collect_scores_from_map_of_cad_descriptors(map_of_residue_cad_descriptors), smoothing_window), smoothed_scores_file);
+		const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(
+				combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
+		auxiliaries::IOUtilities().write_map_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
+
+		const std::map<CRAD, CADDescriptor> map_of_atom_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
+				auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth));
+		auxiliaries::IOUtilities().write_map_to_file(map_of_atom_cad_descriptors, atom_scores_file);
+
+		std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
+		std::cout << "atom_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_atom_cad_descriptors) << "\n";
 	}
 
-	std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
-	std::cout << "residue_level_global " << construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors) << "\n";
-	std::cout << "atom_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_atom_cad_descriptors) << "\n";
-	std::cout << "residue_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_residue_cad_descriptors) << "\n";
+	{
+		const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(
+				combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts), summarize_pair_mapping_of_values(map_of_contacts)));
+		auxiliaries::IOUtilities().write_map_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
+
+		const std::map<CRAD, CADDescriptor> map_of_residue_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
+				auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth));
+		auxiliaries::IOUtilities().write_map_to_file(map_of_residue_cad_descriptors, residue_scores_file);
+
+		if(!smoothed_scores_file.empty())
+		{
+			auxiliaries::IOUtilities().write_map_to_file(
+					auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
+							collect_scores_from_map_of_cad_descriptors(map_of_residue_cad_descriptors), smoothing_window), smoothed_scores_file);
+		}
+
+		std::cout << "residue_level_global " << construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors) << "\n";
+		std::cout << "residue_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_residue_cad_descriptors) << "\n";
+	}
 }
