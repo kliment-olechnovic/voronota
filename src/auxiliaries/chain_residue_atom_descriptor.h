@@ -270,12 +270,31 @@ public:
 				!(resSeq==null_num() && !iCode.empty()));
 	}
 
-	ChainResidueAtomDescriptor without_atom() const
+	ChainResidueAtomDescriptor without_some_info(const bool no_serial, const bool no_name, const bool no_resSeq, const bool no_resName) const
 	{
 		ChainResidueAtomDescriptor v=(*this);
-		v.serial=null_num();
-		v.name.clear();
+		if(no_serial)
+		{
+			v.serial=null_num();
+		}
+		if(no_name)
+		{
+			v.name.clear();
+		}
+		if(no_resSeq)
+		{
+			v.resSeq=null_num();
+		}
+		if(no_resName)
+		{
+			v.resName.clear();
+		}
 		return v;
+	}
+
+	ChainResidueAtomDescriptor without_atom() const
+	{
+		return without_some_info(true, true, false, false);
 	}
 
 	ChainResidueAtomDescriptor without_numbering() const
