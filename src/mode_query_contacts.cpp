@@ -225,10 +225,10 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!map_of_external_adjunct_values.empty())
 				{
-					std::map< CRADsPair, double >::const_iterator adjunct_value_it=map_of_external_adjunct_values.find(it->first);
-					if(adjunct_value_it!=map_of_external_adjunct_values.end())
+					const std::pair<bool, double> adjunct_value=MatchingUtilities::match_crad_with_map_of_crads_pairs(it->first, map_of_external_adjunct_values);
+					if(adjunct_value.first)
 					{
-						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value_it->second;
+						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
 					}
 				}
 				if(!map_of_external_values_for_averaging.empty())
