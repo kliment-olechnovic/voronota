@@ -44,11 +44,6 @@ struct CADDescriptor
 	{
 		return ((target_area_sum>0.0) ? (1.0-(constrained_differences_sum/target_area_sum)) : -1.0);
 	}
-
-	double bounded_ratio_of_areas() const
-	{
-		return ((target_area_sum>0.0) ? std::min(1.0, model_area_sum/target_area_sum) : -1.0);
-	}
 };
 
 inline bool& detailed_output_of_CADDescriptor()
@@ -65,8 +60,7 @@ inline std::ostream& operator<<(std::ostream& output, const CADDescriptor& cadd)
 		output << " " << cadd.target_area_sum
 				<< " " << cadd.model_area_sum
 				<< " " << cadd.raw_differences_sum
-				<< " " << cadd.constrained_differences_sum
-				<< " " << cadd.bounded_ratio_of_areas();
+				<< " " << cadd.constrained_differences_sum;
 	}
 	return output;
 }

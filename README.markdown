@@ -716,8 +716,8 @@ The script interface is presented below:
     
     Standard output (one line):
         {target file path} {model file path}
-         {number of residues} {global score} {bounded ratio of areas}
-          {site-based number of residues} {site-based global score} {site-based bounded ratio of areas}
+         {number of residues} {global score} {target total area} {model total area}
+          {site-based number of residues} {site-based global score} {site-based target total area} {site-based model total area}
     
 
 ## Contacts calculation convenience script
