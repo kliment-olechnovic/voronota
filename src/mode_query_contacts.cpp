@@ -298,7 +298,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
 			{
-				if(MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
+				if(crads[i]!=CRAD::any() && MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
 				{
 					ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
 					cv.add(it->second->second);
