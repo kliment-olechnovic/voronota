@@ -1,6 +1,6 @@
-AA 0.513984
-AS 0.453755
-SS 0.375782
-AM 0.590554
-MM 0.744088
-MS 0.493274
+./input/complex/target.pdb  ./input/complex/model1.pdb  AA  55  0.513984  1052.61  982.91   55  0.714775  2105.22  1965.82
+./input/complex/target.pdb  ./input/complex/model1.pdb  AS  55  0.453755  895.091  840.14   55  0.674659  1790.18  1680.28
+./input/complex/target.pdb  ./input/complex/model1.pdb  SS  44  0.375782  485.432  401.203  44  0.570668  970.864  802.406
+./input/complex/target.pdb  ./input/complex/model1.pdb  AM  50  0.590554  567.179  581.707  50  0.753109  1134.36  1163.41
+./input/complex/target.pdb  ./input/complex/model1.pdb  MM  36  0.744088  157.52   142.77   36  0.794737  315.041  285.54
+./input/complex/target.pdb  ./input/complex/model1.pdb  MS  50  0.493274  409.659  438.937  50  0.664836  819.318  877.874

@@ -15,9 +15,9 @@ Basic options:
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
     --smoothing-window              number      residue scores smoothing window size, default is 0
     --contacts-query                string      contacts query parameters
-    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
-    --output-coded-global-scores    string      output text file with all coded global scores
     --contacts-query-inter-chain                flag to consider only inter-chain contacts
+    --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
+    --use-all-query-codes                       flag to output global scores for all query codes, one line per code
     --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
@@ -46,7 +46,7 @@ IGNORE_RESIDUE_NAMES_OPTION=""
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_RESIDUE_SCORES_PDB_TARGET=""
 OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
-OUTFILE_CODED_GLOBAL_SCORES=""
+USE_ALL_QUERY_CODES=false
 SMOOTHING_WINDOW="0"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
@@ -97,9 +97,8 @@ do
 		OUTFILE_RESIDUE_SCORES_PDB_MODEL="$OPTARG"
 		shift
 		;;
-	--output-coded-global-scores)
-		OUTFILE_CODED_GLOBAL_SCORES="$OPTARG"
-		shift
+	--use-all-query-codes)
+		USE_ALL_QUERY_CODES=true
 		;;
 	--smoothing-window)
 		SMOOTHING_WINDOW="$OPTARG"
@@ -301,30 +300,14 @@ done
 
 STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
 
-CONTACTS_QUERY_PARAMETERS_MORE=""
-if [ -n "$CONTACTS_QUERY_BY_CODE" ]
-then
-	CONTACTS_QUERY_PARAMETERS_MORE="--match-tags $CONTACTS_QUERY_BY_CODE"
-fi
-
-cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE \
-| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE) \
-> $TMPLDIR/global_cad_scores
-
-cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
-| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS) \
-> $TMPLDIR/site_based_global_cad_scores
-
-echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
-  $(cat $TMPLDIR/global_cad_scores | egrep '^residue_count ' | awk '{print $2}') \
-  $(cat $TMPLDIR/global_cad_scores | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}') \
-  $(cat $TMPLDIR/site_based_global_cad_scores | egrep '^residue_count ' | awk '{print $2}') \
-  $(cat $TMPLDIR/site_based_global_cad_scores | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}')
-
 if [ -n "$OUTFILE_RESIDUE_SCORES" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
 then
+	CONTACTS_QUERY_PARAMETERS_MORE=""
+	if [ -n "$CONTACTS_QUERY_BY_CODE" ]
+	then
+		CONTACTS_QUERY_PARAMETERS_MORE="--match-tags $CONTACTS_QUERY_BY_CODE"
+	fi
+
 	cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE \
 	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
 	  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE) \
@@ -350,7 +333,7 @@ then
 		  --pdb-output-b-factor score \
 		> /dev/null
 	fi
-	
+
 	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
 	then
 		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_MODEL")
@@ -365,23 +348,35 @@ then
 	fi
 fi
 
-if [ -n "$OUTFILE_CODED_GLOBAL_SCORES" ]
+QCODES=(AA)
+
+if [ -n "$CONTACTS_QUERY_BY_CODE" ]
 then
-	mkdir -p $(dirname "$OUTFILE_CODED_GLOBAL_SCORES")
-	for QCODE in AA AS SS AM MM MS
-	do
-		cat $TMPLDIR/model.contacts \
-		| voronota query-contacts --match-tags "$QCODE" \
-		| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-		  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts --match-tags "$QCODE") \
-		| egrep '^residue_level_global ' \
-		> $TMPLDIR/coded_global_score_$QCODE
-		
-		if [ -s "$TMPLDIR/coded_global_score_$QCODE" ]
-		then
-			echo $QCODE $(cat $TMPLDIR/coded_global_score_$QCODE  | awk '{print $2}')
-		else
-			echo $QCODE "0"
-		fi
-	done > "$OUTFILE_CODED_GLOBAL_SCORES"
+	QCODES=($CONTACTS_QUERY_BY_CODE)
 fi
+
+if $USE_ALL_QUERY_CODES
+then
+	QCODES=(AA AS SS AM MM MS)
+fi
+
+for QCODE in "${QCODES[@]}"
+do
+	CONTACTS_QUERY_PARAMETERS_MORE="--match-tags $QCODE"
+	
+	cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE \
+	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
+	  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE) \
+	> $TMPLDIR/global_cad_scores_$QCODE
+	
+	cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
+	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
+	  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS) \
+	> $TMPLDIR/site_based_global_cad_scores_$QCODE
+	
+	echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $QCODE \
+	  $(cat $TMPLDIR/global_cad_scores_$QCODE | egrep '^residue_count ' | awk '{print $2}') \
+	  $(cat $TMPLDIR/global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}') \
+	  $(cat $TMPLDIR/site_based_global_cad_scores_$QCODE | egrep '^residue_count ' | awk '{print $2}') \
+	  $(cat $TMPLDIR/site_based_global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}')
+done

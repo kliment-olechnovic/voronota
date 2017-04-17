@@ -1,6 +1,6 @@
-AA 0.974679
-AS 0.963991
-SS 0.963526
-AM 0.964126
-MM 0.969113
-MS 0.917973
+./input/rna/target.pdb  ./input/rna/model1.pdb  AA  77  0.974679  9217.67  9174.28  77  0.990508  18435.3  18348.6
+./input/rna/target.pdb  ./input/rna/model1.pdb  AS  77  0.963991  5413.8   5410.86  77  0.983979  10827.6  10821.7
+./input/rna/target.pdb  ./input/rna/model1.pdb  SS  75  0.963526  3574.55  3561.73  75  0.981349  7149.09  7123.45
+./input/rna/target.pdb  ./input/rna/model1.pdb  AM  77  0.964126  5643.12  5612.56  77  0.985111  11286.2  11225.1
+./input/rna/target.pdb  ./input/rna/model1.pdb  MM  77  0.969113  3803.87  3763.42  77  0.983591  7607.73  7526.83
+./input/rna/target.pdb  ./input/rna/model1.pdb  MS  77  0.917973  1839.26  1849.14  77  0.954533  3678.51  3698.28

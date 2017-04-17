@@ -1,6 +1,6 @@
-AA 1
-AS 1
-SS 1
-AM 1
-MM 1
-MS 1
+./input/rna/target.pdb  ./input/rna/target.pdb  AA  77  1  66419.2  66419.2  77  1  132838   132838
+./input/rna/target.pdb  ./input/rna/target.pdb  AS  77  1  36259.1  36259.1  77  1  72518.3  72518.3
+./input/rna/target.pdb  ./input/rna/target.pdb  SS  75  1  30531.4  30531.4  75  1  61062.8  61062.8
+./input/rna/target.pdb  ./input/rna/target.pdb  AM  77  1  30160    30160    77  1  60320.1  60320.1
+./input/rna/target.pdb  ./input/rna/target.pdb  MM  77  1  24508.1  24508.1  77  1  49016.1  49016.1
+./input/rna/target.pdb  ./input/rna/target.pdb  MS  77  1  5727.76  5727.76  77  1  11455.5  11455.5

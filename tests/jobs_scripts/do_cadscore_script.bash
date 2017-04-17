@@ -6,18 +6,23 @@ mkdir -p $SUBDIR
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
+	mkdir -p $SUBDIR/$INFILEBASENAME
 	$VORONOTADIR/voronota-cadscore \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
-	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	  --smoothing-window 0 \
-	  --cache-dir $SUBDIR/cache
+	  --cache-dir $SUBDIR/cache \
+	  --use-all-query-codes \
+	| column -t \
+	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
+	| grep ' AA '
 done > $SUBDIR/global_scores
 
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
+	mkdir -p $SUBDIR/$INFILEBASENAME
 	$VORONOTADIR/voronota-cadscore \
 	  --input-target $INPUTDIR/complex/target.pdb \
 	  --input-model $INFILE \
@@ -25,9 +30,12 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
 	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
-	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	  --smoothing-window 0 \
-	  --cache-dir $SUBDIR/cache
+	  --cache-dir $SUBDIR/cache \
+	  --use-all-query-codes \
+	| column -t \
+	| tee $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
+	| grep ' AA '
 done > $SUBDIR/interface_global_scores
 
 rm -r $SUBDIR/cache
@@ -40,19 +48,24 @@ mkdir -p $SUBDIR
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
+	mkdir -p $SUBDIR/$INFILEBASENAME
 	$VORONOTADIR/voronota-cadscore \
 	  --old-regime \
 	  -t $INPUTDIR/complex/target.pdb \
 	  -m $INFILE \
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
-	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	  --smoothing-window 0 \
-	  --cache-dir $SUBDIR/cache
+	  --cache-dir $SUBDIR/cache \
+	  --use-all-query-codes \
+	| column -t \
+	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
+	| grep ' AA '
 done > $SUBDIR/global_scores
 
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
+	mkdir -p $SUBDIR/$INFILEBASENAME
 	$VORONOTADIR/voronota-cadscore \
 	  --old-regime \
 	  --input-target $INPUTDIR/complex/target.pdb \
@@ -61,9 +74,12 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/interface_residue_scores \
 	  --output-residue-scores-pdb-t $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_target.pdb \
 	  --output-residue-scores-pdb-m $SUBDIR/$INFILEBASENAME/interface_residue_scores_on_model.pdb \
-	  --output-coded-global-scores $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	  --smoothing-window 0 \
-	  --cache-dir $SUBDIR/cache
+	  --cache-dir $SUBDIR/cache \
+	  --use-all-query-codes \
+	| column -t \
+	| tee $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
+	| grep ' AA '
 done > $SUBDIR/interface_global_scores
 
 rm -r $SUBDIR/cache

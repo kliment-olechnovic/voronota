@@ -1,3 +1,3 @@
-./input/rna/target.pdb ./input/rna/model1.pdb 77 0.970422 66419.2 66430.2 77 0.986607 132838 132860
-./input/rna/target.pdb ./input/rna/model2.pdb 77 0.755151 66419.2 61260.2 77 0.887162 132838 122520
-./input/rna/target.pdb ./input/rna/target.pdb 77 1 66419.2 66419.2 77 1 132838 132838
+./input/rna/target.pdb  ./input/rna/model1.pdb  AA  77  0.970422  66419.2  66430.2  77  0.986607  132838   132860
+./input/rna/target.pdb  ./input/rna/model2.pdb  AA  77  0.755151  66419.2  61260.2  77  0.887162  132838   122520
+./input/rna/target.pdb  ./input/rna/target.pdb  AA  77  1  66419.2  66419.2  77  1  132838   132838
