@@ -217,6 +217,7 @@ Command 'compare-contacts' options:
 --smoothing-window              number      window to smooth residue scores along sequence
 --smoothed-scores-file          string      file path to output smoothed residue scores
 --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
+--residue-level-only                        flag to output only residue-level results
 --detailed-output                           flag to enable detailed output
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of model contacts (line format: 'annotation1 annotation2 area')

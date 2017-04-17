@@ -18,6 +18,7 @@ Basic options:
     --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
     --output-coded-global-scores    string      output text file with all coded global scores
     --contacts-query-inter-chain                flag to consider only inter-chain contacts
+    --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
     --cache-dir                     string      path to cache directory
     --help | -h                                 flag to display help message and exit
 
@@ -39,6 +40,7 @@ INPUT_FILTER_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_BY_CODE=""
 CONTACTS_QUERY_INTER_CHAIN=false
+IGNORE_RESIDUE_NAMES_OPTION=""
 OUTFILE_RESIDUE_SCORES=""
 OUTFILE_RESIDUE_SCORES_PDB_TARGET=""
 OUTFILE_RESIDUE_SCORES_PDB_MODEL=""
@@ -77,6 +79,9 @@ do
 		;;
 	--contacts-query-inter-chain)
 		CONTACTS_QUERY_INTER_CHAIN=true
+		;;
+	--ignore-residue-names)
+		IGNORE_RESIDUE_NAMES_OPTION="--ignore-residue-names"
 		;;
 	--output-residue-scores)
 		OUTFILE_RESIDUE_SCORES="$OPTARG"
@@ -308,6 +313,7 @@ done
 
 cat $TMPLDIR/model.contacts \
 | voronota compare-contacts \
+  --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION \
   --target-contacts-file $TMPLDIR/target.contacts \
   --smoothing-window $SMOOTHING_WINDOW \
   --smoothed-scores-file $TMPLDIR/smoothed_residue_cad_scores \
@@ -347,7 +353,7 @@ then
 fi
 
 echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
-  $(cat $TMPLDIR/global_cad_scores | grep 'residue_level_global' | awk '{print $2}') \
+  $(cat $TMPLDIR/global_cad_scores | egrep '^residue_level_global ' | awk '{print $2}') \
   $(cat $TMPLDIR/smoothed_residue_cad_scores | wc -l)
 
 if [ -n "$OUTFILE_CODED_GLOBAL_SCORES" ]
@@ -357,10 +363,11 @@ then
 	do
 		cat $TMPLDIR/model.all_contacts_filtered_not_by_code \
 		| voronota query-contacts --match-tags "$QCODE" \
-		| voronota compare-contacts \
+		| voronota compare-contacts --residue-level-only \
+		  --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION \
 		  --target-contacts-file <(cat $TMPLDIR/target.all_contacts_filtered_not_by_code | voronota query-contacts --match-tags "$QCODE") \
 		  --depth 0 \
-		| grep 'residue_level_global' \
+		| egrep '^residue_level_global ' \
 		> $TMPLDIR/coded_global_score_$QCODE
 		
 		if [ -s "$TMPLDIR/coded_global_score_$QCODE" ]

@@ -592,6 +592,7 @@ Using "--help" option without specific command results in printing help for all 
     --smoothing-window              number      window to smooth residue scores along sequence
     --smoothed-scores-file          string      file path to output smoothed residue scores
     --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
+    --residue-level-only                        flag to output only residue-level results
     --detailed-output                           flag to enable detailed output
     --help                                      flag to print usage help to stdout and exit
 
@@ -705,6 +706,7 @@ The script interface is presented below:
         --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
         --output-coded-global-scores    string      output text file with all coded global scores
         --contacts-query-inter-chain                flag to consider only inter-chain contacts
+        --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
         --cache-dir                     string      path to cache directory
         --help | -h                                 flag to display help message and exit
     

@@ -166,6 +166,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const unsigned int smoothing_window=poh.argument<unsigned int>(pohw.describe_option("--smoothing-window", "number", "window to smooth residue scores along sequence"), 0);
 	const std::string smoothed_scores_file=poh.argument<std::string>(pohw.describe_option("--smoothed-scores-file", "string", "file path to output smoothed residue scores"), "");
 	const bool ignore_residue_names=poh.contains_option(pohw.describe_option("--ignore-residue-names", "", "flag to consider just residue numbers and ignore residue names"));
+	const bool residue_level_only=poh.contains_option(pohw.describe_option("--residue-level-only", "", "flag to output only residue-level results"));
 	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
 
 	if(!pohw.assert_or_print_help(false))
@@ -185,6 +186,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No target contacts input.");
 	}
 
+	if(!residue_level_only)
 	{
 		const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(
 				combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
