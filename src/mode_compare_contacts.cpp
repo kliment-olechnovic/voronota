@@ -198,6 +198,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 		std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
 		std::cout << "atom_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_atom_cad_descriptors) << "\n";
+		std::cout << "atom_count " << map_of_atom_cad_descriptors.size() << "\n";
 	}
 
 	{
@@ -218,5 +219,6 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 		std::cout << "residue_level_global " << construct_global_cad_descriptor(map_of_inter_residue_cad_descriptors) << "\n";
 		std::cout << "residue_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_residue_cad_descriptors) << "\n";
+		std::cout << "residue_count " << map_of_residue_cad_descriptors.size() << "\n";
 	}
 }
