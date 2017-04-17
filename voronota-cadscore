@@ -354,7 +354,7 @@ fi
 
 echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
   $(cat $TMPLDIR/global_cad_scores | egrep '^residue_level_global ' | awk '{print $2}') \
-  $(cat $TMPLDIR/smoothed_residue_cad_scores | wc -l) \
+  $(cat $TMPLDIR/global_cad_scores | egrep '^residue_count ' | awk '{print $2}') \
   $(cat $TMPLDIR/global_cad_scores | egrep '^residue_level_global ' | awk '{print $7}')
 
 if [ -n "$OUTFILE_CODED_GLOBAL_SCORES" ]
