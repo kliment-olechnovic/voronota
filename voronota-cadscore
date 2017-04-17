@@ -152,20 +152,21 @@ then
 	exit 1
 fi
 
-if [ -n "$CONTACTS_QUERY_BY_CODE" ]
+if [ -n "$CONTACTS_QUERY_BY_CODE" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AA" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AS" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "SS" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "AM" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "MM" ] \
+   && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
 then
-	if [ "$CONTACTS_QUERY_BY_CODE" != "AA" ] \
-	   && [ "$CONTACTS_QUERY_BY_CODE" != "AS" ] \
-	   && [ "$CONTACTS_QUERY_BY_CODE" != "SS" ] \
-	   && [ "$CONTACTS_QUERY_BY_CODE" != "AM" ] \
-	   && [ "$CONTACTS_QUERY_BY_CODE" != "MM" ] \
-	   && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
-	then
-		echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
-		exit 1
-	else
-		CONTACTS_QUERY_PARAMETERS="$CONTACTS_QUERY_PARAMETERS --match-tags $CONTACTS_QUERY_BY_CODE"
-	fi
+	echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
+	exit 1
+fi
+
+if $CONTACTS_QUERY_INTER_CHAIN
+then
+	CONTACTS_QUERY_PARAMETERS="$CONTACTS_QUERY_PARAMETERS --no-same-chain"
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -289,18 +290,7 @@ do
 	
 	cat $WORKFILE.all_contacts \
 	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| \
-	{
-		if $CONTACTS_QUERY_INTER_CHAIN
-		then
-			voronota query-contacts --no-same-chain
-		else
-			cat
-		fi
-	} \
-	| tee $WORKFILE.contacts \
-	| voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
-	> $WORKFILE.contacts_summarized
+	> $WORKFILE.contacts
 	
 	if [ ! -s "$WORKFILE.contacts" ]
 	then
@@ -311,14 +301,20 @@ done
 
 STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
 
-cat $TMPLDIR/model.contacts \
+CONTACTS_QUERY_PARAMETERS_MORE=""
+if [ -n "$CONTACTS_QUERY_BY_CODE" ]
+then
+	CONTACTS_QUERY_PARAMETERS_MORE="--match-tags $CONTACTS_QUERY_BY_CODE"
+fi
+
+cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE \
 | voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-  --target-contacts-file $TMPLDIR/target.contacts \
+  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE) \
 > $TMPLDIR/global_cad_scores
 
-cat $TMPLDIR/model.contacts_summarized \
+cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
 | voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-  --target-contacts-file $TMPLDIR/target.contacts_summarized \
+  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS) \
 > $TMPLDIR/site_based_global_cad_scores
 
 echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
@@ -329,9 +325,9 @@ echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
 then
-	cat $TMPLDIR/model.contacts \
+	cat $TMPLDIR/model.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE \
 	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
-	  --target-contacts-file $TMPLDIR/target.contacts \
+	  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts $CONTACTS_QUERY_PARAMETERS_MORE) \
 	  --smoothing-window $SMOOTHING_WINDOW \
 	  --smoothed-scores-file $TMPLDIR/smoothed_residue_cad_scores \
 	> /dev/null
