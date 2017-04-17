@@ -715,7 +715,9 @@ The script interface is presented below:
         --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
     
     Standard output (one line):
-        {target file path} {model file path} {global score} {number of residue scores} {bounded ratio of total areas}
+        {target file path} {model file path}
+         {number of residues} {global score} {bounded ratio of areas}
+          {site-based number of residues} {site-based global score} {site-based bounded ratio of areas}
     
 
 ## Contacts calculation convenience script
