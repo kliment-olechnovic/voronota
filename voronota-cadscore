@@ -152,16 +152,20 @@ then
 	exit 1
 fi
 
-if [ -n "$CONTACTS_QUERY_BY_CODE" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "AA" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "AS" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "SS" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "AM" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "MM" ] \
-   && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
+if [ -n "$CONTACTS_QUERY_BY_CODE" ]
 then
-	echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
-	exit 1
+	if [ "$CONTACTS_QUERY_BY_CODE" != "AA" ] \
+	   && [ "$CONTACTS_QUERY_BY_CODE" != "AS" ] \
+	   && [ "$CONTACTS_QUERY_BY_CODE" != "SS" ] \
+	   && [ "$CONTACTS_QUERY_BY_CODE" != "AM" ] \
+	   && [ "$CONTACTS_QUERY_BY_CODE" != "MM" ] \
+	   && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
+	then
+		echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
+		exit 1
+	else
+		CONTACTS_QUERY_PARAMETERS="$CONTACTS_QUERY_PARAMETERS --match-tags $CONTACTS_QUERY_BY_CODE"
+	fi
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -294,17 +298,9 @@ do
 			cat
 		fi
 	} \
-	| tee $WORKFILE.all_contacts_filtered_not_by_code \
-	| \
-	{
-		if [ -n "$CONTACTS_QUERY_BY_CODE" ]
-		then
-			voronota query-contacts --match-tags "$CONTACTS_QUERY_BY_CODE"
-		else
-			cat
-		fi
-	} \
-	> $WORKFILE.contacts
+	| tee $WORKFILE.contacts \
+	| voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
+	> $WORKFILE.contacts_summarized
 	
 	if [ ! -s "$WORKFILE.contacts" ]
 	then
@@ -313,20 +309,16 @@ do
 	fi
 done
 
+STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
+
 cat $TMPLDIR/model.contacts \
-| voronota compare-contacts \
-  --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION \
+| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
   --target-contacts-file $TMPLDIR/target.contacts \
-  --smoothing-window $SMOOTHING_WINDOW \
-  --smoothed-scores-file $TMPLDIR/smoothed_residue_cad_scores \
-  --depth 0 \
 > $TMPLDIR/global_cad_scores
 
-cat $TMPLDIR/model.contacts | voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS \
-| voronota compare-contacts \
-  --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION \
-  --target-contacts-file <(cat $TMPLDIR/target.contacts| voronota query-contacts --summarize-by-first $CONTACTS_QUERY_PARAMETERS) \
-  --depth 0 \
+cat $TMPLDIR/model.contacts_summarized \
+| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
+  --target-contacts-file $TMPLDIR/target.contacts_summarized \
 > $TMPLDIR/site_based_global_cad_scores
 
 echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
@@ -335,36 +327,46 @@ echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB \
   $(cat $TMPLDIR/site_based_global_cad_scores | egrep '^residue_count ' | awk '{print $2}') \
   $(cat $TMPLDIR/site_based_global_cad_scores | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}')
 
-if [ -n "$OUTFILE_RESIDUE_SCORES" ]
+if [ -n "$OUTFILE_RESIDUE_SCORES" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
 then
-	mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
-	cp $TMPLDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
-fi
-
-if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ]
-then
-	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_TARGET")
-	cat $TMPLDIR/target.balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
-	  --set-external-adjuncts-name score \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" \
-	  --pdb-output-b-factor score \
+	cat $TMPLDIR/model.contacts \
+	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
+	  --target-contacts-file $TMPLDIR/target.contacts \
+	  --smoothing-window $SMOOTHING_WINDOW \
+	  --smoothed-scores-file $TMPLDIR/smoothed_residue_cad_scores \
 	> /dev/null
-fi
 
-if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
-then
-	mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_MODEL")
-	cat $TMPLDIR/model.balls \
-	| voronota query-balls \
-	  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
-	  --set-external-adjuncts-name score \
-	| voronota write-balls-to-atoms-file \
-	  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" \
-	  --pdb-output-b-factor score \
-	> /dev/null
+	if [ -n "$OUTFILE_RESIDUE_SCORES" ]
+	then
+		mkdir -p $(dirname $OUTFILE_RESIDUE_SCORES)
+		cp $TMPLDIR/smoothed_residue_cad_scores "$OUTFILE_RESIDUE_SCORES"
+	fi
+	
+	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ]
+	then
+		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_TARGET")
+		cat $TMPLDIR/target.balls \
+		| voronota query-balls \
+		  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
+		  --set-external-adjuncts-name score \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
+	
+	if [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
+	then
+		mkdir -p $(dirname "$OUTFILE_RESIDUE_SCORES_PDB_MODEL")
+		cat $TMPLDIR/model.balls \
+		| voronota query-balls \
+		  --set-external-adjuncts $TMPLDIR/smoothed_residue_cad_scores \
+		  --set-external-adjuncts-name score \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" \
+		  --pdb-output-b-factor score \
+		> /dev/null
+	fi
 fi
 
 if [ -n "$OUTFILE_CODED_GLOBAL_SCORES" ]
@@ -372,12 +374,10 @@ then
 	mkdir -p $(dirname "$OUTFILE_CODED_GLOBAL_SCORES")
 	for QCODE in AA AS SS AM MM MS
 	do
-		cat $TMPLDIR/model.all_contacts_filtered_not_by_code \
+		cat $TMPLDIR/model.contacts \
 		| voronota query-contacts --match-tags "$QCODE" \
-		| voronota compare-contacts --residue-level-only \
-		  --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION \
-		  --target-contacts-file <(cat $TMPLDIR/target.all_contacts_filtered_not_by_code | voronota query-contacts --match-tags "$QCODE") \
-		  --depth 0 \
+		| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS \
+		  --target-contacts-file <(cat $TMPLDIR/target.contacts | voronota query-contacts --match-tags "$QCODE") \
 		| egrep '^residue_level_global ' \
 		> $TMPLDIR/coded_global_score_$QCODE
 		
