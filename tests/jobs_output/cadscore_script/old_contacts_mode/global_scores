@@ -1,3 +1,3 @@
-./input/complex/target.pdb ./input/complex/model1.pdb 0.494071 261 1
-./input/complex/target.pdb ./input/complex/model2.pdb 0.540656 261 1
-./input/complex/target.pdb ./input/complex/target.pdb 1 261 1
+./input/complex/target.pdb ./input/complex/model1.pdb 261 0.494071 1 261 0.842523 1
+./input/complex/target.pdb ./input/complex/model2.pdb 261 0.540656 1 261 0.828637 1
+./input/complex/target.pdb ./input/complex/target.pdb 261 1 1 261 1 1
