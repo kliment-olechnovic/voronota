@@ -1,6 +1,6 @@
-AA 1
-AS 1
-SS 1
-AM 1
-MM 1
-MS 1
+./input/complex/target.pdb  ./input/complex/target.pdb  AA  55  1  6273.52  6273.52  55  1  12547    12547
+./input/complex/target.pdb  ./input/complex/target.pdb  AS  50  1  4140.39  4140.39  50  1  8280.77  8280.77
+./input/complex/target.pdb  ./input/complex/target.pdb  SS  44  1  2486.4   2486.4   44  1  4972.81  4972.81
+./input/complex/target.pdb  ./input/complex/target.pdb  AM  44  1  2133.13  2133.13  44  1  4266.27  4266.27
+./input/complex/target.pdb  ./input/complex/target.pdb  MM  36  1  1004.29  1004.29  36  1  2008.57  2008.57
+./input/complex/target.pdb  ./input/complex/target.pdb  MS  39  1  1653.98  1653.98  39  1  3307.97  3307.97
