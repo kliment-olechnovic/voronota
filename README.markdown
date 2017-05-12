@@ -594,6 +594,9 @@ Using "--help" option without specific command results in printing help for all 
     --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
     --residue-level-only                        flag to output only residue-level results
     --detailed-output                           flag to enable detailed output
+    --chains-renaming-file          string      file path to input chains renaming
+    --remap-chains                              flag to calculate optimal chains remapping
+    --remapped-chains-file          string      file path to output calculated chains remapping
     --help                                      flag to print usage help to stdout and exit
 
 ### Input stream:

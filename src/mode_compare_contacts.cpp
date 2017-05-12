@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <cmath>
+#include <algorithm>
 
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
@@ -143,6 +144,67 @@ std::map<CRAD, double> collect_scores_from_map_of_cad_descriptors(const std::map
 	return result;
 }
 
+std::string rename_by_map(const std::map<std::string, std::string>& map_of_renamings, const std::string& name)
+{
+	std::map<std::string, std::string>::const_iterator it=map_of_renamings.find(name);
+	if(it!=map_of_renamings.end())
+	{
+		return it->second;
+	}
+	else
+	{
+		return name;
+	}
+}
+
+std::map<CRADsPair, double> rename_chains_in_map_of_contacts(const std::map<CRADsPair, double>& map_of_contacts, const std::map<std::string, std::string>& map_of_renamings)
+{
+	if(map_of_renamings.empty())
+	{
+		return map_of_contacts;
+	}
+	std::map<CRADsPair, double> result;
+	for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		CRAD a=it->first.a;
+		CRAD b=it->first.b;
+		a.chainID=rename_by_map(map_of_renamings, a.chainID);
+		b.chainID=rename_by_map(map_of_renamings, b.chainID);
+		result[CRADsPair(a, b)]=it->second;
+	}
+	return result;
+}
+
+std::vector<std::string> get_sorted_chain_names_from_map_of_contacts(const std::map<CRADsPair, double>& map_of_contacts)
+{
+	std::set<std::string> set_of_names;
+	for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		if(it->first.a!=CRAD::solvent() && it->first.a!=CRAD::any())
+		{
+			set_of_names.insert(it->first.a.chainID);
+		}
+		if(it->first.b!=CRAD::solvent() && it->first.b!=CRAD::any())
+		{
+			set_of_names.insert(it->first.b.chainID);
+		}
+	}
+	return std::vector<std::string>(set_of_names.begin(), set_of_names.end());
+}
+
+std::map<std::string, std::string> generate_map_of_renamings_from_two_lists(const std::vector<std::string>& left, const std::vector<std::string>& right)
+{
+	std::map<std::string, std::string> result;
+	if(left.size()==right.size())
+	{
+		for(std::size_t i=0;i<left.size();i++)
+		{
+			result[left[i]]=right[i];
+		}
+	}
+	return result;
+}
+
 }
 
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -162,13 +224,16 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool ignore_residue_names=poh.contains_option(pohw.describe_option("--ignore-residue-names", "", "flag to consider just residue numbers and ignore residue names"));
 	const bool residue_level_only=poh.contains_option(pohw.describe_option("--residue-level-only", "", "flag to output only residue-level results"));
 	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
+	const std::string chains_renaming_file=poh.argument<std::string>(pohw.describe_option("--chains-renaming-file", "string", "file path to input chains renaming"), "");
+	const bool remap_chains=poh.contains_option(pohw.describe_option("--remap-chains", "", "flag to calculate optimal chains remapping"));
+	const std::string remapped_chains_file=poh.argument<std::string>(pohw.describe_option("--remapped-chains-file", "string", "file path to output calculated chains remapping"), "");
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
@@ -178,6 +243,47 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	if(map_of_target_contacts.empty())
 	{
 		throw std::runtime_error("No target contacts input.");
+	}
+
+	if(!chains_renaming_file.empty())
+	{
+		const std::map<std::string, std::string> map_of_renamings=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<std::string, std::string> >(chains_renaming_file);
+		if(!map_of_renamings.empty())
+		{
+			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings);
+		}
+	}
+
+	if(remap_chains)
+	{
+		const std::vector<std::string> chain_names=get_sorted_chain_names_from_map_of_contacts(map_of_contacts);
+		if(chain_names.size()>1)
+		{
+			std::pair<std::map<std::string, std::string>, double> best_renaming(std::map<std::string, std::string>(), 0.0);
+			std::vector<std::string> permutated_chain_names=chain_names;
+			do
+			{
+				const std::map<std::string, std::string> map_of_renamings=generate_map_of_renamings_from_two_lists(chain_names, permutated_chain_names);
+				const double score=construct_global_cad_descriptor(
+						construct_map_of_cad_descriptors(
+								combine_two_pair_mappings_of_values(
+										summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names),
+										summarize_pair_mapping_of_values(rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings), ignore_residue_names)))).score();
+				if(score>best_renaming.second)
+				{
+					best_renaming.first=map_of_renamings;
+					best_renaming.second=score;
+				}
+				for(std::size_t i=0;i<permutated_chain_names.size();i++)
+				{
+					std::cerr << permutated_chain_names[i] << " ";
+				}
+				std::cerr << "   " << score << "\n";
+			}
+			while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
+			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, best_renaming.first);
+			auxiliaries::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
+		}
 	}
 
 	if(!residue_level_only)
