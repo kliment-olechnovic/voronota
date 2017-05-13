@@ -111,6 +111,15 @@ CADDescriptor construct_global_cad_descriptor(const std::map< CRADsPair, CADDesc
 	return result;
 }
 
+CADDescriptor construct_global_cad_descriptor(const std::map<CRADsPair, double>& map_of_target_contacts, const std::map<CRADsPair, double>& map_of_contacts, const bool ignore_residue_names)
+{
+	return construct_global_cad_descriptor(
+			construct_map_of_cad_descriptors(
+					combine_two_pair_mappings_of_values(
+							summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names),
+							summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names))));
+}
+
 std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(const std::map<CRAD, CADDescriptor>& input_map)
 {
 	std::map<CRAD, CADDescriptor> result;
@@ -170,7 +179,7 @@ std::map<CRADsPair, double> rename_chains_in_map_of_contacts(const std::map<CRAD
 		CRAD b=it->first.b;
 		a.chainID=rename_by_map(map_of_renamings, a.chainID);
 		b.chainID=rename_by_map(map_of_renamings, b.chainID);
-		result[CRADsPair(a, b)]=it->second;
+		result[CRADsPair(a, b)]+=it->second;
 	}
 	return result;
 }
@@ -203,6 +212,87 @@ std::map<std::string, std::string> generate_map_of_renamings_from_two_lists(cons
 		}
 	}
 	return result;
+}
+
+void remap_chains_optimally(
+		const std::map<CRADsPair, double>& map_of_target_contacts,
+		const bool ignore_residue_names,
+		const std::string& remapped_chains_file,
+		std::map<CRADsPair, double>& map_of_contacts)
+{
+	const std::vector<std::string> chain_names=get_sorted_chain_names_from_map_of_contacts(map_of_contacts);
+	if(chain_names.size()<2)
+	{
+		return;
+	}
+	if(chain_names.size()<=4)
+	{
+		std::pair<std::map<std::string, std::string>, double> best_renaming(std::map<std::string, std::string>(), 0.0);
+		std::vector<std::string> permutated_chain_names=chain_names;
+		do
+		{
+			const std::map<std::string, std::string> map_of_renamings=generate_map_of_renamings_from_two_lists(chain_names, permutated_chain_names);
+			const double score=construct_global_cad_descriptor(map_of_target_contacts, rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings), ignore_residue_names).score();
+			if(score>best_renaming.second)
+			{
+				best_renaming.first=map_of_renamings;
+				best_renaming.second=score;
+			}
+			for(std::size_t i=0;i<permutated_chain_names.size();i++)
+			{
+				std::cerr << permutated_chain_names[i] << " ";
+			}
+			std::cerr << "   " << score << "\n";
+		}
+		while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
+		map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, best_renaming.first);
+		auxiliaries::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
+	}
+	else
+	{
+		std::map<std::string, std::string> map_of_renamings;
+		std::map<std::string, std::string> map_of_renamings_in_target;
+		for(std::size_t i=0;i<chain_names.size();i++)
+		{
+			map_of_renamings[chain_names[i]]=std::string();
+			map_of_renamings_in_target[chain_names[i]]=std::string();
+		}
+		std::set<std::string> set_of_free_chains_left(chain_names.begin(), chain_names.end());
+		std::set<std::string> set_of_free_chains_right(chain_names.begin(), chain_names.end());
+		while(!set_of_free_chains_left.empty())
+		{
+			std::pair<std::string, std::string> best_pair(*set_of_free_chains_left.begin(), *set_of_free_chains_right.begin());
+			double best_score=0.0;
+			for(std::set<std::string>::const_iterator it_left=set_of_free_chains_left.begin();it_left!=set_of_free_chains_left.end();++it_left)
+			{
+				for(std::set<std::string>::const_iterator it_right=set_of_free_chains_right.begin();it_right!=set_of_free_chains_right.end();++it_right)
+				{
+					std::map<std::string, std::string> new_map_of_renamings=map_of_renamings;
+					std::map<std::string, std::string> new_map_of_renamings_in_target=map_of_renamings_in_target;
+					new_map_of_renamings[*it_left]=(*it_right);
+					new_map_of_renamings_in_target[*it_right]=(*it_right);
+					const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
+							rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target),
+							rename_chains_in_map_of_contacts(map_of_contacts, new_map_of_renamings),
+							ignore_residue_names);
+					const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
+					if(score>best_score)
+					{
+						best_pair=std::make_pair(*it_left, *it_right);
+						best_score=score;
+					}
+					std::cerr << (*it_left) << " " << (*it_right) << "   " << score << "\n";
+				}
+			}
+			std::cerr << best_pair.first << " " << best_pair.second << "   " << best_score << " chosen\n";
+			map_of_renamings[best_pair.first]=best_pair.second;
+			map_of_renamings_in_target[best_pair.second]=best_pair.second;
+			set_of_free_chains_left.erase(best_pair.first);
+			set_of_free_chains_right.erase(best_pair.second);
+		}
+		map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings);
+		auxiliaries::IOUtilities().write_map_to_file(map_of_renamings, remapped_chains_file);
+	}
 }
 
 }
@@ -256,34 +346,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(remap_chains)
 	{
-		const std::vector<std::string> chain_names=get_sorted_chain_names_from_map_of_contacts(map_of_contacts);
-		if(chain_names.size()>1)
-		{
-			std::pair<std::map<std::string, std::string>, double> best_renaming(std::map<std::string, std::string>(), 0.0);
-			std::vector<std::string> permutated_chain_names=chain_names;
-			do
-			{
-				const std::map<std::string, std::string> map_of_renamings=generate_map_of_renamings_from_two_lists(chain_names, permutated_chain_names);
-				const double score=construct_global_cad_descriptor(
-						construct_map_of_cad_descriptors(
-								combine_two_pair_mappings_of_values(
-										summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names),
-										summarize_pair_mapping_of_values(rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings), ignore_residue_names)))).score();
-				if(score>best_renaming.second)
-				{
-					best_renaming.first=map_of_renamings;
-					best_renaming.second=score;
-				}
-				for(std::size_t i=0;i<permutated_chain_names.size();i++)
-				{
-					std::cerr << permutated_chain_names[i] << " ";
-				}
-				std::cerr << "   " << score << "\n";
-			}
-			while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
-			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, best_renaming.first);
-			auxiliaries::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
-		}
+		remap_chains_optimally(map_of_target_contacts, ignore_residue_names, remapped_chains_file, map_of_contacts);
 	}
 
 	if(!residue_level_only)
