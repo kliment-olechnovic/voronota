@@ -184,6 +184,19 @@ std::map<CRADsPair, double> rename_chains_in_map_of_contacts(const std::map<CRAD
 	return result;
 }
 
+std::map<CRADsPair, double> select_contacts_with_defined_chain_names(const std::map<CRADsPair, double>& map_of_contacts)
+{
+	std::map<CRADsPair, double> result;
+	for(std::map<CRADsPair, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		if(!it->first.a.chainID.empty() || !it->first.b.chainID.empty())
+		{
+			result[it->first]=it->second;
+		}
+	}
+	return result;
+}
+
 std::vector<std::string> get_sorted_chain_names_from_map_of_contacts(const std::map<CRADsPair, double>& map_of_contacts)
 {
 	std::set<std::string> set_of_names;
@@ -226,7 +239,7 @@ void remap_chains_optimally(
 	{
 		return;
 	}
-	if(chain_names.size()<=4)
+	if(chain_names.size()<=5)
 	{
 		std::pair<std::map<std::string, std::string>, double> best_renaming(std::map<std::string, std::string>(), 0.0);
 		std::vector<std::string> permutated_chain_names=chain_names;
@@ -281,8 +294,8 @@ void remap_chains_optimally(
 					new_map_of_renamings[*it_left]=(*it_right);
 					new_map_of_renamings_in_target[*it_right]=(*it_right);
 					const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
-							rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target),
-							rename_chains_in_map_of_contacts(map_of_contacts, new_map_of_renamings),
+							select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target)),
+							select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_contacts, new_map_of_renamings)),
 							ignore_residue_names);
 					const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
 					if(score>best_score)
