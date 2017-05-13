@@ -50,6 +50,8 @@ USE_ALL_QUERY_CODES=false
 SMOOTHING_WINDOW="0"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
+REMAP_CHAINS=false
+REMAP_CHAINS_LOG_OPTION=""
 OLD_REGIME=false
 HELP_MODE=false
 
@@ -110,6 +112,12 @@ do
 		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
+		;;
+	--remap-chains)
+		REMAP_CHAINS=true
+		;;
+	--remap-chains-log)
+		REMAP_CHAINS_LOG_OPTION="--remap-chains-log"
 		;;
 	--old-regime)
 		OLD_REGIME=true
@@ -299,6 +307,16 @@ do
 done
 
 STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
+
+if $REMAP_CHAINS
+then
+	cat $TMPLDIR/model.contacts \
+	| voronota compare-contacts $STANDARD_OPTIONS_FOR_COMPARE_CONTACTS --remap-chains --remapped-chains-file $TMPLDIR/remapped_chains $REMAP_CHAINS_LOG_OPTION \
+	  --target-contacts-file $TMPLDIR/target.contacts \
+	> /dev/null
+	
+	STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="$STANDARD_OPTIONS_FOR_COMPARE_CONTACTS --chains-renaming-file $TMPLDIR/remapped_chains"
+fi
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
 then
