@@ -596,6 +596,7 @@ Using "--help" option without specific command results in printing help for all 
     --detailed-output                           flag to enable detailed output
     --chains-renaming-file          string      file path to input chains renaming
     --remap-chains                              flag to calculate optimal chains remapping
+    --remap-chains-log                          flag output remapping progress to stderr
     --remapped-chains-file          string      file path to output calculated chains remapping
     --help                                      flag to print usage help to stdout and exit
 

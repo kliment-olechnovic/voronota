@@ -218,6 +218,7 @@ void remap_chains_optimally(
 		const std::map<CRADsPair, double>& map_of_target_contacts,
 		const bool ignore_residue_names,
 		const std::string& remapped_chains_file,
+		const bool print_log,
 		std::map<CRADsPair, double>& map_of_contacts)
 {
 	const std::vector<std::string> chain_names=get_sorted_chain_names_from_map_of_contacts(map_of_contacts);
@@ -238,14 +239,22 @@ void remap_chains_optimally(
 				best_renaming.first=map_of_renamings;
 				best_renaming.second=score;
 			}
-			for(std::size_t i=0;i<permutated_chain_names.size();i++)
+			if(print_log)
 			{
-				std::cerr << permutated_chain_names[i] << " ";
+				for(std::size_t i=0;i<permutated_chain_names.size();i++)
+				{
+					std::cerr << permutated_chain_names[i] << " ";
+				}
+				std::cerr << " " << score << "\n";
 			}
-			std::cerr << "   " << score << "\n";
 		}
 		while(std::next_permutation(permutated_chain_names.begin(), permutated_chain_names.end()));
 		map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, best_renaming.first);
+		if(print_log)
+		{
+			std::cerr << "remapping:\n";
+			auxiliaries::IOUtilities().write_map(best_renaming.first, std::cerr);
+		}
 		auxiliaries::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
 	}
 	else
@@ -281,16 +290,27 @@ void remap_chains_optimally(
 						best_pair=std::make_pair(*it_left, *it_right);
 						best_score=score;
 					}
-					std::cerr << (*it_left) << " " << (*it_right) << "   " << score << "\n";
+					if(print_log)
+					{
+						std::cerr << (*it_left) << " " << (*it_right) << "  " << score << "\n";
+					}
 				}
 			}
-			std::cerr << best_pair.first << " " << best_pair.second << "   " << best_score << " chosen\n";
+			if(print_log)
+			{
+				std::cerr << best_pair.first << " " << best_pair.second << "  " << best_score << " fixed\n";
+			}
 			map_of_renamings[best_pair.first]=best_pair.second;
 			map_of_renamings_in_target[best_pair.second]=best_pair.second;
 			set_of_free_chains_left.erase(best_pair.first);
 			set_of_free_chains_right.erase(best_pair.second);
 		}
 		map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings);
+		if(print_log)
+		{
+			std::cerr << "remapping:\n";
+			auxiliaries::IOUtilities().write_map(map_of_renamings, std::cerr);
+		}
 		auxiliaries::IOUtilities().write_map_to_file(map_of_renamings, remapped_chains_file);
 	}
 }
@@ -316,6 +336,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
 	const std::string chains_renaming_file=poh.argument<std::string>(pohw.describe_option("--chains-renaming-file", "string", "file path to input chains renaming"), "");
 	const bool remap_chains=poh.contains_option(pohw.describe_option("--remap-chains", "", "flag to calculate optimal chains remapping"));
+	const bool remap_chains_log=poh.contains_option(pohw.describe_option("--remap-chains-log", "", "flag output remapping progress to stderr"));
 	const std::string remapped_chains_file=poh.argument<std::string>(pohw.describe_option("--remapped-chains-file", "string", "file path to output calculated chains remapping"), "");
 
 	if(!pohw.assert_or_print_help(false))
@@ -346,7 +367,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(remap_chains)
 	{
-		remap_chains_optimally(map_of_target_contacts, ignore_residue_names, remapped_chains_file, map_of_contacts);
+		remap_chains_optimally(map_of_target_contacts, ignore_residue_names, remapped_chains_file, remap_chains_log, map_of_contacts);
 	}
 
 	if(!residue_level_only)
