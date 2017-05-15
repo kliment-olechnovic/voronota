@@ -50,6 +50,7 @@ USE_ALL_QUERY_CODES=false
 SMOOTHING_WINDOW="0"
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
+INPUT_MODEL_CHAINS_RENAMING=""
 REMAP_CHAINS=false
 REMAP_CHAINS_LOG_OPTION=""
 REMAP_CHAINS_OUTPUT=""
@@ -114,6 +115,10 @@ do
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
+	--input-model-chains-renaming)
+		INPUT_MODEL_CHAINS_RENAMING="$OPTARG"
+		shift
+		;;
 	--remap-chains)
 		REMAP_CHAINS=true
 		;;
@@ -173,6 +178,12 @@ if [ -n "$CONTACTS_QUERY_BY_CODE" ] \
    && [ "$CONTACTS_QUERY_BY_CODE" != "MS" ]
 then
 	echo >&2 "Error: invalid contacts query code '$CONTACTS_QUERY_BY_CODE'"
+	exit 1
+fi
+
+if [ -n "$INPUT_MODEL_CHAINS_RENAMING" ] && [ ! -s "$INPUT_MODEL_CHAINS_RENAMING" ]
+then
+	echo >&2 "Error: input model chains renaming file does not exist"
 	exit 1
 fi
 
@@ -311,6 +322,21 @@ do
 	fi
 done
 
+function rename_model_chains_by_dictionary()
+{
+	cat "$1" | awk '{print "c<" $1 "> c_replaced<" $2 ">" }' > $TMPLDIR/chains_renaming_dictionary
+	for MFILE in $TMPLDIR/model.balls $TMPLDIR/model.contacts
+	do
+		awk 'NR==FNR{rep[$1]=$2;next}{for(key in rep){gsub(key,rep[key])};print}' $TMPLDIR/chains_renaming_dictionary $MFILE | sed 's/_replaced//g' > $MFILE.renamed
+		mv $MFILE.renamed $MFILE
+	done
+}
+
+if [ -n "$INPUT_MODEL_CHAINS_RENAMING" ]
+then
+	rename_model_chains_by_dictionary "$INPUT_MODEL_CHAINS_RENAMING"
+fi
+
 STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
 
 if $REMAP_CHAINS
@@ -320,7 +346,7 @@ then
 	  --target-contacts-file $TMPLDIR/target.contacts \
 	> /dev/null
 	
-	STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="$STANDARD_OPTIONS_FOR_COMPARE_CONTACTS --chains-renaming-file $TMPLDIR/remapped_chains"
+	rename_model_chains_by_dictionary "$TMPLDIR/remapped_chains"
 	
 	if [ -n "$REMAP_CHAINS_OUTPUT" ]
 	then
