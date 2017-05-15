@@ -52,6 +52,7 @@ CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 REMAP_CHAINS=false
 REMAP_CHAINS_LOG_OPTION=""
+REMAP_CHAINS_OUTPUT=""
 OLD_REGIME=false
 HELP_MODE=false
 
@@ -118,6 +119,10 @@ do
 		;;
 	--remap-chains-log)
 		REMAP_CHAINS_LOG_OPTION="--remap-chains-log"
+		;;
+	--remap-chains-output)
+		REMAP_CHAINS_OUTPUT="$OPTARG"
+		shift
 		;;
 	--old-regime)
 		OLD_REGIME=true
@@ -316,6 +321,12 @@ then
 	> /dev/null
 	
 	STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="$STANDARD_OPTIONS_FOR_COMPARE_CONTACTS --chains-renaming-file $TMPLDIR/remapped_chains"
+	
+	if [ -n "$REMAP_CHAINS_OUTPUT" ]
+	then
+		mkdir -p $(dirname "$REMAP_CHAINS_OUTPUT")
+		cp "$TMPLDIR/remapped_chains" "$REMAP_CHAINS_OUTPUT"
+	fi
 fi
 
 if [ -n "$OUTFILE_RESIDUE_SCORES" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_TARGET" ] || [ -n "$OUTFILE_RESIDUE_SCORES_PDB_MODEL" ]
