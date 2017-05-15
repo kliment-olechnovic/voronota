@@ -19,6 +19,11 @@ do
 	| grep ' AA '
 done > $SUBDIR/global_scores
 
+cat > $SUBDIR/input_model_chains_renaming << 'EOF'
+A B
+B A
+EOF
+
 for INFILE in $INPUTDIR/complex/*.pdb
 do
 	INFILEBASENAME=$(basename $INFILE .pdb)
@@ -33,6 +38,9 @@ do
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache \
 	  --use-all-query-codes \
+	  --input-model-chains-renaming $SUBDIR/input_model_chains_renaming \
+	  --remap-chains \
+	  --remap-chains-output $SUBDIR/$INFILEBASENAME/interface_chains_remapping \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	| grep ' AA '
