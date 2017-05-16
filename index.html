@@ -18,6 +18,7 @@
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-from-source-code">Building from source code</a><ul>
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#using-make">Using make</a></li>
 <li><a href="#using-cmake">Using CMake</a></li>
 <li><a href="#enabling-openmp">Enabling OpenMP</a></li>
 <li><a href="#enabling-mpi">Enabling MPI</a></li>
@@ -125,8 +126,17 @@
 <p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
 <pre><code>g++ -O3 -o voronota src/*.cpp
 </code></pre>
+<h2 id="using-make"><a href="#TOC">Using make</a></h2>
+<p>You can generate and use a makefile:</p>
+<pre><code>./configure
+make
+</code></pre>
+<p>It allows install and uninstall Voronota executables:</p>
+<pre><code>make install
+make uninstall
+</code></pre>
 <h2 id="using-cmake"><a href="#TOC">Using CMake</a></h2>
-<p>You can also build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
+<p>You can build using CMake for makefile generation. Starting in the directory containing &quot;CMakeLists.txt&quot; file, run the sequence of commands:</p>
 <pre><code>cmake ./
 make
 </code></pre>
@@ -134,13 +144,17 @@ make
 <p>To enable the usage of OpenMP for parallel processing when building using C++ compiler directly, add &quot;-fopenmp&quot; option:</p>
 <pre><code>g++ -O3 -fopenmp -o voronota src/*.cpp
 </code></pre>
+<p>When generating a makefile with a &quot;configure&quot; script, OpenMP usage can be enabled by setting CXXFLAGS variable:</p>
+<pre><code>./configure CXXFLAGS=&quot;-O3 -fopenmp&quot;
+make
+</code></pre>
 <p>When using CMake, OpenMP usage is enabled automatically if it is possible.</p>
 <h2 id="enabling-mpi"><a href="#TOC">Enabling MPI</a></h2>
 <p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
 </code></pre>
 <h2 id="tr1-usage-switch"><a href="#TOC">TR1 usage switch</a></h2>
-<p>Voronota can be built with pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
+<p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
 <pre><code>g++ -O3 -DUSE_TR1=1 -o voronota src/*.cpp
 </code></pre>
 <p>or</p>
