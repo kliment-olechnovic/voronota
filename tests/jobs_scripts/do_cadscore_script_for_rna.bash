@@ -13,6 +13,7 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
 	  --smoothing-window 0 \
 	  --use-all-query-codes \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	| grep ' AA '
@@ -34,6 +35,7 @@ do
 	  --output-residue-scores $SUBDIR/$INFILEBASENAME/residue_scores \
 	  --smoothing-window 0 \
 	  --use-all-query-codes \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	| grep ' AA '

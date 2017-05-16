@@ -731,18 +731,19 @@ The script interface is presented below:
         --contacts-query-inter-chain                flag to consider only inter-chain contacts
         --contacts-query-by-code        string      contacts query code, possible codes are AA, AS, SS, AM, MM, MS
         --use-all-query-codes                       flag to output global scores for all query codes, one line per code
-        --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
         --cache-dir                     string      path to cache directory
+        --output-header                             flag to output header before result line
         --help | -h                                 flag to display help message and exit
     
     Advanced options:
+        --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
+        --enable-site-based-scoring                 falg to enable site-based scoring
         --multiple-models                           flag to handle multiple models in PDB file
         --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
     
     Standard output (one line):
-        {target file path} {model file path} {query code}
-         {number of residues} {global score} {target total area} {model total area}
-          {site-based number of residues} {site-based global score} {site-based target total area} {site-based model total area}
+        {target file path} {model file path} {query code} {number of residues} {global score} {target total area} {model total area}
+        [ {site-based number of residues} {site-based global score} {site-based target total area} {site-based model total area} ]
     
 
 ## Contacts calculation convenience script
