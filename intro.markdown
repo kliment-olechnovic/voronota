@@ -45,9 +45,21 @@ the sources in "src" directory using GNU C++ compiler:
 
     g++ -O3 -o voronota src/*.cpp
 
+## Using make
+
+You can generate and use a makefile:
+
+    ./configure
+    make
+
+It allows install and uninstall Voronota executables:
+
+    make install
+    make uninstall
+
 ## Using CMake
 
-You can also build using CMake for makefile generation.
+You can build using CMake for makefile generation.
 Starting in the directory containing "CMakeLists.txt" file,
 run the sequence of commands:
 
@@ -61,6 +73,12 @@ building using C++ compiler directly, add "-fopenmp" option:
 
     g++ -O3 -fopenmp -o voronota src/*.cpp
 
+When generating a makefile with a "configure" script,
+OpenMP usage can be enabled by setting CXXFLAGS variable:
+
+    ./configure CXXFLAGS="-O3 -fopenmp"
+    make
+
 When using CMake, OpenMP usage is enabled automatically if it is possible.
 
 ## Enabling MPI
@@ -73,11 +91,14 @@ can use mpic++ compiler wrapper. You also need to define
 
 ## TR1 usage switch
 
-Voronota can be built with pre-C++11 compilers that support C++ Technical Report 1 (TR1) features.
-The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used.
+Voronota can be built with either modern C++ compilers or
+pre-C++11 compilers that support C++ Technical Report 1 (TR1) features.
+The voronota code has preprocessor-based checks to find out
+if C++ TR1 namespace is available and needs to be used.
 If compilation fails, it may mean that these checks failed.
 To troubleshoot this, try setting the value of the "USE_TR1" macro
-to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:
+to 0 (to not use TR1 and to rely on C++11 standard)
+or 1 (to use TR1) when compiling, for example:
 
     g++ -O3 -DUSE_TR1=1 -o voronota src/*.cpp
 
