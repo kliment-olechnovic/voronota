@@ -52,7 +52,7 @@ You can generate and use a makefile:
     ./configure
     make
 
-It allows install and uninstall Voronota executables:
+It allows to install and uninstall Voronota executables:
 
     make install
     make uninstall
