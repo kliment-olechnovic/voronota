@@ -14,6 +14,7 @@ do
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache \
 	  --use-all-query-codes \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	| grep ' AA '
@@ -41,6 +42,7 @@ do
 	  --input-model-chains-renaming $SUBDIR/input_model_chains_renaming \
 	  --remap-chains \
 	  --remap-chains-output $SUBDIR/$INFILEBASENAME/interface_chains_remapping \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	| grep ' AA '
@@ -65,6 +67,7 @@ do
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache \
 	  --use-all-query-codes \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/coded_global_scores \
 	| grep ' AA '
@@ -85,6 +88,7 @@ do
 	  --smoothing-window 0 \
 	  --cache-dir $SUBDIR/cache \
 	  --use-all-query-codes \
+	  --enable-site-based-scoring \
 	| column -t \
 	| tee $SUBDIR/$INFILEBASENAME/interface_coded_global_scores \
 	| grep ' AA '
