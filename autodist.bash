@@ -12,6 +12,7 @@ trap "rm -r $TMPLDIR" EXIT
 
 cp -r ./src "$TMPLDIR/"
 cp ./voronota-resources ./voronota-voromqa ./voronota-contacts ./voronota-cadscore ./voronota-volumes "$TMPLDIR/"
+cp ./manpage.troff "$TMPLDIR/voronota.man"
 
 cd $TMPLDIR
 
@@ -33,6 +34,7 @@ cat << EOF
 bin_PROGRAMS = voronota
 voronota_SOURCES = $(find src/ -type f | tr '\n' ' ')
 dist_bin_SCRIPTS = voronota-resources voronota-voromqa voronota-contacts voronota-cadscore voronota-volumes
+dist_man1_MANS = voronota.man
 EOF
 } \
 > "./Makefile.am"
