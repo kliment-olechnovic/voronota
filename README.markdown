@@ -739,6 +739,8 @@ The script interface is presented below:
         --ignore-residue-names                      flag to consider just residue numbers and ignore residue names
         --enable-site-based-scoring                 falg to enable site-based scoring
         --multiple-models                           flag to handle multiple models in PDB file
+        --remap-chains                              flag to automatically rearrange chain names for higher scores
+        --remap-chains-output           string      output file with chain names rearrangement
         --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
     
     Standard output (one line):
