@@ -241,7 +241,7 @@ void remap_chains_optimally(
 	}
 	if(chain_names.size()<=5)
 	{
-		std::pair<std::map<std::string, std::string>, double> best_renaming(std::map<std::string, std::string>(), 0.0);
+		std::pair<std::map<std::string, std::string>, double> best_renaming(generate_map_of_renamings_from_two_lists(chain_names, chain_names), 0.0);
 		std::vector<std::string> permutated_chain_names=chain_names;
 		do
 		{
