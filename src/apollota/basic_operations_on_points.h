@@ -241,7 +241,7 @@ OutputPointType any_normal_of_vector(const InputPointType& a)
 		b.x=0.0-b.x;
 		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
 	}
-	else if(!equal(b.y, 0.0) && !equal(b.z, 0.0))
+	else if(!equal(b.y, 0.0) && (!equal(b.x, 0.0) || !equal(b.z, 0.0)))
 	{
 		b.y=0.0-b.y;
 		return unit_point<OutputPointType>(cross_product<OutputPointType>(a, b));
@@ -250,13 +250,9 @@ OutputPointType any_normal_of_vector(const InputPointType& a)
 	{
 		return custom_point<OutputPointType>(0, 1, 0);
 	}
-	else if(!equal(b.y, 0.0))
-	{
-		return custom_point<OutputPointType>(1, 0, 0);
-	}
 	else
 	{
-		return custom_point<OutputPointType>(0, 0, 1);
+		return custom_point<OutputPointType>(1, 0, 0);
 	}
 }
 
