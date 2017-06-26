@@ -12,7 +12,7 @@ mkdir -p ./tmp
 rm ./tmp/mock_balls.py ./tmp/mock_surface.py
 
 cat "$INFILE" \
-| ./voronota get-balls-from-atoms-file --annotated \
+| ./voronota get-balls-from-atoms-file --annotated --radii-file ./resources/radii \
 | ./voronota x-calculate-mock-solvent --solvent-distance 1 --solvent-radius 1.4 --sparse-mode \
 | ./voronota query-balls --match 'c<w>' --set-adjuncts 'r=0;g=1;b=1' \
 | ./voronota x-draw-balls --representation vdw --default-color 0xFFFF00 --adjuncts-rgb --drawing-name mock_balls --drawing-for-pymol ./tmp/mock_balls.py \
