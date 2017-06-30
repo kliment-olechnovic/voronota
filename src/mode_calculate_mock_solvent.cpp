@@ -61,8 +61,8 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 
 			const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
 			const apollota::Triangulation::VerticesVector vertices=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+			const apollota::TriangulationQueries::IDsGraph ids_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), real_spheres_count);
 
-			apollota::TriangulationQueries::TriplesMap triples_all;
 			apollota::TriangulationQueries::TriplesMap triples_exposed;
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
@@ -73,7 +73,6 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 					if(t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size())
 					{
 						const std::size_t n=q.get(j);
-						triples_all[t].insert(n);
 						if(vertices[i].second.r>probe)
 						{
 							triples_exposed[t].insert(n);
@@ -90,7 +89,10 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfThreeSpheres::calculate(spheres[t.get(0)], spheres[t.get(1)], spheres[t.get(2)], probe);
 				if(!tangents.empty())
 				{
-					const std::set<std::size_t>& ns=triples_all[t];
+					std::set<std::size_t> ns;
+					ns.insert(ids_graph[t.get(0)].begin(), ids_graph[t.get(0)].end());
+					ns.insert(ids_graph[t.get(1)].begin(), ids_graph[t.get(1)].end());
+					ns.insert(ids_graph[t.get(2)].begin(), ids_graph[t.get(2)].end());
 					for(std::size_t i=0;i<tangents.size();i++)
 					{
 						bool candidate_good=true;
