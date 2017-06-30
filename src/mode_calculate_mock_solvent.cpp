@@ -46,8 +46,8 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(sparse_mode)
 	{
-		bool repeat=true;
-		while(repeat)
+		int stage=0;
+		while(stage<1)
 		{
 			std::vector<apollota::SimpleSphere> spheres=input_spheres;
 			if(!mock_solvent_spheres.empty())
@@ -66,14 +66,14 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 			apollota::TriangulationQueries::TriplesMap triples_exposed;
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
-				const apollota::Quadruple& q=vertices[i].first;
-				for(unsigned int j=0;j<4;j++)
+				if(vertices[i].second.r>probe)
 				{
-					const apollota::Triple& t=q.exclude(j);
-					if(t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size())
+					const apollota::Quadruple& q=vertices[i].first;
+					for(unsigned int j=0;j<4;j++)
 					{
+						const apollota::Triple& t=q.exclude(j);
 						const std::size_t n=q.get(j);
-						if(vertices[i].second.r>probe)
+						if((stage==0 && t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size()) || stage==1)
 						{
 							triples_exposed[t].insert(n);
 						}
@@ -115,9 +115,14 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				mock_solvent_spheres.insert(mock_solvent_spheres.end(), new_mock_solvent_spheres.begin(), new_mock_solvent_spheres.end());
 			}
-			else
+
+			if(stage==0 && new_mock_solvent_spheres.empty())
 			{
-				repeat=false;
+				stage=1;
+			}
+			else if(stage==1)
+			{
+				stage=2;
 			}
 		}
 	}
