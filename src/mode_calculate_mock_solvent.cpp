@@ -73,7 +73,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						const apollota::Triple& t=q.exclude(j);
 						const std::size_t n=q.get(j);
-						if((stage==0 && t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size()) || stage==1)
+						if((stage==0 && t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size()) || stage>0)
 						{
 							triples_exposed[t].insert(n);
 						}
@@ -116,13 +116,9 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 				mock_solvent_spheres.insert(mock_solvent_spheres.end(), new_mock_solvent_spheres.begin(), new_mock_solvent_spheres.end());
 			}
 
-			if(stage==0 && new_mock_solvent_spheres.empty())
+			if((stage==0 && new_mock_solvent_spheres.empty()) || stage>0)
 			{
-				stage=1;
-			}
-			else if(stage==1)
-			{
-				stage=2;
+				stage++;
 			}
 		}
 	}
