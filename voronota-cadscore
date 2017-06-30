@@ -31,8 +31,8 @@ Advanced options:
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
 Standard output (one line):
-    {target file path} {model file path} {query code} {number of residues} {global score} {target total area} {model total area}
-    [ {site-based number of residues} {site-based global score} {site-based target total area} {site-based model total area} ]
+    {target file path} {model file path} {query code} {number of residues} {global score} {target total area} {corresponding model total area}
+    [ {site-based number of residues} {site-based global score} {site-based target total area} {corresponding site-based model total area} ]
 
 EOF
 exit 1
@@ -456,11 +456,11 @@ do
 	{
 		echo $INFILE_TARGET_PDB $INFILE_MODEL_PDB $QCODE
 		cat $TMPLDIR/global_cad_scores_$QCODE | egrep '^residue_count ' | awk '{print $2}'
-		cat $TMPLDIR/global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}'
+		cat $TMPLDIR/global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $7}'
 		if $ENABLE_SITE_BASED_SCORING
 		then
 			cat $TMPLDIR/site_based_global_cad_scores_$QCODE | egrep '^residue_count ' | awk '{print $2}'
-			cat $TMPLDIR/site_based_global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $4}'
+			cat $TMPLDIR/site_based_global_cad_scores_$QCODE | egrep '^residue_level_global ' | awk '{print $2 " " $3 " " $7}'
 		fi
 	} \
 	| tr '\n' ' ' \

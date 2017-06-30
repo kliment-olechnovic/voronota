@@ -1,6 +1,6 @@
-./input/complex/target.pdb  ./input/complex/model1.pdb  AA  261  0.412335  17716    21253.3  261  0.853421  35432    42506.5
-./input/complex/target.pdb  ./input/complex/model1.pdb  AS  261  0.31443   13031.9  15185.8  261  0.79963   26063.8  30371.6
-./input/complex/target.pdb  ./input/complex/model1.pdb  SS  245  0.225523  7850.02  7969.9   245  0.729208  15700    15939.8
-./input/complex/target.pdb  ./input/complex/model1.pdb  AM  261  0.512386  9865.98  13283.4  261  0.839134  19732    26566.7
-./input/complex/target.pdb  ./input/complex/model1.pdb  MM  261  0.618558  4684.11  6067.46  261  0.832418  9368.21  12134.9
-./input/complex/target.pdb  ./input/complex/model1.pdb  MS  261  0.364155  5181.88  7215.9   261  0.702368  10363.8  14431.8
+./input/complex/target.pdb  ./input/complex/model1.pdb  AA  261  0.412335  17716    12300.4  261  0.853421  35432    34830.3
+./input/complex/target.pdb  ./input/complex/model1.pdb  AS  261  0.31443   13031.9  7882.18  261  0.79963   26063.8  25914.6
+./input/complex/target.pdb  ./input/complex/model1.pdb  SS  245  0.225523  7850.02  3333.74  245  0.729208  15700    14378.8
+./input/complex/target.pdb  ./input/complex/model1.pdb  AM  261  0.512386  9865.98  8197.36  261  0.839134  19732    20451.5
+./input/complex/target.pdb  ./input/complex/model1.pdb  MM  261  0.618558  4684.11  3993.29  261  0.832418  9368.21  8915.74
+./input/complex/target.pdb  ./input/complex/model1.pdb  MS  261  0.364155  5181.88  3950.34  261  0.702368  10363.8  11535.7

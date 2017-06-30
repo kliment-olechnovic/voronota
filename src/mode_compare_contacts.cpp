@@ -20,8 +20,9 @@ struct CADDescriptor
 	double model_area_sum;
 	double raw_differences_sum;
 	double constrained_differences_sum;
+	double model_target_area_sum;
 
-	CADDescriptor() : target_area_sum(0), model_area_sum(0), raw_differences_sum(), constrained_differences_sum(0)
+	CADDescriptor() : target_area_sum(0), model_area_sum(0), raw_differences_sum(), constrained_differences_sum(0), model_target_area_sum(0)
 	{
 	}
 
@@ -31,6 +32,7 @@ struct CADDescriptor
 		model_area_sum+=model_area;
 		raw_differences_sum+=fabs(target_area-model_area);
 		constrained_differences_sum+=std::min(fabs(target_area-model_area), target_area);
+		model_target_area_sum+=(target_area>0.0 ? model_area : 0.0);
 	}
 
 	void add(const CADDescriptor& cadd)
@@ -39,6 +41,7 @@ struct CADDescriptor
 		model_area_sum+=cadd.model_area_sum;
 		raw_differences_sum+=cadd.raw_differences_sum;
 		constrained_differences_sum+=cadd.constrained_differences_sum;
+		model_target_area_sum+=cadd.model_target_area_sum;
 	}
 
 	double score() const
@@ -61,7 +64,8 @@ inline std::ostream& operator<<(std::ostream& output, const CADDescriptor& cadd)
 		output << " " << cadd.target_area_sum
 				<< " " << cadd.model_area_sum
 				<< " " << cadd.raw_differences_sum
-				<< " " << cadd.constrained_differences_sum;
+				<< " " << cadd.constrained_differences_sum
+				<< " " << cadd.model_target_area_sum;
 	}
 	return output;
 }
