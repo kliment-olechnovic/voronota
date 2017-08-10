@@ -17,3 +17,5 @@ syntax: regexp
 ^install_manifest\.txt$
 syntax: regexp
 ^Makefile$
+syntax: regexp
+^\.settings$
