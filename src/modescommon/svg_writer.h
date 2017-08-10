@@ -50,7 +50,7 @@ public:
 			r=(value/0.5);
 			g=r;
 		}
-		else if(value>0.5)
+		else
 		{
 			r=1.0;
 			b=(1.0-(value-0.5)/0.5);

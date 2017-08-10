@@ -58,7 +58,7 @@ private:
 	{
 		Less less;
 
-		LessForPairs(const Less& less) : less(less)
+		explicit LessForPairs(const Less& less) : less(less)
 		{
 		}
 

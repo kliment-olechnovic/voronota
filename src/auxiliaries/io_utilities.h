@@ -46,7 +46,6 @@ public:
 			LineReader line_reader,
 			Container& container) const
 	{
-		std::size_t line_num=0;
 		while(input.good())
 		{
 			std::string line;
@@ -74,7 +73,6 @@ public:
 					{
 						throw std::runtime_error(std::string("Failed to read line '")+line+"'.");
 					}
-					line_num++;
 				}
 			}
 		}
