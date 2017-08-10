@@ -457,7 +457,7 @@ private:
 				color.r=static_cast<unsigned char>(255*(value/0.5));
 				color.g=color.r;
 			}
-			else if(value>0.5)
+			else
 			{
 				color.r=255;
 				color.b=static_cast<unsigned char>(255*(1-(value-0.5)/0.5));
@@ -654,9 +654,9 @@ private:
 			const std::string& id,
 			std::ostream& output)
 	{
-		static int use_num=0;
 		if(!(vertices.empty() || triples.empty()))
 		{
+			static int use_num=0;
 			output << "draw " << id << use_num << " ";
 			output << "POLYGON " << vertices.size() << " ";
 			for(std::size_t i=0;i<vertices.size();i++)

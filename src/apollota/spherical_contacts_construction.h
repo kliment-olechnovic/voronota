@@ -20,7 +20,7 @@ public:
 		}
 	};
 
-	SphericalContactsConstruction(const std::size_t subdivision_depth) : sih_(subdivision_depth)
+	explicit SphericalContactsConstruction(const std::size_t subdivision_depth) : sih_(subdivision_depth)
 	{
 	}
 

@@ -12,7 +12,7 @@ namespace
 class SubdividedSphericalTriangulation
 {
 public:
-	SubdividedSphericalTriangulation(const int steps) : center_sphere_(0, 0, 0, 1)
+	explicit SubdividedSphericalTriangulation(const int steps) : center_sphere_(0, 0, 0, 1)
 	{
 		const double t=(1+sqrt(5.0))/2.0;
 

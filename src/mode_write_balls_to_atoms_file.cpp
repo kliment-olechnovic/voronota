@@ -160,7 +160,6 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						output_map_of_ball_ids[list_of_balls[i].first]=i;
 					}
-					int icount=0;
 					for(std::size_t i=0;i<pdb_file_data.atom_records.size();i++)
 					{
 						const auxiliaries::AtomsIO::AtomRecord& atom_record=pdb_file_data.atom_records[i];
@@ -173,7 +172,6 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 							ball_line=(temperature_factor_it!=ball_adjuncts.end()) ?
 									auxiliaries::AtomsIO::PDBWriter::write_temperature_factor_to_line(ball_line, true, temperature_factor_it->second) :
 									auxiliaries::AtomsIO::PDBWriter::write_temperature_factor_to_line(ball_line, false, 0);
-							icount++;
 						}
 					}
 					for(std::size_t i=0;i<pdb_file_data.all_lines.size();i++)

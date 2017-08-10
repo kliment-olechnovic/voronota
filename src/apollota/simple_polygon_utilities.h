@@ -138,8 +138,8 @@ public:
 					{
 						ear_found=true;
 						result.triangulation.push_back(Triple(*prev_it, *it, *next_it));
-						polygon_ids.erase(it);
 						polygon_concave_set.erase(*it);
+						polygon_ids.erase(it);
 						std::list<std::size_t>::iterator prev_prev_it=get_prev_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), prev_it);
 						std::list<std::size_t>::iterator next_next_it=get_next_iter_in_cycle<std::list<std::size_t>::iterator>(polygon_ids.begin(), polygon_ids.end(), next_it);
 						polygon_convexity_vector[*prev_it]=calc_convexity(polygon_normal, polygon_points[*prev_prev_it], polygon_points[*prev_it], polygon_points[*next_it]);
