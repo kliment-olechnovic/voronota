@@ -334,6 +334,76 @@ public:
 		}
 	}
 
+	void print_generic_geometric_object(std::ostream& output) const
+	{
+		std::istringstream input(str());
+		if(!input.good())
+		{
+			return;
+		}
+		Color color(0xFFFFFF);
+		std::string label="undefined";
+		std::vector<PlainPoint> global_vertices;
+		std::vector<PlainPoint> global_normals;
+		std::vector<PlainTriple> global_triples;
+		std::vector< std::pair<PlainPoint, double> > global_spheres;
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.color || type.label)
+			{
+				if(type.color)
+				{
+					color=read_color_from_stream(input);
+				}
+				else if(type.label)
+				{
+					input >> label;
+				}
+			}
+			else if(type.tstrip || type.tfan || type.tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals) && vertices.size()==normals.size())
+				{
+					const std::size_t offset=global_vertices.size();
+					global_vertices.insert(global_vertices.end(), vertices.begin(), vertices.end());
+					global_normals.insert(global_normals.end(), normals.begin(), normals.end());
+					for(std::size_t i=0;(i+2)<vertices.size();i++)
+					{
+						global_triples.push_back(PlainTriple(offset+(type.tstrip ? i : 0), offset+(i+1), offset+(i+2)));
+					}
+				}
+			}
+			else if(type.sphere)
+			{
+				const PlainPoint c=read_point_from_stream(input);
+				double r;
+				input >> r;
+				global_spheres.push_back(std::make_pair(c, r));
+			}
+		}
+		{
+			output << global_vertices.size() << " ";
+			for(std::size_t i=0;i<global_vertices.size();i++)
+			{
+				write_point_to_stream(global_vertices[i], output);
+			}
+			for(std::size_t i=0;i<global_normals.size();i++)
+			{
+				write_point_to_stream(global_normals[i], output);
+			}
+			output << global_triples.size() << " ";
+			for(std::size_t i=0;i<global_triples.size();i++)
+			{
+				output << global_triples[i].a << " " << global_triples[i].b << " " << global_triples[i].c << " ";
+			}
+		}
+	}
+
 private:
 	struct ObjectTyper
 	{

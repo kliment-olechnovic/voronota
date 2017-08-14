@@ -19,6 +19,7 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_jmol=poh.argument<std::string>(pohw.describe_option("--drawing-for-jmol", "string", "file path to output drawing as jmol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
+	const std::string drawing_for_generic=poh.argument<std::string>(pohw.describe_option("--drawing-for-generic", "string", "file path to output generic geometric objects"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
 	DrawingParametersWrapper drawing_parameters_wrapper;
 	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
@@ -44,44 +45,68 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No input.");
 	}
 
-	auxiliaries::OpenGLPrinter opengl_printer;
-	opengl_printer.add_color(drawing_parameters_wrapper.default_color);
-	opengl_printer.add_alpha(drawing_parameters_wrapper.alpha_opacity);
-	for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	if(!(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
 	{
-		const CRADsPair& crads=it->first;
-		const ContactValue& value=it->second;
-		if(!value.graphics.empty())
+		auxiliaries::OpenGLPrinter opengl_printer;
+		opengl_printer.add_color(drawing_parameters_wrapper.default_color);
+		opengl_printer.add_alpha(drawing_parameters_wrapper.alpha_opacity);
+		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
-			drawing_parameters_wrapper.process(std::make_pair(crads.a, crads.b), value.props.adjuncts, opengl_printer);
-			opengl_printer.add(value.graphics);
+			const CRADsPair& crads=it->first;
+			const ContactValue& value=it->second;
+			if(!value.graphics.empty())
+			{
+				drawing_parameters_wrapper.process(std::make_pair(crads.a, crads.b), value.props.adjuncts, opengl_printer);
+				opengl_printer.add(value.graphics);
+			}
+		}
+
+		if(!drawing_for_pymol.empty())
+		{
+			std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_pymol_script(drawing_name, true, foutput);
+			}
+		}
+
+		if(!drawing_for_jmol.empty())
+		{
+			std::ofstream foutput(drawing_for_jmol.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_jmol_script(drawing_name, foutput);
+			}
+		}
+
+		if(!drawing_for_scenejs.empty())
+		{
+			std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_scenejs_script(drawing_name, true, foutput);
+			}
 		}
 	}
 
-	if(!drawing_for_pymol.empty())
+	if(!drawing_for_generic.empty())
 	{
-		std::ofstream foutput(drawing_for_pymol.c_str(), std::ios::out);
+		std::ofstream foutput(drawing_for_generic.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			opengl_printer.print_pymol_script(drawing_name, true, foutput);
-		}
-	}
-
-	if(!drawing_for_jmol.empty())
-	{
-		std::ofstream foutput(drawing_for_jmol.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			opengl_printer.print_jmol_script(drawing_name, foutput);
-		}
-	}
-
-	if(!drawing_for_scenejs.empty())
-	{
-		std::ofstream foutput(drawing_for_scenejs.c_str(), std::ios::out);
-		if(foutput.good())
-		{
-			opengl_printer.print_scenejs_script(drawing_name, true, foutput);
+			for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			{
+				const CRADsPair& crads=it->first;
+				const ContactValue& value=it->second;
+				if(!value.graphics.empty())
+				{
+					auxiliaries::OpenGLPrinter opengl_printer;
+					opengl_printer.add(value.graphics);
+					foutput << "contact " << crads << " ";
+					opengl_printer.print_generic_geometric_object(foutput);
+					foutput << "\n";
+				}
+			}
 		}
 	}
 
