@@ -152,7 +152,7 @@ public:
 				{
 					spheres_plain_vector.resize(static_cast<std::size_t>(spheres_plain_vector_length));
 				}
-				MPI_Bcast(spheres_plain_vector.data(), spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+				MPI_Bcast(&spheres_plain_vector[0], spheres_plain_vector_length, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 				if(mpi_handle.rank()!=0)
 				{
 					fill_spheres_from_plain_vector(spheres_plain_vector, spheres);
@@ -176,7 +176,7 @@ public:
 						if(plain_vector_size>0)
 						{
 							plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
-							MPI_Recv(plain_vector.data(), plain_vector_size, MPI_DOUBLE, status.MPI_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+							MPI_Recv(&plain_vector[0], plain_vector_size, MPI_DOUBLE, status.MPI_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 							apollota::Triangulation::QuadruplesMap partial_quadruples_map;
 							fill_quadruples_map_from_plain_vector(plain_vector, partial_quadruples_map);
 							result.number_of_produced_quadruples+=partial_quadruples_map.size();
@@ -192,7 +192,7 @@ public:
 						if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
 						{
 							fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map, plain_vector);
-							MPI_Send(plain_vector.data(), static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
+							MPI_Send(&plain_vector[0], static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
 						}
 					}
 				}
