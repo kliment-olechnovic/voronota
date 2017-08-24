@@ -334,10 +334,11 @@ public:
 		}
 	}
 
-	bool write_to_low_level_triangle_buffers(std::vector<float>& output_vertices, std::vector<float>& output_normals) const
+	bool write_to_low_level_triangle_buffers(std::vector<float>& output_vertices, std::vector<float>& output_normals, std::vector<unsigned int>& output_indices, const bool indexed) const
 	{
 		output_vertices.clear();
 		output_normals.clear();
+		output_indices.clear();
 
 		std::istringstream input(str());
 		if(!input.good())
@@ -399,32 +400,58 @@ public:
 			return false;
 		}
 
-		output_vertices.reserve(global_triples.size()*9);
-		output_normals.reserve(global_triples.size()*9);
-
-		for(std::size_t i=0;i<global_triples.size();i++)
+		if(indexed)
 		{
-			const PlainTriple& t=global_triples[i];
-			if(t.a<global_vertices.size() && t.b<global_vertices.size() && t.c<global_vertices.size())
+			output_vertices.reserve(global_vertices.size()*3);
+			output_normals.reserve(global_normals.size()*3);
+	        output_indices.reserve(global_triples.size()*3);
+
+	        for(std::size_t i=0;i<global_vertices.size();i++)
+	        {
+	            output_vertices.push_back(global_vertices[i].x);
+	            output_vertices.push_back(global_vertices[i].y);
+	            output_vertices.push_back(global_vertices[i].z);
+	            output_normals.push_back(global_normals[i].x);
+	            output_normals.push_back(global_normals[i].y);
+	            output_normals.push_back(global_normals[i].z);
+	        }
+
+	        for(std::size_t i=0;i<global_triples.size();i++)
+	        {
+	        	output_indices.push_back(global_triples[i].a);
+	        	output_indices.push_back(global_triples[i].b);
+	        	output_indices.push_back(global_triples[i].c);
+	        }
+		}
+		else
+		{
+			output_vertices.reserve(global_triples.size()*9);
+			output_normals.reserve(global_triples.size()*9);
+
+			for(std::size_t i=0;i<global_triples.size();i++)
 			{
-				output_vertices.push_back(static_cast<float>(global_vertices[t.a].x));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.a].y));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.a].z));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.b].x));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.b].y));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.b].z));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.c].x));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.c].y));
-				output_vertices.push_back(static_cast<float>(global_vertices[t.c].z));
-				output_normals.push_back(static_cast<float>(global_normals[t.a].x));
-				output_normals.push_back(static_cast<float>(global_normals[t.a].y));
-				output_normals.push_back(static_cast<float>(global_normals[t.a].z));
-				output_normals.push_back(static_cast<float>(global_normals[t.b].x));
-				output_normals.push_back(static_cast<float>(global_normals[t.b].y));
-				output_normals.push_back(static_cast<float>(global_normals[t.b].z));
-				output_normals.push_back(static_cast<float>(global_normals[t.c].x));
-				output_normals.push_back(static_cast<float>(global_normals[t.c].y));
-				output_normals.push_back(static_cast<float>(global_normals[t.c].z));
+				const PlainTriple& t=global_triples[i];
+				if(t.a<global_vertices.size() && t.b<global_vertices.size() && t.c<global_vertices.size())
+				{
+					output_vertices.push_back(static_cast<float>(global_vertices[t.a].x));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.a].y));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.a].z));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.b].x));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.b].y));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.b].z));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.c].x));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.c].y));
+					output_vertices.push_back(static_cast<float>(global_vertices[t.c].z));
+					output_normals.push_back(static_cast<float>(global_normals[t.a].x));
+					output_normals.push_back(static_cast<float>(global_normals[t.a].y));
+					output_normals.push_back(static_cast<float>(global_normals[t.a].z));
+					output_normals.push_back(static_cast<float>(global_normals[t.b].x));
+					output_normals.push_back(static_cast<float>(global_normals[t.b].y));
+					output_normals.push_back(static_cast<float>(global_normals[t.b].z));
+					output_normals.push_back(static_cast<float>(global_normals[t.c].x));
+					output_normals.push_back(static_cast<float>(global_normals[t.c].y));
+					output_normals.push_back(static_cast<float>(global_normals[t.c].z));
+				}
 			}
 		}
 
