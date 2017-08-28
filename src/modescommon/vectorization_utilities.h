@@ -1,5 +1,5 @@
-#ifndef VECTORIZATION_UTILITIES_H_
-#define VECTORIZATION_UTILITIES_H_
+#ifndef MODESCOMMON_VECTORIZATION_UTILITIES_H_
+#define MODESCOMMON_VECTORIZATION_UTILITIES_H_
 
 #include <vector>
 #include <list>
@@ -7,7 +7,7 @@
 
 #include "filepath_utilities.h"
 
-namespace
+namespace modescommon
 {
 
 template<typename VectorNameType, typename ValueNameType, typename ValueType>
@@ -27,7 +27,7 @@ public:
 		MapOfMaps map_of_maps;
 		if(!input_files.empty())
 		{
-			const std::size_t common_path_start_length=calc_common_path_start_length(input_files);
+			const std::size_t common_path_start_length=modescommon::calc_common_path_start_length(input_files);
 			for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
 			{
 				const std::string& filename=(*it);
@@ -397,4 +397,4 @@ public:
 
 }
 
-#endif /* VECTORIZATION_UTILITIES_H_ */
+#endif /* MODESCOMMON_VECTORIZATION_UTILITIES_H_ */

@@ -50,7 +50,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<input_ball_records.size();i++)
 		{
 			spheres.push_back(apollota::SimpleSphere(input_ball_records[i].second));
-			if(identify_mock_solvent(input_ball_records[i].first))
+			if(modescommon::identify_mock_solvent(input_ball_records[i].first))
 			{
 				mock_solvent_ids.insert(i);
 			}
@@ -115,11 +115,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				const std::size_t b_id=it->first.get(1);
 				auxiliaries::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
 				auxiliaries::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
-				if(identify_mock_solvent(crad_a))
+				if(modescommon::identify_mock_solvent(crad_a))
 				{
 					crad_a=auxiliaries::ChainResidueAtomDescriptor::solvent();
 				}
-				if(a_id==b_id || identify_mock_solvent(crad_b))
+				if(a_id==b_id || modescommon::identify_mock_solvent(crad_b))
 				{
 					crad_b=auxiliaries::ChainResidueAtomDescriptor::solvent();
 				}

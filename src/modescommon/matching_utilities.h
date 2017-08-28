@@ -1,10 +1,10 @@
-#ifndef MATCHING_UTILITIES_H_
-#define MATCHING_UTILITIES_H_
+#ifndef MODESCOMMON_MATCHING_UTILITIES_H_
+#define MODESCOMMON_MATCHING_UTILITIES_H_
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 #include "../auxiliaries/io_utilities.h"
 
-namespace
+namespace modescommon
 {
 
 class MatchingUtilities
@@ -186,4 +186,4 @@ private:
 
 }
 
-#endif /* MATCHING_UTILITIES_H_ */
+#endif /* MODESCOMMON_MATCHING_UTILITIES_H_ */

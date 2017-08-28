@@ -15,7 +15,7 @@ void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& p
 		return;
 	}
 
-	std::map<InteractionName, ValueStat> map_of_value_stats;
+	std::map<InteractionName, modescommon::ValueStat> map_of_value_stats;
 	while(std::cin.good())
 	{
 		std::string potential_file;
@@ -27,10 +27,10 @@ void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& p
 		}
 	}
 
-	std::map<InteractionName, NormalDistributionParameters> means_and_sds;
-	for(std::map<InteractionName, ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
+	std::map<InteractionName, modescommon::NormalDistributionParameters> means_and_sds;
+	for(std::map<InteractionName, modescommon::ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
 	{
-		means_and_sds[it->first]=NormalDistributionParameters(it->second.mean(), it->second.sd());
+		means_and_sds[it->first]=modescommon::NormalDistributionParameters(it->second.mean(), it->second.sd());
 	}
 
 	auxiliaries::IOUtilities().write_map(means_and_sds, std::cout);

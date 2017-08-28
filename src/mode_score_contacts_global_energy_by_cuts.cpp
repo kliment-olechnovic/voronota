@@ -52,7 +52,7 @@ std::string get_sequence_string_cut_out(const std::vector<CRAD>& sequence, const
 			inner_sequence.push_back(sequence[i]);
 		}
 	}
-	return SequenceUtilities::convert_residue_sequence_container_to_string(inner_sequence);
+	return modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(inner_sequence);
 }
 
 std::map<InteractionName, double> exclude_residues_from_contacts(const std::map<InteractionName, double>& map_of_contacts, const std::set<CRAD>& exclusion_set, const double solvent_expansion)

@@ -1,5 +1,5 @@
-#ifndef SEQUENCE_UTILITIES_H_
-#define SEQUENCE_UTILITIES_H_
+#ifndef MODESCOMMON_SEQUENCE_UTILITIES_H_
+#define MODESCOMMON_SEQUENCE_UTILITIES_H_
 
 #include <fstream>
 #include <sstream>
@@ -9,7 +9,7 @@
 #include "../auxiliaries/pairwise_sequence_alignment.h"
 #include "../auxiliaries/residue_atoms_reference.h"
 
-namespace
+namespace modescommon
 {
 
 class SequenceUtilities
@@ -124,4 +124,4 @@ public:
 
 }
 
-#endif /* SEQUENCE_UTILITIES_H_ */
+#endif /* MODESCOMMON_SEQUENCE_UTILITIES_H_ */

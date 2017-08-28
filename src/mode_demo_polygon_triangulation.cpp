@@ -74,7 +74,7 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Failed to produce triangulation.");
 	}
 
-	SVGWriter svg(dimensions.first, dimensions.second);
+	modescommon::SVGWriter svg(dimensions.first, dimensions.second);
 	for(std::size_t i=0;i<points.size();i++)
 	{
 		const apollota::SimplePoint& p=points[i];

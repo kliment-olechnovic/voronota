@@ -1,9 +1,9 @@
-#ifndef MOCK_SOLVENT_UTILITIES_H_
-#define MOCK_SOLVENT_UTILITIES_H_
+#ifndef MODESCOMMON_MOCK_SOLVENT_UTILITIES_H_
+#define MODESCOMMON_MOCK_SOLVENT_UTILITIES_H_
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 
-namespace
+namespace modescommon
 {
 
 inline std::string mock_solvent_name()
@@ -18,4 +18,4 @@ inline bool identify_mock_solvent(const auxiliaries::ChainResidueAtomDescriptor&
 
 }
 
-#endif /* MOCK_SOLVENT_UTILITIES_H_ */
+#endif /* MODESCOMMON_MOCK_SOLVENT_UTILITIES_H_ */

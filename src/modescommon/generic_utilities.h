@@ -1,9 +1,9 @@
-#ifndef GENERIC_UTILITIES_H_
-#define GENERIC_UTILITIES_H_
+#ifndef MODESCOMMON_GENERIC_UTILITIES_H_
+#define MODESCOMMON_GENERIC_UTILITIES_H_
 
 #include <map>
 
-namespace
+namespace modescommon
 {
 
 class GenericUtilities
@@ -39,4 +39,4 @@ public:
 }
 
 
-#endif /* GENERIC_UTILITIES_H_ */
+#endif /* MODESCOMMON_GENERIC_UTILITIES_H_ */
