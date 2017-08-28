@@ -3,6 +3,13 @@
 
 #include "modescommon/contacts_scoring_utilities.h"
 
+namespace
+{
+	typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+	typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+	typedef modescommon::InteractionName InteractionName;
+}
+
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);

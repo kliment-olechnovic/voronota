@@ -3,6 +3,16 @@
 
 #include "modescommon/contacts_scoring_utilities.h"
 
+namespace
+{
+
+typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef modescommon::InteractionName InteractionName;
+typedef modescommon::EnergyDescriptor EnergyDescriptor;
+
+}
+
 void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
@@ -38,12 +48,12 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const CRADsPair& crads=it->first.crads;
 			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
+			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !modescommon::check_crads_pair_for_peptide_bond(crads))
 			{
 				ed.total_area=(it->second);
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
-						map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
+						map_of_potential_values.find(InteractionName(modescommon::generalize_crads_pair(crads), it->first.tag));
 				if(potential_value_it!=map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);

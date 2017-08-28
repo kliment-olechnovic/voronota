@@ -4,6 +4,13 @@
 #include "modescommon/contacts_scoring_utilities.h"
 #include "modescommon/statistics_utilities.h"
 
+namespace
+{
+
+typedef modescommon::InteractionName InteractionName;
+
+}
+
 void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);

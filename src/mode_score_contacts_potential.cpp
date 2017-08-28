@@ -6,6 +6,10 @@
 namespace
 {
 
+typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef modescommon::InteractionName InteractionName;
+
 inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input, std::map<InteractionName, double>& map_of_interactions_areas)
 {
 	InteractionName interaction;
@@ -13,7 +17,7 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	input >> interaction >> area;
 	if(!input.fail())
 	{
-		map_of_interactions_areas[InteractionName(generalize_crads_pair(interaction.crads), interaction.tag)]+=area;
+		map_of_interactions_areas[InteractionName(modescommon::generalize_crads_pair(interaction.crads), interaction.tag)]+=area;
 		return true;
 	}
 	return false;
