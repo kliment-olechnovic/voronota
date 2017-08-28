@@ -1,24 +1,21 @@
-#ifndef CONTACTS_SCORING_UTILITIES_H_
-#define CONTACTS_SCORING_UTILITIES_H_
+#ifndef MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
+#define MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 
-namespace
+namespace modescommon
 {
-
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 struct InteractionName
 {
-	CRADsPair crads;
+	auxiliaries::ChainResidueAtomDescriptorsPair crads;
 	std::string tag;
 
 	InteractionName()
 	{
 	}
 
-	InteractionName(const CRADsPair& crads, const std::string& tag) : crads(crads), tag(tag)
+	InteractionName(const auxiliaries::ChainResidueAtomDescriptorsPair& crads, const std::string& tag) : crads(crads), tag(tag)
 	{
 	}
 
@@ -77,9 +74,9 @@ inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 	return input;
 }
 
-inline CRAD generalize_crad(const CRAD& input_crad)
+inline auxiliaries::ChainResidueAtomDescriptor generalize_crad(const auxiliaries::ChainResidueAtomDescriptor& input_crad)
 {
-	CRAD crad=input_crad.without_numbering();
+	auxiliaries::ChainResidueAtomDescriptor crad=input_crad.without_numbering();
 	if(crad.resName=="ARG" && (crad.name=="NH1" || crad.name=="NH2"))
 	{
 		crad.name="NH1";
@@ -131,17 +128,17 @@ inline CRAD generalize_crad(const CRAD& input_crad)
 	return crad;
 }
 
-inline CRADsPair generalize_crads_pair(const CRADsPair& input_crads)
+inline auxiliaries::ChainResidueAtomDescriptorsPair generalize_crads_pair(const auxiliaries::ChainResidueAtomDescriptorsPair& input_crads)
 {
-	return CRADsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
+	return auxiliaries::ChainResidueAtomDescriptorsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
 }
 
-inline bool check_crads_pair_for_peptide_bond(const CRADsPair& crads)
+inline bool check_crads_pair_for_peptide_bond(const auxiliaries::ChainResidueAtomDescriptorsPair& crads)
 {
 	return (((crads.a.name=="C" && crads.b.name=="N" && crads.a.resSeq<crads.b.resSeq) || (crads.a.name=="N" && crads.b.name=="C" && crads.b.resSeq<crads.a.resSeq))
-			&& CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
+			&& auxiliaries::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
 }
 
 }
 
-#endif /* CONTACTS_SCORING_UTILITIES_H_ */
+#endif /* MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_ */

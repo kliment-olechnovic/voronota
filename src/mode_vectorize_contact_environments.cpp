@@ -12,7 +12,7 @@ typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
 
 std::string generate_generalized_crad_file_name(const CRAD& crad, const std::string& prefix)
 {
-	const CRAD generalized_crad=generalize_crad(crad);
+	const CRAD generalized_crad=modescommon::generalize_crad(crad);
 	return (prefix+generalized_crad.resName+"_"+generalized_crad.name);
 }
 
@@ -65,7 +65,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 		}
 		for(std::set<CRAD>::const_iterator it=set_of_names.begin();it!=set_of_names.end();++it)
 		{
-			refined_set_of_names.insert(inter_residue ? generalize_crad(*it).without_atom() : generalize_crad(*it));
+			refined_set_of_names.insert(inter_residue ? modescommon::generalize_crad(*it).without_atom() : modescommon::generalize_crad(*it));
 		}
 	}
 
@@ -93,7 +93,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 				{
 					std::vector<double>& environment=map_of_environments[crad1];
 					environment.resize(map_of_names_ids.size(), 0.0);
-					std::map<CRAD, std::size_t>::const_iterator map_of_names_ids_it=map_of_names_ids.find(generalize_crad(crad2));
+					std::map<CRAD, std::size_t>::const_iterator map_of_names_ids_it=map_of_names_ids.find(modescommon::generalize_crad(crad2));
 					if(map_of_names_ids_it!=map_of_names_ids.end())
 					{
 						environment[map_of_names_ids_it->second]+=area;
