@@ -1,13 +1,11 @@
-#ifndef DRAWING_UTILITIES_H_
-#define DRAWING_UTILITIES_H_
+#ifndef MODESCOMMON_DRAWING_UTILITIES_H_
+#define MODESCOMMON_DRAWING_UTILITIES_H_
 
 #include "../auxiliaries/chain_residue_atom_descriptor.h"
 #include "../auxiliaries/opengl_printer.h"
 
-namespace
+namespace modescommon
 {
-
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
 
 class DrawingParametersWrapper
 {
@@ -117,12 +115,12 @@ private:
 		return std::min(color+static_cast<unsigned int>(0x444444), static_cast<unsigned int>(0xFFFFFF));
 	}
 
-	static unsigned int calc_color_integer(const CRAD& crad)
+	static unsigned int calc_color_integer(const auxiliaries::ChainResidueAtomDescriptor& crad)
 	{
 		return calc_string_color_integer(crad.str());
 	}
 
-	static unsigned int calc_color_integer(const std::pair<CRAD, CRAD>& crads)
+	static unsigned int calc_color_integer(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& crads)
 	{
 		return calc_string_color_integer(
 				crads.first<crads.second ?
@@ -130,17 +128,17 @@ private:
 						(crads.second.str()+crads.first.str()));
 	}
 
-	static unsigned int calc_color_integer_by_chain(const CRAD& crad)
+	static unsigned int calc_color_integer_by_chain(const auxiliaries::ChainResidueAtomDescriptor& crad)
 	{
 		return calc_lighter_color_integer(calc_string_color_integer(crad.chainID));
 	}
 
-	static unsigned int calc_color_integer_by_chain(const std::pair<CRAD, CRAD>& crads)
+	static unsigned int calc_color_integer_by_chain(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& crads)
 	{
 		return calc_lighter_color_integer(calc_string_color_integer(crads.first.chainID<crads.second.chainID ? (crads.first.chainID+crads.second.chainID) : (crads.second.chainID+crads.first.chainID)));
 	}
 
-	static std::string construct_label(const CRAD& crad)
+	static std::string construct_label(const auxiliaries::ChainResidueAtomDescriptor& crad)
 	{
 		std::ostringstream output;
 		output << "[ ";
@@ -149,7 +147,7 @@ private:
 			output << crad.chainID;
 			output << " ";
 		}
-		if(crad.resSeq!=CRAD::null_num())
+		if(crad.resSeq!=auxiliaries::ChainResidueAtomDescriptor::null_num())
 		{
 			output << crad.resSeq;
 			if(!crad.iCode.empty())
@@ -172,7 +170,7 @@ private:
 		return output.str();
 	}
 
-	static std::string construct_label(const std::pair<CRAD, CRAD>& crads)
+	static std::string construct_label(const std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>& crads)
 	{
 		std::ostringstream output;
 		output << construct_label(crads.first) << " " << construct_label(crads.second);
@@ -182,4 +180,4 @@ private:
 
 }
 
-#endif /* DRAWING_UTILITIES_H_ */
+#endif /* MODESCOMMON_DRAWING_UTILITIES_H_ */
