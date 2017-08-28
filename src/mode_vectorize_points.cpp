@@ -46,7 +46,7 @@ void vectorize_points(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef VectorizationUtilities<std::string, std::string, Point> Vectorizer;
+	typedef modescommon::VectorizationUtilities<std::string, std::string, Point> Vectorizer;
 
 	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
 	if(maps_of_maps.empty())

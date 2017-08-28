@@ -162,10 +162,10 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
 		const modescommon::BallValue value=apollota::custom_sphere<modescommon::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
-		auxiliaries::ChainResidueAtomDescriptor crad(mock_solvent_name());
+		auxiliaries::ChainResidueAtomDescriptor crad(modescommon::mock_solvent_name());
 		crad.resSeq=(i+1);
-		crad.resName=mock_solvent_name();
-		crad.name=mock_solvent_name();
+		crad.resName=modescommon::mock_solvent_name();
+		crad.name=modescommon::mock_solvent_name();
 		ball_records.push_back(std::make_pair(crad, value));
 	}
 

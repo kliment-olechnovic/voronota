@@ -1,13 +1,13 @@
-#ifndef FILEPATH_UTILITIES_H_
-#define FILEPATH_UTILITIES_H_
+#ifndef MODESCOMMON_FILEPATH_UTILITIES_H_
+#define MODESCOMMON_FILEPATH_UTILITIES_H_
 
 #include <string>
 #include <set>
 
-namespace
+namespace modescommon
 {
 
-std::size_t calc_common_path_start_length(const std::set<std::string>& filenames)
+inline std::size_t calc_common_path_start_length(const std::set<std::string>& filenames)
 {
 	std::size_t common_path_start_length=0;
 	if(filenames.size()>1)
@@ -35,4 +35,4 @@ std::size_t calc_common_path_start_length(const std::set<std::string>& filenames
 
 }
 
-#endif /* FILEPATH_UTILITIES_H_ */
+#endif /* MODESCOMMON_FILEPATH_UTILITIES_H_ */

@@ -240,7 +240,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const MapOfNamedValues reference_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->first);
 		const MapOfNamedValues testable_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->second);
-		const MapOfNamedValuesPairs merged_scores_map=GenericUtilities::merge_two_maps(reference_scores_map, testable_scores_map);
+		const MapOfNamedValuesPairs merged_scores_map=modescommon::GenericUtilities::merge_two_maps(reference_scores_map, testable_scores_map);
 		if(!merged_scores_map.empty())
 		{
 			update_classification_results_map(merged_scores_map, reference_threshold, testable_step, classification_results_map);

@@ -201,7 +201,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(output.good())
 		{
 			const std::size_t max_coordinate=(axis.rbegin()->second+1);
-			SVGWriter svg(max_coordinate, max_coordinate);
+			modescommon::SVGWriter svg(max_coordinate, max_coordinate);
 			svg.add_rect(0, 0, max_coordinate, max_coordinate, std::string("fill:")+background_color);
 			for(std::map<CRADsPair, modescommon::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
@@ -213,7 +213,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					if(adjuncts.count(adjunct_gradient)==1)
 					{
-						color=SVGWriter::color_from_blue_white_red_gradient(adjuncts.find(adjunct_gradient)->second, adjunct_gradient_blue, adjunct_gradient_red);
+						color=modescommon::SVGWriter::color_from_blue_white_red_gradient(adjuncts.find(adjunct_gradient)->second, adjunct_gradient_blue, adjunct_gradient_red);
 					}
 				}
 				else if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
@@ -221,7 +221,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
 					const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
 					const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
-					color=SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
+					color=modescommon::SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
 				}
 				svg.add_rect(x, y, 1, 1, std::string("fill:")+color);
 				svg.add_rect(y, x, 1, 1, std::string("fill:")+color);

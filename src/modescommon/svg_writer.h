@@ -1,9 +1,9 @@
-#ifndef SVG_WRITER_H_
-#define SVG_WRITER_H_
+#ifndef MODESCOMMON_SVG_WRITER_H_
+#define MODESCOMMON_SVG_WRITER_H_
 
 #include "../auxiliaries/xml_writer.h"
 
-namespace
+namespace modescommon
 {
 
 class SVGWriter : public auxiliaries::XMLWriter
@@ -80,4 +80,4 @@ public:
 
 }
 
-#endif /* SVG_WRITER_H_ */
+#endif /* MODESCOMMON_SVG_WRITER_H_ */
