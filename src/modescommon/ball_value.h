@@ -1,9 +1,9 @@
-#ifndef BALL_VALUE_H_
-#define BALL_VALUE_H_
+#ifndef MODESCOMMON_BALL_VALUE_H_
+#define MODESCOMMON_BALL_VALUE_H_
 
 #include "properties_value.h"
 
-namespace
+namespace modescommon
 {
 
 struct BallValue
@@ -33,4 +33,4 @@ inline std::istream& operator>>(std::istream& input, BallValue& value)
 
 }
 
-#endif /* BALL_VALUE_H_ */
+#endif /* MODESCOMMON_BALL_VALUE_H_ */

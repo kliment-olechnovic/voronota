@@ -1,12 +1,12 @@
-#ifndef PROPERTIES_VALUE_H_
-#define PROPERTIES_VALUE_H_
+#ifndef MODESCOMMON_PROPERTIES_VALUE_H_
+#define MODESCOMMON_PROPERTIES_VALUE_H_
 
 #include <set>
 #include <map>
 
 #include "../auxiliaries/io_utilities.h"
 
-namespace
+namespace modescommon
 {
 
 struct PropertiesValue
@@ -78,4 +78,4 @@ inline std::istream& operator>>(std::istream& input, PropertiesValue& value)
 
 }
 
-#endif /* PROPERTIES_VALUE_H_ */
+#endif /* MODESCOMMON_PROPERTIES_VALUE_H_ */

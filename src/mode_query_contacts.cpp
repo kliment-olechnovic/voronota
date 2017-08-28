@@ -37,13 +37,13 @@ std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file
 	return set_of_hbplus_crad_pairs;
 }
 
-void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, ContactValue>& map_of_contacts)
+void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, modescommon::ContactValue>& map_of_contacts)
 {
 	const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
 	if(!renaming_map_of_crads.empty())
 	{
-		std::map< CRADsPair, ContactValue > map_of_renamed_contacts;
-		for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		std::map< CRADsPair, modescommon::ContactValue > map_of_renamed_contacts;
+		for(std::map< CRADsPair, modescommon::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
@@ -62,11 +62,11 @@ void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CR
 	}
 }
 
-void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, ContactValue>& map_of_contacts)
+void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, modescommon::ContactValue>& map_of_contacts)
 {
 	const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
-	std::map< CRADsPair, ContactValue > map_of_reduced_contacts;
-	for(std::map< CRADsPair, ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	std::map< CRADsPair, modescommon::ContactValue > map_of_reduced_contacts;
+	for(std::map< CRADsPair, modescommon::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const CRADsPair& raw_crads=it->first;
 		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
@@ -125,14 +125,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of matched contacts"));
 	const bool summarize_by_first=poh.contains_option(pohw.describe_option("--summarize-by-first", "", "flag to output only summary of matched contacts by first identifier"));
-	enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
+	modescommon::enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	std::map<CRADsPair, ContactValue> map_of_contacts;
+	std::map<CRADsPair, modescommon::ContactValue> map_of_contacts;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
@@ -149,16 +149,16 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
 	}
 
-	std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator> selected_contacts;
+	std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator> selected_contacts;
 
 	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
 	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
 	{
 		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
-		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< CRADsPair, modescommon::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			const ContactValue& value=it->second;
+			const modescommon::ContactValue& value=it->second;
 			bool passed=false;
 			if(
 					value.area>=match_min_area && value.area<=match_max_area &&
@@ -202,9 +202,9 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const std::set<CRADsPair> set_of_hbplus_crad_pairs=init_set_of_hbplus_crad_pairs(set_hbplus_tags, inter_residue_hbplus_tags);
 		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
 
-		for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
+		for(std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
 		{
-			std::map<CRADsPair, ContactValue>::iterator it=selected_map_it->second;
+			std::map<CRADsPair, modescommon::ContactValue>::iterator it=selected_map_it->second;
 			if(it!=map_of_contacts.end())
 			{
 				if(drop_tags)
@@ -282,8 +282,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(summarize)
 	{
-		ContactValue summary;
-		for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+		modescommon::ContactValue summary;
+		for(std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 		{
 			summary.add(it->second->second);
 			summary.graphics.clear();
@@ -292,15 +292,15 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(summarize_by_first)
 	{
-		std::map< CRADsPair, ContactValue > map_of_summaries;
-		for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+		std::map< CRADsPair, modescommon::ContactValue > map_of_summaries;
+		for(std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 		{
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
 			{
 				if(crads[i]!=CRAD::any() && MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
 				{
-					ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
+					modescommon::ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
 					cv.add(it->second->second);
 					cv.graphics.clear();
 				}
@@ -316,7 +316,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		if(!update_mode && !inter_residue_summation_needed)
 		{
-			for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+			for(std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 			{
 				std::cout << it->first << " " << it->second->second << "\n";
 			}
@@ -325,8 +325,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			if(!update_mode)
 			{
-				std::map< CRADsPair, ContactValue > map_of_selected_contacts;
-				for(std::map<CRADsPair, std::map<CRADsPair, ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+				std::map< CRADsPair, modescommon::ContactValue > map_of_selected_contacts;
+				for(std::map<CRADsPair, std::map<CRADsPair, modescommon::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 				{
 					map_of_selected_contacts.insert(std::make_pair(it->first, it->second->second));
 				}
