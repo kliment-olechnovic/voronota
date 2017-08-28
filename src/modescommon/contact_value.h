@@ -1,9 +1,9 @@
-#ifndef CONTACT_VALUE_H_
-#define CONTACT_VALUE_H_
+#ifndef MODESCOMMON_CONTACT_VALUE_H_
+#define MODESCOMMON_CONTACT_VALUE_H_
 
 #include "properties_value.h"
 
-namespace
+namespace modescommon
 {
 
 struct ContactValue
@@ -77,4 +77,4 @@ inline std::istream& operator>>(std::istream& input, ContactValue& value)
 
 }
 
-#endif /* CONTACT_VALUE_H_ */
+#endif /* MODESCOMMON_CONTACT_VALUE_H_ */

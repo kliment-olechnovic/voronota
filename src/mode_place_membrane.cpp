@@ -259,7 +259,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Invalid membrane width.");
 	}
 
-	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
+	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{

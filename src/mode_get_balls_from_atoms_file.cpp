@@ -82,7 +82,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			const auxiliaries::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
 			if(crad.valid())
 			{
-				BallValue value;
+				modescommon::BallValue value;
 				value.x=atom.x;
 				value.y=atom.y;
 				value.z=atom.z;
@@ -125,7 +125,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				auxiliaries::ChainResidueAtomDescriptor crad;
 				crad.chainID="hull";
-				BallValue value;
+				modescommon::BallValue value;
 				value.x=s.x;
 				value.y=s.y;
 				value.z=s.z;

@@ -28,11 +28,11 @@ public:
 	}
 
 	void draw_cartoon(
-			const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+			const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
 			const DrawingParametersWrapper& drawing_parameters_wrapper,
 			auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		std::map<CRAD, BallValue> map_of_crad_values;
+		std::map<CRAD, modescommon::BallValue> map_of_crad_values;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
@@ -99,13 +99,13 @@ private:
 		apollota::SimplePoint center;
 	};
 
-	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, BallValue> >& list_of_balls)
+	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls)
 	{
 		std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const BallValue& ball_value=list_of_balls[i].second;
+			const modescommon::BallValue& ball_value=list_of_balls[i].second;
 			const apollota::SimplePoint ball_center(ball_value);
 			ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 			ro.crad=crad.without_atom();

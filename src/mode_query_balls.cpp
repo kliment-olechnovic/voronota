@@ -77,7 +77,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector< std::pair<CRAD, BallValue> > list_of_balls;
+	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
@@ -118,11 +118,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!renumber_from_adjunct.empty())
 	{
-		std::vector< std::pair<CRAD, BallValue> > refined_list_of_balls;
+		std::vector< std::pair<CRAD, modescommon::BallValue> > refined_list_of_balls;
 		refined_list_of_balls.reserve(list_of_balls.size());
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			const BallValue& value=list_of_balls[i].second;
+			const modescommon::BallValue& value=list_of_balls[i].second;
 			if(value.props.adjuncts.count(renumber_from_adjunct)>0)
 			{
 				refined_list_of_balls.push_back(list_of_balls[i]);
@@ -198,7 +198,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const BallValue& value=list_of_balls[i].second;
+			const modescommon::BallValue& value=list_of_balls[i].second;
 			const bool passed=(MatchingUtilities::match_crad(crad, match, match_not) &&
 					MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
 					MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
@@ -251,7 +251,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
 			CRAD& crad=list_of_balls[*it].first;
-			BallValue& value=list_of_balls[*it].second;
+			modescommon::BallValue& value=list_of_balls[*it].second;
 			if(drop_atom_serial)
 			{
 				crad.serial=CRAD::null_num();

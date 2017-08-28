@@ -35,9 +35,9 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	enabled_output_of_ContactValue_graphics()=true;
+	modescommon::enabled_output_of_ContactValue_graphics()=true;
 
-	std::map<CRADsPair, ContactValue> map_of_contacts;
+	std::map<CRADsPair, modescommon::ContactValue> map_of_contacts;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
@@ -49,10 +49,10 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_parameters_wrapper.default_color);
 		opengl_printer.add_alpha(drawing_parameters_wrapper.alpha_opacity);
-		for(std::map< CRADsPair, ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< CRADsPair, modescommon::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			const ContactValue& value=it->second;
+			const modescommon::ContactValue& value=it->second;
 			if(!value.graphics.empty())
 			{
 				drawing_parameters_wrapper.process(std::make_pair(crads.a, crads.b), value.props.adjuncts, opengl_printer);

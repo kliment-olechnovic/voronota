@@ -30,7 +30,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=(solvent_radius+solvent_distance);
 
 	std::vector<apollota::SimpleSphere> input_spheres;
-	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, BallValue> > ball_records;
+	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, modescommon::BallValue> > ball_records;
 	auxiliaries::IOUtilities().read_lines_to_map(std::cin, ball_records);
 	input_spheres.reserve(ball_records.size());
 	for(std::size_t i=0;i<ball_records.size();i++)
@@ -161,7 +161,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::size_t i=0;i<mock_solvent_spheres.size();i++)
 	{
 		const apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
-		const BallValue value=apollota::custom_sphere<BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
+		const modescommon::BallValue value=apollota::custom_sphere<modescommon::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
 		auxiliaries::ChainResidueAtomDescriptor crad(mock_solvent_name());
 		crad.resSeq=(i+1);
 		crad.resName=mock_solvent_name();

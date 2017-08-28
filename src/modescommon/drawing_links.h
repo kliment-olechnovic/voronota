@@ -10,7 +10,7 @@ namespace
 {
 
 void draw_links(
-		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
 		const double ball_collision_radius,
 		const double bsh_initial_radius,
 		const double ball_drawing_radius,
@@ -52,14 +52,14 @@ void draw_links(
 }
 
 void draw_trace(
-		const std::vector< std::pair<CRAD, BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
 		const std::string& atom_name,
 		const double max_distance,
 		const double drawing_radius,
 		const DrawingParametersWrapper& drawing_parameters_wrapper,
 		auxiliaries::OpenGLPrinter& opengl_printer)
 {
-	std::vector< std::pair<CRAD, BallValue> > list_of_balls_filtered;
+	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls_filtered;
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
 		if(list_of_balls[i].first.name==atom_name)

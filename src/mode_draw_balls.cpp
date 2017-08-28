@@ -30,7 +30,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef std::vector< std::pair<CRAD, BallValue> > ListOfBalls;
+	typedef std::vector< std::pair<CRAD, modescommon::BallValue> > ListOfBalls;
 	const ListOfBalls list_of_balls=auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
 	if(list_of_balls.empty())
 	{
@@ -44,7 +44,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const BallValue& value=list_of_balls[i].second;
+			const modescommon::BallValue& value=list_of_balls[i].second;
 			drawing_parameters_wrapper.process(crad, value.props.adjuncts, opengl_printer);
 			opengl_printer.add_sphere(value);
 		}
