@@ -225,7 +225,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!map_of_external_adjunct_values.empty())
 				{
-					const std::pair<bool, double> adjunct_value=modescommon::MatchingUtilities::match_crad_with_map_of_crads_pairs(it->first, map_of_external_adjunct_values);
+					const std::pair<bool, double> adjunct_value=modescommon::MatchingUtilities::match_crads_pair_with_map_of_crads_pairs(it->first, map_of_external_adjunct_values);
 					if(adjunct_value.first)
 					{
 						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
