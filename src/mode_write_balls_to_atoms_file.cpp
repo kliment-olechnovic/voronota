@@ -101,7 +101,7 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
-	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -186,5 +186,5 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(list_of_balls, std::cout);
+	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 }

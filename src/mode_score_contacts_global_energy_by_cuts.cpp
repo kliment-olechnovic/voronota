@@ -1,6 +1,5 @@
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 #include "modescommon/sequence_utilities.h"
@@ -146,13 +145,13 @@ void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandl
 		return;
 	}
 
-	const std::map<InteractionName, double> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
+	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<InteractionName, double> map_of_potential_values=common::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
 	if(map_of_potential_values.empty())
 	{
 		throw std::runtime_error("No potential values input.");

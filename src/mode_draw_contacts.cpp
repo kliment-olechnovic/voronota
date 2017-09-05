@@ -39,7 +39,7 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	common::enabled_output_of_ContactValue_graphics()=true;
 
 	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	common::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -89,5 +89,5 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(map_of_contacts, std::cout);
+	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 }

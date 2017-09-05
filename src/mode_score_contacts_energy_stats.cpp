@@ -1,6 +1,5 @@
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 #include "modescommon/statistics_utilities.h"
@@ -41,7 +40,7 @@ void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map<CRAD, modescommon::ValueStat> map_of_value_stats;
-	common::IOUtilities().read_lines_to_container(std::cin, read_energy_descriptors_and_accumulate_to_map_of_value_stats, map_of_value_stats);
+	auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_energy_descriptors_and_accumulate_to_map_of_value_stats, map_of_value_stats);
 
 	std::map<CRAD, modescommon::NormalDistributionParameters> means_and_sds;
 	for(std::map<CRAD, modescommon::ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
@@ -49,5 +48,5 @@ void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
 		means_and_sds[it->first]=modescommon::NormalDistributionParameters(it->second.mean(), it->second.sd());
 	}
 
-	common::IOUtilities().write_map(means_and_sds, std::cout);
+	auxiliaries::IOUtilities().write_map(means_and_sds, std::cout);
 }

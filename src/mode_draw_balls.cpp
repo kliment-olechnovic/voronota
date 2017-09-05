@@ -775,7 +775,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	typedef std::vector< std::pair<CRAD, common::BallValue> > ListOfBalls;
-	const ListOfBalls list_of_balls=common::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
+	const ListOfBalls list_of_balls=auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -830,5 +830,5 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(list_of_balls, std::cout);
+	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 }

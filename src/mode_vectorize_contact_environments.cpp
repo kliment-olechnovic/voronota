@@ -1,6 +1,6 @@
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "common/io_utilities.h"
 #include "common/chain_residue_atom_descriptor.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
@@ -37,7 +37,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 		return;
 	}
 
-	std::map<CRADsPair, double> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
@@ -59,7 +59,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 
 	std::set<CRAD> refined_set_of_names;
 	{
-		const std::set<CRAD> set_of_names=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(names_file);
+		const std::set<CRAD> set_of_names=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(names_file);
 		if(set_of_names.empty())
 		{
 			throw std::runtime_error("No environment names input.");

@@ -26,7 +26,7 @@ void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandle
 
 	common::enabled_output_of_ContactValue_graphics()=false;
 
-	const std::map<CRADsPair, common::ContactValue> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<CRADsPair, common::ContactValue> >(std::cin);
+	const std::map<CRADsPair, common::ContactValue> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, common::ContactValue> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -57,5 +57,5 @@ void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandle
 		}
 	}
 
-	common::IOUtilities().write_map(result, std::cout);
+	auxiliaries::IOUtilities().write_map(result, std::cout);
 }

@@ -1,6 +1,6 @@
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "common/io_utilities.h"
 #include "common/chain_residue_atom_descriptor.h"
 
 #include "modescommon/vectorization_utilities.h"
@@ -83,7 +83,7 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	typedef modescommon::VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
 
-	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(common::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
+	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
 	if(maps_of_maps.empty())
 	{
 		throw std::runtime_error("No input.");

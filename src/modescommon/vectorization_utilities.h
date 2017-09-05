@@ -31,7 +31,7 @@ public:
 			for(std::set<std::string>::const_iterator it=input_files.begin();it!=input_files.end();++it)
 			{
 				const std::string& filename=(*it);
-				const Map map=common::IOUtilities().read_file_lines_to_map<Map>(filename);
+				const Map map=auxiliaries::IOUtilities().read_file_lines_to_map<Map>(filename);
 				if(!map.empty())
 				{
 					map_of_maps[filename.substr(common_path_start_length)]=map;

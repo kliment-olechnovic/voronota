@@ -260,13 +260,13 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
-	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input balls.");
 	}
 
-	const std::map<CRAD, double> map_of_scores=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
+	const std::map<CRAD, double> map_of_scores=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
 	if(map_of_scores.empty())
 	{
 		throw std::runtime_error("No input scores.");
@@ -314,5 +314,5 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(list_of_balls, std::cout);
+	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 }
