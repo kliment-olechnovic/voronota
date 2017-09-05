@@ -4,10 +4,11 @@
 #include <fstream>
 #include <sstream>
 
-#include "../auxiliaries/chain_residue_atom_descriptor.h"
 #include "../auxiliaries/residue_letters_coding.h"
 #include "../auxiliaries/pairwise_sequence_alignment.h"
 #include "../auxiliaries/residue_atoms_reference.h"
+
+#include "../common/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {
@@ -71,9 +72,9 @@ public:
 		return seq;
 	}
 
-	static std::map<auxiliaries::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<auxiliaries::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const std::string& ref_seq_alignment_output_filename)
+	static std::map<common::ChainResidueAtomDescriptor, int> construct_sequence_mapping(const std::vector<common::ChainResidueAtomDescriptor>& residue_sequence_vector, const std::string& reference_sequence, const std::string& ref_seq_alignment_output_filename)
 	{
-		std::map<auxiliaries::ChainResidueAtomDescriptor, int> result;
+		std::map<common::ChainResidueAtomDescriptor, int> result;
 		if(!residue_sequence_vector.empty() && !reference_sequence.empty())
 		{
 			const std::string seq=convert_residue_sequence_container_to_string(residue_sequence_vector);

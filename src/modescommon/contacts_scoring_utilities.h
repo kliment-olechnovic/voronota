@@ -1,21 +1,21 @@
 #ifndef MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
 #define MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
 
-#include "../auxiliaries/chain_residue_atom_descriptor.h"
+#include "../common/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {
 
 struct InteractionName
 {
-	auxiliaries::ChainResidueAtomDescriptorsPair crads;
+	common::ChainResidueAtomDescriptorsPair crads;
 	std::string tag;
 
 	InteractionName()
 	{
 	}
 
-	InteractionName(const auxiliaries::ChainResidueAtomDescriptorsPair& crads, const std::string& tag) : crads(crads), tag(tag)
+	InteractionName(const common::ChainResidueAtomDescriptorsPair& crads, const std::string& tag) : crads(crads), tag(tag)
 	{
 	}
 
@@ -74,9 +74,9 @@ inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 	return input;
 }
 
-inline auxiliaries::ChainResidueAtomDescriptor generalize_crad(const auxiliaries::ChainResidueAtomDescriptor& input_crad)
+inline common::ChainResidueAtomDescriptor generalize_crad(const common::ChainResidueAtomDescriptor& input_crad)
 {
-	auxiliaries::ChainResidueAtomDescriptor crad=input_crad.without_numbering();
+	common::ChainResidueAtomDescriptor crad=input_crad.without_numbering();
 	if(crad.resName=="ARG" && (crad.name=="NH1" || crad.name=="NH2"))
 	{
 		crad.name="NH1";
@@ -128,15 +128,15 @@ inline auxiliaries::ChainResidueAtomDescriptor generalize_crad(const auxiliaries
 	return crad;
 }
 
-inline auxiliaries::ChainResidueAtomDescriptorsPair generalize_crads_pair(const auxiliaries::ChainResidueAtomDescriptorsPair& input_crads)
+inline common::ChainResidueAtomDescriptorsPair generalize_crads_pair(const common::ChainResidueAtomDescriptorsPair& input_crads)
 {
-	return auxiliaries::ChainResidueAtomDescriptorsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
+	return common::ChainResidueAtomDescriptorsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
 }
 
-inline bool check_crads_pair_for_peptide_bond(const auxiliaries::ChainResidueAtomDescriptorsPair& crads)
+inline bool check_crads_pair_for_peptide_bond(const common::ChainResidueAtomDescriptorsPair& crads)
 {
 	return (((crads.a.name=="C" && crads.b.name=="N" && crads.a.resSeq<crads.b.resSeq) || (crads.a.name=="N" && crads.b.name=="C" && crads.b.resSeq<crads.a.resSeq))
-			&& auxiliaries::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
+			&& common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
 }
 
 }

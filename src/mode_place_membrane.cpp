@@ -1,14 +1,14 @@
 #include "apollota/subdivided_icosahedron.h"
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/ball_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 
 struct PointAndScore
 {
@@ -259,14 +259,14 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Invalid membrane width.");
 	}
 
-	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
+	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input balls.");
 	}
 
-	const std::map<CRAD, double> map_of_scores=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
+	const std::map<CRAD, double> map_of_scores=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
 	if(map_of_scores.empty())
 	{
 		throw std::runtime_error("No input scores.");
@@ -314,5 +314,5 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+	common::IOUtilities().write_map(list_of_balls, std::cout);
 }

@@ -1,16 +1,16 @@
 #ifndef MODESCOMMON_MATCHING_UTILITIES_H_
 #define MODESCOMMON_MATCHING_UTILITIES_H_
 
-#include "../auxiliaries/chain_residue_atom_descriptor.h"
-#include "../auxiliaries/io_utilities.h"
+#include "chain_residue_atom_descriptor.h"
+#include "io_utilities.h"
 
-namespace modescommon
+namespace common
 {
 
 class MatchingUtilities
 {
 public:
-	static bool match_crad(const auxiliaries::ChainResidueAtomDescriptor& crad, const std::string& positive_values, const std::string& negative_values)
+	static bool match_crad(const ChainResidueAtomDescriptor& crad, const std::string& positive_values, const std::string& negative_values)
 	{
 		return ((positive_values.empty() || match_container_with_multiple_values(crad, functor_match_crad_with_single_value(), positive_values))
 				&& (negative_values.empty() || !match_container_with_multiple_values(crad, functor_match_crad_with_single_value(), negative_values)));
@@ -28,13 +28,13 @@ public:
 				&& (negative_values.empty() || !match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), negative_values)));
 	}
 
-	static bool match_crad_with_set_of_crads(const auxiliaries::ChainResidueAtomDescriptor& crad, const std::set<auxiliaries::ChainResidueAtomDescriptor>& set_of_crads)
+	static bool match_crad_with_set_of_crads(const ChainResidueAtomDescriptor& crad, const std::set<ChainResidueAtomDescriptor>& set_of_crads)
 	{
 		if(set_of_crads.count(crad)>0)
 		{
 			return true;
 		}
-		for(std::set<auxiliaries::ChainResidueAtomDescriptor>::const_iterator it=set_of_crads.begin();it!=set_of_crads.end();++it)
+		for(std::set<ChainResidueAtomDescriptor>::const_iterator it=set_of_crads.begin();it!=set_of_crads.end();++it)
 		{
 			if(crad.contains(*it))
 			{
@@ -45,14 +45,14 @@ public:
 	}
 
 	static bool match_crads_pair_with_set_of_crads_pairs(
-			const auxiliaries::ChainResidueAtomDescriptorsPair& crads_pair,
-			const std::set<auxiliaries::ChainResidueAtomDescriptorsPair>& crads_pairs)
+			const ChainResidueAtomDescriptorsPair& crads_pair,
+			const std::set<ChainResidueAtomDescriptorsPair>& crads_pairs)
 	{
 		if(crads_pairs.count(crads_pair)>0)
 		{
 			return true;
 		}
-		for(std::set<auxiliaries::ChainResidueAtomDescriptorsPair>::const_iterator it=crads_pairs.begin();it!=crads_pairs.end();++it)
+		for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=crads_pairs.begin();it!=crads_pairs.end();++it)
 		{
 			if((crads_pair.a.contains(it->a) && crads_pair.b.contains(it->b)) ||
 					(crads_pair.a.contains(it->b) && crads_pair.b.contains(it->a)))
@@ -63,16 +63,16 @@ public:
 		return false;
 	}
 
-	static std::pair<bool, double>  match_crad_with_map_of_crads(const auxiliaries::ChainResidueAtomDescriptor& crad, const std::map<auxiliaries::ChainResidueAtomDescriptor, double>& map_of_crads)
+	static std::pair<bool, double>  match_crad_with_map_of_crads(const ChainResidueAtomDescriptor& crad, const std::map<ChainResidueAtomDescriptor, double>& map_of_crads)
 	{
-		std::map<auxiliaries::ChainResidueAtomDescriptor, double>::const_iterator result_it=map_of_crads.find(crad);
+		std::map<ChainResidueAtomDescriptor, double>::const_iterator result_it=map_of_crads.find(crad);
 		if(result_it==map_of_crads.end())
 		{
 			result_it=map_of_crads.find(crad.without_atom());
 		}
 		if(result_it==map_of_crads.end())
 		{
-			for(std::map<auxiliaries::ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
+			for(std::map<ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
 			{
 				if(crad.contains(it->first))
 				{
@@ -87,16 +87,16 @@ public:
 		return std::pair<bool, double>(false, 0.0);
 	}
 
-	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const auxiliaries::ChainResidueAtomDescriptorsPair& crads_pair, const std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
+	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const ChainResidueAtomDescriptorsPair& crads_pair, const std::map<ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
 	{
-		std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
+		std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
 		if(result_it==map_of_crads_pairs.end())
 		{
-			result_it=map_of_crads_pairs.find(auxiliaries::ChainResidueAtomDescriptorsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()));
+			result_it=map_of_crads_pairs.find(ChainResidueAtomDescriptorsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()));
 		}
 		if(result_it==map_of_crads_pairs.end())
 		{
-			for(std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
+			for(std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
 			{
 				if((crads_pair.a.contains(it->first.a) && crads_pair.b.contains(it->first.b)) ||
 						(crads_pair.a.contains(it->first.b) && crads_pair.b.contains(it->first.a)))
@@ -117,11 +117,11 @@ private:
 	static bool match_container_with_multiple_values(const T& container, const F& matcher, const std::string& values)
 	{
 		std::set<std::string> or_set;
-		auxiliaries::IOUtilities('|').read_string_lines_to_set(values, or_set);
+		IOUtilities('|').read_string_lines_to_set(values, or_set);
 		for(std::set<std::string>::const_iterator it=or_set.begin();it!=or_set.end();++it)
 		{
 			std::set<std::string> and_set;
-			auxiliaries::IOUtilities('&').read_string_lines_to_set(*it, and_set);
+			IOUtilities('&').read_string_lines_to_set(*it, and_set);
 			bool and_result=true;
 			for(std::set<std::string>::const_iterator jt=and_set.begin();and_result && jt!=and_set.end();++jt)
 			{
@@ -137,9 +137,9 @@ private:
 
 	struct functor_match_crad_with_single_value
 	{
-		inline bool operator()(const auxiliaries::ChainResidueAtomDescriptor& crad, const std::string& value) const
+		inline bool operator()(const ChainResidueAtomDescriptor& crad, const std::string& value) const
 		{
-			return auxiliaries::ChainResidueAtomDescriptor::match_with_member_selection_string(crad, value);
+			return ChainResidueAtomDescriptor::match_with_member_selection_string(crad, value);
 		}
 	};
 

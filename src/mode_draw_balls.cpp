@@ -4,13 +4,14 @@
 
 #include "auxiliaries/program_options_handler.h"
 
-#include "modescommon/ball_value.h"
+#include "common/ball_value.h"
+
 #include "modescommon/drawing_utilities.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 
 void draw_cylinder(
 		const apollota::SimpleSphere& a,
@@ -48,7 +49,7 @@ void draw_cylinder(
 }
 
 void draw_links(
-		const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
 		const double ball_collision_radius,
 		const double bsh_initial_radius,
 		const double ball_drawing_radius,
@@ -90,14 +91,14 @@ void draw_links(
 }
 
 void draw_trace(
-		const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
 		const std::string& atom_name,
 		const double max_distance,
 		const double drawing_radius,
 		const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
 		auxiliaries::OpenGLPrinter& opengl_printer)
 {
-	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls_filtered;
+	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls_filtered;
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
 		if(list_of_balls[i].first.name==atom_name)
@@ -133,11 +134,11 @@ public:
 	}
 
 	void draw_cartoon(
-			const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
+			const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
 			const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
 			auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		std::map<CRAD, modescommon::BallValue> map_of_crad_values;
+		std::map<CRAD, common::BallValue> map_of_crad_values;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
@@ -150,7 +151,7 @@ public:
 		for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 		{
 			const CRAD& crad=it->first;
-			const modescommon::BallValue& ball_value=map_of_crad_values[crad];
+			const common::BallValue& ball_value=map_of_crad_values[crad];
 			const std::vector<RibbonVertebra>& subspine=it->second;
 			if(subspine.size()>1)
 			{
@@ -309,7 +310,7 @@ private:
 		int ss_type;
 	};
 
-	static int ss_type_from_ball_value(const modescommon::BallValue& ball_value)
+	static int ss_type_from_ball_value(const common::BallValue& ball_value)
 	{
 		if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
 		{
@@ -322,13 +323,13 @@ private:
 		return 0;
 	}
 
-	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls)
+	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls)
 	{
 		std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const modescommon::BallValue& ball_value=list_of_balls[i].second;
+			const common::BallValue& ball_value=list_of_balls[i].second;
 			const apollota::SimplePoint ball_center(ball_value);
 			ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 			ro.crad=crad.without_atom();
@@ -525,7 +526,7 @@ private:
 		return result;
 	}
 
-	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls, const double k, const int steps)
+	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls, const double k, const int steps)
 	{
 		std::map< CRAD, std::vector<RibbonVertebra> > result;
 		const std::vector< std::vector<ResidueOrientation> > residue_orientations=collect_residue_orientations(list_of_balls);
@@ -557,11 +558,11 @@ public:
 	}
 
 	void draw_cartoon(
-			const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls,
+			const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
 			const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
 			auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		std::map<CRAD, modescommon::BallValue> map_of_crad_values;
+		std::map<CRAD, common::BallValue> map_of_crad_values;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
@@ -628,13 +629,13 @@ private:
 		apollota::SimplePoint center;
 	};
 
-	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, modescommon::BallValue> >& list_of_balls)
+	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls)
 	{
 		std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const modescommon::BallValue& ball_value=list_of_balls[i].second;
+			const common::BallValue& ball_value=list_of_balls[i].second;
 			const apollota::SimplePoint ball_center(ball_value);
 			ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 			ro.crad=crad.without_atom();
@@ -773,8 +774,8 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef std::vector< std::pair<CRAD, modescommon::BallValue> > ListOfBalls;
-	const ListOfBalls list_of_balls=auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
+	typedef std::vector< std::pair<CRAD, common::BallValue> > ListOfBalls;
+	const ListOfBalls list_of_balls=common::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -787,7 +788,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const modescommon::BallValue& value=list_of_balls[i].second;
+			const common::BallValue& value=list_of_balls[i].second;
 			drawing_parameters_wrapper.process(crad, value.props.adjuncts, opengl_printer);
 			opengl_printer.add_sphere(value);
 		}
@@ -829,5 +830,5 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+	common::IOUtilities().write_map(list_of_balls, std::cout);
 }

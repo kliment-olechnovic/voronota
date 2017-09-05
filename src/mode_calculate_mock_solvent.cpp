@@ -6,9 +6,10 @@
 #include "apollota/spheres_boundary_construction.h"
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/ball_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
+
 #include "modescommon/mock_solvent_utilities.h"
 
 void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
@@ -30,8 +31,8 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	const double probe=(solvent_radius+solvent_distance);
 
 	std::vector<apollota::SimpleSphere> input_spheres;
-	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, modescommon::BallValue> > ball_records;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, ball_records);
+	std::vector< std::pair<common::ChainResidueAtomDescriptor, common::BallValue> > ball_records;
+	common::IOUtilities().read_lines_to_map(std::cin, ball_records);
 	input_spheres.reserve(ball_records.size());
 	for(std::size_t i=0;i<ball_records.size();i++)
 	{
@@ -161,8 +162,8 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	for(std::size_t i=0;i<mock_solvent_spheres.size();i++)
 	{
 		const apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
-		const modescommon::BallValue value=apollota::custom_sphere<modescommon::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
-		auxiliaries::ChainResidueAtomDescriptor crad(modescommon::mock_solvent_name());
+		const common::BallValue value=apollota::custom_sphere<common::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
+		common::ChainResidueAtomDescriptor crad(modescommon::mock_solvent_name());
 		crad.resSeq=(i+1);
 		crad.resName=modescommon::mock_solvent_name();
 		crad.name=modescommon::mock_solvent_name();

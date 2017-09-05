@@ -1,13 +1,14 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/io_utilities.h"
+
+#include "common/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 typedef modescommon::InteractionName InteractionName;
 typedef modescommon::EnergyDescriptor EnergyDescriptor;
 
@@ -30,13 +31,13 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
+	const std::map<InteractionName, double> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+	const std::map<InteractionName, double> map_of_potential_values=common::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
 	if(map_of_potential_values.empty())
 	{
 		throw std::runtime_error("No potential values input.");
@@ -64,11 +65,11 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		auxiliaries::IOUtilities().write_map_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
+		common::IOUtilities().write_map_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
 	}
 
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
-	auxiliaries::IOUtilities().write_map_to_file(atom_energy_descriptors, atom_scores_file);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
+	common::IOUtilities().write_map_to_file(atom_energy_descriptors, atom_scores_file);
 
 	{
 		EnergyDescriptor global_ed;

@@ -5,14 +5,15 @@
 #include <algorithm>
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/io_utilities.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
+
+#include "common/io_utilities.h"
+#include "common/chain_residue_atom_descriptor.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 struct CADDescriptor
 {
@@ -270,9 +271,9 @@ void remap_chains_optimally(
 		if(print_log)
 		{
 			std::cerr << "remapping:\n";
-			auxiliaries::IOUtilities().write_map(best_renaming.first, std::cerr);
+			common::IOUtilities().write_map(best_renaming.first, std::cerr);
 		}
-		auxiliaries::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
+		common::IOUtilities().write_map_to_file(best_renaming.first, remapped_chains_file);
 	}
 	else
 	{
@@ -326,9 +327,9 @@ void remap_chains_optimally(
 		if(print_log)
 		{
 			std::cerr << "remapping:\n";
-			auxiliaries::IOUtilities().write_map(map_of_renamings, std::cerr);
+			common::IOUtilities().write_map(map_of_renamings, std::cerr);
 		}
-		auxiliaries::IOUtilities().write_map_to_file(map_of_renamings, remapped_chains_file);
+		common::IOUtilities().write_map_to_file(map_of_renamings, remapped_chains_file);
 	}
 }
 
@@ -361,13 +362,13 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<CRADsPair, double> map_of_target_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(target_contacts_file);
+	const std::map<CRADsPair, double> map_of_target_contacts=common::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(target_contacts_file);
 	if(map_of_target_contacts.empty())
 	{
 		throw std::runtime_error("No target contacts input.");
@@ -375,7 +376,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!chains_renaming_file.empty())
 	{
-		const std::map<std::string, std::string> map_of_renamings=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<std::string, std::string> >(chains_renaming_file);
+		const std::map<std::string, std::string> map_of_renamings=common::IOUtilities().read_file_lines_to_map< std::map<std::string, std::string> >(chains_renaming_file);
 		if(!map_of_renamings.empty())
 		{
 			map_of_contacts=rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings);
@@ -391,11 +392,11 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::map< CRADsPair, CADDescriptor > map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(
 				combine_two_pair_mappings_of_values(map_of_target_contacts, map_of_contacts));
-		auxiliaries::IOUtilities().write_map_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
+		common::IOUtilities().write_map_to_file(map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
 
 		const std::map<CRAD, CADDescriptor> map_of_atom_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
-				auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth));
-		auxiliaries::IOUtilities().write_map_to_file(map_of_atom_cad_descriptors, atom_scores_file);
+				common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_atom_cad_descriptors, depth));
+		common::IOUtilities().write_map_to_file(map_of_atom_cad_descriptors, atom_scores_file);
 
 		std::cout << "atom_level_global " << construct_global_cad_descriptor(map_of_inter_atom_cad_descriptors) << "\n";
 		std::cout << "atom_average_local " << calculate_average_score_from_map_of_cad_descriptors(map_of_atom_cad_descriptors) << "\n";
@@ -405,16 +406,16 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::map< CRADsPair, CADDescriptor > map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(
 				combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names), summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names)));
-		auxiliaries::IOUtilities().write_map_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
+		common::IOUtilities().write_map_to_file(map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
 
 		const std::map<CRAD, CADDescriptor> map_of_residue_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
-				auxiliaries::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth));
-		auxiliaries::IOUtilities().write_map_to_file(map_of_residue_cad_descriptors, residue_scores_file);
+				common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(map_of_inter_residue_cad_descriptors, depth));
+		common::IOUtilities().write_map_to_file(map_of_residue_cad_descriptors, residue_scores_file);
 
 		if(!smoothed_scores_file.empty())
 		{
-			auxiliaries::IOUtilities().write_map_to_file(
-					auxiliaries::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
+			common::IOUtilities().write_map_to_file(
+					common::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
 							collect_scores_from_map_of_cad_descriptors(map_of_residue_cad_descriptors), smoothing_window), smoothed_scores_file);
 		}
 

@@ -2,9 +2,10 @@
 #include "apollota/triangulation_queries.h"
 #include "apollota/rolling_topology.h"
 
-#include "auxiliaries/io_utilities.h"
 #include "auxiliaries/opengl_printer.h"
 #include "auxiliaries/program_options_handler.h"
+
+#include "common/io_utilities.h"
 
 namespace
 {
@@ -364,7 +365,7 @@ void demo_ses(const auxiliaries::ProgramOptionsHandler& poh)
 	const int parts_from_depth=(1 << depth);
 
 	std::vector<apollota::SimpleSphere> spheres;
-	auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+	common::IOUtilities().read_lines_to_set(std::cin, spheres);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

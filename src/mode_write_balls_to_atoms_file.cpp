@@ -1,15 +1,15 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/atoms_io.h"
 
-#include "modescommon/ball_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 
-inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_record(const CRAD& crad, const modescommon::BallValue& value, const std::string& temperature_factor_adjunct_name)
+inline auxiliaries::AtomsIO::AtomRecord convert_ball_record_to_single_atom_record(const CRAD& crad, const common::BallValue& value, const std::string& temperature_factor_adjunct_name)
 {
 	auxiliaries::AtomsIO::AtomRecord atom_record=auxiliaries::AtomsIO::AtomRecord();
 	atom_record.record_name=(value.props.tags.count("het")>0 ? std::string("HETATM") : std::string("ATOM"));
@@ -100,8 +100,8 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
+	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -186,5 +186,5 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+	common::IOUtilities().write_map(list_of_balls, std::cout);
 }

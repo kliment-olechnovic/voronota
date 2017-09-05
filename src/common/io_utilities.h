@@ -14,7 +14,7 @@
 #include <type_traits>
 #endif
 
-namespace auxiliaries
+namespace common
 {
 
 class IOUtilities

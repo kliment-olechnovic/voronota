@@ -1,13 +1,13 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/contact_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/contact_value.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
@@ -24,19 +24,19 @@ void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandle
 		return;
 	}
 
-	modescommon::enabled_output_of_ContactValue_graphics()=false;
+	common::enabled_output_of_ContactValue_graphics()=false;
 
-	const std::map<CRADsPair, modescommon::ContactValue> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, modescommon::ContactValue> >(std::cin);
+	const std::map<CRADsPair, common::ContactValue> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<CRADsPair, common::ContactValue> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	std::map<CRADsPair, modescommon::ContactValue> result;
-	for(std::map< CRADsPair, modescommon::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	std::map<CRADsPair, common::ContactValue> result;
+	for(std::map< CRADsPair, common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const CRADsPair& crads=it->first;
-		const modescommon::ContactValue& value=it->second;
+		const common::ContactValue& value=it->second;
 		if(CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, match_max_sequence_separation, true) && !crads.contains(CRAD::solvent()))
 		{
 			result[crads]=value;
@@ -49,7 +49,7 @@ void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandle
 				const CRAD& crad=(*(crads_components[i]));
 				if(crad!=CRAD::solvent())
 				{
-					modescommon::ContactValue& solvent_value=result[CRADsPair(crad, CRAD::solvent())];
+					common::ContactValue& solvent_value=result[CRADsPair(crad, CRAD::solvent())];
 					solvent_value.area+=value.area;
 					solvent_value.dist=std::max(solvent_value.dist, value.dist);
 				}
@@ -57,5 +57,5 @@ void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandle
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(result, std::cout);
+	common::IOUtilities().write_map(result, std::cout);
 }

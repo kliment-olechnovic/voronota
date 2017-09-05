@@ -2,9 +2,10 @@
 #include "apollota/subdivided_icosahedron.h"
 #include "apollota/hyperboloid_between_two_spheres.h"
 
-#include "auxiliaries/io_utilities.h"
 #include "auxiliaries/opengl_printer.h"
 #include "auxiliaries/program_options_handler.h"
+
+#include "common/io_utilities.h"
 
 namespace
 {

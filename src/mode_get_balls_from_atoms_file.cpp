@@ -6,9 +6,9 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 #include "auxiliaries/atom_radius_assigner.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/ball_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
 
 namespace
 {
@@ -66,7 +66,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			common::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 
@@ -79,10 +79,10 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(annotated)
 		{
-			const auxiliaries::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
+			const common::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
 			if(crad.valid())
 			{
-				modescommon::BallValue value;
+				common::BallValue value;
 				value.x=atom.x;
 				value.y=atom.y;
 				value.z=atom.z;
@@ -123,9 +123,9 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 			const apollota::SimpleSphere& s=artificial_boundary[i];
 			if(annotated)
 			{
-				auxiliaries::ChainResidueAtomDescriptor crad;
+				common::ChainResidueAtomDescriptor crad;
 				crad.chainID="hull";
-				modescommon::BallValue value;
+				common::BallValue value;
 				value.x=s.x;
 				value.y=s.y;
 				value.z=s.z;
