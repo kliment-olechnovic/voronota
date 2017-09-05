@@ -87,7 +87,7 @@ public:
 		return std::pair<bool, double>(false, 0.0);
 	}
 
-	static std::pair<bool, double>  match_crad_with_map_of_crads_pairs(const auxiliaries::ChainResidueAtomDescriptorsPair& crads_pair, const std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
+	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const auxiliaries::ChainResidueAtomDescriptorsPair& crads_pair, const std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
 	{
 		std::map<auxiliaries::ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
 		if(result_it==map_of_crads_pairs.end())
