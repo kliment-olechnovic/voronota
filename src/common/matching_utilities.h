@@ -1,5 +1,5 @@
-#ifndef MODESCOMMON_MATCHING_UTILITIES_H_
-#define MODESCOMMON_MATCHING_UTILITIES_H_
+#ifndef COMMON_MATCHING_UTILITIES_H_
+#define COMMON_MATCHING_UTILITIES_H_
 
 #include "chain_residue_atom_descriptor.h"
 #include "io_utilities.h"
@@ -186,4 +186,4 @@ private:
 
 }
 
-#endif /* MODESCOMMON_MATCHING_UTILITIES_H_ */
+#endif /* COMMON_MATCHING_UTILITIES_H_ */

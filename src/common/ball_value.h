@@ -1,5 +1,5 @@
-#ifndef MODESCOMMON_BALL_VALUE_H_
-#define MODESCOMMON_BALL_VALUE_H_
+#ifndef COMMON_BALL_VALUE_H_
+#define COMMON_BALL_VALUE_H_
 
 #include "properties_value.h"
 
@@ -33,4 +33,4 @@ inline std::istream& operator>>(std::istream& input, BallValue& value)
 
 }
 
-#endif /* MODESCOMMON_BALL_VALUE_H_ */
+#endif /* COMMON_BALL_VALUE_H_ */

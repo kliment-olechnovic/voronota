@@ -1,5 +1,5 @@
-#ifndef MODESCOMMON_PROPERTIES_VALUE_H_
-#define MODESCOMMON_PROPERTIES_VALUE_H_
+#ifndef COMMON_PROPERTIES_VALUE_H_
+#define COMMON_PROPERTIES_VALUE_H_
 
 #include <set>
 #include <map>
@@ -78,4 +78,4 @@ inline std::istream& operator>>(std::istream& input, PropertiesValue& value)
 
 }
 
-#endif /* MODESCOMMON_PROPERTIES_VALUE_H_ */
+#endif /* COMMON_PROPERTIES_VALUE_H_ */

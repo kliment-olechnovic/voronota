@@ -1,5 +1,5 @@
-#ifndef MODESCOMMON_CONTACT_VALUE_H_
-#define MODESCOMMON_CONTACT_VALUE_H_
+#ifndef COMMON_CONTACT_VALUE_H_
+#define COMMON_CONTACT_VALUE_H_
 
 #include "properties_value.h"
 
@@ -77,4 +77,4 @@ inline std::istream& operator>>(std::istream& input, ContactValue& value)
 
 }
 
-#endif /* MODESCOMMON_CONTACT_VALUE_H_ */
+#endif /* COMMON_CONTACT_VALUE_H_ */
