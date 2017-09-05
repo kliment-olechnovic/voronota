@@ -3,7 +3,7 @@
 
 #include "properties_value.h"
 
-namespace modescommon
+namespace common
 {
 
 struct ContactValue

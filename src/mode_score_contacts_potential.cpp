@@ -1,13 +1,14 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/io_utilities.h"
+
+#include "common/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 typedef modescommon::InteractionName InteractionName;
 
 inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input, std::map<InteractionName, double>& map_of_interactions_areas)
@@ -79,7 +80,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::set<std::string> toggling_subtags=(toggling_list.empty() ? std::set<std::string>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(toggling_list));
+	const std::set<std::string> toggling_subtags=(toggling_list.empty() ? std::set<std::string>() : common::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(toggling_list));
 
 	std::map<InteractionName, double> map_of_interactions_total_areas;
 
@@ -89,12 +90,12 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::string file_path;
 			std::cin >> file_path;
-			auxiliaries::IOUtilities().read_file_lines_to_container(file_path, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
+			common::IOUtilities().read_file_lines_to_container(file_path, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 		}
 	}
 	else
 	{
-		auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
+		common::IOUtilities().read_lines_to_container(std::cin, read_and_accumulate_to_map_of_interactions_areas, map_of_interactions_total_areas);
 	}
 
 	std::map<CRAD, double> map_of_crads_total_areas;
@@ -116,7 +117,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			sum_of_nonsolvent_areas+=area;
-			const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+			const std::set<std::string> subtags=common::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
 			map_of_crads_possible_subtags[interaction.crads].insert(subtags.begin(), subtags.end());
 			for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 			{
@@ -131,7 +132,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<InteractionName, double> map_of_subtags_contributions;
 	if(!input_contributions.empty())
 	{
-		auxiliaries::IOUtilities().read_file_lines_to_map(input_contributions, map_of_subtags_contributions);
+		common::IOUtilities().read_file_lines_to_map(input_contributions, map_of_subtags_contributions);
 		if(map_of_subtags_contributions.empty())
 		{
 			throw std::runtime_error("No valid contributions input.");
@@ -170,7 +171,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!input_seq_pairs_stats.empty())
 	{
 		std::map< CRADsPair, std::pair<double, double> > seq_pairs_stats;
-		auxiliaries::IOUtilities().read_file_lines_to_container(input_seq_pairs_stats, read_to_map_of_crads_pairs_stats, seq_pairs_stats);
+		common::IOUtilities().read_file_lines_to_container(input_seq_pairs_stats, read_to_map_of_crads_pairs_stats, seq_pairs_stats);
 		if(!seq_pairs_stats.empty())
 		{
 			double sep1_contribution=0.0;
@@ -210,7 +211,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 			else
 			{
 				p_exp=(map_of_crads_total_areas[interaction.crads.a]/sum_of_all_areas)*(map_of_crads_total_areas[interaction.crads.b]/sum_of_all_areas)*(1.0-solvent_contribution)*(interaction.crads.a==interaction.crads.b ? 1.0 : 2.0);
-				const std::set<std::string> subtags=auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
+				const std::set<std::string> subtags=common::IOUtilities(';').read_string_lines_to_set< std::set<std::string> >(interaction.tag);
 				for(std::set<std::string>::const_iterator subtags_it=subtags.begin();subtags_it!=subtags.end();++subtags_it)
 				{
 					p_exp*=map_of_subtags_contributions[InteractionName(simplify_crads_pair(interaction.crads), *subtags_it)];
@@ -249,7 +250,7 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 	if(!input_fixed_types.empty())
 	{
 		std::set<InteractionName> fixed_types;
-		auxiliaries::IOUtilities().read_file_lines_to_set(input_fixed_types, fixed_types);
+		common::IOUtilities().read_file_lines_to_set(input_fixed_types, fixed_types);
 		if(fixed_types.empty())
 		{
 			throw std::runtime_error("No valid fixed types input.");
@@ -314,9 +315,9 @@ void score_contacts_potential(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
+	common::IOUtilities().write_map_to_file(map_of_crads_total_areas, single_areas_file);
 
-	auxiliaries::IOUtilities().write_map_to_file(map_of_subtags_contributions, contributions_file);
+	common::IOUtilities().write_map_to_file(map_of_subtags_contributions, contributions_file);
 
 	for(std::map< InteractionName, std::pair<double, double> >::const_iterator it=result.begin();it!=result.end();++it)
 	{

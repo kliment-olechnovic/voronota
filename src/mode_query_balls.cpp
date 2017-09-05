@@ -5,14 +5,15 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/atoms_io.h"
 
-#include "modescommon/ball_value.h"
+#include "common/ball_value.h"
+#include "common/matching_utilities.h"
+
 #include "modescommon/sequence_utilities.h"
-#include "modescommon/matching_utilities.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 typedef auxiliaries::AtomsIO::DSSPReader::DSSPRecord DSSPRecord;
 
 std::map<CRAD, DSSPRecord> init_map_of_dssp_records(const std::string& dssp_file_name)
@@ -77,8 +78,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector< std::pair<CRAD, modescommon::BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
+	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -118,11 +119,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!renumber_from_adjunct.empty())
 	{
-		std::vector< std::pair<CRAD, modescommon::BallValue> > refined_list_of_balls;
+		std::vector< std::pair<CRAD, common::BallValue> > refined_list_of_balls;
 		refined_list_of_balls.reserve(list_of_balls.size());
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			const modescommon::BallValue& value=list_of_balls[i].second;
+			const common::BallValue& value=list_of_balls[i].second;
 			if(value.props.adjuncts.count(renumber_from_adjunct)>0)
 			{
 				refined_list_of_balls.push_back(list_of_balls[i]);
@@ -193,16 +194,16 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::set<std::size_t> selected_set_of_ball_ids;
 	{
-		const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
+		const std::set<CRAD> matchable_external_set_of_crads=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
 
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const modescommon::BallValue& value=list_of_balls[i].second;
-			const bool passed=(modescommon::MatchingUtilities::match_crad(crad, match, match_not) &&
-					modescommon::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
-					modescommon::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-					(match_external_annotations.empty() || modescommon::MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
+			const common::BallValue& value=list_of_balls[i].second;
+			const bool passed=(common::MatchingUtilities::match_crad(crad, match, match_not) &&
+					common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+					common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+					(match_external_annotations.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
 			if((passed && !invert) || (!passed && invert))
 			{
 				selected_set_of_ball_ids.insert(selected_set_of_ball_ids.end(), i);
@@ -218,7 +219,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			for(std::size_t i=0;i<list_of_balls.size();i++)
 			{
-				if(modescommon::MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
+				if(common::MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
 				{
 					selected_set_of_ball_ids.insert(i);
 				}
@@ -243,7 +244,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool update_mode=(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_dssp_info.empty() || !set_ref_seq_num_adjunct.empty());
 	if(update_mode && !selected_set_of_ball_ids.empty())
 	{
-		const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_adjunct_values=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
 		const std::string reference_sequence=modescommon::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
 		const std::map<CRAD, int> sequence_mapping=modescommon::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
@@ -251,7 +252,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
 			CRAD& crad=list_of_balls[*it].first;
-			modescommon::BallValue& value=list_of_balls[*it].second;
+			common::BallValue& value=list_of_balls[*it].second;
 			if(drop_atom_serial)
 			{
 				crad.serial=CRAD::null_num();
@@ -278,7 +279,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!map_of_external_adjunct_values.empty())
 			{
-				const std::pair<bool, double> adjunct_value=modescommon::MatchingUtilities::match_crad_with_map_of_crads(crad, map_of_external_adjunct_values);
+				const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crad_with_map_of_crads(crad, map_of_external_adjunct_values);
 				if(adjunct_value.first)
 				{
 					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
@@ -315,7 +316,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(update_mode)
 	{
-		auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+		common::IOUtilities().write_map(list_of_balls, std::cout);
 	}
 	else
 	{
@@ -368,7 +369,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 			foutput << map_of_chains_sequences.size() << " " << representative_chains.size() << "\n";
-			auxiliaries::IOUtilities().write_set(representative_chains, foutput);
+			common::IOUtilities().write_set(representative_chains, foutput);
 		}
 	}
 }

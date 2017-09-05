@@ -1,12 +1,13 @@
 #include "auxiliaries/program_options_handler.h"
 
-#include "modescommon/contact_value.h"
+#include "common/contact_value.h"
+
 #include "modescommon/drawing_utilities.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
@@ -35,10 +36,10 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	modescommon::enabled_output_of_ContactValue_graphics()=true;
+	common::enabled_output_of_ContactValue_graphics()=true;
 
-	std::map<CRADsPair, modescommon::ContactValue> map_of_contacts;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	std::map<CRADsPair, common::ContactValue> map_of_contacts;
+	common::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -49,10 +50,10 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_parameters_wrapper.default_color);
 		opengl_printer.add_alpha(drawing_parameters_wrapper.alpha_opacity);
-		for(std::map< CRADsPair, modescommon::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< CRADsPair, common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			const modescommon::ContactValue& value=it->second;
+			const common::ContactValue& value=it->second;
 			if(!value.graphics.empty())
 			{
 				drawing_parameters_wrapper.process(std::make_pair(crads.a, crads.b), value.props.adjuncts, opengl_printer);
@@ -88,5 +89,5 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
+	common::IOUtilities().write_map(map_of_contacts, std::cout);
 }

@@ -7,11 +7,12 @@
 #include "apollota/spherical_contacts_construction.h"
 
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 #include "auxiliaries/opengl_printer.h"
 
-#include "modescommon/ball_value.h"
-#include "modescommon/contact_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
+#include "common/contact_value.h"
+
 #include "modescommon/mock_solvent_utilities.h"
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
@@ -41,11 +42,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimpleSphere> spheres;
-	std::vector< std::pair<auxiliaries::ChainResidueAtomDescriptor, modescommon::BallValue> > input_ball_records;
+	std::vector< std::pair<common::ChainResidueAtomDescriptor, common::BallValue> > input_ball_records;
 	std::set<std::size_t> mock_solvent_ids;
 	if(annotated)
 	{
-		auxiliaries::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
+		common::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
 		spheres.reserve(input_ball_records.size());
 		for(std::size_t i=0;i<input_ball_records.size();i++)
 		{
@@ -58,7 +59,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+		common::IOUtilities().read_lines_to_set(std::cin, spheres);
 	}
 	if(spheres.size()<4)
 	{
@@ -105,7 +106,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const apollota::SubdividedIcosahedron sih(draw ? sih_depth : 0);
 		const apollota::TriangulationQueries::PairsMap pairs_neighbors=(tag_centrality ? apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map) : apollota::TriangulationQueries::PairsMap());
 
-		std::map< auxiliaries::ChainResidueAtomDescriptorsPair, modescommon::ContactValue > output_map_of_contacts;
+		std::map< common::ChainResidueAtomDescriptorsPair, common::ContactValue > output_map_of_contacts;
 		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
 		{
 			const double area=it->second;
@@ -113,19 +114,19 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				const std::size_t a_id=it->first.get(0);
 				const std::size_t b_id=it->first.get(1);
-				auxiliaries::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
-				auxiliaries::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
+				common::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
+				common::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
 				if(modescommon::identify_mock_solvent(crad_a))
 				{
-					crad_a=auxiliaries::ChainResidueAtomDescriptor::solvent();
+					crad_a=common::ChainResidueAtomDescriptor::solvent();
 				}
 				if(a_id==b_id || modescommon::identify_mock_solvent(crad_b))
 				{
-					crad_b=auxiliaries::ChainResidueAtomDescriptor::solvent();
+					crad_b=common::ChainResidueAtomDescriptor::solvent();
 				}
-				if(crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() || crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent())
+				if(crad_a!=common::ChainResidueAtomDescriptor::solvent() || crad_b!=common::ChainResidueAtomDescriptor::solvent())
 				{
-					modescommon::ContactValue value;
+					common::ContactValue value;
 					value.area=area;
 					if(a_id!=b_id)
 					{
@@ -141,19 +142,19 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 								apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 								apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 					}
-					if(tag_centrality && crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() && crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
+					if(tag_centrality && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
 					{
 						value.props.tags.insert("central");
 					}
-					if(tag_peripherial && crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent() && crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_peripherial(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe))
+					if(tag_peripherial && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_peripherial(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe))
 					{
 						value.props.tags.insert("peripherial");
 					}
-					output_map_of_contacts[auxiliaries::ChainResidueAtomDescriptorsPair(crad_a, crad_b)].add(value);
+					output_map_of_contacts[common::ChainResidueAtomDescriptorsPair(crad_a, crad_b)].add(value);
 				}
 			}
 		}
-		auxiliaries::IOUtilities().write_map(output_map_of_contacts, std::cout);
+		common::IOUtilities().write_map(output_map_of_contacts, std::cout);
 	}
 	else
 	{
@@ -187,7 +188,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		const std::map<std::size_t, double>& volumes_map=volumes_map_bundle.second;
 		if(!input_ball_records.empty())
 		{
-			std::map<auxiliaries::ChainResidueAtomDescriptor, double> output_volumes_map;
+			std::map<common::ChainResidueAtomDescriptor, double> output_volumes_map;
 			for(std::map<std::size_t, double>::const_iterator it=volumes_map.begin();it!=volumes_map.end();++it)
 			{
 				const double volume=it->second;
@@ -196,12 +197,12 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					const std::size_t a_id=it->first;
 					if(a_id<input_ball_records.size())
 					{
-						const auxiliaries::ChainResidueAtomDescriptor& crad_a=input_ball_records[a_id].first;
+						const common::ChainResidueAtomDescriptor& crad_a=input_ball_records[a_id].first;
 						output_volumes_map[crad_a]=volume;
 					}
 				}
 			}
-			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+			common::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
 		}
 		else
 		{
@@ -218,7 +219,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
-			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+			common::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
 		}
 	}
 
@@ -240,7 +241,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!input_ball_records.empty())
 			{
-				std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, modescommon::ContactValue > output_map_of_contacts;
+				std::map< std::pair<common::ChainResidueAtomDescriptor, common::ChainResidueAtomDescriptor>, common::ContactValue > output_map_of_contacts;
 				for(std::map<std::pair<std::size_t, std::size_t>, double>::const_iterator it=old_interactions_map.begin();it!=old_interactions_map.end();++it)
 				{
 					const double area=it->second;
@@ -248,15 +249,15 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						const std::size_t a_id=it->first.first;
 						const std::size_t b_id=it->first.second;
-						auxiliaries::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
-						auxiliaries::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
-						if(crad_a!=auxiliaries::ChainResidueAtomDescriptor::solvent())
+						common::ChainResidueAtomDescriptor crad_a=input_ball_records[a_id].first;
+						common::ChainResidueAtomDescriptor crad_b=input_ball_records[b_id].first;
+						if(crad_a!=common::ChainResidueAtomDescriptor::solvent())
 						{
 							if(a_id==b_id)
 							{
-								crad_b=auxiliaries::ChainResidueAtomDescriptor::solvent();
+								crad_b=common::ChainResidueAtomDescriptor::solvent();
 							}
-							modescommon::ContactValue value;
+							common::ContactValue value;
 							value.area=area;
 							if(a_id!=b_id)
 							{
@@ -266,7 +267,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 							{
 								value.dist=(spheres[a_id].r+(probe*3.0));
 							}
-							if(crad_b!=auxiliaries::ChainResidueAtomDescriptor::solvent())
+							if(crad_b!=common::ChainResidueAtomDescriptor::solvent())
 							{
 								crad_b.altLoc="m";
 							}
@@ -274,7 +275,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 						}
 					}
 				}
-				for(std::map< std::pair<auxiliaries::ChainResidueAtomDescriptor, auxiliaries::ChainResidueAtomDescriptor>, modescommon::ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
+				for(std::map< std::pair<common::ChainResidueAtomDescriptor, common::ChainResidueAtomDescriptor>, common::ContactValue >::const_iterator it=output_map_of_contacts.begin();it!=output_map_of_contacts.end();++it)
 				{
 					foutput << it->first.first << " " << it->first.second << " " << it->second << "\n";
 				}

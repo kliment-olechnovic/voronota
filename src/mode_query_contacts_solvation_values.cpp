@@ -1,12 +1,13 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/io_utilities.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
+
+#include "common/io_utilities.h"
+#include "common/chain_residue_atom_descriptor.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
@@ -21,7 +22,7 @@ void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler& p
 		return;
 	}
 
-	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	const std::map<CRADsPair, double> map_of_contacts=common::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");

@@ -1,10 +1,11 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
+
+#include "common/chain_residue_atom_descriptor.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 
 inline std::string crad_to_expanded_str(const CRAD& crad)
 {

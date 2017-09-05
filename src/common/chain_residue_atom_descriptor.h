@@ -11,7 +11,7 @@
 #include <map>
 #include <cmath>
 
-namespace auxiliaries
+namespace common
 {
 
 class ChainResidueAtomDescriptor

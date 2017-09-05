@@ -1,18 +1,18 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/ball_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/ball_value.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptor CRAD;
 
 }
 
 void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+	typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls files");
@@ -33,7 +33,7 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 		std::string balls_file;
 		std::cin >> balls_file;
 		std::vector<CRAD> list_of_balls;
-		auxiliaries::IOUtilities().read_file_lines_to_set(balls_file, list_of_balls);
+		common::IOUtilities().read_file_lines_to_set(balls_file, list_of_balls);
 		std::map< std::string, std::set<CRAD> > chains;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{

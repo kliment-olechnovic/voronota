@@ -1,13 +1,13 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/chain_residue_atom_descriptor.h"
 
-#include "modescommon/contact_value.h"
+#include "common/chain_residue_atom_descriptor.h"
+#include "common/contact_value.h"
 
 namespace
 {
 
-typedef auxiliaries::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef common::ChainResidueAtomDescriptor CRAD;
+typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 struct ResidueValuesSummary
 {
@@ -59,7 +59,7 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::set<CRADsPair> set_of_contacts=auxiliaries::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
+	const std::set<CRADsPair> set_of_contacts=common::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
 	if(set_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -115,7 +115,7 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
+	common::IOUtilities().write_map(map_crad_to_depth, std::cout);
 
 	if(!map_crad_to_depth.empty() && !residue_info.empty())
 	{
