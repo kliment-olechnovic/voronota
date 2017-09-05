@@ -1,8 +1,7 @@
 #include "apollota/simple_polygon_utilities.h"
 
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 #include "modescommon/svg_writer.h"
 
@@ -61,7 +60,7 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<apollota::SimplePoint> points;
-	common::IOUtilities().read_lines_to_set(std::cin, points);
+	auxiliaries::IOUtilities().read_lines_to_set(std::cin, points);
 	if(points.size()<3)
 	{
 		throw std::runtime_error("Less than 3 points provided to stdin.");

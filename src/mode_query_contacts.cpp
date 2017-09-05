@@ -39,7 +39,7 @@ std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file
 
 void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, common::ContactValue>& map_of_contacts)
 {
-	const std::map<CRAD, CRAD> renaming_map_of_crads=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
+	const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
 	if(!renaming_map_of_crads.empty())
 	{
 		std::map< CRADsPair, common::ContactValue > map_of_renamed_contacts;
@@ -64,7 +64,7 @@ void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CR
 
 void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, common::ContactValue>& map_of_contacts)
 {
-	const std::set<CRAD> summing_exceptions_set_of_crads=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
+	const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
 	std::map< CRADsPair, common::ContactValue > map_of_reduced_contacts;
 	for(std::map< CRADsPair, common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
@@ -133,7 +133,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	common::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -151,10 +151,10 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator> selected_contacts;
 
-	const std::set<CRAD> matchable_external_first_set_of_crads=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
-	const std::set<CRAD> matchable_external_second_set_of_crads=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
+	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
+	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
 	{
-		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=common::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
+		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
 		for(std::map< CRADsPair, common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
@@ -197,10 +197,10 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_external_means.empty() || !set_hbplus_tags.empty() || !set_distance_bins_tags.empty());
 	if(update_mode && !selected_contacts.empty())
 	{
-		const std::map<CRADsPair, double> map_of_external_adjunct_values=common::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
-		const std::map<CRAD, double> map_of_external_values_for_averaging=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_means);
+		const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_values_for_averaging=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_means);
 		const std::set<CRADsPair> set_of_hbplus_crad_pairs=init_set_of_hbplus_crad_pairs(set_hbplus_tags, inter_residue_hbplus_tags);
-		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : common::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
+		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
 
 		for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
 		{
@@ -310,7 +310,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_summaries);
 		}
-		common::IOUtilities().write_map(map_of_summaries, std::cout);
+		auxiliaries::IOUtilities().write_map(map_of_summaries, std::cout);
 	}
 	else
 	{
@@ -336,7 +336,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
 			}
-			common::IOUtilities().write_map(map_of_contacts, std::cout);
+			auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 		}
 	}
 }

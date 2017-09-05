@@ -3,8 +3,8 @@
 #include <bitset>
 
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "common/io_utilities.h"
 #include "common/chain_residue_atom_descriptor.h"
 #include "common/contact_value.h"
 
@@ -152,7 +152,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	common::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -233,7 +233,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!axis_output.empty())
 	{
-		common::IOUtilities().write_map_to_file(axis, axis_output);
+		auxiliaries::IOUtilities().write_map_to_file(axis, axis_output);
 	}
 
 	if(!points_output.empty())
@@ -275,5 +275,5 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(map_of_contacts, std::cout);
+	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 }

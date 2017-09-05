@@ -6,8 +6,7 @@
 
 #include "auxiliaries/atoms_io.h"
 #include "auxiliaries/atom_radius_assigner.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 class WrapperGetBallsFromAtomsFileAndCalculateVertices
 {
@@ -127,7 +126,7 @@ public:
 			else
 			{
 				std::ifstream radii_file_stream(parameters.radii_file.c_str(), std::ios::in);
-				common::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+				auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 			}
 		}
 

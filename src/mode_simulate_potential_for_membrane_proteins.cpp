@@ -1,6 +1,5 @@
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 
@@ -22,7 +21,7 @@ void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsH
 		return;
 	}
 
-	std::map<InteractionName, double> normal_potential=common::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
+	std::map<InteractionName, double> normal_potential=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 
 	double sum_of_sas_values=0.0;
 	int num_of_sas_values=0;
@@ -85,5 +84,5 @@ void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsH
 		}
 	}
 
-	common::IOUtilities().write_map(simulated_potential, std::cout);
+	auxiliaries::IOUtilities().write_map(simulated_potential, std::cout);
 }

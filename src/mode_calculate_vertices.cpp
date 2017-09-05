@@ -4,8 +4,7 @@
 #include "apollota/triangulation_output.h"
 
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 {
@@ -30,7 +29,7 @@ void calculate_vertices(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Bounding spheres hierarchy initial radius should be greater than 1.");
 	}
 
-	const std::vector<apollota::SimpleSphere> spheres=common::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(std::cin);
+	const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(std::cin);
 	if(spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");

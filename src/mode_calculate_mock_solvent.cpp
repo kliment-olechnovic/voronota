@@ -32,7 +32,7 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::vector<apollota::SimpleSphere> input_spheres;
 	std::vector< std::pair<common::ChainResidueAtomDescriptor, common::BallValue> > ball_records;
-	common::IOUtilities().read_lines_to_map(std::cin, ball_records);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, ball_records);
 	input_spheres.reserve(ball_records.size());
 	for(std::size_t i=0;i<ball_records.size();i++)
 	{

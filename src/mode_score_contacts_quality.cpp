@@ -1,6 +1,5 @@
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 #include "modescommon/contacts_scoring_utilities.h"
 #include "modescommon/statistics_utilities.h"
@@ -51,15 +50,15 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=common::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
 	if(atom_energy_descriptors.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRAD, modescommon::NormalDistributionParameters> means_and_sds=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, modescommon::NormalDistributionParameters> >(mean_and_sds_file);
+	const std::map<CRAD, modescommon::NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, modescommon::NormalDistributionParameters> >(mean_and_sds_file);
 
-	const std::map<CRAD, double> external_weights=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
+	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
 
 	std::map<CRAD, double> atom_quality_scores;
 	double sum_of_weighted_scores=0.0;
@@ -92,18 +91,18 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 			sum_of_weights+=1.0;
 		}
 	}
-	common::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
+	auxiliaries::IOUtilities().write_map_to_file(atom_quality_scores, atom_scores_file);
 
 	if(!residue_scores_file.empty())
 	{
 		const std::map<CRAD, double> raw_residue_quality_scores=average_atom_scores_by_residue(atom_quality_scores);
 		if(smoothing_windows.empty() || (smoothing_windows.size()==1 && smoothing_windows.front()==0))
 		{
-			common::IOUtilities().write_map_to_file(raw_residue_quality_scores, residue_scores_file);
+			auxiliaries::IOUtilities().write_map_to_file(raw_residue_quality_scores, residue_scores_file);
 		}
 		else if(smoothing_windows.size()==1)
 		{
-			common::IOUtilities().write_map_to_file(common::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(raw_residue_quality_scores, smoothing_windows.front()), residue_scores_file);
+			auxiliaries::IOUtilities().write_map_to_file(common::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(raw_residue_quality_scores, smoothing_windows.front()), residue_scores_file);
 		}
 		else
 		{

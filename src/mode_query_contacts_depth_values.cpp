@@ -59,7 +59,7 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::set<CRADsPair> set_of_contacts=common::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
+	const std::set<CRADsPair> set_of_contacts=auxiliaries::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
 	if(set_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -115,7 +115,7 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	common::IOUtilities().write_map(map_crad_to_depth, std::cout);
+	auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
 
 	if(!map_crad_to_depth.empty() && !residue_info.empty())
 	{

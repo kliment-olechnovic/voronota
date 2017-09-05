@@ -1,8 +1,8 @@
 #include "apollota/search_for_spherical_collisions.h"
 
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "common/io_utilities.h"
 #include "common/chain_residue_atom_descriptor.h"
 
 namespace
@@ -34,7 +34,7 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector< std::pair<CRAD, apollota::SimpleSphere> > list_of_balls;
-	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");

@@ -1,6 +1,6 @@
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/io_utilities.h"
 
-#include "common/io_utilities.h"
 #include "common/chain_residue_atom_descriptor.h"
 
 namespace
@@ -44,7 +44,7 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 		throw std::runtime_error("Invalid parameters.");
 	}
 
-	const std::map<CRAD, double> map_of_crad_scores=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(local_scores);
+	const std::map<CRAD, double> map_of_crad_scores=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(local_scores);
 
 	if(map_of_crad_scores.empty())
 	{

@@ -46,7 +46,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	std::set<std::size_t> mock_solvent_ids;
 	if(annotated)
 	{
-		common::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
+		auxiliaries::IOUtilities().read_lines_to_map(std::cin, input_ball_records);
 		spheres.reserve(input_ball_records.size());
 		for(std::size_t i=0;i<input_ball_records.size();i++)
 		{
@@ -59,7 +59,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		common::IOUtilities().read_lines_to_set(std::cin, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 	}
 	if(spheres.size()<4)
 	{
@@ -154,7 +154,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 		}
-		common::IOUtilities().write_map(output_map_of_contacts, std::cout);
+		auxiliaries::IOUtilities().write_map(output_map_of_contacts, std::cout);
 	}
 	else
 	{
@@ -202,7 +202,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
-			common::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
 		}
 		else
 		{
@@ -219,7 +219,7 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 				}
 			}
-			common::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
+			auxiliaries::IOUtilities().write_map_to_file(output_volumes_map, volumes_output);
 		}
 	}
 

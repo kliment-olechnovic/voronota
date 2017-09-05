@@ -10,8 +10,7 @@
 #include "apollota/triangulation_output.h"
 
 #include "auxiliaries/program_options_handler.h"
-
-#include "common/io_utilities.h"
+#include "auxiliaries/io_utilities.h"
 
 namespace
 {
@@ -39,7 +38,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		common::IOUtilities().read_lines_to_set(std::cin, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -67,7 +66,7 @@ public:
 	{
 		result.input_spheres.clear();
 		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		common::IOUtilities().read_lines_to_set(std::cin, spheres);
+		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
 		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
@@ -144,7 +143,7 @@ public:
 				int spheres_plain_vector_length=0;
 				if(mpi_handle.rank()==0)
 				{
-					common::IOUtilities().read_lines_to_set(std::cin, spheres);
+					auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 					fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 					spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 				}

@@ -79,7 +79,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
-	common::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -194,7 +194,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::set<std::size_t> selected_set_of_ball_ids;
 	{
-		const std::set<CRAD> matchable_external_set_of_crads=common::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
+		const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
 
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
@@ -244,7 +244,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool update_mode=(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_dssp_info.empty() || !set_ref_seq_num_adjunct.empty());
 	if(update_mode && !selected_set_of_ball_ids.empty())
 	{
-		const std::map<CRAD, double> map_of_external_adjunct_values=common::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
 		const std::string reference_sequence=modescommon::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
 		const std::map<CRAD, int> sequence_mapping=modescommon::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
@@ -316,7 +316,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(update_mode)
 	{
-		common::IOUtilities().write_map(list_of_balls, std::cout);
+		auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 	}
 	else
 	{
@@ -369,7 +369,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 			foutput << map_of_chains_sequences.size() << " " << representative_chains.size() << "\n";
-			common::IOUtilities().write_set(representative_chains, foutput);
+			auxiliaries::IOUtilities().write_set(representative_chains, foutput);
 		}
 	}
 }
