@@ -213,7 +213,7 @@ public:
 			std::vector<float> global_buffer_of_vertices;
 			std::vector<float> global_buffer_of_normals;
 			std::vector<unsigned int> global_buffer_of_indices;
-			std::vector< std::vector<unsigned int> > map_of_drawing_locations;
+			std::vector< std::vector<unsigned int> > map_of_contacts_indices;
 
 			Result() : valid(false)
 			{
@@ -229,7 +229,7 @@ public:
 				return result;
 			}
 
-			result.map_of_drawing_locations.resize(vector_of_contacts.size());
+			result.map_of_contacts_indices.resize(vector_of_contacts.size());
 
 			{
 				std::vector<float> buffer_of_vertices;
@@ -252,7 +252,7 @@ public:
 							result.global_buffer_of_vertices.insert(result.global_buffer_of_vertices.end(), buffer_of_vertices.begin(), buffer_of_vertices.end());
 							result.global_buffer_of_normals.insert(result.global_buffer_of_normals.end(), buffer_of_normals.begin(), buffer_of_normals.end());
 							result.global_buffer_of_indices.insert(result.global_buffer_of_indices.end(), buffer_of_indices.begin(), buffer_of_indices.end());
-							result.map_of_drawing_locations[id]=buffer_of_indices;
+							result.map_of_contacts_indices[id]=buffer_of_indices;
 						}
 					}
 				}
