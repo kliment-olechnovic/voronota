@@ -6,7 +6,6 @@
 namespace apollota
 {
 
-
 template<typename OpenGLPrinter>
 std::string draw_inter_atom_contact(
 		const std::vector<SimpleSphere>& spheres,
@@ -86,7 +85,7 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
-bool check_inter_atom_contact_centrality(
+inline bool check_inter_atom_contact_centrality(
 		const std::vector<SimpleSphere>& spheres,
 		const TriangulationQueries::PairsMap& pairs_neighbors,
 		const std::size_t a_id,
@@ -120,7 +119,7 @@ bool check_inter_atom_contact_centrality(
 	return true;
 }
 
-bool check_inter_atom_contact_peripherial(
+inline bool check_inter_atom_contact_peripherial(
 		const std::vector<SimpleSphere>& spheres,
 		const Triangulation::VerticesVector& vertices_vector,
 		const TriangulationQueries::PairsMap& pairs_vertices,
