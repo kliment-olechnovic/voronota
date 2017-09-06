@@ -1,0 +1,164 @@
+#ifndef COMMON_COLLECTION_OF_BALLS_H_
+#define COMMON_COLLECTION_OF_BALLS_H_
+
+#include <vector>
+
+#include "../auxiliaries/atoms_io.h"
+#include "../auxiliaries/atom_radius_assigner.h"
+#include "../auxiliaries/io_utilities.h"
+
+#include "chain_residue_atom_descriptor.h"
+#include "ball_value.h"
+
+namespace common
+{
+
+class CollectionOfBalls
+{
+public:
+	struct Ball
+	{
+		ChainResidueAtomDescriptor crad;
+		BallValue value;
+
+		Ball(const ChainResidueAtomDescriptor& crad, const BallValue& value) : crad(crad), value(value)
+		{
+		}
+	};
+
+	typedef std::vector<Ball> VectorOfBalls;
+
+	class FunctionCollectBallsFromStream
+	{
+	public:
+		struct Result
+		{
+			bool valid;
+			VectorOfBalls vector_of_balls;
+
+			Result() : valid(false)
+			{
+			}
+		};
+
+		bool mmcif;
+		bool include_heteroatoms;
+		bool include_hydrogens;
+		bool multimodel_chains;
+		auxiliaries::AtomRadiusAssigner atom_radius_assigner;
+
+		FunctionCollectBallsFromStream() :
+			mmcif(false),
+			include_heteroatoms(false),
+			include_hydrogens(false),
+			multimodel_chains(false),
+			atom_radius_assigner(generate_atom_radius_assigner(1.7, false, ""))
+		{
+		}
+
+		void set_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
+		{
+			atom_radius_assigner=generate_atom_radius_assigner(1.7, false, radii_file);
+		}
+
+		Result run(std::istream& input) const
+		{
+			Result result;
+
+			const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
+					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input, include_heteroatoms, include_hydrogens).atom_records :
+					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+
+			if(atoms.empty())
+			{
+				return result;
+			}
+
+			for(std::size_t i=0;i<atoms.size();i++)
+			{
+				const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
+				const ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
+				if(crad.valid())
+				{
+					BallValue value;
+					value.x=atom.x;
+					value.y=atom.y;
+					value.z=atom.z;
+					value.r=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
+					if(atom.record_name=="HETATM")
+					{
+						value.props.tags.insert("het");
+					}
+					if(!atom.element.empty())
+					{
+						value.props.tags.insert(std::string("el=")+atom.element);
+					}
+					if(atom.occupancy_valid)
+					{
+						value.props.adjuncts["oc"]=atom.occupancy;
+					}
+					if(atom.tempFactor_valid)
+					{
+						value.props.adjuncts["tf"]=atom.tempFactor;
+					}
+					result.vector_of_balls.push_back(Ball(crad, value));
+				}
+			}
+
+			result.valid=true;
+			return result;
+		}
+
+		Result run(std::string& input_file) const
+		{
+			std::ifstream input(input_file.c_str(), std::ios::in);
+			return run(input);
+		}
+
+	private:
+		static auxiliaries::AtomRadiusAssigner generate_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string radii_file)
+		{
+			auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
+			if(!only_default_radius)
+			{
+				if(radii_file.empty())
+				{
+					atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
+					atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
+					atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
+					atom_radius_assigner.add_radius_by_descriptor("*", "S*", 1.80);
+					atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
+					atom_radius_assigner.add_radius_by_descriptor("*", "H*", 1.20);
+				}
+				else
+				{
+					std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
+					if(radii_file_stream.good())
+					{
+						auxiliaries::IOUtilities().read_lines_to_container(
+								radii_file_stream,
+								auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner,
+								atom_radius_assigner);
+					}
+				}
+			}
+			return atom_radius_assigner;
+		}
+	};
+};
+
+inline std::ostream& operator<<(std::ostream& output, const CollectionOfBalls::Ball& ball)
+{
+	output << ball.crad << " " << ball.value;
+	return output;
+}
+
+inline std::istream& operator>>(std::istream& input, CollectionOfBalls::Ball& ball)
+{
+	input >> ball.crad >> ball.value;
+	return input;
+}
+
+}
+
+#endif /* COMMON_COLLECTION_OF_BALLS_H_ */
