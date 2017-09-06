@@ -45,9 +45,7 @@ public:
 		return false;
 	}
 
-	static bool match_crads_pair_with_set_of_crads_pairs(
-			const ChainResidueAtomDescriptorsPair& crads_pair,
-			const std::set<ChainResidueAtomDescriptorsPair>& crads_pairs)
+	static bool match_crads_pair_with_set_of_crads_pairs(const ChainResidueAtomDescriptorsPair& crads_pair, const std::set<ChainResidueAtomDescriptorsPair>& crads_pairs)
 	{
 		if(crads_pairs.count(crads_pair)>0)
 		{
