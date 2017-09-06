@@ -142,11 +142,11 @@ void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 								apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
 								apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections));
 					}
-					if(tag_centrality && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
+					if(tag_centrality && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && apollota::check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
 					{
 						value.props.tags.insert("central");
 					}
-					if(tag_peripherial && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && check_inter_atom_contact_peripherial(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe))
+					if(tag_peripherial && crad_a!=common::ChainResidueAtomDescriptor::solvent() && crad_b!=common::ChainResidueAtomDescriptor::solvent() && apollota::check_inter_atom_contact_peripherial(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe))
 					{
 						value.props.tags.insert("peripherial");
 					}
