@@ -1,5 +1,5 @@
-#ifndef COMMON_COLLECTION_OF_BALLS_H_
-#define COMMON_COLLECTION_OF_BALLS_H_
+#ifndef COMMON_CONSTRUCTION_OF_ATOMIC_BALLS_H_
+#define COMMON_CONSTRUCTION_OF_ATOMIC_BALLS_H_
 
 #include <vector>
 
@@ -13,41 +13,29 @@
 namespace common
 {
 
-class CollectionOfBalls
+class ConstructionOfAtomicBalls
 {
 public:
-	struct Ball
+	struct AtomicBall
 	{
 		ChainResidueAtomDescriptor crad;
 		BallValue value;
 
-		Ball(const ChainResidueAtomDescriptor& crad, const BallValue& value) : crad(crad), value(value)
+		AtomicBall(const ChainResidueAtomDescriptor& crad, const BallValue& value) : crad(crad), value(value)
 		{
 		}
 	};
 
-	typedef std::vector<Ball> VectorOfBalls;
-
-	class FunctionCollectBallsFromStream
+	class collect_atomic_balls_from_file
 	{
 	public:
-		struct Result
-		{
-			bool valid;
-			VectorOfBalls vector_of_balls;
-
-			Result() : valid(false)
-			{
-			}
-		};
-
 		bool mmcif;
 		bool include_heteroatoms;
 		bool include_hydrogens;
 		bool multimodel_chains;
 		auxiliaries::AtomRadiusAssigner atom_radius_assigner;
 
-		FunctionCollectBallsFromStream() :
+		collect_atomic_balls_from_file() :
 			mmcif(false),
 			include_heteroatoms(false),
 			include_hydrogens(false),
@@ -61,18 +49,20 @@ public:
 			atom_radius_assigner=generate_atom_radius_assigner(1.7, false, radii_file);
 		}
 
-		Result run(std::istream& input) const
+		bool operator()(std::istream& input_stream, std::vector<AtomicBall>& atomic_balls) const
 		{
-			Result result;
+			atomic_balls.clear();
 
 			const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
-					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input, include_heteroatoms, include_hydrogens).atom_records :
-					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input_stream, include_heteroatoms, include_hydrogens).atom_records :
+					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input_stream, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
 
 			if(atoms.empty())
 			{
-				return result;
+				return false;
 			}
+
+			atomic_balls.reserve(atoms.size());
 
 			for(std::size_t i=0;i<atoms.size();i++)
 			{
@@ -101,18 +91,17 @@ public:
 					{
 						value.props.adjuncts["tf"]=atom.tempFactor;
 					}
-					result.vector_of_balls.push_back(Ball(crad, value));
+					atomic_balls.push_back(AtomicBall(crad, value));
 				}
 			}
 
-			result.valid=true;
-			return result;
+			return true;
 		}
 
-		Result run(std::string& input_file) const
+		bool operator()(std::string& input_file, std::vector<AtomicBall>& atomic_balls) const
 		{
 			std::ifstream input(input_file.c_str(), std::ios::in);
-			return run(input);
+			return (*this)(input, atomic_balls);
 		}
 
 	private:
@@ -145,15 +134,27 @@ public:
 			return atom_radius_assigner;
 		}
 	};
+
+	template<typename PlainBall>
+	static std::vector<PlainBall> collect_plain_balls_from_atomic_balls(const std::vector<AtomicBall>& atomic_balls)
+	{
+		std::vector<PlainBall> plain_balls;
+		plain_balls.reserve(atomic_balls.size());
+		for(std::size_t i=0;i<atomic_balls.size();i++)
+		{
+			plain_balls.push_back(PlainBall(atomic_balls[i].value));
+		}
+		return plain_balls;
+	}
 };
 
-inline std::ostream& operator<<(std::ostream& output, const CollectionOfBalls::Ball& ball)
+inline std::ostream& operator<<(std::ostream& output, const ConstructionOfAtomicBalls::AtomicBall& ball)
 {
 	output << ball.crad << " " << ball.value;
 	return output;
 }
 
-inline std::istream& operator>>(std::istream& input, CollectionOfBalls::Ball& ball)
+inline std::istream& operator>>(std::istream& input, ConstructionOfAtomicBalls::AtomicBall& ball)
 {
 	input >> ball.crad >> ball.value;
 	return input;
@@ -161,4 +162,4 @@ inline std::istream& operator>>(std::istream& input, CollectionOfBalls::Ball& ba
 
 }
 
-#endif /* COMMON_COLLECTION_OF_BALLS_H_ */
+#endif /* COMMON_CONSTRUCTION_OF_ATOMIC_BALLS_H_ */
