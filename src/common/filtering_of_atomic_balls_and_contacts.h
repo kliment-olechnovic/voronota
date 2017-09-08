@@ -1,5 +1,5 @@
-#ifndef COMMON_MANIPULATION_OF_ATOMIC_BALLS_AND_CONTACTS_H_
-#define COMMON_MANIPULATION_OF_ATOMIC_BALLS_AND_CONTACTS_H_
+#ifndef COMMON_FILTERING_OF_ATOMIC_BALLS_AND_CONTACTS_H_
+#define COMMON_FILTERING_OF_ATOMIC_BALLS_AND_CONTACTS_H_
 
 #include "construction_of_atomic_balls.h"
 #include "construction_of_contacts.h"
@@ -8,7 +8,7 @@
 namespace common
 {
 
-class ManipulationOfAtomicBallsAndContacts
+class FilteringOfAtomicBallsAndContacts
 {
 public:
 	typedef ConstructionOfAtomicBalls::AtomicBall Atom;
@@ -17,12 +17,17 @@ public:
 	class test_atom
 	{
 	public:
+		bool invert;
 		std::string match_crad;
 		std::string match_crad_not;
 		std::string match_tags;
 		std::string match_tags_not;
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
+
+		test_atom() : invert(false)
+		{
+		}
 
 		bool operator()(const Atom& atom) const
 		{
@@ -32,9 +37,9 @@ public:
 					MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
 			{
-				return true;
+				return !invert;
 			}
-			return false;
+			return invert;
 		}
 	};
 
@@ -42,6 +47,7 @@ public:
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
+		bool invert;
 		double match_min_area;
 		double match_max_area;
 		double match_min_dist;
@@ -59,6 +65,7 @@ public:
 
 		test_contact_between_atoms() :
 			atoms_ptr(0),
+			invert(false),
 			match_min_area(std::numeric_limits<double>::min()),
 			match_max_area(std::numeric_limits<double>::max()),
 			match_min_dist(std::numeric_limits<double>::min()),
@@ -107,103 +114,62 @@ public:
 							(test_atom_a(atom_b) && test_atom_b(atom_a))
 					)
 					{
-						return true;
+						return !invert;
 					}
 				}
 			}
-			return false;
+			return invert;
 		}
 	};
 
-	class Selection
+	class test_anything_positively
 	{
-		enum Mode
+	public:
+		template<typename T>
+		bool operator()(const T& obj) const
 		{
-			SELECTION_MODE_SET,
-			SELECTION_MODE_UPDATE_WITH_OR,
-			SELECTION_MODE_UPDATE_WITH_AND
-		};
+			return true;
+		}
+	};
 
-		template<typename Container, typename Tester>
-		static bool select(const Container& container, const Tester& tester, const bool logical_not, const Mode mode, std::vector<bool>& selection)
+	template<typename Container, typename Tester>
+	static std::set<std::size_t> select(const Container& container, const Tester& tester)
+	{
+		std::set<std::size_t> result;
+		if(!container.empty())
 		{
-			if(container.empty())
-			{
-				return false;
-			}
-
-			const bool logical_or=(mode==SELECTION_MODE_UPDATE_WITH_OR);
-			const bool logical_and=(mode==SELECTION_MODE_UPDATE_WITH_AND);
-
-			if(selection.size()!=container.size())
-			{
-				selection.clear();
-				selection.resize(container.size(), false);
-				if(logical_and)
-				{
-					return true;
-				}
-			}
-
+			std::set<std::size_t>::iterator pos=result.begin();
 			for(std::size_t i=0;i<container.size();i++)
 			{
-				if(
-						(!logical_or && !logical_and) ||
-						(logical_or && !selection[i]) ||
-						(logical_and && selection[i])
-				)
+				if(tester(container[i]))
 				{
-					const bool result=tester(container[i]);
-					selection[i]=(logical_not ? (!result) : result);
+					pos=result.insert(pos, i);
 				}
 			}
-
-			return true;
 		}
+		return result;
+	}
 
-		template<typename Container, typename Tester>
-		static bool select(const Container& container, const Tester& tester, const bool logical_not, std::vector<bool>& selection)
+	template<typename Container, typename Tester>
+	static std::set<std::size_t> select(const Container& container, const std::set<std::size_t>& restriction, const Tester& tester)
+	{
+		std::set<std::size_t> result;
+		if(!container.empty() || restriction.empty())
 		{
-			return select(container, tester, logical_not, SELECTION_MODE_SET, selection);
-		}
-
-		template<typename Container>
-		static bool select(const Container& container, const bool value, std::vector<bool>& selection)
-		{
-			if(container.empty())
+			std::set<std::size_t>::iterator pos=result.begin();
+			for(std::set<std::size_t>::const_iterator it=restriction.begin();it!=restriction.end();++it)
 			{
-				return false;
-			}
-			selection.clear();
-			selection.resize(container.size(), value);
-			return true;
-		}
-
-		static bool select(const std::vector<bool>& reference_selection, const Mode mode, std::vector<bool>& selection)
-		{
-			return select(reference_selection, test_echo(), false, mode, selection);
-		}
-
-		static void invert(std::vector<bool>& selection)
-		{
-			for(std::size_t i=0;i<selection.size();i++)
-			{
-				selection[i]=!selection[i];
+				const std::size_t i=(*it);
+				if(i<container.size() && tester(container[i]))
+				{
+					pos=result.insert(pos, i);
+				}
 			}
 		}
-
-	private:
-		class test_echo
-		{
-		public:
-			bool operator()(const bool value) const
-			{
-				return value;
-			}
-		};
-	};
+		return result;
+	}
 };
 
 }
 
-#endif /* COMMON_MANIPULATION_OF_ATOMIC_BALLS_AND_CONTACTS_H_ */
+#endif /* COMMON_FILTERING_OF_ATOMIC_BALLS_AND_CONTACTS_H_ */
