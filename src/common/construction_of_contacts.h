@@ -206,54 +206,55 @@ public:
 		{
 		}
 
-		template<typename ContainerOfBooleans>
-		bool operator()(BundleOfContactInformation& bundle, const ContainerOfBooleans& draw_mask) const
+		template<typename ContainerOfIds>
+		bool operator()(BundleOfContactInformation& bundle, const ContainerOfIds& draw_ids) const
 		{
 			if(bundle.contacts.empty())
 			{
 				return false;
 			}
 
-			const bool draw=(draw_mask.size()==bundle.contacts.size());
-
-			if(!(draw || tag_centrality || tag_peripherial))
+			if(!tag_centrality && !tag_peripherial && draw_ids.empty())
 			{
 				return false;
 			}
 
-			bool present_solvent=false;
-			bool present_nonsolvent=false;
-			for(std::size_t i=0;i<bundle.contacts.size() && (!present_solvent || !present_nonsolvent);i++)
+			bool tag_nonsolvent=false;
+			if(tag_centrality || tag_peripherial)
 			{
-				Contact& contact=bundle.contacts[i];
-				present_solvent=(present_solvent || contact.solvent());
-				present_nonsolvent=(present_nonsolvent || !contact.solvent());
-			}
-
-			bool draw_solvent=false;
-			if(draw && present_solvent)
-			{
-				for(std::size_t i=0;i<bundle.contacts.size() && !draw_solvent;i++)
+				for(std::size_t i=0;i<bundle.contacts.size() && !tag_nonsolvent;i++)
 				{
-					draw_solvent=(draw_solvent || (bundle.contacts[i].solvent() && draw_mask[i]));
+					tag_nonsolvent=!bundle.contacts[i].solvent();
 				}
 			}
 
-			bool draw_nonsolvent=false;
-			if(draw && present_nonsolvent)
+			std::vector<std::size_t> draw_solvent_ids;
+			std::vector<std::size_t> draw_nonsolvent_ids;
+			for(typename ContainerOfIds::const_iterator it=draw_ids.begin();it!=draw_ids.end();++it)
 			{
-				for(std::size_t i=0;i<bundle.contacts.size() && !draw_nonsolvent;i++)
+				const std::size_t id=(*it);
+				if(id<bundle.contacts.size())
 				{
-					draw_nonsolvent=(draw_nonsolvent || (!bundle.contacts[i].solvent() && draw_mask[i]));
+					if(bundle.contacts[id].solvent())
+					{
+						draw_solvent_ids.push_back(id);
+					}
+					else
+					{
+						draw_nonsolvent_ids.push_back(id);
+					}
 				}
 			}
 
-			bool modified=false;
+			if(!tag_nonsolvent && draw_solvent_ids.empty() && draw_nonsolvent_ids.empty())
+			{
+				return false;
+			}
 
 			apollota::Triangulation::VerticesVector vertices_vector;
 			apollota::TriangulationQueries::PairsMap pairs_vertices;
 
-			if(draw_solvent)
+			if(!draw_solvent_ids.empty())
 			{
 				if(vertices_vector.empty())
 				{
@@ -261,18 +262,14 @@ public:
 				}
 				const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 				const apollota::SubdividedIcosahedron sih(sih_depth);
-				for(std::size_t i=0;i<bundle.contacts.size();i++)
+				for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
 				{
-					Contact& contact=bundle.contacts[i];
-					if(contact.solvent() && draw_mask[i])
-					{
-						contact.value.graphics=apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle.spheres, vertices_vector, ids_vertices, contact.ids[0], probe, sih);
-						modified=true;
-					}
+					Contact& contact=bundle.contacts[*it];
+					contact.value.graphics=apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle.spheres, vertices_vector, ids_vertices, contact.ids[0], probe, sih);
 				}
 			}
 
-			if(draw_nonsolvent)
+			if(!draw_nonsolvent_ids.empty())
 			{
 				if(vertices_vector.empty())
 				{
@@ -282,18 +279,14 @@ public:
 				{
 					pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 				}
-				for(std::size_t i=0;i<bundle.contacts.size();i++)
+				for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_solvent_ids.end();++it)
 				{
-					Contact& contact=bundle.contacts[i];
-					if(!contact.solvent() && draw_mask[i])
-					{
-						contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe, step, projections);
-						modified=true;
-					}
+					Contact& contact=bundle.contacts[*it];
+					contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe, step, projections);
 				}
 			}
 
-			if(present_nonsolvent && tag_peripherial)
+			if(tag_nonsolvent && tag_peripherial)
 			{
 				if(vertices_vector.empty())
 				{
@@ -309,12 +302,11 @@ public:
 					if(!contact.solvent() && apollota::check_inter_atom_contact_peripherial(bundle.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe))
 					{
 						contact.value.props.tags.insert("peripherial");
-						modified=true;
 					}
 				}
 			}
 
-			if(present_nonsolvent && tag_centrality)
+			if(tag_nonsolvent && tag_centrality)
 			{
 				const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle.triangulation_result.quadruples_map);
 				for(std::size_t i=0;i<bundle.contacts.size();i++)
@@ -323,12 +315,11 @@ public:
 					if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
 					{
 						contact.value.props.tags.insert("central");
-						modified=true;
 					}
 				}
 			}
 
-			return modified;
+			return true;
 		}
 	};
 
