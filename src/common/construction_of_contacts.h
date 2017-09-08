@@ -332,7 +332,7 @@ public:
 		}
 	};
 
-	bool construct_bundle_of_contacts_mesh_information(const std::vector<Contact>& contacts, BundleOfContactsMeshInformation& bundle)
+	static bool construct_bundle_of_contacts_mesh_information(const std::vector<Contact>& contacts, BundleOfContactsMeshInformation& bundle)
 	{
 		bundle.clear();
 
