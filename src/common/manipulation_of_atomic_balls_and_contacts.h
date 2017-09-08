@@ -41,6 +41,7 @@ public:
 	class test_contact_between_atoms
 	{
 	public:
+		const std::vector<Atom>* atoms_ptr;
 		double match_min_area;
 		double match_max_area;
 		double match_min_dist;
@@ -57,6 +58,7 @@ public:
 		test_atom test_atom_b;
 
 		test_contact_between_atoms() :
+			atoms_ptr(0),
 			match_min_area(std::numeric_limits<double>::min()),
 			match_max_area(std::numeric_limits<double>::max()),
 			match_min_dist(std::numeric_limits<double>::min()),
@@ -66,6 +68,15 @@ public:
 			no_solvent(false),
 			no_same_chain(false)
 		{
+		}
+
+		bool operator()(const Contact& contact) const
+		{
+			if(atoms_ptr!=0)
+			{
+				return ((*this)(*atoms_ptr, contact));
+			}
+			return false;
 		}
 
 		bool operator()(const std::vector<Atom>& atoms, const Contact& contact) const
@@ -102,6 +113,94 @@ public:
 			}
 			return false;
 		}
+	};
+
+	class Selection
+	{
+		enum Mode
+		{
+			SELECTION_MODE_SET,
+			SELECTION_MODE_UPDATE_WITH_OR,
+			SELECTION_MODE_UPDATE_WITH_AND
+		};
+
+		template<typename Container, typename Tester>
+		static bool select(const Container& container, const Tester& tester, const bool logical_not, const Mode mode, std::vector<bool>& selection)
+		{
+			if(container.empty())
+			{
+				return false;
+			}
+
+			const bool logical_or=(mode==SELECTION_MODE_UPDATE_WITH_OR);
+			const bool logical_and=(mode==SELECTION_MODE_UPDATE_WITH_AND);
+
+			if(selection.size()!=container.size())
+			{
+				selection.clear();
+				selection.resize(container.size(), false);
+				if(logical_and)
+				{
+					return true;
+				}
+			}
+
+			for(std::size_t i=0;i<container.size();i++)
+			{
+				if(
+						(!logical_or && !logical_and) ||
+						(logical_or && !selection[i]) ||
+						(logical_and && selection[i])
+				)
+				{
+					const bool result=tester(container[i]);
+					selection[i]=(logical_not ? (!result) : result);
+				}
+			}
+
+			return true;
+		}
+
+		template<typename Container, typename Tester>
+		static bool select(const Container& container, const Tester& tester, const bool logical_not, std::vector<bool>& selection)
+		{
+			return select(container, tester, logical_not, SELECTION_MODE_SET, selection);
+		}
+
+		template<typename Container>
+		static bool select(const Container& container, const bool value, std::vector<bool>& selection)
+		{
+			if(container.empty())
+			{
+				return false;
+			}
+			selection.clear();
+			selection.resize(container.size(), value);
+			return true;
+		}
+
+		static bool select(const std::vector<bool>& reference_selection, const Mode mode, std::vector<bool>& selection)
+		{
+			return select(reference_selection, test_echo(), false, mode, selection);
+		}
+
+		static void invert(std::vector<bool>& selection)
+		{
+			for(std::size_t i=0;i<selection.size();i++)
+			{
+				selection[i]=!selection[i];
+			}
+		}
+
+	private:
+		class test_echo
+		{
+		public:
+			bool operator()(const bool value) const
+			{
+				return value;
+			}
+		};
 	};
 };
 
