@@ -17,6 +17,7 @@ public:
 	class test_atom
 	{
 	public:
+		const std::vector<Atom>* atoms_ptr;
 		bool invert;
 		std::string match_crad;
 		std::string match_crad_not;
@@ -25,8 +26,19 @@ public:
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
 
-		test_atom() : invert(false)
+		test_atom(const std::vector<Atom>* atoms_ptr=0) :
+			atoms_ptr(atoms_ptr),
+			invert(false)
 		{
+		}
+
+		bool operator()(const std::size_t id) const
+		{
+			if(atoms_ptr!=0 && id<atoms_ptr->size())
+			{
+				return ((*this)((*atoms_ptr)[id]));
+			}
+			return false;
 		}
 
 		bool operator()(const Atom& atom) const
@@ -47,6 +59,7 @@ public:
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
+		const std::vector<Contact>* contacts_ptr;
 		bool invert;
 		double match_min_area;
 		double match_max_area;
@@ -63,8 +76,9 @@ public:
 		test_atom test_atom_a;
 		test_atom test_atom_b;
 
-		test_contact_between_atoms() :
-			atoms_ptr(0),
+		test_contact_between_atoms(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
+			atoms_ptr(atoms_ptr),
+			contacts_ptr(contacts_ptr),
 			invert(false),
 			match_min_area(std::numeric_limits<double>::min()),
 			match_max_area(std::numeric_limits<double>::max()),
@@ -75,6 +89,15 @@ public:
 			no_solvent(false),
 			no_same_chain(false)
 		{
+		}
+
+		bool operator()(const std::size_t id) const
+		{
+			if(contacts_ptr!=0 && id<contacts_ptr->size())
+			{
+				return ((*this)((*contacts_ptr)[id]));
+			}
+			return false;
 		}
 
 		bool operator()(const Contact& contact) const
@@ -122,13 +145,24 @@ public:
 		}
 	};
 
-	class test_anything_positively
+	class test_id
 	{
 	public:
-		template<typename T>
-		bool operator()(const T& obj) const
+		bool invert;
+		std::set<std::size_t> allowed;
+		std::set<std::size_t> forbidden;
+
+		test_id() : invert(false)
 		{
-			return true;
+		}
+
+		bool operator()(const std::size_t id) const
+		{
+			if((allowed.empty() || allowed.count(id)>0) && (forbidden.count(id)==0))
+			{
+				return !invert;
+			}
+			return invert;
 		}
 	};
 
