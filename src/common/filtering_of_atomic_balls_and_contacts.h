@@ -171,6 +171,108 @@ public:
 		}
 	};
 
+	template<typename Tester>
+	class VariantTesterOrOperator
+	{
+	public:
+		enum Type
+		{
+			TYPE_TESTER,
+			TYPE_OPERATOR_OR,
+			TYPE_OPERATOR_AND,
+			TYPE_OPERATOR_NOT
+		};
+
+		Type type;
+		Tester tester;
+
+		VariantTesterOrOperator(const Type type) : type(type)
+		{
+		}
+
+		VariantTesterOrOperator(const Tester& tester) : type(TYPE_TESTER), tester(tester)
+		{
+		}
+	};
+
+	class SelectionManager
+	{
+	public:
+		SelectionManager(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts) :
+			atoms_ptr_(&atoms),
+			contacts_ptr_(&contacts)
+		{
+		}
+
+		const std::vector<Atom>& atoms() const
+		{
+			return (*atoms_ptr_);
+		}
+
+		const std::vector<Contact>& contacts() const
+		{
+			return (*contacts_ptr_);
+		}
+
+		std::set<std::size_t> get_atoms_selections(const std::string& name) const
+		{
+			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_atoms_selections_.find(name);
+			if(it!=map_of_atoms_selections_.end())
+			{
+				return (it->second);
+			}
+			return std::set<std::size_t>();
+		}
+
+		std::set<std::size_t> get_contacts_selections(const std::string& name) const
+		{
+			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_contacts_selections_.find(name);
+			if(it!=map_of_contacts_selections_.end())
+			{
+				return (it->second);
+			}
+			return std::set<std::size_t>();
+		}
+
+		bool set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
+		{
+			if(!name.empty() && ids.size()<=atoms().size())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					if((*it)>=atoms().size())
+					{
+						return false;
+					}
+					map_of_atoms_selections_[name]=ids;
+				}
+			}
+			return false;
+		}
+
+		bool set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
+		{
+			if(!name.empty() && ids.size()<=contacts().size())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					if((*it)>=contacts().size())
+					{
+						return false;
+					}
+					map_of_contacts_selections_[name]=ids;
+				}
+			}
+			return false;
+		}
+
+	private:
+		const std::vector<Atom>* atoms_ptr_;
+		const std::vector<Contact>* contacts_ptr_;
+		std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
+		std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
+	};
+
 	template<typename Container, typename Tester>
 	static std::set<std::size_t> select(const Container& container, const Tester& tester)
 	{
