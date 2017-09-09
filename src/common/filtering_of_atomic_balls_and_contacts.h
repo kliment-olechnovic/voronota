@@ -14,11 +14,40 @@ public:
 	typedef ConstructionOfAtomicBalls::AtomicBall Atom;
 	typedef ConstructionOfContacts::Contact Contact;
 
-	class test_atom
+	class test_id
+	{
+	public:
+		std::set<std::size_t> allowed_ids;
+		std::string name_of_allowed_ids;
+
+		virtual bool operator()(const std::size_t id) const
+		{
+			if(allowed_ids.empty() || allowed_ids.count(id)>0)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		bool load_allowed_ids_by_name(const std::map< std::string, std::set<std::size_t> >& map_of_names_to_allowed_ids)
+		{
+			if(!name_of_allowed_ids.empty())
+			{
+				std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_names_to_allowed_ids.find(name_of_allowed_ids);
+				if(it!=map_of_names_to_allowed_ids.end())
+				{
+					allowed_ids=it->second;
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+
+	class test_atom : public test_id
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
-		bool invert;
 		std::string match_crad;
 		std::string match_crad_not;
 		std::string match_tags;
@@ -27,8 +56,7 @@ public:
 		std::string match_adjuncts_not;
 
 		test_atom(const std::vector<Atom>* atoms_ptr=0) :
-			atoms_ptr(atoms_ptr),
-			invert(false)
+			atoms_ptr(atoms_ptr)
 		{
 		}
 
@@ -36,7 +64,7 @@ public:
 		{
 			if(atoms_ptr!=0 && id<atoms_ptr->size())
 			{
-				return ((*this)((*atoms_ptr)[id]));
+				return (test_id::operator()(id) && (this->operator()((*atoms_ptr)[id])));
 			}
 			return false;
 		}
@@ -49,18 +77,17 @@ public:
 					MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
 			{
-				return !invert;
+				return true;
 			}
-			return invert;
+			return false;
 		}
 	};
 
-	class test_contact_between_atoms
+	class test_contact_between_atoms : public test_id
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
 		const std::vector<Contact>* contacts_ptr;
-		bool invert;
 		double match_min_area;
 		double match_max_area;
 		double match_min_dist;
@@ -79,7 +106,6 @@ public:
 		test_contact_between_atoms(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
 			atoms_ptr(atoms_ptr),
 			contacts_ptr(contacts_ptr),
-			invert(false),
 			match_min_area(std::numeric_limits<double>::min()),
 			match_max_area(std::numeric_limits<double>::max()),
 			match_min_dist(std::numeric_limits<double>::min()),
@@ -95,7 +121,7 @@ public:
 		{
 			if(contacts_ptr!=0 && id<contacts_ptr->size())
 			{
-				return ((*this)((*contacts_ptr)[id]));
+				return (test_id::operator()(id) && (this->operator()((*contacts_ptr)[id])));
 			}
 			return false;
 		}
@@ -104,7 +130,7 @@ public:
 		{
 			if(atoms_ptr!=0)
 			{
-				return ((*this)(*atoms_ptr, contact));
+				return (this->operator()(*atoms_ptr, contact));
 			}
 			return false;
 		}
@@ -137,32 +163,11 @@ public:
 							(test_atom_a(atom_b) && test_atom_b(atom_a))
 					)
 					{
-						return !invert;
+						return true;
 					}
 				}
 			}
-			return invert;
-		}
-	};
-
-	class test_id
-	{
-	public:
-		bool invert;
-		std::set<std::size_t> allowed;
-		std::set<std::size_t> forbidden;
-
-		test_id() : invert(false)
-		{
-		}
-
-		bool operator()(const std::size_t id) const
-		{
-			if((allowed.empty() || allowed.count(id)>0) && (forbidden.count(id)==0))
-			{
-				return !invert;
-			}
-			return invert;
+			return false;
 		}
 	};
 
