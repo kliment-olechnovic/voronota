@@ -62,7 +62,11 @@ public:
 
 		bool operator()(const std::size_t id) const
 		{
-			if(atoms_ptr!=0 && id<atoms_ptr->size())
+			if(atoms_ptr==0)
+			{
+				throw std::runtime_error(std::string("Atom test functor has no atoms list to refer to."));
+			}
+			else if(id<atoms_ptr->size())
 			{
 				return (test_id::operator()(id) && (this->operator()((*atoms_ptr)[id])));
 			}
@@ -119,7 +123,11 @@ public:
 
 		bool operator()(const std::size_t id) const
 		{
-			if(contacts_ptr!=0 && id<contacts_ptr->size())
+			if(contacts_ptr==0)
+			{
+				throw std::runtime_error(std::string("Contact test functor has no contacts list to refer to."));
+			}
+			else if(id<contacts_ptr->size())
 			{
 				return (test_id::operator()(id) && (this->operator()((*contacts_ptr)[id])));
 			}
@@ -128,7 +136,11 @@ public:
 
 		bool operator()(const Contact& contact) const
 		{
-			if(atoms_ptr!=0)
+			if(atoms_ptr==0)
+			{
+				throw std::runtime_error(std::string("Contact test functor has no atoms list to refer to."));
+			}
+			else
 			{
 				return (this->operator()(*atoms_ptr, contact));
 			}
@@ -172,27 +184,206 @@ public:
 	};
 
 	template<typename Tester>
-	class VariantTesterOrOperator
+	class test_id_using_expression
 	{
 	public:
-		enum Type
+		struct ExpressionToken
 		{
-			TYPE_TESTER,
-			TYPE_OPERATOR_OR,
-			TYPE_OPERATOR_AND,
-			TYPE_OPERATOR_NOT
+			enum Type
+			{
+				TYPE_TESTER,
+				TYPE_OPERATOR_OR,
+				TYPE_OPERATOR_AND,
+				TYPE_OPERATOR_NOT,
+				TYPE_BRACKET_OPEN,
+				TYPE_BRACKET_CLOSE,
+			};
+
+			Type type;
+			Tester tester;
+
+			ExpressionToken(const Type type) : type(type)
+			{
+			}
+
+			ExpressionToken(const Tester& tester) : type(TYPE_TESTER), tester(tester)
+			{
+			}
+
+			bool is_binary_operator() const
+			{
+				return (type==ExpressionToken::TYPE_OPERATOR_OR || type==ExpressionToken::TYPE_OPERATOR_AND);
+			}
+
+			bool is_unary_operator() const
+			{
+				return (type==ExpressionToken::TYPE_OPERATOR_NOT);
+			}
+
+			bool is_operator() const
+			{
+				return (is_binary_operator() || is_unary_operator());
+			}
+
+			bool is_bracket() const
+			{
+				return (type==ExpressionToken::TYPE_BRACKET_OPEN || type==ExpressionToken::TYPE_BRACKET_CLOSE);
+			}
 		};
 
-		Type type;
-		Tester tester;
-
-		VariantTesterOrOperator(const Type type) : type(type)
+		test_id_using_expression(const std::vector<ExpressionToken>& expression, const bool postfix)
 		{
+			if(postfix)
+			{
+				postfix_expression_=expression;
+			}
+			else
+			{
+				postfix_expression_=convert_infix_expression_to_postfix_expression(expression);
+			}
 		}
 
-		VariantTesterOrOperator(const Tester& tester) : type(TYPE_TESTER), tester(tester)
+		bool operator()(const std::size_t id) const
 		{
+			if(!postfix_expression_.empty())
+			{
+				std::vector<bool> operands_stack;
+
+				for(std::vector<ExpressionToken>::const_iterator it=postfix_expression_.begin();it!=postfix_expression_.end();++it)
+				{
+					const ExpressionToken& token=(*it);
+
+					if(token.type==ExpressionToken::TYPE_TESTER)
+					{
+						operands_stack.push_back(token.tester(id));
+					}
+					else if(token.is_binary_operator())
+					{
+						if(operands_stack.size()<2)
+						{
+							throw std::runtime_error(std::string("Invalid binary operation in the expression."));
+						}
+						else
+						{
+							const bool a=operands_stack.back();
+							operands_stack.pop_back();
+							const bool b=operands_stack.back();
+							operands_stack.pop_back();
+							if(token.type==ExpressionToken::TYPE_OPERATOR_OR)
+							{
+								operands_stack.push_back(a || b);
+							}
+							else if(token.type==ExpressionToken::TYPE_OPERATOR_AND)
+							{
+								operands_stack.push_back(a && b);
+							}
+							else
+							{
+								throw std::runtime_error(std::string("Binary operation not implemented."));
+							}
+						}
+					}
+					else if(token.is_unary_operator())
+					{
+						if(operands_stack.empty())
+						{
+							throw std::runtime_error(std::string("Invalid unary operation in the expression."));
+						}
+						else
+						{
+							const bool a=operands_stack.back();
+							operands_stack.pop_back();
+							if(token.type==ExpressionToken::TYPE_OPERATOR_NOT)
+							{
+								operands_stack.push_back(!a);
+							}
+							else
+							{
+								throw std::runtime_error(std::string("Binary operation not implemented."));
+							}
+						}
+					}
+					else
+					{
+						throw std::runtime_error(std::string("Invalid token in the postfix expression."));
+					}
+				}
+
+				if(operands_stack.size()!=1)
+				{
+					throw std::runtime_error(std::string("Invalid expression."));
+				}
+
+				return operands_stack.back();
+			}
+
+			return false;
 		}
+
+	private:
+		static std::vector<ExpressionToken> convert_infix_expression_to_postfix_expression(const std::vector<ExpressionToken>& infix_expression)
+		{
+			std::vector<ExpressionToken> output;
+			std::vector<ExpressionToken> operators_stack;
+
+			for(std::vector<ExpressionToken>::const_iterator it=infix_expression.begin();it!=infix_expression.end();++it)
+			{
+				const ExpressionToken& token=(*it);
+
+				if(token.type==ExpressionToken::TYPE_TESTER)
+				{
+					output.push_back(token);
+				}
+				else if(token.is_operator())
+				{
+					if(token.is_binary_operator())
+					{
+						while(!operators_stack.empty() && operators_stack.back().is_operator())
+						{
+							output.push_back(operators_stack.back());
+							operators_stack.pop_back();
+						}
+					}
+					operators_stack.push_back(token);
+				}
+				else if(token.type==ExpressionToken::TYPE_BRACKET_OPEN)
+				{
+					operators_stack.push_back(token);
+				}
+				else if(token.type==ExpressionToken::TYPE_BRACKET_CLOSE)
+				{
+					while(!operators_stack.empty() && operators_stack.back().is_operator())
+					{
+						output.push_back(operators_stack.back());
+						operators_stack.pop_back();
+					}
+
+					if(operators_stack.empty() || operators_stack.back().type!=ExpressionToken::TYPE_BRACKET_OPEN)
+					{
+						throw std::runtime_error(std::string("Mismatched parenthesis in the infix expression."));
+					}
+					else
+					{
+						operators_stack.pop_back();
+					}
+				}
+			}
+
+			while(!operators_stack.empty() && operators_stack.back().is_operator())
+			{
+				output.push_back(operators_stack.back());
+				operators_stack.pop_back();
+			}
+
+			if(!operators_stack.empty())
+			{
+				throw std::runtime_error(std::string("Mismatched parenthesis in the infix expression."));
+			}
+
+			return output;
+		}
+
+		std::vector<ExpressionToken> postfix_expression_;
 	};
 
 	class SelectionManager
@@ -214,101 +405,59 @@ public:
 			return (*contacts_ptr_);
 		}
 
-		std::set<std::size_t> get_atoms_selections(const std::string& name) const
+		std::set<std::size_t> get_atoms_selection(const std::string& name) const
 		{
-			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_atoms_selections_.find(name);
-			if(it!=map_of_atoms_selections_.end())
-			{
-				return (it->second);
-			}
-			return std::set<std::size_t>();
+			return get_selection(name, map_of_atoms_selections_);
 		}
 
-		std::set<std::size_t> get_contacts_selections(const std::string& name) const
+		std::set<std::size_t> get_contacts_selection(const std::string& name) const
 		{
-			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_contacts_selections_.find(name);
-			if(it!=map_of_contacts_selections_.end())
-			{
-				return (it->second);
-			}
-			return std::set<std::size_t>();
+			return get_selection(name, map_of_contacts_selections_);
 		}
 
 		bool set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
-			if(!name.empty() && ids.size()<=atoms().size())
-			{
-				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-				{
-					if((*it)>=atoms().size())
-					{
-						return false;
-					}
-					map_of_atoms_selections_[name]=ids;
-				}
-			}
-			return false;
+			return set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
 		}
 
 		bool set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
-			if(!name.empty() && ids.size()<=contacts().size())
+			return set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
+		}
+
+	private:
+		static std::set<std::size_t> get_selection(const std::string& name, const std::map< std::string, std::set<std::size_t> >& map_of_selections) const
+		{
+			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.find(name);
+			if(it!=map_of_selections.end())
+			{
+				return (it->second);
+			}
+			return std::set<std::size_t>();
+		}
+
+		static bool set_selection(const std::string& name, const std::set<std::size_t>& ids, const std::size_t id_limit, std::map< std::string, std::set<std::size_t> >& map_of_selections)
+		{
+			if(!name.empty() && ids.size()<=id_limit)
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
-					if((*it)>=contacts().size())
+					if((*it)>=id_limit)
 					{
 						return false;
 					}
-					map_of_contacts_selections_[name]=ids;
 				}
+				map_of_selections[name]=ids;
+				return true;
 			}
 			return false;
 		}
 
-	private:
 		const std::vector<Atom>* atoms_ptr_;
 		const std::vector<Contact>* contacts_ptr_;
 		std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 		std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 	};
-
-	template<typename Container, typename Tester>
-	static std::set<std::size_t> select(const Container& container, const Tester& tester)
-	{
-		std::set<std::size_t> result;
-		if(!container.empty())
-		{
-			std::set<std::size_t>::iterator pos=result.begin();
-			for(std::size_t i=0;i<container.size();i++)
-			{
-				if(tester(container[i]))
-				{
-					pos=result.insert(pos, i);
-				}
-			}
-		}
-		return result;
-	}
-
-	template<typename Container, typename Tester>
-	static std::set<std::size_t> select(const Container& container, const std::set<std::size_t>& restriction, const Tester& tester)
-	{
-		std::set<std::size_t> result;
-		if(!container.empty() || restriction.empty())
-		{
-			std::set<std::size_t>::iterator pos=result.begin();
-			for(std::set<std::size_t>::const_iterator it=restriction.begin();it!=restriction.end();++it)
-			{
-				const std::size_t i=(*it);
-				if(i<container.size() && tester(container[i]))
-				{
-					pos=result.insert(pos, i);
-				}
-			}
-		}
-		return result;
-	}
 };
 
 }
