@@ -171,8 +171,8 @@ public:
 				)
 				{
 					if(
-							(test_atom_a(atom_a) && test_atom_b(atom_b)) ||
-							(test_atom_a(atom_b) && test_atom_b(atom_a))
+							(test_atom_a(contact.ids[0]) && test_atom_b(contact.ids[1])) ||
+							(test_atom_a(contact.ids[1]) && test_atom_b(contact.ids[0]))
 					)
 					{
 						return true;
@@ -201,6 +201,10 @@ public:
 
 			Type type;
 			Tester tester;
+
+			ExpressionToken() : type(TYPE_TESTER)
+			{
+			}
 
 			ExpressionToken(const Type type) : type(type)
 			{
@@ -459,6 +463,223 @@ public:
 		std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 	};
 };
+
+inline std::istream& operator>>(std::istream& input, FilteringOfAtomicBallsAndContacts::test_atom& tester)
+{
+	std::string token;
+	input >> token;
+
+	if(token.empty())
+	{
+		return input;
+	}
+
+	if(token!="{")
+	{
+		throw std::runtime_error(std::string("Invalid atom tester string start."));
+	}
+	else
+	{
+		bool end=false;
+		while(input.good() && end)
+		{
+			std::string token;
+			input >> token;
+
+			if(token=="}")
+			{
+				end=true;
+			}
+			else if(token=="selection")
+			{
+				input << tester.name_of_allowed_ids;
+			}
+			else if(token=="match")
+			{
+				input << tester.match_crad;
+			}
+			else if(token=="match-not")
+			{
+				input << tester.match_crad_not;
+			}
+			else if(token=="tags")
+			{
+				input << tester.match_tags;
+			}
+			else if(token=="tags-not")
+			{
+				input << tester.match_tags_not;
+			}
+			else if(token=="adjuncts")
+			{
+				input << tester.match_adjuncts;
+			}
+			else if(token=="adjuncts-not")
+			{
+				input << tester.match_adjuncts_not;
+			}
+
+			if(input.fail() || token.empty())
+			{
+				throw std::runtime_error(std::string("Invalid atom tester string."));
+			}
+		}
+		if(!end)
+		{
+			throw std::runtime_error(std::string("Invalid atom tester string end."));
+		}
+	}
+
+	return input;
+}
+
+inline std::istream& operator>>(std::istream& input, FilteringOfAtomicBallsAndContacts::test_contact_between_atoms& tester)
+{
+	std::string token;
+	input >> token;
+
+	if(token.empty())
+	{
+		return input;
+	}
+
+	if(token!="{")
+	{
+		throw std::runtime_error(std::string("Invalid contact tester string start."));
+	}
+	else
+	{
+		bool end=false;
+		while(input.good() && end)
+		{
+			std::string token;
+			input >> token;
+
+			if(token=="}")
+			{
+				end=true;
+			}
+			else if(token=="selection")
+			{
+				input << tester.name_of_allowed_ids;
+			}
+			else if(token=="min-area")
+			{
+				input << tester.match_min_area;
+			}
+			else if(token=="max-area")
+			{
+				input << tester.match_max_area;
+			}
+			else if(token=="min-dist")
+			{
+				input << tester.match_min_dist;
+			}
+			else if(token=="max-dist")
+			{
+				input << tester.match_max_dist;
+			}
+			else if(token=="min-seq-sep")
+			{
+				input << tester.match_min_sequence_separation;
+			}
+			else if(token=="max-seq-sep")
+			{
+				input << tester.match_max_sequence_separation;
+			}
+			else if(token=="tags")
+			{
+				input << tester.match_tags;
+			}
+			else if(token=="tags-not")
+			{
+				input << tester.match_tags_not;
+			}
+			else if(token=="adjuncts")
+			{
+				input << tester.match_adjuncts;
+			}
+			else if(token=="adjuncts-not")
+			{
+				input << tester.match_adjuncts_not;
+			}
+			else if(token=="atom-first")
+			{
+				input << tester.test_atom_a;
+			}
+			else if(token=="atom-second")
+			{
+				input << tester.test_atom_b;
+			}
+			else if(token=="no-solvent")
+			{
+				tester.no_solvent=true;
+			}
+			else if(token=="no-same-chain")
+			{
+				tester.no_same_chain=true;
+			}
+
+			if(input.fail() || token.empty())
+			{
+				throw std::runtime_error(std::string("Invalid contact tester string."));
+			}
+		}
+		if(!end)
+		{
+			throw std::runtime_error(std::string("Invalid contact tester string end."));
+		}
+	}
+
+	return input;
+}
+
+template<typename Tester>
+inline std::istream& operator>>(std::istream& input, typename FilteringOfAtomicBallsAndContacts::test_id_using_expression<Tester>::ExpressionToken& obj)
+{
+	typedef typename FilteringOfAtomicBallsAndContacts::test_id_using_expression<Tester>::ExpressionToken ExpressionToken;
+
+	input >> std::ws;
+	const int c=input.peek();
+
+	if(c==std::char_traits<char>::eof())
+	{
+		return input;
+	}
+
+	if(c==std::char_traits<char>::to_int_type('{'))
+	{
+		input >> obj.tester;
+		obj.type=ExpressionToken::TYPE_TESTER;
+	}
+	else if(c==std::char_traits<char>::to_int_type('|'))
+	{
+		input.get();
+		obj.type=ExpressionToken::TYPE_OPERATOR_OR;
+	}
+	else if(c==std::char_traits<char>::to_int_type('&'))
+	{
+		input.get();
+		obj.type=ExpressionToken::TYPE_OPERATOR_AND;
+	}
+	else if(c==std::char_traits<char>::to_int_type('!'))
+	{
+		input.get();
+		obj.type=ExpressionToken::TYPE_OPERATOR_NOT;
+	}
+	else if(c==std::char_traits<char>::to_int_type('('))
+	{
+		input.get();
+		obj.type=ExpressionToken::TYPE_BRACKET_OPEN;
+	}
+	else if(c==std::char_traits<char>::to_int_type(')'))
+	{
+		input.get();
+		obj.type=ExpressionToken::TYPE_BRACKET_CLOSE;
+	}
+
+	return input;
+}
 
 }
 
