@@ -46,7 +46,7 @@ public:
 
 		void set_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
 		{
-			atom_radius_assigner=generate_atom_radius_assigner(1.7, false, radii_file);
+			atom_radius_assigner=generate_atom_radius_assigner(default_radius, only_default_radius, radii_file);
 		}
 
 		bool operator()(std::istream& input_stream, std::vector<AtomicBall>& atomic_balls) const
