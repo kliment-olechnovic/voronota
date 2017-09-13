@@ -71,6 +71,20 @@ public:
 			}
 			return false;
 		}
+
+		bool operator()(const ChainResidueAtomDescriptor& crad) const
+		{
+			const PropertiesValue props;
+			if(
+					MatchingUtilities::match_crad(crad, match_crad, match_crad_not) &&
+					MatchingUtilities::match_set_of_tags(props.tags, match_tags, match_tags_not) &&
+					MatchingUtilities::match_map_of_adjuncts(props.adjuncts, match_adjuncts, match_adjuncts_not)
+			)
+			{
+				return true;
+			}
+			return false;
+		}
 	};
 
 	class test_contact : public test_id
@@ -145,10 +159,8 @@ public:
 					(!no_solvent || !contact.solvent())
 			)
 			{
-				const Atom& atom_a=atoms[contact.ids[0]];
-				const Atom& atom_b=atoms[contact.ids[1]];
-				const ChainResidueAtomDescriptor& crad_a=atom_a.crad;
-				const ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? ChainResidueAtomDescriptor::solvent() : atom_b.crad);
+				const ChainResidueAtomDescriptor& crad_a=atoms[contact.ids[0]].crad;
+				const ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? ChainResidueAtomDescriptor::solvent() : atoms[contact.ids[1]].crad);
 				if(
 						(!no_same_chain || crad_a.chainID!=crad_b.chainID) &&
 						ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crad_a, crad_b, match_min_sequence_separation, match_max_sequence_separation, true) &&
@@ -156,10 +168,14 @@ public:
 						MatchingUtilities::match_map_of_adjuncts(contact.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 				)
 				{
-					if(
-							(test_atom_a(contact.ids[0]) && test_atom_b(contact.ids[1])) ||
-							(test_atom_a(contact.ids[1]) && test_atom_b(contact.ids[0]))
-					)
+					if(contact.solvent())
+					{
+						if((test_atom_a(contact.ids[0]) && test_atom_b(crad_b)) || (test_atom_a(crad_b) && test_atom_b(contact.ids[0])))
+						{
+							return true;
+						}
+					}
+					else if((test_atom_a(contact.ids[0]) && test_atom_b(contact.ids[1])) || (test_atom_a(contact.ids[1]) && test_atom_b(contact.ids[0])))
 					{
 						return true;
 					}
