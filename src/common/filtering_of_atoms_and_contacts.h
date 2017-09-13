@@ -248,7 +248,7 @@ public:
 		{
 			std::vector<bool> operands_stack;
 
-			for(std::vector<Token>::const_iterator it=postfix_expression.begin();it!=postfix_expression.end();++it)
+			for(typename std::vector<Token>::const_iterator it=postfix_expression.begin();it!=postfix_expression.end();++it)
 			{
 				const Token& token=(*it);
 
@@ -327,7 +327,7 @@ public:
 		std::vector<Token> output;
 		std::vector<Token> operators_stack;
 
-		for(std::vector<Token>::const_iterator it=infix_expression.begin();it!=infix_expression.end();++it)
+		for(typename std::vector<Token>::const_iterator it=infix_expression.begin();it!=infix_expression.end();++it)
 		{
 			const Token& token=(*it);
 
@@ -464,7 +464,7 @@ public:
 		}
 
 	private:
-		static std::set<std::size_t> get_selection(const std::string& name, const std::map< std::string, std::set<std::size_t> >& map_of_selections) const
+		static std::set<std::size_t> get_selection(const std::string& name, const std::map< std::string, std::set<std::size_t> >& map_of_selections)
 		{
 			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.find(name);
 			if(it!=map_of_selections.end())
@@ -607,6 +607,8 @@ public:
 						test_contact& tester=postfix_expression[i].tester;
 						tester.atoms_ptr=atoms_ptr_;
 						tester.contacts_ptr=contacts_ptr_;
+						tester.test_atom_a.atoms_ptr=atoms_ptr_;
+						tester.test_atom_b.atoms_ptr=atoms_ptr_;
 						if(!tester.name_of_allowed_ids.empty())
 						{
 							tester.allowed_ids=get_contacts_selection(tester.name_of_allowed_ids);
@@ -659,7 +661,7 @@ inline std::istream& operator>>(std::istream& input, FilteringOfAtomsAndContacts
 	else
 	{
 		bool end=false;
-		while(input.good() && end)
+		while(input.good() && !end)
 		{
 			std::string token;
 			input >> token;
@@ -725,7 +727,7 @@ inline std::istream& operator>>(std::istream& input, FilteringOfAtomsAndContacts
 	else
 	{
 		bool end=false;
-		while(input.good() && end)
+		while(input.good() && !end)
 		{
 			std::string token;
 			input >> token;
