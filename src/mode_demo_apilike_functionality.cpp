@@ -31,16 +31,16 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 
 			common::FilteringOfAtomsAndContacts::SelectionManager selection_manager(atomic_balls, bundle_of_contact_information.contacts);
 
-			std::clog << selection_manager.select_atoms("{match c<A>}", false).size() << " atoms in chain A" << std::endl;
-			std::clog << selection_manager.select_atoms("{match c<B>}", false).size() << " atoms in chain B" << std::endl;
-			std::clog << selection_manager.select_contacts("{atom-first {match c<A>} atom-second {match c<B>}}", false).size() << " contacts between A and B" << std::endl;
-			selection_manager.set_atoms_selection("chainA", selection_manager.select_atoms("{match c<A>}", false));
-			selection_manager.set_atoms_selection("chainB", selection_manager.select_atoms("{match c<B>}", false));
-			std::clog << selection_manager.select_contacts("{atom-first {selection chainA} atom-second {selection chainB}}", false).size() << " contacts between A and B" << std::endl;
-			std::clog << selection_manager.select_contacts("{min-seq-sep 1}", false).size() << " drawable contacts" << std::endl;
-			std::clog << selection_manager.select_contacts("{max-seq-sep 0}", false).size() << " non-drawable contacts" << std::endl;
-			std::clog << selection_manager.select_contacts("{atom-second {match c<solvent>}}", false).size() << " solvent contacts" << std::endl;
-			std::clog << selection_manager.select_contacts("not {no-solvent}", false).size() << " solvent contacts" << std::endl;
+			std::clog << selection_manager.select_atoms("{match c<A>}").size() << " atoms in chain A" << std::endl;
+			std::clog << selection_manager.select_atoms("{match c<B>}").size() << " atoms in chain B" << std::endl;
+			std::clog << selection_manager.select_contacts("{atom-first {match c<A>} atom-second {match c<B>}}").size() << " contacts between A and B" << std::endl;
+			selection_manager.set_atoms_selection("chainA", selection_manager.select_atoms("{match c<A>}"));
+			selection_manager.set_atoms_selection("chainB", selection_manager.select_atoms("{match c<B>}"));
+			std::clog << selection_manager.select_contacts("{atom-first {selection chainA} atom-second {selection chainB}}").size() << " contacts between A and B" << std::endl;
+			std::clog << selection_manager.select_contacts("{min-seq-sep 1}").size() << " drawable contacts" << std::endl;
+			std::clog << selection_manager.select_contacts("{max-seq-sep 0}").size() << " non-drawable contacts" << std::endl;
+			std::clog << selection_manager.select_contacts("{atom-second {match c<solvent>}}").size() << " solvent contacts" << std::endl;
+			std::clog << selection_manager.select_contacts("not {no-solvent}").size() << " solvent contacts" << std::endl;
 		}
 	}
 }
