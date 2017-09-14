@@ -33,7 +33,7 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 
 			std::clog << selection_manager.select_atoms("{match c<A>}").size() << " atoms in chain A" << std::endl;
 			std::clog << selection_manager.select_atoms("{match c<B>}").size() << " atoms in chain B" << std::endl;
-			std::clog << selection_manager.select_contacts("{atom-first {match c<A>} atom-second {match c<B>}}").size() << " contacts between A and B" << std::endl;
+			std::clog << selection_manager.select_contacts("{atom-first  {    match    c  <  A  >    }atom-second{match c<B>}}").size() << " contacts between A and B" << std::endl;
 			selection_manager.set_atoms_selection("chainA", selection_manager.select_atoms("{match c<A>}"));
 			selection_manager.set_atoms_selection("chainB", selection_manager.select_atoms("{match c<B>}"));
 			std::clog << selection_manager.select_contacts("{atom-first {selection chainA} atom-second {selection chainB}}").size() << " contacts between A and B" << std::endl;

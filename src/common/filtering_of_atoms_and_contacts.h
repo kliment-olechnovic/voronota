@@ -18,7 +18,6 @@ public:
 	{
 	public:
 		std::set<std::size_t> allowed_ids;
-		std::string name_of_allowed_ids;
 
 		virtual bool operator()(const std::size_t id) const
 		{
@@ -34,6 +33,8 @@ public:
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
+		std::string name_of_base_selection_of_atoms;
+		std::string name_of_base_selection_of_contacts;
 		std::string match_crad;
 		std::string match_crad_not;
 		std::string match_tags;
@@ -101,6 +102,7 @@ public:
 	public:
 		const std::vector<Atom>* atoms_ptr;
 		const std::vector<Contact>* contacts_ptr;
+		std::string name_of_base_selection_of_contacts;
 		double match_min_area;
 		double match_max_area;
 		double match_min_dist;
@@ -518,41 +520,60 @@ public:
 			if(!expression_string.empty())
 			{
 				std::string prepared_string;
-				for(std::size_t i=0;i<expression_string.size();i++)
+				char last_nws=0;
+				std::size_t i=0;
+				while(i<expression_string.size())
 				{
 					const char c=expression_string[i];
-					if(c==' ')
+					if(c>0 && c<=32)
 					{
-						if(i>0 && i+1<expression_string.size())
+						if(last_nws!=0 && i+1<expression_string.size())
 						{
-							const char c_prev=expression_string[i-1];
-							const char c_next=expression_string[i+1];
-							if(
-									c_prev!=',' && c_prev!=';' && c_prev!='|' && c_prev!='&' &&
-									c_next!=' ' &&
-									c_next!=',' && c_next!=';' && c_next!='|' && c_next!='&'
-							)
+							if(!(last_nws==',' || last_nws==';' || last_nws=='|' || last_nws=='&' || last_nws=='<'))
 							{
-								prepared_string.push_back(c);
+								char next_nws=0;
+								std::size_t j=i+1;
+								while(j<expression_string.size() && next_nws==0)
+								{
+									const char d=expression_string[j];
+									if(d>32)
+									{
+										next_nws=d;
+										i=j-1;
+									}
+									j++;
+								}
+								if(next_nws!=0)
+								{
+									if(!(next_nws==',' || next_nws==';' || next_nws=='|' || next_nws=='&' || next_nws=='<' || next_nws=='>'))
+									{
+										prepared_string.push_back(' ');
+									}
+								}
 							}
 						}
 					}
-					else if(c=='{' || c=='}' || c=='(' || c==')')
+					else if(c>0)
 					{
-						if(i>0)
+						last_nws=c;
+						if(c=='{' || c=='}' || c=='(' || c==')')
 						{
-							prepared_string.push_back(' ');
+							if(!prepared_string.empty() && prepared_string.back()>32)
+							{
+								prepared_string.push_back(' ');
+							}
+							prepared_string.push_back(c);
+							if(i+1<expression_string.size() && expression_string[i+1]>32)
+							{
+								prepared_string.push_back(' ');
+							}
 						}
-						prepared_string.push_back(c);
-						if(i+1<expression_string.size())
+						else
 						{
-							prepared_string.push_back(' ');
+							prepared_string.push_back(c);
 						}
 					}
-					else
-					{
-						prepared_string.push_back(c);
-					}
+					i++;
 				}
 				std::istringstream input(prepared_string);
 				while(input.good())
@@ -563,6 +584,43 @@ public:
 				}
 			}
 			return result;
+		}
+
+		void fix_atom_tester(test_atom& tester) const
+		{
+			tester.atoms_ptr=atoms_ptr_;
+
+			if(!tester.name_of_base_selection_of_atoms.empty())
+			{
+				const std::set<std::size_t> sel=get_atoms_selection(tester.name_of_base_selection_of_atoms);
+				tester.allowed_ids.insert(sel.begin(), sel.end());
+			}
+
+			if(!tester.name_of_base_selection_of_contacts.empty())
+			{
+				const std::set<std::size_t> sel=get_contacts_selection(tester.name_of_base_selection_of_contacts);
+				for(std::set<std::size_t>::const_iterator it=sel.begin();it!=sel.end();++it)
+				{
+					const Contact& contact=contacts()[*it];
+					tester.allowed_ids.insert(contact.ids[0]);
+					tester.allowed_ids.insert(contact.ids[1]);
+				}
+			}
+		}
+
+		void fix_contact_tester(test_contact& tester) const
+		{
+			tester.atoms_ptr=atoms_ptr_;
+			tester.contacts_ptr=contacts_ptr_;
+
+			if(!tester.name_of_base_selection_of_contacts.empty())
+			{
+				std::set<std::size_t> sel=get_contacts_selection(tester.name_of_base_selection_of_contacts);
+				tester.allowed_ids.insert(sel.begin(), sel.end());
+			}
+
+			fix_atom_tester(tester.test_atom_a);
+			fix_atom_tester(tester.test_atom_b);
 		}
 
 		std::set<std::size_t> select_atoms(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_atom> >& expression, const bool postfix) const
@@ -577,12 +635,7 @@ public:
 				{
 					if(postfix_expression[i].is_tester())
 					{
-						test_atom& tester=postfix_expression[i].tester;
-						tester.atoms_ptr=atoms_ptr_;
-						if(!tester.name_of_allowed_ids.empty())
-						{
-							tester.allowed_ids=get_atoms_selection(tester.name_of_allowed_ids);
-						}
+						fix_atom_tester(postfix_expression[i].tester);
 					}
 				}
 
@@ -624,23 +677,7 @@ public:
 				{
 					if(postfix_expression[i].is_tester())
 					{
-						test_contact& tester=postfix_expression[i].tester;
-						tester.atoms_ptr=atoms_ptr_;
-						tester.contacts_ptr=contacts_ptr_;
-						tester.test_atom_a.atoms_ptr=atoms_ptr_;
-						tester.test_atom_b.atoms_ptr=atoms_ptr_;
-						if(!tester.name_of_allowed_ids.empty())
-						{
-							tester.allowed_ids=get_contacts_selection(tester.name_of_allowed_ids);
-						}
-						if(!tester.test_atom_a.name_of_allowed_ids.empty())
-						{
-							tester.test_atom_a.allowed_ids=get_atoms_selection(tester.test_atom_a.name_of_allowed_ids);
-						}
-						if(!tester.test_atom_b.name_of_allowed_ids.empty())
-						{
-							tester.test_atom_b.allowed_ids=get_atoms_selection(tester.test_atom_b.name_of_allowed_ids);
-						}
+						fix_contact_tester(postfix_expression[i].tester);
 					}
 				}
 
@@ -700,7 +737,11 @@ inline std::istream& operator>>(std::istream& input, FilteringOfAtomsAndContacts
 			}
 			else if(token=="selection")
 			{
-				input >> tester.name_of_allowed_ids;
+				input >> tester.name_of_base_selection_of_atoms;
+			}
+			else if(token=="selection-of-contacts")
+			{
+				input >> tester.name_of_base_selection_of_contacts;
 			}
 			else if(token=="match")
 			{
@@ -766,7 +807,7 @@ inline std::istream& operator>>(std::istream& input, FilteringOfAtomsAndContacts
 			}
 			else if(token=="selection")
 			{
-				input >> tester.name_of_allowed_ids;
+				input >> tester.name_of_base_selection_of_contacts;
 			}
 			else if(token=="min-area")
 			{
