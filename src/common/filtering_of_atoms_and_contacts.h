@@ -59,6 +59,15 @@ public:
 			return false;
 		}
 
+		bool operator()(const std::vector<Atom>& atoms, const std::size_t id) const
+		{
+			if(id<atoms.size())
+			{
+				return (test_id::operator()(id) && (this->operator()(atoms[id])));
+			}
+			return false;
+		}
+
 		bool operator()(const Atom& atom) const
 		{
 			if(
@@ -134,6 +143,15 @@ public:
 			return false;
 		}
 
+		bool operator()(const std::vector<Contact>& contacts, const std::size_t id) const
+		{
+			if(id<contacts.size())
+			{
+				return (test_id::operator()(id) && (this->operator()(contacts[id])));
+			}
+			return false;
+		}
+
 		bool operator()(const Contact& contact) const
 		{
 			if(atoms_ptr==0)
@@ -159,8 +177,10 @@ public:
 					(!no_solvent || !contact.solvent())
 			)
 			{
-				const ChainResidueAtomDescriptor& crad_a=atoms[contact.ids[0]].crad;
-				const ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? ChainResidueAtomDescriptor::solvent() : atoms[contact.ids[1]].crad);
+				const Atom& atom_a=atoms[contact.ids[0]];
+				const Atom& atom_b=atoms[contact.ids[1]];
+				const ChainResidueAtomDescriptor& crad_a=atom_a.crad;
+				const ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? ChainResidueAtomDescriptor::solvent() : atom_b.crad);
 				if(
 						(!no_same_chain || crad_a.chainID!=crad_b.chainID) &&
 						ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crad_a, crad_b, match_min_sequence_separation, match_max_sequence_separation, true) &&
@@ -170,12 +190,12 @@ public:
 				{
 					if(contact.solvent())
 					{
-						if((test_atom_a(contact.ids[0]) && test_atom_b(crad_b)) || (test_atom_a(crad_b) && test_atom_b(contact.ids[0])))
+						if((test_atom_b.allowed_ids.empty() && test_atom_b(crad_b) && test_atom_a(atoms, contact.ids[0])) || (test_atom_a.allowed_ids.empty() && test_atom_a(crad_b) && test_atom_b(atoms, contact.ids[0])))
 						{
 							return true;
 						}
 					}
-					else if((test_atom_a(contact.ids[0]) && test_atom_b(contact.ids[1])) || (test_atom_a(contact.ids[1]) && test_atom_b(contact.ids[0])))
+					else if((test_atom_a(atoms, contact.ids[0]) && test_atom_b(atoms, contact.ids[1])) || (test_atom_a(atoms, contact.ids[1]) && test_atom_b(atoms, contact.ids[0])))
 					{
 						return true;
 					}
@@ -612,6 +632,14 @@ public:
 						if(!tester.name_of_allowed_ids.empty())
 						{
 							tester.allowed_ids=get_contacts_selection(tester.name_of_allowed_ids);
+						}
+						if(!tester.test_atom_a.name_of_allowed_ids.empty())
+						{
+							tester.test_atom_a.allowed_ids=get_atoms_selection(tester.test_atom_a.name_of_allowed_ids);
+						}
+						if(!tester.test_atom_b.name_of_allowed_ids.empty())
+						{
+							tester.test_atom_b.allowed_ids=get_atoms_selection(tester.test_atom_b.name_of_allowed_ids);
 						}
 					}
 				}
