@@ -217,7 +217,7 @@ public:
 			TYPE_OPERATOR_AND,
 			TYPE_OPERATOR_NOT,
 			TYPE_BRACKET_OPEN,
-			TYPE_BRACKET_CLOSE,
+			TYPE_BRACKET_CLOSE
 		};
 
 		Type type;
@@ -558,7 +558,7 @@ public:
 						last_nws=c;
 						if(c=='{' || c=='}' || c=='(' || c==')')
 						{
-							if(!prepared_string.empty() && prepared_string.back()>32)
+							if(!prepared_string.empty() && prepared_string[prepared_string.size()-1]>32)
 							{
 								prepared_string.push_back(' ');
 							}
