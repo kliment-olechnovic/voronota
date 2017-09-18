@@ -369,8 +369,6 @@ cat $INFILE_CONTENTS_EXTRACTED \
   --radii-file <(voronota-resources radii) \
   --include-heteroatoms \
 | voronota query-balls \
-  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>' \
-| voronota query-balls \
   --drop-adjuncts \
   --drop-altloc-indicators \
 | \
@@ -387,6 +385,8 @@ cat $INFILE_CONTENTS_EXTRACTED \
 	if [ -s "$REFERENCE_SEQUENCE" ]
 	then
 		voronota query-balls \
+		  --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>' \
+		| voronota query-balls \
 		  --set-ref-seq-num-adjunct "$REFERENCE_SEQUENCE" \
 		  --ref-seq-alignment $TMPLDIR/sequence_alignment \
 		| voronota query-balls \
@@ -402,7 +402,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 	if [ -n "$REBUILD_SIDECHAINS_COMMAND" ]
 	then
 		voronota query-balls \
-		  --match 'A<CA,C,N,O,OXT>' \
+		  --match 'A<CA,C,N,O,OXT>&R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>' \
 		| voronota write-balls-to-atoms-file \
 		  --pdb-output $TMPLDIR/atoms_stripped.pdb \
 		> /dev/null
@@ -471,6 +471,8 @@ then
 	| tee $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
 	  --match-min-seq-sep 1 \
+	  --match-first 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>' \
+	  --match-second 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>|c<solvent>' \
 	| voronota query-contacts \
 	  --match-first 'A<C>' \
 	  --match-second 'A<N>' \
@@ -503,6 +505,19 @@ then
 		mkdir -p $CACHE_DIRECTORY
 		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 	fi
+fi
+
+cat $TMPLDIR/balls \
+| voronota query-balls \
+  --match-external-annotations <(cat $TMPLDIR/foundation/all_contacts | awk '{print $1 " " $2}' | tr ' ' '\n' | grep R) \
+> $TMPLDIR/balls_of_contacts
+
+mv $TMPLDIR/balls_of_contacts $TMPLDIR/balls
+
+if [ ! -s "$TMPLDIR/balls" ]
+then
+	echo >&2 "Error: no atoms have meaningful contacts"
+	exit 1
 fi
 
 if [ -n "$OUTFILE_CONTACTS" ]
