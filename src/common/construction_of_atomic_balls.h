@@ -105,7 +105,7 @@ public:
 		}
 
 	private:
-		static auxiliaries::AtomRadiusAssigner generate_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string radii_file)
+		static auxiliaries::AtomRadiusAssigner generate_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
 		{
 			auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
 			if(!only_default_radius)
