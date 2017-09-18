@@ -42,7 +42,7 @@ public:
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
 
-		test_atom(const std::vector<Atom>* atoms_ptr=0) :
+		explicit test_atom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
 		{
 		}
@@ -227,11 +227,11 @@ public:
 		{
 		}
 
-		TestingExpressionToken(const Type type) : type(type)
+		explicit TestingExpressionToken(const Type type) : type(type)
 		{
 		}
 
-		TestingExpressionToken(const Tester& tester) : type(TYPE_TESTER), tester(tester)
+		explicit TestingExpressionToken(const Tester& tester) : type(TYPE_TESTER), tester(tester)
 		{
 		}
 
