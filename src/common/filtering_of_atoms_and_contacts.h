@@ -445,44 +445,14 @@ public:
 			return set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
 		}
 
-		std::set<std::size_t> select_atoms(const std::vector< TestingExpressionToken<test_atom> >& expression, const bool postfix=false) const
-		{
-			return select_atoms(true, std::set<std::size_t>(), expression, postfix);
-		}
-
-		std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_atom> >& expression, const bool postfix=false) const
-		{
-			return select_atoms(false, from_ids, expression, postfix);
-		}
-
 		std::set<std::size_t> select_atoms(const std::string& expression_string, const bool postfix=false) const
 		{
 			return select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), postfix);
 		}
 
-		std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool postfix=false) const
-		{
-			return select_atoms(false, from_ids, read_expression_from_string<test_atom>(expression_string), postfix);
-		}
-
-		std::set<std::size_t> select_contacts(const std::vector< TestingExpressionToken<test_contact> >& expression, const bool postfix=false) const
-		{
-			return select_contacts(true, std::set<std::size_t>(), expression, postfix);
-		}
-
-		std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_contact> >& expression, const bool postfix=false) const
-		{
-			return select_contacts(false, from_ids, expression, postfix);
-		}
-
 		std::set<std::size_t> select_contacts(const std::string& expression_string, const bool postfix=false) const
 		{
 			return select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), postfix);
-		}
-
-		std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool postfix=false) const
-		{
-			return select_contacts(false, from_ids, read_expression_from_string<test_contact>(expression_string), postfix);
 		}
 
 	private:
