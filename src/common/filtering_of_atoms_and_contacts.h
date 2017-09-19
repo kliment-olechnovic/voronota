@@ -409,6 +409,12 @@ public:
 	class SelectionManager
 	{
 	public:
+		SelectionManager(const std::vector<Atom>& atoms) :
+			atoms_ptr_(&atoms),
+			contacts_ptr_(0)
+		{
+		}
+
 		SelectionManager(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts) :
 			atoms_ptr_(&atoms),
 			contacts_ptr_(&contacts)
@@ -417,42 +423,126 @@ public:
 
 		const std::vector<Atom>& atoms() const
 		{
-			return (*atoms_ptr_);
+			static const std::vector<Atom> empty_atoms;
+			if(atoms_ptr_==0)
+			{
+				return empty_atoms;
+			}
+			else
+			{
+				return (*atoms_ptr_);
+			}
 		}
 
 		const std::vector<Contact>& contacts() const
 		{
-			return (*contacts_ptr_);
+			static const std::vector<Contact> empty_contacts;
+			if(contacts_ptr_==0)
+			{
+				return empty_contacts;
+			}
+			else
+			{
+				return (*contacts_ptr_);
+			}
+		}
+
+		void set_contacts(const std::vector<Contact>& contacts)
+		{
+			contacts_ptr_=&contacts;
+			map_of_contacts_selections_.clear();
 		}
 
 		std::set<std::size_t> get_atoms_selection(const std::string& name) const
 		{
-			return get_selection(name, map_of_atoms_selections_);
+			if(atoms().empty())
+			{
+				return std::set<std::size_t>();
+			}
+			else
+			{
+				return get_selection(name, map_of_atoms_selections_);
+			}
 		}
 
-		std::set<std::size_t> get_contacts_selection(const std::string& name) const
+		std::set<std::size_t> select_atoms(const std::string& expression_string) const
 		{
-			return get_selection(name, map_of_contacts_selections_);
+			if(atoms().empty())
+			{
+				return std::set<std::size_t>();
+			}
+			else
+			{
+				return select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), false);
+			}
 		}
 
 		bool set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
-			return set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
+			if(atoms().empty())
+			{
+				return false;
+			}
+			else
+			{
+				return set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
+			}
+		}
+
+		void delete_atoms_selection(const std::string& name)
+		{
+			map_of_atoms_selections_.erase(name);
+		}
+
+		void delete_atoms_selections()
+		{
+			map_of_atoms_selections_.clear();
+		}
+
+		std::set<std::size_t> get_contacts_selection(const std::string& name) const
+		{
+			if(contacts().empty())
+			{
+				return std::set<std::size_t>();
+			}
+			else
+			{
+				return get_selection(name, map_of_contacts_selections_);
+			}
+		}
+
+		std::set<std::size_t> select_contacts(const std::string& expression_string) const
+		{
+			if(contacts().empty())
+			{
+				return std::set<std::size_t>();
+			}
+			else
+			{
+				return select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), false);
+			}
 		}
 
 		bool set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
-			return set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
+			if(contacts().empty())
+			{
+				return false;
+			}
+			else
+			{
+				return set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
+			}
 		}
 
-		std::set<std::size_t> select_atoms(const std::string& expression_string, const bool postfix=false) const
+		void delete_contacts_selection(const std::string& name)
 		{
-			return select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), postfix);
+			map_of_contacts_selections_.erase(name);
 		}
 
-		std::set<std::size_t> select_contacts(const std::string& expression_string, const bool postfix=false) const
+		void delete_contacts_selections()
 		{
-			return select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), postfix);
+			map_of_contacts_selections_.clear();
 		}
 
 	private:
@@ -468,7 +558,7 @@ public:
 
 		static bool set_selection(const std::string& name, const std::set<std::size_t>& ids, const std::size_t id_limit, std::map< std::string, std::set<std::size_t> >& map_of_selections)
 		{
-			if(!name.empty() && ids.size()<=id_limit)
+			if(!name.empty() && !ids.empty() && ids.size()<=id_limit)
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
