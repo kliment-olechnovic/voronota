@@ -109,12 +109,15 @@ outfile=args[3];
 t_quantiles=read.table(infile_quantiles, header=TRUE, stringsAsFactors=FALSE);
 t_scores=read.table(infile_scores, header=FALSE, stringsAsFactors=FALSE);
 png(filename=outfile, width=8, height=6, units="in", res=DPIVAL);
-plot(x=c(0, 1000), y=c(0, 1), xlim=c(0, 1000), ylim=c(0, 1), type="n", main="The provided VoroMQA global scores in the context\nof statistics of high-quality X-ray structure scores", cex.main=1.0, xlab="Number of residues", ylab="VoroMQA global score");
+plot(x=c(0, 1000), y=c(0, 1), xlim=c(0, 1000), ylim=c(0, 1), type="n", main="VoroMQA global scores in the context\nof high-quality X-ray structure scores", cex.main=1.0, xlab="Number of residues", ylab="VoroMQA global score");
 points(x=t_quantiles$length, y=t_quantiles$quantile05, type="l", lwd=2, col="red");
 points(x=t_quantiles$length, y=t_quantiles$quantile50, type="l", lwd=2, col="gray");
 points(x=t_quantiles$length, y=t_quantiles$quantile95, type="l", lwd=2, col="blue");
 points(x=t_scores$V1, y=t_scores$V2, col="black");
-legend("topright", legend=c("95%", "median", "5%"), col=c("blue", "gray", "red"), lty=c(1, 1, 1), lwd=c(2, 2, 2), bty="n");
+text(x=900, y=0.99, labels=c("Quantiles of scores:"), col="black");
+legend(x=790, y=0.97, legend=c("best 5%", "median", "worst 5%"), col=c("blue", "gray", "red"), lty=c(1, 1, 1), lwd=c(2, 2, 2), bty="n");
+text(x=500, y=0.85, labels=c("Best 5%"), col="blue");
+text(x=500, y=0.15, labels=c("Worst 5%"), col="red");
 dev.off();
 EOF
 } \
