@@ -409,16 +409,17 @@ public:
 	class SelectionManager
 	{
 	public:
-		SelectionManager(const std::vector<Atom>& atoms) :
-			atoms_ptr_(&atoms),
+		SelectionManager(const std::vector<Atom>* atoms_ptr) :
+			atoms_ptr_(atoms_ptr),
 			contacts_ptr_(0)
 		{
 		}
 
-		SelectionManager(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts) :
-			atoms_ptr_(&atoms),
-			contacts_ptr_(&contacts)
+		SelectionManager(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr) :
+			atoms_ptr_(atoms_ptr),
+			contacts_ptr_(0)
 		{
+			set_contacts(contacts_ptr);
 		}
 
 		const std::vector<Atom>& atoms() const
@@ -447,21 +448,34 @@ public:
 			}
 		}
 
-		void set_contacts(const std::vector<Contact>& contacts)
+		void set_contacts(const std::vector<Contact>* contacts_ptr)
 		{
-			contacts_ptr_=&contacts;
-			map_of_contacts_selections_.clear();
+			if(contacts_ptr==0 || check_contacts_according_to_atoms(atoms(), *contacts_ptr))
+			{
+				contacts_ptr_=contacts_ptr;
+				map_of_contacts_selections_.clear();
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Contacts do not accord to atoms."));
+			}
 		}
 
 		std::set<std::size_t> get_atoms_selection(const std::string& name) const
 		{
 			if(atoms().empty())
 			{
+				throw std::runtime_error(std::string("No atoms to get selection for."));
+			}
+			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_atoms_selections_.find(name);
+			if(it==map_of_atoms_selections_.end())
+			{
+				throw std::runtime_error(std::string("No atoms selection with name '")+name+"'.");
 				return std::set<std::size_t>();
 			}
 			else
 			{
-				return get_selection(name, map_of_atoms_selections_);
+				return (it->second);
 			}
 		}
 
@@ -469,23 +483,33 @@ public:
 		{
 			if(atoms().empty())
 			{
+				throw std::runtime_error(std::string("No atoms to select from."));
 				return std::set<std::size_t>();
 			}
 			else
 			{
-				return select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), false);
+				std::set<std::size_t> result;
+				try
+				{
+					result=select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), false);
+				}
+				catch(const std::exception& e)
+				{
+					throw std::runtime_error(std::string("Failed to select atoms with expression '")+expression_string+"': "+e.what());
+				}
+				return result;
 			}
 		}
 
-		bool set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
+		void set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
 			if(atoms().empty())
 			{
-				return false;
+				throw std::runtime_error(std::string("No atoms to set selection for."));
 			}
 			else
 			{
-				return set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
+				set_selection(name, ids, atoms().size(), map_of_atoms_selections_);
 			}
 		}
 
@@ -503,11 +527,17 @@ public:
 		{
 			if(contacts().empty())
 			{
+				throw std::runtime_error(std::string("No contacts to get selection for."));
+			}
+			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_contacts_selections_.find(name);
+			if(it==map_of_contacts_selections_.end())
+			{
+				throw std::runtime_error(std::string("No contacts selection with name '")+name+"'.");
 				return std::set<std::size_t>();
 			}
 			else
 			{
-				return get_selection(name, map_of_contacts_selections_);
+				return (it->second);
 			}
 		}
 
@@ -515,23 +545,33 @@ public:
 		{
 			if(contacts().empty())
 			{
+				throw std::runtime_error(std::string("No contacts to select from."));
 				return std::set<std::size_t>();
 			}
 			else
 			{
-				return select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), false);
+				std::set<std::size_t> result;
+				try
+				{
+					result=select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), false);
+				}
+				catch(const std::exception& e)
+				{
+					throw std::runtime_error(std::string("Failed to select contacts with expression '")+expression_string+"': "+e.what());
+				}
+				return result;
 			}
 		}
 
-		bool set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
+		void set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
 		{
 			if(contacts().empty())
 			{
-				return false;
+				throw std::runtime_error(std::string("No contacts to set selection for."));
 			}
 			else
 			{
-				return set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
+				set_selection(name, ids, contacts().size(), map_of_contacts_selections_);
 			}
 		}
 
@@ -546,19 +586,21 @@ public:
 		}
 
 	private:
-		static std::set<std::size_t> get_selection(const std::string& name, const std::map< std::string, std::set<std::size_t> >& map_of_selections)
+		static bool check_contacts_according_to_atoms(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts)
 		{
-			std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.find(name);
-			if(it!=map_of_selections.end())
+			for(std::size_t i=0;i<contacts.size();i++)
 			{
-				return (it->second);
+				if(!(contacts[i].ids[0]<atoms.size() && contacts[i].ids[1]<atoms.size()))
+				{
+					return false;
+				}
 			}
-			return std::set<std::size_t>();
+			return true;
 		}
 
-		static bool set_selection(const std::string& name, const std::set<std::size_t>& ids, const std::size_t id_limit, std::map< std::string, std::set<std::size_t> >& map_of_selections)
+		static bool check_selection_ids(const std::set<std::size_t>& ids, const std::size_t id_limit)
 		{
-			if(!name.empty() && !ids.empty() && ids.size()<=id_limit)
+			if(!ids.empty() && ids.size()<=id_limit)
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -567,10 +609,28 @@ public:
 						return false;
 					}
 				}
-				map_of_selections[name]=ids;
 				return true;
 			}
 			return false;
+		}
+
+		static void set_selection(const std::string& name, const std::set<std::size_t>& ids, const std::size_t id_limit, std::map< std::string, std::set<std::size_t> >& map_of_selections)
+		{
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("No name for setting selection."));
+			}
+			else
+			{
+				if(!check_selection_ids(ids, id_limit))
+				{
+					throw std::runtime_error(std::string("Invalid ids provided for selection '")+name+"'.");
+				}
+				else
+				{
+					map_of_selections[name]=ids;
+				}
+			}
 		}
 
 		template<typename Tester>
