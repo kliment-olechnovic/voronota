@@ -29,7 +29,7 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			std::clog << bundle_of_contact_information.contacts.size() << " contacts\n";
 
-			common::FilteringOfAtomsAndContacts::SelectionManager selection_manager(atomic_balls, bundle_of_contact_information.contacts);
+			common::FilteringOfAtomsAndContacts::SelectionManager selection_manager(&atomic_balls, &bundle_of_contact_information.contacts);
 
 			std::clog << selection_manager.select_atoms("{}").size() << " all atoms" << std::endl;
 			std::clog << selection_manager.select_contacts("{}").size() << " all contacts" << std::endl;
