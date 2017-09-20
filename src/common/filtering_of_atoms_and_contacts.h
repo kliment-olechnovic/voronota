@@ -409,16 +409,11 @@ public:
 	class SelectionManager
 	{
 	public:
-		SelectionManager(const std::vector<Atom>* atoms_ptr) :
+		SelectionManager(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr=0) :
 			atoms_ptr_(atoms_ptr),
 			contacts_ptr_(0)
 		{
-		}
-
-		SelectionManager(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr) :
-			atoms_ptr_(atoms_ptr),
-			contacts_ptr_(0)
-		{
+			construct_atoms_residues_definition_and_reference();
 			set_contacts(contacts_ptr);
 		}
 
@@ -454,6 +449,7 @@ public:
 			{
 				contacts_ptr_=contacts_ptr;
 				map_of_contacts_selections_.clear();
+				construct_contacts_residues_definition_and_reference();
 			}
 			else
 			{
@@ -479,7 +475,7 @@ public:
 			}
 		}
 
-		std::set<std::size_t> select_atoms(const std::string& expression_string) const
+		std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues=false) const
 		{
 			if(atoms().empty())
 			{
@@ -497,7 +493,7 @@ public:
 				{
 					throw std::runtime_error(std::string("Failed to select atoms with expression '")+expression_string+"': "+e.what());
 				}
-				return result;
+				return (full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
 			}
 		}
 
@@ -541,7 +537,7 @@ public:
 			}
 		}
 
-		std::set<std::size_t> select_contacts(const std::string& expression_string) const
+		std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues=false) const
 		{
 			if(contacts().empty())
 			{
@@ -559,7 +555,7 @@ public:
 				{
 					throw std::runtime_error(std::string("Failed to select contacts with expression '")+expression_string+"': "+e.what());
 				}
-				return result;
+				return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
 			}
 		}
 
@@ -706,6 +702,28 @@ public:
 			return result;
 		}
 
+		static std::set<std::size_t> get_ids_for_full_residues(
+				const std::set<std::size_t>& initial_ids,
+				const std::vector< std::vector<std::size_t> >& residues_definition,
+				const std::vector<std::size_t>& residues_reference)
+		{
+			std::set<std::size_t> result;
+			for(std::set<std::size_t>::const_iterator it=initial_ids.begin();it!=initial_ids.end();++it)
+			{
+				const std::size_t id=(*it);
+				if(id<residues_reference.size() && residues_reference[id]<residues_definition.size())
+				{
+					const std::vector<std::size_t>& residue_ids=residues_definition[residues_reference[id]];
+					result.insert(residue_ids.begin(), residue_ids.end());
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid mapping of residue."));
+				}
+			}
+			return result;
+		}
+
 		void fix_atom_tester(test_atom& tester) const
 		{
 			tester.atoms_ptr=atoms_ptr_;
@@ -827,8 +845,73 @@ public:
 			return result;
 		}
 
+		void construct_atoms_residues_definition_and_reference()
+		{
+			atoms_residues_definition_.clear();
+			atoms_residues_reference_.clear();
+			if(!atoms().empty())
+			{
+				std::map<ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residues;
+				for(std::size_t i=0;i<atoms().size();i++)
+				{
+					map_of_residues[atoms()[i].crad.without_atom()].push_back(i);
+				}
+
+				atoms_residues_definition_.resize(map_of_residues.size());
+				atoms_residues_reference_.resize(atoms().size(), 0);
+
+				std::size_t residue_id=0;
+				for(std::map<ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
+				{
+					const std::vector<std::size_t>& atoms_ids=it->second;
+					atoms_residues_definition_[residue_id]=atoms_ids;
+					for(std::size_t i=0;i<atoms_ids.size();i++)
+					{
+						atoms_residues_reference_[atoms_ids[i]]=residue_id;
+					}
+					residue_id++;
+				}
+			}
+		}
+
+		void construct_contacts_residues_definition_and_reference()
+		{
+			contacts_residues_definition_.clear();
+			contacts_residues_reference_.clear();
+			if(!contacts().empty())
+			{
+				std::map<ChainResidueAtomDescriptorsPair, std::vector<std::size_t> > map_of_residues;
+				for(std::size_t i=0;i<contacts().size();i++)
+				{
+					map_of_residues[ChainResidueAtomDescriptorsPair(
+											atoms()[contacts()[i].ids[0]].crad.without_atom(),
+											atoms()[contacts()[i].ids[1]].crad.without_atom())
+									].push_back(i);
+				}
+
+				contacts_residues_definition_.resize(map_of_residues.size());
+				contacts_residues_reference_.resize(contacts().size(), 0);
+
+				std::size_t residue_id=0;
+				for(std::map<ChainResidueAtomDescriptorsPair, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
+				{
+					const std::vector<std::size_t>& contacts_ids=it->second;
+					contacts_residues_definition_[residue_id]=contacts_ids;
+					for(std::size_t i=0;i<contacts_ids.size();i++)
+					{
+						contacts_residues_reference_[contacts_ids[i]]=residue_id;
+					}
+					residue_id++;
+				}
+			}
+		}
+
 		const std::vector<Atom>* atoms_ptr_;
 		const std::vector<Contact>* contacts_ptr_;
+		std::vector< std::vector<std::size_t> > atoms_residues_definition_;
+		std::vector<std::size_t> atoms_residues_reference_;
+		std::vector< std::vector<std::size_t> > contacts_residues_definition_;
+		std::vector<std::size_t> contacts_residues_reference_;
 		std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 		std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 	};

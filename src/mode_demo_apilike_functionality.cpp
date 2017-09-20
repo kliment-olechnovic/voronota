@@ -44,6 +44,10 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 			std::clog << selection_manager.select_contacts("{max-seq-sep 0}").size() << " non-drawable contacts" << std::endl;
 			std::clog << selection_manager.select_contacts("{atom-second {match c<solvent>}}").size() << " solvent contacts" << std::endl;
 			std::clog << selection_manager.select_contacts("not {no-solvent}").size() << " solvent contacts" << std::endl;
+			std::clog << selection_manager.select_atoms("{match A<CA>}").size() << " CA atoms" << std::endl;
+			std::clog << selection_manager.select_atoms("{match A<CA>}", true).size() << " CA atoms, full residues" << std::endl;
+			std::clog << selection_manager.select_contacts("{atom-first{match A<C>} atom-second{match A<N>}}").size() << " contacts between C and N atoms" << std::endl;
+			std::clog << selection_manager.select_contacts("{atom-first{match A<C>} atom-second{match A<N>}}", true).size() << " contacts between C and N atoms, full residues" << std::endl;
 		}
 	}
 }
