@@ -596,7 +596,7 @@ public:
 
 		static bool check_selection_ids(const std::set<std::size_t>& ids, const std::size_t id_limit)
 		{
-			if(!ids.empty() && ids.size()<=id_limit)
+			if(ids.size()<=id_limit)
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -618,13 +618,20 @@ public:
 			}
 			else
 			{
-				if(!check_selection_ids(ids, id_limit))
+				if(ids.empty())
 				{
-					throw std::runtime_error(std::string("Invalid ids provided for selection '")+name+"'.");
+					throw std::runtime_error(std::string("No ids provided for selection '")+name+"'.");
 				}
 				else
 				{
-					map_of_selections[name]=ids;
+					if(!check_selection_ids(ids, id_limit))
+					{
+						throw std::runtime_error(std::string("Invalid ids provided for selection '")+name+"'.");
+					}
+					else
+					{
+						map_of_selections[name]=ids;
+					}
 				}
 			}
 		}
