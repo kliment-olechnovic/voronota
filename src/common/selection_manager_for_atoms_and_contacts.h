@@ -9,11 +9,17 @@ namespace common
 class SelectionManagerForAtomsAndContacts : public TestingOfAtomsAndContacts
 {
 public:
-	SelectionManagerForAtomsAndContacts(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr=0) :
-		atoms_ptr_(atoms_ptr),
+	SelectionManagerForAtomsAndContacts() :
+		atoms_ptr_(0),
 		contacts_ptr_(0)
 	{
-		construct_atoms_residues_definition_and_reference();
+	}
+
+	SelectionManagerForAtomsAndContacts(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr=0) :
+		atoms_ptr_(0),
+		contacts_ptr_(0)
+	{
+		set_atoms(atoms_ptr);
 		set_contacts(contacts_ptr);
 	}
 
@@ -41,6 +47,14 @@ public:
 		{
 			return (*contacts_ptr_);
 		}
+	}
+
+	void set_atoms(const std::vector<Atom>* atoms_ptr)
+	{
+		atoms_ptr_=atoms_ptr;
+		map_of_atoms_selections_.clear();
+		construct_atoms_residues_definition_and_reference();
+		set_contacts(0);
 	}
 
 	void set_contacts(const std::vector<Contact>* contacts_ptr)
