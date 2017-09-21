@@ -323,7 +323,6 @@ private:
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(restriction_expression, full_residues);
-
 		if(ids.size()<4)
 		{
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -333,21 +332,21 @@ private:
 		atoms.reserve(ids.size());
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			atoms.push_back(atoms.at(*it));
+			atoms.push_back(atoms_.at(*it));
 		}
 
 		reset_atoms(atoms);
-		output << "Restricted from " << atoms.size() << " to " << atoms_.size() << " atoms.\n";
+		output << "Restricted from " << atoms.size() << " to " << atoms_.size() << " atoms." << std::endl;
 	}
 
 	void write_atoms(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void read_atoms_and_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void construct_contacts(std::istringstream& input, std::ostream& output)
@@ -361,8 +360,8 @@ private:
 		enhance_bundle_of_contact_information.tag_centrality=true;
 		enhance_bundle_of_contact_information.tag_peripherial=true;
 
-		bool draw=false;
-		std::string drawing_expression="{min-seq-sep 1}";
+		bool render=false;
+		std::string rendering_expression="{min-seq-sep 1}";
 
 		{
 			std::string token;
@@ -375,14 +374,14 @@ private:
 					input >> construct_bundle_of_contact_information.probe;
 					enhance_bundle_of_contact_information.probe=construct_bundle_of_contact_information.probe;
 				}
-				else if(token=="draw")
+				else if(token=="render")
 				{
-					draw=true;
+					render=true;
 				}
-				else if(token=="draw-sel")
+				else if(token=="render-sel")
 				{
-					draw=true;
-					read_bracketed_string(input, drawing_expression);
+					render=true;
+					read_bracketed_string(input, rendering_expression);
 				}
 				else
 				{
@@ -403,21 +402,20 @@ private:
 		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_contact_information))
 		{
 			std::set<std::size_t> draw_ids;
-			if(draw)
+			if(render)
 			{
-				draw_ids=SelectionManagerForAtomsAndContacts(&atoms_, &bundle_of_contact_information.contacts).select_contacts(drawing_expression, true);
+				draw_ids=SelectionManagerForAtomsAndContacts(&atoms_, &bundle_of_contact_information.contacts).select_contacts(rendering_expression, false);
 			}
 
 			enhance_bundle_of_contact_information(bundle_of_contact_information, draw_ids);
-
-			reset_contacts(bundle_of_contact_information.contacts);
 
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
 			{
 				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
 			}
 
-			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics.\n";
+			reset_contacts(bundle_of_contact_information.contacts);
+			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics." << std::endl;
 		}
 		else
 		{
@@ -427,77 +425,77 @@ private:
 
 	void write_atoms_and_contacts(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void select_atoms(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void select_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void list_selections_of_atoms(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void list_selections_of_contacts(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void clear_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void clear_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void print_atoms(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void print_contacts(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void show_atoms(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void show_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void hide_atoms(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void hide_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void color_atoms(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void color_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); //TODO implement
+		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	std::vector<Atom> atoms_;

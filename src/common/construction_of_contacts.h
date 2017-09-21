@@ -279,7 +279,7 @@ public:
 				{
 					pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 				}
-				for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_solvent_ids.end();++it)
+				for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_nonsolvent_ids.end();++it)
 				{
 					Contact& contact=bundle.contacts[*it];
 					contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe, step, projections);
