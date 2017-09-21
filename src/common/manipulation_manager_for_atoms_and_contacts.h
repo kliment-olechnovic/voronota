@@ -407,6 +407,7 @@ private:
 			{
 				draw_ids=SelectionManagerForAtomsAndContacts(&atoms_, &bundle_of_contact_information.contacts).select_contacts(drawing_expression, true);
 			}
+
 			enhance_bundle_of_contact_information(bundle_of_contact_information, draw_ids);
 
 			reset_contacts(bundle_of_contact_information.contacts);
@@ -415,6 +416,8 @@ private:
 			{
 				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
 			}
+
+			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics.\n";
 		}
 		else
 		{
