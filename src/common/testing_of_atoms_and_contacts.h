@@ -462,21 +462,21 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			}
 			else
 			{
-				token.clear();
+				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 			}
 
 			if(input.fail() || token.empty())
 			{
 				throw std::runtime_error(std::string("Invalid atom tester string."));
 			}
+
+			input >> std::ws;
 		}
 		if(!end)
 		{
 			throw std::runtime_error(std::string("Invalid atom tester string end."));
 		}
 	}
-
-	input >> std::ws;
 
 	return input;
 }
@@ -564,13 +564,15 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			}
 			else
 			{
-				token.clear();
+				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 			}
 
 			if(input.fail() || token.empty())
 			{
 				throw std::runtime_error(std::string("Invalid contact tester string."));
 			}
+
+			input >> std::ws;
 		}
 		if(!end)
 		{
