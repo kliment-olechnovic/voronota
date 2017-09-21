@@ -40,8 +40,13 @@ public:
 			include_heteroatoms(false),
 			include_hydrogens(false),
 			multimodel_chains(false),
-			atom_radius_assigner(generate_atom_radius_assigner(1.7, false, ""))
+			atom_radius_assigner(generate_atom_radius_assigner(default_default_radius(), false, ""))
 		{
+		}
+
+		static double default_default_radius()
+		{
+			return 1.7;
 		}
 
 		void set_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
