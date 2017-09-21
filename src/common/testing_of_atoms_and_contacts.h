@@ -460,6 +460,10 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.match_adjuncts_not;
 			}
+			else
+			{
+				token.clear();
+			}
 
 			if(input.fail() || token.empty())
 			{
@@ -557,6 +561,10 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			else if(token=="no-same-chain")
 			{
 				tester.no_same_chain=true;
+			}
+			else
+			{
+				token.clear();
 			}
 
 			if(input.fail() || token.empty())
