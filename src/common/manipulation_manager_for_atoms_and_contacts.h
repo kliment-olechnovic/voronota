@@ -73,17 +73,13 @@ public:
 			{
 				command_print_atoms(input, output);
 			}
-			else if(token=="read-atoms-and-contacts")
-			{
-				read_atoms_and_contacts(input, output);
-			}
 			else if(token=="construct-contacts")
 			{
 				command_construct_contacts(input, output);
 			}
-			else if(token=="write-atoms-and-contacts")
+			else if(token=="print-contacts")
 			{
-				write_atoms_and_contacts(input, output);
+				command_print_contacts(input, output);
 			}
 			else if(token=="select-atoms")
 			{
@@ -108,34 +104,6 @@ public:
 			else if(token=="clear-selections-of-contacts")
 			{
 				clear_selections_of_contacts(input, output);
-			}
-			else if(token=="print-contacts")
-			{
-				print_contacts(input, output);
-			}
-			else if(token=="show-atoms")
-			{
-				show_atoms(input, output);
-			}
-			else if(token=="show-contacts")
-			{
-				show_contacts(input, output);
-			}
-			else if(token=="hide-atoms")
-			{
-				hide_atoms(input, output);
-			}
-			else if(token=="hide-contacts")
-			{
-				hide_contacts(input, output);
-			}
-			else if(token=="color-atoms")
-			{
-				color_atoms(input, output);
-			}
-			else if(token=="color-contacts")
-			{
-				color_contacts(input, output);
 			}
 			else
 			{
@@ -397,44 +365,40 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		std::ostringstream local_output;
-
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		if(!summarize_only)
 		{
-			const Atom& atom=atoms_[*it];
-			if(!summarize_only)
+			std::ofstream foutput;
+			if(!filename.empty())
 			{
-				local_output << atom << "\n";
+				foutput.open(filename.c_str(), std::ios::out);
+				if(!foutput.good())
+				{
+					throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
+				}
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Atom& atom=atoms_[*it];
+
+				if(filename.empty() || echo)
+				{
+					output << atom << "\n";
+				}
+
+				if(foutput.is_open() && foutput.good())
+				{
+					output << atom << "\n";
+				}
 			}
 		}
 
 		if(summarize || summarize_only)
 		{
-			local_output << "Total atoms: " << ids.size() << "\n";
+			output << "Atoms";
+			output << " count=" << ids.size();
+			output << "\n";
 		}
-
-		if(filename.empty() || echo)
-		{
-			output << local_output.str();
-		}
-
-		if(!filename.empty())
-		{
-			std::ofstream foutput(filename.c_str(), std::ios::out);
-			if(!foutput.good())
-			{
-				throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
-			}
-			else
-			{
-				foutput << local_output.str();
-			}
-		}
-	}
-
-	void read_atoms_and_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output)
@@ -503,7 +467,7 @@ private:
 				draw_ids=selection_manager_.select_contacts(rendering_selection_expression, false);
 			}
 
-			enhance_contacts(bundle_of_triangulation_information, draw_ids, bundle_of_contact_information.contacts);
+			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
 
 			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics." << std::endl;
 		}
@@ -513,9 +477,125 @@ private:
 		}
 	}
 
-	void write_atoms_and_contacts(std::istringstream& input, std::ostream& output) const
+	void command_print_contacts(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
+		assert_contacts_availability();
+
+		std::string selection_expression="{}";
+		bool full_residues=false;
+		bool summarize=false;
+		bool summarize_only=false;
+		bool echo=false;
+		std::string filename;
+
+		{
+			std::string token;
+			while(input.good())
+			{
+				input >> token;
+
+				if(token=="sel")
+				{
+					read_string_considering_quotes(input, selection_expression);
+				}
+				else if(token=="full-residues")
+				{
+					full_residues=true;
+				}
+				else if(token=="summarize")
+				{
+					summarize=true;
+				}
+				else if(token=="summarize-only")
+				{
+					summarize_only=true;
+				}
+				else if(token=="echo")
+				{
+					echo=true;
+				}
+				else if(token=="file")
+				{
+					input >> filename;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+				}
+
+				if(input.fail() || token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+
+				input >> std::ws;
+			}
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression, full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		if(!summarize_only)
+		{
+			std::ofstream foutput;
+			if(!filename.empty())
+			{
+				foutput.open(filename.c_str(), std::ios::out);
+				if(!foutput.good())
+				{
+					throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
+				}
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Contact& contact=contacts_[*it];
+
+				if(filename.empty() || echo)
+				{
+					enabled_output_of_ContactValue_graphics()=false;
+					if(contact.solvent())
+					{
+						output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
+					}
+					else
+					{
+						output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
+					}
+					output  << " " << contact.value << "\n";
+				}
+
+				if(foutput.is_open() && foutput.good())
+				{
+					enabled_output_of_ContactValue_graphics()=true;
+					foutput << contact << "\n";
+				}
+			}
+		}
+
+		if(summarize || summarize_only)
+		{
+			double total_area=0.0;
+			int drawable=0;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Contact& contact=contacts_[*it];
+				total_area+=contact.value.area;
+				if(!contact.value.graphics.empty())
+				{
+					drawable++;
+				}
+			}
+
+			output << "Contacts";
+			output << " count=" << ids.size();
+			output << " area=" << total_area;
+			output << " drawable=" << drawable;
+			output << "\n";
+		}
 	}
 
 	void select_atoms(std::istringstream& input, std::ostream& output)
@@ -544,11 +624,6 @@ private:
 	}
 
 	void clear_selections_of_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void print_contacts(std::istringstream& input, std::ostream& output) const
 	{
 		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
