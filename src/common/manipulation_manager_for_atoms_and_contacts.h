@@ -151,7 +151,6 @@ public:
 private:
 	static void read_string_considering_quotes(std::istream& input, std::string& output)
 	{
-		output.clear();
 		input >> std::ws;
 		const int c=input.peek();
 		if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
@@ -293,7 +292,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		std::string restriction_expression="{}";
+		std::string selection_expression="{}";
 		bool full_residues=false;
 
 		{
@@ -304,7 +303,7 @@ private:
 
 				if(token=="sel")
 				{
-					read_string_considering_quotes(input, restriction_expression);
+					read_string_considering_quotes(input, selection_expression);
 				}
 				else if(token=="full-residues")
 				{
@@ -324,7 +323,7 @@ private:
 			}
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(restriction_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
 		if(ids.size()<4)
 		{
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -363,7 +362,7 @@ private:
 		enhance_contacts.tag_peripherial=true;
 
 		bool render=false;
-		std::string rendering_expression="{min-seq-sep 1}";
+		std::string rendering_selection_expression="{min-seq-sep 1}";
 
 		{
 			std::string token;
@@ -383,7 +382,7 @@ private:
 				else if(token=="render-sel")
 				{
 					render=true;
-					read_string_considering_quotes(input, rendering_expression);
+					read_string_considering_quotes(input, rendering_selection_expression);
 				}
 				else
 				{
@@ -414,7 +413,7 @@ private:
 			std::set<std::size_t> draw_ids;
 			if(render)
 			{
-				draw_ids=selection_manager_.select_contacts(rendering_expression, false);
+				draw_ids=selection_manager_.select_contacts(rendering_selection_expression, false);
 			}
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, bundle_of_contact_information.contacts);
