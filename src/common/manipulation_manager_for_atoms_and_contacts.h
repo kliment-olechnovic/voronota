@@ -149,18 +149,21 @@ public:
 	}
 
 private:
-	static bool read_bracketed_string(std::istream& input, std::string& output)
+	static void read_string_considering_quotes(std::istream& input, std::string& output)
 	{
+		output.clear();
 		input >> std::ws;
 		const int c=input.peek();
-		if(c==std::char_traits<char>::to_int_type('['))
+		if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
 		{
 			input.get();
 			output.clear();
-			std::getline(input, output, ']');
-			return true;
+			std::getline(input, output, std::char_traits<char>::to_char_type(c));
 		}
-		return false;
+		else
+		{
+			input >> output;
+		}
 	}
 
 	void assert_atoms_availability() const
@@ -290,7 +293,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		std::string restriction_expression;
+		std::string restriction_expression="{}";
 		bool full_residues=false;
 
 		{
@@ -301,7 +304,7 @@ private:
 
 				if(token=="sel")
 				{
-					read_bracketed_string(input, restriction_expression);
+					read_string_considering_quotes(input, restriction_expression);
 				}
 				else if(token=="full-residues")
 				{
@@ -380,7 +383,7 @@ private:
 				else if(token=="render-sel")
 				{
 					render=true;
-					read_bracketed_string(input, rendering_expression);
+					read_string_considering_quotes(input, rendering_expression);
 				}
 				else
 				{
