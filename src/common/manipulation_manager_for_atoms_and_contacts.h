@@ -63,15 +63,15 @@ public:
 
 			if(token=="read-atoms")
 			{
-				read_atoms(input, output);
+				command_read_atoms(input, output);
 			}
 			else if(token=="restrict-atoms")
 			{
-				restrict_atoms(input, output);
+				command_restrict_atoms(input, output);
 			}
-			else if(token=="write-atoms")
+			else if(token=="print-atoms")
 			{
-				write_atoms(input, output);
+				command_print_atoms(input, output);
 			}
 			else if(token=="read-atoms-and-contacts")
 			{
@@ -79,7 +79,7 @@ public:
 			}
 			else if(token=="construct-contacts")
 			{
-				construct_contacts(input, output);
+				command_construct_contacts(input, output);
 			}
 			else if(token=="write-atoms-and-contacts")
 			{
@@ -108,10 +108,6 @@ public:
 			else if(token=="clear-selections-of-contacts")
 			{
 				clear_selections_of_contacts(input, output);
-			}
-			else if(token=="print-atoms")
-			{
-				print_atoms(input, output);
 			}
 			else if(token=="print-contacts")
 			{
@@ -199,7 +195,7 @@ private:
 		selection_manager_.set_contacts(&contacts_);
 	}
 
-	void read_atoms(std::istringstream& input, std::ostream& output)
+	void command_read_atoms(std::istringstream& input, std::ostream& output)
 	{
 		ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
 		std::string atoms_file;
@@ -288,7 +284,7 @@ private:
 		}
 	}
 
-	void restrict_atoms(std::istringstream& input, std::ostream& output)
+	void command_restrict_atoms(std::istringstream& input, std::ostream& output)
 	{
 		assert_atoms_availability();
 
@@ -340,9 +336,100 @@ private:
 		output << "Restricted from " << atoms.size() << " to " << atoms_.size() << " atoms." << std::endl;
 	}
 
-	void write_atoms(std::istringstream& input, std::ostream& output) const
+	void command_print_atoms(std::istringstream& input, std::ostream& output) const
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
+		assert_atoms_availability();
+
+		std::string selection_expression="{}";
+		bool full_residues=false;
+		bool summarize=false;
+		bool summarize_only=false;
+		bool echo=false;
+		std::string filename;
+
+		{
+			std::string token;
+			while(input.good())
+			{
+				input >> token;
+
+				if(token=="sel")
+				{
+					read_string_considering_quotes(input, selection_expression);
+				}
+				else if(token=="full-residues")
+				{
+					full_residues=true;
+				}
+				else if(token=="summarize")
+				{
+					summarize=true;
+				}
+				else if(token=="summarize-only")
+				{
+					summarize_only=true;
+				}
+				else if(token=="echo")
+				{
+					echo=true;
+				}
+				else if(token=="file")
+				{
+					input >> filename;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+				}
+
+				if(input.fail() || token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+
+				input >> std::ws;
+			}
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		std::ostringstream local_output;
+
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const Atom& atom=atoms_[*it];
+			if(!summarize_only)
+			{
+				local_output << atom << "\n";
+			}
+		}
+
+		if(summarize || summarize_only)
+		{
+			local_output << "Total atoms: " << ids.size() << "\n";
+		}
+
+		if(filename.empty() || echo)
+		{
+			output << local_output.str();
+		}
+
+		if(!filename.empty())
+		{
+			std::ofstream foutput(filename.c_str(), std::ios::out);
+			if(!foutput.good())
+			{
+				throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
+			}
+			else
+			{
+				foutput << local_output.str();
+			}
+		}
 	}
 
 	void read_atoms_and_contacts(std::istringstream& input, std::ostream& output)
@@ -350,7 +437,7 @@ private:
 		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
 
-	void construct_contacts(std::istringstream& input, std::ostream& output)
+	void command_construct_contacts(std::istringstream& input, std::ostream& output)
 	{
 		assert_atoms_availability();
 
@@ -457,11 +544,6 @@ private:
 	}
 
 	void clear_selections_of_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void print_atoms(std::istringstream& input, std::ostream& output) const
 	{
 		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
