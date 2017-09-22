@@ -465,9 +465,16 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 			}
 
-			if(input.fail() || token.empty())
+			if(input.fail())
 			{
-				throw std::runtime_error(std::string("Invalid atom tester string."));
+				if(token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid atom tester string."));
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid atom tester string at '")+token+"'.");
+				}
 			}
 
 			input >> std::ws;
@@ -567,9 +574,16 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 			}
 
-			if(input.fail() || token.empty())
+			if(input.fail())
 			{
-				throw std::runtime_error(std::string("Invalid contact tester string."));
+				if(token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid contact tester string."));
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid contact tester string at '")+token+"'.");
+				}
 			}
 
 			input >> std::ws;
@@ -635,7 +649,14 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		}
 		else
 		{
-			throw std::runtime_error(std::string("Invalid testing expression token."));
+			if(opname.empty())
+			{
+				throw std::runtime_error(std::string("Invalid testing expression token."));
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Invalid testing expression token '")+opname+"'.");
+			}
 		}
 	}
 
