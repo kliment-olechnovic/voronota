@@ -356,9 +356,9 @@ private:
 		ConstructionOfContacts::construct_bundle_of_contact_information construct_bundle_of_contact_information;
 		construct_bundle_of_contact_information.calculate_volumes=true;
 
-		ConstructionOfContacts::enhance_bundle_of_contact_information enhance_bundle_of_contact_information;
-		enhance_bundle_of_contact_information.tag_centrality=true;
-		enhance_bundle_of_contact_information.tag_peripherial=true;
+		ConstructionOfContacts::enhance_contacts enhance_contacts;
+		enhance_contacts.tag_centrality=true;
+		enhance_contacts.tag_peripherial=true;
 
 		bool render=false;
 		std::string rendering_expression="{min-seq-sep 1}";
@@ -372,7 +372,7 @@ private:
 				if(token=="probe")
 				{
 					input >> construct_bundle_of_contact_information.probe;
-					enhance_bundle_of_contact_information.probe=construct_bundle_of_contact_information.probe;
+					enhance_contacts.probe=construct_bundle_of_contact_information.probe;
 				}
 				else if(token=="render")
 				{
@@ -397,9 +397,10 @@ private:
 			}
 		}
 
+		ConstructionOfContacts::BundleOfTriangulationInformation bundle_of_triangulation_information;
 		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
 
-		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_contact_information))
+		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
 		{
 			std::set<std::size_t> draw_ids;
 			if(render)
@@ -407,7 +408,7 @@ private:
 				draw_ids=SelectionManagerForAtomsAndContacts(&atoms_, &bundle_of_contact_information.contacts).select_contacts(rendering_expression, false);
 			}
 
-			enhance_bundle_of_contact_information(bundle_of_contact_information, draw_ids);
+			enhance_contacts(bundle_of_triangulation_information, draw_ids, bundle_of_contact_information.contacts);
 
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
 			{
