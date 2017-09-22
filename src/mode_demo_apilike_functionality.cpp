@@ -15,7 +15,7 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	common::ManipulationManagerForAtomsAndContacts manager;
 	manager.execute("read-atoms file tests/input/single/structure.pdb heteroatoms", std::cout);
-	manager.execute("restrict-atoms sel [{tags-not het}]", std::cout);
+	manager.execute("restrict-atoms sel '{tags-not het}'", std::cout);
 	manager.execute("construct-contacts render", std::cout);
 
 //	common::ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
