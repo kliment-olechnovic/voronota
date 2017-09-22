@@ -14,18 +14,15 @@ public:
 
 	struct DisplayState
 	{
-		std::vector<bool> visibility;
-		std::vector<unsigned int> colors;
+		bool visible;
+		unsigned int color;
 
-		void reset(const std::size_t n, const bool visible=false, const unsigned int color=0)
+		DisplayState() : visible(true), color(0x777777)
 		{
-			visibility.clear();
-			colors.clear();
-			if(n>0)
-			{
-				visibility.resize(n, visible);
-				colors.resize(n, color);
-			}
+		}
+
+		DisplayState(const bool visible, const unsigned int color) : visible(visible), color(color)
+		{
 		}
 	};
 
@@ -43,14 +40,14 @@ public:
 		return contacts_;
 	}
 
-	const DisplayState& display_state_of_atoms() const
+	const std::vector<DisplayState>& atoms_display_states() const
 	{
-		return display_state_of_atoms_;
+		return atoms_display_states_;
 	}
 
-	const DisplayState& display_state_of_contacts() const
+	const std::vector<DisplayState>& contacts_display_states() const
 	{
-		return display_state_of_contacts_;
+		return contacts_display_states_;
 	}
 
 	void execute(const std::string& command, std::ostream& output)
@@ -185,16 +182,18 @@ private:
 	void reset_atoms(std::vector<Atom>& atoms)
 	{
 		atoms_.swap(atoms);
+		atoms_display_states_.clear();
+		atoms_display_states_.resize(atoms_.size(), DisplayState(true, 0xFF7700));
 		contacts_.clear();
-		display_state_of_atoms_.reset(atoms_.size(), true, 0xFFFFFF);
-		display_state_of_contacts_.reset(0);
+		contacts_display_states_.clear();
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
 	void reset_contacts(std::vector<Contact>& contacts)
 	{
 		contacts_.swap(contacts);
-		display_state_of_contacts_.reset(contacts_.size(), false, 0xFFFFFF);
+		contacts_display_states_.clear();
+		contacts_display_states_.resize(contacts_.size(), DisplayState(true, 0x0077FF));
 		selection_manager_.set_contacts(&contacts_);
 	}
 
@@ -402,20 +401,21 @@ private:
 
 		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
 		{
-			std::set<std::size_t> draw_ids;
-			if(render)
-			{
-				draw_ids=SelectionManagerForAtomsAndContacts(&atoms_, &bundle_of_contact_information.contacts).select_contacts(rendering_expression, false);
-			}
-
-			enhance_contacts(bundle_of_triangulation_information, draw_ids, bundle_of_contact_information.contacts);
+			reset_contacts(bundle_of_contact_information.contacts);
 
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
 			{
 				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
 			}
 
-			reset_contacts(bundle_of_contact_information.contacts);
+			std::set<std::size_t> draw_ids;
+			if(render)
+			{
+				draw_ids=selection_manager_.select_contacts(rendering_expression, false);
+			}
+
+			enhance_contacts(bundle_of_triangulation_information, draw_ids, bundle_of_contact_information.contacts);
+
 			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics." << std::endl;
 		}
 		else
@@ -501,8 +501,8 @@ private:
 
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
-	DisplayState display_state_of_atoms_;
-	DisplayState display_state_of_contacts_;
+	std::vector<DisplayState> atoms_display_states_;
+	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 };
 
