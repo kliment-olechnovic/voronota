@@ -15,9 +15,9 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 
 	common::ManipulationManagerForAtomsAndContacts manager;
 	manager.execute("read-atoms file tests/input/single/structure.pdb heteroatoms", std::cout);
-	manager.execute("print-atoms selection '{tags het adjuncts tf=0:10}' summarize", std::cout);
-	manager.execute("restrict-atoms selection '{tags-not het}'", std::cout);
+	manager.execute("print-atoms use '{tags het adjuncts tf=0:10}' summarize", std::cout);
+	manager.execute("restrict-atoms use '{tags-not het}'", std::cout);
 	manager.execute("construct-contacts render", std::cout);
-	manager.execute("print-contacts selection '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' summarize", std::cout);
-	manager.execute("print-atoms selection '{match r<64>&A<C,N,O,CA,CB>}' summarize", std::cout);
+	manager.execute("print-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' summarize", std::cout);
+	manager.execute("print-atoms use '{match r<64>&A<C,N,O,CA,CB>}' summarize", std::cout);
 }
