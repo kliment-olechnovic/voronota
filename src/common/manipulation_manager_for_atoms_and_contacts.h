@@ -265,7 +265,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="select")
+				if(token=="selection")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -312,8 +312,6 @@ private:
 		bool full_residues=false;
 		bool summarize=false;
 		bool summarize_only=false;
-		bool echo=false;
-		std::string filename;
 
 		{
 			std::string token;
@@ -321,7 +319,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="select")
+				if(token=="selection")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -336,14 +334,6 @@ private:
 				else if(token=="summarize-only")
 				{
 					summarize_only=true;
-				}
-				else if(token=="echo")
-				{
-					echo=true;
-				}
-				else if(token=="file")
-				{
-					input >> filename;
 				}
 				else
 				{
@@ -367,29 +357,10 @@ private:
 
 		if(!summarize_only)
 		{
-			std::ofstream foutput;
-			if(!filename.empty())
-			{
-				foutput.open(filename.c_str(), std::ios::out);
-				if(!foutput.good())
-				{
-					throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
-				}
-			}
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const Atom& atom=atoms_[*it];
-
-				if(filename.empty() || echo)
-				{
-					output << atom << "\n";
-				}
-
-				if(foutput.is_open() && foutput.good())
-				{
-					output << atom << "\n";
-				}
+				output << atom << "\n";
 			}
 		}
 
@@ -498,8 +469,6 @@ private:
 		bool full_residues=false;
 		bool summarize=false;
 		bool summarize_only=false;
-		bool echo=false;
-		std::string filename;
 
 		{
 			std::string token;
@@ -507,7 +476,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="select")
+				if(token=="selection")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -522,14 +491,6 @@ private:
 				else if(token=="summarize-only")
 				{
 					summarize_only=true;
-				}
-				else if(token=="echo")
-				{
-					echo=true;
-				}
-				else if(token=="file")
-				{
-					input >> filename;
 				}
 				else
 				{
@@ -553,40 +514,21 @@ private:
 
 		if(!summarize_only)
 		{
-			std::ofstream foutput;
-			if(!filename.empty())
-			{
-				foutput.open(filename.c_str(), std::ios::out);
-				if(!foutput.good())
-				{
-					throw std::runtime_error(std::string("Failed to write to file '")+filename+"'.");
-				}
-			}
-
+			enabled_output_of_ContactValue_graphics()=false;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const Contact& contact=contacts_[*it];
-
-				if(filename.empty() || echo)
+				if(contact.solvent())
 				{
-					enabled_output_of_ContactValue_graphics()=false;
-					if(contact.solvent())
-					{
-						output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
-					}
-					else
-					{
-						output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
-					}
-					output  << " " << contact.value << "\n";
+					output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
 				}
-
-				if(foutput.is_open() && foutput.good())
+				else
 				{
-					enabled_output_of_ContactValue_graphics()=true;
-					foutput << contact << "\n";
+					output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
 				}
+				output  << " " << contact.value << "\n";
 			}
+			enabled_output_of_ContactValue_graphics()=true;
 		}
 
 		if(summarize || summarize_only)
