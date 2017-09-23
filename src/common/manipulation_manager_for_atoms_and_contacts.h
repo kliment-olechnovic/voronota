@@ -265,7 +265,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="selection")
+				if(token=="use")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -319,7 +319,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="selection")
+				if(token=="use")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -476,7 +476,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="selection")
+				if(token=="use")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
