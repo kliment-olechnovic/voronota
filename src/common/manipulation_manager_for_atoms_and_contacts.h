@@ -265,7 +265,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="sel")
+				if(token=="select")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -321,7 +321,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="sel")
+				if(token=="select")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
@@ -395,8 +395,21 @@ private:
 
 		if(summarize || summarize_only)
 		{
+			double volume=0.0;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Atom& atom=atoms_[*it];
+				if(atom.value.props.adjuncts.count("volume")>0)
+				{
+					volume+=atom.value.props.adjuncts.find("volume")->second;
+				}
+			}
 			output << "Atoms";
 			output << " count=" << ids.size();
+			if(volume>0.0)
+			{
+				output << " volume=" << volume;
+			}
 			output << "\n";
 		}
 	}
@@ -494,7 +507,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="sel")
+				if(token=="select")
 				{
 					read_string_considering_quotes(input, selection_expression);
 				}
