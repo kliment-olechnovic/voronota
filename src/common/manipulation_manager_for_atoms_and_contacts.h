@@ -69,25 +69,17 @@ public:
 			{
 				command_restrict_atoms(input, output);
 			}
-			else if(token=="print-atoms")
+			else if(token=="query-atoms")
 			{
-				command_print_atoms(input, output);
-			}
-			else if(token=="select-atoms")
-			{
-				command_select_atoms(input, output);
+				command_query_atoms(input, output);
 			}
 			else if(token=="construct-contacts")
 			{
 				command_construct_contacts(input, output);
 			}
-			else if(token=="print-contacts")
+			else if(token=="query-contacts")
 			{
-				command_print_contacts(input, output);
-			}
-			else if(token=="select-contacts")
-			{
-				command_select_contacts(input, output);
+				command_query_contacts(input, output);
 			}
 			else if(token=="list-selections-of-atoms")
 			{
@@ -442,71 +434,13 @@ private:
 		output << ")\n";
 	}
 
-	void command_print_atoms(std::istringstream& input, std::ostream& output) const
+	void command_query_atoms(std::istringstream& input, std::ostream& output)
 	{
 		assert_atoms_availability();
 
 		SelectionExpressionParameters selection_expression;
-		bool summarize=false;
-		bool summarize_only=false;
-
-		{
-			std::string token;
-			while(input.good())
-			{
-				input >> token;
-
-				if(token=="summarize")
-				{
-					summarize=true;
-				}
-				else if(token=="summarize-only")
-				{
-					summarize_only=true;
-				}
-				else if(!selection_expression.read(token, input))
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
-			}
-		}
-
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
-		if(ids.empty())
-		{
-			throw std::runtime_error(std::string("No atoms selected."));
-		}
-
-		if(!summarize_only)
-		{
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				const Atom& atom=atoms_[*it];
-				output << atom << "\n";
-			}
-		}
-
-		if(summarize || summarize_only)
-		{
-			output << "Summary of atoms: ";
-			print_summary_of_atoms(collect_summary_of_atoms(ids), output);
-			output << "\n";
-		}
-	}
-
-	void command_select_atoms(std::istringstream& input, std::ostream& output)
-	{
-		assert_atoms_availability();
-
-		SelectionExpressionParameters selection_expression;
-		std::string name="unnamed";
+		std::string name;
+		bool print=false;
 
 		{
 			std::string token;
@@ -518,6 +452,10 @@ private:
 				{
 					input >> name;
 				}
+				else if(token=="print")
+				{
+					print=true;
+				}
 				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
@@ -532,22 +470,32 @@ private:
 			}
 		}
 
-		if(name.empty())
-		{
-			throw std::runtime_error(std::string("No name provided for selection."));
-		}
-
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		selection_manager_.set_atoms_selection(name, ids);
+		if(print)
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Atom& atom=atoms_[*it];
+				output << atom << "\n";
+			}
+		}
 
-		output << "Set selection '" << name << "' of atoms (";
-		print_summary_of_atoms(collect_summary_of_atoms(ids), output);
-		output << ")\n";
+		{
+			output << "Summary of atoms: ";
+			print_summary_of_atoms(collect_summary_of_atoms(ids), output);
+			output << "\n";
+		}
+
+		if(!name.empty())
+		{
+			selection_manager_.set_atoms_selection(name, ids);
+			output << "Set selection of atoms named '" << name << "'\n";
+		}
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output)
@@ -628,13 +576,13 @@ private:
 		}
 	}
 
-	void command_print_contacts(std::istringstream& input, std::ostream& output) const
+	void command_query_contacts(std::istringstream& input, std::ostream& output)
 	{
 		assert_contacts_availability();
 
 		SelectionExpressionParameters selection_expression;
-		bool summarize=false;
-		bool summarize_only=false;
+		std::string name;
+		bool print=false;
 
 		{
 			std::string token;
@@ -642,13 +590,13 @@ private:
 			{
 				input >> token;
 
-				if(token=="summarize")
+				if(token=="name")
 				{
-					summarize=true;
+					input >> name;
 				}
-				else if(token=="summarize-only")
+				else if(token=="print")
 				{
-					summarize_only=true;
+					print=true;
 				}
 				else if(!selection_expression.read(token, input))
 				{
@@ -670,7 +618,7 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		if(!summarize_only)
+		if(print)
 		{
 			enabled_output_of_ContactValue_graphics()=false;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -689,61 +637,17 @@ private:
 			enabled_output_of_ContactValue_graphics()=true;
 		}
 
-		if(summarize || summarize_only)
 		{
 			output << "Summary of contacts: ";
 			print_summary_of_contacts(collect_summary_of_contacts(ids), output);
 			output << "\n";
 		}
-	}
 
-	void command_select_contacts(std::istringstream& input, std::ostream& output)
-	{
-		assert_contacts_availability();
-
-		SelectionExpressionParameters selection_expression;
-		std::string name="unnamed";
-
+		if(!name.empty())
 		{
-			std::string token;
-			while(input.good())
-			{
-				input >> token;
-
-				if(token=="name")
-				{
-					input >> name;
-				}
-				else if(!selection_expression.read(token, input))
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
-			}
+			selection_manager_.set_contacts_selection(name, ids);
+			output << "Set selection of contacts named '" << name << "'\n";
 		}
-
-		if(name.empty())
-		{
-			throw std::runtime_error(std::string("No name provided for selection."));
-		}
-
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
-		if(ids.empty())
-		{
-			throw std::runtime_error(std::string("No contacts selected."));
-		}
-
-		selection_manager_.set_contacts_selection(name, ids);
-
-		output << "Set selection '" << name << "' of contacts (";
-		print_summary_of_contacts(collect_summary_of_contacts(ids), output);
-		output << ")\n";
 	}
 
 	void list_selections_of_atoms(std::istringstream& input, std::ostream& output) const
@@ -762,36 +666,6 @@ private:
 	}
 
 	void clear_selections_of_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void show_atoms(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void show_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void hide_atoms(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void hide_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void color_atoms(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
-
-	void color_contacts(std::istringstream& input, std::ostream& output)
 	{
 		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
 	}
