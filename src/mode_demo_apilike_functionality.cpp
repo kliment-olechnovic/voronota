@@ -18,6 +18,8 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	manager.execute("query-atoms use '{tags het adjuncts tf=0:10}' print", std::cout);
 	manager.execute("restrict-atoms use '{tags-not het}'", std::cout);
 	manager.execute("construct-contacts render", std::cout);
-	manager.execute("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name as1", std::cout);
-	manager.execute("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name cs1", std::cout);
+	manager.execute("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name cs1", std::cout);
+	manager.execute("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name as1", std::cout);
+	manager.execute("manage-selections-of-atoms list", std::cout);
+	manager.execute("manage-selections-of-contacts list", std::cout);
 }
