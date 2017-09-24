@@ -73,6 +73,10 @@ public:
 			{
 				command_print_atoms(input, output);
 			}
+			else if(token=="select-atoms")
+			{
+				command_select_atoms(input, output);
+			}
 			else if(token=="construct-contacts")
 			{
 				command_construct_contacts(input, output);
@@ -81,13 +85,9 @@ public:
 			{
 				command_print_contacts(input, output);
 			}
-			else if(token=="select-atoms")
-			{
-				select_atoms(input, output);
-			}
 			else if(token=="select-contacts")
 			{
-				select_contacts(input, output);
+				command_select_contacts(input, output);
 			}
 			else if(token=="list-selections-of-atoms")
 			{
@@ -113,6 +113,62 @@ public:
 	}
 
 private:
+	struct SummaryOfAtoms
+	{
+		std::size_t number_total;
+		double volume;
+
+		SummaryOfAtoms() : number_total(0), volume(0.0)
+		{
+		}
+
+		void feed(const Atom& atom)
+		{
+			number_total++;
+			if(atom.value.props.adjuncts.count("volume")>0)
+			{
+				volume+=atom.value.props.adjuncts.find("volume")->second;
+			}
+		}
+	};
+
+	struct SummaryOfContacts
+	{
+		std::size_t number_total;
+		std::size_t number_drawable;
+		double area;
+
+		SummaryOfContacts() : number_total(0), number_drawable(0), area(0.0)
+		{
+		}
+
+		void feed(const Contact& contact)
+		{
+			number_total++;
+			area+=contact.value.area;
+			if(!contact.value.graphics.empty())
+			{
+				number_drawable++;
+			}
+		}
+	};
+
+	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output)
+	{
+		output << "count=" << summary.number_total;
+		if(summary.volume>0.0)
+		{
+			output << " volume=" << summary.volume;
+		}
+	}
+
+	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output)
+	{
+		output << "count=" << summary.number_total;
+		output << " drawable=" << summary.number_drawable;
+		output << " area=" << summary.area;
+	}
+
 	static void read_string_considering_quotes(std::istream& input, std::string& output)
 	{
 		input >> std::ws;
@@ -161,6 +217,60 @@ private:
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size(), DisplayState(true, 0x0077FF));
 		selection_manager_.set_contacts(&contacts_);
+	}
+
+	SummaryOfAtoms collect_summary_of_atoms() const
+	{
+		SummaryOfAtoms summary;
+		for(std::vector<Atom>::const_iterator it=atoms_.begin();it!=atoms_.end();++it)
+		{
+			summary.feed(*it);
+		}
+		return summary;
+	}
+
+	SummaryOfAtoms collect_summary_of_atoms(const std::set<std::size_t>& ids) const
+	{
+		SummaryOfAtoms summary;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			if((*it)<atoms_.size())
+			{
+				summary.feed(atoms_[*it]);
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
+			}
+		}
+		return summary;
+	}
+
+	SummaryOfContacts collect_summary_of_contacts() const
+	{
+		SummaryOfContacts summary;
+		for(std::vector<Contact>::const_iterator it=contacts_.begin();it!=contacts_.end();++it)
+		{
+			summary.feed(*it);
+		}
+		return summary;
+	}
+
+	SummaryOfContacts collect_summary_of_contacts(const std::set<std::size_t>& ids) const
+	{
+		SummaryOfContacts summary;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			if((*it)<contacts_.size())
+			{
+				summary.feed(contacts_[*it]);
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
+			}
+		}
+		return summary;
 	}
 
 	void command_read_atoms(std::istringstream& input, std::ostream& output)
@@ -243,7 +353,9 @@ private:
 			else
 			{
 				reset_atoms(atoms);
-				output << "Read " << atoms_.size() << " atoms from file '" << atoms_file << "'.\n";
+				output << "Read atoms from file '" << atoms_file << "' (";
+				print_summary_of_atoms(collect_summary_of_atoms(), output);
+				output << ")\n";
 			}
 		}
 		else
@@ -300,8 +412,15 @@ private:
 			atoms.push_back(atoms_.at(*it));
 		}
 
+		const SummaryOfAtoms old_summary=collect_summary_of_atoms();
+
 		reset_atoms(atoms);
-		output << "Restricted from " << atoms.size() << " to " << atoms_.size() << " atoms." << std::endl;
+
+		output << "Restricted atoms from (";
+		print_summary_of_atoms(old_summary, output);
+		output << ") to (";
+		print_summary_of_atoms(collect_summary_of_atoms(), output);
+		output << ")\n";
 	}
 
 	void command_print_atoms(std::istringstream& input, std::ostream& output) const
@@ -366,23 +485,68 @@ private:
 
 		if(summarize || summarize_only)
 		{
-			double volume=0.0;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				const Atom& atom=atoms_[*it];
-				if(atom.value.props.adjuncts.count("volume")>0)
-				{
-					volume+=atom.value.props.adjuncts.find("volume")->second;
-				}
-			}
-			output << "Atoms";
-			output << " count=" << ids.size();
-			if(volume>0.0)
-			{
-				output << " volume=" << volume;
-			}
+			output << "Summary of atoms: ";
+			print_summary_of_atoms(collect_summary_of_atoms(ids), output);
 			output << "\n";
 		}
+	}
+
+	void command_select_atoms(std::istringstream& input, std::ostream& output)
+	{
+		assert_atoms_availability();
+
+		std::string selection_expression="{}";
+		bool full_residues=false;
+		std::string name="unnamed";
+
+		{
+			std::string token;
+			while(input.good())
+			{
+				input >> token;
+
+				if(token=="use")
+				{
+					read_string_considering_quotes(input, selection_expression);
+				}
+				else if(token=="full-residues")
+				{
+					full_residues=true;
+				}
+				else if(token=="name")
+				{
+					input >> name;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+				}
+
+				if(input.fail() || token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+
+				input >> std::ws;
+			}
+		}
+
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("No name provided for selection."));
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		selection_manager_.set_atoms_selection(name, ids);
+
+		output << "Set selection '" << name << "' of atoms (";
+		print_summary_of_atoms(collect_summary_of_atoms(ids), output);
+		output << ")\n";
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output)
@@ -453,7 +617,9 @@ private:
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
 
-			output << "Constructed " << contacts_.size() << " contacts, " << draw_ids.size() << " of them with graphics." << std::endl;
+			output << "Constructed contacts (";
+			print_summary_of_contacts(collect_summary_of_contacts(), output);
+			output << ")\n";
 		}
 		else
 		{
@@ -533,34 +699,68 @@ private:
 
 		if(summarize || summarize_only)
 		{
-			double total_area=0.0;
-			int drawable=0;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				const Contact& contact=contacts_[*it];
-				total_area+=contact.value.area;
-				if(!contact.value.graphics.empty())
-				{
-					drawable++;
-				}
-			}
-
-			output << "Contacts";
-			output << " count=" << ids.size();
-			output << " area=" << total_area;
-			output << " drawable=" << drawable;
+			output << "Summary of contacts: ";
+			print_summary_of_contacts(collect_summary_of_contacts(ids), output);
 			output << "\n";
 		}
 	}
 
-	void select_atoms(std::istringstream& input, std::ostream& output)
+	void command_select_contacts(std::istringstream& input, std::ostream& output)
 	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
-	}
+		assert_contacts_availability();
 
-	void select_contacts(std::istringstream& input, std::ostream& output)
-	{
-		throw std::runtime_error(std::string("Command not implemented.")); input.good(); output.good(); //TODO implement
+		std::string selection_expression="{}";
+		bool full_residues=false;
+		std::string name="unnamed";
+
+		{
+			std::string token;
+			while(input.good())
+			{
+				input >> token;
+
+				if(token=="use")
+				{
+					read_string_considering_quotes(input, selection_expression);
+				}
+				else if(token=="full-residues")
+				{
+					full_residues=true;
+				}
+				else if(token=="name")
+				{
+					input >> name;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+				}
+
+				if(input.fail() || token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+
+				input >> std::ws;
+			}
+		}
+
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("No name provided for selection."));
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression, full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		selection_manager_.set_contacts_selection(name, ids);
+
+		output << "Set selection '" << name << "' of contacts (";
+		print_summary_of_contacts(collect_summary_of_contacts(ids), output);
+		output << ")\n";
 	}
 
 	void list_selections_of_atoms(std::istringstream& input, std::ostream& output) const
