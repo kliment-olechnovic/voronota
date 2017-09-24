@@ -153,6 +153,34 @@ private:
 		}
 	};
 
+	struct SelectionExpressionParameters
+	{
+		std::string expression;
+		bool full_residues;
+
+		SelectionExpressionParameters() : expression("{}"), full_residues(false)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type=="use")
+			{
+				read_string_considering_quotes(input, expression);
+				return true;
+			}
+			else if(type=="full-residues")
+			{
+				full_residues=true;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
+
 	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output)
 	{
 		output << "count=" << summary.number_total;
@@ -368,8 +396,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		std::string selection_expression="{}";
-		bool full_residues=false;
+		SelectionExpressionParameters selection_expression;
 
 		{
 			std::string token;
@@ -377,15 +404,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="use")
-				{
-					read_string_considering_quotes(input, selection_expression);
-				}
-				else if(token=="full-residues")
-				{
-					full_residues=true;
-				}
-				else
+				if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -399,7 +418,7 @@ private:
 			}
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.size()<4)
 		{
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -427,8 +446,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		std::string selection_expression="{}";
-		bool full_residues=false;
+		SelectionExpressionParameters selection_expression;
 		bool summarize=false;
 		bool summarize_only=false;
 
@@ -438,15 +456,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="use")
-				{
-					read_string_considering_quotes(input, selection_expression);
-				}
-				else if(token=="full-residues")
-				{
-					full_residues=true;
-				}
-				else if(token=="summarize")
+				if(token=="summarize")
 				{
 					summarize=true;
 				}
@@ -454,7 +464,7 @@ private:
 				{
 					summarize_only=true;
 				}
-				else
+				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -468,7 +478,7 @@ private:
 			}
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -495,8 +505,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		std::string selection_expression="{}";
-		bool full_residues=false;
+		SelectionExpressionParameters selection_expression;
 		std::string name="unnamed";
 
 		{
@@ -505,19 +514,11 @@ private:
 			{
 				input >> token;
 
-				if(token=="use")
-				{
-					read_string_considering_quotes(input, selection_expression);
-				}
-				else if(token=="full-residues")
-				{
-					full_residues=true;
-				}
-				else if(token=="name")
+				if(token=="name")
 				{
 					input >> name;
 				}
-				else
+				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -536,7 +537,7 @@ private:
 			throw std::runtime_error(std::string("No name provided for selection."));
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -631,8 +632,7 @@ private:
 	{
 		assert_contacts_availability();
 
-		std::string selection_expression="{}";
-		bool full_residues=false;
+		SelectionExpressionParameters selection_expression;
 		bool summarize=false;
 		bool summarize_only=false;
 
@@ -642,15 +642,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="use")
-				{
-					read_string_considering_quotes(input, selection_expression);
-				}
-				else if(token=="full-residues")
-				{
-					full_residues=true;
-				}
-				else if(token=="summarize")
+				if(token=="summarize")
 				{
 					summarize=true;
 				}
@@ -658,7 +650,7 @@ private:
 				{
 					summarize_only=true;
 				}
-				else
+				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -672,7 +664,7 @@ private:
 			}
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -709,8 +701,7 @@ private:
 	{
 		assert_contacts_availability();
 
-		std::string selection_expression="{}";
-		bool full_residues=false;
+		SelectionExpressionParameters selection_expression;
 		std::string name="unnamed";
 
 		{
@@ -719,19 +710,11 @@ private:
 			{
 				input >> token;
 
-				if(token=="use")
-				{
-					read_string_considering_quotes(input, selection_expression);
-				}
-				else if(token=="full-residues")
-				{
-					full_residues=true;
-				}
-				else if(token=="name")
+				if(token=="name")
 				{
 					input >> name;
 				}
-				else
+				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -750,7 +733,7 @@ private:
 			throw std::runtime_error(std::string("No name provided for selection."));
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression, full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
