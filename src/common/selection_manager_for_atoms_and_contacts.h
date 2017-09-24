@@ -195,6 +195,16 @@ public:
 		map_of_contacts_selections_.clear();
 	}
 
+	const std::map< std::string, std::set<std::size_t> >& map_of_atoms_selections() const
+	{
+		return map_of_atoms_selections_;
+	}
+
+	const std::map< std::string, std::set<std::size_t> >& map_of_contacts_selections() const
+	{
+		return map_of_contacts_selections_;
+	}
+
 private:
 	static bool check_contacts_according_to_atoms(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts)
 	{
