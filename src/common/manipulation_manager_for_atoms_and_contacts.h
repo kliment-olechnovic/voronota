@@ -272,6 +272,21 @@ private:
 		}
 	}
 
+	static unsigned int read_color_integer_from_string(const std::string& color_str)
+	{
+		unsigned int color_int=0;
+		if(!color_str.empty())
+		{
+			std::istringstream color_input(color_str);
+			color_input >> std::hex >> color_int;
+			if(color_input.fail())
+			{
+				throw std::runtime_error(std::string("Invalid hex color string '")+color_str+"'.");
+			}
+		}
+		return color_int;
+	}
+
 	void assert_atoms_availability() const
 	{
 		if(atoms_.empty())
@@ -463,7 +478,7 @@ private:
 		}
 		else
 		{
-			throw std::runtime_error(std::string("Failed to read atoms from file."));
+			throw std::runtime_error(std::string("Failed to read atoms from file '")+atoms_file+"'.");
 		}
 	}
 
@@ -524,6 +539,9 @@ private:
 		SelectionExpressionParameters selection_expression;
 		std::string name;
 		bool print=false;
+		bool show=false;
+		bool hide=false;
+		std::string color;
 
 		{
 			std::string token;
@@ -539,6 +557,18 @@ private:
 				{
 					print=true;
 				}
+				else if(token=="show")
+				{
+					show=true;
+				}
+				else if(token=="hide")
+				{
+					hide=true;
+				}
+				else if(token=="color")
+				{
+					input >> color;
+				}
 				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
@@ -553,10 +583,36 @@ private:
 			}
 		}
 
+		if(show && hide)
+		{
+			throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+		}
+
+		const unsigned int color_int=read_color_integer_from_string(color);
+
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		if(show || hide || !color.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<atoms_display_states_.size())
+				{
+					DisplayState& ds=atoms_display_states_[*it];
+					if(show || hide)
+					{
+						ds.visible=show;
+					}
+					if(!color.empty())
+					{
+						ds.color=color_int;
+					}
+				}
+			}
 		}
 
 		if(print)
@@ -767,6 +823,9 @@ private:
 		SelectionExpressionParameters selection_expression;
 		std::string name;
 		bool print=false;
+		bool show=false;
+		bool hide=false;
+		std::string color;
 
 		{
 			std::string token;
@@ -782,6 +841,18 @@ private:
 				{
 					print=true;
 				}
+				else if(token=="show")
+				{
+					show=true;
+				}
+				else if(token=="hide")
+				{
+					hide=true;
+				}
+				else if(token=="color")
+				{
+					input >> color;
+				}
 				else if(!selection_expression.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
@@ -796,10 +867,36 @@ private:
 			}
 		}
 
+		if(show && hide)
+		{
+			throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+		}
+
+		const unsigned int color_int=read_color_integer_from_string(color);
+
 		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		if(show || hide || !color.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<contacts_display_states_.size())
+				{
+					DisplayState& ds=contacts_display_states_[*it];
+					if(show || hide)
+					{
+						ds.visible=show;
+					}
+					if(!color.empty())
+					{
+						ds.color=color_int;
+					}
+				}
+			}
 		}
 
 		if(print)

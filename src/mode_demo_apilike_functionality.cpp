@@ -16,6 +16,9 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	std::cout << "\n";
 
 	common::ManipulationManagerForAtomsAndContacts manager;
+	manager.execute_plainly("read-atoms file tests/input/single/structure", std::cout);
+	manager.execute_plainly("read-atoms file tests/input/single/structure.cif mmcif", std::cout);
+	manager.execute_plainly("read-atoms file tests/input/single/structure.pdb", std::cout);
 	manager.execute_plainly("read-atoms file tests/input/single/structure.pdb heteroatoms", std::cout);
 	manager.execute_plainly("query-atoms use '{tags het adjuncts tf=0:10}' print", std::cout);
 	manager.execute_plainly("restrict-atoms use '{tags-not het}'", std::cout);
