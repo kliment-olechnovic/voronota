@@ -50,10 +50,15 @@ public:
 		return contacts_display_states_;
 	}
 
-	void execute(const std::string& command, std::ostream& output)
+	void execute(const std::string& command, std::ostream& output, const bool echo_command=true)
 	{
 		if(!command.empty())
 		{
+			if(echo_command)
+			{
+				output << "> " << command << "\n";
+			}
+
 			std::istringstream input(command);
 
 			std::string token;
@@ -93,7 +98,23 @@ public:
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
 			}
+
+			output << std::endl;
 		}
+	}
+
+	bool execute_and_handle_exceptions(const std::string& command, std::ostream& output, const bool echo_command=true)
+	{
+		try
+		{
+			execute(command, output, echo_command);
+		}
+		catch(const std::exception& e)
+		{
+			output << "Error: " << e.what() << "\n";
+			output << std::endl;
+		}
+		return false;
 	}
 
 private:
@@ -569,7 +590,7 @@ private:
 		if(remove_all)
 		{
 			selection_manager_.delete_atoms_selections();
-			output << "Removed all selections of atoms.\n";
+			output << "Removed all selections of atoms\n";
 			return;
 		}
 
@@ -608,6 +629,10 @@ private:
 					print_summary_of_atoms(collect_summary_of_atoms(it->second), output);
 					output << "\n";
 				}
+			}
+			else
+			{
+				output << "No selections of atoms to list\n";
 			}
 		}
 	}
@@ -827,7 +852,7 @@ private:
 		if(remove_all)
 		{
 			selection_manager_.delete_contacts_selections();
-			output << "Removed all selections of contacts.\n";
+			output << "Removed all selections of contacts\n";
 			return;
 		}
 
@@ -866,6 +891,10 @@ private:
 					print_summary_of_contacts(collect_summary_of_contacts(it->second), output);
 					output << "\n";
 				}
+			}
+			else
+			{
+				output << "No selections of contacts to list\n";
 			}
 		}
 	}
