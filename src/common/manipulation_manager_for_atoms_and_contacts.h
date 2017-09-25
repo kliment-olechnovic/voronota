@@ -62,9 +62,19 @@ public:
 		return atoms_display_states_;
 	}
 
+	DisplayState* editable_atoms_display_states()
+	{
+		return &atoms_display_states_[0];
+	}
+
 	const std::vector<DisplayState>& contacts_display_states() const
 	{
 		return contacts_display_states_;
+	}
+
+	DisplayState* editable_contacts_display_states()
+	{
+		return &contacts_display_states_[0];
 	}
 
 	const std::vector<CommandHistory>& history() const
