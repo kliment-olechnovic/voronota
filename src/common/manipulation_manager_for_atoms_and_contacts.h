@@ -98,9 +98,21 @@ public:
 			{
 				command_query_atoms(input, output_for_log, output_for_content);
 			}
-			else if(token=="manage-selections-of-atoms")
+			else if(token=="list-selections-of-atoms")
 			{
-				command_manage_selections_of_atoms(input, output_for_log);
+				command_list_selections_of_atoms(input, output_for_log);
+			}
+			else if(token=="delete-all-selections-of-atoms")
+			{
+				command_delete_all_selections_of_atoms(input, output_for_log);
+			}
+			else if(token=="delete-selections-of-atoms")
+			{
+				command_delete_selections_of_atoms(input, output_for_log);
+			}
+			else if(token=="rename-selection-of-atoms")
+			{
+				command_rename_selection_of_atoms(input, output_for_log);
 			}
 			else if(token=="construct-contacts")
 			{
@@ -110,9 +122,21 @@ public:
 			{
 				command_query_contacts(input, output_for_log, output_for_content);
 			}
-			else if(token=="manage-selections-of-contacts")
+			else if(token=="list-selections-of-contacts")
 			{
-				command_manage_selections_of_contacts(input, output_for_log);
+				command_list_selections_of_contacts(input, output_for_log);
+			}
+			else if(token=="delete-all-selections-of-contacts")
+			{
+				command_delete_all_selections_of_contacts(input, output_for_log);
+			}
+			else if(token=="delete-selections-of-contacts")
+			{
+				command_delete_selections_of_contacts(input, output_for_log);
+			}
+			else if(token=="rename-selection-of-contacts")
+			{
+				command_rename_selection_of_contacts(input, output_for_log);
 			}
 			else
 			{
@@ -130,14 +154,20 @@ public:
 	void execute_plainly(const std::string& command, std::ostream& output)
 	{
 		std::ostringstream output_for_content;
-		if(execute(command, output_for_content) && !commands_history_.empty())
+		if(!command.empty())
 		{
-			const CommandHistory& ch=commands_history_.back();
-			output << "> " << ch.command << "\n";
-			output << output_for_content.str();
-			output << ch.output_log;
-			output << ch.output_error;
-			output << std::endl;
+			output << "> " << command << std::endl;
+			if(execute(command, output_for_content) && !commands_history_.empty())
+			{
+				const CommandHistory& ch=commands_history_.back();
+				output << output_for_content.str();
+				output << ch.output_log;
+				if(!ch.output_error.empty())
+				{
+					output << "Error: " << ch.output_error << "\n";
+				}
+				output << std::endl;
+			}
 		}
 	}
 
@@ -551,114 +581,105 @@ private:
 		}
 	}
 
-	void command_manage_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
 		assert_atoms_selections_availability();
 
-		bool list=false;
-		bool remove_all=false;
-		std::string remove;
-		std::pair<std::string, std::string> rename;
+		input >> std::ws;
+		if(input.good())
+		{
+			throw std::runtime_error(std::string("No additional parameters allowed."));
+		}
+
+		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
+		if(map_of_selections.empty())
+		{
+			output << "No selections of atoms to list\n";
+		}
+		else
+		{
+			output << "Selections of atoms:\n";
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
+			{
+				output << "  name='" << (it->first) << "' ";
+				print_summary_of_atoms(collect_summary_of_atoms(it->second), output);
+				output << "\n";
+			}
+		}
+	}
+
+	void command_delete_all_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	{
+		assert_atoms_selections_availability();
+
+		input >> std::ws;
+		if(input.good())
+		{
+			throw std::runtime_error(std::string("No additional parameters allowed."));
+		}
+
+		selection_manager_.delete_atoms_selections();
+		output << "Removed all selections of atoms\n";
+	}
+
+	void command_delete_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	{
+		assert_atoms_selections_availability();
+
+		std::vector<std::string> names;
 
 		{
 			std::string token;
 			while(input.good())
 			{
 				input >> token;
-
-				if(token=="list")
+				if(selection_manager_.map_of_atoms_selections().count(token)>0)
 				{
-					list=true;
-				}
-				else if(token=="remove-all")
-				{
-					remove_all=true;
-				}
-				else if(token=="remove")
-				{
-					read_string_considering_quotes(input, remove);
-				}
-				else if(token=="rename")
-				{
-					input >> rename.first >> rename.second;
+					names.push_back(token);
 				}
 				else
 				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+					throw std::runtime_error(std::string("Invalid atoms selection name '")+token+"'.");
 				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
 				input >> std::ws;
 			}
 		}
 
-		if(remove_all && !remove.empty())
+		if(names.empty())
 		{
-			throw std::runtime_error(std::string("For clarity, it is forbidden to use both 'remove-all' and 'remove' options together."));
+			throw std::runtime_error(std::string("No atoms selection names provided."));
 		}
 
-		if((remove_all || !remove.empty()) && (!rename.first.empty() && !rename.second.empty()))
+		for(std::size_t i=0;i<names.size();i++)
 		{
-			throw std::runtime_error(std::string("For clarity, it is forbidden to rename and to remove with one command."));
+			selection_manager_.delete_atoms_selection(names[i]);
 		}
 
-		if((!rename.first.empty() && rename.second.empty()) || (rename.first.empty() && !rename.second.empty()))
+		output << "Removed selections of atoms:";
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			output << " " << names[i];
+		}
+		output << "\n";
+	}
+
+	void command_rename_selection_of_atoms(std::istringstream& input, std::ostream& output)
+	{
+		assert_atoms_selections_availability();
+
+		std::pair<std::string, std::string> rename;
+
+		input >> rename.first >> rename.second;
+
+		if(rename.first.empty() || rename.second.empty())
 		{
 			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
 		}
 
-		if(remove_all)
-		{
-			selection_manager_.delete_atoms_selections();
-			output << "Removed all selections of atoms\n";
-			return;
-		}
-
-		if(!remove.empty())
-		{
-			std::istringstream list_input(remove);
-			while(list_input.good())
-			{
-				std::string name;
-				list_input >> name;
-				if(!name.empty())
-				{
-					selection_manager_.delete_atoms_selection(name);
-					output << "Removed selection of atoms '" << name << "'\n";
-				}
-			}
-		}
-
-		if(!rename.first.empty() && !rename.second.empty())
-		{
-			const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(rename.first);
-			selection_manager_.set_atoms_selection(rename.second, ids);
-			selection_manager_.delete_atoms_selection(rename.first);
-			output << "Renamed selection of atoms from '" << rename.first << "' to '" << rename.second << "'\n";
-		}
-
-		if(list)
-		{
-			const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
-			if(!map_of_selections.empty())
-			{
-				output << "Selections of atoms:\n";
-				for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
-				{
-					output << "  name='" << (it->first) << "' ";
-					print_summary_of_atoms(collect_summary_of_atoms(it->second), output);
-					output << "\n";
-				}
-			}
-			else
-			{
-				output << "No selections of atoms to list\n";
-			}
-		}
+		const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(rename.first);
+		selection_manager_.set_atoms_selection(rename.second, ids);
+		selection_manager_.delete_atoms_selection(rename.first);
+		output << "Renamed selection of atoms from '" << rename.first << "' to '" << rename.second << "'\n";
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output)
@@ -813,114 +834,105 @@ private:
 		}
 	}
 
-	void command_manage_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
 		assert_contacts_selections_availability();
 
-		bool list=false;
-		bool remove_all=false;
-		std::string remove;
-		std::pair<std::string, std::string> rename;
+		input >> std::ws;
+		if(input.good())
+		{
+			throw std::runtime_error(std::string("No additional parameters allowed."));
+		}
+
+		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
+		if(map_of_selections.empty())
+		{
+			output << "No selections of contacts to list\n";
+		}
+		else
+		{
+			output << "Selections of contacts:\n";
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
+			{
+				output << "  name='" << (it->first) << "' ";
+				print_summary_of_contacts(collect_summary_of_contacts(it->second), output);
+				output << "\n";
+			}
+		}
+	}
+
+	void command_delete_all_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	{
+		assert_contacts_selections_availability();
+
+		input >> std::ws;
+		if(input.good())
+		{
+			throw std::runtime_error(std::string("No additional parameters allowed."));
+		}
+
+		selection_manager_.delete_contacts_selections();
+		output << "Removed all selections of contacts\n";
+	}
+
+	void command_delete_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	{
+		assert_contacts_selections_availability();
+
+		std::vector<std::string> names;
 
 		{
 			std::string token;
 			while(input.good())
 			{
 				input >> token;
-
-				if(token=="list")
+				if(selection_manager_.map_of_contacts_selections().count(token)>0)
 				{
-					list=true;
-				}
-				else if(token=="remove-all")
-				{
-					remove_all=true;
-				}
-				else if(token=="remove")
-				{
-					read_string_considering_quotes(input, remove);
-				}
-				else if(token=="rename")
-				{
-					input >> rename.first >> rename.second;
+					names.push_back(token);
 				}
 				else
 				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
+					throw std::runtime_error(std::string("Invalid contacts selection name '")+token+"'.");
 				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
 				input >> std::ws;
 			}
 		}
 
-		if(remove_all && !remove.empty())
+		if(names.empty())
 		{
-			throw std::runtime_error(std::string("For clarity, it is forbidden to use both 'remove-all' and 'remove' options together."));
+			throw std::runtime_error(std::string("No contacts selection names provided."));
 		}
 
-		if((remove_all || !remove.empty()) && (!rename.first.empty() && !rename.second.empty()))
+		for(std::size_t i=0;i<names.size();i++)
 		{
-			throw std::runtime_error(std::string("For clarity, it is forbidden to rename and to remove with one command."));
+			selection_manager_.delete_contacts_selection(names[i]);
 		}
 
-		if((!rename.first.empty() && rename.second.empty()) || (rename.first.empty() && !rename.second.empty()))
+		output << "Removed selections of contacts:";
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			output << " " << names[i];
+		}
+		output << "\n";
+	}
+
+	void command_rename_selection_of_contacts(std::istringstream& input, std::ostream& output)
+	{
+		assert_contacts_selections_availability();
+
+		std::pair<std::string, std::string> rename;
+
+		input >> rename.first >> rename.second;
+
+		if(rename.first.empty() || rename.second.empty())
 		{
 			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
 		}
 
-		if(remove_all)
-		{
-			selection_manager_.delete_contacts_selections();
-			output << "Removed all selections of contacts\n";
-			return;
-		}
-
-		if(!remove.empty())
-		{
-			std::istringstream list_input(remove);
-			while(list_input.good())
-			{
-				std::string name;
-				list_input >> name;
-				if(!name.empty())
-				{
-					selection_manager_.delete_contacts_selection(name);
-					output << "Removed selection of contacts '" << name << "'\n";
-				}
-			}
-		}
-
-		if(!rename.first.empty() && !rename.second.empty())
-		{
-			const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(rename.first);
-			selection_manager_.set_contacts_selection(rename.second, ids);
-			selection_manager_.delete_contacts_selection(rename.first);
-			output << "Renamed selection of contacts from '" << rename.first << "' to '" << rename.second << "'\n";
-		}
-
-		if(list)
-		{
-			const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
-			if(!map_of_selections.empty())
-			{
-				output << "Selections of contacts:\n";
-				for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
-				{
-					output << "  name='" << (it->first) << "' ";
-					print_summary_of_contacts(collect_summary_of_contacts(it->second), output);
-					output << "\n";
-				}
-			}
-			else
-			{
-				output << "No selections of contacts to list\n";
-			}
-		}
+		const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(rename.first);
+		selection_manager_.set_contacts_selection(rename.second, ids);
+		selection_manager_.delete_contacts_selection(rename.first);
+		output << "Renamed selection of contacts from '" << rename.first << "' to '" << rename.second << "'\n";
 	}
 
 	std::vector<Atom> atoms_;
