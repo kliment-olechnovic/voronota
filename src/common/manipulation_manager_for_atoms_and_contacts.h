@@ -84,14 +84,15 @@ public:
 
 	bool execute(const std::string& command, std::ostream& output_for_content)
 	{
-		if(command.empty())
-		{
-			return false;
-		}
+		bool status=false;
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 		try
 		{
+			if(command.empty())
+			{
+				throw std::runtime_error(std::string("Empty command."));
+			}
 			std::istringstream input(command);
 			std::string token;
 			input >> token;
@@ -152,13 +153,14 @@ public:
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
 			}
+			status=true;
 		}
 		catch(const std::exception& e)
 		{
 			output_for_errors << e.what();
 		}
 		commands_history_.push_back(CommandHistory(command, output_for_log.str(), output_for_errors.str()));
-		return true;
+		return status;
 	}
 
 	void execute_plainly(const std::string& command, std::ostream& output)
@@ -167,7 +169,8 @@ public:
 		if(!command.empty())
 		{
 			output << "> " << command << std::endl;
-			if(execute(command, output_for_content) && !commands_history_.empty())
+			execute(command, output_for_content);
+			if(!commands_history_.empty())
 			{
 				const CommandHistory& ch=commands_history_.back();
 				output << output_for_content.str();
