@@ -23,6 +23,18 @@ public:
 		set_contacts(contacts_ptr);
 	}
 
+	static bool check_contacts_compatibility_with_atoms(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts)
+	{
+		for(std::size_t i=0;i<contacts.size();i++)
+		{
+			if(!(contacts[i].ids[0]<atoms.size() && contacts[i].ids[1]<atoms.size()))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	const std::vector<Atom>& atoms() const
 	{
 		static const std::vector<Atom> empty_atoms;
@@ -59,7 +71,7 @@ public:
 
 	void set_contacts(const std::vector<Contact>* contacts_ptr)
 	{
-		if(contacts_ptr==0 || check_contacts_according_to_atoms(atoms(), *contacts_ptr))
+		if(contacts_ptr==0 || check_contacts_compatibility_with_atoms(atoms(), *contacts_ptr))
 		{
 			contacts_ptr_=contacts_ptr;
 			map_of_contacts_selections_.clear();
@@ -206,18 +218,6 @@ public:
 	}
 
 private:
-	static bool check_contacts_according_to_atoms(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts)
-	{
-		for(std::size_t i=0;i<contacts.size();i++)
-		{
-			if(!(contacts[i].ids[0]<atoms.size() && contacts[i].ids[1]<atoms.size()))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
 	static bool check_selection_ids(const std::set<std::size_t>& ids, const std::size_t id_limit)
 	{
 		if(ids.size()<=id_limit)
