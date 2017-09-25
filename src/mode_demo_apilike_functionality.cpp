@@ -13,13 +13,15 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
+	std::cout << "\n";
+
 	common::ManipulationManagerForAtomsAndContacts manager;
-	manager.execute_and_handle_exceptions("read-atoms file tests/input/single/structure.pdb heteroatoms", std::cout);
-	manager.execute_and_handle_exceptions("query-atoms use '{tags het adjuncts tf=0:10}' print", std::cout);
-	manager.execute_and_handle_exceptions("restrict-atoms use '{tags-not het}'", std::cout);
-	manager.execute_and_handle_exceptions("construct-contacts render", std::cout);
-	manager.execute_and_handle_exceptions("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name cs1", std::cout);
-	manager.execute_and_handle_exceptions("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name as1", std::cout);
-	manager.execute_and_handle_exceptions("manage-selections-of-atoms list", std::cout);
-	manager.execute_and_handle_exceptions("manage-selections-of-contacts list", std::cout);
+	manager.execute_plainly("read-atoms file tests/input/single/structure.pdb heteroatoms", std::cout);
+	manager.execute_plainly("query-atoms use '{tags het adjuncts tf=0:10}' print", std::cout);
+	manager.execute_plainly("restrict-atoms use '{tags-not het}'", std::cout);
+	manager.execute_plainly("construct-contacts render", std::cout);
+	manager.execute_plainly("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name cs1", std::cout);
+	manager.execute_plainly("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name as1", std::cout);
+	manager.execute_plainly("manage-selections-of-atoms list", std::cout);
+	manager.execute_plainly("manage-selections-of-contacts list", std::cout);
 }

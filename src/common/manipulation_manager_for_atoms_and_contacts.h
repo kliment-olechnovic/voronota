@@ -26,6 +26,23 @@ public:
 		}
 	};
 
+	struct CommandHistory
+	{
+		std::string command;
+		std::string output_log;
+		std::string output_error;
+
+		CommandHistory(
+				const std::string& command,
+				const std::string& output_log,
+				const std::string& output_error) :
+					command(command),
+					output_log(output_log),
+					output_error(output_error)
+		{
+		}
+	};
+
 	ManipulationManagerForAtomsAndContacts()
 	{
 	}
@@ -50,71 +67,78 @@ public:
 		return contacts_display_states_;
 	}
 
-	void execute(const std::string& command, std::ostream& output, const bool echo_command=true)
+	const std::vector<CommandHistory>& history() const
 	{
-		if(!command.empty())
+		return commands_history_;
+	}
+
+	bool execute(const std::string& command, std::ostream& output_for_content)
+	{
+		if(command.empty())
 		{
-			if(echo_command)
-			{
-				output << "> " << command << "\n";
-			}
-
+			return false;
+		}
+		std::ostringstream output_for_log;
+		std::ostringstream output_for_errors;
+		try
+		{
 			std::istringstream input(command);
-
 			std::string token;
 			input >> token;
-
 			input >> std::ws;
-
 			if(token=="read-atoms")
 			{
-				command_read_atoms(input, output);
+				command_read_atoms(input, output_for_log);
 			}
 			else if(token=="restrict-atoms")
 			{
-				command_restrict_atoms(input, output);
+				command_restrict_atoms(input, output_for_log);
 			}
 			else if(token=="query-atoms")
 			{
-				command_query_atoms(input, output);
+				command_query_atoms(input, output_for_log, output_for_content);
 			}
 			else if(token=="manage-selections-of-atoms")
 			{
-				command_manage_selections_of_atoms(input, output);
+				command_manage_selections_of_atoms(input, output_for_log);
 			}
 			else if(token=="construct-contacts")
 			{
-				command_construct_contacts(input, output);
+				command_construct_contacts(input, output_for_log);
 			}
 			else if(token=="query-contacts")
 			{
-				command_query_contacts(input, output);
+				command_query_contacts(input, output_for_log, output_for_content);
 			}
 			else if(token=="manage-selections-of-contacts")
 			{
-				command_manage_selections_of_contacts(input, output);
+				command_manage_selections_of_contacts(input, output_for_log);
 			}
 			else
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
 			}
-
-			output << std::endl;
-		}
-	}
-
-	bool execute_and_handle_exceptions(const std::string& command, std::ostream& output, const bool echo_command=true)
-	{
-		try
-		{
-			execute(command, output, echo_command);
 		}
 		catch(const std::exception& e)
 		{
-			output << "Error: " << e.what() << "\n";
+			output_for_errors << e.what();
+		}
+		commands_history_.push_back(CommandHistory(command, output_for_log.str(), output_for_errors.str()));
+		return true;
+	}
+
+	void execute_plainly(const std::string& command, std::ostream& output)
+	{
+		std::ostringstream output_for_content;
+		if(execute(command, output_for_content) && !commands_history_.empty())
+		{
+			const CommandHistory& ch=commands_history_.back();
+			output << "> " << ch.command << "\n";
+			output << output_for_content.str();
+			output << ch.output_log;
+			output << ch.output_error;
 			output << std::endl;
 		}
-		return false;
 	}
 
 private:
@@ -463,7 +487,7 @@ private:
 		output << ")\n";
 	}
 
-	void command_query_atoms(std::istringstream& input, std::ostream& output)
+	void command_query_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content)
 	{
 		assert_atoms_availability();
 
@@ -510,20 +534,20 @@ private:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const Atom& atom=atoms_[*it];
-				output << atom << "\n";
+				output_for_content << atom << "\n";
 			}
 		}
 
 		{
-			output << "Summary of atoms: ";
-			print_summary_of_atoms(collect_summary_of_atoms(ids), output);
-			output << "\n";
+			output_for_log << "Summary of atoms: ";
+			print_summary_of_atoms(collect_summary_of_atoms(ids), output_for_log);
+			output_for_log << "\n";
 		}
 
 		if(!name.empty())
 		{
 			selection_manager_.set_atoms_selection(name, ids);
-			output << "Set selection of atoms named '" << name << "'\n";
+			output_for_log << "Set selection of atoms named '" << name << "'\n";
 		}
 	}
 
@@ -715,7 +739,7 @@ private:
 		}
 	}
 
-	void command_query_contacts(std::istringstream& input, std::ostream& output)
+	void command_query_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content)
 	{
 		assert_contacts_availability();
 
@@ -765,27 +789,27 @@ private:
 				const Contact& contact=contacts_[*it];
 				if(contact.solvent())
 				{
-					output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
+					output_for_content << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
 				}
 				else
 				{
-					output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
+					output_for_content << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
 				}
-				output  << " " << contact.value << "\n";
+				output_for_content  << " " << contact.value << "\n";
 			}
 			enabled_output_of_ContactValue_graphics()=true;
 		}
 
 		{
-			output << "Summary of contacts: ";
-			print_summary_of_contacts(collect_summary_of_contacts(ids), output);
-			output << "\n";
+			output_for_log << "Summary of contacts: ";
+			print_summary_of_contacts(collect_summary_of_contacts(ids), output_for_log);
+			output_for_log << "\n";
 		}
 
 		if(!name.empty())
 		{
 			selection_manager_.set_contacts_selection(name, ids);
-			output << "Set selection of contacts named '" << name << "'\n";
+			output_for_log << "Set selection of contacts named '" << name << "'\n";
 		}
 	}
 
@@ -904,6 +928,7 @@ private:
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
+	std::vector<CommandHistory> commands_history_;
 };
 
 }
