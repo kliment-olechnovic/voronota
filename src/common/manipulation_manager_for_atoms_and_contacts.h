@@ -342,12 +342,28 @@ private:
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
+	void reset_atoms()
+	{
+		std::vector<Atom> atoms;
+		reset_atoms(atoms);
+	}
+
 	void reset_contacts(std::vector<Contact>& contacts)
 	{
+		if(!SelectionManagerForAtomsAndContacts::check_contacts_compatibility_with_atoms(atoms_, contacts))
+		{
+			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
+		}
 		contacts_.swap(contacts);
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size(), DisplayState(true, 0x0077FF));
 		selection_manager_.set_contacts(&contacts_);
+	}
+
+	void reset_contacts()
+	{
+		std::vector<Contact> contacts;
+		reset_contacts(contacts);
 	}
 
 	SummaryOfAtoms collect_summary_of_atoms() const
