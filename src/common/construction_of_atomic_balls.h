@@ -21,6 +21,10 @@ public:
 		ChainResidueAtomDescriptor crad;
 		BallValue value;
 
+		AtomicBall()
+		{
+		}
+
 		AtomicBall(const ChainResidueAtomDescriptor& crad, const BallValue& value) : crad(crad), value(value)
 		{
 		}
