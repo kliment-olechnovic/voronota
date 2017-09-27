@@ -426,6 +426,7 @@ private:
 		std::string radii_file;
 		double default_radius=ConstructionOfAtomicBalls::collect_atomic_balls_from_file::default_default_radius();
 		bool only_default_radius=false;
+		std::string format="pdb";
 
 		{
 			std::string token;
@@ -445,23 +446,23 @@ private:
 				{
 					input >> default_radius;
 				}
-				else if(token=="only-default-radius")
+				else if(token=="same-radius-for-all")
 				{
 					only_default_radius=true;
 				}
-				else if(token=="mmcif")
+				else if(token=="format")
 				{
-					collect_atomic_balls_from_file.mmcif=true;
+					input >> format;
 				}
-				else if(token=="heteroatoms")
+				else if(token=="include-heteroatoms")
 				{
 					collect_atomic_balls_from_file.include_heteroatoms=true;
 				}
-				else if(token=="hydrogens")
+				else if(token=="include-hydrogens")
 				{
 					collect_atomic_balls_from_file.include_hydrogens=true;
 				}
-				else if(token=="multimodel")
+				else if(token=="as-assembly")
 				{
 					collect_atomic_balls_from_file.multimodel_chains=true;
 				}
@@ -481,7 +482,12 @@ private:
 
 		if(atoms_file.empty())
 		{
-			throw std::runtime_error(std::string("Missing atoms file."));
+			throw std::runtime_error(std::string("Missing input atoms file."));
+		}
+
+		if(format!="pdb" && format!="mmcif" && format!="plain")
+		{
+			throw std::runtime_error(std::string("Unrecognized format '")+format+"', allowed formats are 'pdb', 'mmcif' or 'plain'.");
 		}
 
 		if(!radii_file.empty() || only_default_radius || default_radius!=ConstructionOfAtomicBalls::collect_atomic_balls_from_file::default_default_radius())
@@ -490,7 +496,30 @@ private:
 		}
 
 		std::vector<Atom> atoms;
-		if(collect_atomic_balls_from_file(atoms_file, atoms))
+		bool success=false;
+
+		if(format=="pdb" || format=="mmcif")
+		{
+			if(format=="mmcif")
+			{
+				collect_atomic_balls_from_file.mmcif=true;
+			}
+			success=collect_atomic_balls_from_file(atoms_file, atoms);
+		}
+		else if(format=="plain")
+		{
+			auxiliaries::IOUtilities().read_lines_to_set(std::cin, atoms);
+			if(!radii_file.empty() || only_default_radius)
+			{
+				for(std::size_t i=0;i<atoms.size();i++)
+				{
+					Atom& atom=atoms[i];
+					atom.value.r=collect_atomic_balls_from_file.atom_radius_assigner.get_atom_radius(atom.crad.resName, atom.crad.name);
+				}
+			}
+		}
+
+		if(success)
 		{
 			if(atoms.size()<4)
 			{
@@ -506,7 +535,7 @@ private:
 		}
 		else
 		{
-			throw std::runtime_error(std::string("Failed to read atoms from file '")+atoms_file+"'.");
+			throw std::runtime_error(std::string("Failed to read atoms from file '")+atoms_file+"' in '"+format+"' format.");
 		}
 	}
 
