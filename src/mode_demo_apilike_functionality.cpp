@@ -22,7 +22,7 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	manager.execute_plainly("read-atoms file tests/input/single/structure.pdb include-heteroatoms", std::cout);
 	manager.execute_plainly("query-atoms use '{tags het adjuncts tf=0:10}' print", std::cout);
 	manager.execute_plainly("restrict-atoms use '{tags-not het}'", std::cout);
-	manager.execute_plainly("construct-contacts render", std::cout);
+	manager.execute_plainly("construct-contacts render-default", std::cout);
 	manager.execute_plainly("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name cs1", std::cout);
 	manager.execute_plainly("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name as1", std::cout);
 	manager.execute_plainly("rename-selection-of-atoms nosel1 nodel2", std::cout);
