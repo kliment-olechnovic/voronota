@@ -31,14 +31,17 @@ public:
 		std::string command;
 		std::string output_log;
 		std::string output_error;
+		bool successful;
 
 		CommandHistory(
 				const std::string& command,
 				const std::string& output_log,
-				const std::string& output_error) :
+				const std::string& output_error,
+				const bool successful) :
 					command(command),
 					output_log(output_log),
-					output_error(output_error)
+					output_error(output_error),
+					successful(successful)
 		{
 		}
 	};
@@ -62,7 +65,7 @@ public:
 		return atoms_display_states_;
 	}
 
-	DisplayState* editable_atoms_display_states()
+	DisplayState* atoms_display_states_editable()
 	{
 		return &atoms_display_states_[0];
 	}
@@ -72,7 +75,7 @@ public:
 		return contacts_display_states_;
 	}
 
-	DisplayState* editable_contacts_display_states()
+	DisplayState* contacts_display_states_editable()
 	{
 		return &contacts_display_states_[0];
 	}
@@ -82,9 +85,9 @@ public:
 		return commands_history_;
 	}
 
-	bool execute(const std::string& command, std::ostream& output_for_content)
+	const CommandHistory& execute(const std::string& command, std::ostream& output_for_content)
 	{
-		bool status=false;
+		bool successful=false;
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 		try
@@ -153,14 +156,14 @@ public:
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
 			}
-			status=true;
+			successful=true;
 		}
 		catch(const std::exception& e)
 		{
 			output_for_errors << e.what();
 		}
-		commands_history_.push_back(CommandHistory(command, output_for_log.str(), output_for_errors.str()));
-		return status;
+		commands_history_.push_back(CommandHistory(command, output_for_log.str(), output_for_errors.str(), successful));
+		return commands_history_.back();
 	}
 
 	void execute_plainly(const std::string& command, std::ostream& output)
@@ -169,18 +172,14 @@ public:
 		if(!command.empty())
 		{
 			output << "> " << command << std::endl;
-			execute(command, output_for_content);
-			if(!commands_history_.empty())
+			const CommandHistory& ch=execute(command, output_for_content);
+			output << output_for_content.str();
+			output << ch.output_log;
+			if(!ch.output_error.empty())
 			{
-				const CommandHistory& ch=commands_history_.back();
-				output << output_for_content.str();
-				output << ch.output_log;
-				if(!ch.output_error.empty())
-				{
-					output << "Error: " << ch.output_error << "\n";
-				}
-				output << std::endl;
+				output << "Error: " << ch.output_error << "\n";
 			}
+			output << std::endl;
 		}
 	}
 
