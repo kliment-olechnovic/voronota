@@ -820,11 +820,11 @@ private:
 					input >> construct_bundle_of_contact_information.probe;
 					enhance_contacts.probe=construct_bundle_of_contact_information.probe;
 				}
-				else if(token=="render")
+				else if(token=="render-default")
 				{
 					render=true;
 				}
-				else if(token=="render-sel")
+				else if(token=="render")
 				{
 					render=true;
 					read_string_considering_quotes(input, rendering_selection_expression);
