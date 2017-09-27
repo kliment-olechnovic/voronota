@@ -238,16 +238,87 @@ private:
 			if(type=="use")
 			{
 				read_string_considering_quotes(input, expression);
-				return true;
 			}
 			else if(type=="full-residues")
 			{
 				full_residues=true;
-				return true;
 			}
 			else
 			{
 				return false;
+			}
+			return true;
+		}
+	};
+
+	struct CommonQueryParameters
+	{
+		bool print=false;
+		bool show=false;
+		bool hide=false;
+		int color_int;
+		std::string name;
+		std::string color;
+
+		CommonQueryParameters() : print(false), show(false), hide(false), color_int(0)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type=="name")
+			{
+				input >> name;
+			}
+			else if(type=="print")
+			{
+				print=true;
+			}
+			else if(type=="show")
+			{
+				show=true;
+			}
+			else if(type=="hide")
+			{
+				hide=true;
+			}
+			else if(type=="color")
+			{
+				input >> color;
+				color_int=read_color_integer_from_string(color);
+			}
+			else
+			{
+				return false;
+			}
+
+			if(show && hide)
+			{
+				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+			}
+
+			return true;
+		}
+
+		void apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
+		{
+			if(show || hide || !color.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					if((*it)<display_states.size())
+					{
+						DisplayState& ds=display_states[*it];
+						if(show || hide)
+						{
+							ds.visible=show;
+						}
+						if(!color.empty())
+						{
+							ds.color=color_int;
+						}
+					}
+				}
 			}
 		}
 	};
@@ -594,11 +665,7 @@ private:
 		assert_atoms_availability();
 
 		SelectionExpressionParameters selection_expression;
-		std::string name;
-		bool print=false;
-		bool show=false;
-		bool hide=false;
-		std::string color;
+		CommonQueryParameters common_query_parameters;
 
 		{
 			std::string token;
@@ -606,27 +673,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="name")
-				{
-					input >> name;
-				}
-				else if(token=="print")
-				{
-					print=true;
-				}
-				else if(token=="show")
-				{
-					show=true;
-				}
-				else if(token=="hide")
-				{
-					hide=true;
-				}
-				else if(token=="color")
-				{
-					input >> color;
-				}
-				else if(!selection_expression.read(token, input))
+				if(!selection_expression.read(token, input) && !common_query_parameters.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -640,39 +687,15 @@ private:
 			}
 		}
 
-		if(show && hide)
-		{
-			throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-		}
-
-		const unsigned int color_int=read_color_integer_from_string(color);
-
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		if(show || hide || !color.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				if((*it)<atoms_display_states_.size())
-				{
-					DisplayState& ds=atoms_display_states_[*it];
-					if(show || hide)
-					{
-						ds.visible=show;
-					}
-					if(!color.empty())
-					{
-						ds.color=color_int;
-					}
-				}
-			}
-		}
+		common_query_parameters.apply_to_display_states(ids, atoms_display_states_);
 
-		if(print)
+		if(common_query_parameters.print)
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
@@ -687,10 +710,10 @@ private:
 			output_for_log << "\n";
 		}
 
-		if(!name.empty())
+		if(!common_query_parameters.name.empty())
 		{
-			selection_manager_.set_atoms_selection(name, ids);
-			output_for_log << "Set selection of atoms named '" << name << "'\n";
+			selection_manager_.set_atoms_selection(common_query_parameters.name, ids);
+			output_for_log << "Set selection of atoms named '" << common_query_parameters.name << "'\n";
 		}
 	}
 
@@ -878,11 +901,7 @@ private:
 		assert_contacts_availability();
 
 		SelectionExpressionParameters selection_expression;
-		std::string name;
-		bool print=false;
-		bool show=false;
-		bool hide=false;
-		std::string color;
+		CommonQueryParameters common_query_parameters;
 
 		{
 			std::string token;
@@ -890,27 +909,7 @@ private:
 			{
 				input >> token;
 
-				if(token=="name")
-				{
-					input >> name;
-				}
-				else if(token=="print")
-				{
-					print=true;
-				}
-				else if(token=="show")
-				{
-					show=true;
-				}
-				else if(token=="hide")
-				{
-					hide=true;
-				}
-				else if(token=="color")
-				{
-					input >> color;
-				}
-				else if(!selection_expression.read(token, input))
+				if(!selection_expression.read(token, input) && !common_query_parameters.read(token, input))
 				{
 					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
 				}
@@ -924,39 +923,15 @@ private:
 			}
 		}
 
-		if(show && hide)
-		{
-			throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-		}
-
-		const unsigned int color_int=read_color_integer_from_string(color);
-
 		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		if(show || hide || !color.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				if((*it)<contacts_display_states_.size())
-				{
-					DisplayState& ds=contacts_display_states_[*it];
-					if(show || hide)
-					{
-						ds.visible=show;
-					}
-					if(!color.empty())
-					{
-						ds.color=color_int;
-					}
-				}
-			}
-		}
+		common_query_parameters.apply_to_display_states(ids, contacts_display_states_);
 
-		if(print)
+		if(common_query_parameters.print)
 		{
 			enabled_output_of_ContactValue_graphics()=false;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -981,10 +956,10 @@ private:
 			output_for_log << "\n";
 		}
 
-		if(!name.empty())
+		if(!common_query_parameters.name.empty())
 		{
-			selection_manager_.set_contacts_selection(name, ids);
-			output_for_log << "Set selection of contacts named '" << name << "'\n";
+			selection_manager_.set_contacts_selection(common_query_parameters.name, ids);
+			output_for_log << "Set selection of contacts named '" << common_query_parameters.name << "'\n";
 		}
 	}
 
