@@ -55,27 +55,9 @@ public:
 		return atoms_;
 	}
 
-	PropertiesValue* atom_properties(const std::size_t id)
-	{
-		if(id<atoms_.size())
-		{
-			return &atoms_[id].value.props;
-		}
-		return 0;
-	}
-
 	const std::vector<Contact>& contacts() const
 	{
 		return contacts_;
-	}
-
-	PropertiesValue* contact_properties(const std::size_t id)
-	{
-		if(id<contacts_.size())
-		{
-			return &contacts_[id].value.props;
-		}
-		return 0;
 	}
 
 	const std::vector<DisplayState>& atoms_display_states() const
@@ -83,27 +65,9 @@ public:
 		return atoms_display_states_;
 	}
 
-	DisplayState* atom_display_state(const std::size_t id)
-	{
-		if(id<atoms_display_states_.size())
-		{
-			return &atoms_display_states_[id];
-		}
-		return 0;
-	}
-
 	const std::vector<DisplayState>& contacts_display_states() const
 	{
 		return contacts_display_states_;
-	}
-
-	DisplayState* contact_display_state(const std::size_t id)
-	{
-		if(id<contacts_display_states_.size())
-		{
-			return &contacts_display_states_[id];
-		}
-		return 0;
 	}
 
 	const std::vector<CommandHistory>& history() const
