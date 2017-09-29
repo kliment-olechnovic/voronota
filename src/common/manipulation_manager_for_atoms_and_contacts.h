@@ -183,12 +183,48 @@ private:
 		{
 		}
 
+		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms)
+		{
+			SummaryOfAtoms summary;
+			for(std::vector<Atom>::const_iterator it=atoms.begin();it!=atoms.end();++it)
+			{
+				summary.feed(*it);
+			}
+			return summary;
+		}
+
+		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms, const std::set<std::size_t>& ids)
+		{
+			SummaryOfAtoms summary;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<atoms.size())
+				{
+					summary.feed(atoms[*it]);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
+				}
+			}
+			return summary;
+		}
+
 		void feed(const Atom& atom)
 		{
 			number_total++;
 			if(atom.value.props.adjuncts.count("volume")>0)
 			{
 				volume+=atom.value.props.adjuncts.find("volume")->second;
+			}
+		}
+
+		void print(std::ostream& output) const
+		{
+			output << "count=" << number_total;
+			if(volume>0.0)
+			{
+				output << " volume=" << volume;
 			}
 		}
 	};
@@ -203,6 +239,33 @@ private:
 		{
 		}
 
+		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts)
+		{
+			SummaryOfContacts summary;
+			for(std::vector<Contact>::const_iterator it=contacts.begin();it!=contacts.end();++it)
+			{
+				summary.feed(*it);
+			}
+			return summary;
+		}
+
+		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts, const std::set<std::size_t>& ids)
+		{
+			SummaryOfContacts summary;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<contacts.size())
+				{
+					summary.feed(contacts[*it]);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
+				}
+			}
+			return summary;
+		}
+
 		void feed(const Contact& contact)
 		{
 			number_total++;
@@ -211,6 +274,13 @@ private:
 			{
 				number_drawable++;
 			}
+		}
+
+		void print(std::ostream& output) const
+		{
+			output << "count=" << number_total;
+			output << " drawable=" << number_drawable;
+			output << " area=" << area;
 		}
 	};
 
@@ -376,22 +446,6 @@ private:
 		}
 	};
 
-	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output)
-	{
-		output << "count=" << summary.number_total;
-		if(summary.volume>0.0)
-		{
-			output << " volume=" << summary.volume;
-		}
-	}
-
-	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output)
-	{
-		output << "count=" << summary.number_total;
-		output << " drawable=" << summary.number_drawable;
-		output << " area=" << summary.area;
-	}
-
 	static void read_string_considering_quotes(std::istream& input, std::string& output)
 	{
 		input >> std::ws;
@@ -487,60 +541,6 @@ private:
 	{
 		std::vector<Contact> contacts;
 		reset_contacts(contacts);
-	}
-
-	SummaryOfAtoms collect_summary_of_atoms() const
-	{
-		SummaryOfAtoms summary;
-		for(std::vector<Atom>::const_iterator it=atoms_.begin();it!=atoms_.end();++it)
-		{
-			summary.feed(*it);
-		}
-		return summary;
-	}
-
-	SummaryOfAtoms collect_summary_of_atoms(const std::set<std::size_t>& ids) const
-	{
-		SummaryOfAtoms summary;
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-		{
-			if((*it)<atoms_.size())
-			{
-				summary.feed(atoms_[*it]);
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
-			}
-		}
-		return summary;
-	}
-
-	SummaryOfContacts collect_summary_of_contacts() const
-	{
-		SummaryOfContacts summary;
-		for(std::vector<Contact>::const_iterator it=contacts_.begin();it!=contacts_.end();++it)
-		{
-			summary.feed(*it);
-		}
-		return summary;
-	}
-
-	SummaryOfContacts collect_summary_of_contacts(const std::set<std::size_t>& ids) const
-	{
-		SummaryOfContacts summary;
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-		{
-			if((*it)<contacts_.size())
-			{
-				summary.feed(contacts_[*it]);
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
-			}
-		}
-		return summary;
 	}
 
 	void command_read_atoms(std::istringstream& input, std::ostream& output)
@@ -648,7 +648,7 @@ private:
 			{
 				reset_atoms(atoms);
 				output << "Read atoms from file '" << atoms_file << "' (";
-				print_summary_of_atoms(collect_summary_of_atoms(), output);
+				SummaryOfAtoms::collect_summary(atoms_).print(output);
 				output << ")\n";
 			}
 		}
@@ -688,14 +688,14 @@ private:
 			atoms.push_back(atoms_.at(*it));
 		}
 
-		const SummaryOfAtoms old_summary=collect_summary_of_atoms();
+		const SummaryOfAtoms old_summary=SummaryOfAtoms::collect_summary(atoms_);
 
 		reset_atoms(atoms);
 
 		output << "Restricted atoms from (";
-		print_summary_of_atoms(old_summary, output);
+		old_summary.print(output);
 		output << ") to (";
-		print_summary_of_atoms(collect_summary_of_atoms(), output);
+		SummaryOfAtoms::collect_summary(atoms_).print(output);
 		output << ")\n";
 	}
 
@@ -740,7 +740,7 @@ private:
 
 		{
 			output_for_log << "Summary of atoms: ";
-			print_summary_of_atoms(collect_summary_of_atoms(ids), output_for_log);
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
 			output_for_log << "\n";
 		}
 
@@ -771,7 +771,7 @@ private:
 			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 			{
 				output << "  name='" << (it->first) << "' ";
-				print_summary_of_atoms(collect_summary_of_atoms(it->second), output);
+				SummaryOfAtoms::collect_summary(atoms_, it->second).print(output);
 				output << "\n";
 			}
 		}
@@ -915,7 +915,7 @@ private:
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
 
 			output << "Constructed contacts (";
-			print_summary_of_contacts(collect_summary_of_contacts(), output);
+			SummaryOfContacts::collect_summary(contacts_).print(output);
 			output << ")\n";
 		}
 		else
@@ -975,7 +975,7 @@ private:
 
 		{
 			output_for_log << "Summary of contacts: ";
-			print_summary_of_contacts(collect_summary_of_contacts(ids), output_for_log);
+			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
 			output_for_log << "\n";
 		}
 
@@ -1006,7 +1006,7 @@ private:
 			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 			{
 				output << "  name='" << (it->first) << "' ";
-				print_summary_of_contacts(collect_summary_of_contacts(it->second), output);
+				SummaryOfContacts::collect_summary(contacts_, it->second).print(output);
 				output << "\n";
 			}
 		}
