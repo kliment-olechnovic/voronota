@@ -284,6 +284,52 @@ private:
 		}
 	};
 
+	struct CommandInputParsingUtilities
+	{
+		static void assert_absence_of_input(std::istream& input)
+		{
+			if((input >> std::ws).good())
+			{
+				throw std::runtime_error(std::string("No additional parameters allowed."));
+			}
+		}
+
+		static void read_string_considering_quotes(std::istream& input, std::string& output, const bool allow_empty_value_in_quotes=false)
+		{
+			input >> std::ws;
+			const int c=input.peek();
+			if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
+			{
+				input.get();
+				output.clear();
+				std::getline(input, output, std::char_traits<char>::to_char_type(c));
+				if(!allow_empty_value_in_quotes && output.empty())
+				{
+					throw std::runtime_error(std::string("Empty string in quotes."));
+				}
+			}
+			else
+			{
+				input >> output;
+			}
+		}
+
+		static unsigned int read_color_integer_from_string(const std::string& color_str)
+		{
+			unsigned int color_int=0;
+			if(!color_str.empty())
+			{
+				std::istringstream color_input(color_str);
+				color_input >> std::hex >> color_int;
+				if(color_input.fail() || color_int>0xFFFFFF)
+				{
+					throw std::runtime_error(std::string("Invalid hex color string '")+color_str+"'.");
+				}
+			}
+			return color_int;
+		}
+	};
+
 	struct CommandInputParsingGuard
 	{
 		std::string token;
@@ -291,14 +337,6 @@ private:
 
 		CommandInputParsingGuard() : token_validated(false)
 		{
-		}
-
-		static void assert_absence_of_input(std::istream& input)
-		{
-			if((input >> std::ws).good())
-			{
-				throw std::runtime_error(std::string("No additional parameters allowed."));
-			}
 		}
 
 		void on_iteration_start(std::istream& input)
@@ -366,7 +404,7 @@ private:
 		{
 			if(type==type_for_expression)
 			{
-				read_string_considering_quotes(input, expression);
+				CommandInputParsingUtilities::read_string_considering_quotes(input, expression);
 			}
 			else if(type==type_for_full_residues)
 			{
@@ -422,7 +460,7 @@ private:
 			else if(type=="color")
 			{
 				input >> color;
-				color_int=read_color_integer_from_string(color);
+				color_int=CommandInputParsingUtilities::read_color_integer_from_string(color);
 			}
 			else
 			{
@@ -453,37 +491,6 @@ private:
 			}
 		}
 	};
-
-	static void read_string_considering_quotes(std::istream& input, std::string& output)
-	{
-		input >> std::ws;
-		const int c=input.peek();
-		if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
-		{
-			input.get();
-			output.clear();
-			std::getline(input, output, std::char_traits<char>::to_char_type(c));
-		}
-		else
-		{
-			input >> output;
-		}
-	}
-
-	static unsigned int read_color_integer_from_string(const std::string& color_str)
-	{
-		unsigned int color_int=0;
-		if(!color_str.empty())
-		{
-			std::istringstream color_input(color_str);
-			color_input >> std::hex >> color_int;
-			if(color_input.fail())
-			{
-				throw std::runtime_error(std::string("Invalid hex color string '")+color_str+"'.");
-			}
-		}
-		return color_int;
-	}
 
 	void assert_atoms_availability() const
 	{
@@ -519,6 +526,10 @@ private:
 
 	void reset_atoms(std::vector<Atom>& atoms)
 	{
+		if(atoms.empty())
+		{
+			throw std::runtime_error(std::string("No atoms to set."));
+		}
 		atoms_.swap(atoms);
 		atoms_display_states_.clear();
 		atoms_display_states_.resize(atoms_.size(), DisplayState(true, 0xFF7700));
@@ -527,16 +538,13 @@ private:
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
-	void reset_atoms()
-	{
-		std::vector<Atom> atoms;
-		reset_atoms(atoms);
-	}
-
 	void reset_contacts(std::vector<Contact>& contacts)
 	{
+		if(contacts.empty())
+		{
+			throw std::runtime_error(std::string("No contacts to set."));
+		}
 		assert_atoms_availability();
-
 		if(!SelectionManagerForAtomsAndContacts::check_contacts_compatibility_with_atoms(atoms_, contacts))
 		{
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
@@ -545,12 +553,6 @@ private:
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size(), DisplayState(true, 0x0077FF));
 		selection_manager_.set_contacts(&contacts_);
-	}
-
-	void reset_contacts()
-	{
-		std::vector<Contact> contacts;
-		reset_contacts(contacts);
 	}
 
 	void command_read_atoms(std::istringstream& input, std::ostream& output)
@@ -765,7 +767,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		CommandInputParsingGuard::assert_absence_of_input(input);
+		CommandInputParsingUtilities::assert_absence_of_input(input);
 
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
 		if(map_of_selections.empty())
@@ -788,7 +790,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		CommandInputParsingGuard::assert_absence_of_input(input);
+		CommandInputParsingUtilities::assert_absence_of_input(input);
 
 		selection_manager_.delete_atoms_selections();
 		output << "Removed all selections of atoms\n";
@@ -994,7 +996,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		CommandInputParsingGuard::assert_absence_of_input(input);
+		CommandInputParsingUtilities::assert_absence_of_input(input);
 
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
 		if(map_of_selections.empty())
@@ -1017,7 +1019,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		CommandInputParsingGuard::assert_absence_of_input(input);
+		CommandInputParsingUtilities::assert_absence_of_input(input);
 
 		selection_manager_.delete_contacts_selections();
 		output << "Removed all selections of contacts\n";
