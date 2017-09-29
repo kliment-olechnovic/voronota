@@ -214,22 +214,83 @@ private:
 		}
 	};
 
-	struct SelectionExpressionParameters
+	struct CommandInputParsingGuard
 	{
+		std::string token;
+		bool token_validated;
+
+		CommandInputParsingGuard() : token_validated(false)
+		{
+		}
+
+		void on_iteration_start(std::istream& input)
+		{
+			input >> std::ws;
+			input >> token;
+			if(input.fail() || token.empty())
+			{
+				throw std::runtime_error(std::string("Missing command parameters."));
+			}
+		}
+
+		void on_token_processed(std::istream& input)
+		{
+			if(input.fail())
+			{
+				if(!token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid value for the command parameter '")+token+"'.");
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+			}
+			else
+			{
+				token_validated=true;
+			}
+		}
+
+		void on_iteration_end(std::istream& input) const
+		{
+			if(!token_validated)
+			{
+				if(!token.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command parameter '")+token+"'.");
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid command."));
+				}
+			}
+			input >> std::ws;
+		}
+	};
+
+	struct CommandParametersForGenericSelecting
+	{
+		std::string type_for_expression;
+		std::string type_for_full_residues;
 		std::string expression;
 		bool full_residues;
 
-		SelectionExpressionParameters() : expression("{}"), full_residues(false)
+		CommandParametersForGenericSelecting() :
+			type_for_expression("use"),
+			type_for_full_residues("full-residues"),
+			expression("{}"),
+			full_residues(false)
 		{
 		}
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="use")
+			if(type==type_for_expression)
 			{
 				read_string_considering_quotes(input, expression);
 			}
-			else if(type=="full-residues")
+			else if(type==type_for_full_residues)
 			{
 				full_residues=true;
 			}
@@ -241,7 +302,7 @@ private:
 		}
 	};
 
-	struct CommonQueryParameters
+	struct CommandParametersForGenericQueryProcessing
 	{
 		bool print=false;
 		bool show=false;
@@ -250,7 +311,7 @@ private:
 		std::string name;
 		std::string color;
 
-		CommonQueryParameters() : print(false), show(false), hide(false), color_int(0)
+		CommandParametersForGenericQueryProcessing() : print(false), show(false), hide(false), color_int(0)
 		{
 		}
 
@@ -266,10 +327,18 @@ private:
 			}
 			else if(type=="show")
 			{
+				if(hide)
+				{
+					throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+				}
 				show=true;
 			}
 			else if(type=="hide")
 			{
+				if(show)
+				{
+					throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+				}
 				hide=true;
 			}
 			else if(type=="color")
@@ -281,12 +350,6 @@ private:
 			{
 				return false;
 			}
-
-			if(show && hide)
-			{
-				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-			}
-
 			return true;
 		}
 
@@ -489,56 +552,51 @@ private:
 		bool only_default_radius=false;
 		std::string format="pdb";
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="file")
 			{
-				input >> token;
-
-				if(token=="file")
-				{
-					input >> atoms_file;
-				}
-				else if(token=="radii-file")
-				{
-					input >> radii_file;
-				}
-				else if(token=="default-radius")
-				{
-					input >> default_radius;
-				}
-				else if(token=="same-radius-for-all")
-				{
-					only_default_radius=true;
-				}
-				else if(token=="format")
-				{
-					input >> format;
-				}
-				else if(token=="include-heteroatoms")
-				{
-					collect_atomic_balls_from_file.include_heteroatoms=true;
-				}
-				else if(token=="include-hydrogens")
-				{
-					collect_atomic_balls_from_file.include_hydrogens=true;
-				}
-				else if(token=="as-assembly")
-				{
-					collect_atomic_balls_from_file.multimodel_chains=true;
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
+				input >> atoms_file;
+				guard.on_token_processed(input);
 			}
+			else if(guard.token=="radii-file")
+			{
+				input >> radii_file;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="default-radius")
+			{
+				input >> default_radius;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="same-radius-for-all")
+			{
+				only_default_radius=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="format")
+			{
+				input >> format;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="include-heteroatoms")
+			{
+				collect_atomic_balls_from_file.include_heteroatoms=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="include-hydrogens")
+			{
+				collect_atomic_balls_from_file.include_hydrogens=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="as-assembly")
+			{
+				collect_atomic_balls_from_file.multimodel_chains=true;
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
 		}
 
 		if(atoms_file.empty())
@@ -604,26 +662,17 @@ private:
 	{
 		assert_atoms_availability();
 
-		SelectionExpressionParameters selection_expression;
+		CommandParametersForGenericSelecting selection_expression;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(selection_expression.read(guard.token, input))
 			{
-				input >> token;
-
-				if(!selection_expression.read(token, input))
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
+				guard.on_token_processed(input);
 			}
+			guard.on_iteration_end(input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
@@ -654,27 +703,22 @@ private:
 	{
 		assert_atoms_availability();
 
-		SelectionExpressionParameters selection_expression;
-		CommonQueryParameters common_query_parameters;
+		CommandParametersForGenericSelecting selection_expression;
+		CommandParametersForGenericQueryProcessing common_query_parameters;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(selection_expression.read(guard.token, input))
 			{
-				input >> token;
-
-				if(!selection_expression.read(token, input) && !common_query_parameters.read(token, input))
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
+				guard.on_token_processed(input);
 			}
+			else if(common_query_parameters.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
@@ -711,8 +755,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		input >> std::ws;
-		if(input.good())
+		if((input >> std::ws).good())
 		{
 			throw std::runtime_error(std::string("No additional parameters allowed."));
 		}
@@ -738,8 +781,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		input >> std::ws;
-		if(input.good())
+		if((input >> std::ws).good())
 		{
 			throw std::runtime_error(std::string("No additional parameters allowed."));
 		}
@@ -754,21 +796,19 @@ private:
 
 		std::vector<std::string> names;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(selection_manager_.map_of_atoms_selections().count(guard.token)>0)
 			{
-				input >> token;
-				if(selection_manager_.map_of_atoms_selections().count(token)>0)
-				{
-					names.push_back(token);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid atoms selection name '")+token+"'.");
-				}
-				input >> std::ws;
+				names.push_back(guard.token);
 			}
+			else
+			{
+				throw std::runtime_error(std::string("Invalid atoms selection name '")+guard.token+"'.");
+			}
+			guard.on_iteration_end(input);
 		}
 
 		if(names.empty())
@@ -797,9 +837,14 @@ private:
 
 		input >> rename.first >> rename.second;
 
-		if(rename.first.empty() || rename.second.empty())
+		if(input.fail() || rename.first.empty() || rename.second.empty())
 		{
 			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
+		}
+
+		if((input >> std::ws).good())
+		{
+			throw std::runtime_error(std::string("Too many parameters, only a pair of names for renaming is needed."));
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(rename.first);
@@ -820,40 +865,33 @@ private:
 		enhance_contacts.tag_peripherial=true;
 
 		bool render=false;
-		std::string rendering_selection_expression="{min-seq-sep 1}";
+		CommandParametersForGenericSelecting rendering_selection_expression;
+		rendering_selection_expression.type_for_expression="render-use";
+		rendering_selection_expression.type_for_full_residues="render-full-residues";
+		rendering_selection_expression.expression="{min-seq-sep 1}";
+		rendering_selection_expression.full_residues=false;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="probe")
 			{
-				input >> token;
-
-				if(token=="probe")
-				{
-					input >> construct_bundle_of_contact_information.probe;
-					enhance_contacts.probe=construct_bundle_of_contact_information.probe;
-				}
-				else if(token=="render-default")
-				{
-					render=true;
-				}
-				else if(token=="render")
-				{
-					render=true;
-					read_string_considering_quotes(input, rendering_selection_expression);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
+				input >> construct_bundle_of_contact_information.probe;
+				enhance_contacts.probe=construct_bundle_of_contact_information.probe;
+				guard.on_token_processed(input);
 			}
+			else if(guard.token=="render-default")
+			{
+				render=true;
+				guard.on_token_processed(input);
+			}
+			else if(rendering_selection_expression.read(guard.token, input))
+			{
+				render=true;
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
 		}
 
 		ConstructionOfContacts::BundleOfTriangulationInformation bundle_of_triangulation_information;
@@ -871,7 +909,7 @@ private:
 			std::set<std::size_t> draw_ids;
 			if(render)
 			{
-				draw_ids=selection_manager_.select_contacts(rendering_selection_expression, false);
+				draw_ids=selection_manager_.select_contacts(rendering_selection_expression.expression, rendering_selection_expression.full_residues);
 			}
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
@@ -890,27 +928,22 @@ private:
 	{
 		assert_contacts_availability();
 
-		SelectionExpressionParameters selection_expression;
-		CommonQueryParameters common_query_parameters;
+		CommandParametersForGenericSelecting selection_expression;
+		CommandParametersForGenericQueryProcessing common_query_parameters;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(selection_expression.read(guard.token, input))
 			{
-				input >> token;
-
-				if(!selection_expression.read(token, input) && !common_query_parameters.read(token, input))
-				{
-					throw std::runtime_error(std::string("Invalid token '")+token+"'.");
-				}
-
-				if(input.fail() || token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-
-				input >> std::ws;
+				guard.on_token_processed(input);
 			}
+			else if(common_query_parameters.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
@@ -957,8 +990,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		input >> std::ws;
-		if(input.good())
+		if((input >> std::ws).good())
 		{
 			throw std::runtime_error(std::string("No additional parameters allowed."));
 		}
@@ -984,8 +1016,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		input >> std::ws;
-		if(input.good())
+		if((input >> std::ws).good())
 		{
 			throw std::runtime_error(std::string("No additional parameters allowed."));
 		}
@@ -1000,21 +1031,19 @@ private:
 
 		std::vector<std::string> names;
 
+		while(input.good())
 		{
-			std::string token;
-			while(input.good())
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(selection_manager_.map_of_atoms_selections().count(guard.token)>0)
 			{
-				input >> token;
-				if(selection_manager_.map_of_contacts_selections().count(token)>0)
-				{
-					names.push_back(token);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid contacts selection name '")+token+"'.");
-				}
-				input >> std::ws;
+				names.push_back(guard.token);
 			}
+			else
+			{
+				throw std::runtime_error(std::string("Invalid atoms selection name '")+guard.token+"'.");
+			}
+			guard.on_iteration_end(input);
 		}
 
 		if(names.empty())
@@ -1043,9 +1072,14 @@ private:
 
 		input >> rename.first >> rename.second;
 
-		if(rename.first.empty() || rename.second.empty())
+		if(input.fail() || rename.first.empty() || rename.second.empty())
 		{
 			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
+		}
+
+		if((input >> std::ws).good())
+		{
+			throw std::runtime_error(std::string("Too many parameters, only a pair of names for renaming is needed."));
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(rename.first);
