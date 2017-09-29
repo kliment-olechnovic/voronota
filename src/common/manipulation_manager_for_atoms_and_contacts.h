@@ -293,6 +293,14 @@ private:
 		{
 		}
 
+		static void assert_absence_of_input(std::istream& input)
+		{
+			if((input >> std::ws).good())
+			{
+				throw std::runtime_error(std::string("No additional parameters allowed."));
+			}
+		}
+
 		void on_iteration_start(std::istream& input)
 		{
 			input >> std::ws;
@@ -527,6 +535,8 @@ private:
 
 	void reset_contacts(std::vector<Contact>& contacts)
 	{
+		assert_atoms_availability();
+
 		if(!SelectionManagerForAtomsAndContacts::check_contacts_compatibility_with_atoms(atoms_, contacts))
 		{
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
@@ -755,10 +765,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("No additional parameters allowed."));
-		}
+		CommandInputParsingGuard::assert_absence_of_input(input);
 
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
 		if(map_of_selections.empty())
@@ -781,10 +788,7 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("No additional parameters allowed."));
-		}
+		CommandInputParsingGuard::assert_absence_of_input(input);
 
 		selection_manager_.delete_atoms_selections();
 		output << "Removed all selections of atoms\n";
@@ -990,10 +994,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("No additional parameters allowed."));
-		}
+		CommandInputParsingGuard::assert_absence_of_input(input);
 
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
 		if(map_of_selections.empty())
@@ -1016,10 +1017,7 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("No additional parameters allowed."));
-		}
+		CommandInputParsingGuard::assert_absence_of_input(input);
 
 		selection_manager_.delete_contacts_selections();
 		output << "Removed all selections of contacts\n";
