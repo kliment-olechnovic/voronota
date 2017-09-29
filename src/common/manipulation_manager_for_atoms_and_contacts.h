@@ -314,6 +314,21 @@ private:
 			}
 		}
 
+		static void read_all_strings_considering_quotes(std::istream& input, std::vector<std::string>& output, const bool allow_empty_value_in_quotes=false)
+		{
+			std::vector<std::string> result;
+			while((input >> std::ws).good())
+			{
+				std::string str;
+				read_string_considering_quotes(input, str, allow_empty_value_in_quotes);
+				if(!input.fail())
+				{
+					result.push_back(str);
+				}
+			}
+			output.swap(result);
+		}
+
 		static unsigned int read_color_integer_from_string(const std::string& color_str)
 		{
 			unsigned int color_int=0;
@@ -508,6 +523,22 @@ private:
 		}
 	}
 
+	void assert_atoms_selections_availability(const std::vector<std::string>& names) const
+	{
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			if(selection_manager_.map_of_atoms_selections().count(names[i])==0)
+			{
+				throw std::runtime_error(std::string("Invalid atoms selection name '")+names[i]+"'.");
+			}
+		}
+	}
+
+	void assert_atoms_selection_availability(const std::string& name) const
+	{
+		assert_atoms_selections_availability(std::vector<std::string>(1, name));
+	}
+
 	void assert_contacts_availability() const
 	{
 		if(contacts_.empty())
@@ -522,6 +553,22 @@ private:
 		{
 			throw std::runtime_error(std::string("No contacts selections available."));
 		}
+	}
+
+	void assert_contacts_selections_availability(const std::vector<std::string>& names) const
+	{
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			if(selection_manager_.map_of_contacts_selections().count(names[i])==0)
+			{
+				throw std::runtime_error(std::string("Invalid contacts selection name '")+names[i]+"'.");
+			}
+		}
+	}
+
+	void assert_contacts_selection_availability(const std::string& name) const
+	{
+		assert_contacts_selections_availability(std::vector<std::string>(1, name));
 	}
 
 	void reset_atoms(std::vector<Atom>& atoms)
@@ -765,33 +812,22 @@ private:
 
 	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
-		assert_atoms_selections_availability();
-
 		CommandInputParsingUtilities::assert_absence_of_input(input);
-
+		assert_atoms_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
-		if(map_of_selections.empty())
+		output << "Selections of atoms:\n";
+		for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 		{
-			output << "No selections of atoms to list\n";
-		}
-		else
-		{
-			output << "Selections of atoms:\n";
-			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
-			{
-				output << "  name='" << (it->first) << "' ";
-				SummaryOfAtoms::collect_summary(atoms_, it->second).print(output);
-				output << "\n";
-			}
+			output << "  name='" << (it->first) << "' ";
+			SummaryOfAtoms::collect_summary(atoms_, it->second).print(output);
+			output << "\n";
 		}
 	}
 
 	void command_delete_all_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
-		assert_atoms_selections_availability();
-
 		CommandInputParsingUtilities::assert_absence_of_input(input);
-
+		assert_atoms_selections_availability();
 		selection_manager_.delete_atoms_selections();
 		output << "Removed all selections of atoms\n";
 	}
@@ -801,26 +837,14 @@ private:
 		assert_atoms_selections_availability();
 
 		std::vector<std::string> names;
-
-		while(input.good())
-		{
-			CommandInputParsingGuard guard;
-			guard.on_iteration_start(input);
-			if(selection_manager_.map_of_atoms_selections().count(guard.token)>0)
-			{
-				names.push_back(guard.token);
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Invalid atoms selection name '")+guard.token+"'.");
-			}
-			guard.on_iteration_end(input);
-		}
+		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.empty())
 		{
-			throw std::runtime_error(std::string("No atoms selection names provided."));
+			throw std::runtime_error(std::string("No atoms selections names provided."));
 		}
+
+		assert_atoms_selections_availability(names);
 
 		for(std::size_t i=0;i<names.size();i++)
 		{
@@ -994,33 +1018,22 @@ private:
 
 	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
-		assert_contacts_selections_availability();
-
 		CommandInputParsingUtilities::assert_absence_of_input(input);
-
+		assert_contacts_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
-		if(map_of_selections.empty())
+		output << "Selections of contacts:\n";
+		for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 		{
-			output << "No selections of contacts to list\n";
-		}
-		else
-		{
-			output << "Selections of contacts:\n";
-			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
-			{
-				output << "  name='" << (it->first) << "' ";
-				SummaryOfContacts::collect_summary(contacts_, it->second).print(output);
-				output << "\n";
-			}
+			output << "  name='" << (it->first) << "' ";
+			SummaryOfContacts::collect_summary(contacts_, it->second).print(output);
+			output << "\n";
 		}
 	}
 
 	void command_delete_all_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
-		assert_contacts_selections_availability();
-
 		CommandInputParsingUtilities::assert_absence_of_input(input);
-
+		assert_contacts_selections_availability();
 		selection_manager_.delete_contacts_selections();
 		output << "Removed all selections of contacts\n";
 	}
@@ -1030,26 +1043,14 @@ private:
 		assert_contacts_selections_availability();
 
 		std::vector<std::string> names;
-
-		while(input.good())
-		{
-			CommandInputParsingGuard guard;
-			guard.on_iteration_start(input);
-			if(selection_manager_.map_of_atoms_selections().count(guard.token)>0)
-			{
-				names.push_back(guard.token);
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Invalid atoms selection name '")+guard.token+"'.");
-			}
-			guard.on_iteration_end(input);
-		}
+		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.empty())
 		{
-			throw std::runtime_error(std::string("No contacts selection names provided."));
+			throw std::runtime_error(std::string("No contacts selections names provided."));
 		}
+
+		assert_contacts_selections_availability(names);
 
 		for(std::size_t i=0;i<names.size();i++)
 		{
