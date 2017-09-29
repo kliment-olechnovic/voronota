@@ -674,20 +674,20 @@ private:
 	{
 		assert_atoms_availability();
 
-		CommandParametersForGenericSelecting selection_expression;
+		CommandParametersForGenericSelecting parameters_for_selecting;
 
 		while(input.good())
 		{
 			CommandInputParsingGuard guard;
 			guard.on_iteration_start(input);
-			if(selection_expression.read(guard.token, input))
+			if(parameters_for_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.size()<4)
 		{
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -715,33 +715,33 @@ private:
 	{
 		assert_atoms_availability();
 
-		CommandParametersForGenericSelecting selection_expression;
-		CommandParametersForGenericQueryProcessing common_query_parameters;
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericQueryProcessing parameters_for_processing;
 
 		while(input.good())
 		{
 			CommandInputParsingGuard guard;
 			guard.on_iteration_start(input);
-			if(selection_expression.read(guard.token, input))
+			if(parameters_for_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
-			else if(common_query_parameters.read(guard.token, input))
+			else if(parameters_for_processing.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(selection_expression.expression, selection_expression.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		common_query_parameters.apply_to_display_states(ids, atoms_display_states_);
+		parameters_for_processing.apply_to_display_states(ids, atoms_display_states_);
 
-		if(common_query_parameters.print)
+		if(parameters_for_processing.print)
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
@@ -756,10 +756,10 @@ private:
 			output_for_log << "\n";
 		}
 
-		if(!common_query_parameters.name.empty())
+		if(!parameters_for_processing.name.empty())
 		{
-			selection_manager_.set_atoms_selection(common_query_parameters.name, ids);
-			output_for_log << "Set selection of atoms named '" << common_query_parameters.name << "'\n";
+			selection_manager_.set_atoms_selection(parameters_for_processing.name, ids);
+			output_for_log << "Set selection of atoms named '" << parameters_for_processing.name << "'\n";
 		}
 	}
 
@@ -871,11 +871,11 @@ private:
 		enhance_contacts.tag_peripherial=true;
 
 		bool render=false;
-		CommandParametersForGenericSelecting rendering_selection_expression;
-		rendering_selection_expression.type_for_expression="render-use";
-		rendering_selection_expression.type_for_full_residues="render-full-residues";
-		rendering_selection_expression.expression="{min-seq-sep 1}";
-		rendering_selection_expression.full_residues=false;
+		CommandParametersForGenericSelecting render_parameters_for_selecting;
+		render_parameters_for_selecting.type_for_expression="render-use";
+		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
+		render_parameters_for_selecting.expression="{min-seq-sep 1}";
+		render_parameters_for_selecting.full_residues=false;
 
 		while(input.good())
 		{
@@ -892,7 +892,7 @@ private:
 				render=true;
 				guard.on_token_processed(input);
 			}
-			else if(rendering_selection_expression.read(guard.token, input))
+			else if(render_parameters_for_selecting.read(guard.token, input))
 			{
 				render=true;
 				guard.on_token_processed(input);
@@ -915,7 +915,7 @@ private:
 			std::set<std::size_t> draw_ids;
 			if(render)
 			{
-				draw_ids=selection_manager_.select_contacts(rendering_selection_expression.expression, rendering_selection_expression.full_residues);
+				draw_ids=selection_manager_.select_contacts(render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
 			}
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
@@ -934,33 +934,33 @@ private:
 	{
 		assert_contacts_availability();
 
-		CommandParametersForGenericSelecting selection_expression;
-		CommandParametersForGenericQueryProcessing common_query_parameters;
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericQueryProcessing parameters_for_processing;
 
 		while(input.good())
 		{
 			CommandInputParsingGuard guard;
 			guard.on_iteration_start(input);
-			if(selection_expression.read(guard.token, input))
+			if(parameters_for_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
-			else if(common_query_parameters.read(guard.token, input))
+			else if(parameters_for_processing.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(selection_expression.expression, selection_expression.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		common_query_parameters.apply_to_display_states(ids, contacts_display_states_);
+		parameters_for_processing.apply_to_display_states(ids, contacts_display_states_);
 
-		if(common_query_parameters.print)
+		if(parameters_for_processing.print)
 		{
 			enabled_output_of_ContactValue_graphics()=false;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -985,10 +985,10 @@ private:
 			output_for_log << "\n";
 		}
 
-		if(!common_query_parameters.name.empty())
+		if(!parameters_for_processing.name.empty())
 		{
-			selection_manager_.set_contacts_selection(common_query_parameters.name, ids);
-			output_for_log << "Set selection of contacts named '" << common_query_parameters.name << "'\n";
+			selection_manager_.set_contacts_selection(parameters_for_processing.name, ids);
+			output_for_log << "Set selection of contacts named '" << parameters_for_processing.name << "'\n";
 		}
 	}
 
