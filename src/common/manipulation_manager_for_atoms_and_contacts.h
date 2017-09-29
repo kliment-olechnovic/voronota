@@ -863,24 +863,18 @@ private:
 	{
 		assert_atoms_selections_availability();
 
-		std::pair<std::string, std::string> rename;
+		std::vector<std::string> names;
+		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
 
-		input >> rename.first >> rename.second;
-
-		if(input.fail() || rename.first.empty() || rename.second.empty())
+		if(names.size()!=2)
 		{
-			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
+			throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
 		}
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("Too many parameters, only a pair of names for renaming is needed."));
-		}
-
-		const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(rename.first);
-		selection_manager_.set_atoms_selection(rename.second, ids);
-		selection_manager_.delete_atoms_selection(rename.first);
-		output << "Renamed selection of atoms from '" << rename.first << "' to '" << rename.second << "'\n";
+		const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(names[0]);
+		selection_manager_.set_atoms_selection(names[1], ids);
+		selection_manager_.delete_atoms_selection(names[0]);
+		output << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output)
@@ -1069,24 +1063,18 @@ private:
 	{
 		assert_contacts_selections_availability();
 
-		std::pair<std::string, std::string> rename;
+		std::vector<std::string> names;
+		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
 
-		input >> rename.first >> rename.second;
-
-		if(input.fail() || rename.first.empty() || rename.second.empty())
+		if(names.size()!=2)
 		{
-			throw std::runtime_error(std::string("Missing a pair of names for renaming."));
+			throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
 		}
 
-		if((input >> std::ws).good())
-		{
-			throw std::runtime_error(std::string("Too many parameters, only a pair of names for renaming is needed."));
-		}
-
-		const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(rename.first);
-		selection_manager_.set_contacts_selection(rename.second, ids);
-		selection_manager_.delete_contacts_selection(rename.first);
-		output << "Renamed selection of contacts from '" << rename.first << "' to '" << rename.second << "'\n";
+		const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(names[0]);
+		selection_manager_.set_contacts_selection(names[1], ids);
+		selection_manager_.delete_contacts_selection(names[0]);
+		output << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
 	std::vector<Atom> atoms_;
