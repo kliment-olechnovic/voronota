@@ -617,12 +617,12 @@ private:
 			guard.on_iteration_start(input);
 			if(guard.token=="file")
 			{
-				input >> atoms_file;
+				CommandInputParsingUtilities::read_string_considering_quotes(input, atoms_file);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="radii-file")
 			{
-				input >> radii_file;
+				CommandInputParsingUtilities::read_string_considering_quotes(input, radii_file);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="default-radius")
@@ -637,7 +637,7 @@ private:
 			}
 			else if(guard.token=="format")
 			{
-				input >> format;
+				CommandInputParsingUtilities::read_string_considering_quotes(input, format);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="include-heteroatoms")
