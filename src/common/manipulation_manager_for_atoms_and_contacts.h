@@ -612,6 +612,72 @@ private:
 		}
 	};
 
+	static void print_nice_columns(std::istream& input, std::ostream& output)
+	{
+		std::vector< std::vector<std::string> > rows;
+		while(input.good())
+		{
+			std::string line;
+			std::getline(input, line);
+			rows.push_back(std::vector<std::string>());
+			if(!line.empty())
+			{
+				std::istringstream line_input(line);
+				while(line_input.good())
+				{
+					std::string token;
+
+					{
+						line_input >> std::ws;
+						const int c=input.peek();
+						if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
+						{
+							line_input.get();
+							std::getline(line_input, token, std::char_traits<char>::to_char_type(c));
+							const std::string quote_symbol(1, std::char_traits<char>::to_char_type(c));
+							token=quote_symbol+token+quote_symbol;
+						}
+						else
+						{
+							line_input >> token;
+						}
+					}
+
+					if(!token.empty())
+					{
+						rows.back().push_back(token);
+					}
+				}
+			}
+		}
+
+		std::vector<std::size_t> widths;
+		for(std::size_t i=0;i<rows.size();i++)
+		{
+			for(std::size_t j=0;j<rows[i].size();j++)
+			{
+				const std::size_t w=rows[i][j].size();
+				if(j<widths.size())
+				{
+					widths[j]=std::max(widths[j], w);
+				}
+				else
+				{
+					widths.push_back(w);
+				}
+			}
+		}
+
+		for(std::size_t i=0;i<rows.size();i++)
+		{
+			for(std::size_t j=0;j<rows[i].size();j++)
+			{
+				output << std::setw(widths[j]+2) << std::left << rows[i][j];
+			}
+			output << "\n";
+		}
+	}
+
 	void assert_atoms_availability() const
 	{
 		if(atoms_.empty())
@@ -1030,11 +1096,15 @@ private:
 
 		if(parameters_for_processing.print)
 		{
+			std::ostringstream tmp_output;
+			tmp_output << "atom x y z r tags adjuncts\n";
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const Atom& atom=atoms_[*it];
-				output_for_content << atom << "\n";
+				tmp_output << atom << "\n";
 			}
+			std::istringstream tmp_input(tmp_output.str());
+			print_nice_columns(tmp_input, output_for_content);
 		}
 
 		{
@@ -1310,21 +1380,27 @@ private:
 
 		if(parameters_for_processing.print)
 		{
-			enabled_output_of_ContactValue_graphics()=false;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			std::ostringstream tmp_output;
 			{
-				const Contact& contact=contacts_[*it];
-				if(contact.solvent())
+				enabled_output_of_ContactValue_graphics()=false;
+				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
-					output_for_content << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
+					const Contact& contact=contacts_[*it];
+					if(contact.solvent())
+					{
+						tmp_output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
+					}
+					else
+					{
+						tmp_output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
+					}
+					tmp_output  << " " << contact.value << "\n";
 				}
-				else
-				{
-					output_for_content << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
-				}
-				output_for_content  << " " << contact.value << "\n";
+				enabled_output_of_ContactValue_graphics()=true;
 			}
-			enabled_output_of_ContactValue_graphics()=true;
+			std::istringstream tmp_input(tmp_output.str());
+			print_nice_columns(tmp_input, output_for_content);
 		}
 
 		{
