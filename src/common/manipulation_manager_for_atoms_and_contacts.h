@@ -75,6 +75,60 @@ public:
 		return commands_history_;
 	}
 
+	void set_atom_visible(const std::size_t id, const bool visible)
+	{
+		if(id<atoms_display_states_.size())
+		{
+			atoms_display_states_[id].visible=visible;
+			need_sync_atoms_selections_with_dispaly_states_=true;
+		}
+	}
+
+	void set_atom_marked(const std::size_t id, const bool marked)
+	{
+		if(id<atoms_display_states_.size())
+		{
+			atoms_display_states_[id].marked=marked;
+			need_sync_atoms_selections_with_dispaly_states_=true;
+		}
+	}
+
+	void set_atom_color(const std::size_t id, const unsigned int color)
+	{
+		if(id<atoms_display_states_.size())
+		{
+			atoms_display_states_[id].color=(color & 0xFFFFFF);
+			need_sync_atoms_selections_with_dispaly_states_=true;
+		}
+	}
+
+	void set_contact_visible(const std::size_t id, const bool visible)
+	{
+		if(id<contacts_display_states_.size())
+		{
+			contacts_display_states_[id].visible=visible;
+			need_sync_contacts_selections_with_dispaly_states_=true;
+		}
+	}
+
+	void set_contact_marked(const std::size_t id, const bool marked)
+	{
+		if(id<contacts_display_states_.size())
+		{
+			contacts_display_states_[id].marked=marked;
+			need_sync_contacts_selections_with_dispaly_states_=true;
+		}
+	}
+
+	void set_contact_color(const std::size_t id, const unsigned int color)
+	{
+		if(id<contacts_display_states_.size())
+		{
+			contacts_display_states_[id].color=(color & 0xFFFFFF);
+			need_sync_contacts_selections_with_dispaly_states_=true;
+		}
+	}
+
 	const CommandHistory& execute(const std::string& command, std::ostream& output_for_content)
 	{
 		sync_selections_with_display_states();
