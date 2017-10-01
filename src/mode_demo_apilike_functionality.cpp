@@ -25,6 +25,7 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	manager.execute_plainly("save-atoms file 'tmp/plain_atoms.txt'", std::cout);
 	manager.execute_plainly("load-atoms file 'tmp/plain_atoms.txt' format plain", std::cout);
 	manager.execute_plainly("construct-contacts render-default", std::cout);
+	manager.execute_plainly("save-contacts file 'tmp/plain_contacts.txt'", std::cout);
 	manager.execute_plainly("query-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' print name cs1", std::cout);
 	manager.execute_plainly("query-atoms use '{match r<64>&A<C,N,O,CA,CB>}' print name as1", std::cout);
 	manager.execute_plainly("rename-selection-of-atoms nosel1 nodel2", std::cout);
