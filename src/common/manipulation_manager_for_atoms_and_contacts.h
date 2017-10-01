@@ -185,6 +185,10 @@ public:
 			{
 				command_save_contacts(input, output_for_log);
 			}
+			else if(token=="load-contacts")
+			{
+				command_load_contacts(input, output_for_log);
+			}
 			else if(token=="query-contacts")
 			{
 				command_query_contacts(input, output_for_log, output_for_content);
@@ -1118,7 +1122,7 @@ private:
 		assert_atoms_availability();
 
 		ConstructionOfContacts::construct_bundle_of_contact_information construct_bundle_of_contact_information;
-		construct_bundle_of_contact_information.calculate_volumes=true;
+		construct_bundle_of_contact_information.calculate_volumes=false;
 
 		ConstructionOfContacts::enhance_contacts enhance_contacts;
 		enhance_contacts.tag_centrality=true;
@@ -1146,6 +1150,11 @@ private:
 				render=true;
 				guard.on_token_processed(input);
 			}
+			else if(guard.token=="calculate-volumes")
+			{
+				construct_bundle_of_contact_information.calculate_volumes=true;
+				guard.on_token_processed(input);
+			}
 			else if(render_parameters_for_selecting.read(guard.token, input))
 			{
 				render=true;
@@ -1161,9 +1170,12 @@ private:
 		{
 			reset_contacts(bundle_of_contact_information.contacts);
 
-			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
+			if(construct_bundle_of_contact_information.calculate_volumes)
 			{
-				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
+				for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
+				{
+					atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
+				}
 			}
 
 			std::set<std::size_t> draw_ids;
@@ -1219,6 +1231,47 @@ private:
 		else
 		{
 			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+		}
+	}
+
+	void command_load_contacts(std::istringstream& input, std::ostream& output)
+	{
+		assert_atoms_availability();
+
+		std::string file;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="file")
+			{
+				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		if(file.empty())
+		{
+			throw std::runtime_error(std::string("Missing input file."));
+		}
+
+		std::vector<Contact> contacts;
+
+		auxiliaries::IOUtilities().read_file_lines_to_set(file, contacts);
+
+		if(!contacts.empty())
+		{
+			reset_contacts(contacts);
+
+			output << "Read contacts from file '" << file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(output);
+			output << ")\n";
+		}
+		else
+		{
+			throw std::runtime_error(std::string("Failed to read contacts from file '")+file+"'.");
 		}
 	}
 

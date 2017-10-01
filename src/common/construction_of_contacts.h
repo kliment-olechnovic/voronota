@@ -20,6 +20,12 @@ public:
 		std::size_t ids[2];
 		ContactValue value;
 
+		Contact()
+		{
+			ids[0]=0;
+			ids[1]=0;
+		}
+
 		Contact(const std::size_t id_a, const std::size_t id_b, const ContactValue& value) : value(value)
 		{
 			ids[0]=id_a;
