@@ -145,13 +145,17 @@ public:
 			std::string token;
 			input >> token;
 			input >> std::ws;
-			if(token=="read-atoms")
+			if(token=="load-atoms")
 			{
-				command_read_atoms(input, output_for_log);
+				command_load_atoms(input, output_for_log);
 			}
 			else if(token=="restrict-atoms")
 			{
 				command_restrict_atoms(input, output_for_log);
+			}
+			else if(token=="save-atoms")
+			{
+				command_save_atoms(input, output_for_log);
 			}
 			else if(token=="query-atoms")
 			{
@@ -786,7 +790,7 @@ private:
 		sync_contacts_selections_with_display_states();
 	}
 
-	void command_read_atoms(std::istringstream& input, std::ostream& output)
+	void command_load_atoms(std::istringstream& input, std::ostream& output)
 	{
 		ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
 		std::string atoms_file;
@@ -870,14 +874,18 @@ private:
 		}
 		else if(format=="plain")
 		{
-			auxiliaries::IOUtilities().read_lines_to_set(std::cin, atoms);
-			if(!radii_file.empty() || only_default_radius)
+			auxiliaries::IOUtilities().read_file_lines_to_set(atoms_file, atoms);
+			if(!atoms.empty())
 			{
-				for(std::size_t i=0;i<atoms.size();i++)
+				if(!radii_file.empty() || only_default_radius)
 				{
-					Atom& atom=atoms[i];
-					atom.value.r=collect_atomic_balls_from_file.atom_radius_assigner.get_atom_radius(atom.crad.resName, atom.crad.name);
+					for(std::size_t i=0;i<atoms.size();i++)
+					{
+						Atom& atom=atoms[i];
+						atom.value.r=collect_atomic_balls_from_file.atom_radius_assigner.get_atom_radius(atom.crad.resName, atom.crad.name);
+					}
 				}
+				success=true;
 			}
 		}
 
@@ -940,6 +948,43 @@ private:
 		output << ") to (";
 		SummaryOfAtoms::collect_summary(atoms_).print(output);
 		output << ")\n";
+	}
+
+	void command_save_atoms(std::istringstream& input, std::ostream& output) const
+	{
+		assert_atoms_availability();
+
+		std::string file;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="file")
+			{
+				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		if(file.empty())
+		{
+			throw std::runtime_error(std::string("Missing output file."));
+		}
+
+		std::ofstream foutput(file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			auxiliaries::IOUtilities().write_set(atoms_, foutput);
+			output << "Wrote atoms to file '" << file << "' (";
+			SummaryOfAtoms::collect_summary(atoms_).print(output);
+			output << ")\n";
+		}
+		else
+		{
+			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+		}
 	}
 
 	void command_query_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content)
