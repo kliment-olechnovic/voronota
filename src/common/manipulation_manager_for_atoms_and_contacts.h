@@ -181,6 +181,10 @@ public:
 			{
 				command_construct_contacts(input, output_for_log);
 			}
+			else if(token=="save-contacts")
+			{
+				command_save_contacts(input, output_for_log);
+			}
 			else if(token=="query-contacts")
 			{
 				command_query_contacts(input, output_for_log, output_for_content);
@@ -1177,6 +1181,44 @@ private:
 		else
 		{
 			throw std::runtime_error(std::string("Failed to construct contacts."));
+		}
+	}
+
+	void command_save_contacts(std::istringstream& input, std::ostream& output) const
+	{
+		assert_contacts_availability();
+
+		std::string file;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="file")
+			{
+				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		if(file.empty())
+		{
+			throw std::runtime_error(std::string("Missing output file."));
+		}
+
+		std::ofstream foutput(file.c_str(), std::ios::out);
+		if(foutput.good())
+		{
+			enabled_output_of_ContactValue_graphics()=true;
+			auxiliaries::IOUtilities().write_set(contacts_, foutput);
+			output << "Wrote contacts to file '" << file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(output);
+			output << ")\n";
+		}
+		else
+		{
+			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
 		}
 	}
 
