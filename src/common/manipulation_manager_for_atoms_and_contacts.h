@@ -14,14 +14,12 @@ public:
 
 	struct DisplayState
 	{
+		bool drawable;
 		bool visible;
+		bool marked;
 		unsigned int color;
 
-		DisplayState() : visible(true), color(0x777777)
-		{
-		}
-
-		DisplayState(const bool visible, const unsigned int color) : visible(visible), color(color)
+		DisplayState() : drawable(false), visible(false), marked(false), color(0x777777)
 		{
 		}
 	};
@@ -46,7 +44,9 @@ public:
 		}
 	};
 
-	ManipulationManagerForAtomsAndContacts()
+	ManipulationManagerForAtomsAndContacts() :
+		need_sync_atoms_selections_with_dispaly_states_(false),
+		need_sync_contacts_selections_with_dispaly_states_(false)
 	{
 	}
 
@@ -77,6 +77,7 @@ public:
 
 	const CommandHistory& execute(const std::string& command, std::ostream& output_for_content)
 	{
+		sync_selections_with_display_states();
 		bool successful=false;
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
@@ -435,14 +436,22 @@ private:
 
 	struct CommandParametersForGenericQueryProcessing
 	{
-		bool print=false;
-		bool show=false;
-		bool hide=false;
+		bool print;
+		bool show;
+		bool hide;
+		bool mark;
+		bool unmark;
 		int color_int;
 		std::string name;
 		std::string color;
 
-		CommandParametersForGenericQueryProcessing() : print(false), show(false), hide(false), color_int(0)
+		CommandParametersForGenericQueryProcessing() :
+			print(false),
+			show(false),
+			hide(false),
+			mark(false),
+			unmark(false),
+			color_int(0)
 		{
 		}
 
@@ -451,6 +460,14 @@ private:
 			if(type=="name")
 			{
 				input >> name;
+				if(name.empty())
+				{
+					throw std::runtime_error(std::string("Selection name cannot be empty."));
+				}
+				else if(name[0]=='_')
+				{
+					throw std::runtime_error(std::string("Explicitly specified selection name cannot start with '_'."));
+				}
 			}
 			else if(type=="print")
 			{
@@ -472,6 +489,22 @@ private:
 				}
 				hide=true;
 			}
+			else if(type=="mark")
+			{
+				if(unmark)
+				{
+					throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
+				}
+				mark=true;
+			}
+			else if(type=="unmark")
+			{
+				if(mark)
+				{
+					throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
+				}
+				unmark=true;
+			}
 			else if(type=="color")
 			{
 				input >> color;
@@ -484,9 +517,9 @@ private:
 			return true;
 		}
 
-		void apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
+		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
 		{
-			if(show || hide || !color.empty())
+			if(show || hide || mark || unmark || !color.empty())
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -495,7 +528,11 @@ private:
 						DisplayState& ds=display_states[*it];
 						if(show || hide)
 						{
-							ds.visible=show;
+							ds.visible=(show && ds.drawable);
+						}
+						if(mark || unmark)
+						{
+							ds.marked=mark;
 						}
 						if(!color.empty())
 						{
@@ -503,7 +540,9 @@ private:
 						}
 					}
 				}
+				return true;
 			}
+			return false;
 		}
 	};
 
@@ -579,7 +618,7 @@ private:
 		}
 		atoms_.swap(atoms);
 		atoms_display_states_.clear();
-		atoms_display_states_.resize(atoms_.size(), DisplayState(true, 0xFF7700));
+		atoms_display_states_.resize(atoms_.size());
 		contacts_.clear();
 		contacts_display_states_.clear();
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
@@ -598,8 +637,99 @@ private:
 		}
 		contacts_.swap(contacts);
 		contacts_display_states_.clear();
-		contacts_display_states_.resize(contacts_.size(), DisplayState(true, 0x0077FF));
+		contacts_display_states_.resize(contacts_.size());
+		for(std::size_t i=0;i<contacts_.size();i++)
+		{
+			DisplayState& ds=contacts_display_states_[i];
+			ds.drawable=(!contacts_[i].value.graphics.empty());
+		}
 		selection_manager_.set_contacts(&contacts_);
+	}
+
+	void sync_atoms_selections_with_display_states(const bool force=false)
+	{
+		if((need_sync_atoms_selections_with_dispaly_states_ || force) && !atoms_display_states_.empty())
+		{
+			std::set<std::size_t> ids_visible;
+			std::set<std::size_t> ids_marked;
+			for(std::size_t i=0;i<atoms_display_states_.size();i++)
+			{
+				const DisplayState& ds=atoms_display_states_[i];
+				if(ds.visible)
+				{
+					ids_visible.insert(i);
+				}
+				if(ds.marked)
+				{
+					ids_marked.insert(i);
+				}
+			}
+
+			if(ids_visible.empty())
+			{
+				selection_manager_.delete_atoms_selection("_visible");
+			}
+			else
+			{
+				selection_manager_.set_atoms_selection("_visible", ids_visible);
+			}
+
+			if(ids_marked.empty())
+			{
+				selection_manager_.delete_atoms_selection("_marked");
+			}
+			else
+			{
+				selection_manager_.set_atoms_selection("_marked", ids_marked);
+			}
+		}
+		need_sync_atoms_selections_with_dispaly_states_=false;
+	}
+
+	void sync_contacts_selections_with_display_states(const bool force=false)
+	{
+		if((need_sync_contacts_selections_with_dispaly_states_ || force) && !contacts_display_states_.empty())
+		{
+			std::set<std::size_t> ids_visible;
+			std::set<std::size_t> ids_marked;
+			for(std::size_t i=0;i<contacts_display_states_.size();i++)
+			{
+				const DisplayState& ds=contacts_display_states_[i];
+				if(ds.visible)
+				{
+					ids_visible.insert(i);
+				}
+				if(ds.marked)
+				{
+					ids_marked.insert(i);
+				}
+			}
+
+			if(ids_visible.empty())
+			{
+				selection_manager_.delete_contacts_selection("_visible");
+			}
+			else
+			{
+				selection_manager_.set_contacts_selection("_visible", ids_visible);
+			}
+
+			if(ids_marked.empty())
+			{
+				selection_manager_.delete_contacts_selection("_marked");
+			}
+			else
+			{
+				selection_manager_.set_contacts_selection("_marked", ids_marked);
+			}
+		}
+		need_sync_contacts_selections_with_dispaly_states_=false;
+	}
+
+	void sync_selections_with_display_states()
+	{
+		sync_atoms_selections_with_display_states();
+		sync_contacts_selections_with_display_states();
 	}
 
 	void command_read_atoms(std::istringstream& input, std::ostream& output)
@@ -786,7 +916,10 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		parameters_for_processing.apply_to_display_states(ids, atoms_display_states_);
+		if(parameters_for_processing.apply_to_display_states(ids, atoms_display_states_))
+		{
+			sync_atoms_selections_with_display_states(true);
+		}
 
 		if(parameters_for_processing.print)
 		{
@@ -976,7 +1109,10 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		parameters_for_processing.apply_to_display_states(ids, contacts_display_states_);
+		if(parameters_for_processing.apply_to_display_states(ids, contacts_display_states_))
+		{
+			sync_contacts_selections_with_display_states(true);
+		}
 
 		if(parameters_for_processing.print)
 		{
@@ -1083,6 +1219,8 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 	std::vector<CommandHistory> commands_history_;
+	bool need_sync_atoms_selections_with_dispaly_states_;
+	bool need_sync_contacts_selections_with_dispaly_states_;
 };
 
 }
