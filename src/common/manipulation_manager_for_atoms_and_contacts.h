@@ -612,162 +612,223 @@ private:
 		}
 	};
 
-	static void print_nice_columns(
-			std::istream& input,
-			std::ostream& output,
-			const std::size_t sort_column=std::numeric_limits<std::size_t>::max(),
-			const bool sort_reversed=false,
-			const bool sort_after_title=false)
+	class TablePrinting
 	{
-		std::vector< std::vector<std::string> > rows;
-		while(input.good())
+	public:
+		static void print_atoms(
+				const std::vector<Atom>& atoms,
+				const std::set<std::size_t>& ids,
+				std::ostream& output)
 		{
-			std::string line;
-			std::getline(input, line);
-			rows.push_back(std::vector<std::string>());
-			if(!line.empty())
+			std::ostringstream tmp_output;
+			tmp_output << "atom x y z r tags adjuncts\n";
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				std::istringstream line_input(line);
-				while(line_input.good())
+				const std::size_t id=(*it);
+				if(id<atoms.size())
 				{
-					std::string token;
+					const Atom& atom=atoms[id];
+					tmp_output << atom << "\n";
+				}
+			}
+			std::istringstream tmp_input(tmp_output.str());
+			print_nice_columns(tmp_input, output);
+		}
 
+		static void print_contacts(
+				const std::vector<Atom>& atoms,
+				const std::vector<Contact>& contacts,
+				const std::set<std::size_t>& ids,
+				std::ostream& output)
+		{
+			std::ostringstream tmp_output;
+			{
+				enabled_output_of_ContactValue_graphics()=false;
+				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id=(*it);
+					if(id<contacts.size())
 					{
-						line_input >> std::ws;
-						const int c=input.peek();
-						if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
+						const Contact& contact=contacts[id];
+						if(contact.ids[0]<atoms.size() && contact.ids[1]<atoms.size())
 						{
-							line_input.get();
-							std::getline(line_input, token, std::char_traits<char>::to_char_type(c));
-							const std::string quote_symbol(1, std::char_traits<char>::to_char_type(c));
-							token=quote_symbol+token+quote_symbol;
-						}
-						else
-						{
-							line_input >> token;
+							if(contact.solvent())
+							{
+								tmp_output << atoms[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
+							}
+							else
+							{
+								tmp_output << atoms[contact.ids[0]].crad << " " << atoms[contact.ids[1]].crad;
+							}
+							tmp_output  << " " << contact.value << "\n";
 						}
 					}
+				}
+				enabled_output_of_ContactValue_graphics()=true;
+			}
+			std::istringstream tmp_input(tmp_output.str());
+			print_nice_columns(tmp_input, output);
+		}
 
-					if(!token.empty())
+	private:
+		static void print_nice_columns(
+				std::istream& input,
+				std::ostream& output,
+				const std::size_t sort_column=std::numeric_limits<std::size_t>::max(),
+				const bool sort_reversed=false,
+				const bool sort_after_title=false)
+		{
+			std::vector< std::vector<std::string> > rows;
+			while(input.good())
+			{
+				std::string line;
+				std::getline(input, line);
+				rows.push_back(std::vector<std::string>());
+				if(!line.empty())
+				{
+					std::istringstream line_input(line);
+					while(line_input.good())
 					{
-						rows.back().push_back(token);
+						std::string token;
+
+						{
+							line_input >> std::ws;
+							const int c=input.peek();
+							if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
+							{
+								line_input.get();
+								std::getline(line_input, token, std::char_traits<char>::to_char_type(c));
+								const std::string quote_symbol(1, std::char_traits<char>::to_char_type(c));
+								token=quote_symbol+token+quote_symbol;
+							}
+							else
+							{
+								line_input >> token;
+							}
+						}
+
+						if(!token.empty())
+						{
+							rows.back().push_back(token);
+						}
 					}
 				}
 			}
-		}
 
-		if(rows.empty())
-		{
-			return;
-		}
-
-		std::vector<std::size_t> widths;
-		for(std::size_t i=0;i<rows.size();i++)
-		{
-			for(std::size_t j=0;j<rows[i].size();j++)
+			if(rows.empty())
 			{
-				const std::size_t w=rows[i][j].size();
-				if(j<widths.size())
-				{
-					widths[j]=std::max(widths[j], w);
-				}
-				else
-				{
-					widths.push_back(w);
-				}
+				return;
 			}
-		}
 
-		if(widths.empty())
-		{
-			return;
-		}
-
-		if(sort_column>=widths.size())
-		{
+			std::vector<std::size_t> widths;
 			for(std::size_t i=0;i<rows.size();i++)
 			{
 				for(std::size_t j=0;j<rows[i].size();j++)
 				{
-					output << std::setw(widths[j]+2) << std::left << rows[i][j];
-				}
-				output << "\n";
-			}
-		}
-		else
-		{
-			std::vector< std::pair< std::pair<std::string, double>, std::size_t> > descriptors_to_ids;
-			descriptors_to_ids.reserve(rows.size());
-
-			bool all_values_are_numeric=true;
-			for(std::size_t i=(sort_after_title ? 1 : 0);i<rows.size();i++)
-			{
-				if(sort_column<rows[i].size())
-				{
-					descriptors_to_ids.push_back(std::make_pair(std::make_pair(rows[i][sort_column], 0.0), i));
-					if(all_values_are_numeric)
+					const std::size_t w=rows[i][j].size();
+					if(j<widths.size())
 					{
-						std::istringstream value_input(rows[i][sort_column]);
-						bool value_is_numeric=false;
-						if(value_input.good())
-						{
-							double value=0.0;
-							value_input >> value;
-							if(!value_input.fail())
-							{
-								descriptors_to_ids.back().first.second=value;
-								value_is_numeric=true;
-							}
-						}
-						all_values_are_numeric=value_is_numeric;
+						widths[j]=std::max(widths[j], w);
+					}
+					else
+					{
+						widths.push_back(w);
 					}
 				}
-				else
-				{
-					descriptors_to_ids.push_back(std::make_pair(std::make_pair(std::string(), 0.0), i));
-					all_values_are_numeric=false;
-				}
 			}
 
-
-			for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+			if(widths.empty())
 			{
-				if(all_values_are_numeric)
-				{
-					descriptors_to_ids[i].first.first.clear();
-				}
-				else
-				{
-					descriptors_to_ids[i].first.second=0.0;
-				}
+				return;
 			}
 
-			std::sort(descriptors_to_ids.begin(), descriptors_to_ids.end());
-			if(sort_reversed)
+			if(sort_column>=widths.size())
 			{
-				std::reverse(descriptors_to_ids.begin(), descriptors_to_ids.end());
-			}
-
-			if(sort_after_title)
-			{
-				for(std::size_t j=0;j<rows[0].size();j++)
+				for(std::size_t i=0;i<rows.size();i++)
 				{
-					output << std::setw(widths[j]+2) << std::left << rows[0][j];
+					for(std::size_t j=0;j<rows[i].size();j++)
+					{
+						output << std::setw(widths[j]+2) << std::left << rows[i][j];
+					}
+					output << "\n";
 				}
-				output << "\n";
 			}
-
-			for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+			else
 			{
-				const std::size_t id=descriptors_to_ids[i].second;
-				for(std::size_t j=0;j<rows[id].size();j++)
+				std::vector< std::pair< std::pair<std::string, double>, std::size_t> > descriptors_to_ids;
+				descriptors_to_ids.reserve(rows.size());
+
+				bool all_values_are_numeric=true;
+				for(std::size_t i=(sort_after_title ? 1 : 0);i<rows.size();i++)
 				{
-					output << std::setw(widths[j]+2) << std::left << rows[id][j];
+					if(sort_column<rows[i].size())
+					{
+						descriptors_to_ids.push_back(std::make_pair(std::make_pair(rows[i][sort_column], 0.0), i));
+						if(all_values_are_numeric)
+						{
+							std::istringstream value_input(rows[i][sort_column]);
+							bool value_is_numeric=false;
+							if(value_input.good())
+							{
+								double value=0.0;
+								value_input >> value;
+								if(!value_input.fail())
+								{
+									descriptors_to_ids.back().first.second=value;
+									value_is_numeric=true;
+								}
+							}
+							all_values_are_numeric=value_is_numeric;
+						}
+					}
+					else
+					{
+						descriptors_to_ids.push_back(std::make_pair(std::make_pair(std::string(), 0.0), i));
+						all_values_are_numeric=false;
+					}
 				}
-				output << "\n";
+
+
+				for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+				{
+					if(all_values_are_numeric)
+					{
+						descriptors_to_ids[i].first.first.clear();
+					}
+					else
+					{
+						descriptors_to_ids[i].first.second=0.0;
+					}
+				}
+
+				std::sort(descriptors_to_ids.begin(), descriptors_to_ids.end());
+				if(sort_reversed)
+				{
+					std::reverse(descriptors_to_ids.begin(), descriptors_to_ids.end());
+				}
+
+				if(sort_after_title)
+				{
+					for(std::size_t j=0;j<rows[0].size();j++)
+					{
+						output << std::setw(widths[j]+2) << std::left << rows[0][j];
+					}
+					output << "\n";
+				}
+
+				for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+				{
+					const std::size_t id=descriptors_to_ids[i].second;
+					for(std::size_t j=0;j<rows[id].size();j++)
+					{
+						output << std::setw(widths[j]+2) << std::left << rows[id][j];
+					}
+					output << "\n";
+				}
 			}
 		}
-	}
+	};
 
 	void assert_atoms_availability() const
 	{
@@ -1187,15 +1248,7 @@ private:
 
 		if(parameters_for_processing.print)
 		{
-			std::ostringstream tmp_output;
-			tmp_output << "atom x y z r tags adjuncts\n";
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				const Atom& atom=atoms_[*it];
-				tmp_output << atom << "\n";
-			}
-			std::istringstream tmp_input(tmp_output.str());
-			print_nice_columns(tmp_input, output_for_content);
+			TablePrinting::print_atoms(atoms_, ids, output_for_content);
 		}
 
 		{
@@ -1471,27 +1524,7 @@ private:
 
 		if(parameters_for_processing.print)
 		{
-			std::ostringstream tmp_output;
-			{
-				enabled_output_of_ContactValue_graphics()=false;
-				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
-				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-				{
-					const Contact& contact=contacts_[*it];
-					if(contact.solvent())
-					{
-						tmp_output << atoms_[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
-					}
-					else
-					{
-						tmp_output << atoms_[contact.ids[0]].crad << " " << atoms_[contact.ids[1]].crad;
-					}
-					tmp_output  << " " << contact.value << "\n";
-				}
-				enabled_output_of_ContactValue_graphics()=true;
-			}
-			std::istringstream tmp_input(tmp_output.str());
-			print_nice_columns(tmp_input, output_for_content);
+			TablePrinting::print_contacts(atoms_, contacts_, ids, output_for_content);
 		}
 
 		{
