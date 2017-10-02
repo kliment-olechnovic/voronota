@@ -38,4 +38,6 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	manager.execute_plainly("delete-selections-of-contacts nosel1", std::cout);
 	manager.execute_plainly("list-selections-of-atoms", std::cout);
 	manager.execute_plainly("list-selections-of-contacts", std::cout);
+	manager.execute_plainly("print-history last 5", std::cout);
+	manager.execute_plainly("print-history successful", std::cout);
 }
