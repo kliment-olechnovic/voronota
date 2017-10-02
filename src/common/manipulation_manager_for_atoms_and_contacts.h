@@ -609,15 +609,15 @@ private:
 	struct CommandParametersForGenericTablePrinting
 	{
 		bool print;
-		bool sorted;
-		bool reversed;
+		bool reversed_sorting;
 		std::size_t sort_column;
+		std::size_t limit;
 
 		CommandParametersForGenericTablePrinting() :
 			print(false),
-			sorted(false),
-			reversed(false),
-			sort_column(0)
+			reversed_sorting(false),
+			sort_column(std::numeric_limits<std::size_t>::max()),
+			limit(std::numeric_limits<std::size_t>::max())
 		{
 		}
 
@@ -630,15 +630,17 @@ private:
 			else if(type=="print-sorted")
 			{
 				print=true;
-				sorted=true;
 				input >> sort_column;
 			}
 			else if(type=="print-sorted-reversed")
 			{
 				print=true;
-				sorted=true;
-				reversed=true;
+				reversed_sorting=true;
 				input >> sort_column;
+			}
+			else if(type=="printing-limit")
+			{
+				input >> limit;
 			}
 			else
 			{
@@ -661,7 +663,7 @@ private:
 			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
 			if(!parent_read)
 			{
-				if(type=="inter-residue-printing")
+				if(type=="printing-inter-residue")
 				{
 					inter_residue=true;
 				}
@@ -696,14 +698,7 @@ private:
 			}
 
 			std::istringstream tmp_input(tmp_output.str());
-			if(params.sorted)
-			{
-				print_nice_columns(tmp_input, output, params.sort_column, params.reversed, true);
-			}
-			else
-			{
-				print_nice_columns(tmp_input, output);
-			}
+			print_nice_columns(tmp_input, output, true, params.sort_column, params.reversed_sorting, params.limit);
 		}
 
 		static void print_contacts(
@@ -757,23 +752,17 @@ private:
 			enabled_output_of_ContactValue_graphics()=true;
 
 			std::istringstream tmp_input(tmp_output.str());
-			if(params.sorted)
-			{
-				print_nice_columns(tmp_input, output, params.sort_column, params.reversed, true);
-			}
-			else
-			{
-				print_nice_columns(tmp_input, output);
-			}
+			print_nice_columns(tmp_input, output, true, params.sort_column, params.reversed_sorting, params.limit);
 		}
 
 	private:
 		static void print_nice_columns(
 				std::istream& input,
 				std::ostream& output,
+				const bool first_row_is_title=false,
 				const std::size_t sort_column=std::numeric_limits<std::size_t>::max(),
-				const bool sort_reversed=false,
-				const bool sort_after_title=false)
+				const bool reverse_sorted=false,
+				const std::size_t limit_rows=std::numeric_limits<std::size_t>::max())
 		{
 			std::vector< std::vector<std::string> > rows;
 			while(input.good())
@@ -839,9 +828,11 @@ private:
 				return;
 			}
 
+
 			if(sort_column>=widths.size())
 			{
-				for(std::size_t i=0;i<rows.size();i++)
+				const std::size_t actual_limit_rows=(first_row_is_title && limit_rows<std::numeric_limits<std::size_t>::max()) ? (limit_rows+1) : limit_rows;
+				for(std::size_t i=0;i<rows.size() && i<actual_limit_rows;i++)
 				{
 					for(std::size_t j=0;j<rows[i].size();j++)
 					{
@@ -856,7 +847,7 @@ private:
 				descriptors_to_ids.reserve(rows.size());
 
 				bool all_values_are_numeric=true;
-				for(std::size_t i=(sort_after_title ? 1 : 0);i<rows.size();i++)
+				for(std::size_t i=(first_row_is_title ? 1 : 0);i<rows.size();i++)
 				{
 					if(sort_column<rows[i].size())
 					{
@@ -899,12 +890,12 @@ private:
 				}
 
 				std::sort(descriptors_to_ids.begin(), descriptors_to_ids.end());
-				if(sort_reversed)
+				if(reverse_sorted)
 				{
 					std::reverse(descriptors_to_ids.begin(), descriptors_to_ids.end());
 				}
 
-				if(sort_after_title)
+				if(first_row_is_title)
 				{
 					for(std::size_t j=0;j<rows[0].size();j++)
 					{
@@ -913,7 +904,7 @@ private:
 					output << "\n";
 				}
 
-				for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+				for(std::size_t i=0;i<descriptors_to_ids.size() && i<limit_rows;i++)
 				{
 					const std::size_t id=descriptors_to_ids[i].second;
 					for(std::size_t j=0;j<rows[id].size();j++)
