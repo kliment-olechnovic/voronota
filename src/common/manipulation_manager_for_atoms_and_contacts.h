@@ -638,8 +638,9 @@ private:
 				reversed_sorting=true;
 				input >> sort_column;
 			}
-			else if(type=="printing-limit")
+			else if(type=="print-limit")
 			{
+				print=true;
 				input >> limit;
 			}
 			else
@@ -663,8 +664,9 @@ private:
 			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
 			if(!parent_read)
 			{
-				if(type=="printing-inter-residue")
+				if(type=="print-inter-residue")
 				{
+					print=true;
 					inter_residue=true;
 				}
 				else
@@ -744,7 +746,14 @@ private:
 			}
 			std::ostringstream tmp_output;
 			enabled_output_of_ContactValue_graphics()=false;
-			tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+			if(params.inter_residue)
+			{
+				tmp_output << "residue1 residue2 area dist tags adjuncts\n";
+			}
+			else
+			{
+				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+			}
 			for(std::map<ChainResidueAtomDescriptorsPair, ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
 			{
 				tmp_output << it->first << " " << it->second << "\n";
