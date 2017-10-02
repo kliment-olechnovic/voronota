@@ -502,7 +502,6 @@ private:
 
 	struct CommandParametersForGenericQueryProcessing
 	{
-		bool print;
 		bool show;
 		bool hide;
 		bool mark;
@@ -512,7 +511,6 @@ private:
 		std::string color;
 
 		CommandParametersForGenericQueryProcessing() :
-			print(false),
 			show(false),
 			hide(false),
 			mark(false),
@@ -534,10 +532,6 @@ private:
 				{
 					throw std::runtime_error(std::string("Explicitly specified selection name cannot start with '_'."));
 				}
-			}
-			else if(type=="print")
-			{
-				print=true;
 			}
 			else if(type=="show")
 			{
@@ -612,6 +606,74 @@ private:
 		}
 	};
 
+	struct CommandParametersForGenericTablePrinting
+	{
+		bool print;
+		bool sorted;
+		bool sorted_reversed;
+		std::size_t sort_column;
+
+		CommandParametersForGenericTablePrinting() :
+			print(false),
+			sorted(false),
+			sorted_reversed(false),
+			sort_column(0)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type=="print")
+			{
+				print=true;
+			}
+			else if(type=="print-sorted")
+			{
+				print=true;
+				sorted=true;
+				input >> sort_column;
+			}
+			else if(type=="print-sorted-reversed")
+			{
+				print=true;
+				sorted=true;
+				sorted_reversed=true;
+				input >> sort_column;
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
+	};
+
+	struct CommandParametersForContactsTablePrinting : public CommandParametersForGenericTablePrinting
+	{
+		bool inter_residue;
+
+		CommandParametersForContactsTablePrinting() : inter_residue(false)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
+			if(!parent_read)
+			{
+				if(type=="inter-residue-print")
+				{
+					inter_residue=true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+	};
+
 	class TablePrinting
 	{
 	public:
@@ -641,32 +703,34 @@ private:
 				const std::set<std::size_t>& ids,
 				std::ostream& output)
 		{
-			std::ostringstream tmp_output;
+			std::map<ChainResidueAtomDescriptorsPair, ContactValue> map_for_output;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				enabled_output_of_ContactValue_graphics()=false;
-				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
-				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				const std::size_t id=(*it);
+				if(id<contacts.size())
 				{
-					const std::size_t id=(*it);
-					if(id<contacts.size())
+					const Contact& contact=contacts[id];
+					if(contact.ids[0]<atoms.size() && contact.ids[1]<atoms.size())
 					{
-						const Contact& contact=contacts[id];
-						if(contact.ids[0]<atoms.size() && contact.ids[1]<atoms.size())
+						if(contact.solvent())
 						{
-							if(contact.solvent())
-							{
-								tmp_output << atoms[contact.ids[0]].crad << " " << ChainResidueAtomDescriptor::solvent();
-							}
-							else
-							{
-								tmp_output << atoms[contact.ids[0]].crad << " " << atoms[contact.ids[1]].crad;
-							}
-							tmp_output  << " " << contact.value << "\n";
+							map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, ChainResidueAtomDescriptor::solvent())].add(contact.value);
+						}
+						else
+						{
+							map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad)].add(contact.value);
 						}
 					}
 				}
-				enabled_output_of_ContactValue_graphics()=true;
 			}
+			std::ostringstream tmp_output;
+			enabled_output_of_ContactValue_graphics()=false;
+			tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+			for(std::map<ChainResidueAtomDescriptorsPair, ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
+			{
+				tmp_output << it->first << " " << it->second << "\n";
+			}
+			enabled_output_of_ContactValue_graphics()=true;
 			std::istringstream tmp_input(tmp_output.str());
 			print_nice_columns(tmp_input, output);
 		}
@@ -1219,6 +1283,7 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericQueryProcessing parameters_for_processing;
+		CommandParametersForGenericTablePrinting parameters_for_printing;
 
 		while(input.good())
 		{
@@ -1229,6 +1294,10 @@ private:
 				guard.on_token_processed(input);
 			}
 			else if(parameters_for_processing.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_printing.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
@@ -1246,7 +1315,7 @@ private:
 			sync_atoms_selections_with_display_states(true);
 		}
 
-		if(parameters_for_processing.print)
+		if(parameters_for_printing.print)
 		{
 			TablePrinting::print_atoms(atoms_, ids, output_for_content);
 		}
@@ -1495,6 +1564,7 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericQueryProcessing parameters_for_processing;
+		CommandParametersForContactsTablePrinting parameters_for_printing;
 
 		while(input.good())
 		{
@@ -1505,6 +1575,10 @@ private:
 				guard.on_token_processed(input);
 			}
 			else if(parameters_for_processing.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_printing.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
@@ -1522,7 +1596,7 @@ private:
 			sync_contacts_selections_with_display_states(true);
 		}
 
-		if(parameters_for_processing.print)
+		if(parameters_for_printing.print)
 		{
 			TablePrinting::print_contacts(atoms_, contacts_, ids, output_for_content);
 		}
