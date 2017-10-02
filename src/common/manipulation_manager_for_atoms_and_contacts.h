@@ -1428,11 +1428,7 @@ private:
 		assert_atoms_availability();
 
 		ConstructionOfContacts::construct_bundle_of_contact_information construct_bundle_of_contact_information;
-		construct_bundle_of_contact_information.calculate_volumes=false;
-
 		ConstructionOfContacts::enhance_contacts enhance_contacts;
-		enhance_contacts.tag_centrality=true;
-		enhance_contacts.tag_peripherial=true;
 
 		bool render=false;
 		CommandParametersForGenericSelecting render_parameters_for_selecting;
@@ -1459,6 +1455,16 @@ private:
 			else if(guard.token=="calculate-volumes")
 			{
 				construct_bundle_of_contact_information.calculate_volumes=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="tag-centrality")
+			{
+				enhance_contacts.tag_centrality=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="tag-peripherial")
+			{
+				enhance_contacts.tag_peripherial=true;
 				guard.on_token_processed(input);
 			}
 			else if(render_parameters_for_selecting.read(guard.token, input))
