@@ -612,7 +612,12 @@ private:
 		}
 	};
 
-	static void print_nice_columns(std::istream& input, std::ostream& output)
+	static void print_nice_columns(
+			std::istream& input,
+			std::ostream& output,
+			const std::size_t sort_column=std::numeric_limits<std::size_t>::max(),
+			const bool sort_reversed=false,
+			const bool sort_after_title=false)
 	{
 		std::vector< std::vector<std::string> > rows;
 		while(input.good())
@@ -651,6 +656,11 @@ private:
 			}
 		}
 
+		if(rows.empty())
+		{
+			return;
+		}
+
 		std::vector<std::size_t> widths;
 		for(std::size_t i=0;i<rows.size();i++)
 		{
@@ -668,13 +678,94 @@ private:
 			}
 		}
 
-		for(std::size_t i=0;i<rows.size();i++)
+		if(widths.empty())
 		{
-			for(std::size_t j=0;j<rows[i].size();j++)
+			return;
+		}
+
+		if(sort_column>=widths.size())
+		{
+			for(std::size_t i=0;i<rows.size();i++)
 			{
-				output << std::setw(widths[j]+2) << std::left << rows[i][j];
+				for(std::size_t j=0;j<rows[i].size();j++)
+				{
+					output << std::setw(widths[j]+2) << std::left << rows[i][j];
+				}
+				output << "\n";
 			}
-			output << "\n";
+		}
+		else
+		{
+			std::vector< std::pair< std::pair<std::string, double>, std::size_t> > descriptors_to_ids;
+			descriptors_to_ids.reserve(rows.size());
+
+			bool all_values_are_numeric=true;
+			for(std::size_t i=(sort_after_title ? 1 : 0);i<rows.size();i++)
+			{
+				if(sort_column<rows[i].size())
+				{
+					descriptors_to_ids.push_back(std::make_pair(std::make_pair(rows[i][sort_column], 0.0), i));
+					if(all_values_are_numeric)
+					{
+						std::istringstream value_input(rows[i][sort_column]);
+						bool value_is_numeric=false;
+						if(value_input.good())
+						{
+							double value=0.0;
+							value_input >> value;
+							if(!value_input.fail())
+							{
+								descriptors_to_ids.back().first.second=value;
+								value_is_numeric=true;
+							}
+						}
+						all_values_are_numeric=value_is_numeric;
+					}
+				}
+				else
+				{
+					descriptors_to_ids.push_back(std::make_pair(std::make_pair(std::string(), 0.0), i));
+					all_values_are_numeric=false;
+				}
+			}
+
+
+			for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+			{
+				if(all_values_are_numeric)
+				{
+					descriptors_to_ids[i].first.first.clear();
+				}
+				else
+				{
+					descriptors_to_ids[i].first.second=0.0;
+				}
+			}
+
+			std::sort(descriptors_to_ids.begin(), descriptors_to_ids.end());
+			if(sort_reversed)
+			{
+				std::reverse(descriptors_to_ids.begin(), descriptors_to_ids.end());
+			}
+
+			if(sort_after_title)
+			{
+				for(std::size_t j=0;j<rows[0].size();j++)
+				{
+					output << std::setw(widths[j]+2) << std::left << rows[0][j];
+				}
+				output << "\n";
+			}
+
+			for(std::size_t i=0;i<descriptors_to_ids.size();i++)
+			{
+				const std::size_t id=descriptors_to_ids[i].second;
+				for(std::size_t j=0;j<rows[id].size();j++)
+				{
+					output << std::setw(widths[j]+2) << std::left << rows[id][j];
+				}
+				output << "\n";
+			}
 		}
 	}
 
