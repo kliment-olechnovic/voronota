@@ -24,22 +24,15 @@ public:
 		}
 	};
 
-	struct CommandHistory
+	struct CommandRecord
 	{
 		std::string command;
+		bool successful;
+		std::string verb;
 		std::string output_log;
 		std::string output_error;
-		bool successful;
 
-		CommandHistory(
-				const std::string& command,
-				const std::string& output_log,
-				const std::string& output_error,
-				const bool successful) :
-					command(command),
-					output_log(output_log),
-					output_error(output_error),
-					successful(successful)
+		CommandRecord(const std::string& command) : command(command), successful(false)
 		{
 		}
 	};
@@ -70,7 +63,7 @@ public:
 		return contacts_display_states_;
 	}
 
-	const std::vector<CommandHistory>& history() const
+	const std::vector<CommandRecord>& history() const
 	{
 		return commands_history_;
 	}
@@ -129,12 +122,15 @@ public:
 		}
 	}
 
-	const CommandHistory& execute(const std::string& command, std::ostream& output_for_content)
+	const CommandRecord& execute(const std::string& command, std::ostream& output_for_content)
 	{
+		CommandRecord record(command);
+
 		sync_selections_with_display_states();
-		bool successful=false;
+
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
+
 		try
 		{
 			if(command.empty())
@@ -142,70 +138,69 @@ public:
 				throw std::runtime_error(std::string("Empty command."));
 			}
 			std::istringstream input(command);
-			std::string token;
-			input >> token;
+			input >> record.verb;
 			input >> std::ws;
-			if(token=="load-atoms")
+			if(record.verb=="load-atoms")
 			{
 				command_load_atoms(input, output_for_log);
 			}
-			else if(token=="restrict-atoms")
+			else if(record.verb=="restrict-atoms")
 			{
 				command_restrict_atoms(input, output_for_log);
 			}
-			else if(token=="save-atoms")
+			else if(record.verb=="save-atoms")
 			{
 				command_save_atoms(input, output_for_log);
 			}
-			else if(token=="query-atoms")
+			else if(record.verb=="query-atoms")
 			{
 				command_query_atoms(input, output_for_log, output_for_content);
 			}
-			else if(token=="list-selections-of-atoms")
+			else if(record.verb=="list-selections-of-atoms")
 			{
 				command_list_selections_of_atoms(input, output_for_log);
 			}
-			else if(token=="delete-all-selections-of-atoms")
+			else if(record.verb=="delete-all-selections-of-atoms")
 			{
 				command_delete_all_selections_of_atoms(input, output_for_log);
 			}
-			else if(token=="delete-selections-of-atoms")
+			else if(record.verb=="delete-selections-of-atoms")
 			{
 				command_delete_selections_of_atoms(input, output_for_log);
 			}
-			else if(token=="rename-selection-of-atoms")
+			else if(record.verb=="rename-selection-of-atoms")
 			{
 				command_rename_selection_of_atoms(input, output_for_log);
 			}
-			else if(token=="construct-contacts")
+			else if(record.verb=="construct-contacts")
 			{
 				command_construct_contacts(input, output_for_log);
 			}
-			else if(token=="save-contacts")
+			else if(record.verb=="save-contacts")
 			{
 				command_save_contacts(input, output_for_log);
 			}
-			else if(token=="load-contacts")
+			else if(record.verb=="load-contacts")
 			{
 				command_load_contacts(input, output_for_log);
 			}
-			else if(token=="query-contacts")
+			else if(record.verb=="query-contacts")
 			{
 				command_query_contacts(input, output_for_log, output_for_content);
 			}
-			else if(token=="list-selections-of-contacts")
+			else if(record.verb=="list-selections-of-contacts")
 			{
 				command_list_selections_of_contacts(input, output_for_log);
 			}
-			else if(token=="delete-all-selections-of-contacts")
+			else if(record.verb=="delete-all-selections-of-contacts")
 			{
 				command_delete_all_selections_of_contacts(input, output_for_log);
 			}
-			else if(token=="delete-selections-of-contacts")
+			else if(record.verb=="delete-selections-of-contacts")
 			{
 				command_delete_selections_of_contacts(input, output_for_log);
 			}
-			else if(token=="rename-selection-of-contacts")
+			else if(record.verb=="rename-selection-of-contacts")
 			{
 				command_rename_selection_of_contacts(input, output_for_log);
 			}
@@ -213,13 +208,17 @@ public:
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
 			}
-			successful=true;
+			record.successful=true;
 		}
 		catch(const std::exception& e)
 		{
 			output_for_errors << e.what();
 		}
-		commands_history_.push_back(CommandHistory(command, output_for_log.str(), output_for_errors.str(), successful));
+
+		record.output_log=output_for_log.str();
+		record.output_error=output_for_errors.str();
+		commands_history_.push_back(record);
+
 		return commands_history_.back();
 	}
 
@@ -229,7 +228,7 @@ public:
 		if(!command.empty())
 		{
 			output << "> " << command << std::endl;
-			const CommandHistory& ch=execute(command, output_for_content);
+			const CommandRecord& ch=execute(command, output_for_content);
 			output << output_for_content.str();
 			output << ch.output_log;
 			if(!ch.output_error.empty())
@@ -1821,7 +1820,7 @@ private:
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
-	std::vector<CommandHistory> commands_history_;
+	std::vector<CommandRecord> commands_history_;
 	bool need_sync_atoms_selections_with_dispaly_states_;
 	bool need_sync_contacts_selections_with_dispaly_states_;
 };
