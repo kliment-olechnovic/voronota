@@ -610,12 +610,14 @@ private:
 	{
 		bool print;
 		bool reversed_sorting;
+		bool expanded_descriptors;
 		std::size_t sort_column;
 		std::size_t limit;
 
 		CommandParametersForGenericTablePrinting() :
 			print(false),
 			reversed_sorting(false),
+			expanded_descriptors(false),
 			sort_column(std::numeric_limits<std::size_t>::max()),
 			limit(std::numeric_limits<std::size_t>::max())
 		{
@@ -637,6 +639,11 @@ private:
 				print=true;
 				reversed_sorting=true;
 				input >> sort_column;
+			}
+			else if(type=="print-expanded")
+			{
+				print=true;
+				expanded_descriptors=true;
 			}
 			else if(type=="print-limit")
 			{
@@ -681,6 +688,43 @@ private:
 	class TablePrinting
 	{
 	public:
+		static void print_expanded_descriptor(const ChainResidueAtomDescriptor& crad, const bool with_atom_details, std::ostream& output)
+		{
+			output << (crad.chainID.empty() ? std::string(".") : crad.chainID) << " ";
+
+			if(crad.resSeq==ChainResidueAtomDescriptor::null_num())
+			{
+				output << "." << " ";
+			}
+			else
+			{
+				output << crad.resSeq << " ";
+			}
+
+			output << (crad.iCode.empty() ? std::string(".") : crad.iCode) << " ";
+
+			if(with_atom_details)
+			{
+				if(crad.serial==ChainResidueAtomDescriptor::null_num())
+				{
+					output << "." << " ";
+				}
+				else
+				{
+					output << crad.serial << " ";
+				}
+
+				output << (crad.altLoc.empty() ? std::string(".") : crad.altLoc) << " ";
+			}
+
+			output << (crad.resName.empty() ? std::string(".") : crad.resName) << " ";
+
+			if(with_atom_details)
+			{
+				output << (crad.name.empty() ? std::string(".") : crad.name);
+			}
+		}
+
 		static void print_atoms(
 				const std::vector<Atom>& atoms,
 				const std::set<std::size_t>& ids,
@@ -688,14 +732,31 @@ private:
 				std::ostream& output)
 		{
 			std::ostringstream tmp_output;
-			tmp_output << "atom x y z r tags adjuncts\n";
+
+			if(params.expanded_descriptors)
+			{
+				tmp_output << "chn resi ic atmi al resn atmn x y z r tags adjuncts\n";
+			}
+			else
+			{
+				tmp_output << "atom x y z r tags adjuncts\n";
+			}
+
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const std::size_t id=(*it);
 				if(id<atoms.size())
 				{
 					const Atom& atom=atoms[id];
-					tmp_output << atom << "\n";
+					if(params.expanded_descriptors)
+					{
+						print_expanded_descriptor(atom.crad, true, tmp_output);
+						tmp_output << " " << atom.value << "\n";
+					}
+					else
+					{
+						tmp_output << atom << "\n";
+					}
 				}
 			}
 
@@ -746,17 +807,41 @@ private:
 			}
 			std::ostringstream tmp_output;
 			enabled_output_of_ContactValue_graphics()=false;
-			if(params.inter_residue)
+			if(params.expanded_descriptors)
 			{
-				tmp_output << "residue1 residue2 area dist tags adjuncts\n";
+				if(params.inter_residue)
+				{
+					tmp_output << "chn1 resi1 ic1 resn1 chn2 resi2 ic2 resn2 area dist tags adjuncts\n";
+				}
+				else
+				{
+					tmp_output << "chn1 resi1 ic1 atmi1 al1 resn1 atmn1 chn2 resi2 ic2 atmi2 al2 resn2 atmn2 area dist tags adjuncts\n";
+				}
 			}
 			else
 			{
-				tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+				if(params.inter_residue)
+				{
+					tmp_output << "residue1 residue2 area dist tags adjuncts\n";
+				}
+				else
+				{
+					tmp_output << "atom1 atom2 area dist tags adjuncts\n";
+				}
 			}
 			for(std::map<ChainResidueAtomDescriptorsPair, ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
 			{
-				tmp_output << it->first << " " << it->second << "\n";
+				if(params.expanded_descriptors)
+				{
+					print_expanded_descriptor(it->first.a, !params.inter_residue, tmp_output);
+					tmp_output << " ";
+					print_expanded_descriptor(it->first.b, !params.inter_residue, tmp_output);
+					tmp_output << " " << it->second << "\n";
+				}
+				else
+				{
+					tmp_output << it->first << " " << it->second << "\n";
+				}
 			}
 			enabled_output_of_ContactValue_graphics()=true;
 
