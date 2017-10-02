@@ -611,14 +611,13 @@ private:
 		bool print;
 		bool reversed_sorting;
 		bool expanded_descriptors;
-		std::size_t sort_column;
 		std::size_t limit;
+		std::string sort_column;
 
 		CommandParametersForGenericTablePrinting() :
 			print(false),
 			reversed_sorting(false),
 			expanded_descriptors(false),
-			sort_column(std::numeric_limits<std::size_t>::max()),
 			limit(std::numeric_limits<std::size_t>::max())
 		{
 		}
@@ -853,8 +852,8 @@ private:
 		static void print_nice_columns(
 				std::istream& input,
 				std::ostream& output,
-				const bool first_row_is_title=false,
-				const std::size_t sort_column=std::numeric_limits<std::size_t>::max(),
+				const bool first_row_is_title,
+				const std::string& sort_column_name,
 				const bool reverse_sorted=false,
 				const std::size_t limit_rows=std::numeric_limits<std::size_t>::max())
 		{
@@ -922,6 +921,19 @@ private:
 				return;
 			}
 
+			std::size_t sort_column=std::numeric_limits<std::size_t>::max();
+			if(first_row_is_title && !sort_column_name.empty())
+			{
+				bool found=false;
+				for(std::size_t j=0;j<rows[0].size() && !found;j++)
+				{
+					if(rows[0][j]==sort_column_name)
+					{
+						sort_column=j;
+						found=true;
+					}
+				}
+			}
 
 			if(sort_column>=widths.size())
 			{
