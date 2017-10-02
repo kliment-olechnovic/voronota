@@ -204,6 +204,10 @@ public:
 			{
 				command_rename_selection_of_contacts(input, output_for_log);
 			}
+			else if(record.verb=="print-history")
+			{
+				command_print_history(input, output_for_log);
+			}
 			else
 			{
 				throw std::runtime_error(std::string("Unrecognized command."));
@@ -1813,6 +1817,57 @@ private:
 		selection_manager_.set_contacts_selection(names[1], ids);
 		selection_manager_.delete_contacts_selection(names[0]);
 		output << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
+	}
+
+	void command_print_history(std::istringstream& input, std::ostream& output) const
+	{
+		assert_contacts_availability();
+
+		bool successful_only=false;
+		std::size_t last=0;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="successful")
+			{
+				successful_only=true;
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="last")
+			{
+				input >> last;
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		if(last==0 || last>commands_history_.size())
+		{
+			for(std::vector<CommandRecord>::const_iterator it=commands_history_.begin();it!=commands_history_.end();++it)
+			{
+				if(!successful_only || it->successful)
+				{
+					output << it->command << "\n";
+				}
+			}
+		}
+		else
+		{
+			std::vector<std::string> commands;
+			for(std::vector<CommandRecord>::const_reverse_iterator it=commands_history_.rbegin();it!=commands_history_.rend() && commands.size()<last;++it)
+			{
+				if(!successful_only || it->successful)
+				{
+					commands.push_back(it->command);
+				}
+			}
+			for(std::vector<std::string>::const_reverse_iterator it=commands.rbegin();it!=commands.rend();++it)
+			{
+				output << (*it) << "\n";
+			}
+		}
 	}
 
 	std::vector<Atom> atoms_;
