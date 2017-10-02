@@ -610,13 +610,13 @@ private:
 	{
 		bool print;
 		bool sorted;
-		bool sorted_reversed;
+		bool reversed;
 		std::size_t sort_column;
 
 		CommandParametersForGenericTablePrinting() :
 			print(false),
 			sorted(false),
-			sorted_reversed(false),
+			reversed(false),
 			sort_column(0)
 		{
 		}
@@ -637,7 +637,7 @@ private:
 			{
 				print=true;
 				sorted=true;
-				sorted_reversed=true;
+				reversed=true;
 				input >> sort_column;
 			}
 			else
@@ -661,7 +661,7 @@ private:
 			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
 			if(!parent_read)
 			{
-				if(type=="inter-residue-print")
+				if(type=="inter-residue-printing")
 				{
 					inter_residue=true;
 				}
@@ -680,6 +680,7 @@ private:
 		static void print_atoms(
 				const std::vector<Atom>& atoms,
 				const std::set<std::size_t>& ids,
+				const CommandParametersForGenericTablePrinting& params,
 				std::ostream& output)
 		{
 			std::ostringstream tmp_output;
@@ -693,14 +694,23 @@ private:
 					tmp_output << atom << "\n";
 				}
 			}
+
 			std::istringstream tmp_input(tmp_output.str());
-			print_nice_columns(tmp_input, output);
+			if(params.sorted)
+			{
+				print_nice_columns(tmp_input, output, params.sort_column, params.reversed, true);
+			}
+			else
+			{
+				print_nice_columns(tmp_input, output);
+			}
 		}
 
 		static void print_contacts(
 				const std::vector<Atom>& atoms,
 				const std::vector<Contact>& contacts,
 				const std::set<std::size_t>& ids,
+				const CommandParametersForContactsTablePrinting& params,
 				std::ostream& output)
 		{
 			std::map<ChainResidueAtomDescriptorsPair, ContactValue> map_for_output;
@@ -712,13 +722,27 @@ private:
 					const Contact& contact=contacts[id];
 					if(contact.ids[0]<atoms.size() && contact.ids[1]<atoms.size())
 					{
-						if(contact.solvent())
+						if(params.inter_residue)
 						{
-							map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, ChainResidueAtomDescriptor::solvent())].add(contact.value);
+							if(contact.solvent())
+							{
+								map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), ChainResidueAtomDescriptor::solvent())].add(contact.value);
+							}
+							else
+							{
+								map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), atoms[contact.ids[1]].crad.without_atom())].add(contact.value);
+							}
 						}
 						else
 						{
-							map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad)].add(contact.value);
+							if(contact.solvent())
+							{
+								map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, ChainResidueAtomDescriptor::solvent())]=contact.value;
+							}
+							else
+							{
+								map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad)]=contact.value;
+							}
 						}
 					}
 				}
@@ -731,8 +755,16 @@ private:
 				tmp_output << it->first << " " << it->second << "\n";
 			}
 			enabled_output_of_ContactValue_graphics()=true;
+
 			std::istringstream tmp_input(tmp_output.str());
-			print_nice_columns(tmp_input, output);
+			if(params.sorted)
+			{
+				print_nice_columns(tmp_input, output, params.sort_column, params.reversed, true);
+			}
+			else
+			{
+				print_nice_columns(tmp_input, output);
+			}
 		}
 
 	private:
@@ -1317,7 +1349,7 @@ private:
 
 		if(parameters_for_printing.print)
 		{
-			TablePrinting::print_atoms(atoms_, ids, output_for_content);
+			TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
 		}
 
 		{
@@ -1598,7 +1630,7 @@ private:
 
 		if(parameters_for_printing.print)
 		{
-			TablePrinting::print_contacts(atoms_, contacts_, ids, output_for_content);
+			TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
 		}
 
 		{
