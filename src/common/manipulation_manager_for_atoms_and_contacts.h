@@ -48,8 +48,8 @@ public:
 	};
 
 	ManipulationManagerForAtomsAndContacts() :
-		need_sync_atoms_selections_with_dispaly_states_(false),
-		need_sync_contacts_selections_with_dispaly_states_(false)
+		need_sync_atoms_selections_with_display_states_(false),
+		need_sync_contacts_selections_with_display_states_(false)
 	{
 	}
 
@@ -83,7 +83,7 @@ public:
 		if(id<atoms_display_states_.size())
 		{
 			atoms_display_states_[id].visible=visible;
-			need_sync_atoms_selections_with_dispaly_states_=true;
+			need_sync_atoms_selections_with_display_states_=true;
 		}
 	}
 
@@ -92,7 +92,7 @@ public:
 		if(id<atoms_display_states_.size())
 		{
 			atoms_display_states_[id].marked=marked;
-			need_sync_atoms_selections_with_dispaly_states_=true;
+			need_sync_atoms_selections_with_display_states_=true;
 		}
 	}
 
@@ -101,7 +101,7 @@ public:
 		if(id<atoms_display_states_.size())
 		{
 			atoms_display_states_[id].color=(color & 0xFFFFFF);
-			need_sync_atoms_selections_with_dispaly_states_=true;
+			need_sync_atoms_selections_with_display_states_=true;
 		}
 	}
 
@@ -110,7 +110,7 @@ public:
 		if(id<contacts_display_states_.size())
 		{
 			contacts_display_states_[id].visible=visible;
-			need_sync_contacts_selections_with_dispaly_states_=true;
+			need_sync_contacts_selections_with_display_states_=true;
 		}
 	}
 
@@ -119,7 +119,7 @@ public:
 		if(id<contacts_display_states_.size())
 		{
 			contacts_display_states_[id].marked=marked;
-			need_sync_contacts_selections_with_dispaly_states_=true;
+			need_sync_contacts_selections_with_display_states_=true;
 		}
 	}
 
@@ -128,7 +128,7 @@ public:
 		if(id<contacts_display_states_.size())
 		{
 			contacts_display_states_[id].color=(color & 0xFFFFFF);
-			need_sync_contacts_selections_with_dispaly_states_=true;
+			need_sync_contacts_selections_with_display_states_=true;
 		}
 	}
 
@@ -1103,7 +1103,7 @@ private:
 
 	void sync_atoms_selections_with_display_states(const bool force=false)
 	{
-		if((need_sync_atoms_selections_with_dispaly_states_ || force) && !atoms_display_states_.empty())
+		if((need_sync_atoms_selections_with_display_states_ || force) && !atoms_display_states_.empty())
 		{
 			std::set<std::size_t> ids_visible;
 			std::set<std::size_t> ids_marked;
@@ -1138,12 +1138,12 @@ private:
 				selection_manager_.set_atoms_selection("_marked", ids_marked);
 			}
 		}
-		need_sync_atoms_selections_with_dispaly_states_=false;
+		need_sync_atoms_selections_with_display_states_=false;
 	}
 
 	void sync_contacts_selections_with_display_states(const bool force=false)
 	{
-		if((need_sync_contacts_selections_with_dispaly_states_ || force) && !contacts_display_states_.empty())
+		if((need_sync_contacts_selections_with_display_states_ || force) && !contacts_display_states_.empty())
 		{
 			std::set<std::size_t> ids_visible;
 			std::set<std::size_t> ids_marked;
@@ -1178,7 +1178,7 @@ private:
 				selection_manager_.set_contacts_selection("_marked", ids_marked);
 			}
 		}
-		need_sync_contacts_selections_with_dispaly_states_=false;
+		need_sync_contacts_selections_with_display_states_=false;
 	}
 
 	void sync_selections_with_display_states()
@@ -1993,8 +1993,8 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 	std::vector<CommandRecord> commands_history_;
-	bool need_sync_atoms_selections_with_dispaly_states_;
-	bool need_sync_contacts_selections_with_dispaly_states_;
+	bool need_sync_atoms_selections_with_display_states_;
+	bool need_sync_contacts_selections_with_display_states_;
 };
 
 }
