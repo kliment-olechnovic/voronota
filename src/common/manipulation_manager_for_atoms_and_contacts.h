@@ -36,7 +36,7 @@ public:
 		std::string output_log;
 		std::string output_error;
 
-		CommandRecord(const std::string& command) :
+		explicit CommandRecord(const std::string& command) :
 			command(command),
 			successful(false),
 			changed_atoms(false),
@@ -1055,11 +1055,6 @@ private:
 		}
 	}
 
-	void assert_atoms_selection_availability(const std::string& name) const
-	{
-		assert_atoms_selections_availability(std::vector<std::string>(1, name));
-	}
-
 	void assert_contacts_availability() const
 	{
 		if(contacts_.empty())
@@ -1085,11 +1080,6 @@ private:
 				throw std::runtime_error(std::string("Invalid contacts selection name '")+names[i]+"'.");
 			}
 		}
-	}
-
-	void assert_contacts_selection_availability(const std::string& name) const
-	{
-		assert_contacts_selections_availability(std::vector<std::string>(1, name));
 	}
 
 	void reset_atoms(std::vector<Atom>& atoms)
