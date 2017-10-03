@@ -28,11 +28,21 @@ public:
 	{
 		std::string command;
 		bool successful;
+		bool changed_atoms;
+		bool changed_contacts;
+		bool changed_atoms_display_states;
+		bool changed_contacts_display_states;
 		std::string verb;
 		std::string output_log;
 		std::string output_error;
 
-		CommandRecord(const std::string& command) : command(command), successful(false)
+		CommandRecord(const std::string& command) :
+			command(command),
+			successful(false),
+			changed_atoms(false),
+			changed_contacts(false),
+			changed_atoms_display_states(false),
+			changed_contacts_display_states(false)
 		{
 		}
 	};
@@ -142,11 +152,11 @@ public:
 			input >> std::ws;
 			if(record.verb=="load-atoms")
 			{
-				command_load_atoms(input, output_for_log);
+				command_load_atoms(input, output_for_log, record.changed_atoms);
 			}
 			else if(record.verb=="restrict-atoms")
 			{
-				command_restrict_atoms(input, output_for_log);
+				command_restrict_atoms(input, output_for_log, record.changed_atoms);
 			}
 			else if(record.verb=="save-atoms")
 			{
@@ -158,7 +168,7 @@ public:
 			}
 			else if(record.verb=="view-atoms")
 			{
-				command_view_atoms(input, output_for_log);
+				command_view_atoms(input, output_for_log, record.changed_atoms_display_states);
 			}
 			else if(record.verb=="print-atoms")
 			{
@@ -182,7 +192,7 @@ public:
 			}
 			else if(record.verb=="construct-contacts")
 			{
-				command_construct_contacts(input, output_for_log);
+				command_construct_contacts(input, output_for_log, record.changed_contacts);
 			}
 			else if(record.verb=="save-contacts")
 			{
@@ -190,7 +200,7 @@ public:
 			}
 			else if(record.verb=="load-contacts")
 			{
-				command_load_contacts(input, output_for_log);
+				command_load_contacts(input, output_for_log, record.changed_contacts);
 			}
 			else if(record.verb=="select-contacts")
 			{
@@ -198,7 +208,7 @@ public:
 			}
 			else if(record.verb=="view-contacts")
 			{
-				command_view_contacts(input, output_for_log);
+				command_view_contacts(input, output_for_log, record.changed_contacts_display_states);
 			}
 			else if(record.verb=="print-contacts")
 			{
@@ -248,12 +258,12 @@ public:
 		if(!command.empty())
 		{
 			output << "> " << command << std::endl;
-			const CommandRecord& ch=execute(command, output_for_content);
+			const CommandRecord& record=execute(command, output_for_content);
 			output << output_for_content.str();
-			output << ch.output_log;
-			if(!ch.output_error.empty())
+			output << record.output_log;
+			if(!record.output_error.empty())
 			{
-				output << "Error: " << ch.output_error << "\n";
+				output << "Error: " << record.output_error << "\n";
 			}
 			output << std::endl;
 		}
@@ -628,16 +638,16 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="sorted")
+			if(type=="sort")
 			{
 				input >> sort_column;
 			}
-			else if(type=="sorted-reversed")
+			else if(type=="sort-r")
 			{
 				reversed_sorting=true;
 				input >> sort_column;
 			}
-			else if(type=="expanded")
+			else if(type=="expand")
 			{
 				expanded_descriptors=true;
 			}
@@ -1204,7 +1214,7 @@ private:
 		sync_contacts_selections_with_display_states();
 	}
 
-	void command_load_atoms(std::istringstream& input, std::ostream& output)
+	void command_load_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
 	{
 		ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
 		std::string atoms_file;
@@ -1312,6 +1322,8 @@ private:
 			else
 			{
 				reset_atoms(atoms);
+				changed_atoms=true;
+
 				output << "Read atoms from file '" << atoms_file << "' (";
 				SummaryOfAtoms::collect_summary(atoms_).print(output);
 				output << ")\n";
@@ -1323,7 +1335,7 @@ private:
 		}
 	}
 
-	void command_restrict_atoms(std::istringstream& input, std::ostream& output)
+	void command_restrict_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
 	{
 		assert_atoms_availability();
 
@@ -1346,22 +1358,32 @@ private:
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
 		}
 
-		std::vector<Atom> atoms;
-		atoms.reserve(ids.size());
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		if(ids.size()<atoms_.size())
 		{
-			atoms.push_back(atoms_.at(*it));
+			std::vector<Atom> atoms;
+			atoms.reserve(ids.size());
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				atoms.push_back(atoms_.at(*it));
+			}
+
+			const SummaryOfAtoms old_summary=SummaryOfAtoms::collect_summary(atoms_);
+
+			reset_atoms(atoms);
+			changed_atoms=true;
+
+			output << "Restricted atoms from (";
+			old_summary.print(output);
+			output << ") to (";
+			SummaryOfAtoms::collect_summary(atoms_).print(output);
+			output << ")\n";
 		}
-
-		const SummaryOfAtoms old_summary=SummaryOfAtoms::collect_summary(atoms_);
-
-		reset_atoms(atoms);
-
-		output << "Restricted atoms from (";
-		old_summary.print(output);
-		output << ") to (";
-		SummaryOfAtoms::collect_summary(atoms_).print(output);
-		output << ")\n";
+		else
+		{
+			output << "No need to restrict because all atoms were selected (";
+			SummaryOfAtoms::collect_summary(atoms_).print(output);
+			output << ")\n";
+		}
 	}
 
 	void command_save_atoms(std::istringstream& input, std::ostream& output) const
@@ -1443,7 +1465,7 @@ private:
 		}
 	}
 
-	void command_view_atoms(std::istringstream& input, std::ostream& output_for_log)
+	void command_view_atoms(std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
 	{
 		assert_atoms_availability();
 
@@ -1473,6 +1495,7 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
+			changed_atoms_display_states=true;
 			sync_atoms_selections_with_display_states(true);
 		}
 
@@ -1587,7 +1610,7 @@ private:
 		output << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_construct_contacts(std::istringstream& input, std::ostream& output)
+	void command_construct_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
 	{
 		assert_atoms_availability();
 
@@ -1645,6 +1668,7 @@ private:
 		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
 		{
 			reset_contacts(bundle_of_contact_information.contacts);
+			changed_contacts=true;
 
 			if(construct_bundle_of_contact_information.calculate_volumes)
 			{
@@ -1710,7 +1734,7 @@ private:
 		}
 	}
 
-	void command_load_contacts(std::istringstream& input, std::ostream& output)
+	void command_load_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
 	{
 		assert_atoms_availability();
 
@@ -1740,6 +1764,7 @@ private:
 		if(!contacts.empty())
 		{
 			reset_contacts(contacts);
+			changed_contacts=true;
 
 			output << "Read contacts from file '" << file << "' (";
 			SummaryOfContacts::collect_summary(contacts_).print(output);
@@ -1793,7 +1818,7 @@ private:
 		}
 	}
 
-	void command_view_contacts(std::istringstream& input, std::ostream& output_for_log)
+	void command_view_contacts(std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
 	{
 		assert_contacts_availability();
 
@@ -1823,6 +1848,7 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
+			changed_contacts_display_states=true;
 			sync_contacts_selections_with_display_states(true);
 		}
 

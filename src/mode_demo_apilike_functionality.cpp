@@ -29,12 +29,12 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	manager.execute_plainly("select-contacts", std::cout);
 	manager.execute_plainly("load-contacts file 'tmp/plain_contacts.txt'", std::cout);
 	manager.execute_plainly("select-contacts use '{atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1}' name cs1", std::cout);
-	manager.execute_plainly("print-contacts use '{selection cs1}' sorted-reversed area", std::cout);
-	manager.execute_plainly("print-contacts use '{no-solvent min-seq-sep 2}' sorted-reversed area limit 3 expanded", std::cout);
-	manager.execute_plainly("print-contacts use '{no-solvent min-seq-sep 2}' sorted-reversed area limit 3 expanded inter-residue", std::cout);
+	manager.execute_plainly("print-contacts use '{selection cs1}' sort-r area", std::cout);
+	manager.execute_plainly("print-contacts use '{no-solvent min-seq-sep 2}' sort-r area limit 3 expand", std::cout);
+	manager.execute_plainly("print-contacts use '{no-solvent min-seq-sep 2}' sort-r area limit 3 expand inter-residue", std::cout);
 	manager.execute_plainly("select-atoms use '{match r<64>&A<C,N,O,CA,CB>}' name as1", std::cout);
-	manager.execute_plainly("print-atoms use '{selection as1}' sorted tags", std::cout);
-	manager.execute_plainly("print-atoms use '{match r<64>&A<C,N,O,CA,CB>}' sorted atmn expanded", std::cout);
+	manager.execute_plainly("print-atoms use '{selection as1}' sort tags", std::cout);
+	manager.execute_plainly("print-atoms use '{match r<64>&A<C,N,O,CA,CB>}' sort atmn expand", std::cout);
 	manager.execute_plainly("rename-selection-of-atoms nosel1 nodel2", std::cout);
 	manager.execute_plainly("delete-selections-of-contacts nosel1", std::cout);
 	manager.execute_plainly("list-selections-of-atoms", std::cout);
