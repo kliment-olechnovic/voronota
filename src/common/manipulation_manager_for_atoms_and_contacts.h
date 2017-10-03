@@ -1097,10 +1097,9 @@ private:
 		contacts_.swap(contacts);
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size());
-		for(std::size_t i=0;i<contacts_.size();i++)
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
 		{
-			DisplayState& ds=contacts_display_states_[i];
-			ds.drawable=(!contacts_[i].value.graphics.empty());
+			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
 		selection_manager_.set_contacts(&contacts_);
 	}
@@ -1662,6 +1661,11 @@ private:
 			}
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
+
+			for(std::size_t i=0;i<contacts_display_states_.size();i++)
+			{
+				contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
+			}
 
 			output << "Constructed contacts (";
 			SummaryOfContacts::collect_summary(contacts_).print(output);
