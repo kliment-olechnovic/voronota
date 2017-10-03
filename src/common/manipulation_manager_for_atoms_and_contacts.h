@@ -152,9 +152,17 @@ public:
 			{
 				command_save_atoms(input, output_for_log);
 			}
-			else if(record.verb=="query-atoms")
+			else if(record.verb=="select-atoms")
 			{
-				command_query_atoms(input, output_for_log, output_for_content);
+				command_select_atoms(input, output_for_log);
+			}
+			else if(record.verb=="view-atoms")
+			{
+				command_view_atoms(input, output_for_log);
+			}
+			else if(record.verb=="print-atoms")
+			{
+				command_print_atoms(input, output_for_log, output_for_content);
 			}
 			else if(record.verb=="list-selections-of-atoms")
 			{
@@ -184,9 +192,17 @@ public:
 			{
 				command_load_contacts(input, output_for_log);
 			}
-			else if(record.verb=="query-contacts")
+			else if(record.verb=="select-contacts")
 			{
-				command_query_contacts(input, output_for_log, output_for_content);
+				command_select_contacts(input, output_for_log);
+			}
+			else if(record.verb=="view-contacts")
+			{
+				command_view_contacts(input, output_for_log);
+			}
+			else if(record.verb=="print-contacts")
+			{
+				command_print_contacts(input, output_for_log, output_for_content);
 			}
 			else if(record.verb=="list-selections-of-contacts")
 			{
@@ -503,17 +519,16 @@ private:
 		}
 	};
 
-	struct CommandParametersForGenericQueryProcessing
+	struct CommandParametersForGenericViewing
 	{
 		bool show;
 		bool hide;
 		bool mark;
 		bool unmark;
 		int color_int;
-		std::string name;
 		std::string color;
 
-		CommandParametersForGenericQueryProcessing() :
+		CommandParametersForGenericViewing() :
 			show(false),
 			hide(false),
 			mark(false),
@@ -524,19 +539,7 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="name")
-			{
-				input >> name;
-				if(name.empty())
-				{
-					throw std::runtime_error(std::string("Selection name cannot be empty."));
-				}
-				else if(name[0]=='_')
-				{
-					throw std::runtime_error(std::string("Explicitly specified selection name cannot start with '_'."));
-				}
-			}
-			else if(type=="show")
+			if(type=="show")
 			{
 				if(hide)
 				{
@@ -611,14 +614,12 @@ private:
 
 	struct CommandParametersForGenericTablePrinting
 	{
-		bool print;
 		bool reversed_sorting;
 		bool expanded_descriptors;
 		std::size_t limit;
 		std::string sort_column;
 
 		CommandParametersForGenericTablePrinting() :
-			print(false),
 			reversed_sorting(false),
 			expanded_descriptors(false),
 			limit(std::numeric_limits<std::size_t>::max())
@@ -627,29 +628,21 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="print")
+			if(type=="sorted")
 			{
-				print=true;
-			}
-			else if(type=="print-sorted")
-			{
-				print=true;
 				input >> sort_column;
 			}
-			else if(type=="print-sorted-reversed")
+			else if(type=="sorted-reversed")
 			{
-				print=true;
 				reversed_sorting=true;
 				input >> sort_column;
 			}
-			else if(type=="print-expanded")
+			else if(type=="expanded")
 			{
-				print=true;
 				expanded_descriptors=true;
 			}
-			else if(type=="print-limit")
+			else if(type=="limit")
 			{
-				print=true;
 				input >> limit;
 			}
 			else
@@ -673,9 +666,8 @@ private:
 			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
 			if(!parent_read)
 			{
-				if(type=="print-inter-residue")
+				if(type=="inter-residue")
 				{
-					print=true;
 					inter_residue=true;
 				}
 				else
@@ -1409,13 +1401,54 @@ private:
 		}
 	}
 
-	void command_query_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content)
+	void command_select_atoms(std::istringstream& input, std::ostream& output_for_log)
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericQueryProcessing parameters_for_processing;
-		CommandParametersForGenericTablePrinting parameters_for_printing;
+		std::string name;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="name")
+			{
+				CommandInputParsingUtilities::read_string_considering_quotes(input, name);
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		{
+			output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+
+		if(!name.empty())
+		{
+			selection_manager_.set_atoms_selection(name, ids);
+			output_for_log << "Set selection of atoms named '" << name << "'\n";
+		}
+	}
+
+	void command_view_atoms(std::istringstream& input, std::ostream& output_for_log)
+	{
+		assert_atoms_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericViewing parameters_for_viewing;
 
 		while(input.good())
 		{
@@ -1425,7 +1458,43 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
-			else if(parameters_for_processing.read(guard.token, input))
+			else if(parameters_for_viewing.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
+		{
+			sync_atoms_selections_with_display_states(true);
+		}
+
+		{
+			output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	{
+		assert_atoms_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericTablePrinting parameters_for_printing;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
@@ -1442,26 +1511,12 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		if(parameters_for_processing.apply_to_display_states(ids, atoms_display_states_))
-		{
-			sync_atoms_selections_with_display_states(true);
-		}
-
-		if(parameters_for_printing.print)
-		{
-			TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
-		}
+		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
 
 		{
 			output_for_log << "Summary of atoms: ";
 			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
 			output_for_log << "\n";
-		}
-
-		if(!parameters_for_processing.name.empty())
-		{
-			selection_manager_.set_atoms_selection(parameters_for_processing.name, ids);
-			output_for_log << "Set selection of atoms named '" << parameters_for_processing.name << "'\n";
 		}
 	}
 
@@ -1696,13 +1751,54 @@ private:
 		}
 	}
 
-	void command_query_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content)
+	void command_select_contacts(std::istringstream& input, std::ostream& output_for_log)
 	{
 		assert_contacts_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericQueryProcessing parameters_for_processing;
-		CommandParametersForContactsTablePrinting parameters_for_printing;
+		std::string name;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="name")
+			{
+				CommandInputParsingUtilities::read_string_considering_quotes(input, name);
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		{
+			output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+
+		if(!name.empty())
+		{
+			selection_manager_.set_contacts_selection(name, ids);
+			output_for_log << "Set selection of contacts named '" << name << "'\n";
+		}
+	}
+
+	void command_view_contacts(std::istringstream& input, std::ostream& output_for_log)
+	{
+		assert_contacts_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericViewing parameters_for_viewing;
 
 		while(input.good())
 		{
@@ -1712,7 +1808,43 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
-			else if(parameters_for_processing.read(guard.token, input))
+			else if(parameters_for_viewing.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
+		{
+			sync_contacts_selections_with_display_states(true);
+		}
+
+		{
+			output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	{
+		assert_contacts_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForContactsTablePrinting parameters_for_printing;
+
+		while(input.good())
+		{
+			CommandInputParsingGuard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
@@ -1729,26 +1861,12 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		if(parameters_for_processing.apply_to_display_states(ids, contacts_display_states_))
-		{
-			sync_contacts_selections_with_display_states(true);
-		}
-
-		if(parameters_for_printing.print)
-		{
-			TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
-		}
+		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
 
 		{
 			output_for_log << "Summary of contacts: ";
 			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
 			output_for_log << "\n";
-		}
-
-		if(!parameters_for_processing.name.empty())
-		{
-			selection_manager_.set_contacts_selection(parameters_for_processing.name, ids);
-			output_for_log << "Set selection of contacts named '" << parameters_for_processing.name << "'\n";
 		}
 	}
 
