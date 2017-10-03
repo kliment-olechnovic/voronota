@@ -1074,6 +1074,10 @@ private:
 		atoms_.swap(atoms);
 		atoms_display_states_.clear();
 		atoms_display_states_.resize(atoms_.size());
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			atoms_display_states_[i].drawable=true;
+		}
 		contacts_.clear();
 		contacts_display_states_.clear();
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
