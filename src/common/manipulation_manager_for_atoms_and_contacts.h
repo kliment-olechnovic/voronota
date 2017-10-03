@@ -252,23 +252,6 @@ public:
 		return commands_history_.back();
 	}
 
-	void execute_plainly(const std::string& command, std::ostream& output)
-	{
-		std::ostringstream output_for_content;
-		if(!command.empty())
-		{
-			output << "> " << command << std::endl;
-			const CommandRecord& record=execute(command, output_for_content);
-			output << output_for_content.str();
-			output << record.output_log;
-			if(!record.output_error.empty())
-			{
-				output << "Error: " << record.output_error << "\n";
-			}
-			output << std::endl;
-		}
-	}
-
 private:
 	struct SummaryOfAtoms
 	{
