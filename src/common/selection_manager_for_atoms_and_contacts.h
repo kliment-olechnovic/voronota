@@ -101,7 +101,8 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues=false) const
+
+	std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues=false) const
 	{
 		if(atoms().empty())
 		{
@@ -113,7 +114,7 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_atoms(true, std::set<std::size_t>(), read_expression_from_string<test_atom>(expression_string), false);
+				result=select_atoms(from_ids.empty(), from_ids, read_expression_from_string<test_atom>(expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
@@ -121,6 +122,11 @@ public:
 			}
 			return (full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
 		}
+	}
+
+	std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues=false) const
+	{
+		return select_atoms(std::set<std::size_t>(), expression_string, full_residues);
 	}
 
 	void set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
@@ -163,7 +169,7 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues=false) const
+	std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues=false) const
 	{
 		if(contacts().empty())
 		{
@@ -175,7 +181,7 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_contacts(true, std::set<std::size_t>(), read_expression_from_string<test_contact>(expression_string), false);
+				result=select_contacts(from_ids.empty(), from_ids, read_expression_from_string<test_contact>(expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
@@ -183,6 +189,11 @@ public:
 			}
 			return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
 		}
+	}
+
+	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues=false) const
+	{
+		return select_contacts(std::set<std::size_t>(), expression_string, full_residues);
 	}
 
 	void set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)

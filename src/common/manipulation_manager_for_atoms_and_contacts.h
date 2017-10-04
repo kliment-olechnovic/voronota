@@ -47,9 +47,7 @@ public:
 		}
 	};
 
-	ManipulationManagerForAtomsAndContacts() :
-		need_sync_atoms_selections_with_display_states_(false),
-		need_sync_contacts_selections_with_display_states_(false)
+	ManipulationManagerForAtomsAndContacts()
 	{
 	}
 
@@ -78,68 +76,14 @@ public:
 		return commands_history_;
 	}
 
-	void set_atom_visible(const std::size_t id, const bool visible)
-	{
-		if(id<atoms_display_states_.size())
-		{
-			atoms_display_states_[id].visible=visible;
-			need_sync_atoms_selections_with_display_states_=true;
-		}
-	}
-
-	void set_atom_marked(const std::size_t id, const bool marked)
-	{
-		if(id<atoms_display_states_.size())
-		{
-			atoms_display_states_[id].marked=marked;
-			need_sync_atoms_selections_with_display_states_=true;
-		}
-	}
-
-	void set_atom_color(const std::size_t id, const unsigned int color)
-	{
-		if(id<atoms_display_states_.size())
-		{
-			atoms_display_states_[id].color=(color & 0xFFFFFF);
-			need_sync_atoms_selections_with_display_states_=true;
-		}
-	}
-
-	void set_contact_visible(const std::size_t id, const bool visible)
-	{
-		if(id<contacts_display_states_.size())
-		{
-			contacts_display_states_[id].visible=visible;
-			need_sync_contacts_selections_with_display_states_=true;
-		}
-	}
-
-	void set_contact_marked(const std::size_t id, const bool marked)
-	{
-		if(id<contacts_display_states_.size())
-		{
-			contacts_display_states_[id].marked=marked;
-			need_sync_contacts_selections_with_display_states_=true;
-		}
-	}
-
-	void set_contact_color(const std::size_t id, const unsigned int color)
-	{
-		if(id<contacts_display_states_.size())
-		{
-			contacts_display_states_[id].color=(color & 0xFFFFFF);
-			need_sync_contacts_selections_with_display_states_=true;
-		}
-	}
-
 	const CommandRecord& execute(const std::string& command, std::ostream& output_for_content)
 	{
 		CommandRecord record(command);
 
-		sync_selections_with_display_states();
-
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
+
+		sync_selections_with_display_states_if_needed(command);
 
 		try
 		{
@@ -483,12 +427,15 @@ private:
 	{
 		std::string type_for_expression;
 		std::string type_for_full_residues;
+		std::string type_for_forced_id;
 		std::string expression;
 		bool full_residues;
+		std::set<std::size_t> forced_ids;
 
 		CommandParametersForGenericSelecting() :
 			type_for_expression("use"),
 			type_for_full_residues("full-residues"),
+			type_for_forced_id("id"),
 			expression("{}"),
 			full_residues(false)
 		{
@@ -503,6 +450,15 @@ private:
 			else if(type==type_for_full_residues)
 			{
 				full_residues=true;
+			}
+			else if(type==type_for_forced_id)
+			{
+				std::size_t id=0;
+				input >> id;
+				if(!input.fail())
+				{
+					forced_ids.insert(id);
+				}
 			}
 			else
 			{
@@ -1104,9 +1060,9 @@ private:
 		selection_manager_.set_contacts(&contacts_);
 	}
 
-	void sync_atoms_selections_with_display_states(const bool force=false)
+	void sync_atoms_selections_with_display_states()
 	{
-		if((need_sync_atoms_selections_with_display_states_ || force) && !atoms_display_states_.empty())
+		if(!atoms_display_states_.empty())
 		{
 			std::set<std::size_t> ids_visible;
 			std::set<std::size_t> ids_marked;
@@ -1141,12 +1097,11 @@ private:
 				selection_manager_.set_atoms_selection("_marked", ids_marked);
 			}
 		}
-		need_sync_atoms_selections_with_display_states_=false;
 	}
 
-	void sync_contacts_selections_with_display_states(const bool force=false)
+	void sync_contacts_selections_with_display_states()
 	{
-		if((need_sync_contacts_selections_with_display_states_ || force) && !contacts_display_states_.empty())
+		if(!contacts_display_states_.empty())
 		{
 			std::set<std::size_t> ids_visible;
 			std::set<std::size_t> ids_marked;
@@ -1181,13 +1136,15 @@ private:
 				selection_manager_.set_contacts_selection("_marked", ids_marked);
 			}
 		}
-		need_sync_contacts_selections_with_display_states_=false;
 	}
 
-	void sync_selections_with_display_states()
+	void sync_selections_with_display_states_if_needed(const std::string& command)
 	{
-		sync_atoms_selections_with_display_states();
-		sync_contacts_selections_with_display_states();
+		if(command.find("selection")!=std::string::npos)
+		{
+			sync_atoms_selections_with_display_states();
+			sync_contacts_selections_with_display_states();
+		}
 	}
 
 	void command_load_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
@@ -1328,7 +1285,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.size()<4)
 		{
 			throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -1422,7 +1379,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -1463,7 +1420,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -1472,7 +1429,6 @@ private:
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
 			changed_atoms_display_states=true;
-			sync_atoms_selections_with_display_states(true);
 		}
 
 		{
@@ -1504,7 +1460,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -1597,6 +1553,7 @@ private:
 		CommandParametersForGenericSelecting render_parameters_for_selecting;
 		render_parameters_for_selecting.type_for_expression="render-use";
 		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
+		render_parameters_for_selecting.type_for_forced_id="render-id";
 		render_parameters_for_selecting.expression="{min-seq-sep 1}";
 		render_parameters_for_selecting.full_residues=false;
 
@@ -1657,7 +1614,7 @@ private:
 			std::set<std::size_t> draw_ids;
 			if(render)
 			{
-				draw_ids=selection_manager_.select_contacts(render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
+				draw_ids=selection_manager_.select_contacts(render_parameters_for_selecting.forced_ids, render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
 			}
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
@@ -1780,7 +1737,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -1821,7 +1778,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -1830,7 +1787,6 @@ private:
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
 			changed_contacts_display_states=true;
-			sync_contacts_selections_with_display_states(true);
 		}
 
 		{
@@ -1862,7 +1818,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -2001,8 +1957,6 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 	std::vector<CommandRecord> commands_history_;
-	bool need_sync_atoms_selections_with_display_states_;
-	bool need_sync_contacts_selections_with_display_states_;
 };
 
 }
