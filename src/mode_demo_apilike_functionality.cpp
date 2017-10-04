@@ -16,7 +16,7 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 	std::ostringstream output_for_content;
 
 	output << "\n> " << command << std::endl;
-	const common::ManipulationManagerForAtomsAndContacts::CommandRecord& record=manager.execute(command, output_for_content);
+	const common::ManipulationManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, output_for_content);
 	output << output_for_content.str();
 	output << record.output_log;
 	if(!record.output_error.empty())
@@ -64,5 +64,5 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	execute(manager, "list-selections-of-atoms");
 	execute(manager, "list-selections-of-contacts");
 	execute(manager, "print-history last 5");
-	execute(manager, "print-history successful");
+	execute(manager, "print-history");
 }
