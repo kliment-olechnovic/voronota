@@ -84,7 +84,7 @@ public:
 		return (!verb.empty() && allowed_command_verbs_.set_of_all.count(verb)>0);
 	}
 
-	const CommandRecord execute(const std::string& command, std::ostream& output_for_content)
+	const CommandRecord execute(const std::string& command, std::ostream* output_for_content=0)
 	{
 		CommandRecord record(command);
 
@@ -182,7 +182,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.print_history)
 				{
-					command_print_history(input, output_for_log);
+					command_print_history(input, output_for_log, output_for_content);
 				}
 				else
 				{
@@ -1523,7 +1523,7 @@ private:
 		}
 	}
 
-	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
 	{
 		assert_atoms_availability();
 
@@ -1551,7 +1551,8 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
+		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
+		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, available_output_for_content);
 
 		{
 			output_for_log << "Summary of atoms: ";
@@ -1881,7 +1882,7 @@ private:
 		}
 	}
 
-	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
 	{
 		assert_contacts_availability();
 
@@ -1909,7 +1910,8 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
+		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
+		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, available_output_for_content);
 
 		{
 			output_for_log << "Summary of contacts: ";
@@ -1985,7 +1987,7 @@ private:
 		output << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_print_history(std::istringstream& input, std::ostream& output) const
+	void command_print_history(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
 	{
 		assert_contacts_availability();
 
@@ -2003,11 +2005,13 @@ private:
 			guard.on_iteration_end(input);
 		}
 
+		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
+
 		if(last==0 || last>commands_history_.size())
 		{
 			for(std::vector<CommandRecord>::const_iterator it=commands_history_.begin();it!=commands_history_.end();++it)
 			{
-				output << it->command << "\n";
+				available_output_for_content << it->command << "\n";
 			}
 		}
 		else
@@ -2019,7 +2023,7 @@ private:
 			}
 			for(std::vector<std::string>::const_reverse_iterator it=commands.rbegin();it!=commands.rend();++it)
 			{
-				output << (*it) << "\n";
+				available_output_for_content << (*it) << "\n";
 			}
 		}
 	}
