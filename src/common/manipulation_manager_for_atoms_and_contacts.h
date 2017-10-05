@@ -283,8 +283,9 @@ private:
 		}
 	};
 
-	struct SummaryOfAtoms
+	class SummaryOfAtoms
 	{
+	public:
 		std::size_t number_total;
 		double volume;
 
@@ -338,8 +339,9 @@ private:
 		}
 	};
 
-	struct SummaryOfContacts
+	class SummaryOfContacts
 	{
+	public:
 		std::size_t number_total;
 		std::size_t number_drawable;
 		double area;
@@ -393,8 +395,9 @@ private:
 		}
 	};
 
-	struct CommandParametersForGenericSelecting
+	class CommandParametersForGenericSelecting
 	{
+	public:
 		std::string type_for_expression;
 		std::string type_for_full_residues;
 		std::string type_for_forced_id;
@@ -438,8 +441,9 @@ private:
 		}
 	};
 
-	struct CommandParametersForGenericViewing
+	class CommandParametersForGenericViewing
 	{
+	public:
 		bool show;
 		bool hide;
 		bool mark;
@@ -531,8 +535,9 @@ private:
 		}
 	};
 
-	struct CommandParametersForGenericTablePrinting
+	class CommandParametersForGenericTablePrinting
 	{
+	public:
 		bool reversed_sorting;
 		bool expanded_descriptors;
 		std::size_t limit;
@@ -572,8 +577,9 @@ private:
 		}
 	};
 
-	struct CommandParametersForContactsTablePrinting : public CommandParametersForGenericTablePrinting
+	class CommandParametersForContactsTablePrinting : public CommandParametersForGenericTablePrinting
 	{
+	public:
 		bool inter_residue;
 
 		CommandParametersForContactsTablePrinting() : inter_residue(false)
