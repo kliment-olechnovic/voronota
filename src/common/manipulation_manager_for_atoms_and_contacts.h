@@ -2,6 +2,7 @@
 #define COMMON_MANIPULATION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
 
 #include "selection_manager_for_atoms_and_contacts.h"
+#include "command_input_utilities.h"
 
 namespace common
 {
@@ -392,122 +393,6 @@ private:
 		}
 	};
 
-	struct CommandInputParsingUtilities
-	{
-		static void assert_absence_of_input(std::istream& input)
-		{
-			if((input >> std::ws).good())
-			{
-				throw std::runtime_error(std::string("No additional parameters allowed."));
-			}
-		}
-
-		static void read_string_considering_quotes(std::istream& input, std::string& output, const bool allow_empty_value_in_quotes=false)
-		{
-			input >> std::ws;
-			const int c=input.peek();
-			if(c==std::char_traits<char>::to_int_type('"') || c==std::char_traits<char>::to_int_type('\''))
-			{
-				input.get();
-				output.clear();
-				std::getline(input, output, std::char_traits<char>::to_char_type(c));
-				if(!allow_empty_value_in_quotes && output.empty())
-				{
-					throw std::runtime_error(std::string("Empty string in quotes."));
-				}
-			}
-			else
-			{
-				input >> output;
-			}
-		}
-
-		static void read_all_strings_considering_quotes(std::istream& input, std::vector<std::string>& output, const bool allow_empty_value_in_quotes=false)
-		{
-			std::vector<std::string> result;
-			while((input >> std::ws).good())
-			{
-				std::string str;
-				read_string_considering_quotes(input, str, allow_empty_value_in_quotes);
-				if(!input.fail())
-				{
-					result.push_back(str);
-				}
-			}
-			output.swap(result);
-		}
-
-		static unsigned int read_color_integer_from_string(const std::string& color_str)
-		{
-			unsigned int color_int=0;
-			if(!color_str.empty())
-			{
-				std::istringstream color_input(color_str);
-				color_input >> std::hex >> color_int;
-				if(color_input.fail() || color_int>0xFFFFFF)
-				{
-					throw std::runtime_error(std::string("Invalid hex color string '")+color_str+"'.");
-				}
-			}
-			return color_int;
-		}
-	};
-
-	struct CommandInputParsingGuard
-	{
-		std::string token;
-		bool token_validated;
-
-		CommandInputParsingGuard() : token_validated(false)
-		{
-		}
-
-		void on_iteration_start(std::istream& input)
-		{
-			input >> std::ws;
-			input >> token;
-			if(input.fail() || token.empty())
-			{
-				throw std::runtime_error(std::string("Missing command parameters."));
-			}
-		}
-
-		void on_token_processed(std::istream& input)
-		{
-			if(input.fail())
-			{
-				if(!token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid value for the command parameter '")+token+"'.");
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-			}
-			else
-			{
-				token_validated=true;
-			}
-		}
-
-		void on_iteration_end(std::istream& input) const
-		{
-			if(!token_validated)
-			{
-				if(!token.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command parameter '")+token+"'.");
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid command."));
-				}
-			}
-			input >> std::ws;
-		}
-	};
-
 	struct CommandParametersForGenericSelecting
 	{
 		std::string type_for_expression;
@@ -530,7 +415,7 @@ private:
 		{
 			if(type==type_for_expression)
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, expression);
+				CommandInputUtilities::read_string_considering_quotes(input, expression);
 			}
 			else if(type==type_for_full_residues)
 			{
@@ -608,7 +493,7 @@ private:
 			else if(type=="color")
 			{
 				input >> color;
-				color_int=CommandInputParsingUtilities::read_color_integer_from_string(color);
+				color_int=CommandInputUtilities::read_color_integer_from_string(color);
 			}
 			else
 			{
@@ -1243,16 +1128,16 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="file")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, atoms_file);
+				CommandInputUtilities::read_string_considering_quotes(input, atoms_file);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="radii-file")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, radii_file);
+				CommandInputUtilities::read_string_considering_quotes(input, radii_file);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="default-radius")
@@ -1267,7 +1152,7 @@ private:
 			}
 			else if(guard.token=="format")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, format);
+				CommandInputUtilities::read_string_considering_quotes(input, format);
 				guard.on_token_processed(input);
 			}
 			else if(guard.token=="include-heteroatoms")
@@ -1361,7 +1246,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(parameters_for_selecting.read(guard.token, input))
 			{
@@ -1412,11 +1297,11 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="file")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
@@ -1450,11 +1335,11 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="name")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, name);
+				CommandInputUtilities::read_string_considering_quotes(input, name);
 				guard.on_token_processed(input);
 			}
 			else if(parameters_for_selecting.read(guard.token, input))
@@ -1492,7 +1377,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(parameters_for_selecting.read(guard.token, input))
 			{
@@ -1532,7 +1417,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(parameters_for_selecting.read(guard.token, input))
 			{
@@ -1563,7 +1448,7 @@ private:
 
 	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
-		CommandInputParsingUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(input);
 		assert_atoms_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
 		output << "Selections of atoms:\n";
@@ -1577,7 +1462,7 @@ private:
 
 	void command_delete_all_selections_of_atoms(std::istringstream& input, std::ostream& output)
 	{
-		CommandInputParsingUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(input);
 		assert_atoms_selections_availability();
 		selection_manager_.delete_atoms_selections();
 		output << "Removed all selections of atoms\n";
@@ -1588,7 +1473,7 @@ private:
 		assert_atoms_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.empty())
 		{
@@ -1615,7 +1500,7 @@ private:
 		assert_atoms_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.size()!=2)
 		{
@@ -1645,7 +1530,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="probe")
 			{
@@ -1728,11 +1613,11 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="file")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
@@ -1766,11 +1651,11 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="file")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, file);
+				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
@@ -1809,11 +1694,11 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="name")
 			{
-				CommandInputParsingUtilities::read_string_considering_quotes(input, name);
+				CommandInputUtilities::read_string_considering_quotes(input, name);
 				guard.on_token_processed(input);
 			}
 			else if(parameters_for_selecting.read(guard.token, input))
@@ -1851,7 +1736,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(parameters_for_selecting.read(guard.token, input))
 			{
@@ -1891,7 +1776,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(parameters_for_selecting.read(guard.token, input))
 			{
@@ -1922,7 +1807,7 @@ private:
 
 	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
-		CommandInputParsingUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(input);
 		assert_contacts_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
 		output << "Selections of contacts:\n";
@@ -1936,7 +1821,7 @@ private:
 
 	void command_delete_all_selections_of_contacts(std::istringstream& input, std::ostream& output)
 	{
-		CommandInputParsingUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(input);
 		assert_contacts_selections_availability();
 		selection_manager_.delete_contacts_selections();
 		output << "Removed all selections of contacts\n";
@@ -1947,7 +1832,7 @@ private:
 		assert_contacts_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.empty())
 		{
@@ -1974,7 +1859,7 @@ private:
 		assert_contacts_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputParsingUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
 
 		if(names.size()!=2)
 		{
@@ -1995,7 +1880,7 @@ private:
 
 		while(input.good())
 		{
-			CommandInputParsingGuard guard;
+			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
 			if(guard.token=="last")
 			{
