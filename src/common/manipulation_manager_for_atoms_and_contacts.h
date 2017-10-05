@@ -416,7 +416,39 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type==type_for_expression)
+			if((type.find("{")==0 || type.find("(")==0) && type_for_expression=="use")
+			{
+				std::streamsize start_pos=input.tellg();
+				std::streamsize end_pos=start_pos;
+				bool end_found=false;
+				while(input.good())
+				{
+					const int c=input.peek();
+					if(c==std::char_traits<char>::to_int_type('}') || c==std::char_traits<char>::to_int_type(')'))
+					{
+						end_pos=input.tellg();
+						end_found=true;
+					}
+					input.get();
+				}
+				if(end_found)
+				{
+					input.clear();
+					input.seekg(start_pos);
+					std::vector<char> buf(end_pos-start_pos+2, 0);
+					input.read(&buf[0], buf.size()-1);
+					expression=type+std::string(&buf[0]);
+				}
+				else if(type.find_last_of("})")==(type.size()-1))
+				{
+					expression=type;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid selection expression in command."));
+				}
+			}
+			else if(type==type_for_expression)
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, expression);
 			}
