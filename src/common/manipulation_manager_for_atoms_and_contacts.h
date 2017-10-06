@@ -19,8 +19,9 @@ public:
 		bool visible;
 		bool marked;
 		unsigned int color;
+		bool updated;
 
-		DisplayState() : drawable(false), visible(false), marked(false), color(0x7F7F7F)
+		DisplayState() : drawable(false), visible(false), marked(false), color(0x7F7F7F), updated(false)
 		{
 		}
 	};
@@ -480,7 +481,7 @@ private:
 		bool hide;
 		bool mark;
 		bool unmark;
-		int color_int;
+		unsigned int color_int;
 		std::string color;
 
 		CommandParametersForGenericViewing() :
@@ -542,29 +543,37 @@ private:
 		{
 			if(show || hide || mark || unmark || !color.empty())
 			{
+				bool updated=false;
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					if((*it)<display_states.size())
 					{
 						DisplayState& ds=display_states[*it];
+						ds.updated=false;
 						if(ds.drawable)
 						{
 							if(show || hide)
 							{
+								ds.updated=(ds.updated || (ds.visible!=show));
 								ds.visible=show;
 							}
+
 							if(mark || unmark)
 							{
+								ds.updated=(ds.updated || (ds.marked!=mark));
 								ds.marked=mark;
 							}
+
 							if(!color.empty())
 							{
+								ds.updated=(ds.updated || (ds.color!=color_int));
 								ds.color=color_int;
 							}
 						}
+						updated=(updated || ds.updated);
 					}
 				}
-				return true;
+				return updated;
 			}
 			return false;
 		}
