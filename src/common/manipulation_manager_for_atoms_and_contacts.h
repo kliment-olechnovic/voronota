@@ -20,7 +20,7 @@ public:
 		bool marked;
 		unsigned int color;
 
-		DisplayState() : drawable(false), visible(false), marked(false), color(0x777777)
+		DisplayState() : drawable(false), visible(false), marked(false), color(0x7F7F7F)
 		{
 		}
 	};
@@ -547,17 +547,20 @@ private:
 					if((*it)<display_states.size())
 					{
 						DisplayState& ds=display_states[*it];
-						if(show || hide)
+						if(ds.drawable)
 						{
-							ds.visible=(show && ds.drawable);
-						}
-						if(mark || unmark)
-						{
-							ds.marked=mark;
-						}
-						if(!color.empty())
-						{
-							ds.color=color_int;
+							if(show || hide)
+							{
+								ds.visible=show;
+							}
+							if(mark || unmark)
+							{
+								ds.marked=mark;
+							}
+							if(!color.empty())
+							{
+								ds.color=color_int;
+							}
 						}
 					}
 				}
@@ -1036,15 +1039,20 @@ private:
 			throw std::runtime_error(std::string("No atoms to set."));
 		}
 		atoms_.swap(atoms);
+		reset_atoms_display_states();
+		contacts_.clear();
+		contacts_display_states_.clear();
+		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
+	}
+
+	void reset_atoms_display_states()
+	{
 		atoms_display_states_.clear();
 		atoms_display_states_.resize(atoms_.size());
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)
 		{
 			atoms_display_states_[i].drawable=true;
 		}
-		contacts_.clear();
-		contacts_display_states_.clear();
-		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
 	void reset_contacts(std::vector<Contact>& contacts)
@@ -1059,13 +1067,18 @@ private:
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
 		}
 		contacts_.swap(contacts);
+		reset_contacts_display_states();
+		selection_manager_.set_contacts(&contacts_);
+	}
+
+	void reset_contacts_display_states()
+	{
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size());
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
 		{
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
-		selection_manager_.set_contacts(&contacts_);
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -1628,10 +1641,7 @@ private:
 
 			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
 
-			for(std::size_t i=0;i<contacts_display_states_.size();i++)
-			{
-				contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
-			}
+			reset_contacts_display_states();
 
 			output << "Constructed contacts (";
 			SummaryOfContacts::collect_summary(contacts_).print(output);
