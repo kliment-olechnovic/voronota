@@ -15,14 +15,32 @@ public:
 
 	struct DisplayState
 	{
-		bool drawable;
-		bool visible;
-		bool marked;
-		unsigned int color;
-		bool updated;
-
-		DisplayState() : drawable(false), visible(false), marked(false), color(0x7F7F7F), updated(false)
+		struct Visual
 		{
+			bool visible;
+			unsigned int color;
+
+			Visual() : visible(false), color(0x7F7F7F)
+			{
+			}
+		};
+
+		bool drawable;
+		bool marked;
+		std::vector<Visual> visuals;
+
+		DisplayState() : drawable(false), marked(false)
+		{
+		}
+
+		bool visible() const
+		{
+			bool result=false;
+			for(std::size_t i=0;i<visuals.size() && !result;i++)
+			{
+				result=(result || visuals[i].visible);
+			}
+			return result;
 		}
 	};
 
@@ -483,6 +501,7 @@ private:
 		bool unmark;
 		unsigned int color_int;
 		std::string color;
+		std::set<std::size_t> visual_ids_;
 
 		CommandParametersForGenericViewing() :
 			show(false),
@@ -541,41 +560,54 @@ private:
 
 		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
 		{
+			bool updated=false;
 			if(show || hide || mark || unmark || !color.empty())
 			{
-				bool updated=false;
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					if((*it)<display_states.size())
 					{
 						DisplayState& ds=display_states[*it];
-						ds.updated=false;
 						if(ds.drawable)
 						{
-							if(show || hide)
-							{
-								ds.updated=(ds.updated || (ds.visible!=show));
-								ds.visible=show;
-							}
-
 							if(mark || unmark)
 							{
-								ds.updated=(ds.updated || (ds.marked!=mark));
+								updated=(updated || (ds.marked!=mark));
 								ds.marked=mark;
 							}
 
-							if(!color.empty())
+							for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
 							{
-								ds.updated=(ds.updated || (ds.color!=color_int));
-								ds.color=color_int;
+								const std::size_t visual_id=(*jt);
+								if(visual_id<ds.visuals.size())
+								{
+									updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+								}
 							}
 						}
-						updated=(updated || ds.updated);
 					}
 				}
-				return updated;
 			}
-			return false;
+			return updated;
+		}
+
+		bool apply_to_display_state_visual(DisplayState::Visual& visual) const
+		{
+			bool updated=false;
+
+			if(show || hide)
+			{
+				updated=(updated || (visual.visible!=show));
+				visual.visible=show;
+			}
+
+			if(!color.empty())
+			{
+				updated=(updated || (visual.color!=color_int));
+				visual.color=color_int;
+			}
+
+			return updated;
 		}
 	};
 
@@ -1099,7 +1131,7 @@ private:
 			for(std::size_t i=0;i<atoms_display_states_.size();i++)
 			{
 				const DisplayState& ds=atoms_display_states_[i];
-				if(ds.visible)
+				if(ds.visible())
 				{
 					ids_visible.insert(i);
 				}
@@ -1138,7 +1170,7 @@ private:
 			for(std::size_t i=0;i<contacts_display_states_.size();i++)
 			{
 				const DisplayState& ds=contacts_display_states_[i];
-				if(ds.visible)
+				if(ds.visible())
 				{
 					ids_visible.insert(i);
 				}
