@@ -576,12 +576,22 @@ private:
 								ds.marked=mark;
 							}
 
-							for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+							if(visual_ids_.empty())
 							{
-								const std::size_t visual_id=(*jt);
-								if(visual_id<ds.visuals.size())
+								for(std::size_t i=0;i<ds.visuals.size();i++)
 								{
-									updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+									updated=(updated || apply_to_display_state_visual(ds.visuals[i]));
+								}
+							}
+							else
+							{
+								for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+								{
+									const std::size_t visual_id=(*jt);
+									if(visual_id<ds.visuals.size())
+									{
+										updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+									}
 								}
 							}
 						}
