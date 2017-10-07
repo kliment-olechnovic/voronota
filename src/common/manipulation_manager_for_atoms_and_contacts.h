@@ -589,7 +589,7 @@ private:
 		{
 		}
 
-		void assert() const
+		void assert_state() const
 		{
 			if(hide && show)
 			{
@@ -1723,7 +1723,7 @@ private:
 		parameters_for_viewing.mark=positive;
 		parameters_for_viewing.unmark=!positive;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
@@ -1775,7 +1775,7 @@ private:
 		parameters_for_viewing.show=positive;
 		parameters_for_viewing.hide=!positive;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
@@ -1832,7 +1832,7 @@ private:
 		CommandParametersForGenericViewing parameters_for_viewing;
 		parameters_for_viewing.color=parameters_for_coloring.color;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
@@ -2217,7 +2217,7 @@ private:
 		parameters_for_viewing.mark=positive;
 		parameters_for_viewing.unmark=!positive;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
@@ -2269,7 +2269,7 @@ private:
 		parameters_for_viewing.show=positive;
 		parameters_for_viewing.hide=!positive;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
@@ -2326,7 +2326,7 @@ private:
 		CommandParametersForGenericViewing parameters_for_viewing;
 		parameters_for_viewing.color=parameters_for_coloring.color;
 
-		parameters_for_viewing.assert();
+		parameters_for_viewing.assert_state();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
