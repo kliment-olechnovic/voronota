@@ -1410,7 +1410,7 @@ private:
 
 	void sync_selections_with_display_states_if_needed(const std::string& command)
 	{
-		if(command.find("selection")!=std::string::npos)
+		if(command.find("selection")!=std::string::npos || command.find("_marked")!=std::string::npos || command.find("_visible")!=std::string::npos)
 		{
 			sync_atoms_selections_with_display_states();
 			sync_contacts_selections_with_display_states();

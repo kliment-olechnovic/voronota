@@ -53,11 +53,11 @@ void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
 	execute(manager, "select-contacts");
 	execute(manager, "load-contacts file 'tmp/plain_contacts.txt'");
 	execute(manager, "select-contacts {atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1} name cs1");
-	execute(manager, "print-contacts {selection cs1} sort-r area");
+	execute(manager, "print-contacts {sel cs1} sort-r area");
 	execute(manager, "print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand");
 	execute(manager, "print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand inter-residue");
 	execute(manager, "select-atoms {match r<64>&A<C,N,O,CA,CB>} name as1");
-	execute(manager, "print-atoms {selection as1} sort tags");
+	execute(manager, "print-atoms {sel as1} sort tags");
 	execute(manager, "print-atoms {match r<64>&A<C,N,O,CA,CB>} sort atmn expand");
 	execute(manager, "rename-selection-of-atoms nosel1 nodel2");
 	execute(manager, "delete-selections-of-contacts nosel1");
