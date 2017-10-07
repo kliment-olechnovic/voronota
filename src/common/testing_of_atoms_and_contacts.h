@@ -428,11 +428,11 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="selection")
+			else if(token=="sel")
 			{
 				input >> tester.name_of_base_selection_of_atoms;
 			}
-			else if(token=="selection-of-contacts")
+			else if(token=="sel-of-contacts")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
@@ -509,7 +509,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="selection")
+			else if(token=="sel")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
