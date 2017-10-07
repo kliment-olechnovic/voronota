@@ -150,9 +150,25 @@ public:
 				{
 					command_select_atoms(input, output_for_log);
 				}
-				else if(record.verb==allowed_command_verbs_.view_atoms)
+				else if(record.verb==allowed_command_verbs_.mark_atoms)
 				{
-					command_view_atoms(input, output_for_log, record.changed_atoms_display_states);
+					command_mark_atoms(true, input, output_for_log, record.changed_atoms_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.unmark_atoms)
+				{
+					command_mark_atoms(false, input, output_for_log, record.changed_atoms_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.show_atoms)
+				{
+					command_show_atoms(true, input, output_for_log, record.changed_atoms_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.hide_atoms)
+				{
+					command_show_atoms(false, input, output_for_log, record.changed_atoms_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.color_atoms)
+				{
+					command_color_atoms(input, output_for_log, record.changed_atoms_display_states);
 				}
 				else if(record.verb==allowed_command_verbs_.print_atoms)
 				{
@@ -194,9 +210,25 @@ public:
 				{
 					command_select_contacts(input, output_for_log);
 				}
-				else if(record.verb==allowed_command_verbs_.view_contacts)
+				else if(record.verb==allowed_command_verbs_.mark_contacts)
 				{
-					command_view_contacts(input, output_for_log, record.changed_contacts_display_states);
+					command_mark_contacts(true, input, output_for_log, record.changed_contacts_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.unmark_contacts)
+				{
+					command_mark_contacts(false, input, output_for_log, record.changed_contacts_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.show_contacts)
+				{
+					command_show_contacts(true, input, output_for_log, record.changed_contacts_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.hide_contacts)
+				{
+					command_show_contacts(false, input, output_for_log, record.changed_contacts_display_states);
+				}
+				else if(record.verb==allowed_command_verbs_.color_contacts)
+				{
+					command_color_contacts(input, output_for_log, record.changed_contacts_display_states);
 				}
 				else if(record.verb==allowed_command_verbs_.print_contacts)
 				{
@@ -253,7 +285,11 @@ private:
 		std::string restrict_atoms;
 		std::string save_atoms;
 		std::string select_atoms;
-		std::string view_atoms;
+		std::string mark_atoms;
+		std::string unmark_atoms;
+		std::string show_atoms;
+		std::string hide_atoms;
+		std::string color_atoms;
 		std::string print_atoms;
 		std::string list_selections_of_atoms;
 		std::string delete_all_selections_of_atoms;
@@ -264,7 +300,11 @@ private:
 		std::string save_contacts;
 		std::string load_contacts;
 		std::string select_contacts;
-		std::string view_contacts;
+		std::string mark_contacts;
+		std::string unmark_contacts;
+		std::string show_contacts;
+		std::string hide_contacts;
+		std::string color_contacts;
 		std::string print_contacts;
 		std::string list_selections_of_contacts;
 		std::string delete_all_selections_of_contacts;
@@ -279,7 +319,11 @@ private:
 			restrict_atoms("restrict-atoms"),
 			save_atoms("save-atoms"),
 			select_atoms("select-atoms"),
-			view_atoms("view-atoms"),
+			mark_atoms("mark-atoms"),
+			unmark_atoms("unmark-atoms"),
+			show_atoms("show-atoms"),
+			hide_atoms("hide-atoms"),
+			color_atoms("color-atoms"),
 			print_atoms("print-atoms"),
 			list_selections_of_atoms("list-selections-of-atoms"),
 			delete_all_selections_of_atoms("delete-all-selections-of-atoms"),
@@ -290,7 +334,11 @@ private:
 			save_contacts("save-contacts"),
 			load_contacts("load-contacts"),
 			select_contacts("select-contacts"),
-			view_contacts("view-contacts"),
+			mark_contacts("mark-contacts"),
+			unmark_contacts("unmark-contacts"),
+			show_contacts("show-contacts"),
+			hide_contacts("hide-contacts"),
+			color_contacts("color-contacts"),
 			print_contacts("print-contacts"),
 			list_selections_of_contacts("list-selections-of-contacts"),
 			delete_all_selections_of_contacts("delete-all-selections-of-contacts"),
@@ -303,7 +351,11 @@ private:
 			set_of_all.insert(restrict_atoms);
 			set_of_all.insert(save_atoms);
 			set_of_all.insert(select_atoms);
-			set_of_all.insert(view_atoms);
+			set_of_all.insert(mark_atoms);
+			set_of_all.insert(unmark_atoms);
+			set_of_all.insert(show_atoms);
+			set_of_all.insert(hide_atoms);
+			set_of_all.insert(color_atoms);
 			set_of_all.insert(print_atoms);
 			set_of_all.insert(list_selections_of_atoms);
 			set_of_all.insert(delete_all_selections_of_atoms);
@@ -314,7 +366,11 @@ private:
 			set_of_all.insert(save_contacts);
 			set_of_all.insert(load_contacts);
 			set_of_all.insert(select_contacts);
-			set_of_all.insert(view_contacts);
+			set_of_all.insert(mark_contacts);
+			set_of_all.insert(unmark_contacts);
+			set_of_all.insert(show_contacts);
+			set_of_all.insert(hide_contacts);
+			set_of_all.insert(color_contacts);
 			set_of_all.insert(print_contacts);
 			set_of_all.insert(list_selections_of_contacts);
 			set_of_all.insert(delete_all_selections_of_contacts);
@@ -517,73 +573,39 @@ private:
 	class CommandParametersForGenericViewing
 	{
 	public:
-		bool show;
-		bool hide;
 		bool mark;
 		bool unmark;
-		unsigned int color_int;
-		std::string color;
+		bool show;
+		bool hide;
+		unsigned int color;
 		std::set<std::size_t> visual_ids_;
 
 		CommandParametersForGenericViewing() :
-			show(false),
-			hide(false),
 			mark(false),
 			unmark(false),
-			color_int(0)
+			show(false),
+			hide(false),
+			color(0)
 		{
 		}
 
-		bool read(const std::string& type, std::istream& input)
+		void assert() const
 		{
-			if(type=="show")
+			if(hide && show)
 			{
-				if(hide)
-				{
-					throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-				}
-				show=true;
+				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
 			}
-			else if(type=="hide")
+
+			if(mark && unmark)
 			{
-				if(show)
-				{
-					throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-				}
-				hide=true;
+				throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
 			}
-			else if(type=="mark")
-			{
-				if(unmark)
-				{
-					throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
-				}
-				mark=true;
-			}
-			else if(type=="unmark")
-			{
-				if(mark)
-				{
-					throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
-				}
-				unmark=true;
-			}
-			else if(type=="color")
-			{
-				input >> color;
-				color_int=CommandInputUtilities::read_color_integer_from_string(color);
-			}
-			else
-			{
-				return false;
-			}
-			return true;
 		}
 
 		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
 		{
 			bool updated=false;
-			if(show || hide || mark || unmark || !color.empty())
+			if(show || hide || mark || unmark || color>0)
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -598,21 +620,24 @@ private:
 								ds.marked=mark;
 							}
 
-							if(visual_ids_.empty())
+							if(show || hide || color>0)
 							{
-								for(std::size_t i=0;i<ds.visuals.size();i++)
+								if(visual_ids_.empty())
 								{
-									updated=(updated || apply_to_display_state_visual(ds.visuals[i]));
-								}
-							}
-							else
-							{
-								for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
-								{
-									const std::size_t visual_id=(*jt);
-									if(visual_id<ds.visuals.size())
+									for(std::size_t i=0;i<ds.visuals.size();i++)
 									{
-										updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+										updated=(updated || apply_to_display_state_visual(ds.visuals[i]));
+									}
+								}
+								else
+								{
+									for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+									{
+										const std::size_t visual_id=(*jt);
+										if(visual_id<ds.visuals.size())
+										{
+											updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+										}
 									}
 								}
 							}
@@ -633,13 +658,112 @@ private:
 				visual.visible=show;
 			}
 
-			if(!color.empty())
+			if(color>0)
 			{
-				updated=(updated || (visual.color!=color_int));
-				visual.color=color_int;
+				updated=(updated || (visual.color!=color));
+				visual.color=color;
 			}
 
 			return updated;
+		}
+	};
+
+	class CommandParametersForGenericRepresentationSelecting
+	{
+	public:
+		const std::vector<std::string>& available_representations;
+		std::set<std::size_t> visual_ids_;
+
+		CommandParametersForGenericRepresentationSelecting(const std::vector<std::string>& available_representations) : available_representations(available_representations)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type=="rep")
+			{
+				std::string name;
+				input >> name;
+				bool found=false;
+				for(std::size_t i=0;i<available_representations.size() && !found;i++)
+				{
+					if(available_representations[i]==name)
+					{
+						visual_ids_.insert(i);
+						found=true;
+					}
+				}
+				if(!found)
+				{
+					throw std::runtime_error(std::string("Representation '")+name+"' does not exist.");
+				}
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
+	};
+
+	class CommandParametersForGenericColoring
+	{
+	public:
+		unsigned int color;
+
+		CommandParametersForGenericColoring() : color(0)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type.find("0x")==0)
+			{
+				color=CommandInputUtilities::read_color_integer_from_string(type);
+			}
+			else if(type=="hex")
+			{
+				std::string color_str;
+				input >> color_str;
+				color=CommandInputUtilities::read_color_integer_from_string(color_str);
+			}
+			else if(type=="red")
+			{
+				color=0xFF0000;
+			}
+			else if(type=="green")
+			{
+				color=0x00FF00;
+			}
+			else if(type=="blue")
+			{
+				color=0x0000FF;
+			}
+			else if(type=="cyan")
+			{
+				color=0x00FFFF;
+			}
+			else if(type=="magenta")
+			{
+				color=0xFF00FF;
+			}
+			else if(type=="yellow")
+			{
+				color=0xFFFF00;
+			}
+			else if(type=="white")
+			{
+				color=0xFFFFFF;
+			}
+			else if(type=="grey" || type=="gray")
+			{
+				color=0x7F7F7F;
+			}
+			else
+			{
+				return false;
+			}
+			return true;
 		}
 	};
 
@@ -1062,6 +1186,27 @@ private:
 		}
 	}
 
+	static std::set<std::size_t> filter_drawable_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& ids)
+	{
+		std::set<std::size_t> drawable_ids;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			if((*it)<display_states.size() && display_states[*it].drawable)
+			{
+				drawable_ids.insert(*it);
+			}
+		}
+		return drawable_ids;
+	}
+
+	void assert_atoms_representations_availability() const
+	{
+		if(atoms_representations_.empty())
+		{
+			throw std::runtime_error(std::string("No atoms representations available."));
+		}
+	}
+
 	void assert_atoms_availability() const
 	{
 		if(atoms_.empty())
@@ -1086,6 +1231,14 @@ private:
 			{
 				throw std::runtime_error(std::string("Invalid atoms selection name '")+names[i]+"'.");
 			}
+		}
+	}
+
+	void assert_contacts_representations_availability() const
+	{
+		if(contacts_representations_.empty())
+		{
+			throw std::runtime_error(std::string("No contacts representations available."));
 		}
 	}
 
@@ -1543,12 +1696,11 @@ private:
 		}
 	}
 
-	void command_view_atoms(std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	void command_mark_atoms(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericViewing parameters_for_viewing;
 
 		while(input.good())
 		{
@@ -1558,18 +1710,129 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
-			else if(parameters_for_viewing.read(guard.token, input))
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable atoms selected."));
+		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.mark=positive;
+		parameters_for_viewing.unmark=!positive;
+
+		parameters_for_viewing.assert();
+
+		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
+		{
+			changed_atoms_display_states=true;
+		}
+
+		{
+			output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_show_atoms(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	{
+		assert_atoms_availability();
+		assert_atoms_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representations_);
+
+		while(input.good())
+		{
+			CommandInputUtilities::Guard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_representation_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && atoms_representations_.size()>1)
+		{
+			throw std::runtime_error(std::string("Atoms representation not specified."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No atoms selected."));
+			throw std::runtime_error(std::string("No drawable atoms selected."));
 		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.show=positive;
+		parameters_for_viewing.hide=!positive;
+
+		parameters_for_viewing.assert();
+
+		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
+		{
+			changed_atoms_display_states=true;
+		}
+
+		{
+			output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_color_atoms(std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	{
+		assert_atoms_availability();
+		assert_atoms_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representations_);
+		CommandParametersForGenericColoring parameters_for_coloring;
+
+		while(input.good())
+		{
+			CommandInputUtilities::Guard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_representation_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_coloring.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+
+			guard.on_iteration_end(input);
+		}
+
+		if(parameters_for_coloring.color==0)
+		{
+			throw std::runtime_error(std::string("Atoms color not specified."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable atoms selected."));
+		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.color=parameters_for_coloring.color;
+
+		parameters_for_viewing.assert();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
@@ -1927,12 +2190,11 @@ private:
 		}
 	}
 
-	void command_view_contacts(std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	void command_mark_contacts(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
 	{
 		assert_contacts_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericViewing parameters_for_viewing;
 
 		while(input.good())
 		{
@@ -1942,18 +2204,129 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
-			else if(parameters_for_viewing.read(guard.token, input))
+			guard.on_iteration_end(input);
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable contacts selected."));
+		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.mark=positive;
+		parameters_for_viewing.unmark=!positive;
+
+		parameters_for_viewing.assert();
+
+		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
+		{
+			changed_contacts_display_states=true;
+		}
+
+		{
+			output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_show_contacts(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	{
+		assert_contacts_availability();
+		assert_contacts_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representations_);
+
+		while(input.good())
+		{
+			CommandInputUtilities::Guard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_representation_selecting.read(guard.token, input))
 			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && contacts_representations_.size()>1)
+		{
+			throw std::runtime_error(std::string("Contacts representation not specified."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No contacts selected."));
+			throw std::runtime_error(std::string("No drawable contacts selected."));
 		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.show=positive;
+		parameters_for_viewing.hide=!positive;
+
+		parameters_for_viewing.assert();
+
+		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
+		{
+			changed_contacts_display_states=true;
+		}
+
+		{
+			output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
+			output_for_log << "\n";
+		}
+	}
+
+	void command_color_contacts(std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	{
+		assert_contacts_availability();
+		assert_contacts_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representations_);
+		CommandParametersForGenericColoring parameters_for_coloring;
+
+		while(input.good())
+		{
+			CommandInputUtilities::Guard guard;
+			guard.on_iteration_start(input);
+			if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_representation_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_coloring.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+
+			guard.on_iteration_end(input);
+		}
+
+		if(parameters_for_coloring.color==0)
+		{
+			throw std::runtime_error(std::string("Contacts color not specified."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable contacts selected."));
+		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.color=parameters_for_coloring.color;
+
+		parameters_for_viewing.assert();
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
