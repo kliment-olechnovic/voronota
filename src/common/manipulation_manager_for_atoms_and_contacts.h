@@ -626,7 +626,10 @@ private:
 								{
 									for(std::size_t i=0;i<ds.visuals.size();i++)
 									{
-										updated=(updated || apply_to_display_state_visual(ds.visuals[i]));
+										if(apply_to_display_state_visual(ds.visuals[i]))
+										{
+											updated=true;
+										}
 									}
 								}
 								else
@@ -636,7 +639,10 @@ private:
 										const std::size_t visual_id=(*jt);
 										if(visual_id<ds.visuals.size())
 										{
-											updated=(updated || apply_to_display_state_visual(ds.visuals[visual_id]));
+											if(apply_to_display_state_visual(ds.visuals[visual_id]))
+											{
+												updated=true;
+											}
 										}
 									}
 								}
