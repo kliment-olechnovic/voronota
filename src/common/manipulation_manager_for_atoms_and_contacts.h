@@ -71,6 +71,16 @@ public:
 	{
 	}
 
+	const std::vector<std::string>& atoms_representations() const
+	{
+		return atoms_representations_;
+	}
+
+	const std::vector<std::string>& contacts_representations() const
+	{
+		return contacts_representations_;
+	}
+
 	const std::vector<Atom>& atoms() const
 	{
 		return atoms_;
@@ -120,7 +130,11 @@ public:
 
 			try
 			{
-				if(record.verb==allowed_command_verbs_.load_atoms)
+				if(record.verb==allowed_command_verbs_.add_representations_of_atoms)
+				{
+					command_add_representations_of_atoms(input);
+				}
+				else if(record.verb==allowed_command_verbs_.load_atoms)
 				{
 					command_load_atoms(input, output_for_log, record.changed_atoms);
 				}
@@ -159,6 +173,10 @@ public:
 				else if(record.verb==allowed_command_verbs_.rename_selection_of_atoms)
 				{
 					command_rename_selection_of_atoms(input, output_for_log);
+				}
+				else if(record.verb==allowed_command_verbs_.add_representations_of_contacts)
+				{
+					command_add_representations_of_contacts(input);
 				}
 				else if(record.verb==allowed_command_verbs_.construct_contacts)
 				{
@@ -230,6 +248,7 @@ public:
 private:
 	struct AllowedCommandVerbs
 	{
+		std::string add_representations_of_atoms;
 		std::string load_atoms;
 		std::string restrict_atoms;
 		std::string save_atoms;
@@ -240,6 +259,7 @@ private:
 		std::string delete_all_selections_of_atoms;
 		std::string delete_selections_of_atoms;
 		std::string rename_selection_of_atoms;
+		std::string add_representations_of_contacts;
 		std::string construct_contacts;
 		std::string save_contacts;
 		std::string load_contacts;
@@ -251,10 +271,10 @@ private:
 		std::string delete_selections_of_contacts;
 		std::string rename_selection_of_contacts;
 		std::string print_history;
-		std::vector<std::string> list_of_all;
 		std::set<std::string> set_of_all;
 
 		AllowedCommandVerbs() :
+			add_representations_of_atoms("add-representations-of-atoms"),
 			load_atoms("load-atoms"),
 			restrict_atoms("restrict-atoms"),
 			save_atoms("save-atoms"),
@@ -265,6 +285,7 @@ private:
 			delete_all_selections_of_atoms("delete-all-selections-of-atoms"),
 			delete_selections_of_atoms("delete-selections-of-atoms"),
 			rename_selection_of_atoms("rename-selection-of-atoms"),
+			add_representations_of_contacts("add-representations-of-contacts"),
 			construct_contacts("construct-contacts"),
 			save_contacts("save-contacts"),
 			load_contacts("load-contacts"),
@@ -277,28 +298,29 @@ private:
 			rename_selection_of_contacts("rename-selection-of-contacts"),
 			print_history("print-history")
 		{
-			list_of_all.push_back(load_atoms);
-			list_of_all.push_back(restrict_atoms);
-			list_of_all.push_back(save_atoms);
-			list_of_all.push_back(select_atoms);
-			list_of_all.push_back(view_atoms);
-			list_of_all.push_back(print_atoms);
-			list_of_all.push_back(list_selections_of_atoms);
-			list_of_all.push_back(delete_all_selections_of_atoms);
-			list_of_all.push_back(delete_selections_of_atoms);
-			list_of_all.push_back(rename_selection_of_atoms);
-			list_of_all.push_back(construct_contacts);
-			list_of_all.push_back(save_contacts);
-			list_of_all.push_back(load_contacts);
-			list_of_all.push_back(select_contacts);
-			list_of_all.push_back(view_contacts);
-			list_of_all.push_back(print_contacts);
-			list_of_all.push_back(list_selections_of_contacts);
-			list_of_all.push_back(delete_all_selections_of_contacts);
-			list_of_all.push_back(delete_selections_of_contacts);
-			list_of_all.push_back(rename_selection_of_contacts);
-			list_of_all.push_back(print_history);
-			set_of_all.insert(list_of_all.begin(), list_of_all.end());
+			set_of_all.insert(add_representations_of_atoms);
+			set_of_all.insert(load_atoms);
+			set_of_all.insert(restrict_atoms);
+			set_of_all.insert(save_atoms);
+			set_of_all.insert(select_atoms);
+			set_of_all.insert(view_atoms);
+			set_of_all.insert(print_atoms);
+			set_of_all.insert(list_selections_of_atoms);
+			set_of_all.insert(delete_all_selections_of_atoms);
+			set_of_all.insert(delete_selections_of_atoms);
+			set_of_all.insert(rename_selection_of_atoms);
+			set_of_all.insert(add_representations_of_contacts);
+			set_of_all.insert(construct_contacts);
+			set_of_all.insert(save_contacts);
+			set_of_all.insert(load_contacts);
+			set_of_all.insert(select_contacts);
+			set_of_all.insert(view_contacts);
+			set_of_all.insert(print_contacts);
+			set_of_all.insert(list_selections_of_contacts);
+			set_of_all.insert(delete_all_selections_of_contacts);
+			set_of_all.insert(delete_selections_of_contacts);
+			set_of_all.insert(rename_selection_of_contacts);
+			set_of_all.insert(print_history);
 		}
 	};
 
@@ -1029,6 +1051,17 @@ private:
 		}
 	};
 
+	static void resize_visuals_in_display_states(const std::size_t size, std::vector<DisplayState>& display_states)
+	{
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			if(display_states[i].drawable && display_states[i].visuals.size()!=size)
+			{
+				display_states[i].visuals.resize(size);
+			}
+		}
+	}
+
 	void assert_atoms_availability() const
 	{
 		if(atoms_.empty())
@@ -1104,6 +1137,12 @@ private:
 		{
 			atoms_display_states_[i].drawable=true;
 		}
+		resize_visuals_in_atoms_display_states();
+	}
+
+	void resize_visuals_in_atoms_display_states()
+	{
+		resize_visuals_in_display_states(atoms_representations_.size(), atoms_display_states_);
 	}
 
 	void reset_contacts(std::vector<Contact>& contacts)
@@ -1130,6 +1169,12 @@ private:
 		{
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
+		resize_visuals_in_contacts_display_states();
+	}
+
+	void resize_visuals_in_contacts_display_states()
+	{
+		resize_visuals_in_display_states(contacts_representations_.size(), contacts_display_states_);
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -1217,6 +1262,34 @@ private:
 			sync_atoms_selections_with_display_states();
 			sync_contacts_selections_with_display_states();
 		}
+	}
+
+	void command_add_representations_of_atoms(std::istringstream& input)
+	{
+		std::vector<std::string> names;
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+
+		if(names.empty())
+		{
+			throw std::runtime_error(std::string("No atoms representations names provided."));
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Provided atoms representations name is empty."));
+			}
+			else if(std::find(atoms_representations_.begin(), atoms_representations_.end(), name)!=atoms_representations_.end())
+			{
+				throw std::runtime_error(std::string("Atoms representation '")+name+"'already exists.");
+			}
+		}
+
+		atoms_representations_.insert(atoms_representations_.end(), names.begin(), names.end());
+
+		resize_visuals_in_atoms_display_states();
 	}
 
 	void command_load_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
@@ -1613,6 +1686,34 @@ private:
 		selection_manager_.set_atoms_selection(names[1], ids);
 		selection_manager_.delete_atoms_selection(names[0]);
 		output << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
+	}
+
+	void command_add_representations_of_contacts(std::istringstream& input)
+	{
+		std::vector<std::string> names;
+		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+
+		if(names.empty())
+		{
+			throw std::runtime_error(std::string("No contacts representations names provided."));
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Provided contacts representations name is empty."));
+			}
+			else if(std::find(contacts_representations_.begin(), contacts_representations_.end(), name)!=contacts_representations_.end())
+			{
+				throw std::runtime_error(std::string("Contacts representation '")+name+"'already exists.");
+			}
+		}
+
+		contacts_representations_.insert(contacts_representations_.end(), names.begin(), names.end());
+
+		resize_visuals_in_contacts_display_states();
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
@@ -2013,6 +2114,8 @@ private:
 	}
 
 	AllowedCommandVerbs allowed_command_verbs_;
+	std::vector<std::string> atoms_representations_;
+	std::vector<std::string> contacts_representations_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
