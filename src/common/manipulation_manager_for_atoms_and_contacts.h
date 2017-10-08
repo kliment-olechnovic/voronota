@@ -518,7 +518,7 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if((type.find("{")==0 || type.find("(")==0) && type_for_expression=="use")
+			if(type.find_first_of("({")==0 && type_for_expression=="use")
 			{
 				std::streamsize start_pos=input.tellg();
 				std::streamsize end_pos=start_pos;
@@ -685,7 +685,7 @@ private:
 		const std::vector<std::string>& available_representations;
 		std::set<std::size_t> visual_ids_;
 
-		CommandParametersForGenericRepresentationSelecting(const std::vector<std::string>& available_representations) : available_representations(available_representations)
+		explicit CommandParametersForGenericRepresentationSelecting(const std::vector<std::string>& available_representations) : available_representations(available_representations)
 		{
 		}
 
@@ -728,7 +728,7 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type.find("0x")==0)
+			if(type.size()>2 && type.compare(0, 2, "0x")==0)
 			{
 				color=CommandInputUtilities::read_color_integer_from_string(type);
 			}
