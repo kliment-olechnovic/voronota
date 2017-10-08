@@ -101,6 +101,11 @@ public:
 		return contacts_display_states_;
 	}
 
+	const SelectionManagerForAtomsAndContacts& selection_manager() const
+	{
+		return selection_manager_;
+	}
+
 	const std::vector<CommandRecord>& history() const
 	{
 		return commands_history_;
