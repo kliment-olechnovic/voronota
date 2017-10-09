@@ -1311,7 +1311,10 @@ private:
 
 		for(std::size_t i=0;i<display_states.size();i++)
 		{
-			display_states[i].visuals[representation_id].implemented=(display_states[i].drawable && statuses[i]);
+			if(display_states[i].drawable)
+			{
+				display_states[i].visuals[representation_id].implemented=statuses[i];
+			}
 		}
 
 		return true;
