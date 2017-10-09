@@ -1317,14 +1317,30 @@ private:
 		return true;
 	}
 
-	static std::set<std::size_t> filter_drawable_implemented_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& ids)
+	static std::set<std::size_t> filter_drawable_implemented_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids)
 	{
 		std::set<std::size_t> drawable_ids;
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			if((*it)<display_states.size() && display_states[*it].implemented())
+			if((*it)<display_states.size() && display_states[*it].drawable)
 			{
-				drawable_ids.insert(*it);
+				bool good=false;
+				if(visual_ids.empty())
+				{
+					good=display_states[*it].implemented();
+				}
+				else
+				{
+					for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end() && !good;++jt)
+					{
+						good=(good || ((*jt)<display_states[*it].visuals.size() && display_states[*it].visuals[*jt].implemented));
+					}
+				}
+
+				if(good)
+				{
+					drawable_ids.insert(*it);
+				}
 			}
 		}
 		return drawable_ids;
@@ -1818,7 +1834,10 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				atoms_display_states_,
+				std::set<std::size_t>(),
+				selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -1870,7 +1889,10 @@ private:
 			throw std::runtime_error(std::string("Atoms representation not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				atoms_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -1928,7 +1950,10 @@ private:
 			throw std::runtime_error(std::string("Atoms color not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				atoms_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -2285,7 +2310,10 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				contacts_display_states_,
+				std::set<std::size_t>(),
+				selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
@@ -2337,7 +2365,10 @@ private:
 			throw std::runtime_error(std::string("Contacts representation not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				contacts_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
@@ -2395,7 +2426,10 @@ private:
 			throw std::runtime_error(std::string("Contacts color not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				contacts_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
