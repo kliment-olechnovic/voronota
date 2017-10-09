@@ -67,6 +67,12 @@ public:
 		}
 	};
 
+	struct CommandOutputSink
+	{
+		std::ostringstream output_stream;
+		std::set<std::size_t> output_set_of_ids;
+	};
+
 	ManipulationManagerForAtomsAndContacts()
 	{
 	}
@@ -101,11 +107,6 @@ public:
 		return contacts_display_states_;
 	}
 
-	const SelectionManagerForAtomsAndContacts& selection_manager() const
-	{
-		return selection_manager_;
-	}
-
 	const std::vector<CommandRecord>& history() const
 	{
 		return commands_history_;
@@ -119,7 +120,7 @@ public:
 		return (!verb.empty() && allowed_command_verbs_.set_of_all.count(verb)>0);
 	}
 
-	const CommandRecord execute(const std::string& command, std::ostream* output_for_content=0)
+	CommandRecord execute(const std::string& command, CommandOutputSink& sink)
 	{
 		CommandRecord record(command);
 
@@ -153,7 +154,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.select_atoms)
 				{
-					command_select_atoms(input, output_for_log);
+					command_select_atoms(input, output_for_log, sink.output_set_of_ids);
 				}
 				else if(record.verb==allowed_command_verbs_.mark_atoms)
 				{
@@ -177,7 +178,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.print_atoms)
 				{
-					command_print_atoms(input, output_for_log, output_for_content);
+					command_print_atoms(input, output_for_log, sink.output_stream);
 				}
 				else if(record.verb==allowed_command_verbs_.list_selections_of_atoms)
 				{
@@ -213,7 +214,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.select_contacts)
 				{
-					command_select_contacts(input, output_for_log);
+					command_select_contacts(input, output_for_log, sink.output_set_of_ids);
 				}
 				else if(record.verb==allowed_command_verbs_.mark_contacts)
 				{
@@ -237,7 +238,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.print_contacts)
 				{
-					command_print_contacts(input, output_for_log, output_for_content);
+					command_print_contacts(input, output_for_log, sink.output_stream);
 				}
 				else if(record.verb==allowed_command_verbs_.list_selections_of_contacts)
 				{
@@ -257,7 +258,7 @@ public:
 				}
 				else if(record.verb==allowed_command_verbs_.print_history)
 				{
-					command_print_history(input, output_for_log, output_for_content);
+					command_print_history(input, sink.output_stream);
 				}
 				else
 				{
@@ -280,6 +281,12 @@ public:
 		}
 
 		return record;
+	}
+
+	CommandRecord execute(const std::string& command)
+	{
+		CommandOutputSink sink;
+		return execute(command, sink);
 	}
 
 private:
@@ -1665,7 +1672,7 @@ private:
 		}
 	}
 
-	void command_select_atoms(std::istringstream& input, std::ostream& output_for_log)
+	void command_select_atoms(std::istringstream& input, std::ostream& output_for_log, std::set<std::size_t>& output_for_ids)
 	{
 		assert_atoms_availability();
 
@@ -1688,7 +1695,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No atoms selected."));
@@ -1705,6 +1712,8 @@ private:
 			selection_manager_.set_atoms_selection(name, ids);
 			output_for_log << "Set selection of atoms named '" << name << "'\n";
 		}
+
+		output_for_ids.swap(ids);
 	}
 
 	void command_mark_atoms(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
@@ -1857,7 +1866,7 @@ private:
 		}
 	}
 
-	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
+	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
 	{
 		assert_atoms_availability();
 
@@ -1885,8 +1894,7 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
-		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, available_output_for_content);
+		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
 
 		{
 			output_for_log << "Summary of atoms: ";
@@ -1895,7 +1903,7 @@ private:
 		}
 	}
 
-	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output) const
 	{
 		CommandInputUtilities::assert_absence_of_input(input);
 		assert_atoms_selections_availability();
@@ -2159,7 +2167,7 @@ private:
 		}
 	}
 
-	void command_select_contacts(std::istringstream& input, std::ostream& output_for_log)
+	void command_select_contacts(std::istringstream& input, std::ostream& output_for_log, std::set<std::size_t>& output_for_ids)
 	{
 		assert_contacts_availability();
 
@@ -2182,7 +2190,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
@@ -2199,6 +2207,8 @@ private:
 			selection_manager_.set_contacts_selection(name, ids);
 			output_for_log << "Set selection of contacts named '" << name << "'\n";
 		}
+
+		output_for_ids.swap(ids);
 	}
 
 	void command_mark_contacts(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
@@ -2351,7 +2361,7 @@ private:
 		}
 	}
 
-	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
+	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
 	{
 		assert_contacts_availability();
 
@@ -2379,8 +2389,7 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
-		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, available_output_for_content);
+		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
 
 		{
 			output_for_log << "Summary of contacts: ";
@@ -2389,7 +2398,7 @@ private:
 		}
 	}
 
-	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output) const
 	{
 		CommandInputUtilities::assert_absence_of_input(input);
 		assert_contacts_selections_availability();
@@ -2456,7 +2465,7 @@ private:
 		output << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_print_history(std::istringstream& input, std::ostream& output_for_log, std::ostream* output_for_content) const
+	void command_print_history(std::istringstream& input, std::ostream& output_for_content) const
 	{
 		assert_contacts_availability();
 
@@ -2474,13 +2483,11 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		std::ostream& available_output_for_content=(output_for_content!=0 ? *output_for_content : output_for_log);
-
 		if(last==0 || last>commands_history_.size())
 		{
 			for(std::vector<CommandRecord>::const_iterator it=commands_history_.begin();it!=commands_history_.end();++it)
 			{
-				available_output_for_content << it->command << "\n";
+				output_for_content << it->command << "\n";
 			}
 		}
 		else
@@ -2492,7 +2499,7 @@ private:
 			}
 			for(std::vector<std::string>::const_reverse_iterator it=commands.rbegin();it!=commands.rend();++it)
 			{
-				available_output_for_content << (*it) << "\n";
+				output_for_content << (*it) << "\n";
 			}
 		}
 	}

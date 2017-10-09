@@ -13,11 +13,11 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 	}
 
 	std::ostream& output=std::cout;
-	std::ostringstream output_for_content;
+	common::ManipulationManagerForAtomsAndContacts::CommandOutputSink sink;
 
 	output << "\n> " << command << std::endl;
-	const common::ManipulationManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, &output_for_content);
-	output << output_for_content.str();
+	const common::ManipulationManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, sink);
+	output << sink.output_stream.str();
 	output << record.output_log;
 	if(!record.output_error.empty())
 	{
