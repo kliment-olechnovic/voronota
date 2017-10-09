@@ -17,10 +17,11 @@ public:
 	{
 		struct Visual
 		{
+			bool implemented;
 			bool visible;
 			unsigned int color;
 
-			Visual() : visible(false), color(0x7F7F7F)
+			Visual() : implemented(false), visible(false), color(0x7F7F7F)
 			{
 			}
 		};
@@ -36,9 +37,25 @@ public:
 		bool visible() const
 		{
 			bool result=false;
-			for(std::size_t i=0;i<visuals.size() && !result;i++)
+			if(drawable)
 			{
-				result=(result || visuals[i].visible);
+				for(std::size_t i=0;i<visuals.size() && !result;i++)
+				{
+					result=(result || visuals[i].visible);
+				}
+			}
+			return result;
+		}
+
+		bool implemented() const
+		{
+			bool result=false;
+			if(drawable)
+			{
+				for(std::size_t i=0;i<visuals.size() && !result;i++)
+				{
+					result=(result || visuals[i].implemented);
+				}
 			}
 			return result;
 		}
@@ -77,16 +94,6 @@ public:
 	{
 	}
 
-	const std::vector<std::string>& atoms_representations() const
-	{
-		return atoms_representations_;
-	}
-
-	const std::vector<std::string>& contacts_representations() const
-	{
-		return contacts_representations_;
-	}
-
 	const std::vector<Atom>& atoms() const
 	{
 		return atoms_;
@@ -107,12 +114,81 @@ public:
 		return contacts_display_states_;
 	}
 
-	const std::vector<CommandRecord>& history() const
+	const std::vector<std::string>& atoms_representations() const
 	{
-		return commands_history_;
+		return atoms_representations_;
 	}
 
-	bool check_executable(const std::string& command) const
+	const std::vector<std::string>& contacts_representations() const
+	{
+		return contacts_representations_;
+	}
+
+	bool add_representations_of_atoms(const std::vector<std::string>& names)
+	{
+		if(names.empty())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				return false;
+			}
+			else if(std::find(atoms_representations_.begin(), atoms_representations_.end(), name)!=atoms_representations_.end())
+			{
+				return false;
+			}
+		}
+
+		atoms_representations_.insert(atoms_representations_.end(), names.begin(), names.end());
+
+		resize_visuals_in_atoms_display_states();
+
+		return true;
+	}
+
+	bool add_representations_of_contacts(const std::vector<std::string>& names)
+	{
+		if(names.empty())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				return false;
+			}
+			else if(std::find(contacts_representations_.begin(), contacts_representations_.end(), name)!=contacts_representations_.end())
+			{
+				return false;
+			}
+		}
+
+		contacts_representations_.insert(contacts_representations_.end(), names.begin(), names.end());
+
+		resize_visuals_in_contacts_display_states();
+
+		return true;
+	}
+
+	bool set_atoms_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(atoms_representations_, name, statuses, atoms_display_states_);
+	}
+
+	bool set_contacts_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(contacts_representations_, name, statuses, contacts_display_states_);
+	}
+
+	bool executable(const std::string& command) const
 	{
 		std::string verb;
 		std::istringstream input(command);
@@ -136,11 +212,7 @@ public:
 
 			try
 			{
-				if(record.verb==allowed_command_verbs_.add_representations_of_atoms)
-				{
-					command_add_representations_of_atoms(input);
-				}
-				else if(record.verb==allowed_command_verbs_.load_atoms)
+				if(record.verb==allowed_command_verbs_.load_atoms)
 				{
 					command_load_atoms(input, output_for_log, record.changed_atoms);
 				}
@@ -195,10 +267,6 @@ public:
 				else if(record.verb==allowed_command_verbs_.rename_selection_of_atoms)
 				{
 					command_rename_selection_of_atoms(input, output_for_log);
-				}
-				else if(record.verb==allowed_command_verbs_.add_representations_of_contacts)
-				{
-					command_add_representations_of_contacts(input);
 				}
 				else if(record.verb==allowed_command_verbs_.construct_contacts)
 				{
@@ -289,10 +357,14 @@ public:
 		return execute(command, sink);
 	}
 
+	const std::vector<CommandRecord>& history() const
+	{
+		return commands_history_;
+	}
+
 private:
 	struct AllowedCommandVerbs
 	{
-		std::string add_representations_of_atoms;
 		std::string load_atoms;
 		std::string restrict_atoms;
 		std::string save_atoms;
@@ -307,7 +379,6 @@ private:
 		std::string delete_all_selections_of_atoms;
 		std::string delete_selections_of_atoms;
 		std::string rename_selection_of_atoms;
-		std::string add_representations_of_contacts;
 		std::string construct_contacts;
 		std::string save_contacts;
 		std::string load_contacts;
@@ -326,7 +397,6 @@ private:
 		std::set<std::string> set_of_all;
 
 		AllowedCommandVerbs() :
-			add_representations_of_atoms("add-representations-of-atoms"),
 			load_atoms("load-atoms"),
 			restrict_atoms("restrict-atoms"),
 			save_atoms("save-atoms"),
@@ -341,7 +411,6 @@ private:
 			delete_all_selections_of_atoms("delete-all-selections-of-atoms"),
 			delete_selections_of_atoms("delete-selections-of-atoms"),
 			rename_selection_of_atoms("rename-selection-of-atoms"),
-			add_representations_of_contacts("add-representations-of-contacts"),
 			construct_contacts("construct-contacts"),
 			save_contacts("save-contacts"),
 			load_contacts("load-contacts"),
@@ -358,7 +427,6 @@ private:
 			rename_selection_of_contacts("rename-selection-of-contacts"),
 			print_history("print-history")
 		{
-			set_of_all.insert(add_representations_of_atoms);
 			set_of_all.insert(load_atoms);
 			set_of_all.insert(restrict_atoms);
 			set_of_all.insert(save_atoms);
@@ -373,7 +441,6 @@ private:
 			set_of_all.insert(delete_all_selections_of_atoms);
 			set_of_all.insert(delete_selections_of_atoms);
 			set_of_all.insert(rename_selection_of_atoms);
-			set_of_all.insert(add_representations_of_contacts);
 			set_of_all.insert(construct_contacts);
 			set_of_all.insert(save_contacts);
 			set_of_all.insert(load_contacts);
@@ -624,7 +691,7 @@ private:
 					if((*it)<display_states.size())
 					{
 						DisplayState& ds=display_states[*it];
-						if(ds.drawable)
+						if(ds.implemented())
 						{
 							if(mark || unmark)
 							{
@@ -670,16 +737,19 @@ private:
 		{
 			bool updated=false;
 
-			if(show || hide)
+			if(visual.implemented)
 			{
-				updated=(updated || (visual.visible!=show));
-				visual.visible=show;
-			}
+				if(show || hide)
+				{
+					updated=(updated || (visual.visible!=show));
+					visual.visible=show;
+				}
 
-			if(color>0)
-			{
-				updated=(updated || (visual.color!=color));
-				visual.color=color;
+				if(color>0)
+				{
+					updated=(updated || (visual.color!=color));
+					visual.color=color;
+				}
 			}
 
 			return updated;
@@ -702,16 +772,12 @@ private:
 			{
 				std::string name;
 				input >> name;
-				bool found=false;
-				for(std::size_t i=0;i<available_representations.size() && !found;i++)
+				std::size_t id=find_name_id(available_representations, name);
+				if(id<available_representations.size())
 				{
-					if(available_representations[i]==name)
-					{
-						visual_ids_.insert(i);
-						found=true;
-					}
+					visual_ids_.insert(id);
 				}
-				if(!found)
+				else
 				{
 					throw std::runtime_error(std::string("Representation '")+name+"' does not exist.");
 				}
@@ -1204,12 +1270,59 @@ private:
 		}
 	}
 
-	static std::set<std::size_t> filter_drawable_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& ids)
+	static std::size_t find_name_id(const std::vector<std::string>& names, const std::string& name)
+	{
+		std::size_t id=names.size();
+		for(std::size_t i=0;i<names.size() && !(id<names.size());i++)
+		{
+			if(names[i]==name)
+			{
+				id=i;
+			}
+		}
+		return id;
+	}
+
+	static bool set_representation_implemented(
+			const std::vector<std::string>& representations,
+			const std::string& name,
+			const std::vector<bool>& statuses,
+			std::vector<DisplayState>& display_states)
+	{
+		if(statuses.size()!=display_states.size())
+		{
+			return false;
+		}
+
+		const std::size_t representation_id=find_name_id(representations, name);
+
+		if(representation_id>=representations.size())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			if(display_states[i].drawable && representation_id>=display_states[i].visuals.size())
+			{
+				return false;
+			}
+		}
+
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			display_states[i].visuals[representation_id].implemented=(display_states[i].drawable && statuses[i]);
+		}
+
+		return true;
+	}
+
+	static std::set<std::size_t> filter_drawable_implemented_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& ids)
 	{
 		std::set<std::size_t> drawable_ids;
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			if((*it)<display_states.size() && display_states[*it].drawable)
+			if((*it)<display_states.size() && display_states[*it].implemented())
 			{
 				drawable_ids.insert(*it);
 			}
@@ -1433,34 +1546,6 @@ private:
 			sync_atoms_selections_with_display_states();
 			sync_contacts_selections_with_display_states();
 		}
-	}
-
-	void command_add_representations_of_atoms(std::istringstream& input)
-	{
-		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
-
-		if(names.empty())
-		{
-			throw std::runtime_error(std::string("No atoms representations names provided."));
-		}
-
-		for(std::size_t i=0;i<names.size();i++)
-		{
-			const std::string& name=names[i];
-			if(name.empty())
-			{
-				throw std::runtime_error(std::string("Provided atoms representations name is empty."));
-			}
-			else if(std::find(atoms_representations_.begin(), atoms_representations_.end(), name)!=atoms_representations_.end())
-			{
-				throw std::runtime_error(std::string("Atoms representation '")+name+"'already exists.");
-			}
-		}
-
-		atoms_representations_.insert(atoms_representations_.end(), names.begin(), names.end());
-
-		resize_visuals_in_atoms_display_states();
 	}
 
 	void command_load_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
@@ -1733,7 +1818,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -1785,7 +1870,7 @@ private:
 			throw std::runtime_error(std::string("Atoms representation not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -1843,7 +1928,7 @@ private:
 			throw std::runtime_error(std::string("Atoms color not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(atoms_display_states_, selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
@@ -1968,34 +2053,6 @@ private:
 		selection_manager_.set_atoms_selection(names[1], ids);
 		selection_manager_.delete_atoms_selection(names[0]);
 		output << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
-	}
-
-	void command_add_representations_of_contacts(std::istringstream& input)
-	{
-		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
-
-		if(names.empty())
-		{
-			throw std::runtime_error(std::string("No contacts representations names provided."));
-		}
-
-		for(std::size_t i=0;i<names.size();i++)
-		{
-			const std::string& name=names[i];
-			if(name.empty())
-			{
-				throw std::runtime_error(std::string("Provided contacts representations name is empty."));
-			}
-			else if(std::find(contacts_representations_.begin(), contacts_representations_.end(), name)!=contacts_representations_.end())
-			{
-				throw std::runtime_error(std::string("Contacts representation '")+name+"'already exists.");
-			}
-		}
-
-		contacts_representations_.insert(contacts_representations_.end(), names.begin(), names.end());
-
-		resize_visuals_in_contacts_display_states();
 	}
 
 	void command_construct_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
@@ -2228,7 +2285,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
@@ -2280,7 +2337,7 @@ private:
 			throw std::runtime_error(std::string("Contacts representation not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
@@ -2338,7 +2395,7 @@ private:
 			throw std::runtime_error(std::string("Contacts color not specified."));
 		}
 
-		const std::set<std::size_t> ids=filter_drawable_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(contacts_display_states_, selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
 		if(ids.empty())
 		{
 			throw std::runtime_error(std::string("No drawable contacts selected."));
