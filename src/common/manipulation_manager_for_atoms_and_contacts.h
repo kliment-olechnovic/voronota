@@ -114,14 +114,14 @@ public:
 		return contacts_display_states_;
 	}
 
-	const std::vector<std::string>& atoms_representations() const
+	const std::vector<std::string>& atoms_representation_names() const
 	{
-		return atoms_representations_;
+		return atoms_representation_names_;
 	}
 
-	const std::vector<std::string>& contacts_representations() const
+	const std::vector<std::string>& contacts_representation_names() const
 	{
-		return contacts_representations_;
+		return contacts_representation_names_;
 	}
 
 	bool add_representations_of_atoms(const std::vector<std::string>& names)
@@ -138,13 +138,13 @@ public:
 			{
 				return false;
 			}
-			else if(std::find(atoms_representations_.begin(), atoms_representations_.end(), name)!=atoms_representations_.end())
+			else if(std::find(atoms_representation_names_.begin(), atoms_representation_names_.end(), name)!=atoms_representation_names_.end())
 			{
 				return false;
 			}
 		}
 
-		atoms_representations_.insert(atoms_representations_.end(), names.begin(), names.end());
+		atoms_representation_names_.insert(atoms_representation_names_.end(), names.begin(), names.end());
 
 		resize_visuals_in_atoms_display_states();
 
@@ -165,13 +165,13 @@ public:
 			{
 				return false;
 			}
-			else if(std::find(contacts_representations_.begin(), contacts_representations_.end(), name)!=contacts_representations_.end())
+			else if(std::find(contacts_representation_names_.begin(), contacts_representation_names_.end(), name)!=contacts_representation_names_.end())
 			{
 				return false;
 			}
 		}
 
-		contacts_representations_.insert(contacts_representations_.end(), names.begin(), names.end());
+		contacts_representation_names_.insert(contacts_representation_names_.end(), names.begin(), names.end());
 
 		resize_visuals_in_contacts_display_states();
 
@@ -180,12 +180,12 @@ public:
 
 	bool set_atoms_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(atoms_representations_, name, statuses, atoms_display_states_);
+		return set_representation_implemented(atoms_representation_names_, name, statuses, atoms_display_states_);
 	}
 
 	bool set_contacts_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(contacts_representations_, name, statuses, contacts_display_states_);
+		return set_representation_implemented(contacts_representation_names_, name, statuses, contacts_display_states_);
 	}
 
 	bool executable(const std::string& command) const
@@ -1351,7 +1351,7 @@ private:
 
 	void assert_atoms_representations_availability() const
 	{
-		if(atoms_representations_.empty())
+		if(atoms_representation_names_.empty())
 		{
 			throw std::runtime_error(std::string("No atoms representations available."));
 		}
@@ -1386,7 +1386,7 @@ private:
 
 	void assert_contacts_representations_availability() const
 	{
-		if(contacts_representations_.empty())
+		if(contacts_representation_names_.empty())
 		{
 			throw std::runtime_error(std::string("No contacts representations available."));
 		}
@@ -1445,7 +1445,7 @@ private:
 
 	void resize_visuals_in_atoms_display_states()
 	{
-		resize_visuals_in_display_states(atoms_representations_.size(), atoms_display_states_);
+		resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
 	}
 
 	void reset_contacts(std::vector<Contact>& contacts)
@@ -1477,7 +1477,7 @@ private:
 
 	void resize_visuals_in_contacts_display_states()
 	{
-		resize_visuals_in_display_states(contacts_representations_.size(), contacts_display_states_);
+		resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -1870,7 +1870,7 @@ private:
 		assert_atoms_representations_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representations_);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representation_names_);
 
 		while(input.good())
 		{
@@ -1887,7 +1887,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && atoms_representations_.size()>1)
+		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && atoms_representation_names_.size()>1)
 		{
 			throw std::runtime_error(std::string("Atoms representation not specified."));
 		}
@@ -1925,7 +1925,7 @@ private:
 		assert_atoms_representations_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representations_);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representation_names_);
 		CommandParametersForGenericColoring parameters_for_coloring;
 
 		while(input.good())
@@ -2346,7 +2346,7 @@ private:
 		assert_contacts_representations_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representations_);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 
 		while(input.good())
 		{
@@ -2363,7 +2363,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && contacts_representations_.size()>1)
+		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && contacts_representation_names_.size()>1)
 		{
 			throw std::runtime_error(std::string("Contacts representation not specified."));
 		}
@@ -2401,7 +2401,7 @@ private:
 		assert_contacts_representations_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
-		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representations_);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 		CommandParametersForGenericColoring parameters_for_coloring;
 
 		while(input.good())
@@ -2599,8 +2599,8 @@ private:
 	}
 
 	AllowedCommandVerbs allowed_command_verbs_;
-	std::vector<std::string> atoms_representations_;
-	std::vector<std::string> contacts_representations_;
+	std::vector<std::string> atoms_representation_names_;
+	std::vector<std::string> contacts_representation_names_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
