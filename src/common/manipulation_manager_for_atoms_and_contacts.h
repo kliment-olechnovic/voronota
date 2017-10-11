@@ -342,6 +342,10 @@ public:
 			record.output_log=output_for_log.str();
 			record.output_error=output_for_errors.str();
 
+			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_atoms);
+			record.changed_contacts=(record.changed_contacts || record.changed_atoms);
+			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_contacts);
+
 			if(record.successful)
 			{
 				commands_history_.push_back(record);
