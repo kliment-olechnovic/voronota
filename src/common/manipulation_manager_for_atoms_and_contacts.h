@@ -1891,9 +1891,9 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && atoms_representation_names_.size()>1)
+		if(positive && parameters_for_representation_selecting.visual_ids_.empty())
 		{
-			throw std::runtime_error(std::string("Atoms representation not specified."));
+			parameters_for_representation_selecting.visual_ids_.insert(0);
 		}
 
 		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
@@ -1906,6 +1906,7 @@ private:
 		}
 
 		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
 		parameters_for_viewing.show=positive;
 		parameters_for_viewing.hide=!positive;
 
@@ -1967,6 +1968,7 @@ private:
 		}
 
 		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
 		parameters_for_viewing.color=parameters_for_coloring.color;
 
 		parameters_for_viewing.assert_state();
@@ -2369,7 +2371,7 @@ private:
 
 		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && contacts_representation_names_.size()>1)
 		{
-			throw std::runtime_error(std::string("Contacts representation not specified."));
+			parameters_for_representation_selecting.visual_ids_.insert(0);
 		}
 
 		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
@@ -2382,6 +2384,7 @@ private:
 		}
 
 		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
 		parameters_for_viewing.show=positive;
 		parameters_for_viewing.hide=!positive;
 
@@ -2443,6 +2446,7 @@ private:
 		}
 
 		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
 		parameters_for_viewing.color=parameters_for_coloring.color;
 
 		parameters_for_viewing.assert_state();
