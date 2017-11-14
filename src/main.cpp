@@ -33,7 +33,6 @@ void vectorize_points(const auxiliaries::ProgramOptionsHandler&);
 void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler&);
 void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
 void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
-void wrapped_get_balls_from_atoms_file_and_calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
 void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler&);
 void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler&);
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
@@ -97,7 +96,6 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-calculate-mock-solvent", ModeDescriptor::FunctionPtr(calculate_mock_solvent)));
 	list_of_modes.push_back(ModeDescriptor("x-query-contacts-simulating-unfolding", ModeDescriptor::FunctionPtr(query_contacts_simulating_unfolding)));
 	list_of_modes.push_back(ModeDescriptor("x-vectorize-contact-environments", ModeDescriptor::FunctionPtr(vectorize_contact_environments)));
-	list_of_modes.push_back(ModeDescriptor("x-wrapped-get-balls-from-atoms-file-and-calculate-vertices", ModeDescriptor::FunctionPtr(wrapped_get_balls_from_atoms_file_and_calculate_vertices)));
 	list_of_modes.push_back(ModeDescriptor("x-write-qa-scores-in-casp-format", ModeDescriptor::FunctionPtr(write_qa_scores_in_casp_format)));
 	list_of_modes.push_back(ModeDescriptor("x-score-contacts-global-energy-by-cuts", ModeDescriptor::FunctionPtr(score_contacts_global_energy_by_cuts)));
 	list_of_modes.push_back(ModeDescriptor("x-simulate-potential-for-membrane-proteins", ModeDescriptor::FunctionPtr(simulate_potential_for_membrane_proteins)));
