@@ -3,10 +3,10 @@
 
 #include "../apollota/constrained_contacts_construction.h"
 #include "../apollota/constrained_contacts_utilities.h"
-#include "../apollota/spheres_boundary_construction.h"
 
 #include "../auxiliaries/opengl_printer.h"
 
+#include "construction_of_triangulation.h"
 #include "contact_value.h"
 
 namespace common
@@ -44,17 +44,6 @@ public:
 		}
 	};
 
-	struct BundleOfTriangulationInformation
-	{
-		std::size_t number_of_input_spheres;
-		std::vector<apollota::SimpleSphere> spheres;
-		apollota::Triangulation::Result triangulation_result;
-
-		BundleOfTriangulationInformation() : number_of_input_spheres(0)
-		{
-		}
-	};
-
 	struct BundleOfContactInformation
 	{
 		std::vector<Contact> contacts;
@@ -77,54 +66,6 @@ public:
 		}
 	};
 
-	class construct_bundle_of_triangulation_information
-	{
-	public:
-		double artificial_boundary_shift;
-		bool exclude_hidden_balls;
-		double init_radius_for_BSH;
-
-		construct_bundle_of_triangulation_information() :
-			artificial_boundary_shift(2.8),
-			exclude_hidden_balls(false),
-			init_radius_for_BSH(3.5)
-		{
-		}
-
-		template<typename ContainerOfBalls>
-		bool operator()(const ContainerOfBalls& balls, BundleOfTriangulationInformation& bundle_of_triangulation_information) const
-		{
-			bundle_of_triangulation_information=BundleOfTriangulationInformation();
-
-			if(balls.size()<4)
-			{
-				return false;
-			}
-
-			bundle_of_triangulation_information.spheres.reserve(balls.size());
-			for(typename ContainerOfBalls::const_iterator it=balls.begin();it!=balls.end();++it)
-			{
-				bundle_of_triangulation_information.spheres.push_back(apollota::SimpleSphere(*it));
-			}
-
-			bundle_of_triangulation_information.number_of_input_spheres=bundle_of_triangulation_information.spheres.size();
-			if(artificial_boundary_shift>0.0)
-			{
-				const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(bundle_of_triangulation_information.spheres, artificial_boundary_shift);
-				bundle_of_triangulation_information.spheres.insert(bundle_of_triangulation_information.spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
-			}
-
-			bundle_of_triangulation_information.triangulation_result=apollota::Triangulation::construct_result(bundle_of_triangulation_information.spheres, init_radius_for_BSH, exclude_hidden_balls, false);
-
-			if(bundle_of_triangulation_information.triangulation_result.quadruples_map.empty())
-			{
-				return false;
-			}
-
-			return true;
-		}
-	};
-
 	class construct_bundle_of_contact_information
 	{
 	public:
@@ -143,7 +84,9 @@ public:
 		{
 		}
 
-		bool operator()(const BundleOfTriangulationInformation& bundle_of_triangulation_information, BundleOfContactInformation& bundle_of_contact_information) const
+		bool operator()(
+				const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+				BundleOfContactInformation& bundle_of_contact_information) const
 		{
 			bundle_of_contact_information=BundleOfContactInformation();
 
@@ -226,9 +169,13 @@ public:
 		}
 
 		template<typename ContainerOfBalls>
-		bool operator()(const ContainerOfBalls& balls, const construct_bundle_of_triangulation_information& construct_triangulation, BundleOfTriangulationInformation& bundle_of_triangulation_information, BundleOfContactInformation& bundle_of_contact_information) const
+		bool operator()(
+				const ContainerOfBalls& balls,
+				const ConstructionOfTriangulation::construct_bundle_of_triangulation_information& construct_triangulation,
+				ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+				BundleOfContactInformation& bundle_of_contact_information) const
 		{
-			construct_bundle_of_triangulation_information construct_triangulation_safely=construct_triangulation;
+			ConstructionOfTriangulation::construct_bundle_of_triangulation_information construct_triangulation_safely=construct_triangulation;
 			if(construct_triangulation_safely.artificial_boundary_shift<probe*2.0)
 			{
 				construct_triangulation_safely.artificial_boundary_shift=probe*2.0;
@@ -243,9 +190,12 @@ public:
 		}
 
 		template<typename ContainerOfBalls>
-		bool operator()(const ContainerOfBalls& balls, BundleOfTriangulationInformation& bundle_of_triangulation_information, BundleOfContactInformation& bundle_of_contact_information) const
+		bool operator()(
+				const ContainerOfBalls& balls,
+				ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+				BundleOfContactInformation& bundle_of_contact_information) const
 		{
-			construct_bundle_of_triangulation_information construct_triangulation;
+			ConstructionOfTriangulation::construct_bundle_of_triangulation_information construct_triangulation;
 			construct_triangulation.artificial_boundary_shift=probe*2.0;
 
 			return this->operator()(balls, construct_triangulation, bundle_of_triangulation_information, bundle_of_contact_information);
@@ -273,7 +223,10 @@ public:
 		}
 
 		template<typename ContainerOfIds>
-		bool operator()(const BundleOfTriangulationInformation& bundle_of_triangulation_information, const ContainerOfIds& draw_ids, std::vector<Contact>& contacts) const
+		bool operator()(
+				const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+				const ContainerOfIds& draw_ids,
+				std::vector<Contact>& contacts) const
 		{
 			if(contacts.empty())
 			{

@@ -2142,7 +2142,7 @@ private:
 			guard.on_iteration_end(input);
 		}
 
-		ConstructionOfContacts::BundleOfTriangulationInformation bundle_of_triangulation_information;
+		ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
 		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
 
 		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
