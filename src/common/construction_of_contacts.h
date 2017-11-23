@@ -90,12 +90,12 @@ public:
 		{
 			bundle_of_contact_information=BundleOfContactInformation();
 
-			if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.triangulation_result.quadruples_map.empty())
+			if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.quadruples_map.empty())
 			{
 				return false;
 			}
 
-			const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.triangulation_result.quadruples_map);
+			const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 
 			std::map<apollota::Pair, double> interactions_map;
 			std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(calculate_volumes, std::map<std::size_t, double>());
@@ -277,7 +277,7 @@ public:
 			{
 				if(vertices_vector.empty())
 				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.triangulation_result.quadruples_map);
+					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 				}
 				const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
 				const apollota::SubdividedIcosahedron sih(sih_depth);
@@ -292,7 +292,7 @@ public:
 			{
 				if(vertices_vector.empty())
 				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.triangulation_result.quadruples_map);
+					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 				}
 				if(pairs_vertices.empty())
 				{
@@ -309,7 +309,7 @@ public:
 			{
 				if(vertices_vector.empty())
 				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.triangulation_result.quadruples_map);
+					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 				}
 				if(pairs_vertices.empty())
 				{
@@ -327,7 +327,7 @@ public:
 
 			if(tag_nonsolvent && tag_centrality)
 			{
-				const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.triangulation_result.quadruples_map);
+				const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 				for(std::size_t i=0;i<contacts.size();i++)
 				{
 					Contact& contact=contacts[i];

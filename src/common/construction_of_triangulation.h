@@ -14,7 +14,7 @@ public:
 	{
 		std::size_t number_of_input_spheres;
 		std::vector<apollota::SimpleSphere> spheres;
-		apollota::Triangulation::Result triangulation_result;
+		apollota::Triangulation::QuadruplesMap quadruples_map;
 
 		BundleOfTriangulationInformation() : number_of_input_spheres(0)
 		{
@@ -58,9 +58,11 @@ public:
 				bundle_of_triangulation_information.spheres.insert(bundle_of_triangulation_information.spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 			}
 
-			bundle_of_triangulation_information.triangulation_result=apollota::Triangulation::construct_result(bundle_of_triangulation_information.spheres, init_radius_for_BSH, exclude_hidden_balls, false);
+			apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(bundle_of_triangulation_information.spheres, init_radius_for_BSH, exclude_hidden_balls, false);
 
-			if(bundle_of_triangulation_information.triangulation_result.quadruples_map.empty())
+			bundle_of_triangulation_information.quadruples_map.swap(triangulation_result.quadruples_map);
+
+			if(bundle_of_triangulation_information.quadruples_map.empty())
 			{
 				return false;
 			}
