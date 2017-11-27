@@ -43,7 +43,7 @@ void rotational_optimization_demo(const auxiliaries::ProgramOptionsHandler&);
 void place_membrane(const auxiliaries::ProgramOptionsHandler&);
 void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler&);
 void demo_hypercut(const auxiliaries::ProgramOptionsHandler&);
-void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler&);
+void run_script(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -106,7 +106,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-place-membrane", ModeDescriptor::FunctionPtr(place_membrane)));
 	list_of_modes.push_back(ModeDescriptor("x-demo-polygon-triangulation", ModeDescriptor::FunctionPtr(demo_polygon_triangulation)));
 	list_of_modes.push_back(ModeDescriptor("x-demo-hypercut", ModeDescriptor::FunctionPtr(demo_hypercut)));
-	list_of_modes.push_back(ModeDescriptor("x-demo-apilike-functionality", ModeDescriptor::FunctionPtr(demo_apilike_functionality)));
+	list_of_modes.push_back(ModeDescriptor("x-run-script", ModeDescriptor::FunctionPtr(run_script)));
 	return list_of_modes;
 }
 
