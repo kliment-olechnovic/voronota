@@ -28,7 +28,7 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 
 }
 
-void demo_apilike_functionality(const auxiliaries::ProgramOptionsHandler& poh)
+void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "none");
