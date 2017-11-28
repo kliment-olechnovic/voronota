@@ -26,43 +26,43 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 	output << std::endl;
 }
 
+void run_loop(std::istream& input)
+{
+	common::ManipulationManagerForAtomsAndContacts manager;
+
+	while(input.good())
+	{
+		std::string line;
+		std::getline(input, line);
+		if(!line.empty())
+		{
+			{
+				const std::size_t comments_pos=line.find("#", 0);
+				if(comments_pos!=std::string::npos)
+				{
+					line=line.substr(0, comments_pos);
+				}
+			}
+			if(!line.empty())
+			{
+				execute(manager, line);
+			}
+		}
+	}
+}
+
 }
 
 void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
-	pohw.describe_io("stdin", true, false, "none");
-	pohw.describe_io("stdout", false, true, "demo output");
+	pohw.describe_io("stdin", true, false, "script as plain text");
+	pohw.describe_io("stdout", false, true, "output on script execution");
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	common::ManipulationManagerForAtomsAndContacts manager;
-	execute(manager, "load-atoms file tests/input/single/structure");
-	execute(manager, "load-atoms file tests/input/single/structure.cif format mmcif");
-	execute(manager, "load-atoms file tests/input/single/structure.pdb");
-	execute(manager, "load-atoms file tests/input/single/structure.pdb include-heteroatoms");
-	execute(manager, "print-atoms {tags het adjuncts tf=0:10}");
-	execute(manager, "restrict-atoms {tags-not het}");
-	execute(manager, "construct-contacts render-default calculate-volumes");
-	execute(manager, "save-atoms file 'tmp/plain_atoms.txt'");
-	execute(manager, "save-contacts file 'tmp/plain_contacts.txt'");
-	execute(manager, "load-atoms file 'tmp/plain_atoms.txt' format plain");
-	execute(manager, "select-contacts");
-	execute(manager, "load-contacts file 'tmp/plain_contacts.txt'");
-	execute(manager, "select-contacts {atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1} name cs1");
-	execute(manager, "print-contacts {sel cs1} sort-r area");
-	execute(manager, "print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand");
-	execute(manager, "print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand inter-residue");
-	execute(manager, "select-atoms {match r<64>&A<C,N,O,CA,CB>} name as1");
-	execute(manager, "print-atoms {sel as1} sort tags");
-	execute(manager, "print-atoms {match r<64>&A<C,N,O,CA,CB>} sort atmn expand");
-	execute(manager, "rename-selection-of-atoms nosel1 nodel2");
-	execute(manager, "delete-selections-of-contacts nosel1");
-	execute(manager, "list-selections-of-atoms");
-	execute(manager, "list-selections-of-contacts");
-	execute(manager, "print-history last 5");
-	execute(manager, "print-history");
+	run_loop(std::cin);
 }
