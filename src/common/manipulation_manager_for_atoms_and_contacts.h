@@ -586,9 +586,9 @@ private:
 		std::set<std::size_t> forced_ids;
 
 		CommandParametersForGenericSelecting() :
-			type_for_expression("use"),
-			type_for_full_residues("full-residues"),
-			type_for_forced_id("id"),
+			type_for_expression("--use"),
+			type_for_full_residues("--full-residues"),
+			type_for_forced_id("--id"),
 			expression("{}"),
 			full_residues(false)
 		{
@@ -596,7 +596,7 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type.find_first_of("({")==0 && type_for_expression=="use")
+			if(type.find_first_of("({")==0 && type_for_expression=="--use")
 			{
 				std::streamsize start_pos=input.tellg();
 				std::streamsize end_pos=start_pos;
@@ -772,7 +772,7 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="rep")
+			if(type=="--rep")
 			{
 				std::string name;
 				input >> name;
@@ -809,47 +809,53 @@ private:
 			{
 				color=CommandInputUtilities::read_color_integer_from_string(type);
 			}
-			else if(type=="hex")
+			else if(type=="--col")
 			{
 				std::string color_str;
 				input >> color_str;
-				color=CommandInputUtilities::read_color_integer_from_string(color_str);
-			}
-			else if(type=="red")
-			{
-				color=0xFF0000;
-			}
-			else if(type=="green")
-			{
-				color=0x00FF00;
-			}
-			else if(type=="blue")
-			{
-				color=0x0000FF;
-			}
-			else if(type=="cyan")
-			{
-				color=0x00FFFF;
-			}
-			else if(type=="magenta")
-			{
-				color=0xFF00FF;
-			}
-			else if(type=="yellow")
-			{
-				color=0xFFFF00;
-			}
-			else if(type=="white")
-			{
-				color=0xFFFFFF;
-			}
-			else if(type=="grey" || type=="gray")
-			{
-				color=0x7F7F7F;
-			}
-			else
-			{
-				return false;
+				if(color_str.size()>2 && color_str.compare(0, 2, "0x")==0)
+				{
+					color=CommandInputUtilities::read_color_integer_from_string(color_str);
+				}
+				else
+				{
+					if(color_str=="red")
+					{
+						color=0xFF0000;
+					}
+					else if(color_str=="green")
+					{
+						color=0x00FF00;
+					}
+					else if(color_str=="blue")
+					{
+						color=0x0000FF;
+					}
+					else if(color_str=="cyan")
+					{
+						color=0x00FFFF;
+					}
+					else if(color_str=="magenta")
+					{
+						color=0xFF00FF;
+					}
+					else if(color_str=="yellow")
+					{
+						color=0xFFFF00;
+					}
+					else if(color_str=="white")
+					{
+						color=0xFFFFFF;
+					}
+					else if(color_str=="grey" || color_str=="gray")
+					{
+						color=0x7F7F7F;
+					}
+					else
+					{
+						return false;
+					}
+				}
 			}
 			return true;
 		}
@@ -872,20 +878,20 @@ private:
 
 		bool read(const std::string& type, std::istream& input)
 		{
-			if(type=="sort")
+			if(type=="--sort")
 			{
 				input >> sort_column;
 			}
-			else if(type=="sort-r")
+			else if(type=="--sort-r")
 			{
 				reversed_sorting=true;
 				input >> sort_column;
 			}
-			else if(type=="expand")
+			else if(type=="--expand")
 			{
 				expanded_descriptors=true;
 			}
-			else if(type=="limit")
+			else if(type=="--limit")
 			{
 				input >> limit;
 			}
@@ -911,7 +917,7 @@ private:
 			const bool parent_read=CommandParametersForGenericTablePrinting::read(type, input);
 			if(!parent_read)
 			{
-				if(type=="inter-residue")
+				if(type=="--inter-residue")
 				{
 					inter_residue=true;
 				}
@@ -1584,42 +1590,42 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="file")
+			if(guard.token=="--file")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, atoms_file);
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="radii-file")
+			else if(guard.token=="--radii-file")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, radii_file);
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="default-radius")
+			else if(guard.token=="--default-radius")
 			{
 				input >> default_radius;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="same-radius-for-all")
+			else if(guard.token=="--same-radius-for-all")
 			{
 				only_default_radius=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="format")
+			else if(guard.token=="--format")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, format);
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="include-heteroatoms")
+			else if(guard.token=="--include-heteroatoms")
 			{
 				collect_atomic_balls_from_file.include_heteroatoms=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="include-hydrogens")
+			else if(guard.token=="--include-hydrogens")
 			{
 				collect_atomic_balls_from_file.include_hydrogens=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="as-assembly")
+			else if(guard.token=="--as-assembly")
 			{
 				collect_atomic_balls_from_file.multimodel_chains=true;
 				guard.on_token_processed(input);
@@ -1753,7 +1759,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="file")
+			if(guard.token=="--file")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
@@ -1791,7 +1797,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="name")
+			if(guard.token=="--name")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, name);
 				guard.on_token_processed(input);
@@ -2108,28 +2114,28 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="probe")
+			if(guard.token=="--probe")
 			{
 				input >> construct_bundle_of_contact_information.probe;
 				enhance_contacts.probe=construct_bundle_of_contact_information.probe;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="render-default")
+			else if(guard.token=="--render-default")
 			{
 				render=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="calculate-volumes")
+			else if(guard.token=="--calculate-volumes")
 			{
 				construct_bundle_of_contact_information.calculate_volumes=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="tag-centrality")
+			else if(guard.token=="--tag-centrality")
 			{
 				enhance_contacts.tag_centrality=true;
 				guard.on_token_processed(input);
 			}
-			else if(guard.token=="tag-peripherial")
+			else if(guard.token=="--tag-peripherial")
 			{
 				enhance_contacts.tag_peripherial=true;
 				guard.on_token_processed(input);
@@ -2188,7 +2194,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="file")
+			if(guard.token=="--file")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
@@ -2226,7 +2232,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="file")
+			if(guard.token=="--file")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
@@ -2269,7 +2275,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="name")
+			if(guard.token=="--name")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, name);
 				guard.on_token_processed(input);
@@ -2577,7 +2583,7 @@ private:
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="last")
+			if(guard.token=="--last")
 			{
 				input >> last;
 				guard.on_token_processed(input);
