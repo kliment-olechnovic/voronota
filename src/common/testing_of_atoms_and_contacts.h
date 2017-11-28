@@ -428,35 +428,35 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="sel")
+			else if(token=="--sel")
 			{
 				input >> tester.name_of_base_selection_of_atoms;
 			}
-			else if(token=="sel-of-contacts")
+			else if(token=="--sel-of-contacts")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
-			else if(token=="match")
+			else if(token=="--match")
 			{
 				input >> tester.match_crad;
 			}
-			else if(token=="match-not")
+			else if(token=="--match-not")
 			{
 				input >> tester.match_crad_not;
 			}
-			else if(token=="tags")
+			else if(token=="--tags")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="tags-not")
+			else if(token=="--tags-not")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="adjuncts")
+			else if(token=="--adjuncts")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="adjuncts-not")
+			else if(token=="--adjuncts-not")
 			{
 				input >> tester.match_adjuncts_not;
 			}
@@ -509,63 +509,63 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="sel")
+			else if(token=="--sel")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
-			else if(token=="min-area")
+			else if(token=="--min-area")
 			{
 				input >> tester.match_min_area;
 			}
-			else if(token=="max-area")
+			else if(token=="--max-area")
 			{
 				input >> tester.match_max_area;
 			}
-			else if(token=="min-dist")
+			else if(token=="--min-dist")
 			{
 				input >> tester.match_min_dist;
 			}
-			else if(token=="max-dist")
+			else if(token=="--max-dist")
 			{
 				input >> tester.match_max_dist;
 			}
-			else if(token=="min-seq-sep")
+			else if(token=="--min-seq-sep")
 			{
 				input >> tester.match_min_sequence_separation;
 			}
-			else if(token=="max-seq-sep")
+			else if(token=="--max-seq-sep")
 			{
 				input >> tester.match_max_sequence_separation;
 			}
-			else if(token=="tags")
+			else if(token=="--tags")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="tags-not")
+			else if(token=="--tags-not")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="adjuncts")
+			else if(token=="--adjuncts")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="adjuncts-not")
+			else if(token=="--adjuncts-not")
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token=="atom-first")
+			else if(token=="--atom1")
 			{
 				input >> tester.test_atom_a;
 			}
-			else if(token=="atom-second")
+			else if(token=="--atom2")
 			{
 				input >> tester.test_atom_b;
 			}
-			else if(token=="no-solvent")
+			else if(token=="--no-solvent")
 			{
 				tester.no_solvent=true;
 			}
-			else if(token=="no-same-chain")
+			else if(token=="--no-same-chain")
 			{
 				tester.no_same_chain=true;
 			}
@@ -632,17 +632,17 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		std::string opname;
 		input >> opname;
 
-		if(opname=="or")
+		if(opname=="--or")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_OR;
 		}
-		else if(opname=="and")
+		else if(opname=="--and")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_AND;
 		}
-		else if(opname=="not")
+		else if(opname=="--not")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_NOT;

@@ -1,17 +1,17 @@
 
-> load-atoms file ./input/single/structure.cif format mmcif
+> load-atoms --file ./input/single/structure.cif --format mmcif
 Read atoms from file './input/single/structure.cif' (count=1771)
 
 
-> load-atoms file ./input/single/structure.pdb
+> load-atoms --file ./input/single/structure.pdb
 Read atoms from file './input/single/structure.pdb' (count=1717)
 
 
-> load-atoms file ./input/single/structure.pdb include-heteroatoms
+> load-atoms --file ./input/single/structure.pdb --include-heteroatoms
 Read atoms from file './input/single/structure.pdb' (count=1771)
 
 
-> print-atoms {tags het adjuncts tf=0:10}
+> print-atoms {--tags het --adjuncts tf=0:10}
 atom                         x       y       z       r     tags      adjuncts      
 c<A>r<66>a<467>R<CRO>A<CA1>  25.011  26.478  37.078  1.7   el=C;het  oc=1;tf=7.34  
 c<A>r<66>a<472>R<CRO>A<N2>   26.975  27.732  38.216  1.55  el=N;het  oc=1;tf=9.21  
@@ -21,23 +21,23 @@ c<A>r<66>a<486>R<CRO>A<CZ>   31.718  30.3    37.721  1.7   el=C;het  oc=1;tf=9.4
 Summary of atoms: count=5
 
 
-> restrict-atoms {tags-not het}
+> restrict-atoms {--tags-not het}
 Restricted atoms from (count=1771) to (count=1717)
 
 
-> construct-contacts calculate-volumes
+> construct-contacts --calculate-volumes
 Constructed contacts (count=12469 drawable=0 area=47017.2)
 
 
-> save-atoms file './jobs_output/self_scripting/plain_atoms'
+> save-atoms --file './jobs_output/self_scripting/plain_atoms'
 Wrote atoms to file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 
 
-> save-contacts file './jobs_output/self_scripting/plain_contacts'
+> save-contacts --file './jobs_output/self_scripting/plain_contacts'
 Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=0 area=47017.2)
 
 
-> load-atoms file './jobs_output/self_scripting/plain_atoms' format plain
+> load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 
 
@@ -45,16 +45,16 @@ Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volu
 Error: No contacts available.
 
 
-> load-contacts file './jobs_output/self_scripting/plain_contacts'
+> load-contacts --file './jobs_output/self_scripting/plain_contacts'
 Read contacts from file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=0 area=47017.2)
 
 
-> select-contacts {atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1} name cs1
+> select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
 Summary of contacts: count=5 drawable=0 area=33.8164
 Set selection of contacts named 'cs1'
 
 
-> print-contacts {sel cs1} sort-r area
+> print-contacts {--sel cs1} --sort-r area
 atom1                       atom2                         area     dist     tags  adjuncts  
 c<A>r<99>a<756>R<PHE>A<C>   c<A>r<100>a<765>R<PHE>A<N>    8.5725   1.33208  .     .         
 c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  .     .         
@@ -64,7 +64,7 @@ c<A>r<8>a<49>R<PHE>A<CD1>   c<A>r<71>a<518>R<PHE>A<CE1>   5.56317  3.7409   .   
 Summary of contacts: count=5 drawable=0 area=33.8164
 
 
-> print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand
+> print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand
 chn1  resi1  ic1  atmi1  al1  resn1  atmn1  chn2  resi2  ic2  atmi2  al2  resn2  atmn2  area         dist     tags  adjuncts  
 A     19     .    132    .    ASP    OD1    A     28     .    199    .    SER    OG     15.6287      2.64731  .     .         
 A     105    .    810    .    ASN    OD1    A     107    .    830    .    LYS    CD     14.6278      3.21398  .     .         
@@ -72,7 +72,7 @@ A     102    .    787    .    ASP    O      A     131    .    1016   .    LYS   
 Summary of contacts: count=4820 drawable=0 area=10487.8
 
 
-> print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand inter-residue
+> print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand --inter-residue
 chn1  resi1  ic1  resn1  chn2  resi2  ic2  resn2  area        dist     tags  adjuncts  
 A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   .     .         
 A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  .     .         
@@ -80,12 +80,12 @@ A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  .     .
 Summary of contacts: count=4820 drawable=0 area=10487.8
 
 
-> select-atoms {match r<64>&A<C,N,O,CA,CB>} name as1
+> select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
 Summary of atoms: count=5 volume=108.978
 Set selection of atoms named 'as1'
 
 
-> print-atoms {sel as1} sort tags
+> print-atoms {--sel as1} --sort tags
 atom                        x       y       z       r     tags  adjuncts                      
 c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
 c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
@@ -95,7 +95,7 @@ c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O  oc=1;tf=9.64;vol
 Summary of atoms: count=5 volume=108.978
 
 
-> print-atoms {match r<64>&A<C,N,O,CA,CB>} sort atmn expand
+> print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags  adjuncts                      
 A    64    .   457   .   PHE   C     22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
 A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
@@ -123,33 +123,33 @@ Selections of contacts:
   name='cs1' count=5 drawable=0 area=33.8164
 
 
-> print-history last 5
-select-atoms {match r<64>&A<C,N,O,CA,CB>} name as1
-print-atoms {sel as1} sort tags
-print-atoms {match r<64>&A<C,N,O,CA,CB>} sort atmn expand
+> print-history --last 5
+select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+print-atoms {--sel as1} --sort tags
+print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
 
 
 > print-history
-load-atoms file ./input/single/structure.cif format mmcif
-load-atoms file ./input/single/structure.pdb
-load-atoms file ./input/single/structure.pdb include-heteroatoms
-print-atoms {tags het adjuncts tf=0:10}
-restrict-atoms {tags-not het}
-construct-contacts calculate-volumes
-save-atoms file './jobs_output/self_scripting/plain_atoms'
-save-contacts file './jobs_output/self_scripting/plain_contacts'
-load-atoms file './jobs_output/self_scripting/plain_atoms' format plain
-load-contacts file './jobs_output/self_scripting/plain_contacts'
-select-contacts {atom-first {match R<PHE>} atom-second {match R<PHE>} min-area 5.0 min-seq-sep 1} name cs1
-print-contacts {sel cs1} sort-r area
-print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand
-print-contacts {no-solvent min-seq-sep 2} sort-r area limit 3 expand inter-residue
-select-atoms {match r<64>&A<C,N,O,CA,CB>} name as1
-print-atoms {sel as1} sort tags
-print-atoms {match r<64>&A<C,N,O,CA,CB>} sort atmn expand
+load-atoms --file ./input/single/structure.cif --format mmcif
+load-atoms --file ./input/single/structure.pdb
+load-atoms --file ./input/single/structure.pdb --include-heteroatoms
+print-atoms {--tags het --adjuncts tf=0:10}
+restrict-atoms {--tags-not het}
+construct-contacts --calculate-volumes
+save-atoms --file './jobs_output/self_scripting/plain_atoms'
+save-contacts --file './jobs_output/self_scripting/plain_contacts'
+load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
+load-contacts --file './jobs_output/self_scripting/plain_contacts'
+select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
+print-contacts {--sel cs1} --sort-r area
+print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand
+print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand --inter-residue
+select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+print-atoms {--sel as1} --sort tags
+print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
-print-history last 5
+print-history --last 5
 
