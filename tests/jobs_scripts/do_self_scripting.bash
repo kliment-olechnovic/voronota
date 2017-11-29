@@ -10,7 +10,7 @@ load-atoms --file $INPUTDIR/single/structure.pdb
 load-atoms --file $INPUTDIR/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf=0:10}
 restrict-atoms {--tags-not het}
-construct-contacts --calculate-volumes
+construct-contacts --calculate-volumes --render-use '{--atom1 {--match r<83>} --min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
 save-contacts --file '$SUBDIR/plain_contacts'
 load-atoms --file '$SUBDIR/plain_atoms' --format plain

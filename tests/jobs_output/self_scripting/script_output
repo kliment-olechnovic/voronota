@@ -25,8 +25,8 @@ Summary of atoms: count=5
 Restricted atoms from (count=1771) to (count=1717)
 
 
-> construct-contacts --calculate-volumes
-Constructed contacts (count=12469 drawable=0 area=47017.2)
+> construct-contacts --calculate-volumes --render-use '{--atom1 {--match r<83>} --min-seq-sep 1}'
+Constructed contacts (count=12469 drawable=120 area=47017.2)
 
 
 > save-atoms --file './jobs_output/self_scripting/plain_atoms'
@@ -34,7 +34,7 @@ Wrote atoms to file './jobs_output/self_scripting/plain_atoms' (count=1717 volum
 
 
 > save-contacts --file './jobs_output/self_scripting/plain_contacts'
-Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=0 area=47017.2)
+Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
 
 
 > load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
@@ -46,11 +46,11 @@ Error: No contacts available.
 
 
 > load-contacts --file './jobs_output/self_scripting/plain_contacts'
-Read contacts from file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=0 area=47017.2)
+Read contacts from file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
 
 
 > select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
-Summary of contacts: count=5 drawable=0 area=33.8164
+Summary of contacts: count=5 drawable=1 area=33.8164
 Set selection of contacts named 'cs1'
 
 
@@ -61,7 +61,7 @@ c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  .   
 c<A>r<83>a<623>R<PHE>A<C>   c<A>r<84>a<632>R<PHE>A<N>     6.57156  1.35488  .     .         
 c<A>r<8>a<53>R<PHE>A<CZ>    c<A>r<114>a<888>R<PHE>A<CE2>  6.42993  3.93888  .     .         
 c<A>r<8>a<49>R<PHE>A<CD1>   c<A>r<71>a<518>R<PHE>A<CE1>   5.56317  3.7409   .     .         
-Summary of contacts: count=5 drawable=0 area=33.8164
+Summary of contacts: count=5 drawable=1 area=33.8164
 
 
 > print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand
@@ -69,7 +69,7 @@ chn1  resi1  ic1  atmi1  al1  resn1  atmn1  chn2  resi2  ic2  atmi2  al2  resn2 
 A     19     .    132    .    ASP    OD1    A     28     .    199    .    SER    OG     15.6287      2.64731  .     .         
 A     105    .    810    .    ASN    OD1    A     107    .    830    .    LYS    CD     14.6278      3.21398  .     .         
 A     102    .    787    .    ASP    O      A     131    .    1016   .    LYS    CD     14.1631      3.59545  .     .         
-Summary of contacts: count=4820 drawable=0 area=10487.8
+Summary of contacts: count=4820 drawable=86 area=10487.8
 
 
 > print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand --inter-residue
@@ -77,7 +77,7 @@ chn1  resi1  ic1  resn1  chn2  resi2  ic2  resn2  area        dist     tags  adj
 A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   .     .         
 A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  .     .         
 A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  .     .         
-Summary of contacts: count=4820 drawable=0 area=10487.8
+Summary of contacts: count=4820 drawable=86 area=10487.8
 
 
 > select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
@@ -120,7 +120,7 @@ Selections of atoms:
 
 > list-selections-of-contacts
 Selections of contacts:
-  name='cs1' count=5 drawable=0 area=33.8164
+  name='cs1' count=5 drawable=1 area=33.8164
 
 
 > print-history --last 5
@@ -137,7 +137,7 @@ load-atoms --file ./input/single/structure.pdb
 load-atoms --file ./input/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf=0:10}
 restrict-atoms {--tags-not het}
-construct-contacts --calculate-volumes
+construct-contacts --calculate-volumes --render-use '{--atom1 {--match r<83>} --min-seq-sep 1}'
 save-atoms --file './jobs_output/self_scripting/plain_atoms'
 save-contacts --file './jobs_output/self_scripting/plain_contacts'
 load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
