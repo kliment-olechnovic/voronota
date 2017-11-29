@@ -30,6 +30,12 @@ void run_loop(std::istream& input)
 {
 	common::ManipulationManagerForAtomsAndContacts manager;
 
+	manager.add_representations_of_atoms(std::vector<std::string>(1, "atoms"));
+	manager.set_atoms_representation_implemented_always(0, true);
+
+	manager.add_representations_of_contacts(std::vector<std::string>(1, "contacts"));
+	manager.set_contacts_representation_implemented_always(0, true);
+
 	while(input.good())
 	{
 		std::string line;

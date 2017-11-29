@@ -126,66 +126,42 @@ public:
 
 	bool add_representations_of_atoms(const std::vector<std::string>& names)
 	{
-		if(names.empty())
+		if(add_names_to_representations(names, atoms_representation_names_))
 		{
-			return false;
+			resize_visuals_in_atoms_display_states();
+			return true;
 		}
-
-		for(std::size_t i=0;i<names.size();i++)
-		{
-			const std::string& name=names[i];
-			if(name.empty())
-			{
-				return false;
-			}
-			else if(std::find(atoms_representation_names_.begin(), atoms_representation_names_.end(), name)!=atoms_representation_names_.end())
-			{
-				return false;
-			}
-		}
-
-		atoms_representation_names_.insert(atoms_representation_names_.end(), names.begin(), names.end());
-
-		resize_visuals_in_atoms_display_states();
-
-		return true;
+		return false;
 	}
 
 	bool add_representations_of_contacts(const std::vector<std::string>& names)
 	{
-		if(names.empty())
+		if(add_names_to_representations(names, contacts_representation_names_))
 		{
-			return false;
+			resize_visuals_in_contacts_display_states();
+			return true;
 		}
-
-		for(std::size_t i=0;i<names.size();i++)
-		{
-			const std::string& name=names[i];
-			if(name.empty())
-			{
-				return false;
-			}
-			else if(std::find(contacts_representation_names_.begin(), contacts_representation_names_.end(), name)!=contacts_representation_names_.end())
-			{
-				return false;
-			}
-		}
-
-		contacts_representation_names_.insert(contacts_representation_names_.end(), names.begin(), names.end());
-
-		resize_visuals_in_contacts_display_states();
-
-		return true;
+		return false;
 	}
 
-	bool set_atoms_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
+	bool set_atoms_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		return set_representation_implemented(atoms_representation_names_, name, statuses, atoms_display_states_);
+		return set_representation_implemented_always(atoms_representation_names_, representation_id, status, atoms_representations_implemented_always_);
 	}
 
-	bool set_contacts_representation_implemented(const std::string& name, const std::vector<bool>& statuses)
+	bool set_contacts_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		return set_representation_implemented(contacts_representation_names_, name, statuses, contacts_display_states_);
+		return set_representation_implemented_always(contacts_representation_names_, representation_id, status, contacts_representations_implemented_always_);
+	}
+
+	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(atoms_representation_names_, representation_id, statuses, atoms_display_states_);
+	}
+
+	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
 	}
 
 	bool executable(const std::string& command) const
@@ -345,6 +321,22 @@ public:
 			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_atoms);
 			record.changed_contacts=(record.changed_contacts || record.changed_atoms);
 			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_contacts);
+
+			if(record.changed_atoms && !atoms_representations_implemented_always_.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=atoms_representations_implemented_always_.begin();it!=atoms_representations_implemented_always_.end();++it)
+				{
+					set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
+				}
+			}
+
+			if(record.changed_contacts && !contacts_representations_implemented_always_.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=contacts_representations_implemented_always_.begin();it!=contacts_representations_implemented_always_.end();++it)
+				{
+					set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
+				}
+			}
 
 			if(record.successful)
 			{
@@ -1293,9 +1285,57 @@ private:
 		return id;
 	}
 
+	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
+	{
+		if(names.empty())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				return false;
+			}
+			else if(std::find(representations.begin(), representations.end(), name)!=representations.end())
+			{
+				return false;
+			}
+		}
+
+		representations.insert(representations.end(), names.begin(), names.end());
+
+		return true;
+	}
+
+	static bool set_representation_implemented_always(
+			const std::vector<std::string>& representations,
+			const std::size_t representation_id,
+			const bool status,
+			std::set<std::size_t>& representations_implemented_always)
+	{
+		if(representation_id>=representations.size())
+		{
+			return false;
+		}
+
+		if(status)
+		{
+			representations_implemented_always.insert(representation_id);
+		}
+		else
+		{
+			representations_implemented_always.erase(representation_id);
+		}
+
+		return true;
+	}
+
 	static bool set_representation_implemented(
 			const std::vector<std::string>& representations,
-			const std::string& name,
+			const std::size_t representation_id,
 			const std::vector<bool>& statuses,
 			std::vector<DisplayState>& display_states)
 	{
@@ -1303,8 +1343,6 @@ private:
 		{
 			return false;
 		}
-
-		const std::size_t representation_id=find_name_id(representations, name);
 
 		if(representation_id>=representations.size())
 		{
@@ -2615,6 +2653,8 @@ private:
 	AllowedCommandVerbs allowed_command_verbs_;
 	std::vector<std::string> atoms_representation_names_;
 	std::vector<std::string> contacts_representation_names_;
+	std::set<std::size_t> atoms_representations_implemented_always_;
+	std::set<std::size_t> contacts_representations_implemented_always_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
