@@ -2104,10 +2104,10 @@ private:
 
 		bool render=false;
 		CommandParametersForGenericSelecting render_parameters_for_selecting;
-		render_parameters_for_selecting.type_for_expression="render-use";
-		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
-		render_parameters_for_selecting.type_for_forced_id="render-id";
-		render_parameters_for_selecting.expression="{min-seq-sep 1}";
+		render_parameters_for_selecting.type_for_expression="--render-use";
+		render_parameters_for_selecting.type_for_full_residues="--render-full-residues";
+		render_parameters_for_selecting.type_for_forced_id="--render-id";
+		render_parameters_for_selecting.expression="{--min-seq-sep 1}";
 		render_parameters_for_selecting.full_residues=false;
 
 		while(input.good())
