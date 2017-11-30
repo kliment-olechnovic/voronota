@@ -284,6 +284,10 @@ public:
 				{
 					command_print_contacts(input, output_for_log, sink.output_stream);
 				}
+				else if(record.verb==allowed_command_verbs_.write_contacts_as_pymol_cgo)
+				{
+					command_write_contacts_as_pymol_cgo(input, output_for_log);
+				}
 				else if(record.verb==allowed_command_verbs_.list_selections_of_contacts)
 				{
 					command_list_selections_of_contacts(input, output_for_log);
@@ -385,6 +389,7 @@ private:
 		std::string hide_contacts;
 		std::string color_contacts;
 		std::string print_contacts;
+		std::string write_contacts_as_pymol_cgo;
 		std::string list_selections_of_contacts;
 		std::string delete_all_selections_of_contacts;
 		std::string delete_selections_of_contacts;
@@ -417,6 +422,7 @@ private:
 			hide_contacts("hide-contacts"),
 			color_contacts("color-contacts"),
 			print_contacts("print-contacts"),
+			write_contacts_as_pymol_cgo("write-contacts-as-pymol-cgo"),
 			list_selections_of_contacts("list-selections-of-contacts"),
 			delete_all_selections_of_contacts("delete-all-selections-of-contacts"),
 			delete_selections_of_contacts("delete-selections-of-contacts"),
@@ -447,6 +453,7 @@ private:
 			set_of_all.insert(hide_contacts);
 			set_of_all.insert(color_contacts);
 			set_of_all.insert(print_contacts);
+			set_of_all.insert(write_contacts_as_pymol_cgo);
 			set_of_all.insert(list_selections_of_contacts);
 			set_of_all.insert(delete_all_selections_of_contacts);
 			set_of_all.insert(delete_selections_of_contacts);
@@ -1368,7 +1375,11 @@ private:
 		return true;
 	}
 
-	static std::set<std::size_t> filter_drawable_implemented_ids(const std::vector<DisplayState>& display_states, const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids)
+	static std::set<std::size_t> filter_drawable_implemented_ids(
+			const std::vector<DisplayState>& display_states,
+			const std::set<std::size_t>& visual_ids,
+			const std::set<std::size_t>& ids,
+			const bool only_visible)
 	{
 		std::set<std::size_t> drawable_ids;
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -1378,13 +1389,16 @@ private:
 				bool good=false;
 				if(visual_ids.empty())
 				{
-					good=display_states[*it].implemented();
+					good=display_states[*it].implemented() && (!only_visible || display_states[*it].visible());
 				}
 				else
 				{
 					for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end() && !good;++jt)
 					{
-						good=(good || ((*jt)<display_states[*it].visuals.size() && display_states[*it].visuals[*jt].implemented));
+						good=(good ||
+								((*jt)<display_states[*it].visuals.size() &&
+										display_states[*it].visuals[*jt].implemented &&
+										(!only_visible || display_states[*it].visuals[*jt].visible)));
 					}
 				}
 
@@ -1395,6 +1409,14 @@ private:
 			}
 		}
 		return drawable_ids;
+	}
+
+	static std::set<std::size_t> filter_drawable_implemented_ids(
+			const std::vector<DisplayState>& display_states,
+			const std::set<std::size_t>& visual_ids,
+			const std::set<std::size_t>& ids)
+	{
+		return filter_drawable_implemented_ids(display_states, visual_ids, ids, false);
 	}
 
 	void assert_atoms_representations_availability() const
@@ -2541,6 +2563,108 @@ private:
 			output_for_log << "Summary of contacts: ";
 			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
 			output_for_log << "\n";
+		}
+	}
+
+	void command_write_contacts_as_pymol_cgo(std::istringstream& input, std::ostream& output_for_log)
+	{
+		assert_contacts_availability();
+		assert_contacts_representations_availability();
+
+		std::string file;
+		std::string name="contacts";
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
+
+		while(input.good())
+		{
+			CommandInputUtilities::Guard guard;
+			guard.on_iteration_start(input);
+			if(guard.token=="--file")
+			{
+				CommandInputUtilities::read_string_considering_quotes(input, file);
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="--name")
+			{
+				CommandInputUtilities::read_string_considering_quotes(input, name);
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_representation_selecting.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
+			guard.on_iteration_end(input);
+		}
+
+		if(file.empty())
+		{
+			throw std::runtime_error(std::string("Missing output file."));
+		}
+
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("Missing object name."));
+		}
+
+		if(parameters_for_representation_selecting.visual_ids_.empty())
+		{
+			parameters_for_representation_selecting.visual_ids_.insert(0);
+		}
+
+		if(parameters_for_representation_selecting.visual_ids_.size()>1)
+		{
+			throw std::runtime_error(std::string("More than one representation requested."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				contacts_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+				true);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable visible contacts selected."));
+		}
+
+		std::ofstream foutput(file.c_str(), std::ios::out);
+		if(!foutput.good())
+		{
+			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+		}
+
+		auxiliaries::OpenGLPrinter opengl_printer;
+		{
+			unsigned int prev_color=0;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t id=(*it);
+				for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids_.begin();jt!=parameters_for_representation_selecting.visual_ids_.end();++jt)
+				{
+					const std::size_t visual_id=(*jt);
+					if(visual_id<contacts_display_states_[id].visuals.size())
+					{
+						const DisplayState::Visual& dsv=contacts_display_states_[id].visuals[visual_id];
+						if(prev_color==0 || dsv.color!=prev_color)
+						{
+							opengl_printer.add_color(dsv.color);
+						}
+						prev_color=dsv.color;
+						opengl_printer.add(contacts_[id].value.graphics);
+					}
+				}
+			}
+		}
+		opengl_printer.print_pymol_script(name, true, foutput);
+
+		{
+			output_for_log << "Wrote contacts as PyMol CGO to file '" << file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(output_for_log);
+			output_for_log << ")\n";
 		}
 	}
 
