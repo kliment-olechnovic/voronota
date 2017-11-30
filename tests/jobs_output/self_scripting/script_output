@@ -123,12 +123,32 @@ Selections of contacts:
   name='cs1' count=5 drawable=1 area=33.8164
 
 
+> color-contacts 0x00FF00
+Summary of contacts: count=120 drawable=120 area=211.8
+
+
+> color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+Summary of contacts: count=25 drawable=25 area=52.3005
+
+
+> color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+Summary of contacts: count=58 drawable=58 area=99.5972
+
+
+> show-contacts
+Summary of contacts: count=120 drawable=120 area=211.8
+
+
+> write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts_f
+Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts.py' (count=12469 drawable=120 area=47017.2)
+
+
 > print-history --last 5
-select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
-print-atoms {--sel as1} --sort tags
-print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
-list-selections-of-atoms
-list-selections-of-contacts
+color-contacts 0x00FF00
+color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+show-contacts
+write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts_f
 
 
 > print-history
@@ -151,5 +171,10 @@ print-atoms {--sel as1} --sort tags
 print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
+color-contacts 0x00FF00
+color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+show-contacts
+write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts_f
 print-history --last 5
 
