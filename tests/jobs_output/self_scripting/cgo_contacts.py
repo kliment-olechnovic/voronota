@@ -1,6 +1,6 @@
 from pymol.cgo import *
 from pymol import cmd
-contacts_f = [COLOR, 0.000, 1.000, 0.000,
+contacts = [COLOR, 0.000, 1.000, 0.000,
 BEGIN, TRIANGLE_FAN,
 NORMAL, -0.665, -0.439, 0.605,
 VERTEX, 30.817, 21.092, 49.257,
@@ -7749,5 +7749,5 @@ NORMAL, -0.742, 0.079, 0.665,
 VERTEX, 23.046, 23.935, 54.095,
 END,
 ]
-cmd.load_cgo(contacts_f, 'contacts_f')
+cmd.load_cgo(contacts, 'contacts')
 cmd.set('two_sided_lighting', 'on')

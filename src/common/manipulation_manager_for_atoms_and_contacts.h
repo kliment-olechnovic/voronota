@@ -2573,6 +2573,7 @@ private:
 
 		std::string file;
 		std::string name="contacts";
+		bool wireframe=false;
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 
@@ -2588,6 +2589,11 @@ private:
 			else if(guard.token=="--name")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, name);
+				guard.on_token_processed(input);
+			}
+			else if(guard.token=="--wireframe")
+			{
+				wireframe=true;
 				guard.on_token_processed(input);
 			}
 			else if(parameters_for_selecting.read(guard.token, input))
@@ -2654,7 +2660,14 @@ private:
 							opengl_printer.add_color(dsv.color);
 						}
 						prev_color=dsv.color;
-						opengl_printer.add(contacts_[id].value.graphics);
+						if(wireframe)
+						{
+							opengl_printer.add_as_wireframe(contacts_[id].value.graphics);
+						}
+						else
+						{
+							opengl_printer.add(contacts_[id].value.graphics);
+						}
 					}
 				}
 			}
