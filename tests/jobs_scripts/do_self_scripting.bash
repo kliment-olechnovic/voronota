@@ -36,7 +36,10 @@ color-contacts 0x00FF00
 color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
 color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
 show-contacts
-write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts_f
+write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts
+
+color-contacts 0xFF00FF
+write-contacts-as-pymol-cgo --wireframe --file '$SUBDIR/cgo_contacts_wf.py' --name contacts_wf
 
 print-history --last 5
 print-history

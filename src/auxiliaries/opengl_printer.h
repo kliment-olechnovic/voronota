@@ -128,6 +128,60 @@ public:
 		string_stream_ << object_typer_.label << " " << remove_unsafe_characters_in_string(label) << " ";
 	}
 
+	void add_as_wireframe(const std::string& str)
+	{
+		std::istringstream input(str);
+		std::ostringstream output;
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.tstrip || type.tfan || type.tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals) && vertices.size()>=3)
+				{
+					if(type.tstrip)
+					{
+						if(vertices.size()==3)
+						{
+							output << object_typer_.lloop << " ";
+							write_points_vector_to_stream(vertices, output);
+						}
+						else
+						{
+							output << object_typer_.lstrip << " 2 ";
+							write_point_to_stream(vertices[0], output);
+							write_point_to_stream(vertices[1], output);
+							for(std::size_t i=0;(i+2)<vertices.size();i++)
+							{
+								output << object_typer_.lstrip << " 3 ";
+								write_point_to_stream(vertices[i], output);
+								write_point_to_stream(vertices[i+2], output);
+								write_point_to_stream(vertices[i+1], output);
+							}
+						}
+					}
+					else
+					{
+						output << object_typer_.lloop << " " << (vertices.size()-1) << " ";
+						for(std::size_t i=1;i<vertices.size();i++)
+						{
+							write_point_to_stream(vertices[i], output);
+						}
+					}
+				}
+			}
+			else
+			{
+				output << type_str << " ";
+			}
+		}
+		add(output.str());
+	}
+
 	std::string str() const
 	{
 		return string_stream_.str();
