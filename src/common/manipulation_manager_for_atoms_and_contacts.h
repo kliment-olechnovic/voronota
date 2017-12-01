@@ -929,6 +929,82 @@ private:
 		}
 	};
 
+	class CommandParametersForGenericOutputDestinations
+	{
+	public:
+		std::string file;
+		bool use_stdout;
+		std::ofstream foutput;
+
+		explicit CommandParametersForGenericOutputDestinations(const bool use_stdout) : use_stdout(use_stdout)
+		{
+		}
+
+		bool read(const std::string& type, std::istream& input)
+		{
+			if(type=="--file")
+			{
+				std::string str;
+				CommandInputUtilities::read_string_considering_quotes(input, str);
+				if(!str.empty() && str.find_first_of("?*$'\";:<>,|")==std::string::npos)
+				{
+					file=str;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid file name '")+str+"'.");
+				}
+			}
+			else if(type=="--use-stdout")
+			{
+				use_stdout=true;
+			}
+			else if(type=="--no-stdout")
+			{
+				use_stdout=false;
+			}
+			else
+			{
+				return false;
+			}
+			return true;
+		}
+
+		std::vector<std::ostream*> get_output_destinations(std::ostream* stdout_ptr, const bool allow_empty_list=false)
+		{
+			std::vector<std::ostream*> list;
+
+			if(use_stdout && stdout_ptr!=0)
+			{
+				list.push_back(stdout_ptr);
+			}
+
+			if(!file.empty())
+			{
+				if(!foutput.is_open())
+				{
+					foutput.open(file.c_str(), std::ios::out);
+					if(!foutput.good())
+					{
+						throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+					}
+				}
+				if(!foutput.good())
+				{
+					throw std::runtime_error(std::string("Failed to use file '")+file+"' for writing.");
+				}
+				list.push_back(&foutput);
+			}
+
+			if(list.empty() && !allow_empty_list)
+			{
+				throw std::runtime_error(std::string("No output destinations specified."));
+			}
+
+			return list;
+		}
+	};
+
 	class TablePrinting
 	{
 	public:
@@ -1809,40 +1885,36 @@ private:
 		}
 	}
 
-	void command_save_atoms(std::istringstream& input, std::ostream& output) const
+	void command_save_atoms(std::istringstream& input, std::ostream& output_for_log) const
 	{
 		assert_atoms_availability();
 
-		std::string file;
+		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
 		while(input.good())
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="--file")
+			if(parameters_for_output_destinations.read(guard.token, input))
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, file);
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		if(file.empty())
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+		for(std::size_t i=0;i<outputs.size();i++)
 		{
-			throw std::runtime_error(std::string("Missing output file."));
+			std::ostream& output=(*(outputs[i]));
+			auxiliaries::IOUtilities().write_set(atoms_, output);
 		}
 
-		std::ofstream foutput(file.c_str(), std::ios::out);
-		if(foutput.good())
+		if(!parameters_for_output_destinations.file.empty())
 		{
-			auxiliaries::IOUtilities().write_set(atoms_, foutput);
-			output << "Wrote atoms to file '" << file << "' (";
-			SummaryOfAtoms::collect_summary(atoms_).print(output);
-			output << ")\n";
-		}
-		else
-		{
-			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+			output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' (";
+			SummaryOfAtoms::collect_summary(atoms_).print(output_for_log);
+			output_for_log << ")\n";
 		}
 	}
 
@@ -2057,6 +2129,7 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericTablePrinting parameters_for_printing;
+		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
 
 		while(input.good())
 		{
@@ -2070,6 +2143,10 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
+			else if(parameters_for_output_destinations.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
 			guard.on_iteration_end(input);
 		}
 
@@ -2079,7 +2156,13 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output_for_content);
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_content);
+
+		for(std::size_t i=0;i<outputs.size();i++)
+		{
+			std::ostream& output=(*(outputs[i]));
+			TablePrinting::print_atoms(atoms_, ids, parameters_for_printing, output);
+		}
 
 		{
 			output_for_log << "Summary of atoms: ";
@@ -2244,41 +2327,43 @@ private:
 		}
 	}
 
-	void command_save_contacts(std::istringstream& input, std::ostream& output) const
+	void command_save_contacts(std::istringstream& input, std::ostream& output_for_log) const
 	{
 		assert_contacts_availability();
 
-		std::string file;
+		bool no_graphics=false;
+		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
 		while(input.good())
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="--file")
+			if(guard.token=="--no-graphics")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, file);
+				no_graphics=true;
+				guard.on_token_processed(input);
+			}
+			else if(parameters_for_output_destinations.read(guard.token, input))
+			{
 				guard.on_token_processed(input);
 			}
 			guard.on_iteration_end(input);
 		}
 
-		if(file.empty())
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+		for(std::size_t i=0;i<outputs.size();i++)
 		{
-			throw std::runtime_error(std::string("Missing output file."));
+			std::ostream& output=(*(outputs[i]));
+			enabled_output_of_ContactValue_graphics()=!no_graphics;
+			auxiliaries::IOUtilities().write_set(contacts_, output);
 		}
 
-		std::ofstream foutput(file.c_str(), std::ios::out);
-		if(foutput.good())
+		if(!parameters_for_output_destinations.file.empty())
 		{
-			enabled_output_of_ContactValue_graphics()=true;
-			auxiliaries::IOUtilities().write_set(contacts_, foutput);
-			output << "Wrote contacts to file '" << file << "' (";
-			SummaryOfContacts::collect_summary(contacts_).print(output);
-			output << ")\n";
-		}
-		else
-		{
-			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+			output_for_log << "Wrote contacts to file '" << parameters_for_output_destinations.file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(output_for_log);
+			output_for_log << ")\n";
 		}
 	}
 
@@ -2535,6 +2620,7 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForContactsTablePrinting parameters_for_printing;
+		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
 
 		while(input.good())
 		{
@@ -2548,6 +2634,10 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
+			else if(parameters_for_output_destinations.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
 			guard.on_iteration_end(input);
 		}
 
@@ -2557,7 +2647,13 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output_for_content);
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_content);
+
+		for(std::size_t i=0;i<outputs.size();i++)
+		{
+			std::ostream& output=(*(outputs[i]));
+			TablePrinting::print_contacts(atoms_, contacts_, ids, parameters_for_printing, output);
+		}
 
 		{
 			output_for_log << "Summary of contacts: ";
@@ -2571,22 +2667,17 @@ private:
 		assert_contacts_availability();
 		assert_contacts_representations_availability();
 
-		std::string file;
 		std::string name="contacts";
 		bool wireframe=false;
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
+		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
 		while(input.good())
 		{
 			CommandInputUtilities::Guard guard;
 			guard.on_iteration_start(input);
-			if(guard.token=="--file")
-			{
-				CommandInputUtilities::read_string_considering_quotes(input, file);
-				guard.on_token_processed(input);
-			}
-			else if(guard.token=="--name")
+			if(guard.token=="--name")
 			{
 				CommandInputUtilities::read_string_considering_quotes(input, name);
 				guard.on_token_processed(input);
@@ -2604,12 +2695,11 @@ private:
 			{
 				guard.on_token_processed(input);
 			}
+			else if(parameters_for_output_destinations.read(guard.token, input))
+			{
+				guard.on_token_processed(input);
+			}
 			guard.on_iteration_end(input);
-		}
-
-		if(file.empty())
-		{
-			throw std::runtime_error(std::string("Missing output file."));
 		}
 
 		if(name.empty())
@@ -2637,11 +2727,7 @@ private:
 			throw std::runtime_error(std::string("No drawable visible contacts selected."));
 		}
 
-		std::ofstream foutput(file.c_str(), std::ios::out);
-		if(!foutput.good())
-		{
-			throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
-		}
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
 
 		auxiliaries::OpenGLPrinter opengl_printer;
 		{
@@ -2672,10 +2758,16 @@ private:
 				}
 			}
 		}
-		opengl_printer.print_pymol_script(name, true, foutput);
 
+		for(std::size_t i=0;i<outputs.size();i++)
 		{
-			output_for_log << "Wrote contacts as PyMol CGO to file '" << file << "' (";
+			std::ostream& output=(*(outputs[i]));
+			opengl_printer.print_pymol_script(name, true, output);
+		}
+
+		if(!parameters_for_output_destinations.file.empty())
+		{
+			output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' (";
 			SummaryOfContacts::collect_summary(contacts_).print(output_for_log);
 			output_for_log << ")\n";
 		}
