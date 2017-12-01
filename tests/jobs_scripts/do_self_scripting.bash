@@ -19,12 +19,12 @@ select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
-print-contacts {--sel cs1} --sort-r area
+print-contacts {--sel cs1} --sort-r area --file '$SUBDIR/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --sort-r area --limit 3 --expand --inter-residue
 
 select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
-print-atoms {--sel as1} --sort tags
+print-atoms {--sel as1} --sort tags --file '$SUBDIR/printed_atoms'
 print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 
 rename-selection-of-atoms nosel1 nodel2
