@@ -92,6 +92,36 @@ public:
 
 	ManipulationManagerForAtomsAndContacts()
 	{
+		map_of_command_function_pointers_.insert(std::make_pair("load-atoms", &ManipulationManagerForAtomsAndContacts::command_load_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("restrict-atoms", &ManipulationManagerForAtomsAndContacts::command_restrict_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("save-atoms", &ManipulationManagerForAtomsAndContacts::command_save_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("select-atoms", &ManipulationManagerForAtomsAndContacts::command_select_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("mark-atoms", &ManipulationManagerForAtomsAndContacts::command_mark_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("unmark-atoms", &ManipulationManagerForAtomsAndContacts::command_unmark_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("show-atoms", &ManipulationManagerForAtomsAndContacts::command_show_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &ManipulationManagerForAtomsAndContacts::command_hide_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &ManipulationManagerForAtomsAndContacts::command_color_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &ManipulationManagerForAtomsAndContacts::command_print_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-atoms", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("construct-contacts", &ManipulationManagerForAtomsAndContacts::command_construct_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("save-contacts", &ManipulationManagerForAtomsAndContacts::command_save_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("load-contacts", &ManipulationManagerForAtomsAndContacts::command_load_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("select-contacts", &ManipulationManagerForAtomsAndContacts::command_select_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("mark-contacts", &ManipulationManagerForAtomsAndContacts::command_mark_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("unmark-contacts", &ManipulationManagerForAtomsAndContacts::command_unmark_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("show-contacts", &ManipulationManagerForAtomsAndContacts::command_show_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("hide-contacts", &ManipulationManagerForAtomsAndContacts::command_hide_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("color-contacts", &ManipulationManagerForAtomsAndContacts::command_color_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("print-contacts", &ManipulationManagerForAtomsAndContacts::command_print_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("write-contacts-as-pymol-cgo", &ManipulationManagerForAtomsAndContacts::command_write_contacts_as_pymol_cgo));
+		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-contacts", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("print-history", &ManipulationManagerForAtomsAndContacts::command_print_history));
 	}
 
 	const std::vector<Atom>& atoms() const
@@ -169,7 +199,7 @@ public:
 		std::string verb;
 		std::istringstream input(command);
 		input >> verb;
-		return (!verb.empty() && allowed_command_verbs_.set_of_all.count(verb)>0);
+		return (!verb.empty() && map_of_command_function_pointers_.count(verb)>0);
 	}
 
 	CommandRecord execute(const std::string& command, CommandOutputSink& sink)
@@ -179,7 +209,7 @@ public:
 		std::istringstream input(command);
 		input >> record.verb >> std::ws;
 
-		if(!record.verb.empty() && allowed_command_verbs_.set_of_all.count(record.verb)>0)
+		if(!record.verb.empty() && map_of_command_function_pointers_.count(record.verb)>0)
 		{
 			sync_selections_with_display_states_if_needed(command);
 
@@ -190,130 +220,8 @@ public:
 
 			try
 			{
-				if(record.verb==allowed_command_verbs_.load_atoms)
-				{
-					command_load_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.restrict_atoms)
-				{
-					command_restrict_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.save_atoms)
-				{
-					command_save_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.select_atoms)
-				{
-					command_select_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.mark_atoms)
-				{
-					command_mark_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.unmark_atoms)
-				{
-					command_unmark_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.show_atoms)
-				{
-					command_show_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.hide_atoms)
-				{
-					command_hide_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.color_atoms)
-				{
-					command_color_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.print_atoms)
-				{
-					command_print_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.list_selections_of_atoms)
-				{
-					command_list_selections_of_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.delete_all_selections_of_atoms)
-				{
-					command_delete_all_selections_of_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.delete_selections_of_atoms)
-				{
-					command_delete_selections_of_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.rename_selection_of_atoms)
-				{
-					command_rename_selection_of_atoms(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.construct_contacts)
-				{
-					command_construct_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.save_contacts)
-				{
-					command_save_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.load_contacts)
-				{
-					command_load_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.select_contacts)
-				{
-					command_select_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.mark_contacts)
-				{
-					command_mark_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.unmark_contacts)
-				{
-					command_unmark_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.show_contacts)
-				{
-					command_show_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.hide_contacts)
-				{
-					command_hide_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.color_contacts)
-				{
-					command_color_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.print_contacts)
-				{
-					command_print_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.write_contacts_as_pymol_cgo)
-				{
-					command_write_contacts_as_pymol_cgo(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.list_selections_of_contacts)
-				{
-					command_list_selections_of_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.delete_all_selections_of_contacts)
-				{
-					command_delete_all_selections_of_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.delete_selections_of_contacts)
-				{
-					command_delete_selections_of_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.rename_selection_of_contacts)
-				{
-					command_rename_selection_of_contacts(cargs);
-				}
-				else if(record.verb==allowed_command_verbs_.print_history)
-				{
-					command_print_history(cargs);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Unrecognized command."));
-				}
+				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(record.verb)->second;
+				(this->*cfp)(cargs);
 				record.successful=true;
 			}
 			catch(const std::exception& e)
@@ -365,7 +273,7 @@ public:
 		return commands_history_;
 	}
 
-protected:
+private:
 	class CommandArguments
 	{
 	public:
@@ -395,105 +303,7 @@ protected:
 		}
 	};
 
-private:
-	struct AllowedCommandVerbs
-	{
-		std::string load_atoms;
-		std::string restrict_atoms;
-		std::string save_atoms;
-		std::string select_atoms;
-		std::string mark_atoms;
-		std::string unmark_atoms;
-		std::string show_atoms;
-		std::string hide_atoms;
-		std::string color_atoms;
-		std::string print_atoms;
-		std::string list_selections_of_atoms;
-		std::string delete_all_selections_of_atoms;
-		std::string delete_selections_of_atoms;
-		std::string rename_selection_of_atoms;
-		std::string construct_contacts;
-		std::string save_contacts;
-		std::string load_contacts;
-		std::string select_contacts;
-		std::string mark_contacts;
-		std::string unmark_contacts;
-		std::string show_contacts;
-		std::string hide_contacts;
-		std::string color_contacts;
-		std::string print_contacts;
-		std::string write_contacts_as_pymol_cgo;
-		std::string list_selections_of_contacts;
-		std::string delete_all_selections_of_contacts;
-		std::string delete_selections_of_contacts;
-		std::string rename_selection_of_contacts;
-		std::string print_history;
-		std::set<std::string> set_of_all;
-
-		AllowedCommandVerbs() :
-			load_atoms("load-atoms"),
-			restrict_atoms("restrict-atoms"),
-			save_atoms("save-atoms"),
-			select_atoms("select-atoms"),
-			mark_atoms("mark-atoms"),
-			unmark_atoms("unmark-atoms"),
-			show_atoms("show-atoms"),
-			hide_atoms("hide-atoms"),
-			color_atoms("color-atoms"),
-			print_atoms("print-atoms"),
-			list_selections_of_atoms("list-selections-of-atoms"),
-			delete_all_selections_of_atoms("delete-all-selections-of-atoms"),
-			delete_selections_of_atoms("delete-selections-of-atoms"),
-			rename_selection_of_atoms("rename-selection-of-atoms"),
-			construct_contacts("construct-contacts"),
-			save_contacts("save-contacts"),
-			load_contacts("load-contacts"),
-			select_contacts("select-contacts"),
-			mark_contacts("mark-contacts"),
-			unmark_contacts("unmark-contacts"),
-			show_contacts("show-contacts"),
-			hide_contacts("hide-contacts"),
-			color_contacts("color-contacts"),
-			print_contacts("print-contacts"),
-			write_contacts_as_pymol_cgo("write-contacts-as-pymol-cgo"),
-			list_selections_of_contacts("list-selections-of-contacts"),
-			delete_all_selections_of_contacts("delete-all-selections-of-contacts"),
-			delete_selections_of_contacts("delete-selections-of-contacts"),
-			rename_selection_of_contacts("rename-selection-of-contacts"),
-			print_history("print-history")
-		{
-			set_of_all.insert(load_atoms);
-			set_of_all.insert(restrict_atoms);
-			set_of_all.insert(save_atoms);
-			set_of_all.insert(select_atoms);
-			set_of_all.insert(mark_atoms);
-			set_of_all.insert(unmark_atoms);
-			set_of_all.insert(show_atoms);
-			set_of_all.insert(hide_atoms);
-			set_of_all.insert(color_atoms);
-			set_of_all.insert(print_atoms);
-			set_of_all.insert(list_selections_of_atoms);
-			set_of_all.insert(delete_all_selections_of_atoms);
-			set_of_all.insert(delete_selections_of_atoms);
-			set_of_all.insert(rename_selection_of_atoms);
-			set_of_all.insert(construct_contacts);
-			set_of_all.insert(save_contacts);
-			set_of_all.insert(load_contacts);
-			set_of_all.insert(select_contacts);
-			set_of_all.insert(mark_contacts);
-			set_of_all.insert(unmark_contacts);
-			set_of_all.insert(show_contacts);
-			set_of_all.insert(hide_contacts);
-			set_of_all.insert(color_contacts);
-			set_of_all.insert(print_contacts);
-			set_of_all.insert(write_contacts_as_pymol_cgo);
-			set_of_all.insert(list_selections_of_contacts);
-			set_of_all.insert(delete_all_selections_of_contacts);
-			set_of_all.insert(delete_selections_of_contacts);
-			set_of_all.insert(rename_selection_of_contacts);
-			set_of_all.insert(print_history);
-		}
-	};
+	typedef void (ManipulationManagerForAtomsAndContacts::*CommandFunctionPointer)(CommandArguments&);
 
 	class SummaryOfAtoms
 	{
@@ -1918,7 +1728,7 @@ private:
 		}
 	}
 
-	void command_save_atoms(CommandArguments& cargs) const
+	void command_save_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
@@ -2176,7 +1986,7 @@ private:
 		}
 	}
 
-	void command_print_atoms(CommandArguments& cargs) const
+	void command_print_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
@@ -2224,7 +2034,7 @@ private:
 		}
 	}
 
-	void command_list_selections_of_atoms(CommandArguments& cargs) const
+	void command_list_selections_of_atoms(CommandArguments& cargs)
 	{
 		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_atoms_selections_availability();
@@ -2380,7 +2190,7 @@ private:
 		}
 	}
 
-	void command_save_contacts(CommandArguments& cargs) const
+	void command_save_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 
@@ -2687,7 +2497,7 @@ private:
 		}
 	}
 
-	void command_print_contacts(CommandArguments& cargs) const
+	void command_print_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 
@@ -2846,7 +2656,7 @@ private:
 		}
 	}
 
-	void command_list_selections_of_contacts(CommandArguments& cargs) const
+	void command_list_selections_of_contacts(CommandArguments& cargs)
 	{
 		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_contacts_selections_availability();
@@ -2913,7 +2723,7 @@ private:
 		cargs.output_for_log << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_print_history(CommandArguments& cargs) const
+	void command_print_history(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 
@@ -2952,7 +2762,7 @@ private:
 		}
 	}
 
-	AllowedCommandVerbs allowed_command_verbs_;
+	std::map<std::string, CommandFunctionPointer> map_of_command_function_pointers_;
 	std::vector<std::string> atoms_representation_names_;
 	std::vector<std::string> contacts_representation_names_;
 	std::set<std::size_t> atoms_representations_implemented_always_;
