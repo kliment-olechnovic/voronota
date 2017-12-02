@@ -186,127 +186,129 @@ public:
 			std::ostringstream output_for_log;
 			std::ostringstream output_for_errors;
 
+			CommandArguments cargs(input, output_for_log, sink.output_stream, sink.output_set_of_ids);
+
 			try
 			{
 				if(record.verb==allowed_command_verbs_.load_atoms)
 				{
-					command_load_atoms(input, output_for_log, record.changed_atoms);
+					command_load_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.restrict_atoms)
 				{
-					command_restrict_atoms(input, output_for_log, record.changed_atoms);
+					command_restrict_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.save_atoms)
 				{
-					command_save_atoms(input, output_for_log);
+					command_save_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.select_atoms)
 				{
-					command_select_atoms(input, output_for_log, sink.output_set_of_ids);
+					command_select_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.mark_atoms)
 				{
-					command_mark_atoms(true, input, output_for_log, record.changed_atoms_display_states);
+					command_mark_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.unmark_atoms)
 				{
-					command_mark_atoms(false, input, output_for_log, record.changed_atoms_display_states);
+					command_unmark_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.show_atoms)
 				{
-					command_show_atoms(true, input, output_for_log, record.changed_atoms_display_states);
+					command_show_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.hide_atoms)
 				{
-					command_show_atoms(false, input, output_for_log, record.changed_atoms_display_states);
+					command_hide_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.color_atoms)
 				{
-					command_color_atoms(input, output_for_log, record.changed_atoms_display_states);
+					command_color_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.print_atoms)
 				{
-					command_print_atoms(input, output_for_log, sink.output_stream);
+					command_print_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.list_selections_of_atoms)
 				{
-					command_list_selections_of_atoms(input, output_for_log);
+					command_list_selections_of_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.delete_all_selections_of_atoms)
 				{
-					command_delete_all_selections_of_atoms(input, output_for_log);
+					command_delete_all_selections_of_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.delete_selections_of_atoms)
 				{
-					command_delete_selections_of_atoms(input, output_for_log);
+					command_delete_selections_of_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.rename_selection_of_atoms)
 				{
-					command_rename_selection_of_atoms(input, output_for_log);
+					command_rename_selection_of_atoms(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.construct_contacts)
 				{
-					command_construct_contacts(input, output_for_log, record.changed_contacts);
+					command_construct_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.save_contacts)
 				{
-					command_save_contacts(input, output_for_log);
+					command_save_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.load_contacts)
 				{
-					command_load_contacts(input, output_for_log, record.changed_contacts);
+					command_load_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.select_contacts)
 				{
-					command_select_contacts(input, output_for_log, sink.output_set_of_ids);
+					command_select_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.mark_contacts)
 				{
-					command_mark_contacts(true, input, output_for_log, record.changed_contacts_display_states);
+					command_mark_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.unmark_contacts)
 				{
-					command_mark_contacts(false, input, output_for_log, record.changed_contacts_display_states);
+					command_unmark_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.show_contacts)
 				{
-					command_show_contacts(true, input, output_for_log, record.changed_contacts_display_states);
+					command_show_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.hide_contacts)
 				{
-					command_show_contacts(false, input, output_for_log, record.changed_contacts_display_states);
+					command_hide_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.color_contacts)
 				{
-					command_color_contacts(input, output_for_log, record.changed_contacts_display_states);
+					command_color_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.print_contacts)
 				{
-					command_print_contacts(input, output_for_log, sink.output_stream);
+					command_print_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.write_contacts_as_pymol_cgo)
 				{
-					command_write_contacts_as_pymol_cgo(input, output_for_log);
+					command_write_contacts_as_pymol_cgo(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.list_selections_of_contacts)
 				{
-					command_list_selections_of_contacts(input, output_for_log);
+					command_list_selections_of_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.delete_all_selections_of_contacts)
 				{
-					command_delete_all_selections_of_contacts(input, output_for_log);
+					command_delete_all_selections_of_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.delete_selections_of_contacts)
 				{
-					command_delete_selections_of_contacts(input, output_for_log);
+					command_delete_selections_of_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.rename_selection_of_contacts)
 				{
-					command_rename_selection_of_contacts(input, output_for_log);
+					command_rename_selection_of_contacts(cargs);
 				}
 				else if(record.verb==allowed_command_verbs_.print_history)
 				{
-					command_print_history(input, sink.output_stream);
+					command_print_history(cargs);
 				}
 				else
 				{
@@ -322,9 +324,10 @@ public:
 			record.output_log=output_for_log.str();
 			record.output_error=output_for_errors.str();
 
-			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_atoms);
-			record.changed_contacts=(record.changed_contacts || record.changed_atoms);
-			record.changed_atoms_display_states=(record.changed_atoms_display_states || record.changed_contacts);
+			record.changed_atoms=cargs.changed_atoms;
+			record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
+			record.changed_atoms_display_states=(cargs.changed_atoms_display_states || record.changed_atoms);
+			record.changed_contacts_display_states=(cargs.changed_contacts_display_states || record.changed_contacts);
 
 			if(record.changed_atoms && !atoms_representations_implemented_always_.empty())
 			{
@@ -361,6 +364,36 @@ public:
 	{
 		return commands_history_;
 	}
+
+protected:
+	class CommandArguments
+	{
+	public:
+		std::istream& input;
+		std::ostream& output_for_log;
+		std::ostream& output_for_data;
+		std::set<std::size_t>& output_set_of_ids;
+		bool changed_atoms;
+		bool changed_contacts;
+		bool changed_atoms_display_states;
+		bool changed_contacts_display_states;
+
+		CommandArguments(
+				std::istream& input,
+				std::ostream& output_for_log,
+				std::ostream& output_for_data,
+				std::set<std::size_t>& output_set_of_ids) :
+					input(input),
+					output_for_log(output_for_log),
+					output_for_data(output_for_data),
+					output_set_of_ids(output_set_of_ids),
+					changed_atoms(false),
+					changed_contacts(false),
+					changed_atoms_display_states(false),
+					changed_contacts_display_states(false)
+		{
+		}
+	};
 
 private:
 	struct AllowedCommandVerbs
@@ -1713,7 +1746,7 @@ private:
 		}
 	}
 
-	void command_load_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
+	void command_load_atoms(CommandArguments& cargs)
 	{
 		ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
 		std::string atoms_file;
@@ -1722,51 +1755,51 @@ private:
 		bool only_default_radius=false;
 		std::string format="pdb";
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--file")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, atoms_file);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, atoms_file);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--radii-file")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, radii_file);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, radii_file);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--default-radius")
 			{
-				input >> default_radius;
-				guard.on_token_processed(input);
+				cargs.input >> default_radius;
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--same-radius-for-all")
 			{
 				only_default_radius=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--format")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, format);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, format);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--include-heteroatoms")
 			{
 				collect_atomic_balls_from_file.include_heteroatoms=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--include-hydrogens")
 			{
 				collect_atomic_balls_from_file.include_hydrogens=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--as-assembly")
 			{
 				collect_atomic_balls_from_file.multimodel_chains=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(atoms_file.empty())
@@ -1821,11 +1854,11 @@ private:
 			else
 			{
 				reset_atoms(atoms);
-				changed_atoms=true;
+				cargs.changed_atoms=true;
 
-				output << "Read atoms from file '" << atoms_file << "' (";
-				SummaryOfAtoms::collect_summary(atoms_).print(output);
-				output << ")\n";
+				cargs.output_for_log << "Read atoms from file '" << atoms_file << "' (";
+				SummaryOfAtoms::collect_summary(atoms_).print(cargs.output_for_log);
+				cargs.output_for_log << ")\n";
 			}
 		}
 		else
@@ -1834,21 +1867,21 @@ private:
 		}
 	}
 
-	void command_restrict_atoms(std::istringstream& input, std::ostream& output, bool& changed_atoms)
+	void command_restrict_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -1869,37 +1902,37 @@ private:
 			const SummaryOfAtoms old_summary=SummaryOfAtoms::collect_summary(atoms_);
 
 			reset_atoms(atoms);
-			changed_atoms=true;
+			cargs.changed_atoms=true;
 
-			output << "Restricted atoms from (";
-			old_summary.print(output);
-			output << ") to (";
-			SummaryOfAtoms::collect_summary(atoms_).print(output);
-			output << ")\n";
+			cargs.output_for_log << "Restricted atoms from (";
+			old_summary.print(cargs.output_for_log);
+			cargs.output_for_log << ") to (";
+			SummaryOfAtoms::collect_summary(atoms_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 		else
 		{
-			output << "No need to restrict because all atoms were selected (";
-			SummaryOfAtoms::collect_summary(atoms_).print(output);
-			output << ")\n";
+			cargs.output_for_log << "No need to restrict because all atoms were selected (";
+			SummaryOfAtoms::collect_summary(atoms_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 	}
 
-	void command_save_atoms(std::istringstream& input, std::ostream& output_for_log) const
+	void command_save_atoms(CommandArguments& cargs) const
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_output_destinations.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_output_destinations.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
@@ -1912,33 +1945,33 @@ private:
 
 		if(!parameters_for_output_destinations.file.empty())
 		{
-			output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' (";
-			SummaryOfAtoms::collect_summary(atoms_).print(output_for_log);
-			output_for_log << ")\n";
+			cargs.output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' (";
+			SummaryOfAtoms::collect_summary(atoms_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 	}
 
-	void command_select_atoms(std::istringstream& input, std::ostream& output_for_log, std::set<std::size_t>& output_for_ids)
+	void command_select_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		std::string name;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--name")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, name);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, name);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_selecting.read(guard.token, input))
+			else if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -1948,35 +1981,45 @@ private:
 		}
 
 		{
-			output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 
 		if(!name.empty())
 		{
 			selection_manager_.set_atoms_selection(name, ids);
-			output_for_log << "Set selection of atoms named '" << name << "'\n";
+			cargs.output_for_log << "Set selection of atoms named '" << name << "'\n";
 		}
 
-		output_for_ids.swap(ids);
+		cargs.output_set_of_ids.swap(ids);
 	}
 
-	void command_mark_atoms(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	void command_mark_atoms(CommandArguments& cargs)
+	{
+		configurable_command_mark_atoms(true, cargs);
+	}
+
+	void command_unmark_atoms(CommandArguments& cargs)
+	{
+		configurable_command_mark_atoms(false, cargs);
+	}
+
+	void configurable_command_mark_atoms(const bool positive, CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
@@ -1996,17 +2039,27 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
-			changed_atoms_display_states=true;
+			cargs.changed_atoms_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_show_atoms(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	void command_show_atoms(CommandArguments& cargs)
+	{
+		configurable_command_show_atoms(true, cargs);
+	}
+
+	void command_hide_atoms(CommandArguments& cargs)
+	{
+		configurable_command_show_atoms(false, cargs);
+	}
+
+	void configurable_command_show_atoms(const bool positive, CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 		assert_atoms_representations_availability();
@@ -2014,19 +2067,19 @@ private:
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representation_names_);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_representation_selecting.read(guard.token, input))
+			else if(parameters_for_representation_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(positive && parameters_for_representation_selecting.visual_ids_.empty())
@@ -2052,17 +2105,17 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
-			changed_atoms_display_states=true;
+			cargs.changed_atoms_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_color_atoms(std::istringstream& input, std::ostream& output_for_log, bool& changed_atoms_display_states)
+	void command_color_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 		assert_atoms_representations_availability();
@@ -2071,24 +2124,24 @@ private:
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representation_names_);
 		CommandParametersForGenericColoring parameters_for_coloring;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_representation_selecting.read(guard.token, input))
+			else if(parameters_for_representation_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_coloring.read(guard.token, input))
+			else if(parameters_for_coloring.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(parameters_for_coloring.color==0)
@@ -2113,17 +2166,17 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
-			changed_atoms_display_states=true;
+			cargs.changed_atoms_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_print_atoms(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	void command_print_atoms(CommandArguments& cargs) const
 	{
 		assert_atoms_availability();
 
@@ -2131,23 +2184,23 @@ private:
 		CommandParametersForGenericTablePrinting parameters_for_printing;
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_printing.read(guard.token, input))
+			else if(parameters_for_printing.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_output_destinations.read(guard.token, input))
+			else if(parameters_for_output_destinations.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -2156,7 +2209,7 @@ private:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_content);
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_data);
 
 		for(std::size_t i=0;i<outputs.size();i++)
 		{
@@ -2165,40 +2218,40 @@ private:
 		}
 
 		{
-			output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_list_selections_of_atoms(std::istringstream& input, std::ostream& output) const
+	void command_list_selections_of_atoms(CommandArguments& cargs) const
 	{
-		CommandInputUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_atoms_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_atoms_selections();
-		output << "Selections of atoms:\n";
+		cargs.output_for_log << "Selections of atoms:\n";
 		for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 		{
-			output << "  name='" << (it->first) << "' ";
-			SummaryOfAtoms::collect_summary(atoms_, it->second).print(output);
-			output << "\n";
+			cargs.output_for_log << "  name='" << (it->first) << "' ";
+			SummaryOfAtoms::collect_summary(atoms_, it->second).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_delete_all_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	void command_delete_all_selections_of_atoms(CommandArguments& cargs)
 	{
-		CommandInputUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_atoms_selections_availability();
 		selection_manager_.delete_atoms_selections();
-		output << "Removed all selections of atoms\n";
+		cargs.output_for_log << "Removed all selections of atoms\n";
 	}
 
-	void command_delete_selections_of_atoms(std::istringstream& input, std::ostream& output)
+	void command_delete_selections_of_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(cargs.input, names);
 
 		if(names.empty())
 		{
@@ -2212,20 +2265,20 @@ private:
 			selection_manager_.delete_atoms_selection(names[i]);
 		}
 
-		output << "Removed selections of atoms:";
+		cargs.output_for_log << "Removed selections of atoms:";
 		for(std::size_t i=0;i<names.size();i++)
 		{
-			output << " " << names[i];
+			cargs.output_for_log << " " << names[i];
 		}
-		output << "\n";
+		cargs.output_for_log << "\n";
 	}
 
-	void command_rename_selection_of_atoms(std::istringstream& input, std::ostream& output)
+	void command_rename_selection_of_atoms(CommandArguments& cargs)
 	{
 		assert_atoms_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(cargs.input, names);
 
 		if(names.size()!=2)
 		{
@@ -2235,10 +2288,10 @@ private:
 		const std::set<std::size_t> ids=selection_manager_.get_atoms_selection(names[0]);
 		selection_manager_.set_atoms_selection(names[1], ids);
 		selection_manager_.delete_atoms_selection(names[0]);
-		output << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
+		cargs.output_for_log << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_construct_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
+	void command_construct_contacts(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
@@ -2253,42 +2306,42 @@ private:
 		render_parameters_for_selecting.expression="{--min-seq-sep 1}";
 		render_parameters_for_selecting.full_residues=false;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--probe")
 			{
-				input >> construct_bundle_of_contact_information.probe;
+				cargs.input >> construct_bundle_of_contact_information.probe;
 				enhance_contacts.probe=construct_bundle_of_contact_information.probe;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--render-default")
 			{
 				render=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--calculate-volumes")
 			{
 				construct_bundle_of_contact_information.calculate_volumes=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--tag-centrality")
 			{
 				enhance_contacts.tag_centrality=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--tag-peripherial")
 			{
 				enhance_contacts.tag_peripherial=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(render_parameters_for_selecting.read(guard.token, input))
+			else if(render_parameters_for_selecting.read(guard.token, cargs.input))
 			{
 				render=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
@@ -2297,7 +2350,7 @@ private:
 		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
 		{
 			reset_contacts(bundle_of_contact_information.contacts);
-			changed_contacts=true;
+			cargs.changed_contacts=true;
 
 			if(construct_bundle_of_contact_information.calculate_volumes)
 			{
@@ -2317,9 +2370,9 @@ private:
 
 			reset_contacts_display_states();
 
-			output << "Constructed contacts (";
-			SummaryOfContacts::collect_summary(contacts_).print(output);
-			output << ")\n";
+			cargs.output_for_log << "Constructed contacts (";
+			SummaryOfContacts::collect_summary(contacts_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 		else
 		{
@@ -2327,27 +2380,27 @@ private:
 		}
 	}
 
-	void command_save_contacts(std::istringstream& input, std::ostream& output_for_log) const
+	void command_save_contacts(CommandArguments& cargs) const
 	{
 		assert_contacts_availability();
 
 		bool no_graphics=false;
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--no-graphics")
 			{
 				no_graphics=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_output_destinations.read(guard.token, input))
+			else if(parameters_for_output_destinations.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
@@ -2361,28 +2414,28 @@ private:
 
 		if(!parameters_for_output_destinations.file.empty())
 		{
-			output_for_log << "Wrote contacts to file '" << parameters_for_output_destinations.file << "' (";
-			SummaryOfContacts::collect_summary(contacts_).print(output_for_log);
-			output_for_log << ")\n";
+			cargs.output_for_log << "Wrote contacts to file '" << parameters_for_output_destinations.file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 	}
 
-	void command_load_contacts(std::istringstream& input, std::ostream& output, bool& changed_contacts)
+	void command_load_contacts(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
 		std::string file;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--file")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, file);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, file);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(file.empty())
@@ -2397,11 +2450,11 @@ private:
 		if(!contacts.empty())
 		{
 			reset_contacts(contacts);
-			changed_contacts=true;
+			cargs.changed_contacts=true;
 
-			output << "Read contacts from file '" << file << "' (";
-			SummaryOfContacts::collect_summary(contacts_).print(output);
-			output << ")\n";
+			cargs.output_for_log << "Read contacts from file '" << file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 		else
 		{
@@ -2409,27 +2462,27 @@ private:
 		}
 	}
 
-	void command_select_contacts(std::istringstream& input, std::ostream& output_for_log, std::set<std::size_t>& output_for_ids)
+	void command_select_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		std::string name;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--name")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, name);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, name);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_selecting.read(guard.token, input))
+			else if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -2439,35 +2492,45 @@ private:
 		}
 
 		{
-			output_for_log << "Summary of contacts: ";
-			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 
 		if(!name.empty())
 		{
 			selection_manager_.set_contacts_selection(name, ids);
-			output_for_log << "Set selection of contacts named '" << name << "'\n";
+			cargs.output_for_log << "Set selection of contacts named '" << name << "'\n";
 		}
 
-		output_for_ids.swap(ids);
+		cargs.output_set_of_ids.swap(ids);
 	}
 
-	void command_mark_contacts(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	void command_mark_contacts(CommandArguments& cargs)
+	{
+		configurable_command_mark_contacts(true, cargs);
+	}
+
+	void command_unmark_contacts(CommandArguments& cargs)
+	{
+		configurable_command_mark_contacts(false, cargs);
+	}
+
+	void configurable_command_mark_contacts(const bool positive, CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
@@ -2487,17 +2550,27 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
-			changed_contacts_display_states=true;
+			cargs.changed_contacts_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of contacts: ";
-			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_show_contacts(const bool positive, std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	void command_show_contacts(CommandArguments& cargs)
+	{
+		configurable_command_show_contacts(true, cargs);
+	}
+
+	void command_hide_contacts(CommandArguments& cargs)
+	{
+		configurable_command_show_contacts(false, cargs);
+	}
+
+	void configurable_command_show_contacts(const bool positive, CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 		assert_contacts_representations_availability();
@@ -2505,19 +2578,19 @@ private:
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_representation_selecting.read(guard.token, input))
+			else if(parameters_for_representation_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(positive && parameters_for_representation_selecting.visual_ids_.empty() && contacts_representation_names_.size()>1)
@@ -2543,17 +2616,17 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
-			changed_contacts_display_states=true;
+			cargs.changed_contacts_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of contacts: ";
-			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_color_contacts(std::istringstream& input, std::ostream& output_for_log, bool& changed_contacts_display_states)
+	void command_color_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 		assert_contacts_representations_availability();
@@ -2562,24 +2635,24 @@ private:
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 		CommandParametersForGenericColoring parameters_for_coloring;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_representation_selecting.read(guard.token, input))
+			else if(parameters_for_representation_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_coloring.read(guard.token, input))
+			else if(parameters_for_coloring.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
 
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(parameters_for_coloring.color==0)
@@ -2604,17 +2677,17 @@ private:
 
 		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
-			changed_contacts_display_states=true;
+			cargs.changed_contacts_display_states=true;
 		}
 
 		{
-			output_for_log << "Summary of contacts: ";
-			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_print_contacts(std::istringstream& input, std::ostream& output_for_log, std::ostream& output_for_content) const
+	void command_print_contacts(CommandArguments& cargs) const
 	{
 		assert_contacts_availability();
 
@@ -2622,23 +2695,23 @@ private:
 		CommandParametersForContactsTablePrinting parameters_for_printing;
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
-			if(parameters_for_selecting.read(guard.token, input))
+			guard.on_iteration_start(cargs.input);
+			if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_printing.read(guard.token, input))
+			else if(parameters_for_printing.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_output_destinations.read(guard.token, input))
+			else if(parameters_for_output_destinations.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		const std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -2647,7 +2720,7 @@ private:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_content);
+		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_data);
 
 		for(std::size_t i=0;i<outputs.size();i++)
 		{
@@ -2656,13 +2729,13 @@ private:
 		}
 
 		{
-			output_for_log << "Summary of contacts: ";
-			SummaryOfContacts::collect_summary(contacts_, ids).print(output_for_log);
-			output_for_log << "\n";
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_write_contacts_as_pymol_cgo(std::istringstream& input, std::ostream& output_for_log)
+	void command_write_contacts_as_pymol_cgo(CommandArguments& cargs)
 	{
 		assert_contacts_availability();
 		assert_contacts_representations_availability();
@@ -2673,33 +2746,33 @@ private:
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--name")
 			{
-				CommandInputUtilities::read_string_considering_quotes(input, name);
-				guard.on_token_processed(input);
+				CommandInputUtilities::read_string_considering_quotes(cargs.input, name);
+				guard.on_token_processed(cargs.input);
 			}
 			else if(guard.token=="--wireframe")
 			{
 				wireframe=true;
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_selecting.read(guard.token, input))
+			else if(parameters_for_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_representation_selecting.read(guard.token, input))
+			else if(parameters_for_representation_selecting.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			else if(parameters_for_output_destinations.read(guard.token, input))
+			else if(parameters_for_output_destinations.read(guard.token, cargs.input))
 			{
-				guard.on_token_processed(input);
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(name.empty())
@@ -2767,40 +2840,40 @@ private:
 
 		if(!parameters_for_output_destinations.file.empty())
 		{
-			output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' (";
-			SummaryOfContacts::collect_summary(contacts_).print(output_for_log);
-			output_for_log << ")\n";
+			cargs.output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' (";
+			SummaryOfContacts::collect_summary(contacts_).print(cargs.output_for_log);
+			cargs.output_for_log << ")\n";
 		}
 	}
 
-	void command_list_selections_of_contacts(std::istringstream& input, std::ostream& output) const
+	void command_list_selections_of_contacts(CommandArguments& cargs) const
 	{
-		CommandInputUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_contacts_selections_availability();
 		const std::map< std::string, std::set<std::size_t> >& map_of_selections=selection_manager_.map_of_contacts_selections();
-		output << "Selections of contacts:\n";
+		cargs.output_for_log << "Selections of contacts:\n";
 		for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 		{
-			output << "  name='" << (it->first) << "' ";
-			SummaryOfContacts::collect_summary(contacts_, it->second).print(output);
-			output << "\n";
+			cargs.output_for_log << "  name='" << (it->first) << "' ";
+			SummaryOfContacts::collect_summary(contacts_, it->second).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
 		}
 	}
 
-	void command_delete_all_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	void command_delete_all_selections_of_contacts(CommandArguments& cargs)
 	{
-		CommandInputUtilities::assert_absence_of_input(input);
+		CommandInputUtilities::assert_absence_of_input(cargs.input);
 		assert_contacts_selections_availability();
 		selection_manager_.delete_contacts_selections();
-		output << "Removed all selections of contacts\n";
+		cargs.output_for_log << "Removed all selections of contacts\n";
 	}
 
-	void command_delete_selections_of_contacts(std::istringstream& input, std::ostream& output)
+	void command_delete_selections_of_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(cargs.input, names);
 
 		if(names.empty())
 		{
@@ -2814,20 +2887,20 @@ private:
 			selection_manager_.delete_contacts_selection(names[i]);
 		}
 
-		output << "Removed selections of contacts:";
+		cargs.output_for_log << "Removed selections of contacts:";
 		for(std::size_t i=0;i<names.size();i++)
 		{
-			output << " " << names[i];
+			cargs.output_for_log << " " << names[i];
 		}
-		output << "\n";
+		cargs.output_for_log << "\n";
 	}
 
-	void command_rename_selection_of_contacts(std::istringstream& input, std::ostream& output)
+	void command_rename_selection_of_contacts(CommandArguments& cargs)
 	{
 		assert_contacts_selections_availability();
 
 		std::vector<std::string> names;
-		CommandInputUtilities::read_all_strings_considering_quotes(input, names);
+		CommandInputUtilities::read_all_strings_considering_quotes(cargs.input, names);
 
 		if(names.size()!=2)
 		{
@@ -2837,32 +2910,32 @@ private:
 		const std::set<std::size_t> ids=selection_manager_.get_contacts_selection(names[0]);
 		selection_manager_.set_contacts_selection(names[1], ids);
 		selection_manager_.delete_contacts_selection(names[0]);
-		output << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
+		cargs.output_for_log << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_print_history(std::istringstream& input, std::ostream& output_for_content) const
+	void command_print_history(CommandArguments& cargs) const
 	{
 		assert_contacts_availability();
 
 		std::size_t last=0;
 
-		while(input.good())
+		while(cargs.input.good())
 		{
 			CommandInputUtilities::Guard guard;
-			guard.on_iteration_start(input);
+			guard.on_iteration_start(cargs.input);
 			if(guard.token=="--last")
 			{
-				input >> last;
-				guard.on_token_processed(input);
+				cargs.input >> last;
+				guard.on_token_processed(cargs.input);
 			}
-			guard.on_iteration_end(input);
+			guard.on_iteration_end(cargs.input);
 		}
 
 		if(last==0 || last>commands_history_.size())
 		{
 			for(std::vector<CommandRecord>::const_iterator it=commands_history_.begin();it!=commands_history_.end();++it)
 			{
-				output_for_content << it->command << "\n";
+				cargs.output_for_data << it->command << "\n";
 			}
 		}
 		else
@@ -2874,7 +2947,7 @@ private:
 			}
 			for(std::vector<std::string>::const_reverse_iterator it=commands.rbegin();it!=commands.rend();++it)
 			{
-				output_for_content << (*it) << "\n";
+				cargs.output_for_data << (*it) << "\n";
 			}
 		}
 	}
