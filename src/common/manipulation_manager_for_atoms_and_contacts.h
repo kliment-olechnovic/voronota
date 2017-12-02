@@ -527,6 +527,52 @@ private:
 			}
 		}
 
+		bool apply_to_display_state(const std::size_t id, std::vector<DisplayState>& display_states) const
+		{
+			bool updated=false;
+			if((show || hide || mark || unmark || color>0) && id<display_states.size())
+			{
+				DisplayState& ds=display_states[id];
+				if(ds.implemented())
+				{
+					if(mark || unmark)
+					{
+						updated=(updated || (ds.marked!=mark));
+						ds.marked=mark;
+					}
+
+					if(show || hide || color>0)
+					{
+						if(visual_ids_.empty())
+						{
+							for(std::size_t i=0;i<ds.visuals.size();i++)
+							{
+								if(apply_to_display_state_visual(ds.visuals[i]))
+								{
+									updated=true;
+								}
+							}
+						}
+						else
+						{
+							for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+							{
+								const std::size_t visual_id=(*jt);
+								if(visual_id<ds.visuals.size())
+								{
+									if(apply_to_display_state_visual(ds.visuals[visual_id]))
+									{
+										updated=true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return updated;
+		}
+
 		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
 		{
 			bool updated=false;
@@ -534,45 +580,9 @@ private:
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
-					if((*it)<display_states.size())
+					if(apply_to_display_state((*it), display_states))
 					{
-						DisplayState& ds=display_states[*it];
-						if(ds.implemented())
-						{
-							if(mark || unmark)
-							{
-								updated=(updated || (ds.marked!=mark));
-								ds.marked=mark;
-							}
-
-							if(show || hide || color>0)
-							{
-								if(visual_ids_.empty())
-								{
-									for(std::size_t i=0;i<ds.visuals.size();i++)
-									{
-										if(apply_to_display_state_visual(ds.visuals[i]))
-										{
-											updated=true;
-										}
-									}
-								}
-								else
-								{
-									for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
-									{
-										const std::size_t visual_id=(*jt);
-										if(visual_id<ds.visuals.size())
-										{
-											if(apply_to_display_state_visual(ds.visuals[visual_id]))
-											{
-												updated=true;
-											}
-										}
-									}
-								}
-							}
-						}
+						updated=true;
 					}
 				}
 			}
