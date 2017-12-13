@@ -54,6 +54,7 @@ void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "values");
 	pohw.describe_io("stdout", false, true, "picture in PPM format");
 
+	const std::string color_stops=poh.argument<std::string>(pohw.describe_option("--color-stops", "string", "string of coded color stops"), "rygcb");
 	const int max_lines=poh.restrict_value_in_range(1, 10000, poh.argument<int>(pohw.describe_option("--max-lines", "number", "maximum number of lines, default is 1"), 1));
 
 	if(!pohw.assert_or_print_help(false))
@@ -72,18 +73,13 @@ void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler& poh)
 	const int number_of_lines=std::min(N, max_lines);
 	const int number_of_columns=((N%number_of_lines==0) ? (N/number_of_lines) : ((N/number_of_lines)+1));
 
-	std::vector<auxiliaries::ColorUtilities::ColorInteger> color_anchors;
-	color_anchors.push_back(0xFF0000);
-	color_anchors.push_back(0xFFFFFF);
-	color_anchors.push_back(0x0000FF);
-
 	PPMImage image(number_of_columns, number_of_lines);
 	for(int i=0;i<N;i++)
 	{
 		const int y=i/number_of_columns;
 		const int x=i%number_of_columns;
 		unsigned char the_color[3]={0, 0, 0};
-		auxiliaries::ColorUtilities::color_to_components(auxiliaries::ColorUtilities::color_from_gradient(color_anchors, values[i]), the_color, false);
+		auxiliaries::ColorUtilities::color_to_components(auxiliaries::ColorUtilities::color_from_gradient(color_stops, values[i]), the_color, false);
 		char* color=image.color(x, y);
 		for(int j=0;j<3;j++)
 		{
