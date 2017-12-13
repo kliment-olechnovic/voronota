@@ -45,33 +45,70 @@ public:
 		}
 	}
 
-	static ColorInteger color_from_name(const std::string& name)
+	static ColorInteger color_from_name(const char name)
 	{
-		if(name=="r" || name=="red")
+		if(name=='r')
 		{
 			return 0xFF0000;
 		}
-		else if(name=="g" || name=="green")
+		else if(name=='g')
 		{
 			return 0x00FF00;
 		}
-		else if(name=="b" || name=="blue")
+		else if(name=='b')
 		{
 			return 0x0000FF;
 		}
-		else if(name=="y" || name=="yellow")
+		else if(name=='y')
 		{
 			return 0xFFFF00;
 		}
-		else if(name=="c" || name=="cyan")
+		else if(name=='c')
 		{
 			return 0x00FFFF;
 		}
-		else if(name=="m" || name=="magenta")
+		else if(name=='m')
 		{
 			return 0xFF00FF;
 		}
-		else if(name=="w" || name=="white")
+		else if(name=='w')
+		{
+			return 0xFFFFFF;
+		}
+		return 0;
+	}
+
+	static ColorInteger color_from_name(const std::string& name)
+	{
+		if(name.size()==1)
+		{
+			return color_from_name(name[0]);
+		}
+		else if(name=="red")
+		{
+			return 0xFF0000;
+		}
+		else if(name=="green")
+		{
+			return 0x00FF00;
+		}
+		else if(name=="blue")
+		{
+			return 0x0000FF;
+		}
+		else if(name=="yellow")
+		{
+			return 0xFFFF00;
+		}
+		else if(name=="cyan")
+		{
+			return 0x00FFFF;
+		}
+		else if(name=="magenta")
+		{
+			return 0xFF00FF;
+		}
+		else if(name=="white")
 		{
 			return 0xFFFFFF;
 		}
@@ -146,35 +183,24 @@ public:
 			}
 		}
 
-		{
-			unsigned int max_of_mix=std::max(mix[0], std::max(mix[1], mix[2]));
-			if(max_of_mix<static_cast<unsigned int>(0xFF))
-			{
-				const double k=static_cast<double>(0xFF)/static_cast<double>(max_of_mix);
-				for(int a=0;a<3;a++)
-				{
-					mix[a]=std::min(static_cast<unsigned int>(static_cast<double>(mix[a])*k), static_cast<unsigned int>(0xFF));
-				}
-			}
-		}
-
 		return color_from_components(mix, false);
 	}
 
-	static ColorInteger color_from_gradient(const ColorInteger& anchor0, const ColorInteger& anchor1, const double value)
+	static ColorInteger color_from_gradient(const std::string& name, const double value)
 	{
-		static std::vector<ColorInteger> anchors(2, 0);
-		anchors[0]=anchor0;
-		anchors[1]=anchor1;
-		return color_from_gradient(anchors, value);
-	}
+		static std::vector<ColorInteger> anchors;
 
-	static ColorInteger color_from_gradient(const ColorInteger& anchor0, const ColorInteger& anchor1, const ColorInteger& anchor2, const double value)
-	{
-		static std::vector<ColorInteger> anchors(3, 0);
-		anchors[0]=anchor0;
-		anchors[1]=anchor1;
-		anchors[2]=anchor2;
+		if(name.empty())
+		{
+			return 0;
+		}
+
+		anchors.resize(name.size(), 0);
+		for(std::size_t i=0;i<name.size();i++)
+		{
+			anchors[i]=color_from_name(name[i]);
+		}
+
 		return color_from_gradient(anchors, value);
 	}
 
