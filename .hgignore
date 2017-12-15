@@ -19,3 +19,5 @@ syntax: regexp
 ^Makefile$
 syntax: regexp
 ^\.settings$
+syntax: regexp
+^tests/voronota_package$
