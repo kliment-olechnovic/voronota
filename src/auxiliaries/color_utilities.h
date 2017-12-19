@@ -13,6 +13,16 @@ class ColorUtilities
 public:
 	typedef unsigned int ColorInteger;
 
+	static ColorInteger null_color()
+	{
+		return 0x1FFFFFF;
+	}
+
+	static bool color_valid(const ColorInteger color)
+	{
+		return (color<=0xFFFFFF);
+	}
+
 	template<typename T>
 	static void color_to_components(const ColorInteger color, T* components, const bool normalized)
 	{
@@ -75,7 +85,7 @@ public:
 		{
 			return 0xFFFFFF;
 		}
-		return 0;
+		return null_color();
 	}
 
 	static ColorInteger color_from_name(const std::string& name)
@@ -112,14 +122,28 @@ public:
 		{
 			return 0xFFFFFF;
 		}
-		return 0;
+		else if(name.size()==8 && name.compare(0, 2, "0x")==0 && name.find_first_not_of("0123456789ABCDEF", 2)==std::string::npos)
+		{
+			ColorInteger color_int=0;
+			std::istringstream color_input(name);
+			color_input >> std::hex >> color_int;
+			if(!color_input.fail() && color_int<=0xFFFFFF)
+			{
+				return color_int;
+			}
+		}
+		else if(name.size()==6 && name.find_first_not_of("0123456789ABCDEF")==std::string::npos)
+		{
+			return color_from_name(std::string("0x")+name);
+		}
+		return null_color();
 	}
 
 	static ColorInteger color_from_gradient(const std::vector<ColorInteger>& anchors, const double value)
 	{
 		if(anchors.empty())
 		{
-			return 0;
+			return null_color();
 		}
 
 		const std::size_t N=anchors.size();
@@ -192,7 +216,24 @@ public:
 
 		if(name.empty())
 		{
-			return 0;
+			return null_color();
+		}
+
+		if(name=="rainbow")
+		{
+			return color_from_gradient("rygcb", value);
+		}
+		else if(name=="reverse-rainbow")
+		{
+			return color_from_gradient("bcgyr", value);
+		}
+		else if(name=="blue-white-red")
+		{
+			return color_from_gradient("bwr", value);
+		}
+		else if(name=="red-white-blue")
+		{
+			return color_from_gradient("rwb", value);
 		}
 
 		anchors.resize(name.size(), 0);

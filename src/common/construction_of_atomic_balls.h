@@ -107,7 +107,7 @@ public:
 			return true;
 		}
 
-		bool operator()(std::string& input_file, std::vector<AtomicBall>& atomic_balls) const
+		bool operator()(const std::string& input_file, std::vector<AtomicBall>& atomic_balls) const
 		{
 			std::ifstream input(input_file.c_str(), std::ios::in);
 			return (*this)(input, atomic_balls);
