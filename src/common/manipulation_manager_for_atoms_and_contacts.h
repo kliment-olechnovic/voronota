@@ -1922,7 +1922,7 @@ private:
 		render_parameters_for_selecting.type_for_expression="render-use";
 		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
 		render_parameters_for_selecting.type_for_forced_id="render-id";
-		render_parameters_for_selecting.expression="{min-seq-sep 1}";
+		render_parameters_for_selecting.expression="{--min-seq-sep 1}";
 		render_parameters_for_selecting.full_residues=false;
 		render_parameters_for_selecting.read(cargs.input);
 		const bool render=(cargs.input.get_flag("render-default") ||
