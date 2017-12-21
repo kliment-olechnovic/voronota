@@ -102,7 +102,7 @@ public:
 		return (map_of_values_.count(name)>0);
 	}
 
-	bool is_unnamed_value_used(const std::size_t id)
+	bool is_unnamed_value_used(const std::size_t id) const
 	{
 		return (set_of_requested_ids_of_unnamed_values_.count(id)>0);
 	}
