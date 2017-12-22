@@ -107,6 +107,18 @@ public:
 		return (set_of_requested_ids_of_unnamed_values_.count(id)>0);
 	}
 
+	bool is_any_unnamed_value_unused() const
+	{
+		for(std::size_t id=0;id<list_of_unnamed_values_.size();id++)
+		{
+			if(set_of_requested_ids_of_unnamed_values_.count(id)==0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool get_flag(const std::string& name)
 	{
 		MapOfValues::const_iterator it=map_of_values_.find(name);
@@ -173,6 +185,22 @@ public:
 		{
 			return default_value;
 		}
+	}
+
+	std::string get_value_or_first_unused_unnamed_value(const std::string& name)
+	{
+		if(!is_option(name))
+		{
+			for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+			{
+				if(!is_unnamed_value_used(i))
+				{
+					mark_unnamed_value_as_used(i);
+					return list_of_unnamed_values_[i];
+				}
+			}
+		}
+		return get_value<std::string>(name);
 	}
 
 	void mark_unnamed_value_as_used(const std::size_t id)

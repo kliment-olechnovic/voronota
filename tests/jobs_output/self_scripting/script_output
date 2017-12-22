@@ -7,7 +7,7 @@ Read atoms from file './input/single/structure.cif' (count=1771)
 Read atoms from file './input/single/structure.pdb' (count=1717)
 
 
-> load-atoms --file ./input/single/structure.pdb --include-heteroatoms
+> load-atoms ./input/single/structure.pdb --include-heteroatoms
 Read atoms from file './input/single/structure.pdb' (count=1771)
 
 
@@ -33,7 +33,7 @@ Constructed contacts (count=12469 drawable=120 area=47017.2)
 Wrote atoms to file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 
 
-> save-contacts --file './jobs_output/self_scripting/plain_contacts'
+> save-contacts './jobs_output/self_scripting/plain_contacts'
 Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
 
 
@@ -162,12 +162,12 @@ write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo
 > print-history
 load-atoms --file ./input/single/structure.cif --format mmcif
 load-atoms --file ./input/single/structure.pdb
-load-atoms --file ./input/single/structure.pdb --include-heteroatoms
+load-atoms ./input/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf=0:10}
 restrict-atoms {--tags-not het}
 construct-contacts --calculate-volumes --render-use '{--atom1 {--match r<83>} --min-seq-sep 1}'
 save-atoms --file './jobs_output/self_scripting/plain_atoms'
-save-contacts --file './jobs_output/self_scripting/plain_contacts'
+save-contacts './jobs_output/self_scripting/plain_contacts'
 load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
 load-contacts --file './jobs_output/self_scripting/plain_contacts'
 select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1

@@ -441,7 +441,7 @@ private:
 			{
 				expression=input.get_value<std::string>(type_for_expression);
 			}
-			else if(type_for_expression=="use")
+			else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
 			{
 				bool found=false;
 				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
@@ -637,7 +637,7 @@ private:
 			{
 				color=auxiliaries::ColorUtilities::color_from_name(input.get_value<std::string>("col"));
 			}
-			else
+			else if(input.is_any_unnamed_value_unused())
 			{
 				bool found=false;
 				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
@@ -712,11 +712,11 @@ private:
 		{
 		}
 
-		void read(CommandInput& input)
+		void read(const bool allow_use_of_unnamed_value, CommandInput& input)
 		{
-			if(input.is_option("file"))
+			if(input.is_option("file") || (allow_use_of_unnamed_value && input.is_any_unnamed_value_unused()))
 			{
-				const std::string str=input.get_value<std::string>("file");
+				const std::string str=(allow_use_of_unnamed_value ? input.get_value_or_first_unused_unnamed_value("file") : input.get_value<std::string>("file"));
 				if(!str.empty() && str.find_first_of("?*$'\";:<>,|")==std::string::npos)
 				{
 					file=str;
@@ -1482,7 +1482,7 @@ private:
 		collect_atomic_balls_from_file.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
 		collect_atomic_balls_from_file.include_hydrogens=cargs.input.get_flag("include-hydrogens");
 		collect_atomic_balls_from_file.multimodel_chains=cargs.input.get_flag("as-assembly");
-		const std::string atoms_file=cargs.input.get_value<std::string>("file");
+		const std::string atoms_file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 		const std::string radii_file=cargs.input.get_value_or_default<std::string>("radii-file", "");
 		const double default_radius=cargs.input.get_value_or_default<double>("default-radii", ConstructionOfAtomicBalls::collect_atomic_balls_from_file::default_default_radius());
 		const std::string format=cargs.input.get_value_or_default<std::string>("format", "pdb");
@@ -1603,7 +1603,7 @@ private:
 		assert_atoms_availability();
 
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-		parameters_for_output_destinations.read(cargs.input);
+		parameters_for_output_destinations.read(true, cargs.input);
 
 		cargs.input.assert_nothing_unusable();
 
@@ -1810,7 +1810,7 @@ private:
 		CommandParametersForGenericTablePrinting parameters_for_printing;
 		parameters_for_printing.read(cargs.input);
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
-		parameters_for_output_destinations.read(cargs.input);
+		parameters_for_output_destinations.read(false, cargs.input);
 
 		cargs.input.assert_nothing_unusable();
 
@@ -1973,7 +1973,7 @@ private:
 		assert_contacts_availability();
 
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-		parameters_for_output_destinations.read(cargs.input);
+		parameters_for_output_destinations.read(true, cargs.input);
 		const bool no_graphics=cargs.input.get_flag("no-graphics");
 
 		cargs.input.assert_nothing_unusable();
@@ -1999,7 +1999,7 @@ private:
 	{
 		assert_atoms_availability();
 
-		const std::string file=cargs.input.get_value<std::string>("file");
+		const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 
 		cargs.input.assert_nothing_unusable();
 
@@ -2214,7 +2214,7 @@ private:
 		CommandParametersForContactsTablePrinting parameters_for_printing;
 		parameters_for_printing.read(cargs.input);
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
-		parameters_for_output_destinations.read(cargs.input);
+		parameters_for_output_destinations.read(false, cargs.input);
 
 		cargs.input.assert_nothing_unusable();
 
@@ -2251,7 +2251,7 @@ private:
 		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
 		parameters_for_representation_selecting.read(cargs.input);
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-		parameters_for_output_destinations.read(cargs.input);
+		parameters_for_output_destinations.read(false, cargs.input);
 
 		cargs.input.assert_nothing_unusable();
 
