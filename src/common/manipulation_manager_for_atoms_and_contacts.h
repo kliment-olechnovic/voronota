@@ -1818,6 +1818,7 @@ private:
 		const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
 		const bool max_val_present=cargs.input.is_option("max-val");
 		const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+		const bool only_summarize=cargs.input.get_flag("only-summarize");
 
 		cargs.input.assert_nothing_unusable();
 
@@ -1924,29 +1925,29 @@ private:
 			throw std::runtime_error(std::string("Nothing colorable."));
 		}
 
-		{
-			double min_val_to_use=min_val;
-			double max_val_to_use=max_val;
+		double min_val_actual=0.0;
+		double max_val_actual=0.0;
 
-			if(!min_val_present || !max_val_present)
+		{
+			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 			{
-				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				const double val=it->second;
+				if(it==map_of_ids_values.begin() || min_val_actual>val)
 				{
-					const double val=it->second;
-					if(!min_val_present && (it==map_of_ids_values.begin() || min_val_to_use>val))
-					{
-						min_val_to_use=val;
-					}
-					if(!max_val_present && (it==map_of_ids_values.begin() || max_val_to_use<val))
-					{
-						max_val_to_use=val;
-					}
+					min_val_actual=val;
+				}
+				if(it==map_of_ids_values.begin() || max_val_actual<val)
+				{
+					max_val_actual=val;
 				}
 			}
 
+			const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
+			const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
+
 			if(max_val_to_use<=min_val_to_use)
 			{
-				throw std::runtime_error(std::string("Requested value has no range."));
+				throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
 			}
 
 			for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -1967,22 +1968,27 @@ private:
 			}
 		}
 
-		CommandParametersForGenericViewing parameters_for_viewing;
-		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
-		parameters_for_viewing.assert_state();
-
-		for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+		if(!only_summarize)
 		{
-			parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-			if(parameters_for_viewing.apply_to_display_state(it->first, atoms_display_states_))
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
+			parameters_for_viewing.assert_state();
+
+			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 			{
-				cargs.changed_atoms_display_states=true;
+				parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+				if(parameters_for_viewing.apply_to_display_state(it->first, atoms_display_states_))
+				{
+					cargs.changed_atoms_display_states=true;
+				}
 			}
 		}
 
 		{
-			cargs.output_for_log << "Summary of atoms: ";
-			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "Summary: ";
+			cargs.output_for_log << "count=" << ids.size() << " ";
+			cargs.output_for_log << "min=" << min_val_actual << " ";
+			cargs.output_for_log << "max=" << max_val_actual;
 			cargs.output_for_log << "\n";
 		}
 	}
