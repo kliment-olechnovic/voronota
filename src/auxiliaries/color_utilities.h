@@ -146,6 +146,14 @@ public:
 			return null_color();
 		}
 
+		for(std::size_t i=0;i<anchors.size();i++)
+		{
+			if(!color_valid(anchors[i]))
+			{
+				return null_color();
+			}
+		}
+
 		const std::size_t N=anchors.size();
 
 		if(N==1)
@@ -234,6 +242,14 @@ public:
 		else if(name=="red-white-blue")
 		{
 			return color_from_gradient("rwb", value);
+		}
+
+		for(std::size_t i=0;i<name.size();i++)
+		{
+			if(!color_valid(color_from_name(name[i])))
+			{
+				return null_color();
+			}
 		}
 
 		anchors.resize(name.size(), 0);

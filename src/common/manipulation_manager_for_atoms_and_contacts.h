@@ -102,6 +102,7 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("show-atoms", &ManipulationManagerForAtomsAndContacts::command_show_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &ManipulationManagerForAtomsAndContacts::command_hide_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &ManipulationManagerForAtomsAndContacts::command_color_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("spectrum-atoms", &ManipulationManagerForAtomsAndContacts::command_spectrum_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &ManipulationManagerForAtomsAndContacts::command_print_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
@@ -1792,6 +1793,191 @@ private:
 		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
 			cargs.changed_atoms_display_states=true;
+		}
+
+		{
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
+		}
+	}
+
+	void command_spectrum_atoms(CommandArguments& cargs)
+	{
+		assert_atoms_availability();
+		assert_atoms_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(atoms_representation_names_);
+		parameters_for_representation_selecting.read(cargs.input);
+		const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
+		const std::string by=adjunct.empty() ? cargs.input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
+		const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+		const bool min_val_present=cargs.input.is_option("min-val");
+		const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+		const bool max_val_present=cargs.input.is_option("max-val");
+		const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+
+		cargs.input.assert_nothing_unusable();
+
+		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id")
+		{
+			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
+		}
+
+		if(by=="adjunct" && adjunct.empty())
+		{
+			throw std::runtime_error(std::string("No adjunct name provided."));
+		}
+
+		if(by!="adjunct" && !adjunct.empty())
+		{
+			throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
+		}
+
+		if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+		{
+			throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
+		}
+
+		if(min_val_present && max_val_present && max_val<=min_val)
+		{
+			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				atoms_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable atoms selected."));
+		}
+
+		std::map<std::size_t, double> map_of_ids_values;
+
+		if(by=="adjunct")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::map<std::string, double>& adjuncts=atoms_[*it].value.props.adjuncts;
+				std::map<std::string, double>::const_iterator jt=adjuncts.find(adjunct);
+				if(jt!=adjuncts.end())
+				{
+					map_of_ids_values[*it]=jt->second;
+				}
+			}
+		}
+		else if(by=="residue-number")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=atoms_[*it].crad.resSeq;
+			}
+		}
+		else if(by=="chain")
+		{
+			std::map<std::string, double> chains_to_values;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				chains_to_values[atoms_[*it].crad.chainID]=0.5;
+			}
+			if(chains_to_values.size()>1)
+			{
+				int i=0;
+				for(std::map<std::string, double>::iterator it=chains_to_values.begin();it!=chains_to_values.end();++it)
+				{
+					it->second=static_cast<double>(i)/static_cast<double>(chains_to_values.size()-1);
+					i++;
+				}
+			}
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=chains_to_values[atoms_[*it].crad.chainID];
+			}
+		}
+		else if(by=="residue-id")
+		{
+			std::map<common::ChainResidueAtomDescriptor, double> residue_ids_to_values;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				residue_ids_to_values[atoms_[*it].crad.without_atom()]=0.5;
+			}
+			if(residue_ids_to_values.size()>1)
+			{
+				int i=0;
+				for(std::map<common::ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
+				{
+					it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
+					i++;
+				}
+			}
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=residue_ids_to_values[atoms_[*it].crad.without_atom()];
+			}
+		}
+
+		if(map_of_ids_values.empty())
+		{
+			throw std::runtime_error(std::string("Nothing colorable."));
+		}
+
+		{
+			double min_val_to_use=min_val;
+			double max_val_to_use=max_val;
+
+			if(!min_val_present || !max_val_present)
+			{
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					const double val=it->second;
+					if(!min_val_present && (it==map_of_ids_values.begin() || min_val_to_use>val))
+					{
+						min_val_to_use=val;
+					}
+					if(!max_val_present && (it==map_of_ids_values.begin() || max_val_to_use<val))
+					{
+						max_val_to_use=val;
+					}
+				}
+			}
+
+			if(max_val_to_use<=min_val_to_use)
+			{
+				throw std::runtime_error(std::string("Requested value has no range."));
+			}
+
+			for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			{
+				double& val=it->second;
+				if(val<=min_val_to_use)
+				{
+					val=0.0;
+				}
+				else if(val>=max_val_to_use)
+				{
+					val=1.0;
+				}
+				else
+				{
+					val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
+				}
+			}
+		}
+
+		CommandParametersForGenericViewing parameters_for_viewing;
+		parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
+		parameters_for_viewing.assert_state();
+
+		for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+		{
+			parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+			if(parameters_for_viewing.apply_to_display_state(it->first, atoms_display_states_))
+			{
+				cargs.changed_atoms_display_states=true;
+			}
 		}
 
 		{
