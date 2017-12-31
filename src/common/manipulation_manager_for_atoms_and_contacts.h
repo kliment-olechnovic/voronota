@@ -117,6 +117,7 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("show-contacts", &ManipulationManagerForAtomsAndContacts::command_show_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("hide-contacts", &ManipulationManagerForAtomsAndContacts::command_hide_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("color-contacts", &ManipulationManagerForAtomsAndContacts::command_color_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("spectrum-contacts", &ManipulationManagerForAtomsAndContacts::command_spectrum_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("print-contacts", &ManipulationManagerForAtomsAndContacts::command_print_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("write-contacts-as-pymol-cgo", &ManipulationManagerForAtomsAndContacts::command_write_contacts_as_pymol_cgo));
 		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_contacts));
@@ -2393,6 +2394,202 @@ private:
 		{
 			cargs.output_for_log << "Summary of contacts: ";
 			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
+		}
+	}
+
+	void command_spectrum_contacts(CommandArguments& cargs)
+	{
+		assert_contacts_availability();
+		assert_contacts_representations_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+		CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(contacts_representation_names_);
+		parameters_for_representation_selecting.read(cargs.input);
+		const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
+		const std::string by=adjunct.empty() ? cargs.input.get_value<std::string>("by") : std::string("adjunct");
+		const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+		const bool min_val_present=cargs.input.is_option("min-val");
+		const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+		const bool max_val_present=cargs.input.is_option("max-val");
+		const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+		const bool only_summarize=cargs.input.get_flag("only-summarize");
+
+		cargs.input.assert_nothing_unusable();
+
+		if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep")
+		{
+			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
+		}
+
+		if(by=="adjunct" && adjunct.empty())
+		{
+			throw std::runtime_error(std::string("No adjunct name provided."));
+		}
+
+		if(by!="adjunct" && !adjunct.empty())
+		{
+			throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
+		}
+
+		if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+		{
+			throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
+		}
+
+		if(min_val_present && max_val_present && max_val<=min_val)
+		{
+			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+		}
+
+		const std::set<std::size_t> ids=filter_drawable_implemented_ids(
+				contacts_display_states_,
+				parameters_for_representation_selecting.visual_ids_,
+				selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues));
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No drawable contacts selected."));
+		}
+
+		std::map<std::size_t, double> map_of_ids_values;
+
+		if(by=="adjunct")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::map<std::string, double>& adjuncts=contacts_[*it].value.props.adjuncts;
+				std::map<std::string, double>::const_iterator jt=adjuncts.find(adjunct);
+				if(jt!=adjuncts.end())
+				{
+					map_of_ids_values[*it]=jt->second;
+				}
+			}
+		}
+		else if(by=="area")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=contacts_[*it].value.area;
+			}
+		}
+		else if(by=="dist-centers")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=contacts_[*it].value.dist;
+			}
+		}
+		else if(by=="dist-balls")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t id0=contacts_[*it].ids[0];
+				const std::size_t id1=contacts_[*it].ids[1];
+				if(contacts_[*it].solvent())
+				{
+					map_of_ids_values[*it]=(contacts_[*it].value.dist-atoms_[id0].value.r)/3.0*2.0;
+				}
+				else
+				{
+					map_of_ids_values[*it]=apollota::minimal_distance_from_sphere_to_sphere(atoms_[id0].value, atoms_[id1].value);
+				}
+			}
+		}
+		else if(by=="seq-sep")
+		{
+			double max_seq_sep=0.0;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t id0=contacts_[*it].ids[0];
+				const std::size_t id1=contacts_[*it].ids[1];
+				if(atoms_[id0].crad.chainID==atoms_[id1].crad.chainID)
+				{
+					const double seq_sep=fabs(static_cast<double>(atoms_[id0].crad.resSeq-atoms_[id1].crad.resSeq));
+					map_of_ids_values[*it]=seq_sep;
+					max_seq_sep=((max_seq_sep<seq_sep) ? seq_sep : max_seq_sep);
+				}
+			}
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t id0=contacts_[*it].ids[0];
+				const std::size_t id1=contacts_[*it].ids[1];
+				if(atoms_[id0].crad.chainID!=atoms_[id1].crad.chainID)
+				{
+					map_of_ids_values[*it]=max_seq_sep+1.0;
+				}
+			}
+		}
+
+		if(map_of_ids_values.empty())
+		{
+			throw std::runtime_error(std::string("Nothing colorable."));
+		}
+
+		double min_val_actual=0.0;
+		double max_val_actual=0.0;
+
+		{
+			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			{
+				const double val=it->second;
+				if(it==map_of_ids_values.begin() || min_val_actual>val)
+				{
+					min_val_actual=val;
+				}
+				if(it==map_of_ids_values.begin() || max_val_actual<val)
+				{
+					max_val_actual=val;
+				}
+			}
+
+			const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
+			const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
+
+			if(max_val_to_use<=min_val_to_use)
+			{
+				throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+			}
+
+			for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			{
+				double& val=it->second;
+				if(val<=min_val_to_use)
+				{
+					val=0.0;
+				}
+				else if(val>=max_val_to_use)
+				{
+					val=1.0;
+				}
+				else
+				{
+					val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
+				}
+			}
+		}
+
+		if(!only_summarize)
+		{
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids_;
+			parameters_for_viewing.assert_state();
+
+			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			{
+				parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+				if(parameters_for_viewing.apply_to_display_state(it->first, contacts_display_states_))
+				{
+					cargs.changed_contacts_display_states=true;
+				}
+			}
+		}
+
+		{
+			cargs.output_for_log << "Summary: ";
+			cargs.output_for_log << "count=" << ids.size() << " ";
+			cargs.output_for_log << "min=" << min_val_actual << " ";
+			cargs.output_for_log << "max=" << max_val_actual;
 			cargs.output_for_log << "\n";
 		}
 	}
