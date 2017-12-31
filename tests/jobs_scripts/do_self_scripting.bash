@@ -41,7 +41,10 @@ write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts
 color-contacts 0xFF00FF
 write-contacts-as-pymol-cgo --wireframe --file '$SUBDIR/cgo_contacts_wf.py' --name contacts_wf
 
-print-history --last 5
+save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
+load-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
+load-atoms-and-contacts '$SUBDIR/plain_atoms'
+
 print-history
 
 EOF
@@ -49,3 +52,6 @@ EOF
 | $VORONOTA x-run-script \
 > $SUBDIR/script_output \
 2> $SUBDIR/script_errors
+
+rm "$SUBDIR/plain_atoms_and_contacts"
+

@@ -23,20 +23,50 @@ public:
 	bool tail_line_delimiter;
 	char line_delimiter;
 	char internal_separator;
+	std::string block_terminator;
 
-	IOUtilities() : tail_line_delimiter(true), line_delimiter('\n'), internal_separator(' ')
+	IOUtilities() :
+		tail_line_delimiter(true),
+		line_delimiter('\n'),
+		internal_separator(' ')
 	{
 	}
 
-	explicit IOUtilities(const char line_delimiter) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(' ')
+	explicit IOUtilities(const char line_delimiter) :
+			tail_line_delimiter(false),
+			line_delimiter(line_delimiter),
+			internal_separator(' ')
 	{
 	}
 
-	IOUtilities(const char line_delimiter, const char internal_separator) : tail_line_delimiter(false), line_delimiter(line_delimiter), internal_separator(internal_separator)
+	IOUtilities(
+			const char line_delimiter,
+			const char internal_separator) :
+				tail_line_delimiter(false),
+				line_delimiter(line_delimiter),
+				internal_separator(internal_separator)
 	{
 	}
 
-	IOUtilities(const bool tail_line_delimiter, const char line_delimiter, const char internal_separator) : tail_line_delimiter(tail_line_delimiter), line_delimiter(line_delimiter), internal_separator(internal_separator)
+	IOUtilities(
+			const bool tail_line_delimiter,
+			const char line_delimiter,
+			const char internal_separator) :
+				tail_line_delimiter(tail_line_delimiter),
+				line_delimiter(line_delimiter),
+				internal_separator(internal_separator)
+	{
+	}
+
+	IOUtilities(
+			const bool tail_line_delimiter,
+			const char line_delimiter,
+			const char internal_separator,
+			const std::string& block_terminator) :
+				tail_line_delimiter(tail_line_delimiter),
+				line_delimiter(line_delimiter),
+				internal_separator(internal_separator),
+				block_terminator(block_terminator)
 	{
 	}
 
@@ -52,6 +82,10 @@ public:
 			std::getline(input, line, line_delimiter);
 			if(!line.empty())
 			{
+				if(!block_terminator.empty() && line==block_terminator)
+				{
+					return;
+				}
 				{
 					const std::size_t comments_pos=line.find("#", 0);
 					if(comments_pos!=std::string::npos)
