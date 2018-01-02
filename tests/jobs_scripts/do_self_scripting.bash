@@ -19,12 +19,12 @@ select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {R<PHE>} --atom2 {R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
-print-contacts {--sel cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
+print-contacts {cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 
-select-atoms {r<64>&A<C,N,O,CA,CB>} --name as1
-print-atoms {--sel as1} --sort tags --file '$SUBDIR/printed_atoms'
+select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+print-atoms {as1} --sort tags --file '$SUBDIR/printed_atoms'
 print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 
 rename-selection-of-atoms nosel1 nodel2
@@ -33,7 +33,7 @@ list-selections-of-atoms
 list-selections-of-contacts
 
 color-contacts 0x00FF00
-color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
 color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts

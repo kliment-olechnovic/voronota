@@ -464,6 +464,10 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				tester.match_crad=token;
 			}
+			else if(token.compare(0, 2, "--")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
+			{
+				tester.name_of_base_selection_of_atoms=token;
+			}
 			else
 			{
 				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
@@ -572,6 +576,15 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			else if(token=="--no-same-chain")
 			{
 				tester.no_same_chain=true;
+			}
+			else if(token=="--inter-chain")
+			{
+				tester.no_same_chain=true;
+				tester.no_solvent=true;
+			}
+			else if(token.compare(0, 2, "--")!=0)
+			{
+				tester.name_of_base_selection_of_contacts=token;
 			}
 			else
 			{
