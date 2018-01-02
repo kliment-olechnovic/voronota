@@ -1633,7 +1633,9 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		parameters_for_selecting.read(cargs.input);
-		const std::string name=cargs.input.get_value_or_default<std::string>("name", "");
+		const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
+				cargs.input.get_value_or_first_unused_unnamed_value("name") :
+				cargs.input.get_value_or_default<std::string>("name", ""));
 
 		cargs.input.assert_nothing_unusable();
 
@@ -2228,7 +2230,9 @@ private:
 
 		CommandParametersForGenericSelecting parameters_for_selecting;
 		parameters_for_selecting.read(cargs.input);
-		const std::string name=cargs.input.get_value_or_default<std::string>("name", "");
+		const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
+				cargs.input.get_value_or_first_unused_unnamed_value("name") :
+				cargs.input.get_value_or_default<std::string>("name", ""));
 
 		cargs.input.assert_nothing_unusable();
 

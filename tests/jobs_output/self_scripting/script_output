@@ -80,7 +80,7 @@ A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  .     .
 Summary of contacts: count=4820 drawable=86 area=10487.8
 
 
-> select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+> select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 Summary of atoms: count=5 volume=108.978
 Set selection of atoms named 'as1'
 
@@ -95,7 +95,7 @@ c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O  oc=1;tf=9.64;vol
 Summary of atoms: count=5 volume=108.978
 
 
-> print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
+> print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags  adjuncts                      
 A    64    .   457   .   PHE   C     22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
 A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
@@ -127,11 +127,11 @@ Selections of contacts:
 Summary of contacts: count=120 drawable=120 area=211.8
 
 
-> color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
+> color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
 Summary of contacts: count=25 drawable=25 area=52.3005
 
 
-> color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+> color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
 Summary of contacts: count=58 drawable=58 area=99.5972
 
 
@@ -179,14 +179,14 @@ select-contacts {--atom1 {R<PHE>} --atom2 {R<PHE>} --min-area 5.0 --min-seq-sep 
 print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
-select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
-print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
+print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
 color-contacts 0x00FF00
-color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
+color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
 color-contacts 0xFF00FF
