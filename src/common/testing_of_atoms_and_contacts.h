@@ -428,7 +428,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="--sel")
+			else if(token=="--sel" || token=="-s")
 			{
 				input >> tester.name_of_base_selection_of_atoms;
 			}
@@ -436,35 +436,35 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
-			else if(token=="--match")
+			else if(token=="--match" || token=="-m")
 			{
 				input >> tester.match_crad;
 			}
-			else if(token=="--match-not")
+			else if(token=="--match-not" || token=="-m!")
 			{
 				input >> tester.match_crad_not;
 			}
-			else if(token=="--tags")
+			else if(token=="--tags" || token=="-t")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="--tags-not")
+			else if(token=="--tags-not" || token=="-t!")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="--adjuncts")
+			else if(token=="--adjuncts" || token=="-v")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="--adjuncts-not")
+			else if(token=="--adjuncts-not" || token=="-v!")
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token.compare(0, 2, "--")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
+			else if(token.compare(0, 1, "-")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
 			{
 				tester.match_crad=token;
 			}
-			else if(token.compare(0, 2, "--")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
+			else if(token.compare(0, 1, "-")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
 			{
 				tester.name_of_base_selection_of_atoms=token;
 			}
@@ -517,7 +517,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="--sel")
+			else if(token=="--sel" || token=="-s")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
@@ -545,27 +545,27 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.match_max_sequence_separation;
 			}
-			else if(token=="--tags")
+			else if(token=="--tags" || token=="-t")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="--tags-not")
+			else if(token=="--tags-not" || token=="-t!")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="--adjuncts")
+			else if(token=="--adjuncts" || token=="-v")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="--adjuncts-not")
+			else if(token=="--adjuncts-not" || token=="-v!")
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token=="--atom1")
+			else if(token=="--atom1" || token=="-a1")
 			{
 				input >> tester.test_atom_a;
 			}
-			else if(token=="--atom2")
+			else if(token=="--atom2" || token=="-a2")
 			{
 				input >> tester.test_atom_b;
 			}
@@ -582,7 +582,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				tester.no_same_chain=true;
 				tester.no_solvent=true;
 			}
-			else if(token.compare(0, 2, "--")!=0)
+			else if(token.compare(0, 1, "-")!=0)
 			{
 				tester.name_of_base_selection_of_contacts=token;
 			}
@@ -649,17 +649,17 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		std::string opname;
 		input >> opname;
 
-		if(opname=="--or")
+		if(opname=="OR")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_OR;
 		}
-		else if(opname=="--and")
+		else if(opname=="AND")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_AND;
 		}
-		else if(opname=="--not")
+		else if(opname=="NOT")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_NOT;

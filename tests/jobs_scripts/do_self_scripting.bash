@@ -23,9 +23,9 @@ print-contacts {cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 
-select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 print-atoms {as1} --sort tags --file '$SUBDIR/printed_atoms'
-print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
+print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 
 rename-selection-of-atoms nosel1 nodel2
 delete-selections-of-contacts nosel1
@@ -33,8 +33,8 @@ list-selections-of-atoms
 list-selections-of-contacts
 
 color-contacts 0x00FF00
-color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
+color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
+color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts
 
