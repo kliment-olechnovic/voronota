@@ -1264,7 +1264,11 @@ private:
 
 	static void assert_selection_name_input(const std::string& name)
 	{
-		if(name.find_first_of("{}()[]<>,;.:\\/+-*/='\"@#$%^&`~?|")!=std::string::npos)
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("Selection name is empty."));
+		}
+		else if(name.find_first_of("{}()[]<>,;.:\\/+-*/='\"@#$%^&`~?|")!=std::string::npos)
 		{
 			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
 		}
