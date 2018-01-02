@@ -54,7 +54,7 @@ Summary of contacts: count=5 drawable=1 area=33.8164
 Set selection of contacts named 'cs1'
 
 
-> print-contacts {--sel cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
+> print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
 atom1                       atom2                         area     dist     tags  adjuncts  
 c<A>r<99>a<756>R<PHE>A<C>   c<A>r<100>a<765>R<PHE>A<N>    8.5725   1.33208  .     .         
 c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  .     .         
@@ -80,12 +80,12 @@ A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  .     .
 Summary of contacts: count=4820 drawable=86 area=10487.8
 
 
-> select-atoms {r<64>&A<C,N,O,CA,CB>} --name as1
+> select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
 Summary of atoms: count=5 volume=108.978
 Set selection of atoms named 'as1'
 
 
-> print-atoms {--sel as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
+> print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
 atom                        x       y       z       r     tags  adjuncts                      
 c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
 c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
@@ -127,7 +127,7 @@ Selections of contacts:
 Summary of contacts: count=120 drawable=120 area=211.8
 
 
-> color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+> color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
 Summary of contacts: count=25 drawable=25 area=52.3005
 
 
@@ -176,16 +176,16 @@ save-contacts './jobs_output/self_scripting/plain_contacts'
 load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
 load-contacts --file './jobs_output/self_scripting/plain_contacts'
 select-contacts {--atom1 {R<PHE>} --atom2 {R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
-print-contacts {--sel cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
+print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
-select-atoms {r<64>&A<C,N,O,CA,CB>} --name as1
-print-atoms {--sel as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
+select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
 print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
 color-contacts 0x00FF00
-color-contacts {--atom1 {--match A<C,CA,N,O>} --atom2 {--match A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--atom1 {A<C,CA,N,O>} --atom2 {A<C,CA,N,O>}} 0x00FFFF
 color-contacts {--atom1 {--match-not A<C,CA,N,O>} --atom2 {--match-not A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
