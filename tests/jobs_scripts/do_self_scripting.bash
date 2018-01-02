@@ -11,21 +11,21 @@ load-atoms --file $INPUTDIR/single/structure.pdb
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf=0:10}
 restrict-atoms {--tags-not het}
-construct-contacts --calculate-volumes --render-use '{--atom1 {--match r<83>} --min-seq-sep 1}'
+construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} --min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
 save-contacts '$SUBDIR/plain_contacts'
 load-atoms --file '$SUBDIR/plain_atoms' --format plain
 select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
-select-contacts {--atom1 {--match R<PHE>} --atom2 {--match R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
+select-contacts {--atom1 {R<PHE>} --atom2 {R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
 print-contacts {--sel cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 
-select-atoms {--match r<64>&A<C,N,O,CA,CB>} --name as1
+select-atoms {r<64>&A<C,N,O,CA,CB>} --name as1
 print-atoms {--sel as1} --sort tags --file '$SUBDIR/printed_atoms'
-print-atoms {--match r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
+print-atoms {r<64>&A<C,N,O,CA,CB>} --sort atmn --expand
 
 rename-selection-of-atoms nosel1 nodel2
 delete-selections-of-contacts nosel1

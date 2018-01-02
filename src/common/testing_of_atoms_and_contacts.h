@@ -460,6 +460,10 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.match_adjuncts_not;
 			}
+			else if(token.compare(0, 2, "--")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
+			{
+				tester.match_crad=token;
+			}
 			else
 			{
 				throw std::runtime_error(std::string("Invalid token '")+token+"'.");
