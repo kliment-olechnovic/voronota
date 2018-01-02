@@ -1262,6 +1262,18 @@ private:
 		return filter_drawable_implemented_ids(display_states, visual_ids, ids, false);
 	}
 
+	static void assert_selection_name_input(const std::string& name)
+	{
+		if(name.find_first_of("{}()[]<>,;.:\\/+-*/='\"@#$%^&`~?|")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
+		}
+		else if(name.compare(0, 1, "-")==0 || name.compare(0, 1, "_")==0)
+		{
+			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
+		}
+	}
+
 	void assert_atoms_representations_availability() const
 	{
 		if(atoms_representation_names_.empty())
@@ -1638,6 +1650,8 @@ private:
 				cargs.input.get_value_or_default<std::string>("name", ""));
 
 		cargs.input.assert_nothing_unusable();
+
+		assert_selection_name_input(name);
 
 		std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
@@ -2235,6 +2249,8 @@ private:
 				cargs.input.get_value_or_default<std::string>("name", ""));
 
 		cargs.input.assert_nothing_unusable();
+
+		assert_selection_name_input(name);
 
 		std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
