@@ -45,6 +45,7 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler&);
 void demo_hypercut(const auxiliaries::ProgramOptionsHandler&);
 void run_script(const auxiliaries::ProgramOptionsHandler&);
 void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler&);
+void reprint_hbp(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -109,6 +110,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-demo-hypercut", ModeDescriptor::FunctionPtr(demo_hypercut)));
 	list_of_modes.push_back(ModeDescriptor("x-run-script", ModeDescriptor::FunctionPtr(run_script)));
 	list_of_modes.push_back(ModeDescriptor("x-draw-values-bitmap", ModeDescriptor::FunctionPtr(draw_values_bitmap)));
+	list_of_modes.push_back(ModeDescriptor("x-reprint-hbp", ModeDescriptor::FunctionPtr(reprint_hbp)));
 	return list_of_modes;
 }
 
