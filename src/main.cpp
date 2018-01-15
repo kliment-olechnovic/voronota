@@ -46,6 +46,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler&);
 void run_script(const auxiliaries::ProgramOptionsHandler&);
 void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler&);
 void reprint_hbp(const auxiliaries::ProgramOptionsHandler&);
+void compare_files_as_sets(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -111,6 +112,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-run-script", ModeDescriptor::FunctionPtr(run_script)));
 	list_of_modes.push_back(ModeDescriptor("x-draw-values-bitmap", ModeDescriptor::FunctionPtr(draw_values_bitmap)));
 	list_of_modes.push_back(ModeDescriptor("x-reprint-hbp", ModeDescriptor::FunctionPtr(reprint_hbp)));
+	list_of_modes.push_back(ModeDescriptor("x-compare-files-as-sets", ModeDescriptor::FunctionPtr(compare_files_as_sets)));
 	return list_of_modes;
 }
 
