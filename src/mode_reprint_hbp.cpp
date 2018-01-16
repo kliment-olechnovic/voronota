@@ -10,8 +10,6 @@ void reprint_hbp(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "hbplus output");
 	pohw.describe_io("stdout", false, true, "output");
 
-	const bool inter_residue=poh.contains_option(pohw.describe_option("--inter-residue", "", "flag for inter-residue output"));
-
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
@@ -30,7 +28,7 @@ void reprint_hbp(const auxiliaries::ProgramOptionsHandler& poh)
 			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
 			const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
 			const CRADsPair crads_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", ""));
-			set_of_hbplus_crad_pairs.insert(inter_residue ? CRADsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()) : crads_pair);
+			set_of_hbplus_crad_pairs.insert(crads_pair);
 		}
 	}
 
