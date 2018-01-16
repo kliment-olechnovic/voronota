@@ -75,9 +75,9 @@ void compare_files_as_sets(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map< std::pair<int, int>, int > summary=summarize_join_map(join_two_sets(read_file_as_set(file1), read_file_as_set(file2)));
 
-	std::cout << file1 << " " << file2 << " ";
+	std::cout << "m11 m10 m01\n";
+	std::cout << summary[std::make_pair(1, 1)] << " ";
 	std::cout << summary[std::make_pair(1, 0)] << " ";
-	std::cout << summary[std::make_pair(0, 1)] << " ";
-	std::cout << summary[std::make_pair(1, 1)] << "\n";
+	std::cout << summary[std::make_pair(0, 1)] << "\n";
 }
 
