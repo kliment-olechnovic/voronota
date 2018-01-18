@@ -38,10 +38,6 @@ public:
 	struct BundleOfSecondaryStructure
 	{
 		std::vector<ResidueDescriptor> residue_descriptors;
-
-		BundleOfSecondaryStructure()
-		{
-		}
 	};
 
 	class construct_bundle_of_secondary_structure
@@ -63,7 +59,7 @@ public:
 		{
 			bundle_of_secondary_structure=BundleOfSecondaryStructure();
 
-			if(!bundle_of_primary_structure.valid(atoms))
+			if(bundle_of_primary_structure.residues.empty() || bundle_of_primary_structure.map_of_atoms_to_residues.size()==atoms.size())
 			{
 				return false;
 			}
@@ -172,6 +168,170 @@ public:
 				}
 			}
 
+			std::vector<ResidueDescriptor>& rds=bundle_of_secondary_structure.residue_descriptors;
+
+			{
+				int periods[3]={4,3,5};
+				std::size_t lengths[3]={4,3,5};
+				for(int t=0;t<3;t++)
+				{
+					const int period=periods[t];
+					const std::size_t length=lengths[t];
+					std::vector<int> linked(rds.size(), 0);
+					for(std::size_t i=0;i<rds.size();i++)
+					{
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						if(rds[i].hbond_accepted.first<0.0)
+						{
+							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
+							if(r1.segment_id==r2.segment_id && (r1.position_in_segment+period)==r2.position_in_segment)
+							{
+								linked[i]++;
+							}
+						}
+						if(rds[i].hbond_donated.first<0.0)
+						{
+							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_donated.second];
+							if(r1.segment_id==r2.segment_id && (r2.position_in_segment+period)==r1.position_in_segment)
+							{
+								linked[i]++;
+							}
+						}
+					}
+					for(std::size_t i=0;i<rds.size();i++)
+					{
+						std::size_t n=0;
+						for(std::size_t j=0;j<length;j++)
+						{
+							if(i+j<rds.size() && linked[i]>0)
+							{
+								n++;
+							}
+						}
+						if(n==length)
+						{
+							for(std::size_t j=0;j<length;j++)
+							{
+								rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+							}
+						}
+					}
+				}
+			}
+
+			{
+				for(std::size_t i=0;i+1<rds.size();i++)
+				{
+					bool possible_i=true;
+					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && (i+2>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					if(possible_i)
+					{
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+1];
+						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+1)==r2.position_in_segment)
+						{
+							for(int v=0;v<2;v++)
+							{
+								std::size_t nr1_i=rds.size();
+								std::size_t nr2_i=rds.size();
+								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+1].hbond_donated.first<0.0)
+								{
+									nr1_i=rds[i].hbond_accepted.second;
+									nr2_i=rds[i+1].hbond_donated.second;
+								}
+								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+1].hbond_accepted.first<0.0)
+								{
+									nr1_i=rds[i].hbond_donated.second;
+									nr2_i=rds[i+1].hbond_accepted.second;
+								}
+								if(nr1_i<rds.size() && nr2_i<rds.size())
+								{
+									if(nr2_i>nr1_i)
+									{
+										std::swap(nr1_i, nr2_i);
+									}
+									bool possible_nr1_i=(nr1_i+1==nr2_i);
+									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									if(possible_nr1_i)
+									{
+										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
+										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
+										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+1)==nr2.position_in_segment)
+										{
+											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				for(std::size_t i=0;i+2<rds.size();i++)
+				{
+					bool possible_i=true;
+					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					if(possible_i)
+					{
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
+						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+						{
+							for(int v=0;v<2;v++)
+							{
+								std::size_t nr1_i=rds.size();
+								std::size_t nr2_i=rds.size();
+								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_accepted.first<0.0)
+								{
+									nr1_i=rds[i].hbond_accepted.second;
+									nr2_i=rds[i+2].hbond_accepted.second;
+								}
+								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+2].hbond_donated.first<0.0)
+								{
+									nr1_i=rds[i].hbond_donated.second;
+									nr2_i=rds[i+2].hbond_donated.second;
+								}
+								if(nr1_i<rds.size() && nr2_i<rds.size())
+								{
+									if(nr2_i>nr1_i)
+									{
+										std::swap(nr1_i, nr2_i);
+									}
+									bool possible_nr1_i=(nr1_i+2==nr2_i);
+									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+									if(possible_nr1_i)
+									{
+										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
+										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
+										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
+										{
+											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+											rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			return true;
 		}
 
@@ -243,8 +403,9 @@ private:
 		const double dist_CN=apollota::distance_from_point_to_point(C, N);
 
 		const double w=0.0-27888.0;
+		const double energy=(w/dist_ON+w/dist_CH-w/dist_OH-w/dist_CN);
 
-		return (w/dist_ON+w/dist_CH-w/dist_OH-w/dist_CN);
+		return energy;
 	}
 };
 
