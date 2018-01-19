@@ -245,144 +245,57 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<rds.size();i++)
 			{
-				if(rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+				for(std::size_t i=0;i+2<rds.size();i++)
 				{
-					for(int v=0;v<2;v++)
+					bool possible_i=true;
+					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					if(possible_i)
 					{
-						std::size_t nr1_i=rds.size();
-						if(v==0 && rds[i].hbond_accepted.first<0.0)
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
+						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
 						{
-							nr1_i=rds[i].hbond_accepted.second;
-						}
-						else if(v==1 && rds[i].hbond_donated.first<0.0)
-						{
-							nr1_i=rds[i].hbond_donated.second;
-						}
-						if(nr1_i<rds.size())
-						{
-							if(rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+							std::size_t nr1_i=rds.size();
+							std::size_t nr2_i=rds.size();
+							if(rds[i].hbond_accepted.first<0.0 && rds[i].hbond_donated.first<0.0 && rds[i].hbond_accepted.second==rds[i].hbond_donated.second
+									&& rds[i+2].hbond_accepted.first<0.0 && rds[i+2].hbond_donated.first<0.0 && rds[i+2].hbond_accepted.second==rds[i+2].hbond_donated.second)
 							{
-								rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+								nr1_i=rds[i].hbond_accepted.second;
+								nr2_i=rds[i+2].hbond_accepted.second;
+							}
+							if(nr1_i<rds.size() && nr2_i<rds.size())
+							{
+								if(nr2_i<nr1_i)
+								{
+									std::swap(nr1_i, nr2_i);
+								}
+								bool possible_nr1_i=true;
+								possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+								possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								if(possible_nr1_i)
+								{
+									const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
+									const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
+									if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
+									{
+										rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+										rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+										rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+									}
+								}
 							}
 						}
 					}
 				}
 			}
-
-//			{
-//				for(std::size_t i=0;i+1<rds.size();i++)
-//				{
-//					bool possible_i=true;
-//					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//					possible_i=possible_i && (i+2>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//					if(possible_i)
-//					{
-//						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-//						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+1];
-//						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+1)==r2.position_in_segment)
-//						{
-//							for(int v=0;v<2;v++)
-//							{
-//								std::size_t nr1_i=rds.size();
-//								std::size_t nr2_i=rds.size();
-//								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+1].hbond_donated.first<0.0)
-//								{
-//									nr1_i=rds[i].hbond_accepted.second;
-//									nr2_i=rds[i+1].hbond_donated.second;
-//								}
-//								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+1].hbond_accepted.first<0.0)
-//								{
-//									nr1_i=rds[i].hbond_donated.second;
-//									nr2_i=rds[i+1].hbond_accepted.second;
-//								}
-//								if(nr1_i<rds.size() && nr2_i<rds.size())
-//								{
-//									if(nr2_i>nr1_i)
-//									{
-//										std::swap(nr1_i, nr2_i);
-//									}
-//									bool possible_nr1_i=(nr1_i+1==nr2_i);
-//									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									if(possible_nr1_i)
-//									{
-//										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
-//										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-//										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+1)==nr2.position_in_segment)
-//										{
-//											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-//											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//
-//				for(std::size_t i=0;i+2<rds.size();i++)
-//				{
-//					bool possible_i=true;
-//					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//					if(possible_i)
-//					{
-//						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-//						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-//						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
-//						{
-//							for(int v=0;v<2;v++)
-//							{
-//								std::size_t nr1_i=rds.size();
-//								std::size_t nr2_i=rds.size();
-//								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_accepted.first<0.0)
-//								{
-//									nr1_i=rds[i].hbond_accepted.second;
-//									nr2_i=rds[i+2].hbond_accepted.second;
-//								}
-//								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+2].hbond_donated.first<0.0)
-//								{
-//									nr1_i=rds[i].hbond_donated.second;
-//									nr2_i=rds[i+2].hbond_donated.second;
-//								}
-//								if(nr1_i<rds.size() && nr2_i<rds.size())
-//								{
-//									if(nr2_i>nr1_i)
-//									{
-//										std::swap(nr1_i, nr2_i);
-//									}
-//									bool possible_nr1_i=(nr1_i+2==nr2_i);
-//									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-//									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-//									if(possible_nr1_i)
-//									{
-//										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
-//										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-//										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
-//										{
-//											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-//											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-//											rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-//										}
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
 
 			return true;
 		}
