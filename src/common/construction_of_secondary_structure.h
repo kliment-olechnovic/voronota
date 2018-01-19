@@ -1,5 +1,5 @@
-#ifndef COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURES_H_
-#define COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURES_H_
+#ifndef COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURE_H_
+#define COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURE_H_
 
 #include "../apollota/search_for_spherical_collisions.h"
 
@@ -59,7 +59,7 @@ public:
 		{
 			bundle_of_secondary_structure=BundleOfSecondaryStructure();
 
-			if(bundle_of_primary_structure.residues.empty() || bundle_of_primary_structure.map_of_atoms_to_residues.size()==atoms.size())
+			if(bundle_of_primary_structure.residues.empty() || bundle_of_primary_structure.map_of_atoms_to_residues.size()!=atoms.size())
 			{
 				return false;
 			}
@@ -109,60 +109,67 @@ public:
 				return false;
 			}
 
-			std::vector< std::vector<std::size_t> > rough_graph(residue_main_chain_descriptors.size());
-
 			{
-				std::vector<apollota::SimpleSphere> CA_anchors(residue_main_chain_descriptors.size());
+				std::vector< std::vector<std::size_t> > rough_graph(residue_main_chain_descriptors.size());
 
-				for(std::size_t i=0;i<CA_anchors.size();i++)
 				{
-					CA_anchors[i]=apollota::SimpleSphere(residue_main_chain_descriptors[i].CA.second, max_dist_between_CA_atoms*0.5);
-				}
+					std::vector<apollota::SimpleSphere> CA_anchors(residue_main_chain_descriptors.size());
 
-				apollota::BoundingSpheresHierarchy bsh(CA_anchors, max_dist_between_CA_atoms*2.5, 1);
-
-				for(std::size_t i=0;i<CA_anchors.size();i++)
-				{
-					const std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, CA_anchors[i]);
-					for(std::size_t j=0;j<collisions.size();j++)
+					for(std::size_t i=0;i<CA_anchors.size();i++)
 					{
-						if(i<collisions[j])
+						CA_anchors[i]=apollota::SimpleSphere(residue_main_chain_descriptors[i].CA.second, max_dist_between_CA_atoms*0.5);
+					}
+
+					apollota::BoundingSpheresHierarchy bsh(CA_anchors, max_dist_between_CA_atoms*2.5, 1);
+
+					for(std::size_t i=0;i<CA_anchors.size();i++)
+					{
+						const std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, CA_anchors[i]);
+						for(std::size_t j=0;j<collisions.size();j++)
 						{
-							rough_graph[i].push_back(collisions[j]);
+							if(i<collisions[j])
+							{
+								rough_graph[i].push_back(collisions[j]);
+							}
 						}
 					}
 				}
-			}
 
-			for(std::size_t i=0;i<rough_graph.size();i++)
-			{
-				const ResidueMainChainDescriptor& rmcd_a=residue_main_chain_descriptors[i];
-				ResidueDescriptor& rd_a=bundle_of_secondary_structure.residue_descriptors[rmcd_a.residue_id];
-				for(std::size_t j=0;j<rough_graph[i].size();j++)
+				for(std::size_t i=0;i<rough_graph.size();i++)
 				{
-					const ResidueMainChainDescriptor& rmcd_b=residue_main_chain_descriptors[rough_graph[i][j]];
-					ResidueDescriptor& rd_b=bundle_of_secondary_structure.residue_descriptors[rmcd_b.residue_id];
-					for(int e=0;e<2;e++)
+					const ResidueMainChainDescriptor& rmcd_a=residue_main_chain_descriptors[i];
+					ResidueDescriptor& rd_a=bundle_of_secondary_structure.residue_descriptors[rmcd_a.residue_id];
+					const ConstructionOfPrimaryStructure::Residue& r_a=bundle_of_primary_structure.residues[rmcd_a.residue_id];
+					for(std::size_t j=0;j<rough_graph[i].size();j++)
 					{
-						const ResidueMainChainDescriptor& rmcd1=(e==0 ? rmcd_a : rmcd_b);
-						const ResidueMainChainDescriptor& rmcd2=(e==0 ? rmcd_b : rmcd_a);
-						ResidueDescriptor& rd1=(e==0 ? rd_a : rd_b);
-						ResidueDescriptor& rd2=(e==0 ? rd_b : rd_a);
-						const double energy=calculate_hbond_energy(rmcd1, rmcd2);
-						if(energy<max_hbond_energy && energy<rd1.hbond_donated.first && energy<rd2.hbond_accepted.first)
+						const ResidueMainChainDescriptor& rmcd_b=residue_main_chain_descriptors[rough_graph[i][j]];
+						ResidueDescriptor& rd_b=bundle_of_secondary_structure.residue_descriptors[rmcd_b.residue_id];
+						const ConstructionOfPrimaryStructure::Residue& r_b=bundle_of_primary_structure.residues[rmcd_b.residue_id];
+						if(r_a.segment_id!=r_b.segment_id || abs(r_a.position_in_segment-r_b.position_in_segment)>1)
 						{
-							if(rd1.hbond_donated.first<0.0)
+							for(int e=0;e<2;e++)
 							{
-								bundle_of_secondary_structure.residue_descriptors[rd1.hbond_donated.second].hbond_accepted.first=0.0;
+								const ResidueMainChainDescriptor& rmcd1=(e==0 ? rmcd_a : rmcd_b);
+								const ResidueMainChainDescriptor& rmcd2=(e==0 ? rmcd_b : rmcd_a);
+								ResidueDescriptor& rd1=(e==0 ? rd_a : rd_b);
+								ResidueDescriptor& rd2=(e==0 ? rd_b : rd_a);
+								const double energy=calculate_hbond_energy(rmcd1, rmcd2);
+								if(energy<max_hbond_energy && energy<rd1.hbond_donated.first && energy<rd2.hbond_accepted.first)
+								{
+									if(rd1.hbond_donated.first<0.0)
+									{
+										bundle_of_secondary_structure.residue_descriptors[rd1.hbond_donated.second].hbond_accepted.first=0.0;
+									}
+									if(rd2.hbond_accepted.first<0.0)
+									{
+										bundle_of_secondary_structure.residue_descriptors[rd2.hbond_accepted.second].hbond_donated.first=0.0;
+									}
+									rd1.hbond_donated.first=energy;
+									rd1.hbond_donated.second=rmcd2.residue_id;
+									rd2.hbond_accepted.first=energy;
+									rd2.hbond_accepted.second=rmcd1.residue_id;
+								}
 							}
-							if(rd2.hbond_accepted.first<0.0)
-							{
-								bundle_of_secondary_structure.residue_descriptors[rd2.hbond_accepted.second].hbond_donated.first=0.0;
-							}
-							rd1.hbond_donated.first=energy;
-							rd1.hbond_donated.second=rmcd2.residue_id;
-							rd2.hbond_accepted.first=energy;
-							rd2.hbond_accepted.second=rmcd1.residue_id;
 						}
 					}
 				}
@@ -203,7 +210,7 @@ public:
 						std::size_t n=0;
 						for(std::size_t j=0;j<length;j++)
 						{
-							if(i+j<rds.size() && linked[i]>0)
+							if(i+j<rds.size() && linked[i+j]>0)
 							{
 								n++;
 							}
@@ -402,7 +409,7 @@ private:
 		const double dist_OH=apollota::distance_from_point_to_point(O, H);
 		const double dist_CN=apollota::distance_from_point_to_point(C, N);
 
-		const double w=0.0-27888.0;
+		const double w=27888.0;
 		const double energy=(w/dist_ON+w/dist_CH-w/dist_OH-w/dist_CN);
 
 		return energy;
@@ -411,4 +418,4 @@ private:
 
 }
 
-#endif /* COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURES_H_ */
+#endif /* COMMON_CONSTRUCTION_OF_SECONDARY_STRUCTURE_H_ */

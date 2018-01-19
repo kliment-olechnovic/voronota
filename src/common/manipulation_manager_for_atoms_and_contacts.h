@@ -5,6 +5,7 @@
 
 #include "selection_manager_for_atoms_and_contacts.h"
 #include "command_input.h"
+#include "construction_of_secondary_structure.h"
 
 namespace common
 {
@@ -103,6 +104,7 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &ManipulationManagerForAtomsAndContacts::command_hide_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &ManipulationManagerForAtomsAndContacts::command_color_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("spectrum-atoms", &ManipulationManagerForAtomsAndContacts::command_spectrum_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("assign-secondary-structure", &ManipulationManagerForAtomsAndContacts::command_assign_secondary_structure));
 		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &ManipulationManagerForAtomsAndContacts::command_print_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
@@ -2012,6 +2014,71 @@ private:
 			cargs.output_for_log << "count=" << ids.size() << " ";
 			cargs.output_for_log << "min=" << min_val_actual << " ";
 			cargs.output_for_log << "max=" << max_val_actual;
+			cargs.output_for_log << "\n";
+		}
+	}
+
+	void command_assign_secondary_structure(CommandArguments& cargs)
+	{
+		assert_atoms_availability();
+
+		const std::string ss_tag_alpha="ss_a";
+		const std::string ss_tag_beta="ss_b";
+
+		cargs.input.assert_nothing_unusable();
+
+		ConstructionOfPrimaryStructure::BundleOfPrimaryStructure bundle_primary;
+		if(!ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_, bundle_primary))
+		{
+			throw std::runtime_error(std::string("Failed to assign primary structure."));
+		}
+
+		ConstructionOfSecondaryStructure::BundleOfSecondaryStructure bundle_secondary;
+		ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure construct_bundle_secondary;
+		if(!construct_bundle_secondary(atoms_, bundle_primary, bundle_secondary))
+		{
+			throw std::runtime_error(std::string("Failed to assign secondary structure."));
+		}
+
+		int number_of_ss_alpha=0;
+		int number_of_ss_beta=0;
+		int number_of_ss_other=0;
+
+		for(std::size_t i=0;i<bundle_primary.residues.size();i++)
+		{
+			const ConstructionOfSecondaryStructure::SecondaryStructureType sstype=bundle_secondary.residue_descriptors[i].secondary_structure_type;
+			std::string ss_tag;
+			if(sstype==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+			{
+				ss_tag=ss_tag_alpha;
+				number_of_ss_alpha++;
+			}
+			else if(sstype==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+			{
+				ss_tag=ss_tag_beta;
+				number_of_ss_beta++;
+			}
+			else
+			{
+				number_of_ss_other++;
+			}
+			for(std::size_t j=0;j<bundle_primary.residues[i].atom_ids.size();j++)
+			{
+				const std::size_t atom_id=bundle_primary.residues[i].atom_ids[j];
+				atoms_[atom_id].value.props.tags.erase(ss_tag_alpha);
+				atoms_[atom_id].value.props.tags.erase(ss_tag_beta);
+				if(!ss_tag.empty())
+				{
+					atoms_[atom_id].value.props.tags.insert(ss_tag);
+				}
+			}
+		}
+
+		{
+			cargs.output_for_log << "Summary: ";
+			cargs.output_for_log << "alpha=" << number_of_ss_alpha << " ";
+			cargs.output_for_log << "beta=" << number_of_ss_beta << " ";
+			cargs.output_for_log << "other=" << number_of_ss_other;
 			cargs.output_for_log << "\n";
 		}
 	}
