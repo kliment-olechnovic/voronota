@@ -295,6 +295,42 @@ public:
 						}
 					}
 				}
+
+				for(std::size_t i=0;i+2<rds.size();i++)
+				{
+					bool possible_i=true;
+					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+					if(possible_i)
+					{
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
+						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+						{
+							std::size_t nr1_i=rds.size();
+							if(rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_donated.first<0.0 && rds[i].hbond_accepted.second==rds[i+2].hbond_donated.second)
+							{
+								nr1_i=rds[i].hbond_accepted.second;
+							}
+							if(nr1_i<rds.size())
+							{
+								bool possible_nr1_i=true;
+								possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+								possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+								if(possible_nr1_i)
+								{
+									rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+									rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+									rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+								}
+							}
+						}
+					}
+				}
 			}
 
 			return true;
