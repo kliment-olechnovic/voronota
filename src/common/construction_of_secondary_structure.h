@@ -67,39 +67,58 @@ public:
 			bundle_of_secondary_structure.residue_descriptors.resize(bundle_of_primary_structure.residues.size());
 
 			std::vector<ResidueMainChainDescriptor> residue_main_chain_descriptors;
-			residue_main_chain_descriptors.reserve(bundle_of_primary_structure.residues.size());
 
-			for(std::size_t i=0;i<bundle_of_primary_structure.residues.size();i++)
 			{
-				const ConstructionOfPrimaryStructure::Residue& res=bundle_of_primary_structure.residues[i];
-				if(res.residue_type==ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
+				std::vector<ResidueMainChainDescriptor> raw_residue_main_chain_descriptors;
+				raw_residue_main_chain_descriptors.reserve(bundle_of_primary_structure.residues.size());
+				for(std::size_t i=0;i<bundle_of_primary_structure.residues.size();i++)
 				{
-					ResidueMainChainDescriptor rmcd;
-					rmcd.residue_id=i;
-					for(std::size_t j=0;j<res.atom_ids.size();j++)
+					const ConstructionOfPrimaryStructure::Residue& res=bundle_of_primary_structure.residues[i];
+					if(res.residue_type==ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
 					{
-						const Atom& atom=atoms[res.atom_ids[j]];
-						if(atom.crad.name=="CA")
+						ResidueMainChainDescriptor rmcd;
+						rmcd.residue_id=i;
+						for(std::size_t j=0;j<res.atom_ids.size();j++)
 						{
-							rmcd.CA=std::make_pair(true, apollota::SimplePoint(atom.value));
+							const Atom& atom=atoms[res.atom_ids[j]];
+							if(atom.crad.name=="CA")
+							{
+								rmcd.CA=std::make_pair(true, apollota::SimplePoint(atom.value));
+							}
+							else if(atom.crad.name=="C")
+							{
+								rmcd.C=std::make_pair(true, apollota::SimplePoint(atom.value));
+							}
+							else if(atom.crad.name=="N")
+							{
+								rmcd.N=std::make_pair(true, apollota::SimplePoint(atom.value));
+							}
+							else if(atom.crad.name=="O")
+							{
+								rmcd.O=std::make_pair(true, apollota::SimplePoint(atom.value));
+							}
 						}
-						else if(atom.crad.name=="C")
+
+						if(rmcd.almost_valid())
 						{
-							rmcd.C=std::make_pair(true, apollota::SimplePoint(atom.value));
-						}
-						else if(atom.crad.name=="N")
-						{
-							rmcd.N=std::make_pair(true, apollota::SimplePoint(atom.value));
-						}
-						else if(atom.crad.name=="O")
-						{
-							rmcd.O=std::make_pair(true, apollota::SimplePoint(atom.value));
+							raw_residue_main_chain_descriptors.push_back(rmcd);
 						}
 					}
+				}
 
-					if(rmcd.validate())
+				residue_main_chain_descriptors.reserve(raw_residue_main_chain_descriptors.size());
+				for(std::size_t i=0;i+1<raw_residue_main_chain_descriptors.size();i++)
+				{
+					const ResidueMainChainDescriptor& rmcd_a=raw_residue_main_chain_descriptors[i];
+					const ConstructionOfPrimaryStructure::Residue& r_a=bundle_of_primary_structure.residues[rmcd_a.residue_id];
+					ResidueMainChainDescriptor& rmcd_b=raw_residue_main_chain_descriptors[i+1];
+					const ConstructionOfPrimaryStructure::Residue& r_b=bundle_of_primary_structure.residues[rmcd_b.residue_id];
+					if(r_a.segment_id==r_b.segment_id || (r_a.position_in_segment+1)==r_b.position_in_segment)
 					{
-						residue_main_chain_descriptors.push_back(rmcd);
+						if(rmcd_b.calculate_H(rmcd_a) && rmcd_b.fully_valid())
+						{
+							residue_main_chain_descriptors.push_back(rmcd_b);
+						}
 					}
 				}
 			}
@@ -226,118 +245,144 @@ public:
 				}
 			}
 
+			for(std::size_t i=0;i<rds.size();i++)
 			{
-				for(std::size_t i=0;i+1<rds.size();i++)
+				if(rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 				{
-					bool possible_i=true;
-					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && (i+2>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					if(possible_i)
+					for(int v=0;v<2;v++)
 					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+1];
-						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+1)==r2.position_in_segment)
+						std::size_t nr1_i=rds.size();
+						if(v==0 && rds[i].hbond_accepted.first<0.0)
 						{
-							for(int v=0;v<2;v++)
-							{
-								std::size_t nr1_i=rds.size();
-								std::size_t nr2_i=rds.size();
-								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+1].hbond_donated.first<0.0)
-								{
-									nr1_i=rds[i].hbond_accepted.second;
-									nr2_i=rds[i+1].hbond_donated.second;
-								}
-								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+1].hbond_accepted.first<0.0)
-								{
-									nr1_i=rds[i].hbond_donated.second;
-									nr2_i=rds[i+1].hbond_accepted.second;
-								}
-								if(nr1_i<rds.size() && nr2_i<rds.size())
-								{
-									if(nr2_i>nr1_i)
-									{
-										std::swap(nr1_i, nr2_i);
-									}
-									bool possible_nr1_i=(nr1_i+1==nr2_i);
-									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									if(possible_nr1_i)
-									{
-										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
-										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+1)==nr2.position_in_segment)
-										{
-											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-										}
-									}
-								}
-							}
+							nr1_i=rds[i].hbond_accepted.second;
 						}
-					}
-				}
-
-				for(std::size_t i=0;i+2<rds.size();i++)
-				{
-					bool possible_i=true;
-					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					if(possible_i)
-					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+						else if(v==1 && rds[i].hbond_donated.first<0.0)
 						{
-							for(int v=0;v<2;v++)
+							nr1_i=rds[i].hbond_donated.second;
+						}
+						if(nr1_i<rds.size())
+						{
+							if(rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 							{
-								std::size_t nr1_i=rds.size();
-								std::size_t nr2_i=rds.size();
-								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_accepted.first<0.0)
-								{
-									nr1_i=rds[i].hbond_accepted.second;
-									nr2_i=rds[i+2].hbond_accepted.second;
-								}
-								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+2].hbond_donated.first<0.0)
-								{
-									nr1_i=rds[i].hbond_donated.second;
-									nr2_i=rds[i+2].hbond_donated.second;
-								}
-								if(nr1_i<rds.size() && nr2_i<rds.size())
-								{
-									if(nr2_i>nr1_i)
-									{
-										std::swap(nr1_i, nr2_i);
-									}
-									bool possible_nr1_i=(nr1_i+2==nr2_i);
-									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-									if(possible_nr1_i)
-									{
-										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
-										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
-										{
-											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-											rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-										}
-									}
-								}
+								rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
 							}
 						}
 					}
 				}
 			}
+
+//			{
+//				for(std::size_t i=0;i+1<rds.size();i++)
+//				{
+//					bool possible_i=true;
+//					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//					possible_i=possible_i && (i+2>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//					if(possible_i)
+//					{
+//						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+//						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+1];
+//						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+1)==r2.position_in_segment)
+//						{
+//							for(int v=0;v<2;v++)
+//							{
+//								std::size_t nr1_i=rds.size();
+//								std::size_t nr2_i=rds.size();
+//								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+1].hbond_donated.first<0.0)
+//								{
+//									nr1_i=rds[i].hbond_accepted.second;
+//									nr2_i=rds[i+1].hbond_donated.second;
+//								}
+//								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+1].hbond_accepted.first<0.0)
+//								{
+//									nr1_i=rds[i].hbond_donated.second;
+//									nr2_i=rds[i+1].hbond_accepted.second;
+//								}
+//								if(nr1_i<rds.size() && nr2_i<rds.size())
+//								{
+//									if(nr2_i>nr1_i)
+//									{
+//										std::swap(nr1_i, nr2_i);
+//									}
+//									bool possible_nr1_i=(nr1_i+1==nr2_i);
+//									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									if(possible_nr1_i)
+//									{
+//										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
+//										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
+//										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+1)==nr2.position_in_segment)
+//										{
+//											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+//											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//
+//				for(std::size_t i=0;i+2<rds.size();i++)
+//				{
+//					bool possible_i=true;
+//					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//					if(possible_i)
+//					{
+//						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+//						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
+//						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+//						{
+//							for(int v=0;v<2;v++)
+//							{
+//								std::size_t nr1_i=rds.size();
+//								std::size_t nr2_i=rds.size();
+//								if(v==0 && rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_accepted.first<0.0)
+//								{
+//									nr1_i=rds[i].hbond_accepted.second;
+//									nr2_i=rds[i+2].hbond_accepted.second;
+//								}
+//								else if(v==1 && rds[i].hbond_donated.first<0.0 && rds[i+2].hbond_donated.first<0.0)
+//								{
+//									nr1_i=rds[i].hbond_donated.second;
+//									nr2_i=rds[i+2].hbond_donated.second;
+//								}
+//								if(nr1_i<rds.size() && nr2_i<rds.size())
+//								{
+//									if(nr2_i>nr1_i)
+//									{
+//										std::swap(nr1_i, nr2_i);
+//									}
+//									bool possible_nr1_i=(nr1_i+2==nr2_i);
+//									possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+//									possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
+//									if(possible_nr1_i)
+//									{
+//										const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
+//										const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
+//										if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
+//										{
+//											rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+//											rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+//											rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+//										}
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
 
 			return true;
 		}
@@ -375,22 +420,25 @@ private:
 		{
 		}
 
-		bool validate()
+		bool almost_valid() const
 		{
-			if(CA.first && C.first && N.first && O.first)
+			return (CA.first && C.first && N.first && O.first);
+		}
+
+		bool fully_valid() const
+		{
+			return (almost_valid() && H.first);
+		}
+
+		bool calculate_H(const ResidueMainChainDescriptor& prev)
+		{
+			if(almost_valid() && prev.almost_valid())
 			{
-				if(H.first)
+				const apollota::SimplePoint CO=(prev.C.second-prev.O.second);
+				if(CO.module()>0.0)
 				{
+					H=std::make_pair(true, N.second+CO.unit());
 					return true;
-				}
-				else
-				{
-					const apollota::SimplePoint CO=(C.second-O.second);
-					if(CO.module()>0.0)
-					{
-						H=std::make_pair(true, N.second+CO.unit());
-						return true;
-					}
 				}
 			}
 			return false;
