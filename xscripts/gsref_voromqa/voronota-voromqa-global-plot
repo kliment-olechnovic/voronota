@@ -108,8 +108,10 @@ infile_scores=args[2];
 outfile=args[3];
 t_quantiles=read.table(infile_quantiles, header=TRUE, stringsAsFactors=FALSE);
 t_scores=read.table(infile_scores, header=FALSE, stringsAsFactors=FALSE);
+t_scores$V1[which(t_scores$V1>1000)]=1000;
 png(filename=outfile, width=8, height=6, units="in", res=DPIVAL);
-plot(x=c(0, 1000), y=c(0, 1), xlim=c(0, 1000), ylim=c(0, 1), type="n", main="VoroMQA global scores in the context\nof high-quality X-ray structure scores", cex.main=1.0, xlab="Number of residues", ylab="VoroMQA global score");
+plot(x=c(0, 1000), y=c(0, 1), xlim=c(0, 1010), ylim=c(0, 1), type="n", xaxt="n", main="VoroMQA global scores in the context\nof high-quality X-ray structure scores", cex.main=1.0, xlab="Number of residues", ylab="VoroMQA global score");
+axis(1, at=c(0, 200, 400, 600, 800, 1000), labels=c("0", "200", "400", "600", "800", "1000+"))
 points(x=t_quantiles$length, y=t_quantiles$quantile05, type="l", lwd=2, col="red");
 points(x=t_quantiles$length, y=t_quantiles$quantile50, type="l", lwd=2, col="gray");
 points(x=t_quantiles$length, y=t_quantiles$quantile95, type="l", lwd=2, col="blue");
