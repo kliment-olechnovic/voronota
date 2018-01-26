@@ -202,8 +202,7 @@ public:
 				for(int t=0;t<3;t++)
 				{
 					const int period=periods[t];
-					const std::size_t length=lengths[t];
-					std::vector<int> linked(rds.size(), 0);
+					std::vector< std::pair<int, int> > linked(rds.size(), std::make_pair(0, 0));
 					for(std::size_t i=0;i<rds.size();i++)
 					{
 						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
@@ -212,7 +211,7 @@ public:
 							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
 							if(r1.segment_id==r2.segment_id && (r1.position_in_segment+period)==r2.position_in_segment)
 							{
-								linked[i]++;
+								linked[i].first++;
 							}
 						}
 						if(rds[i].hbond_donated.first<0.0)
@@ -220,21 +219,25 @@ public:
 							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_donated.second];
 							if(r1.segment_id==r2.segment_id && (r2.position_in_segment+period)==r1.position_in_segment)
 							{
-								linked[i]++;
+								linked[i].second++;
 							}
 						}
 					}
+					const std::size_t length=lengths[t];
 					for(std::size_t i=0;i<rds.size();i++)
 					{
-						std::size_t n=0;
-						for(std::size_t j=0;j<length;j++)
+						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
+						std::pair<int, int> sum_of_linked(0, 0);
+						for(std::size_t j=0;j<length && i+j<rds.size();j++)
 						{
-							if(i+j<rds.size() && linked[i+j]>0)
+							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+j];
+							if(r1.segment_id==r2.segment_id && (r1.position_in_segment+static_cast<int>(j))==r2.position_in_segment)
 							{
-								n++;
+								sum_of_linked.first+=linked[i+j].first;
+								sum_of_linked.second+=linked[i+j].second;
 							}
 						}
-						if(n==length)
+						if(sum_of_linked.first==static_cast<int>(length) || sum_of_linked.second==static_cast<int>(length))
 						{
 							for(std::size_t j=0;j<length;j++)
 							{
