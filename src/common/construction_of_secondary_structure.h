@@ -198,50 +198,23 @@ public:
 
 			{
 				int periods[3]={4,3,5};
-				std::size_t lengths[3]={4,3,5};
 				for(int t=0;t<3;t++)
 				{
 					const int period=periods[t];
-					std::vector< std::pair<int, int> > linked(rds.size(), std::make_pair(0, 0));
-					for(std::size_t i=0;i<rds.size();i++)
+					for(std::size_t i=1;i<rds.size();i++)
 					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						if(rds[i].hbond_accepted.first<0.0)
+						const ConstructionOfPrimaryStructure::Residue& a=bundle_of_primary_structure.residues[i-1];
+						const ConstructionOfPrimaryStructure::Residue& b=bundle_of_primary_structure.residues[i];
+						if(a.distance_in_segment(a, b)==1 && rds[i-1].hbond_accepted.first<0.0 && rds[i].hbond_accepted.first)
 						{
-							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
-							if(r1.distance_in_segment(r1, r2)==period)
+							const ConstructionOfPrimaryStructure::Residue& c=bundle_of_primary_structure.residues[rds[i-1].hbond_accepted.second];
+							const ConstructionOfPrimaryStructure::Residue& d=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
+							if(a.distance_in_segment(a, c)==period && b.distance_in_segment(b, d)==period)
 							{
-								linked[i].first++;
-							}
-						}
-						if(rds[i].hbond_donated.first<0.0)
-						{
-							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_donated.second];
-							if(r2.distance_in_segment(r2, r1)==period)
-							{
-								linked[i].second++;
-							}
-						}
-					}
-					const std::size_t length=lengths[t];
-					for(std::size_t i=0;i<rds.size();i++)
-					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						std::pair<int, int> sum_of_linked(0, 0);
-						for(std::size_t j=0;j<length && i+j<rds.size();j++)
-						{
-							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+j];
-							if(r1.distance_in_segment(r1, r2)==static_cast<int>(j))
-							{
-								sum_of_linked.first+=linked[i+j].first;
-								sum_of_linked.second+=linked[i+j].second;
-							}
-						}
-						if(sum_of_linked.first==static_cast<int>(length) || sum_of_linked.second==static_cast<int>(length))
-						{
-							for(std::size_t j=0;j<length;j++)
-							{
-								rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+								for(std::size_t j=0;j<static_cast<std::size_t>(period) && (i+j)<rds.size();j++)
+								{
+									rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
+								}
 							}
 						}
 					}
