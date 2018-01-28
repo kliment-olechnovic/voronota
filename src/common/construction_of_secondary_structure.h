@@ -194,6 +194,7 @@ public:
 				}
 			}
 
+			const std::vector<ConstructionOfPrimaryStructure::Residue>& rs=bundle_of_primary_structure.residues;
 			std::vector<ResidueDescriptor>& rds=bundle_of_secondary_structure.residue_descriptors;
 
 			{
@@ -201,28 +202,26 @@ public:
 				for(int t=0;t<3;t++)
 				{
 					const int period=periods[t];
-					for(std::size_t i=1;(i+1)<rds.size();i++)
+					for(std::size_t i=0;i<rds.size();i++)
 					{
-						const ConstructionOfPrimaryStructure::Residue& a=bundle_of_primary_structure.residues[i-1];
-						const ConstructionOfPrimaryStructure::Residue& b=bundle_of_primary_structure.residues[i];
-						const ConstructionOfPrimaryStructure::Residue& c=bundle_of_primary_structure.residues[i+1];
-						if(a.distance_in_segment(a, b)==1 && b.distance_in_segment(b, c)==1
-								&& rds[i-1].hbond_accepted.first<0.0 && rds[i].hbond_accepted.first && rds[i+1].hbond_accepted.first)
+						if(check_hbond(rs, rds, i, -1, i, period-1) && check_hbond(rs, rds, i, 0, i, period) && check_hbond(rs, rds, i, 1, i, period+1))
 						{
-							const ConstructionOfPrimaryStructure::Residue& d=bundle_of_primary_structure.residues[rds[i-1].hbond_accepted.second];
-							const ConstructionOfPrimaryStructure::Residue& e=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
-							const ConstructionOfPrimaryStructure::Residue& f=bundle_of_primary_structure.residues[rds[i+1].hbond_accepted.second];
-							if(a.distance_in_segment(a, d)==period && b.distance_in_segment(b, e)==period && c.distance_in_segment(c, f)==period)
+							for(std::size_t j=0;j<=static_cast<std::size_t>(period) && (i+j)<rds.size();j++)
 							{
-								for(std::size_t j=0;j<=static_cast<std::size_t>(period) && (i+j)<rds.size();j++)
-								{
-									rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-								}
+								rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
 							}
 						}
 					}
 				}
 			}
+
+//			{
+//				std::vector< std::pair<int, std::size_t> > bridges(rds.size(), std::pair<int, std::size_t>(0, 0));
+//				for(std::size_t i=0;i<rds.size();i++)
+//				{
+//					//
+//				}
+//			}
 
 			{
 				for(std::size_t i=0;i+2<rds.size();i++)
@@ -389,6 +388,45 @@ private:
 		const double energy=(w/dist_ON+w/dist_CH-w/dist_OH-w/dist_CN);
 
 		return energy;
+	}
+
+	static bool check_hbond(
+			const std::vector<ConstructionOfPrimaryStructure::Residue>& rs,
+			const std::vector<ResidueDescriptor>& rds,
+			const std::size_t i,
+			const int di,
+			const std::size_t j,
+			const int dj)
+	{
+		if(!(rs.size()==rds.size() && i<rs.size() && j<rs.size()))
+		{
+			return false;
+		}
+
+		if(di==0 && dj==0)
+		{
+			return (rds[i].hbond_accepted.first<0.0 && rds[i].hbond_accepted.second==j);
+		}
+
+		if(static_cast<int>(i)+di<0 || static_cast<int>(j)+dj<0)
+		{
+			return false;
+		}
+
+		const std::size_t ti=static_cast<std::size_t>(static_cast<int>(i)+di);
+		const std::size_t tj=static_cast<std::size_t>(static_cast<int>(j)+dj);
+
+		if(!(ti<rs.size() && tj<rs.size()))
+		{
+			return false;
+		}
+
+		if(!(rs[i].distance_in_segment(rs[i], rs[ti])==di && rs[j].distance_in_segment(rs[j], rs[tj])==dj))
+		{
+			return false;
+		}
+
+		return (rds[ti].hbond_accepted.first<0.0 && rds[ti].hbond_accepted.second==tj);
 	}
 };
 
