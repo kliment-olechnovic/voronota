@@ -201,17 +201,20 @@ public:
 				for(int t=0;t<3;t++)
 				{
 					const int period=periods[t];
-					for(std::size_t i=1;i<rds.size();i++)
+					for(std::size_t i=1;(i+1)<rds.size();i++)
 					{
 						const ConstructionOfPrimaryStructure::Residue& a=bundle_of_primary_structure.residues[i-1];
 						const ConstructionOfPrimaryStructure::Residue& b=bundle_of_primary_structure.residues[i];
-						if(a.distance_in_segment(a, b)==1 && rds[i-1].hbond_accepted.first<0.0 && rds[i].hbond_accepted.first)
+						const ConstructionOfPrimaryStructure::Residue& c=bundle_of_primary_structure.residues[i+1];
+						if(a.distance_in_segment(a, b)==1 && b.distance_in_segment(b, c)==1
+								&& rds[i-1].hbond_accepted.first<0.0 && rds[i].hbond_accepted.first && rds[i+1].hbond_accepted.first)
 						{
-							const ConstructionOfPrimaryStructure::Residue& c=bundle_of_primary_structure.residues[rds[i-1].hbond_accepted.second];
-							const ConstructionOfPrimaryStructure::Residue& d=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
-							if(a.distance_in_segment(a, c)==period && b.distance_in_segment(b, d)==period)
+							const ConstructionOfPrimaryStructure::Residue& d=bundle_of_primary_structure.residues[rds[i-1].hbond_accepted.second];
+							const ConstructionOfPrimaryStructure::Residue& e=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
+							const ConstructionOfPrimaryStructure::Residue& f=bundle_of_primary_structure.residues[rds[i+1].hbond_accepted.second];
+							if(a.distance_in_segment(a, d)==period && b.distance_in_segment(b, e)==period && c.distance_in_segment(c, f)==period)
 							{
-								for(std::size_t j=0;j<static_cast<std::size_t>(period) && (i+j)<rds.size();j++)
+								for(std::size_t j=0;j<=static_cast<std::size_t>(period) && (i+j)<rds.size();j++)
 								{
 									rds[i+j].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
 								}
