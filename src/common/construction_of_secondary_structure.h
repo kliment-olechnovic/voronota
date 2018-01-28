@@ -215,98 +215,65 @@ public:
 				}
 			}
 
-//			{
-//				std::vector< std::pair<int, std::size_t> > bridges(rds.size(), std::pair<int, std::size_t>(0, 0));
-//				for(std::size_t i=0;i<rds.size();i++)
-//				{
-//					//
-//				}
-//			}
-
 			{
-				for(std::size_t i=0;i+2<rds.size();i++)
+				std::vector< std::pair<int, std::size_t> > bridges(rds.size(), std::pair<int, std::size_t>(0, 0));
+
+				for(std::size_t i=0;i<rds.size();i++)
 				{
-					bool possible_i=true;
-					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					if(possible_i)
+					std::pair<int, std::size_t> bridge(0, 0);
+
+					if(bridge.first==0 && i>0 && rds[i-1].hbond_accepted.first<0)
 					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-						if(r1.distance_in_segment(r1, r2)==2)
+						const std::size_t j=rds[i-1].hbond_accepted.second;
+						if(check_hbond(rs, rds, i, -1, j, 0) && check_hbond(rs, rds, j, 0, i, 1))
 						{
-							std::size_t nr1_i=rds.size();
-							std::size_t nr2_i=rds.size();
-							if(rds[i].hbond_accepted.first<0.0 && rds[i].hbond_donated.first<0.0 && rds[i].hbond_accepted.second==rds[i].hbond_donated.second
-									&& rds[i+2].hbond_accepted.first<0.0 && rds[i+2].hbond_donated.first<0.0 && rds[i+2].hbond_accepted.second==rds[i+2].hbond_donated.second)
-							{
-								nr1_i=rds[i].hbond_accepted.second;
-								nr2_i=rds[i+2].hbond_accepted.second;
-							}
-							if(nr1_i<rds.size() && nr2_i<rds.size())
-							{
-								if(nr2_i<nr1_i)
-								{
-									std::swap(nr1_i, nr2_i);
-								}
-								bool possible_nr1_i=true;
-								possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-								possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								possible_nr1_i=possible_nr1_i && (nr1_i+2>=rds.size() || rds[nr1_i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								possible_nr1_i=possible_nr1_i && (nr1_i+3>=rds.size() || rds[nr1_i+3].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								if(possible_nr1_i)
-								{
-									const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
-									const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-									if(nr1.distance_in_segment(nr1, nr2)==2)
-									{
-										rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-										rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-										rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-									}
-								}
-							}
+							bridge.first=1;
+							bridge.second=j;
 						}
+					}
+
+					if(bridge.first==0 && rds[i].hbond_accepted.first<0 && rds[i].hbond_accepted.second>0)
+					{
+						const std::size_t j=rds[i].hbond_accepted.second-1;
+						if(check_hbond(rs, rds, j, -1, i, 0) && check_hbond(rs, rds, i, 0, j, 1))
+						{
+							bridge.first=1;
+							bridge.second=j;
+						}
+					}
+
+					if(bridge.first==0 && rds[i].hbond_accepted.first<0)
+					{
+						const std::size_t j=rds[i].hbond_accepted.second;
+						if(check_hbond(rs, rds, i, 0, j, 0) && check_hbond(rs, rds, j, 0, i, 0))
+						{
+							bridge.first=2;
+							bridge.second=j;
+						}
+					}
+
+					if(bridge.first==0 && i>0 && rds[i-1].hbond_accepted.first<0 && rds[i-1].hbond_accepted.second>0)
+					{
+						const std::size_t j=rds[i-1].hbond_accepted.second-1;
+						if(check_hbond(rs, rds, i, -1, j, 1) && check_hbond(rs, rds, j, -1, i, 1))
+						{
+							bridge.first=2;
+							bridge.second=j;
+						}
+					}
+
+					if(bridge.first>0 && abs(static_cast<int>(i)-static_cast<int>(bridge.second))>=3)
+					{
+						bridges[i]=bridge;
 					}
 				}
 
-				for(std::size_t i=0;i+2<rds.size();i++)
+				for(std::size_t i=1;i<rds.size();i++)
 				{
-					bool possible_i=true;
-					possible_i=possible_i && (i==0 || rds[i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					possible_i=possible_i && rds[i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-					possible_i=possible_i && (i+3>=rds.size() || rds[i+2].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-					if(possible_i)
+					if(bridges[i-1].first>0 && bridges[i].first>0 && rs[i].distance_in_segment(rs[i-1], rs[i])==1)
 					{
-						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
-						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-						if(r1.distance_in_segment(r1, r2)==2)
-						{
-							std::size_t nr1_i=rds.size();
-							if(rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_donated.first<0.0 && rds[i].hbond_accepted.second==rds[i+2].hbond_donated.second)
-							{
-								nr1_i=rds[i].hbond_accepted.second;
-							}
-							if(nr1_i<rds.size())
-							{
-								bool possible_nr1_i=true;
-								possible_nr1_i=possible_nr1_i && (nr1_i==0 || rds[nr1_i-1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								possible_nr1_i=possible_nr1_i && rds[nr1_i].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX;
-								possible_nr1_i=possible_nr1_i && (nr1_i+1>=rds.size() || rds[nr1_i+1].secondary_structure_type!=SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX);
-								if(possible_nr1_i)
-								{
-									rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-									rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-									rds[i+2].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
-								}
-							}
-						}
+						rds[i-1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
+						rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
 					}
 				}
 			}
