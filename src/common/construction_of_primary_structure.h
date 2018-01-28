@@ -1,6 +1,8 @@
 #ifndef COMMON_CONSTRUCTION_OF_PRIMARY_STRUCTURE_H_
 #define COMMON_CONSTRUCTION_OF_PRIMARY_STRUCTURE_H_
 
+#include <limits>
+
 #include "../apollota/basic_operations_on_points.h"
 
 #include "construction_of_atomic_balls.h"
@@ -33,6 +35,18 @@ public:
 			segment_id(0),
 			position_in_segment(0)
 		{
+		}
+
+		static int distance_in_segment(const Residue& a, const Residue& b)
+		{
+			if(a.segment_id==b.segment_id)
+			{
+				return (b.position_in_segment-a.position_in_segment);
+			}
+			else
+			{
+				return std::numeric_limits<int>::max();
+			}
 		}
 	};
 

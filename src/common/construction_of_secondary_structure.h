@@ -113,7 +113,7 @@ public:
 					const ConstructionOfPrimaryStructure::Residue& r_a=bundle_of_primary_structure.residues[rmcd_a.residue_id];
 					ResidueMainChainDescriptor& rmcd_b=raw_residue_main_chain_descriptors[i+1];
 					const ConstructionOfPrimaryStructure::Residue& r_b=bundle_of_primary_structure.residues[rmcd_b.residue_id];
-					if(r_a.segment_id==r_b.segment_id || (r_a.position_in_segment+1)==r_b.position_in_segment)
+					if(r_a.distance_in_segment(r_a, r_b)==1)
 					{
 						if(rmcd_b.calculate_H(rmcd_a) && rmcd_b.fully_valid())
 						{
@@ -164,7 +164,7 @@ public:
 						const ResidueMainChainDescriptor& rmcd_b=residue_main_chain_descriptors[rough_graph[i][j]];
 						ResidueDescriptor& rd_b=bundle_of_secondary_structure.residue_descriptors[rmcd_b.residue_id];
 						const ConstructionOfPrimaryStructure::Residue& r_b=bundle_of_primary_structure.residues[rmcd_b.residue_id];
-						if(r_a.segment_id!=r_b.segment_id || abs(r_a.position_in_segment-r_b.position_in_segment)>1)
+						if(r_a.distance_in_segment(r_a, r_b)>1)
 						{
 							for(int e=0;e<2;e++)
 							{
@@ -209,7 +209,7 @@ public:
 						if(rds[i].hbond_accepted.first<0.0)
 						{
 							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_accepted.second];
-							if(r1.segment_id==r2.segment_id && (r1.position_in_segment+period)==r2.position_in_segment)
+							if(r1.distance_in_segment(r1, r2)==period)
 							{
 								linked[i].first++;
 							}
@@ -217,7 +217,7 @@ public:
 						if(rds[i].hbond_donated.first<0.0)
 						{
 							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[rds[i].hbond_donated.second];
-							if(r1.segment_id==r2.segment_id && (r2.position_in_segment+period)==r1.position_in_segment)
+							if(r2.distance_in_segment(r2, r1)==period)
 							{
 								linked[i].second++;
 							}
@@ -231,7 +231,7 @@ public:
 						for(std::size_t j=0;j<length && i+j<rds.size();j++)
 						{
 							const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+j];
-							if(r1.segment_id==r2.segment_id && (r1.position_in_segment+static_cast<int>(j))==r2.position_in_segment)
+							if(r1.distance_in_segment(r1, r2)==static_cast<int>(j))
 							{
 								sum_of_linked.first+=linked[i+j].first;
 								sum_of_linked.second+=linked[i+j].second;
@@ -261,7 +261,7 @@ public:
 					{
 						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
 						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+						if(r1.distance_in_segment(r1, r2)==2)
 						{
 							std::size_t nr1_i=rds.size();
 							std::size_t nr2_i=rds.size();
@@ -287,7 +287,7 @@ public:
 								{
 									const ConstructionOfPrimaryStructure::Residue& nr1=bundle_of_primary_structure.residues[nr1_i];
 									const ConstructionOfPrimaryStructure::Residue& nr2=bundle_of_primary_structure.residues[nr2_i];
-									if(nr1.segment_id==nr2.segment_id && (nr1.position_in_segment+2)==nr2.position_in_segment)
+									if(nr1.distance_in_segment(nr1, nr2)==2)
 									{
 										rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
 										rds[i+1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
@@ -311,7 +311,7 @@ public:
 					{
 						const ConstructionOfPrimaryStructure::Residue& r1=bundle_of_primary_structure.residues[i];
 						const ConstructionOfPrimaryStructure::Residue& r2=bundle_of_primary_structure.residues[i+2];
-						if(r1.segment_id==r2.segment_id && (r1.position_in_segment+2)==r2.position_in_segment)
+						if(r1.distance_in_segment(r1, r2)==2)
 						{
 							std::size_t nr1_i=rds.size();
 							if(rds[i].hbond_accepted.first<0.0 && rds[i+2].hbond_donated.first<0.0 && rds[i].hbond_accepted.second==rds[i+2].hbond_donated.second)
