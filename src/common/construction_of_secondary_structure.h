@@ -268,11 +268,10 @@ public:
 					}
 				}
 
-				for(std::size_t i=1;i<rds.size();i++)
+				for(std::size_t i=0;i<rds.size();i++)
 				{
-					if(bridges[i-1].first>0 && bridges[i].first>0 && rs[i].distance_in_segment(rs[i-1], rs[i])==1)
+					if(bridges[i].first>0)
 					{
-						rds[i-1].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
 						rds[i].secondary_structure_type=SECONDARY_STRUCTURE_TYPE_BETA_STRAND;
 					}
 				}
