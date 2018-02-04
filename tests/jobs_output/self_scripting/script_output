@@ -127,11 +127,11 @@ Selections of contacts:
 Summary of contacts: count=120 drawable=120 area=211.8
 
 
-> color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
+> color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
 Summary of contacts: count=25 drawable=25 area=52.3005
 
 
-> color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
+> color-contacts {--a1 {--m! A<C,CA,N,O>} --a2 {--m! A<C,CA,N,O>}} 0xFFFF00
 Summary of contacts: count=58 drawable=58 area=99.5972
 
 
@@ -185,8 +185,8 @@ print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 list-selections-of-atoms
 list-selections-of-contacts
 color-contacts 0x00FF00
-color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
+color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--a1 {--m! A<C,CA,N,O>} --a2 {--m! A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
 color-contacts 0xFF00FF
