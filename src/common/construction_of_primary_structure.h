@@ -63,6 +63,11 @@ public:
 		std::vector<std::size_t> map_of_atoms_to_residues;
 		std::vector<Chain> chains;
 		std::vector<std::size_t> map_of_residues_to_chains;
+
+		bool valid(const std::vector<Atom>& atoms) const
+		{
+			return (!residues.empty() && map_of_atoms_to_residues.size()==atoms.size() && !chains.empty() && map_of_residues_to_chains.size()==residues.size());
+		}
 	};
 
 	static bool construct_bundle_of_primary_structure(const std::vector<Atom>& atoms, BundleOfPrimaryStructure& bundle)
@@ -158,6 +163,16 @@ public:
 		}
 
 		return true;
+	}
+
+	static BundleOfPrimaryStructure construct_bundle_of_primary_structure(const std::vector<Atom>& atoms)
+	{
+		BundleOfPrimaryStructure bundle;
+		if(construct_bundle_of_primary_structure(atoms, bundle))
+		{
+			return bundle;
+		}
+		return BundleOfPrimaryStructure();
 	}
 
 private:

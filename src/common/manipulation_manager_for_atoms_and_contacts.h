@@ -104,7 +104,7 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &ManipulationManagerForAtomsAndContacts::command_hide_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &ManipulationManagerForAtomsAndContacts::command_color_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("spectrum-atoms", &ManipulationManagerForAtomsAndContacts::command_spectrum_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("assign-secondary-structure", &ManipulationManagerForAtomsAndContacts::command_assign_secondary_structure));
+		map_of_command_function_pointers_.insert(std::make_pair("set-secondary-structure-tags", &ManipulationManagerForAtomsAndContacts::command_set_secondary_structure_tags));
 		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &ManipulationManagerForAtomsAndContacts::command_print_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
@@ -149,6 +149,11 @@ public:
 	const std::vector<DisplayState>& contacts_display_states() const
 	{
 		return contacts_display_states_;
+	}
+
+	const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure_info() const
+	{
+		return primary_structure_info_;
 	}
 
 	const std::vector<std::string>& atoms_representation_names() const
@@ -1360,6 +1365,7 @@ private:
 		reset_atoms_display_states();
 		contacts_.clear();
 		contacts_display_states_.clear();
+		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
@@ -2018,24 +2024,23 @@ private:
 		}
 	}
 
-	void command_assign_secondary_structure(CommandArguments& cargs)
+	void command_set_secondary_structure_tags(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
 
-		const std::string ss_tag_alpha="ss_a";
-		const std::string ss_tag_beta="ss_b";
+		const std::string ss_tag_alpha=cargs.input.get_value_or_default<std::string>("name-alpha", "ss_a");
+		const std::string ss_tag_beta=cargs.input.get_value_or_default<std::string>("name-beta", "ss_b");
 
 		cargs.input.assert_nothing_unusable();
 
-		ConstructionOfPrimaryStructure::BundleOfPrimaryStructure bundle_primary;
-		if(!ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_, bundle_primary))
+		if(!primary_structure_info_.valid(atoms_))
 		{
 			throw std::runtime_error(std::string("Failed to assign primary structure."));
 		}
 
 		ConstructionOfSecondaryStructure::BundleOfSecondaryStructure bundle_secondary;
 		ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure construct_bundle_secondary;
-		if(!construct_bundle_secondary(atoms_, bundle_primary, bundle_secondary))
+		if(!construct_bundle_secondary(atoms_, primary_structure_info_, bundle_secondary))
 		{
 			throw std::runtime_error(std::string("Failed to assign secondary structure."));
 		}
@@ -2044,7 +2049,7 @@ private:
 		int number_of_ss_beta=0;
 		int number_of_ss_other=0;
 
-		for(std::size_t i=0;i<bundle_primary.residues.size();i++)
+		for(std::size_t i=0;i<primary_structure_info_.residues.size();i++)
 		{
 			const ConstructionOfSecondaryStructure::SecondaryStructureType sstype=bundle_secondary.residue_descriptors[i].secondary_structure_type;
 			std::string ss_tag;
@@ -2062,9 +2067,9 @@ private:
 			{
 				number_of_ss_other++;
 			}
-			for(std::size_t j=0;j<bundle_primary.residues[i].atom_ids.size();j++)
+			for(std::size_t j=0;j<primary_structure_info_.residues[i].atom_ids.size();j++)
 			{
-				const std::size_t atom_id=bundle_primary.residues[i].atom_ids[j];
+				const std::size_t atom_id=primary_structure_info_.residues[i].atom_ids[j];
 				atoms_[atom_id].value.props.tags.erase(ss_tag_alpha);
 				atoms_[atom_id].value.props.tags.erase(ss_tag_beta);
 				if(!ss_tag.empty())
@@ -3008,6 +3013,7 @@ private:
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
+	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 	std::vector<CommandRecord> commands_history_;
 };

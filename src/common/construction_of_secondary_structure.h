@@ -59,7 +59,7 @@ public:
 		{
 			bundle_of_secondary_structure=BundleOfSecondaryStructure();
 
-			if(bundle_of_primary_structure.residues.empty() || bundle_of_primary_structure.map_of_atoms_to_residues.size()!=atoms.size())
+			if(!bundle_of_primary_structure.valid(atoms))
 			{
 				return false;
 			}
@@ -278,18 +278,6 @@ public:
 			}
 
 			return true;
-		}
-
-		bool operator()(
-				const std::vector<Atom>& atoms,
-				BundleOfSecondaryStructure& bundle_of_secondary_structure) const
-		{
-			ConstructionOfPrimaryStructure::BundleOfPrimaryStructure bundle_of_primary_structure;
-			if(ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms, bundle_of_primary_structure))
-			{
-				return this->operator()(atoms, bundle_of_primary_structure, bundle_of_secondary_structure);
-			}
-			return false;
 		}
 	};
 
