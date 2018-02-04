@@ -33,8 +33,8 @@ list-selections-of-atoms
 list-selections-of-contacts
 
 color-contacts 0x00FF00
-color-contacts {-a1 {A<C,CA,N,O>} -a2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {-a1 {-m! A<C,CA,N,O>} -a2 {-m! A<C,CA,N,O>}} 0xFFFF00
+color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
+color-contacts {--a1 {--m! A<C,CA,N,O>} --a2 {--m! A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts
 

@@ -428,43 +428,43 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="--sel" || token=="-s")
+			else if(token=="--sel" || token=="--s")
 			{
 				input >> tester.name_of_base_selection_of_atoms;
 			}
-			else if(token=="--sel-of-contacts")
+			else if(token=="--sel-of-contacts" || token=="--soc")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
-			else if(token=="--match" || token=="-m")
+			else if(token=="--match" || token=="--m")
 			{
 				input >> tester.match_crad;
 			}
-			else if(token=="--match-not" || token=="-m!")
+			else if(token=="--match-not" || token=="--m!")
 			{
 				input >> tester.match_crad_not;
 			}
-			else if(token=="--tags" || token=="-t")
+			else if(token=="--tags" || token=="--t")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="--tags-not" || token=="-t!")
+			else if(token=="--tags-not" || token=="--t!")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="--adjuncts" || token=="-v")
+			else if(token=="--adjuncts" || token=="--v")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="--adjuncts-not" || token=="-v!")
+			else if(token=="--adjuncts-not" || token=="--v!")
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token.compare(0, 1, "-")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
+			else if(token.compare(0, 2, "--")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
 			{
 				tester.match_crad=token;
 			}
-			else if(token.compare(0, 1, "-")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
+			else if(token.compare(0, 2, "--")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
 			{
 				tester.name_of_base_selection_of_atoms=token;
 			}
@@ -517,72 +517,72 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				end=true;
 			}
-			else if(token=="--sel" || token=="-s")
+			else if(token=="--sel" || token=="--s")
 			{
 				input >> tester.name_of_base_selection_of_contacts;
 			}
-			else if(token=="--min-area")
+			else if(token=="--min-area" || token=="--mina")
 			{
 				input >> tester.match_min_area;
 			}
-			else if(token=="--max-area")
+			else if(token=="--max-area" || token=="--maxa")
 			{
 				input >> tester.match_max_area;
 			}
-			else if(token=="--min-dist")
+			else if(token=="--min-dist" || token=="--mind")
 			{
 				input >> tester.match_min_dist;
 			}
-			else if(token=="--max-dist")
+			else if(token=="--max-dist" || token=="--maxd")
 			{
 				input >> tester.match_max_dist;
 			}
-			else if(token=="--min-seq-sep")
+			else if(token=="--min-seq-sep" || token=="--minsep")
 			{
 				input >> tester.match_min_sequence_separation;
 			}
-			else if(token=="--max-seq-sep")
+			else if(token=="--max-seq-sep" || token=="--maxsep")
 			{
 				input >> tester.match_max_sequence_separation;
 			}
-			else if(token=="--tags" || token=="-t")
+			else if(token=="--tags" || token=="--t")
 			{
 				input >> tester.match_tags;
 			}
-			else if(token=="--tags-not" || token=="-t!")
+			else if(token=="--tags-not" || token=="--t!")
 			{
 				input >> tester.match_tags_not;
 			}
-			else if(token=="--adjuncts" || token=="-v")
+			else if(token=="--adjuncts" || token=="--v")
 			{
 				input >> tester.match_adjuncts;
 			}
-			else if(token=="--adjuncts-not" || token=="-v!")
+			else if(token=="--adjuncts-not" || token=="--v!")
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token=="--atom1" || token=="-a1")
+			else if(token=="--atom1" || token=="--a1")
 			{
 				input >> tester.test_atom_a;
 			}
-			else if(token=="--atom2" || token=="-a2")
+			else if(token=="--atom2" || token=="--a2")
 			{
 				input >> tester.test_atom_b;
 			}
-			else if(token=="--no-solvent")
+			else if(token=="--no-solvent" || token=="--nosolv")
 			{
 				tester.no_solvent=true;
 			}
-			else if(token=="--no-same-chain")
+			else if(token=="--no-same-chain" || token=="--nschain")
 			{
 				tester.no_same_chain=true;
 			}
-			else if(token=="--inter-chain")
+			else if(token=="--inter-chain" || token=="--ichain")
 			{
 				tester.no_same_chain=true;
 				tester.no_solvent=true;
 			}
-			else if(token.compare(0, 1, "-")!=0)
+			else if(token.compare(0, 2, "--")!=0)
 			{
 				tester.name_of_base_selection_of_contacts=token;
 			}
