@@ -419,9 +419,9 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	else
 	{
 		bool end=false;
+		int token_index=0;
 		while(input.good() && !end)
 		{
-			std::string token;
 			input >> token;
 
 			if(token=="}")
@@ -460,11 +460,17 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.match_adjuncts_not;
 			}
-			else if(token.compare(0, 2, "--")!=0 && token.find('<')!=std::string::npos && token.find('>')!=std::string::npos)
+			else if(token_index==0
+					&& token.compare(0, 1, "-")!=0
+					&& token.find('<')!=std::string::npos
+					&& token.find('>')!=std::string::npos)
 			{
 				tester.match_crad=token;
 			}
-			else if(token.compare(0, 2, "--")!=0 && token.find('<')==std::string::npos && token.find('>')==std::string::npos)
+			else if(token_index==0
+					&& token.compare(0, 1, "-")!=0
+					&& token.find('<')==std::string::npos
+					&& token.find('>')==std::string::npos)
 			{
 				tester.name_of_base_selection_of_atoms=token;
 			}
@@ -485,6 +491,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				}
 			}
 
+			token_index++;
 			input >> std::ws;
 		}
 		if(!end)
@@ -508,9 +515,9 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	else
 	{
 		bool end=false;
+		int token_index=0;
 		while(input.good() && !end)
 		{
-			std::string token;
 			input >> token;
 
 			if(token=="}")
@@ -582,7 +589,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				tester.no_same_chain=true;
 				tester.no_solvent=true;
 			}
-			else if(token.compare(0, 2, "--")!=0)
+			else if(token_index==0 && token.compare(0, 1, "-")!=0)
 			{
 				tester.name_of_base_selection_of_contacts=token;
 			}
@@ -603,6 +610,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				}
 			}
 
+			token_index++;
 			input >> std::ws;
 		}
 		if(!end)
