@@ -108,7 +108,7 @@ public:
 				{
 					residue.residue_type=RESIDUE_TYPE_AMINO_ACID;
 				}
-				else if(names.count("C2")+names.count("C3'")+names.count("O3'")+names.count("P")==3)
+				else if(names.count("C2")+names.count("C3'")+names.count("O3'")+names.count("P")==4)
 				{
 					residue.residue_type=RESIDUE_TYPE_NUCLEOTIDE;
 				}
