@@ -38,6 +38,11 @@ public:
 	struct BundleOfSecondaryStructure
 	{
 		std::vector<ResidueDescriptor> residue_descriptors;
+
+		bool valid(const std::vector<Atom>& atoms, const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bundle_of_primary_structure) const
+		{
+			return (!residue_descriptors.empty() && residue_descriptors.size()==bundle_of_primary_structure.residues.size() && bundle_of_primary_structure.valid(atoms));
+		}
 	};
 
 	class construct_bundle_of_secondary_structure
@@ -278,6 +283,18 @@ public:
 			}
 
 			return true;
+		}
+
+		BundleOfSecondaryStructure operator()(
+				const std::vector<Atom>& atoms,
+				const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bundle_of_primary_structure) const
+		{
+			BundleOfSecondaryStructure bundle_of_secondary_structure;
+			if(this->operator ()(atoms, bundle_of_primary_structure, bundle_of_secondary_structure))
+			{
+				return bundle_of_secondary_structure;
+			}
+			return BundleOfSecondaryStructure();
 		}
 	};
 
