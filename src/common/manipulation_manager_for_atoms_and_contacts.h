@@ -156,6 +156,11 @@ public:
 		return primary_structure_info_;
 	}
 
+	const ConstructionOfSecondaryStructure::BundleOfSecondaryStructure& secondary_structure_info() const
+	{
+		return secondary_structure_info_;
+	}
+
 	const std::vector<std::string>& atoms_representation_names() const
 	{
 		return atoms_representation_names_;
@@ -1366,6 +1371,7 @@ private:
 		contacts_.clear();
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
+		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure()(atoms_, primary_structure_info_);
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
@@ -2038,9 +2044,7 @@ private:
 			throw std::runtime_error(std::string("Failed to assign primary structure."));
 		}
 
-		ConstructionOfSecondaryStructure::BundleOfSecondaryStructure bundle_secondary;
-		ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure construct_bundle_secondary;
-		if(!construct_bundle_secondary(atoms_, primary_structure_info_, bundle_secondary))
+		if(!secondary_structure_info_.valid(atoms_, primary_structure_info_))
 		{
 			throw std::runtime_error(std::string("Failed to assign secondary structure."));
 		}
@@ -2051,7 +2055,7 @@ private:
 
 		for(std::size_t i=0;i<primary_structure_info_.residues.size();i++)
 		{
-			const ConstructionOfSecondaryStructure::SecondaryStructureType sstype=bundle_secondary.residue_descriptors[i].secondary_structure_type;
+			const ConstructionOfSecondaryStructure::SecondaryStructureType sstype=secondary_structure_info_.residue_descriptors[i].secondary_structure_type;
 			std::string ss_tag;
 			if(sstype==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 			{
@@ -3014,6 +3018,7 @@ private:
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
+	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
 	std::vector<CommandRecord> commands_history_;
 };
