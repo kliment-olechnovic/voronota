@@ -130,7 +130,7 @@ public:
 
 			if(residue_main_chain_descriptors.empty())
 			{
-				return false;
+				return true;
 			}
 
 			{
