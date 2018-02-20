@@ -1274,11 +1274,14 @@ private:
 		return filter_drawable_implemented_ids(display_states, visual_ids, ids, false);
 	}
 
-	static void assert_selection_name_input(const std::string& name)
+	static void assert_selection_name_input(const std::string& name, const bool allow_empty)
 	{
 		if(name.empty())
 		{
-			throw std::runtime_error(std::string("Selection name is empty."));
+			if(!allow_empty)
+			{
+				throw std::runtime_error(std::string("Selection name is empty."));
+			}
 		}
 		else if(name.find_first_of("{}()[]<>,;.:\\/+-*/='\"@#$%^&`~?|")!=std::string::npos)
 		{
@@ -1669,7 +1672,7 @@ private:
 
 		cargs.input.assert_nothing_unusable();
 
-		assert_selection_name_input(name);
+		assert_selection_name_input(name, true);
 
 		std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
@@ -2330,7 +2333,7 @@ private:
 
 		cargs.input.assert_nothing_unusable();
 
-		assert_selection_name_input(name);
+		assert_selection_name_input(name, true);
 
 		std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 		if(ids.empty())
