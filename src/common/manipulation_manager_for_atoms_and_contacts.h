@@ -1371,7 +1371,7 @@ private:
 		contacts_.clear();
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
-		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure()(atoms_, primary_structure_info_);
+		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
@@ -1512,13 +1512,13 @@ private:
 
 	void command_load_atoms(CommandArguments& cargs)
 	{
-		ConstructionOfAtomicBalls::collect_atomic_balls_from_file collect_atomic_balls_from_file;
-		collect_atomic_balls_from_file.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
-		collect_atomic_balls_from_file.include_hydrogens=cargs.input.get_flag("include-hydrogens");
-		collect_atomic_balls_from_file.multimodel_chains=cargs.input.get_flag("as-assembly");
+		ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
+		parameters_to_collect_atoms.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
+		parameters_to_collect_atoms.include_hydrogens=cargs.input.get_flag("include-hydrogens");
+		parameters_to_collect_atoms.multimodel_chains=cargs.input.get_flag("as-assembly");
 		const std::string atoms_file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 		const std::string radii_file=cargs.input.get_value_or_default<std::string>("radii-file", "");
-		const double default_radius=cargs.input.get_value_or_default<double>("default-radii", ConstructionOfAtomicBalls::collect_atomic_balls_from_file::default_default_radius());
+		const double default_radius=cargs.input.get_value_or_default<double>("default-radii", ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile::default_default_radius());
 		const std::string format=cargs.input.get_value_or_default<std::string>("format", "pdb");
 		const bool only_default_radius=cargs.input.get_flag("same-radius-for-all");
 
@@ -1534,9 +1534,9 @@ private:
 			throw std::runtime_error(std::string("Unrecognized format '")+format+"', allowed formats are 'pdb', 'mmcif' or 'plain'.");
 		}
 
-		if(!radii_file.empty() || only_default_radius || default_radius!=ConstructionOfAtomicBalls::collect_atomic_balls_from_file::default_default_radius())
+		if(!radii_file.empty() || only_default_radius || default_radius!=ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile::default_default_radius())
 		{
-			collect_atomic_balls_from_file.set_atom_radius_assigner(default_radius, only_default_radius, radii_file);
+			parameters_to_collect_atoms.set_atom_radius_assigner(default_radius, only_default_radius, radii_file);
 		}
 
 		std::vector<Atom> atoms;
@@ -1546,9 +1546,9 @@ private:
 		{
 			if(format=="mmcif")
 			{
-				collect_atomic_balls_from_file.mmcif=true;
+				parameters_to_collect_atoms.mmcif=true;
 			}
-			success=collect_atomic_balls_from_file(atoms_file, atoms);
+			success=ConstructionOfAtomicBalls::collect_atomic_balls_from_file(parameters_to_collect_atoms, atoms_file, atoms);
 		}
 		else if(format=="plain")
 		{
@@ -1560,7 +1560,7 @@ private:
 					for(std::size_t i=0;i<atoms.size();i++)
 					{
 						Atom& atom=atoms[i];
-						atom.value.r=collect_atomic_balls_from_file.atom_radius_assigner.get_atom_radius(atom.crad.resName, atom.crad.name);
+						atom.value.r=parameters_to_collect_atoms.atom_radius_assigner.get_atom_radius(atom.crad.resName, atom.crad.name);
 					}
 				}
 				success=true;
@@ -2202,13 +2202,13 @@ private:
 	{
 		assert_atoms_availability();
 
-		ConstructionOfContacts::construct_bundle_of_contact_information construct_bundle_of_contact_information;
-		construct_bundle_of_contact_information.probe=cargs.input.get_value_or_default<double>("probe", construct_bundle_of_contact_information.probe);
-		construct_bundle_of_contact_information.calculate_volumes=cargs.input.get_flag("calculate-volumes");
-		ConstructionOfContacts::enhance_contacts enhance_contacts;
-		enhance_contacts.probe=construct_bundle_of_contact_information.probe;
-		enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
-		enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
+		ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
+		parameters_to_construct_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
+		parameters_to_construct_contacts.calculate_volumes=cargs.input.get_flag("calculate-volumes");
+		ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
+		parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
+		parameters_to_enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
+		parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
 		CommandParametersForGenericSelecting render_parameters_for_selecting;
 		render_parameters_for_selecting.type_for_expression="render-use";
 		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
@@ -2226,12 +2226,12 @@ private:
 		ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
 		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
 
-		if(construct_bundle_of_contact_information(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
+		if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_), bundle_of_triangulation_information, bundle_of_contact_information))
 		{
 			reset_contacts(bundle_of_contact_information.contacts);
 			cargs.changed_contacts=true;
 
-			if(construct_bundle_of_contact_information.calculate_volumes)
+			if(parameters_to_construct_contacts.calculate_volumes)
 			{
 				for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms_.size();i++)
 				{
@@ -2245,7 +2245,7 @@ private:
 				draw_ids=selection_manager_.select_contacts(render_parameters_for_selecting.forced_ids, render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
 			}
 
-			enhance_contacts(bundle_of_triangulation_information, draw_ids, contacts_);
+			ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, bundle_of_triangulation_information, draw_ids, contacts_);
 
 			reset_contacts_display_states();
 
