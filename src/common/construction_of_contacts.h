@@ -66,7 +66,7 @@ public:
 		}
 	};
 
-	class construct_bundle_of_contact_information
+	class ParametersToConstructBundleOfContactInformation
 	{
 	public:
 		double probe;
@@ -75,7 +75,7 @@ public:
 		int sih_depth;
 		bool calculate_volumes;
 
-		construct_bundle_of_contact_information() :
+		ParametersToConstructBundleOfContactInformation() :
 			probe(1.4),
 			step(0.2),
 			projections(5),
@@ -83,126 +83,129 @@ public:
 			calculate_volumes(false)
 		{
 		}
+	};
 
-		bool operator()(
-				const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
-				BundleOfContactInformation& bundle_of_contact_information) const
+	static bool construct_bundle_of_contact_information(
+			const ParametersToConstructBundleOfContactInformation& parameters,
+			const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+			BundleOfContactInformation& bundle_of_contact_information)
+	{
+		bundle_of_contact_information=BundleOfContactInformation();
+
+		if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.quadruples_map.empty())
 		{
-			bundle_of_contact_information=BundleOfContactInformation();
-
-			if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.quadruples_map.empty())
-			{
-				return false;
-			}
-
-			const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-
-			std::map<apollota::Pair, double> interactions_map;
-			std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(calculate_volumes, std::map<std::size_t, double>());
-
-			{
-				const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, probe, step, projections, std::set<std::size_t>(), volumes_map_bundle);
-				for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
-				{
-					const std::size_t id_a=it->first.get(0);
-					const std::size_t id_b=it->first.get(1);
-					if(id_a<bundle_of_triangulation_information.number_of_input_spheres && id_b<bundle_of_triangulation_information.number_of_input_spheres)
-					{
-						interactions_map[it->first]=it->second;
-					}
-				}
-			}
-
-			{
-				const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(bundle_of_triangulation_information.spheres, vertices_vector, probe, sih_depth, volumes_map_bundle);
-				for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
-				{
-					const std::size_t id=it->first;
-					if(id<bundle_of_triangulation_information.number_of_input_spheres)
-					{
-						interactions_map[apollota::Pair(id, id)]=it->second;
-					}
-				}
-			}
-
-			bundle_of_contact_information.contacts.reserve(interactions_map.size());
-			for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
-			{
-				const double area=it->second;
-				if(area>0.0)
-				{
-					const std::size_t id_a=it->first.get(0);
-					const std::size_t id_b=it->first.get(1);
-					Contact contact(id_a, id_b, ContactValue());
-					contact.value.area=area;
-					if(!contact.solvent())
-					{
-						contact.value.dist=apollota::distance_from_point_to_point(bundle_of_triangulation_information.spheres[id_a], bundle_of_triangulation_information.spheres[id_b]);
-					}
-					else
-					{
-						contact.value.dist=(bundle_of_triangulation_information.spheres[id_a].r+(probe*3.0));
-					}
-					bundle_of_contact_information.contacts.push_back(contact);
-				}
-			}
-
-			if(volumes_map_bundle.first && !volumes_map_bundle.second.empty())
-			{
-				bundle_of_contact_information.volumes.resize(bundle_of_triangulation_information.number_of_input_spheres, 0.0);
-				const std::map<std::size_t, double>& volumes_map=volumes_map_bundle.second;
-				for(std::map<std::size_t, double>::const_iterator it=volumes_map.begin();it!=volumes_map.end();++it)
-				{
-					const double volume=it->second;
-					if(volume>0.0)
-					{
-						const std::size_t id=it->first;
-						if(id<bundle_of_contact_information.volumes.size())
-						{
-							bundle_of_contact_information.volumes[id]=volume;
-						}
-					}
-				}
-			}
-
-			return true;
-		}
-
-		template<typename ContainerOfBalls>
-		bool operator()(
-				const ContainerOfBalls& balls,
-				const ConstructionOfTriangulation::construct_bundle_of_triangulation_information& construct_triangulation,
-				ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
-				BundleOfContactInformation& bundle_of_contact_information) const
-		{
-			ConstructionOfTriangulation::construct_bundle_of_triangulation_information construct_triangulation_safely=construct_triangulation;
-			if(construct_triangulation_safely.artificial_boundary_shift<probe*2.0)
-			{
-				construct_triangulation_safely.artificial_boundary_shift=probe*2.0;
-			}
-
-			if(construct_triangulation_safely(balls, bundle_of_triangulation_information))
-			{
-				return this->operator()(bundle_of_triangulation_information, bundle_of_contact_information);
-			}
-
 			return false;
 		}
 
-		template<typename ContainerOfBalls>
-		bool operator()(
-				const ContainerOfBalls& balls,
-				ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
-				BundleOfContactInformation& bundle_of_contact_information) const
+		const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+
+		std::map<apollota::Pair, double> interactions_map;
+		std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(parameters.calculate_volumes, std::map<std::size_t, double>());
+
 		{
-			ConstructionOfTriangulation::construct_bundle_of_triangulation_information construct_triangulation;
-			construct_triangulation.artificial_boundary_shift=probe*2.0;
-
-			return this->operator()(balls, construct_triangulation, bundle_of_triangulation_information, bundle_of_contact_information);
+			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), volumes_map_bundle);
+			for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
+			{
+				const std::size_t id_a=it->first.get(0);
+				const std::size_t id_b=it->first.get(1);
+				if(id_a<bundle_of_triangulation_information.number_of_input_spheres && id_b<bundle_of_triangulation_information.number_of_input_spheres)
+				{
+					interactions_map[it->first]=it->second;
+				}
+			}
 		}
-	};
 
-	class enhance_contacts
+		{
+			const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.sih_depth, volumes_map_bundle);
+			for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)
+			{
+				const std::size_t id=it->first;
+				if(id<bundle_of_triangulation_information.number_of_input_spheres)
+				{
+					interactions_map[apollota::Pair(id, id)]=it->second;
+				}
+			}
+		}
+
+		bundle_of_contact_information.contacts.reserve(interactions_map.size());
+		for(std::map<apollota::Pair, double>::const_iterator it=interactions_map.begin();it!=interactions_map.end();++it)
+		{
+			const double area=it->second;
+			if(area>0.0)
+			{
+				const std::size_t id_a=it->first.get(0);
+				const std::size_t id_b=it->first.get(1);
+				Contact contact(id_a, id_b, ContactValue());
+				contact.value.area=area;
+				if(!contact.solvent())
+				{
+					contact.value.dist=apollota::distance_from_point_to_point(bundle_of_triangulation_information.spheres[id_a], bundle_of_triangulation_information.spheres[id_b]);
+				}
+				else
+				{
+					contact.value.dist=(bundle_of_triangulation_information.spheres[id_a].r+(parameters.probe*3.0));
+				}
+				bundle_of_contact_information.contacts.push_back(contact);
+			}
+		}
+
+		if(volumes_map_bundle.first && !volumes_map_bundle.second.empty())
+		{
+			bundle_of_contact_information.volumes.resize(bundle_of_triangulation_information.number_of_input_spheres, 0.0);
+			const std::map<std::size_t, double>& volumes_map=volumes_map_bundle.second;
+			for(std::map<std::size_t, double>::const_iterator it=volumes_map.begin();it!=volumes_map.end();++it)
+			{
+				const double volume=it->second;
+				if(volume>0.0)
+				{
+					const std::size_t id=it->first;
+					if(id<bundle_of_contact_information.volumes.size())
+					{
+						bundle_of_contact_information.volumes[id]=volume;
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
+	template<typename ContainerOfBalls>
+	static bool construct_bundle_of_contact_information(
+			const ParametersToConstructBundleOfContactInformation& parameters,
+			const ContainerOfBalls& balls,
+			const ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters_to_construct_triangulation,
+			ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+			BundleOfContactInformation& bundle_of_contact_information)
+	{
+		ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation_safely=parameters_to_construct_triangulation;
+		if(parameters_to_construct_triangulation_safely.artificial_boundary_shift<parameters.probe*2.0)
+		{
+			parameters_to_construct_triangulation_safely.artificial_boundary_shift=parameters.probe*2.0;
+		}
+
+		if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation_safely, balls, bundle_of_triangulation_information))
+		{
+			return construct_bundle_of_contact_information(parameters, bundle_of_triangulation_information, bundle_of_contact_information);
+		}
+
+		return false;
+	}
+
+	template<typename ContainerOfBalls>
+	static bool construct_bundle_of_contact_information(
+			const ParametersToConstructBundleOfContactInformation& parameters,
+			const ContainerOfBalls& balls,
+			ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+			BundleOfContactInformation& bundle_of_contact_information)
+	{
+		ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+		parameters_to_construct_triangulation.artificial_boundary_shift=parameters.probe*2.0;
+
+		return construct_bundle_of_contact_information(parameters, balls, parameters_to_construct_triangulation, bundle_of_triangulation_information, bundle_of_contact_information);
+	}
+
+	class ParametersToEnhanceContacts
 	{
 	public:
 		double probe;
@@ -212,7 +215,7 @@ public:
 		bool tag_centrality;
 		bool tag_peripherial;
 
-		enhance_contacts() :
+		ParametersToEnhanceContacts() :
 			probe(1.4),
 			step(0.2),
 			projections(5),
@@ -221,126 +224,127 @@ public:
 			tag_peripherial(false)
 		{
 		}
-
-		template<typename ContainerOfIds>
-		bool operator()(
-				const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
-				const ContainerOfIds& draw_ids,
-				std::vector<Contact>& contacts) const
-		{
-			if(contacts.empty())
-			{
-				return false;
-			}
-
-			if(!tag_centrality && !tag_peripherial && draw_ids.empty())
-			{
-				return false;
-			}
-
-			bool tag_nonsolvent=false;
-			if(tag_centrality || tag_peripherial)
-			{
-				for(std::size_t i=0;i<contacts.size() && !tag_nonsolvent;i++)
-				{
-					tag_nonsolvent=!contacts[i].solvent();
-				}
-			}
-
-			std::vector<std::size_t> draw_solvent_ids;
-			std::vector<std::size_t> draw_nonsolvent_ids;
-			for(typename ContainerOfIds::const_iterator it=draw_ids.begin();it!=draw_ids.end();++it)
-			{
-				const std::size_t id=(*it);
-				if(id<contacts.size())
-				{
-					if(contacts[id].solvent())
-					{
-						draw_solvent_ids.push_back(id);
-					}
-					else
-					{
-						draw_nonsolvent_ids.push_back(id);
-					}
-				}
-			}
-
-			if(!tag_nonsolvent && draw_solvent_ids.empty() && draw_nonsolvent_ids.empty())
-			{
-				return false;
-			}
-
-			apollota::Triangulation::VerticesVector vertices_vector;
-			apollota::TriangulationQueries::PairsMap pairs_vertices;
-
-			if(!draw_solvent_ids.empty())
-			{
-				if(vertices_vector.empty())
-				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-				}
-				const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-				const apollota::SubdividedIcosahedron sih(sih_depth);
-				for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
-				{
-					Contact& contact=contacts[*it];
-					contact.value.graphics=apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], probe, sih);
-				}
-			}
-
-			if(!draw_nonsolvent_ids.empty())
-			{
-				if(vertices_vector.empty())
-				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-				}
-				if(pairs_vertices.empty())
-				{
-					pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-				}
-				for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_nonsolvent_ids.end();++it)
-				{
-					Contact& contact=contacts[*it];
-					contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe, step, projections);
-				}
-			}
-
-			if(tag_nonsolvent && tag_peripherial)
-			{
-				if(vertices_vector.empty())
-				{
-					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-				}
-				if(pairs_vertices.empty())
-				{
-					pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-				}
-				for(std::size_t i=0;i<contacts.size();i++)
-				{
-					Contact& contact=contacts[i];
-					if(!contact.solvent() && apollota::check_inter_atom_contact_peripherial(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], probe))
-					{
-						contact.value.props.tags.insert("peripherial");
-					}
-				}
-			}
-
-			if(tag_nonsolvent && tag_centrality)
-			{
-				const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-				for(std::size_t i=0;i<contacts.size();i++)
-				{
-					Contact& contact=contacts[i];
-					if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle_of_triangulation_information.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
-					{
-						contact.value.props.tags.insert("central");
-					}
-				}
-			}
-
-			return true;
-		}
 	};
+
+	template<typename ContainerOfIds>
+	static bool enhance_contacts(
+			const ParametersToEnhanceContacts& parameters,
+			const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+			const ContainerOfIds& draw_ids,
+			std::vector<Contact>& contacts)
+	{
+		if(contacts.empty())
+		{
+			return false;
+		}
+
+		if(!parameters.tag_centrality && !parameters.tag_peripherial && draw_ids.empty())
+		{
+			return false;
+		}
+
+		bool tag_nonsolvent=false;
+		if(parameters.tag_centrality || parameters.tag_peripherial)
+		{
+			for(std::size_t i=0;i<contacts.size() && !tag_nonsolvent;i++)
+			{
+				tag_nonsolvent=!contacts[i].solvent();
+			}
+		}
+
+		std::vector<std::size_t> draw_solvent_ids;
+		std::vector<std::size_t> draw_nonsolvent_ids;
+		for(typename ContainerOfIds::const_iterator it=draw_ids.begin();it!=draw_ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts.size())
+			{
+				if(contacts[id].solvent())
+				{
+					draw_solvent_ids.push_back(id);
+				}
+				else
+				{
+					draw_nonsolvent_ids.push_back(id);
+				}
+			}
+		}
+
+		if(!tag_nonsolvent && draw_solvent_ids.empty() && draw_nonsolvent_ids.empty())
+		{
+			return false;
+		}
+
+		apollota::Triangulation::VerticesVector vertices_vector;
+		apollota::TriangulationQueries::PairsMap pairs_vertices;
+
+		if(!draw_solvent_ids.empty())
+		{
+			if(vertices_vector.empty())
+			{
+				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			}
+			const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+			const apollota::SubdividedIcosahedron sih(parameters.sih_depth);
+			for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
+			{
+				Contact& contact=contacts[*it];
+				contact.value.graphics=apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], parameters.probe, sih);
+			}
+		}
+
+		if(!draw_nonsolvent_ids.empty())
+		{
+			if(vertices_vector.empty())
+			{
+				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			}
+			if(pairs_vertices.empty())
+			{
+				pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+			}
+			for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_nonsolvent_ids.end();++it)
+			{
+				Contact& contact=contacts[*it];
+				contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections);
+			}
+		}
+
+		if(tag_nonsolvent && parameters.tag_peripherial)
+		{
+			if(vertices_vector.empty())
+			{
+				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			}
+			if(pairs_vertices.empty())
+			{
+				pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+			}
+			for(std::size_t i=0;i<contacts.size();i++)
+			{
+				Contact& contact=contacts[i];
+				if(!contact.solvent() && apollota::check_inter_atom_contact_peripherial(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe))
+				{
+					contact.value.props.tags.insert("peripherial");
+				}
+			}
+		}
+
+		if(tag_nonsolvent && parameters.tag_centrality)
+		{
+			const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			for(std::size_t i=0;i<contacts.size();i++)
+			{
+				Contact& contact=contacts[i];
+				if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle_of_triangulation_information.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
+				{
+					contact.value.props.tags.insert("central");
+				}
+			}
+		}
+
+		return true;
+	}
 
 	static bool construct_bundle_of_contacts_mesh_information(const std::vector<Contact>& contacts, BundleOfContactsMeshInformation& bundle)
 	{

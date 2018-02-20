@@ -30,7 +30,7 @@ public:
 		}
 	};
 
-	class collect_atomic_balls_from_file
+	class ParametersToCollectAtomicBallsFromFile
 	{
 	public:
 		bool mmcif;
@@ -39,7 +39,7 @@ public:
 		bool multimodel_chains;
 		auxiliaries::AtomRadiusAssigner atom_radius_assigner;
 
-		collect_atomic_balls_from_file() :
+		ParametersToCollectAtomicBallsFromFile() :
 			mmcif(false),
 			include_heteroatoms(false),
 			include_hydrogens(false),
@@ -56,61 +56,6 @@ public:
 		void set_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
 		{
 			atom_radius_assigner=generate_atom_radius_assigner(default_radius, only_default_radius, radii_file);
-		}
-
-		bool operator()(std::istream& input_stream, std::vector<AtomicBall>& atomic_balls) const
-		{
-			atomic_balls.clear();
-
-			const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
-					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input_stream, include_heteroatoms, include_hydrogens).atom_records :
-					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input_stream, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
-
-			if(atoms.empty())
-			{
-				return false;
-			}
-
-			atomic_balls.reserve(atoms.size());
-
-			for(std::size_t i=0;i<atoms.size();i++)
-			{
-				const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
-				const ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
-				if(crad.valid())
-				{
-					BallValue value;
-					value.x=atom.x;
-					value.y=atom.y;
-					value.z=atom.z;
-					value.r=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
-					if(atom.record_name=="HETATM")
-					{
-						value.props.tags.insert("het");
-					}
-					if(!atom.element.empty())
-					{
-						value.props.tags.insert(std::string("el=")+atom.element);
-					}
-					if(atom.occupancy_valid)
-					{
-						value.props.adjuncts["oc"]=atom.occupancy;
-					}
-					if(atom.tempFactor_valid)
-					{
-						value.props.adjuncts["tf"]=atom.tempFactor;
-					}
-					atomic_balls.push_back(AtomicBall(crad, value));
-				}
-			}
-
-			return true;
-		}
-
-		bool operator()(const std::string& input_file, std::vector<AtomicBall>& atomic_balls) const
-		{
-			std::ifstream input(input_file.c_str(), std::ios::in);
-			return (*this)(input, atomic_balls);
 		}
 
 	private:
@@ -143,6 +88,61 @@ public:
 			return atom_radius_assigner;
 		}
 	};
+
+	static bool collect_atomic_balls_from_file(const ParametersToCollectAtomicBallsFromFile& parameters, std::istream& input_stream, std::vector<AtomicBall>& atomic_balls)
+	{
+		atomic_balls.clear();
+
+		const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(parameters.mmcif ?
+				auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input_stream, parameters.include_heteroatoms, parameters.include_hydrogens).atom_records :
+				auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input_stream, parameters.include_heteroatoms, parameters.include_hydrogens, parameters.multimodel_chains, false).atom_records);
+
+		if(atoms.empty())
+		{
+			return false;
+		}
+
+		atomic_balls.reserve(atoms.size());
+
+		for(std::size_t i=0;i<atoms.size();i++)
+		{
+			const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
+			const ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
+			if(crad.valid())
+			{
+				BallValue value;
+				value.x=atom.x;
+				value.y=atom.y;
+				value.z=atom.z;
+				value.r=parameters.atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
+				if(atom.record_name=="HETATM")
+				{
+					value.props.tags.insert("het");
+				}
+				if(!atom.element.empty())
+				{
+					value.props.tags.insert(std::string("el=")+atom.element);
+				}
+				if(atom.occupancy_valid)
+				{
+					value.props.adjuncts["oc"]=atom.occupancy;
+				}
+				if(atom.tempFactor_valid)
+				{
+					value.props.adjuncts["tf"]=atom.tempFactor;
+				}
+				atomic_balls.push_back(AtomicBall(crad, value));
+			}
+		}
+
+		return true;
+	}
+
+	static bool collect_atomic_balls_from_file(const ParametersToCollectAtomicBallsFromFile& parameters, const std::string& input_file, std::vector<AtomicBall>& atomic_balls)
+	{
+		std::ifstream input(input_file.c_str(), std::ios::in);
+		return collect_atomic_balls_from_file(parameters, input, atomic_balls);
+	}
 
 	template<typename PlainBall>
 	static std::vector<PlainBall> collect_plain_balls_from_atomic_balls(const std::vector<AtomicBall>& atomic_balls)
