@@ -126,7 +126,6 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_selections_of_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-contacts", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("print-history", &ManipulationManagerForAtomsAndContacts::command_print_history));
 		map_of_command_function_pointers_.insert(std::make_pair("save-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_save_atoms_and_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_load_atoms_and_contacts));
 	}
@@ -267,11 +266,6 @@ public:
 					set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
 				}
 			}
-
-			if(record.successful)
-			{
-				commands_history_.push_back(record);
-			}
 		}
 
 		return record;
@@ -281,11 +275,6 @@ public:
 	{
 		CommandOutputSink sink;
 		return execute(command, sink);
-	}
-
-	const std::vector<CommandRecord>& history() const
-	{
-		return commands_history_;
 	}
 
 private:
@@ -2892,33 +2881,6 @@ private:
 		cargs.output_for_log << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 	}
 
-	void command_print_history(CommandArguments& cargs)
-	{
-		const std::size_t last=cargs.input.get_value_or_default<std::size_t>("last", 0);
-
-		cargs.input.assert_nothing_unusable();
-
-		if(last==0 || last>commands_history_.size())
-		{
-			for(std::vector<CommandRecord>::const_iterator it=commands_history_.begin();it!=commands_history_.end();++it)
-			{
-				cargs.output_for_data << it->command << "\n";
-			}
-		}
-		else
-		{
-			std::vector<std::string> commands;
-			for(std::vector<CommandRecord>::const_reverse_iterator it=commands_history_.rbegin();it!=commands_history_.rend() && commands.size()<last;++it)
-			{
-				commands.push_back(it->command);
-			}
-			for(std::vector<std::string>::const_reverse_iterator it=commands.rbegin();it!=commands.rend();++it)
-			{
-				cargs.output_for_data << (*it) << "\n";
-			}
-		}
-	}
-
 	void command_save_atoms_and_contacts(CommandArguments& cargs)
 	{
 		assert_atoms_availability();
@@ -3023,7 +2985,6 @@ private:
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
-	std::vector<CommandRecord> commands_history_;
 };
 
 }

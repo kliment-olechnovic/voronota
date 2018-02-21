@@ -163,35 +163,3 @@ Read contacts from file './jobs_output/self_scripting/plain_atoms_and_contacts' 
 > load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms'
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 No contacts read from file './jobs_output/self_scripting/plain_atoms'.
-
-> print-history
-load-atoms --file ./input/single/structure.cif --format mmcif
-load-atoms --file ./input/single/structure.pdb
-load-atoms ./input/single/structure.pdb --include-heteroatoms
-print-atoms {--tags het --adjuncts tf=0:10}
-restrict-atoms {--tags-not het}
-construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} --min-seq-sep 1}'
-save-atoms --file './jobs_output/self_scripting/plain_atoms'
-save-contacts './jobs_output/self_scripting/plain_contacts'
-load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
-load-contacts --file './jobs_output/self_scripting/plain_contacts'
-select-contacts {--atom1 {R<PHE>} --atom2 {R<PHE>} --min-area 5.0 --min-seq-sep 1} --name cs1
-print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
-print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand
-print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
-select-atoms {r<64> & A<C,N,O,CA,CB>} as1
-print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
-print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
-list-selections-of-atoms
-list-selections-of-contacts
-color-contacts 0x00FF00
-color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {--a1 {--m! A<C,CA,N,O>} --a2 {--m! A<C,CA,N,O>}} 0xFFFF00
-show-contacts
-write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
-color-contacts 0xFF00FF
-write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf
-save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
-load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
-load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms'
-
