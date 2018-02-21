@@ -1,5 +1,5 @@
-#ifndef COMMON_MANIPULATION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
-#define COMMON_MANIPULATION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+#ifndef COMMON_COMMANDING_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+#define COMMON_COMMANDING_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
 
 #include "../auxiliaries/color_utilities.h"
 
@@ -10,7 +10,7 @@
 namespace common
 {
 
-class ManipulationManagerForAtomsAndContacts
+class CommandingManagerForAtomsAndContacts
 {
 public:
 	typedef SelectionManagerForAtomsAndContacts::Atom Atom;
@@ -124,44 +124,44 @@ public:
 		BoundingBox bounding_box;
 	};
 
-	ManipulationManagerForAtomsAndContacts()
+	CommandingManagerForAtomsAndContacts()
 	{
-		map_of_command_function_pointers_.insert(std::make_pair("load-atoms", &ManipulationManagerForAtomsAndContacts::command_load_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("restrict-atoms", &ManipulationManagerForAtomsAndContacts::command_restrict_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("save-atoms", &ManipulationManagerForAtomsAndContacts::command_save_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("select-atoms", &ManipulationManagerForAtomsAndContacts::command_select_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("mark-atoms", &ManipulationManagerForAtomsAndContacts::command_mark_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("unmark-atoms", &ManipulationManagerForAtomsAndContacts::command_unmark_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("show-atoms", &ManipulationManagerForAtomsAndContacts::command_show_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &ManipulationManagerForAtomsAndContacts::command_hide_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &ManipulationManagerForAtomsAndContacts::command_color_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("spectrum-atoms", &ManipulationManagerForAtomsAndContacts::command_spectrum_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("set-secondary-structure-tags", &ManipulationManagerForAtomsAndContacts::command_set_secondary_structure_tags));
-		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &ManipulationManagerForAtomsAndContacts::command_print_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-atoms", &ManipulationManagerForAtomsAndContacts::command_delete_selections_of_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-atoms", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("construct-contacts", &ManipulationManagerForAtomsAndContacts::command_construct_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("save-contacts", &ManipulationManagerForAtomsAndContacts::command_save_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("load-contacts", &ManipulationManagerForAtomsAndContacts::command_load_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("select-contacts", &ManipulationManagerForAtomsAndContacts::command_select_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("mark-contacts", &ManipulationManagerForAtomsAndContacts::command_mark_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("unmark-contacts", &ManipulationManagerForAtomsAndContacts::command_unmark_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("show-contacts", &ManipulationManagerForAtomsAndContacts::command_show_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("hide-contacts", &ManipulationManagerForAtomsAndContacts::command_hide_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("color-contacts", &ManipulationManagerForAtomsAndContacts::command_color_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("spectrum-contacts", &ManipulationManagerForAtomsAndContacts::command_spectrum_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("print-contacts", &ManipulationManagerForAtomsAndContacts::command_print_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("write-contacts-as-pymol-cgo", &ManipulationManagerForAtomsAndContacts::command_write_contacts_as_pymol_cgo));
-		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_list_selections_of_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_all_selections_of_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-contacts", &ManipulationManagerForAtomsAndContacts::command_delete_selections_of_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-contacts", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("save-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_save_atoms_and_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_load_atoms_and_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-atoms", &ManipulationManagerForAtomsAndContacts::command_zoom_by_atoms));
-		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-contacts", &ManipulationManagerForAtomsAndContacts::command_zoom_by_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("load-atoms", &CommandingManagerForAtomsAndContacts::command_load_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("restrict-atoms", &CommandingManagerForAtomsAndContacts::command_restrict_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("save-atoms", &CommandingManagerForAtomsAndContacts::command_save_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("select-atoms", &CommandingManagerForAtomsAndContacts::command_select_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("mark-atoms", &CommandingManagerForAtomsAndContacts::command_mark_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("unmark-atoms", &CommandingManagerForAtomsAndContacts::command_unmark_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("show-atoms", &CommandingManagerForAtomsAndContacts::command_show_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("hide-atoms", &CommandingManagerForAtomsAndContacts::command_hide_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("color-atoms", &CommandingManagerForAtomsAndContacts::command_color_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("spectrum-atoms", &CommandingManagerForAtomsAndContacts::command_spectrum_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("set-secondary-structure-tags", &CommandingManagerForAtomsAndContacts::command_set_secondary_structure_tags));
+		map_of_command_function_pointers_.insert(std::make_pair("print-atoms", &CommandingManagerForAtomsAndContacts::command_print_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-atoms", &CommandingManagerForAtomsAndContacts::command_list_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-atoms", &CommandingManagerForAtomsAndContacts::command_delete_all_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-atoms", &CommandingManagerForAtomsAndContacts::command_delete_selections_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-atoms", &CommandingManagerForAtomsAndContacts::command_rename_selection_of_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("construct-contacts", &CommandingManagerForAtomsAndContacts::command_construct_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("save-contacts", &CommandingManagerForAtomsAndContacts::command_save_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("load-contacts", &CommandingManagerForAtomsAndContacts::command_load_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("select-contacts", &CommandingManagerForAtomsAndContacts::command_select_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("mark-contacts", &CommandingManagerForAtomsAndContacts::command_mark_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("unmark-contacts", &CommandingManagerForAtomsAndContacts::command_unmark_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("show-contacts", &CommandingManagerForAtomsAndContacts::command_show_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("hide-contacts", &CommandingManagerForAtomsAndContacts::command_hide_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("color-contacts", &CommandingManagerForAtomsAndContacts::command_color_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("spectrum-contacts", &CommandingManagerForAtomsAndContacts::command_spectrum_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("print-contacts", &CommandingManagerForAtomsAndContacts::command_print_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("write-contacts-as-pymol-cgo", &CommandingManagerForAtomsAndContacts::command_write_contacts_as_pymol_cgo));
+		map_of_command_function_pointers_.insert(std::make_pair("list-selections-of-contacts", &CommandingManagerForAtomsAndContacts::command_list_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-all-selections-of-contacts", &CommandingManagerForAtomsAndContacts::command_delete_all_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("delete-selections-of-contacts", &CommandingManagerForAtomsAndContacts::command_delete_selections_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-contacts", &CommandingManagerForAtomsAndContacts::command_rename_selection_of_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("save-atoms-and-contacts", &CommandingManagerForAtomsAndContacts::command_save_atoms_and_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &CommandingManagerForAtomsAndContacts::command_load_atoms_and_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-atoms", &CommandingManagerForAtomsAndContacts::command_zoom_by_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-contacts", &CommandingManagerForAtomsAndContacts::command_zoom_by_contacts));
 	}
 
 	const std::vector<Atom>& atoms() const
@@ -344,7 +344,7 @@ private:
 		}
 	};
 
-	typedef void (ManipulationManagerForAtomsAndContacts::*CommandFunctionPointer)(CommandArguments&);
+	typedef void (CommandingManagerForAtomsAndContacts::*CommandFunctionPointer)(CommandArguments&);
 
 	class SummaryOfAtoms
 	{
@@ -3092,4 +3092,4 @@ private:
 
 }
 
-#endif /* COMMON_MANIPULATION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_ */
+#endif /* COMMON_COMMANDING_MANAGER_FOR_ATOMS_AND_CONTACTS_H_ */
