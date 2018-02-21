@@ -1,11 +1,11 @@
 #include "auxiliaries/program_options_handler.h"
 
-#include "common/manipulation_manager_for_atoms_and_contacts.h"
+#include "common/commanding_manager_for_atoms_and_contacts.h"
 
 namespace
 {
 
-void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std::string& command)
+void execute(common::CommandingManagerForAtomsAndContacts& manager, const std::string& command)
 {
 	if(command.empty())
 	{
@@ -13,10 +13,10 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 	}
 
 	std::ostream& output=std::cout;
-	common::ManipulationManagerForAtomsAndContacts::CommandOutputSink sink;
+	common::CommandingManagerForAtomsAndContacts::CommandOutputSink sink;
 
 	output << "\n> " << command << std::endl;
-	const common::ManipulationManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, sink);
+	const common::CommandingManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, sink);
 	output << sink.output_stream.str();
 	output << record.output_log;
 	if(!record.output_error.empty())
@@ -28,7 +28,7 @@ void execute(common::ManipulationManagerForAtomsAndContacts& manager, const std:
 
 void run_loop(std::istream& input)
 {
-	common::ManipulationManagerForAtomsAndContacts manager;
+	common::CommandingManagerForAtomsAndContacts manager;
 
 	manager.add_representations_of_atoms(std::vector<std::string>(1, "atoms"));
 	manager.set_atoms_representation_implemented_always(0, true);
