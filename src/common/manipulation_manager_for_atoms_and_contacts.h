@@ -86,10 +86,42 @@ public:
 		}
 	};
 
+	struct BoundingBox
+	{
+		bool filled;
+		apollota::SimplePoint p_min;
+		apollota::SimplePoint p_max;
+
+		BoundingBox() : filled(false)
+		{
+		}
+
+		template<typename Point>
+		void update(const Point& p)
+		{
+			if(!filled)
+			{
+				p_min=apollota::SimplePoint(p);
+				p_max=p_min;
+			}
+			else
+			{
+				p_min.x=std::min(p_min.x, p.x);
+				p_min.y=std::min(p_min.y, p.y);
+				p_min.z=std::min(p_min.z, p.z);
+				p_max.x=std::max(p_max.x, p.x);
+				p_max.y=std::max(p_max.y, p.y);
+				p_max.z=std::max(p_max.z, p.z);
+			}
+			filled=true;
+		}
+	};
+
 	struct CommandOutputSink
 	{
 		std::ostringstream output_stream;
 		std::set<std::size_t> output_set_of_ids;
+		BoundingBox bounding_box;
 	};
 
 	ManipulationManagerForAtomsAndContacts()
@@ -128,6 +160,8 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("rename-selection-of-contacts", &ManipulationManagerForAtomsAndContacts::command_rename_selection_of_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("save-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_save_atoms_and_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &ManipulationManagerForAtomsAndContacts::command_load_atoms_and_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-atoms", &ManipulationManagerForAtomsAndContacts::command_zoom_by_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-contacts", &ManipulationManagerForAtomsAndContacts::command_zoom_by_contacts));
 	}
 
 	const std::vector<Atom>& atoms() const
@@ -228,7 +262,7 @@ public:
 			std::ostringstream output_for_errors;
 
 			CommandInput input;
-			CommandArguments cargs(input, output_for_log, sink.output_stream, sink.output_set_of_ids);
+			CommandArguments cargs(input, output_for_log, sink.output_stream, sink.output_set_of_ids, sink.bounding_box);
 
 			try
 			{
@@ -285,6 +319,7 @@ private:
 		std::ostream& output_for_log;
 		std::ostream& output_for_data;
 		std::set<std::size_t>& output_set_of_ids;
+		BoundingBox& bounding_box;
 		bool changed_atoms;
 		bool changed_contacts;
 		bool changed_atoms_display_states;
@@ -294,11 +329,13 @@ private:
 				CommandInput& input,
 				std::ostream& output_for_log,
 				std::ostream& output_for_data,
-				std::set<std::size_t>& output_set_of_ids) :
+				std::set<std::size_t>& output_set_of_ids,
+				BoundingBox& bounding_box) :
 					input(input),
 					output_for_log(output_for_log),
 					output_for_data(output_for_data),
 					output_set_of_ids(output_set_of_ids),
+					bounding_box(bounding_box),
 					changed_atoms(false),
 					changed_contacts(false),
 					changed_atoms_display_states(false),
@@ -436,6 +473,15 @@ private:
 			type_for_full_residues("full-residues"),
 			type_for_forced_id("id"),
 			expression("{}"),
+			full_residues(false)
+		{
+		}
+
+		CommandParametersForGenericSelecting(const std::string& types_prefix, const std::string& default_expression) :
+			type_for_expression(types_prefix+"use"),
+			type_for_full_residues(types_prefix+"full-residues"),
+			type_for_forced_id(types_prefix+"id"),
+			expression(default_expression),
 			full_residues(false)
 		{
 		}
@@ -1502,6 +1548,17 @@ private:
 		}
 	}
 
+	void update_bounding_box_with_atoms(const std::set<std::size_t>& ids, BoundingBox& box) const
+	{
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			if((*it)<atoms_.size())
+			{
+				box.update(atoms_[*it].value);
+			}
+		}
+	}
+
 	void command_load_atoms(CommandArguments& cargs)
 	{
 		ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
@@ -2201,12 +2258,7 @@ private:
 		parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 		parameters_to_enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
 		parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
-		CommandParametersForGenericSelecting render_parameters_for_selecting;
-		render_parameters_for_selecting.type_for_expression="render-use";
-		render_parameters_for_selecting.type_for_full_residues="render-full-residues";
-		render_parameters_for_selecting.type_for_forced_id="render-id";
-		render_parameters_for_selecting.expression="{--min-seq-sep 1}";
-		render_parameters_for_selecting.full_residues=false;
+		CommandParametersForGenericSelecting render_parameters_for_selecting("render-", "{--min-seq-sep 1}");
 		render_parameters_for_selecting.read(cargs.input);
 		const bool render=(cargs.input.get_flag("render-default") ||
 				cargs.input.is_option(render_parameters_for_selecting.type_for_expression) ||
@@ -2971,6 +3023,57 @@ private:
 			SummaryOfContacts::collect_summary(contacts_).print(cargs.output_for_log);
 			cargs.output_for_log << ")\n";
 		}
+	}
+
+	void command_zoom_by_atoms(CommandArguments& cargs)
+	{
+		assert_atoms_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+
+		cargs.input.assert_nothing_unusable();
+
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		update_bounding_box_with_atoms(ids, cargs.bounding_box);
+
+		cargs.output_for_log << "Bounding box: (" << cargs.bounding_box.p_min << ") (" << cargs.bounding_box.p_max << ")\n";
+	}
+
+	void command_zoom_by_contacts(CommandArguments& cargs)
+	{
+		assert_contacts_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+
+		cargs.input.assert_nothing_unusable();
+
+		const std::set<std::size_t> contacts_ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(contacts_ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		std::set<std::size_t> atoms_ids;
+		for(std::set<std::size_t>::const_iterator it=contacts_ids.begin();it!=contacts_ids.end();++it)
+		{
+			atoms_ids.insert(contacts_[*it].ids[0]);
+			atoms_ids.insert(contacts_[*it].ids[1]);
+		}
+		if(atoms_ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		update_bounding_box_with_atoms(atoms_ids, cargs.bounding_box);
+
+		cargs.output_for_log << "Bounding box: (" << cargs.bounding_box.p_min << ") (" << cargs.bounding_box.p_max << ")\n";
 	}
 
 	std::map<std::string, CommandFunctionPointer> map_of_command_function_pointers_;
