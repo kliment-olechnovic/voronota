@@ -45,8 +45,6 @@ save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms'
 
-print-history
-
 EOF
 } \
 | $VORONOTA x-run-script \
