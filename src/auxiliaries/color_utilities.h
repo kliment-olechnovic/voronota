@@ -85,6 +85,18 @@ public:
 		{
 			return 0xFFFFFF;
 		}
+		else if(name=='l')
+		{
+			return 0xAFAFAF;
+		}
+		else if(name=='s')
+		{
+			return 0x7F7F7F;
+		}
+		else if(name=='d')
+		{
+			return 0x4F4F4F;
+		}
 		return null_color();
 	}
 
