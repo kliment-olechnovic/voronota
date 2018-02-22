@@ -674,6 +674,22 @@ private:
 			return updated;
 		}
 
+		bool apply_to_display_states(std::vector<DisplayState>& display_states) const
+		{
+			bool updated=false;
+			if(show || hide || mark || unmark || color>0)
+			{
+				for(std::size_t i=0;i<display_states.size();i++)
+				{
+					if(apply_to_display_state(i, display_states))
+					{
+						updated=true;
+					}
+				}
+			}
+			return updated;
+		}
+
 		bool apply_to_display_state_visual(DisplayState::Visual& visual) const
 		{
 			bool updated=false;
@@ -1810,6 +1826,7 @@ private:
 		const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 				cargs.input.get_value_or_first_unused_unnamed_value("name") :
 				cargs.input.get_value_or_default<std::string>("name", ""));
+		const bool no_marking=cargs.input.get_flag("no-marking");
 
 		cargs.input.assert_nothing_unusable();
 
@@ -1831,6 +1848,26 @@ private:
 		{
 			selection_manager_.set_atoms_selection(name, ids);
 			cargs.output_for_log << "Set selection of atoms named '" << name << "'\n";
+		}
+
+		if(!no_marking)
+		{
+			{
+				CommandParametersForGenericViewing params;
+				params.unmark=true;
+				if(params.apply_to_display_states(atoms_display_states_))
+				{
+					cargs.changed_atoms_display_states=true;
+				}
+			}
+			{
+				CommandParametersForGenericViewing params;
+				params.mark=true;
+				if(params.apply_to_display_states(ids, atoms_display_states_))
+				{
+					cargs.changed_atoms_display_states=true;
+				}
+			}
 		}
 
 		cargs.output_set_of_ids.swap(ids);
@@ -1864,15 +1901,14 @@ private:
 			throw std::runtime_error(std::string("No drawable atoms selected."));
 		}
 
-		CommandParametersForGenericViewing parameters_for_viewing;
-		parameters_for_viewing.mark=positive;
-		parameters_for_viewing.unmark=!positive;
-
-		parameters_for_viewing.assert_state();
-
-		if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
 		{
-			cargs.changed_atoms_display_states=true;
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.mark=positive;
+			parameters_for_viewing.unmark=!positive;
+			if(parameters_for_viewing.apply_to_display_states(ids, atoms_display_states_))
+			{
+				cargs.changed_atoms_display_states=true;
+			}
 		}
 
 		{
@@ -2473,6 +2509,7 @@ private:
 		const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 				cargs.input.get_value_or_first_unused_unnamed_value("name") :
 				cargs.input.get_value_or_default<std::string>("name", ""));
+		const bool no_marking=cargs.input.get_flag("no-marking");
 
 		cargs.input.assert_nothing_unusable();
 
@@ -2494,6 +2531,26 @@ private:
 		{
 			selection_manager_.set_contacts_selection(name, ids);
 			cargs.output_for_log << "Set selection of contacts named '" << name << "'\n";
+		}
+
+		if(!no_marking)
+		{
+			{
+				CommandParametersForGenericViewing params;
+				params.unmark=true;
+				if(params.apply_to_display_states(contacts_display_states_))
+				{
+					cargs.changed_contacts_display_states=true;
+				}
+			}
+			{
+				CommandParametersForGenericViewing params;
+				params.mark=true;
+				if(params.apply_to_display_states(ids, contacts_display_states_))
+				{
+					cargs.changed_contacts_display_states=true;
+				}
+			}
 		}
 
 		cargs.output_set_of_ids.swap(ids);
@@ -2527,15 +2584,14 @@ private:
 			throw std::runtime_error(std::string("No drawable contacts selected."));
 		}
 
-		CommandParametersForGenericViewing parameters_for_viewing;
-		parameters_for_viewing.mark=positive;
-		parameters_for_viewing.unmark=!positive;
-
-		parameters_for_viewing.assert_state();
-
-		if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
 		{
-			cargs.changed_contacts_display_states=true;
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.mark=positive;
+			parameters_for_viewing.unmark=!positive;
+			if(parameters_for_viewing.apply_to_display_states(ids, contacts_display_states_))
+			{
+				cargs.changed_contacts_display_states=true;
+			}
 		}
 
 		{
