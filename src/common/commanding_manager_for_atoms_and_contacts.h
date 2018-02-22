@@ -204,6 +204,54 @@ public:
 		return contacts_representation_names_;
 	}
 
+	bool is_any_atom_visible() const
+	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			if(atoms_display_states_[i].visible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_atom_marked() const
+	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			if(atoms_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_visible() const
+	{
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			if(contacts_display_states_[i].visible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_marked() const
+	{
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			if(contacts_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool add_representations_of_atoms(const std::vector<std::string>& names)
 	{
 		if(add_names_to_representations(names, atoms_representation_names_))
