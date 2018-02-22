@@ -1,5 +1,5 @@
 
-> load-atoms --file ./input/single/structure.cif --format mmcif
+> load-atoms --file ./input/single/structure.cif
 Read atoms from file './input/single/structure.cif' (count=1771)
 
 

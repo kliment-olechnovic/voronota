@@ -6,7 +6,7 @@ mkdir -p $SUBDIR
 {
 cat << EOF
 
-load-atoms --file $INPUTDIR/single/structure.cif --format mmcif
+load-atoms --file $INPUTDIR/single/structure.cif
 load-atoms --file $INPUTDIR/single/structure.pdb
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf=0:10}
