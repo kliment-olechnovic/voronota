@@ -239,6 +239,30 @@ public:
 		}
 	}
 
+	std::string generate_string_from_arguments(const std::set<std::string>& names_to_exclude, const bool exclude_unnamed) const
+	{
+		std::ostringstream output;
+		if(!exclude_unnamed)
+		{
+			for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+			{
+				output << " \"" << list_of_unnamed_values_[i] << "\"";
+			}
+		}
+		for(MapOfValues::const_iterator it=map_of_values_.begin();it!=map_of_values_.end();++it)
+		{
+			if(names_to_exclude.count(it->first)==0)
+			{
+				output << " --" << (it->first);
+				for(std::size_t i=0;i<it->second.size();i++)
+				{
+					output << " \"" << it->second[i] << "\"";
+				}
+			}
+		}
+		return output.str();
+	}
+
 private:
 	static bool is_flag_string_true(const std::string& str)
 	{
