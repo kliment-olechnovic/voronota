@@ -115,11 +115,13 @@ Error: Invalid contacts selection name 'nosel1'.
 
 > list-selections-of-atoms
 Selections of atoms:
+  name='_marked' count=5 volume=108.978
   name='as1' count=5 volume=108.978
 
 
 > list-selections-of-contacts
 Selections of contacts:
+  name='_marked' count=1 drawable=1 area=6.57156
   name='cs1' count=5 drawable=1 area=33.8164
 
 
