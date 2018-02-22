@@ -70,6 +70,8 @@ public:
 		bool successful;
 		bool changed_atoms;
 		bool changed_contacts;
+		bool changed_atoms_tags;
+		bool changed_contacts_tags;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
 		std::string output_log;
@@ -80,6 +82,8 @@ public:
 			successful(false),
 			changed_atoms(false),
 			changed_contacts(false),
+			changed_atoms_tags(false),
+			changed_contacts_tags(false),
 			changed_atoms_display_states(false),
 			changed_contacts_display_states(false)
 		{
@@ -330,6 +334,8 @@ public:
 
 			record.changed_atoms=cargs.changed_atoms;
 			record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
+			record.changed_atoms_tags=(cargs.changed_atoms_tags || record.changed_atoms);
+			record.changed_contacts_tags=(cargs.changed_contacts_tags || record.changed_contacts);
 			record.changed_atoms_display_states=(cargs.changed_atoms_display_states || record.changed_atoms);
 			record.changed_contacts_display_states=(cargs.changed_contacts_display_states || record.changed_contacts);
 
@@ -370,6 +376,8 @@ private:
 		BoundingBox& bounding_box;
 		bool changed_atoms;
 		bool changed_contacts;
+		bool changed_atoms_tags;
+		bool changed_contacts_tags;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
 
@@ -386,6 +394,8 @@ private:
 					bounding_box(bounding_box),
 					changed_atoms(false),
 					changed_contacts(false),
+					changed_atoms_tags(false),
+					changed_contacts_tags(false),
 					changed_atoms_display_states(false),
 					changed_contacts_display_states(false)
 		{
@@ -2208,11 +2218,18 @@ private:
 			for(std::size_t j=0;j<primary_structure_info_.residues[i].atom_ids.size();j++)
 			{
 				const std::size_t atom_id=primary_structure_info_.residues[i].atom_ids[j];
-				atoms_[atom_id].value.props.tags.erase(ss_tag_alpha);
-				atoms_[atom_id].value.props.tags.erase(ss_tag_beta);
+				if(atoms_[atom_id].value.props.tags.erase(ss_tag_alpha)>0)
+				{
+					cargs.changed_atoms_tags=true;
+				}
+				if(atoms_[atom_id].value.props.tags.erase(ss_tag_beta)>0)
+				{
+					cargs.changed_atoms_tags=true;
+				}
 				if(!ss_tag.empty())
 				{
 					atoms_[atom_id].value.props.tags.insert(ss_tag);
+					cargs.changed_atoms_tags=true;
 				}
 			}
 		}
