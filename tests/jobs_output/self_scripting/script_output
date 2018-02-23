@@ -133,7 +133,7 @@ Summary of contacts: count=120 drawable=120 area=211.8
 Summary of contacts: count=25 drawable=25 area=52.3005
 
 
-> color-contacts {--a1 {--m! A<C,CA,N,O>} --a2 {--m! A<C,CA,N,O>}} 0xFFFF00
+> color-contacts {--a1 {--m! A<C,CA,N,O>} --a2! {A<C,CA,N,O>}} 0xFFFF00
 Summary of contacts: count=58 drawable=58 area=99.5972
 
 
