@@ -400,7 +400,9 @@ private:
 		}
 
 		fix_atom_tester(tester.test_atom_a);
+		fix_atom_tester(tester.test_atom_a_not);
 		fix_atom_tester(tester.test_atom_b);
+		fix_atom_tester(tester.test_atom_b_not);
 	}
 
 	std::set<std::size_t> select_atoms(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_atom> >& expression, const bool postfix) const

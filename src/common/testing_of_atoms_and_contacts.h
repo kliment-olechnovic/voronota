@@ -47,6 +47,19 @@ public:
 		{
 		}
 
+		bool empty() const
+		{
+			return (allowed_ids.empty() &&
+					name_of_base_selection_of_atoms.empty() &&
+					name_of_base_selection_of_contacts.empty() &&
+					match_crad.empty() &&
+					match_crad_not.empty() &&
+					match_tags.empty() &&
+					match_tags_not.empty() &&
+					match_adjuncts.empty() &&
+					match_adjuncts_not.empty());
+		}
+
 		bool operator()(const std::size_t id) const
 		{
 			if(atoms_ptr==0)
@@ -116,7 +129,9 @@ public:
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
 		test_atom test_atom_a;
+		test_atom test_atom_a_not;
 		test_atom test_atom_b;
+		test_atom test_atom_b_not;
 
 		test_contact(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
 			atoms_ptr(atoms_ptr),
@@ -192,12 +207,28 @@ public:
 				{
 					if(contact.solvent())
 					{
-						if((test_atom_b.allowed_ids.empty() && test_atom_b(crad_b) && test_atom_a(atoms, contact.ids[0])) || (test_atom_a.allowed_ids.empty() && test_atom_a(crad_b) && test_atom_b(atoms, contact.ids[0])))
+						if(
+								((test_atom_b.allowed_ids.empty() && test_atom_b(crad_b)) &&
+										(test_atom_b_not.empty() || !(test_atom_b_not.allowed_ids.empty() && test_atom_b_not(crad_b))) &&
+										test_atom_a(atoms, contact.ids[0]) &&
+										(test_atom_a_not.empty() || !test_atom_a_not(atoms, contact.ids[0]))) ||
+								((test_atom_a.allowed_ids.empty() && test_atom_a(crad_b)) &&
+										(test_atom_a_not.empty() || !(test_atom_a_not.allowed_ids.empty() && test_atom_a_not(crad_b))) &&
+										test_atom_b(atoms, contact.ids[0]) &&
+										(test_atom_b_not.empty() || !test_atom_b_not(atoms, contact.ids[0]))))
 						{
 							return true;
 						}
 					}
-					else if((test_atom_a(atoms, contact.ids[0]) && test_atom_b(atoms, contact.ids[1])) || (test_atom_a(atoms, contact.ids[1]) && test_atom_b(atoms, contact.ids[0])))
+					else if(
+							(test_atom_a(atoms, contact.ids[0]) &&
+									(test_atom_a_not.empty() || !test_atom_a_not(atoms, contact.ids[0])) &&
+									test_atom_b(atoms, contact.ids[1]) &&
+									(test_atom_b_not.empty() || !test_atom_b_not(atoms, contact.ids[1]))) ||
+							(test_atom_a(atoms, contact.ids[1]) &&
+									(test_atom_a_not.empty() || !test_atom_a_not(atoms, contact.ids[1])) &&
+									test_atom_b(atoms, contact.ids[0]) &&
+									(test_atom_b_not.empty() || !test_atom_b_not(atoms, contact.ids[0]))))
 					{
 						return true;
 					}
@@ -572,9 +603,17 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				input >> tester.test_atom_a;
 			}
+			else if(token=="--atom1-not" || token=="--a1!")
+			{
+				input >> tester.test_atom_a_not;
+			}
 			else if(token=="--atom2" || token=="--a2")
 			{
 				input >> tester.test_atom_b;
+			}
+			else if(token=="--atom2-not" || token=="--a2!")
+			{
+				input >> tester.test_atom_b_not;
 			}
 			else if(token=="--no-solvent" || token=="--nosolv")
 			{
