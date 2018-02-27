@@ -71,6 +71,7 @@ SURFACE_CRAVING_ATOMS_OUTPUT_PDB=""
 SURFACE_CRAVING_RESIDUES_OUTPUT=""
 SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT=""
+SURFACE_CRAVING_DEPTH_VALUE="3"
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -221,6 +222,10 @@ do
 		;;
 	--surface-craving-atoms-energies-output)
 		SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT="$OPTARG"
+		shift
+		;;
+	--surface-craving-depth-value)
+		SURFACE_CRAVING_DEPTH_VALUE="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -1021,7 +1026,7 @@ then
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
 	  --potential-file <(voronota-resources energy_potential) \
-	  --depth 3 \
+	  --depth "$SURFACE_CRAVING_DEPTH_VALUE" \
 	  --atom-scores-file $TMPLDIR/surface_atom_energies \
 	> /dev/null
 	
