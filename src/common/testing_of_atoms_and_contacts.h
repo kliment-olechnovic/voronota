@@ -123,6 +123,7 @@ public:
 		int match_min_sequence_separation;
 		int match_max_sequence_separation;
 		bool no_solvent;
+		bool solvent;
 		bool no_same_chain;
 		std::string match_tags;
 		std::string match_tags_not;
@@ -143,6 +144,7 @@ public:
 			match_min_sequence_separation(ChainResidueAtomDescriptor::null_num()),
 			match_max_sequence_separation(ChainResidueAtomDescriptor::null_num()),
 			no_solvent(false),
+			solvent(false),
 			no_same_chain(false)
 		{
 		}
@@ -191,7 +193,8 @@ public:
 					contact.value.area<=match_max_area &&
 					contact.value.dist>=match_min_dist &&
 					contact.value.dist<=match_max_dist &&
-					(!no_solvent || !contact.solvent())
+					(!no_solvent || !contact.solvent()) &&
+					(!solvent || contact.solvent())
 			)
 			{
 				const Atom& atom_a=atoms[contact.ids[0]];
@@ -619,6 +622,10 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			{
 				tester.no_solvent=true;
 			}
+			else if(token=="--solvent" || token=="--solv")
+			{
+				tester.solvent=true;
+			}
 			else if(token=="--no-same-chain" || token=="--nschain")
 			{
 				tester.no_same_chain=true;
@@ -696,17 +703,17 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		std::string opname;
 		input >> opname;
 
-		if(opname=="OR")
+		if(opname=="or")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_OR;
 		}
-		else if(opname=="AND")
+		else if(opname=="and")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_AND;
 		}
-		else if(opname=="NOT")
+		else if(opname=="not")
 		{
 			input.get();
 			token.type=Token::TYPE_OPERATOR_NOT;
