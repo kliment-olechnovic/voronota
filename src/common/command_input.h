@@ -25,7 +25,7 @@ public:
 		init(command_str);
 	}
 
-	void init(const std::string& command_str)
+	void init(const std::string& command_str, const bool canonicalize=false)
 	{
 		command_name_.clear();
 		map_of_values_.clear();
@@ -35,13 +35,20 @@ public:
 			throw std::runtime_error(std::string("Empty command string"));
 		}
 
-		std::istringstream input(command_str);
+		const std::string canonized_command_str=(canonicalize ? canonize_command_string(command_str) : command_str);
+
+		if(canonized_command_str.empty())
+		{
+			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
+		}
+
+		std::istringstream input(canonized_command_str);
 		std::vector< std::pair<int, std::string> > tokens;
 		read_all_strings_considering_quotes_and_brackets(input, tokens);
 
 		if(tokens.empty())
 		{
-			throw std::runtime_error(std::string("Failed to read command string'")+command_str+"'.");
+			throw std::runtime_error(std::string("Failed to read command string '")+canonized_command_str+"'.");
 		}
 
 		std::string current_key;
@@ -53,7 +60,7 @@ public:
 			{
 				if(token_wrapped!=0 || token_str.empty())
 				{
-					throw std::runtime_error(std::string("Invalid command name in string '")+command_str+"'.");
+					throw std::runtime_error(std::string("Invalid command name in string '")+canonized_command_str+"'.");
 				}
 				else
 				{
@@ -326,6 +333,83 @@ private:
 			}
 		}
 		output.swap(tokens);
+	}
+
+	static std::string precanonize_command_string(const std::string& input_str)
+	{
+		std::string collapsed_str;
+
+		for(std::size_t i=0;i<input_str.size();i++)
+		{
+			const char c=input_str[i];
+			if(c=='=')
+			{
+				while(!collapsed_str.empty() && collapsed_str.back()<=32)
+				{
+					collapsed_str.pop_back();
+				}
+				collapsed_str.push_back(c);
+			}
+			else if(c<=32)
+			{
+				if(collapsed_str.empty() || collapsed_str.back()!='=')
+				{
+					collapsed_str.push_back(c);
+				}
+			}
+			else
+			{
+				collapsed_str.push_back(c);
+			}
+		}
+
+		return collapsed_str;
+	}
+
+	static std::string canonize_command_string(const std::string& input_str)
+	{
+		const std::string collapsed_str=precanonize_command_string(input_str);
+
+		std::string canonic_str;
+		std::size_t last_eq=0;
+		std::size_t last_sep=0;
+
+		for(std::size_t i=0;i<collapsed_str.size();i++)
+		{
+			const char c=collapsed_str[i];
+			if(c=='=')
+			{
+				if(last_eq<=last_sep && (last_sep+1)<i)
+				{
+					for(std::size_t j=(last_sep+1);j<i;j++)
+					{
+						canonic_str.pop_back();
+					}
+					std::string token=collapsed_str.substr(last_sep+1, i-(last_sep+1));
+					if(token.compare(0, 1, "-")!=0)
+					{
+						canonic_str+="--";
+					}
+					canonic_str+=token;
+					canonic_str+=" ";
+				}
+				else
+				{
+					canonic_str.push_back(c);
+				}
+				last_eq=i;
+			}
+			else
+			{
+				if(c<=32 || c=='(' || c=='{')
+				{
+					last_sep=i;
+				}
+				canonic_str.push_back(c);
+			}
+		}
+
+		return canonic_str;
 	}
 
 	const std::vector<std::string>& get_value_vector_ref(const std::string& name)

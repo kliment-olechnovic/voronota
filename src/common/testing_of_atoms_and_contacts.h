@@ -441,6 +441,41 @@ public:
 	}
 };
 
+inline bool read_tester_flag_value(std::istream& input)
+{
+	input >> std::ws;
+
+	if(!input.good())
+	{
+		return true;
+	}
+
+	const char opener=std::char_traits<char>::to_char_type(input.peek());
+	if(opener=='-')
+	{
+		return true;
+	}
+	else
+	{
+		std::string token;
+		input >> token;
+		if(token=="true" || token=="1")
+		{
+			return true;
+		}
+		else if(token=="false" || token=="0")
+		{
+			return false;
+		}
+		else
+		{
+			throw std::runtime_error(std::string("Invalid tester flag value '")+token+"'.");
+		}
+	}
+
+	return false;
+}
+
 inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::test_atom& tester)
 {
 	std::string token;
@@ -620,20 +655,20 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			}
 			else if(token=="--no-solvent" || token=="--nosolv")
 			{
-				tester.no_solvent=true;
+				tester.no_solvent=read_tester_flag_value(input);
 			}
 			else if(token=="--solvent" || token=="--solv")
 			{
-				tester.solvent=true;
+				tester.solvent=read_tester_flag_value(input);
 			}
 			else if(token=="--no-same-chain" || token=="--nschain")
 			{
-				tester.no_same_chain=true;
+				tester.no_same_chain=read_tester_flag_value(input);
 			}
 			else if(token=="--inter-chain" || token=="--ichain")
 			{
-				tester.no_same_chain=true;
-				tester.no_solvent=true;
+				tester.no_same_chain=read_tester_flag_value(input);
+				tester.no_solvent=tester.no_same_chain;
 			}
 			else if(token_index==0 && token.compare(0, 1, "-")!=0)
 			{
