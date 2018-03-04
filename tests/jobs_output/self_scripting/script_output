@@ -11,7 +11,7 @@ Read atoms from file './input/single/structure.pdb' (count=1717)
 Read atoms from file './input/single/structure.pdb' (count=1771)
 
 
-> print-atoms {--tags het --adjuncts tf=0:10}
+> print-atoms {--tags het --adjuncts tf:0:10}
 atom                         x       y       z       r     tags      adjuncts      
 c<A>r<66>a<467>R<CRO>A<CA1>  25.011  26.478  37.078  1.7   el=C;het  oc=1;tf=7.34  
 c<A>r<66>a<472>R<CRO>A<N2>   26.975  27.732  38.216  1.55  el=N;het  oc=1;tf=9.21  
