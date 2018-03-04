@@ -25,7 +25,7 @@ public:
 		init(command_str);
 	}
 
-	void init(const std::string& command_str, const bool canonicalize=false)
+	void init(const std::string& command_str)
 	{
 		command_name_.clear();
 		map_of_values_.clear();
@@ -35,7 +35,7 @@ public:
 			throw std::runtime_error(std::string("Empty command string"));
 		}
 
-		const std::string canonical_command_str=(canonicalize ? canonicalize_command_string(command_str) : command_str);
+		const std::string canonical_command_str=canonicalize_command_string(command_str);
 
 		if(canonical_command_str.empty())
 		{
