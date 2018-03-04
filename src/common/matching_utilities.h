@@ -154,10 +154,14 @@ private:
 	{
 		inline bool operator()(const std::map<std::string, double>& adjuncts, const std::string& value) const
 		{
-			const std::size_t eq_pos=value.find('=');
-			if(eq_pos!=std::string::npos)
+			std::size_t eq_pos=value.find('=');
+			if(eq_pos==std::string::npos)
 			{
-				const std::size_t sep_pos=value.find(':', eq_pos);
+				eq_pos=value.find(':');
+			}
+			if(eq_pos!=std::string::npos && (eq_pos+1)<value.size())
+			{
+				const std::size_t sep_pos=value.find(':', eq_pos+1);
 				if(sep_pos!=std::string::npos)
 				{
 					std::string spaced_value=value;
