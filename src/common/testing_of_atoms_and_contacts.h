@@ -451,7 +451,7 @@ inline bool read_tester_flag_value(std::istream& input)
 	}
 
 	const char opener=std::char_traits<char>::to_char_type(input.peek());
-	if(opener=='-')
+	if(opener=='-' || opener=='}')
 	{
 		return true;
 	}
