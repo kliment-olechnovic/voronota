@@ -301,13 +301,52 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const Graph graph=init_graph(map_of_contacts);
 
-	std::cout << graph.vertices.size() << " " << graph.edges.size() << " " << graph.valid() << "\n";
+	std::vector<int> vertex_centralities(graph.vertices.size(), 0);
+	std::map<std::pair<ID, ID>, int> map_of_edge_centralities;
 
-	ShortestPathsSearchResult spsr;
-	find_shortest_paths(graph, 0, spsr);
-	for(std::size_t i=0;i<spsr.dist.size();i++)
+	for(ID source_id=0;source_id<graph.vertices.size();source_id++)
 	{
-		std::cout << spsr.dist[i] << ((i+1)%10==0 ? "\n" : " ");
+		ShortestPathsSearchResult sps_result;
+		find_shortest_paths(graph, source_id, sps_result);
+		for(ID target_id=0;target_id<graph.vertices.size();target_id++)
+		{
+			if(target_id!=source_id)
+			{
+				ID u=target_id;
+				while(sps_result.prev[u]!=null_id())
+				{
+					vertex_centralities[u]++;
+					map_of_edge_centralities[std::make_pair(u, sps_result.prev[u])]++;
+					u=sps_result.prev[u];
+				}
+				vertex_centralities[u]++;
+			}
+		}
 	}
+
+	std::vector<int> edge_centralities(graph.edges.size(), 0);
+	for(std::size_t i=0;i<edge_centralities.size();i++)
+	{
+		const Edge& edge=graph.edges[i];
+		edge_centralities[i]+=map_of_edge_centralities[std::make_pair(edge.vertex_ids[0], edge.vertex_ids[1])];
+		edge_centralities[i]+=map_of_edge_centralities[std::make_pair(edge.vertex_ids[1], edge.vertex_ids[0])];
+	}
+
+	std::map<CRADsPair, double> map_of_centralities;
+	for(ID id=0;id<vertex_centralities.size();id++)
+	{
+		const CRADsPair crads(graph.vertices[id].crad, CRAD::any());
+		map_of_centralities[crads]=vertex_centralities[id];
+	}
+	for(std::size_t i=0;i<edge_centralities.size();i++)
+	{
+		const Edge& edge=graph.edges[i];
+		const ID id1=edge.vertex_ids[0];
+		const ID id2=edge.vertex_ids[1];
+		const CRADsPair crads(graph.vertices[id1].crad, graph.vertices[id2].crad);
+		map_of_centralities[crads]=edge_centralities[i];
+	}
+
+	auxiliaries::IOUtilities().write_map(map_of_centralities, std::cout);
 }
 
