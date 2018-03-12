@@ -12,16 +12,30 @@ namespace
 
 typedef common::ChainResidueAtomDescriptor CRAD;
 typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef double Weight;
+typedef std::size_t ID;
 
-std::size_t null_id()
+inline ID null_id()
 {
-	return std::numeric_limits<std::size_t>::max();
+	return std::numeric_limits<ID>::max();
 }
 
-//double inf_weight()
-//{
-//	return std::numeric_limits<double>::max();
-//}
+inline Weight inf_weight()
+{
+	return std::numeric_limits<Weight>::max();
+}
+
+inline Weight sum_weights(const Weight w1, const Weight w2)
+{
+	if(w1==inf_weight() || w2==inf_weight())
+	{
+		return inf_weight();
+	}
+	else
+	{
+		return (w1+w2);
+	}
+}
 
 struct Vertex
 {
@@ -39,8 +53,8 @@ struct Vertex
 
 struct Edge
 {
-	double weight;
-	std::size_t vertex_ids[2];
+	Weight weight;
+	ID vertex_ids[2];
 
 	Edge() : weight(0.0)
 	{
@@ -48,13 +62,13 @@ struct Edge
 		vertex_ids[1]=0;
 	}
 
-	Edge(const std::size_t a, const std::size_t b, const double weight) : weight(weight)
+	Edge(const ID a, const ID b, const Weight weight) : weight(weight)
 	{
 		vertex_ids[0]=a;
 		vertex_ids[1]=b;
 	}
 
-	std::size_t neighbor(const std::size_t a) const
+	std::size_t neighbor(const ID a) const
 	{
 		return (a==vertex_ids[0] ? vertex_ids[1] : (a==vertex_ids[1] ? vertex_ids[0] : null_id()));
 	}
@@ -64,6 +78,53 @@ struct Graph
 {
 	std::vector<Vertex> vertices;
 	std::vector<Edge> edges;
+
+	bool valid() const
+	{
+		if(vertices.empty())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<vertices.size();i++)
+		{
+			const Vertex& vertex=vertices[i];
+			for(std::size_t j=0;j<vertex.edge_ids.size();j++)
+			{
+				if(vertex.edge_ids[j]>=edges.size())
+				{
+					return false;
+				}
+				else
+				{
+					const Edge& edge=edges[vertex.edge_ids[j]];
+					if(edge.vertex_ids[0]!=i && edge.vertex_ids[1]!=i)
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		for(std::size_t i=0;i<edges.size();i++)
+		{
+			const Edge& edge=edges[i];
+			if(edge.weight<0.0)
+			{
+				return false;
+			}
+			if(edge.vertex_ids[0]==edge.vertex_ids[1])
+			{
+				return false;
+			}
+			if(edge.vertex_ids[0]>=vertices.size() || edge.vertex_ids[1]>=vertices.size())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 };
 
 Graph init_graph(const std::map<CRADsPair, double>& map_of_contacts)
@@ -96,6 +157,129 @@ Graph init_graph(const std::map<CRADsPair, double>& map_of_contacts)
 	return graph;
 }
 
+class PriorityQueue
+{
+public:
+	typedef std::pair<Weight, ID> WeightedID;
+
+	PriorityQueue()
+	{
+	}
+
+	bool empty() const
+	{
+		return set_of_weighted_ids_.empty();
+	}
+
+	void set(const ID id, const Weight weight)
+	{
+		std::map<ID, Weight>::iterator it=map_of_ids_to_weights_.find(id);
+		if(it!=map_of_ids_to_weights_.end())
+		{
+			set_of_weighted_ids_.erase(WeightedID(id, it->second));
+			it->second=weight;
+		}
+		else
+		{
+			map_of_ids_to_weights_[id]=weight;
+		}
+		set_of_weighted_ids_.insert(WeightedID(weight, id));
+	}
+
+	void set(const WeightedID& weighted_id)
+	{
+		set(weighted_id.first, weighted_id.second);
+	}
+
+	WeightedID get_min() const
+	{
+		if(set_of_weighted_ids_.empty())
+		{
+			return WeightedID(inf_weight(), null_id());
+		}
+		return (*set_of_weighted_ids_.begin());
+	}
+
+	void pop_min()
+	{
+		if(set_of_weighted_ids_.empty())
+		{
+			return;
+		}
+		map_of_ids_to_weights_.erase(set_of_weighted_ids_.begin()->second);
+		set_of_weighted_ids_.erase(set_of_weighted_ids_.begin());
+	}
+
+	WeightedID extract_min()
+	{
+		WeightedID weighted_id=get_min();
+		pop_min();
+		return weighted_id;
+	}
+
+private:
+	std::set<WeightedID> set_of_weighted_ids_;
+	std::map<ID, Weight> map_of_ids_to_weights_;
+};
+
+struct ShortestPathsSearchResult
+{
+	std::vector<Weight> dist;
+	std::vector<ID> prev;
+
+	void reset(const std::size_t size)
+	{
+		dist.clear();
+		prev.clear();
+		dist.resize(size, inf_weight());
+		prev.resize(size, null_id());
+	}
+};
+
+void find_shortest_paths(const Graph& graph, const std::size_t source_id, ShortestPathsSearchResult& result)
+{
+	const std::size_t N=graph.vertices.size();
+
+	result.reset(N);
+
+	if(!graph.valid())
+	{
+		throw std::runtime_error("Invalid graph.");
+	}
+
+	if(source_id>=N)
+	{
+		throw std::runtime_error("Invalid source.");
+	}
+
+	result.dist[source_id]=0.0;
+
+	PriorityQueue queue;
+
+	for(ID id=0;id<N;id++)
+	{
+		queue.set(id, result.dist[id]);
+	}
+
+	while(!queue.empty())
+	{
+		const PriorityQueue::WeightedID weighted_id=queue.extract_min();
+		const ID u=weighted_id.second;
+		for(std::size_t i=0;i<graph.vertices[u].edge_ids.size();i++)
+		{
+			const Edge& edge=graph.edges[graph.vertices[u].edge_ids[i]];
+			const ID v=edge.neighbor(u);
+			const Weight alt=sum_weights(result.dist[u], edge.weight);
+			if(alt<result.dist[v])
+			{
+				result.dist[v]=alt;
+				result.prev[v]=u;
+				queue.set(v, alt);
+			}
+		}
+	}
+}
+
 }
 
 void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
@@ -117,6 +301,13 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const Graph graph=init_graph(map_of_contacts);
 
-	std::cout << graph.vertices.size() << " " << graph.edges.size() << "\n";
+	std::cout << graph.vertices.size() << " " << graph.edges.size() << " " << graph.valid() << "\n";
+
+	ShortestPathsSearchResult spsr;
+	find_shortest_paths(graph, 0, spsr);
+	for(std::size_t i=0;i<spsr.dist.size();i++)
+	{
+		std::cout << spsr.dist[i] << ((i+1)%10==0 ? "\n" : " ");
+	}
 }
 
