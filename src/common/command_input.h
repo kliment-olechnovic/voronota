@@ -271,6 +271,24 @@ public:
 	}
 
 private:
+	static char string_back(const std::string& str)
+	{
+		if(str.empty())
+		{
+			return 0;
+		}
+		return str[str.size()-1];
+	}
+
+	static void string_pop_back(std::string& str)
+	{
+		if(str.empty())
+		{
+			return;
+		}
+		str.erase(str.size()-1, 1);
+	}
+
 	static bool is_flag_string_true(const std::string& str)
 	{
 		return (str=="true" || str=="1");
@@ -344,15 +362,15 @@ private:
 			const char c=input_str[i];
 			if(c=='=')
 			{
-				while(!collapsed_str.empty() && collapsed_str.back()<=32)
+				while(!collapsed_str.empty() && string_back(collapsed_str)<=32)
 				{
-					collapsed_str.pop_back();
+					string_pop_back(collapsed_str);
 				}
 				collapsed_str.push_back(c);
 			}
 			else if(c<=32)
 			{
-				if(collapsed_str.empty() || collapsed_str.back()!='=')
+				if(collapsed_str.empty() || string_back(collapsed_str)!='=')
 				{
 					collapsed_str.push_back(c);
 				}
@@ -383,7 +401,7 @@ private:
 				{
 					for(std::size_t j=(last_sep+1);j<i;j++)
 					{
-						canonical_str.pop_back();
+						string_pop_back(canonical_str);
 					}
 					std::string token=collapsed_str.substr(last_sep+1, i-(last_sep+1));
 					if(token.compare(0, 1, "-")!=0)
