@@ -37,6 +37,11 @@ inline Weight sum_weights(const Weight w1, const Weight w2)
 	}
 }
 
+inline std::pair<ID, ID> ordered_pair_of_ids(const ID a, const ID b)
+{
+	return (a<b ? std::pair<ID, ID>(a, b) : std::pair<ID, ID>(b, a));
+}
+
 struct Vertex
 {
 	CRAD crad;
@@ -225,14 +230,14 @@ private:
 struct ShortestPathsSearchResult
 {
 	std::vector<Weight> dist;
-	std::vector<ID> prev;
+	std::vector< std::vector<ID> > prev;
 
 	void reset(const std::size_t size)
 	{
 		dist.clear();
 		prev.clear();
 		dist.resize(size, inf_weight());
-		prev.resize(size, null_id());
+		prev.resize(size);
 	}
 };
 
@@ -270,14 +275,107 @@ void find_shortest_paths(const Graph& graph, const std::size_t source_id, Shorte
 			const Edge& edge=graph.edges[graph.vertices[u].edge_ids[i]];
 			const ID v=edge.neighbor(u);
 			const Weight alt=sum_weights(result.dist[u], edge.weight);
-			if(alt<result.dist[v])
+			if(alt<inf_weight())
 			{
-				result.dist[v]=alt;
-				result.prev[v]=u;
-				queue.set(v, alt);
+				if(alt<result.dist[v])
+				{
+					result.dist[v]=alt;
+					result.prev[v].clear();
+					result.prev[v].push_back(u);
+					queue.set(v, alt);
+				}
+				else if(alt==result.dist[v])
+				{
+					if(std::find(result.prev[v].begin(), result.prev[v].end(), u)==result.prev[v].end())
+					{
+						result.prev[v].push_back(u);
+					}
+				}
 			}
 		}
 	}
+}
+
+struct BetweennessCentralitiesResult
+{
+	int max_number_of_paths;
+	std::map<ID, double> vertex_centralities;
+	std::map<std::pair<ID, ID>, double> edge_centralities;
+
+	BetweennessCentralitiesResult() : max_number_of_paths(0)
+	{
+	}
+};
+
+BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& graph)
+{
+	BetweennessCentralitiesResult result;
+
+	if(!graph.valid())
+	{
+		throw std::runtime_error("Invalid graph.");
+	}
+
+	for(ID source_id=0;source_id<graph.vertices.size();source_id++)
+	{
+		ShortestPathsSearchResult sps_result;
+		find_shortest_paths(graph, source_id, sps_result);
+		for(ID target_id=0;target_id<graph.vertices.size();target_id++)
+		{
+			if(target_id!=source_id)
+			{
+				std::map<ID, int> local_vertex_centralities;
+				std::map<std::pair<ID, ID>, int> local_edge_centralities;
+				std::vector<ID> path;
+				std::vector<ID> stack;
+				int number_of_paths=0;
+				stack.push_back(target_id);
+				while(!stack.empty())
+				{
+					const ID u=stack.back();
+					stack.pop_back();
+					while(!path.empty() && sps_result.dist[path.back()]<=sps_result.dist[u])
+					{
+						path.pop_back();
+					}
+					path.push_back(u);
+					if(u==source_id)
+					{
+						number_of_paths++;
+						for(std::size_t i=0;(i+1)<path.size();i++)
+						{
+							if(i>0)
+							{
+								local_vertex_centralities[path[i]]++;
+							}
+							local_edge_centralities[ordered_pair_of_ids(path[i], path[i+1])]++;
+						}
+					}
+					else
+					{
+						if(!sps_result.prev[u].empty())
+						{
+							stack.insert(stack.end(), sps_result.prev[u].begin(), sps_result.prev[u].end());
+						}
+					}
+				}
+				if(number_of_paths>0)
+				{
+					for(std::map<ID, int>::const_iterator it=local_vertex_centralities.begin();it!=local_vertex_centralities.end();++it)
+					{
+						result.vertex_centralities[it->first]+=static_cast<double>(it->second)/static_cast<double>(number_of_paths);
+					}
+					for(std::map<std::pair<ID, ID>, int>::const_iterator it=local_edge_centralities.begin();it!=local_edge_centralities.end();++it)
+					{
+						result.edge_centralities[it->first]+=static_cast<double>(it->second)/static_cast<double>(number_of_paths);
+					}
+				}
+				result.max_number_of_paths=std::max(result.max_number_of_paths, number_of_paths);
+			}
+		}
+	}
+
+	return result;
 }
 
 }
@@ -301,52 +399,25 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const Graph graph=init_graph(map_of_contacts);
 
-	std::vector<int> vertex_centralities(graph.vertices.size(), 0);
-	std::map<std::pair<ID, ID>, int> map_of_edge_centralities;
-
-	for(ID source_id=0;source_id<graph.vertices.size();source_id++)
-	{
-		ShortestPathsSearchResult sps_result;
-		find_shortest_paths(graph, source_id, sps_result);
-		for(ID target_id=0;target_id<graph.vertices.size();target_id++)
-		{
-			if(target_id!=source_id)
-			{
-				ID u=target_id;
-				while(sps_result.prev[u]!=null_id())
-				{
-					vertex_centralities[u]++;
-					map_of_edge_centralities[std::make_pair(u, sps_result.prev[u])]++;
-					u=sps_result.prev[u];
-				}
-				vertex_centralities[u]++;
-			}
-		}
-	}
-
-	std::vector<int> edge_centralities(graph.edges.size(), 0);
-	for(std::size_t i=0;i<edge_centralities.size();i++)
-	{
-		const Edge& edge=graph.edges[i];
-		edge_centralities[i]+=map_of_edge_centralities[std::make_pair(edge.vertex_ids[0], edge.vertex_ids[1])];
-		edge_centralities[i]+=map_of_edge_centralities[std::make_pair(edge.vertex_ids[1], edge.vertex_ids[0])];
-	}
+	BetweennessCentralitiesResult result=calculate_betweenness_centralities(graph);
 
 	std::map<CRADsPair, double> map_of_centralities;
-	for(ID id=0;id<vertex_centralities.size();id++)
+	for(ID id=0;id<graph.vertices.size();id++)
 	{
 		const CRADsPair crads(graph.vertices[id].crad, CRAD::any());
-		map_of_centralities[crads]=vertex_centralities[id];
+		map_of_centralities[crads]=result.vertex_centralities[id];
 	}
-	for(std::size_t i=0;i<edge_centralities.size();i++)
+	for(std::size_t i=0;i<graph.edges.size();i++)
 	{
 		const Edge& edge=graph.edges[i];
 		const ID id1=edge.vertex_ids[0];
 		const ID id2=edge.vertex_ids[1];
 		const CRADsPair crads(graph.vertices[id1].crad, graph.vertices[id2].crad);
-		map_of_centralities[crads]=edge_centralities[i];
+		map_of_centralities[crads]=result.edge_centralities[ordered_pair_of_ids(id1, id2)];
 	}
 
 	auxiliaries::IOUtilities().write_map(map_of_centralities, std::cout);
+
+	std::cout << result.max_number_of_paths << " result.max_number_of_paths" << std::endl;
 }
 
