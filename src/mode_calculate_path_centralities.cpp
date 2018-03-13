@@ -241,7 +241,7 @@ struct ShortestPathsSearchResult
 	}
 };
 
-void find_shortest_paths(const Graph& graph, const std::size_t source_id, ShortestPathsSearchResult& result)
+void find_shortest_paths(const Graph& graph, const std::size_t source_id, const Weight tolerance, ShortestPathsSearchResult& result)
 {
 	const std::size_t N=graph.vertices.size();
 
@@ -277,14 +277,14 @@ void find_shortest_paths(const Graph& graph, const std::size_t source_id, Shorte
 			const Weight alt=sum_weights(result.dist[u], edge.weight);
 			if(alt<inf_weight())
 			{
-				if(alt<result.dist[v])
+				if(alt+tolerance<result.dist[v])
 				{
 					result.dist[v]=alt;
 					result.prev[v].clear();
 					result.prev[v].push_back(u);
 					queue.set(v, alt);
 				}
-				else if(alt==result.dist[v])
+				else if(fabs(alt-result.dist[v])<=tolerance)
 				{
 					if(std::find(result.prev[v].begin(), result.prev[v].end(), u)==result.prev[v].end())
 					{
@@ -307,7 +307,7 @@ struct BetweennessCentralitiesResult
 	}
 };
 
-BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& graph)
+BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& graph, const Weight tolerance)
 {
 	BetweennessCentralitiesResult result;
 
@@ -319,7 +319,7 @@ BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& gr
 	for(ID source_id=0;source_id<graph.vertices.size();source_id++)
 	{
 		ShortestPathsSearchResult sps_result;
-		find_shortest_paths(graph, source_id, sps_result);
+		find_shortest_paths(graph, source_id, tolerance, sps_result);
 		for(ID target_id=0;target_id<graph.vertices.size();target_id++)
 		{
 			if(target_id!=source_id)
@@ -399,7 +399,7 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const Graph graph=init_graph(map_of_contacts);
 
-	BetweennessCentralitiesResult result=calculate_betweenness_centralities(graph);
+	BetweennessCentralitiesResult result=calculate_betweenness_centralities(graph, 0.0);
 
 	std::map<CRADsPair, double> map_of_centralities;
 	for(ID id=0;id<graph.vertices.size();id++)
