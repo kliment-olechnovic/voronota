@@ -299,15 +299,20 @@ void find_shortest_paths(const Graph& graph, const std::size_t source_id, const 
 struct BetweennessCentralitiesResult
 {
 	int max_number_of_paths;
+	std::pair<double, double> range_of_vertex_centralities;
+	std::pair<double, double> range_of_edge_centralities;
 	std::map<ID, double> vertex_centralities;
 	std::map<std::pair<ID, ID>, double> edge_centralities;
 
-	BetweennessCentralitiesResult() : max_number_of_paths(0)
+	BetweennessCentralitiesResult() :
+		max_number_of_paths(0),
+		range_of_vertex_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::min()),
+		range_of_edge_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::min())
 	{
 	}
 };
 
-BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& graph, const Weight tolerance)
+BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& graph, const Weight tolerance, const bool normalize)
 {
 	BetweennessCentralitiesResult result;
 
@@ -375,6 +380,29 @@ BetweennessCentralitiesResult calculate_betweenness_centralities(const Graph& gr
 		}
 	}
 
+	for(std::map<ID, double>::const_iterator it=result.vertex_centralities.begin();it!=result.vertex_centralities.end();++it)
+	{
+		result.range_of_vertex_centralities.first=std::min(result.range_of_vertex_centralities.first, it->second);
+		result.range_of_vertex_centralities.second=std::max(result.range_of_vertex_centralities.second, it->second);
+	}
+	for(std::map<std::pair<ID, ID>, double>::const_iterator it=result.edge_centralities.begin();it!=result.edge_centralities.end();++it)
+	{
+		result.range_of_edge_centralities.first=std::min(result.range_of_edge_centralities.first, it->second);
+		result.range_of_edge_centralities.second=std::max(result.range_of_edge_centralities.second, it->second);
+	}
+
+	if(normalize)
+	{
+		for(std::map<ID, double>::iterator it=result.vertex_centralities.begin();it!=result.vertex_centralities.end();++it)
+		{
+			it->second=(it->second)/(result.range_of_vertex_centralities.second);
+		}
+		for(std::map<std::pair<ID, ID>, double>::iterator it=result.edge_centralities.begin();it!=result.edge_centralities.end();++it)
+		{
+			it->second=(it->second)/(result.range_of_edge_centralities.second);
+		}
+	}
+
 	return result;
 }
 
@@ -399,7 +427,7 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const Graph graph=init_graph(map_of_contacts);
 
-	BetweennessCentralitiesResult result=calculate_betweenness_centralities(graph, 0.0);
+	BetweennessCentralitiesResult result=calculate_betweenness_centralities(graph, 0.0, true);
 
 	std::map<CRADsPair, double> map_of_centralities;
 	for(ID id=0;id<graph.vertices.size();id++)
@@ -417,7 +445,5 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	auxiliaries::IOUtilities().write_map(map_of_centralities, std::cout);
-
-	std::cout << result.max_number_of_paths << " result.max_number_of_paths" << std::endl;
 }
 
