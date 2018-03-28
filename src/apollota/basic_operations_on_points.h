@@ -212,6 +212,27 @@ static double directed_angle(const InputPointO& o, const InputPointA& a, const I
 	}
 }
 
+template<typename InputPointA0, typename InputPointA1, typename InputPointB0, typename InputPointB1>
+static double min_dihedral_angle(const InputPointA0& a0, const InputPointA1& a1, const InputPointB0& b0, const InputPointB1& b1)
+{
+	if(points_equal(a0, b0) || points_equal(a0, a1) || points_equal(b0, b1))
+	{
+		return 0.0;
+	}
+	const PODPoint c=unit_point<PODPoint>(sub_of_points<PODPoint>(b0, a0));
+	const PODPoint a2=cross_product<PODPoint>(c, unit_point<PODPoint>(sub_of_points<PODPoint>(a1, a0)));
+	if(equal(squared_point_module(a2), 0.0))
+	{
+		return 0.0;
+	}
+	const PODPoint b2=cross_product<PODPoint>(c, unit_point<PODPoint>(sub_of_points<PODPoint>(b1, b0)));
+	if(equal(squared_point_module(b2), 0.0))
+	{
+		return 0.0;
+	}
+	return min_angle(custom_point<PODPoint>(0.0, 0.0, 0.0), a2, b2);
+}
+
 template<typename InputSphereType, typename InputPointTypeA, typename InputPointTypeB, typename InputPointTypeC>
 double spherical_triangle_area(const InputSphereType& s, const InputPointTypeA& a, const InputPointTypeB& b, const InputPointTypeC& c)
 {
