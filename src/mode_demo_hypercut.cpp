@@ -54,17 +54,6 @@ inline TriangleList subdivide_triangle(const Triangle& t, const bool in_three)
 	return (in_three ? subdivide_triangle_in_three(t) : subdivide_triangle_in_four(t));
 }
 
-inline TriangleList multiple_subdivide_triangle(const TriangleList& tl, const bool in_three)
-{
-	TriangleList result;
-	for(std::size_t i=0;i<tl.size();i++)
-	{
-		const TriangleList subresult=subdivide_triangle(tl[i], in_three);
-		result.insert(result.end(), subresult.begin(), subresult.end());
-	}
-	return result;
-}
-
 inline Triangle project_triangle_on_hyperboloid(const Triangle& t, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
 {
 	return Triangle(
