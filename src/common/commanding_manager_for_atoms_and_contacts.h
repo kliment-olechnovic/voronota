@@ -134,6 +134,8 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("restrict-atoms", &CommandingManagerForAtomsAndContacts::command_restrict_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("save-atoms", &CommandingManagerForAtomsAndContacts::command_save_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("select-atoms", &CommandingManagerForAtomsAndContacts::command_select_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("tag-atoms", &CommandingManagerForAtomsAndContacts::command_tag_atoms));
+		map_of_command_function_pointers_.insert(std::make_pair("untag-atoms", &CommandingManagerForAtomsAndContacts::command_untag_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("mark-atoms", &CommandingManagerForAtomsAndContacts::command_mark_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("unmark-atoms", &CommandingManagerForAtomsAndContacts::command_unmark_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("show-atoms", &CommandingManagerForAtomsAndContacts::command_show_atoms));
@@ -150,6 +152,8 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("save-contacts", &CommandingManagerForAtomsAndContacts::command_save_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("load-contacts", &CommandingManagerForAtomsAndContacts::command_load_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("select-contacts", &CommandingManagerForAtomsAndContacts::command_select_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("tag-contacts", &CommandingManagerForAtomsAndContacts::command_tag_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("untag-contacts", &CommandingManagerForAtomsAndContacts::command_untag_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("mark-contacts", &CommandingManagerForAtomsAndContacts::command_mark_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("unmark-contacts", &CommandingManagerForAtomsAndContacts::command_unmark_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("show-contacts", &CommandingManagerForAtomsAndContacts::command_show_contacts));
@@ -1392,13 +1396,29 @@ private:
 				throw std::runtime_error(std::string("Selection name is empty."));
 			}
 		}
-		else if(name.find_first_of("{}()[]<>,;.:\\/+-*/='\"@#$%^&`~?|")!=std::string::npos)
+		else if(name.find_first_of("{}()[]<>,;.:\\/+*/='\"@#$%^&`~?|")!=std::string::npos)
 		{
 			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
 		}
 		else if(name.compare(0, 1, "-")==0 || name.compare(0, 1, "_")==0)
 		{
 			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
+		}
+	}
+
+	static void assert_tag_input(const std::string& tag)
+	{
+		if(tag.empty())
+		{
+			throw std::runtime_error(std::string("Tag is empty."));
+		}
+		else if(tag.find_first_of("{}()[]<>,;.:\\/+*/'\"@#$%^&`~?|")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("Tag contains invalid symbols."));
+		}
+		else if(tag.compare(0, 1, "-")==0)
+		{
+			throw std::runtime_error(std::string("Tag starts with invalid symbol."));
 		}
 	}
 
@@ -1871,6 +1891,54 @@ private:
 		}
 
 		cargs.output_set_of_ids.swap(ids);
+	}
+
+	void command_tag_atoms(CommandArguments& cargs)
+	{
+		configurable_command_tag_atoms(true, cargs);
+	}
+
+	void command_untag_atoms(CommandArguments& cargs)
+	{
+		configurable_command_tag_atoms(false, cargs);
+	}
+
+	void configurable_command_tag_atoms(const bool positive, CommandArguments& cargs)
+	{
+		assert_atoms_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+		const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
+
+		cargs.input.assert_nothing_unusable();
+
+		assert_tag_input(tag);
+
+		std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			Atom& atom=atoms_[*it];
+			if(positive)
+			{
+				atom.value.props.tags.insert(tag);
+			}
+			else
+			{
+				atom.value.props.tags.erase(tag);
+			}
+		}
+
+		{
+			cargs.output_for_log << "Summary of atoms: ";
+			SummaryOfAtoms::collect_summary(atoms_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
+		}
 	}
 
 	void command_mark_atoms(CommandArguments& cargs)
@@ -2554,6 +2622,54 @@ private:
 		}
 
 		cargs.output_set_of_ids.swap(ids);
+	}
+
+	void command_tag_contacts(CommandArguments& cargs)
+	{
+		configurable_command_tag_contacts(true, cargs);
+	}
+
+	void command_untag_contacts(CommandArguments& cargs)
+	{
+		configurable_command_tag_contacts(false, cargs);
+	}
+
+	void configurable_command_tag_contacts(const bool positive, CommandArguments& cargs)
+	{
+		assert_contacts_availability();
+
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+		const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
+
+		cargs.input.assert_nothing_unusable();
+
+		assert_tag_input(tag);
+
+		std::set<std::size_t> ids=selection_manager_.select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			Contact& contact=contacts_[*it];
+			if(positive)
+			{
+				contact.value.props.tags.insert(tag);
+			}
+			else
+			{
+				contact.value.props.tags.erase(tag);
+			}
+		}
+
+		{
+			cargs.output_for_log << "Summary of contacts: ";
+			SummaryOfContacts::collect_summary(contacts_, ids).print(cargs.output_for_log);
+			cargs.output_for_log << "\n";
+		}
 	}
 
 	void command_mark_contacts(CommandArguments& cargs)

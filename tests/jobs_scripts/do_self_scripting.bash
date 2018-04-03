@@ -19,11 +19,15 @@ select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {R<PHE>} atom2={R<PHE>} min-area=5.0 --min-seq-sep=1} --name cs1
+tag-contacts {--min-area 6.0} med
+untag-contacts {--min-area 8.0} --tag med
 print-contacts {cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
 print-contacts {no-solvent=1 min-seq-sep=2} desc=true sort='area' limit=3 expand=true
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
+tag-atoms {A<C,N,O,CA,CB>} --tag pept
+untag-atoms {A<CA,CB>} pept
 print-atoms {as1} --sort tags --file '$SUBDIR/printed_atoms'
 print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 
