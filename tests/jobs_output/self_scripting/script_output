@@ -54,12 +54,20 @@ Summary of contacts: count=5 drawable=1 area=33.8164
 Set selection of contacts named 'cs1'
 
 
+> tag-contacts {--min-area 6.0} med
+Summary of contacts: count=2636 drawable=5 area=29458.6
+
+
+> untag-contacts {--min-area 8.0} --tag med
+Summary of contacts: count=1675 drawable=1 area=22795.8
+
+
 > print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
 atom1                       atom2                         area     dist     tags  adjuncts  
 c<A>r<99>a<756>R<PHE>A<C>   c<A>r<100>a<765>R<PHE>A<N>    8.5725   1.33208  .     .         
-c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  .     .         
-c<A>r<83>a<623>R<PHE>A<C>   c<A>r<84>a<632>R<PHE>A<N>     6.57156  1.35488  .     .         
-c<A>r<8>a<53>R<PHE>A<CZ>    c<A>r<114>a<888>R<PHE>A<CE2>  6.42993  3.93888  .     .         
+c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  med   .         
+c<A>r<83>a<623>R<PHE>A<C>   c<A>r<84>a<632>R<PHE>A<N>     6.57156  1.35488  med   .         
+c<A>r<8>a<53>R<PHE>A<CZ>    c<A>r<114>a<888>R<PHE>A<CE2>  6.42993  3.93888  med   .         
 c<A>r<8>a<49>R<PHE>A<CD1>   c<A>r<71>a<518>R<PHE>A<CE1>   5.56317  3.7409   .     .         
 Summary of contacts: count=5 drawable=1 area=33.8164
 
@@ -74,9 +82,9 @@ Summary of contacts: count=4820 drawable=86 area=10487.8
 
 > print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 chn1  resi1  ic1  resn1  chn2  resi2  ic2  resn2  area        dist     tags  adjuncts  
-A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   .     .         
-A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  .     .         
-A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  .     .         
+A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   med   .         
+A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  med   .         
+A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  med   .         
 Summary of contacts: count=4820 drawable=86 area=10487.8
 
 
@@ -85,23 +93,31 @@ Summary of atoms: count=5 volume=108.978
 Set selection of atoms named 'as1'
 
 
+> tag-atoms {A<C,N,O,CA,CB>} --tag pept
+Summary of atoms: count=1083 volume=20982.5
+
+
+> untag-atoms {A<CA,CB>} pept
+Summary of atoms: count=420 volume=9160.61
+
+
 > print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
-atom                        x       y       z       r     tags  adjuncts                      
-c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
-c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
-c<A>r<64>a<459>R<PHE>A<CB>  22.114  28.438  34.513  1.7   el=C  oc=1;tf=6.88;volume=23.2725   
-c<A>r<64>a<455>R<PHE>A<N>   22.25   29.62   36.583  1.55  el=N  oc=1;tf=10.19;volume=10.4155  
-c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O  oc=1;tf=9.64;volume=28.8387   
+atom                        x       y       z       r     tags       adjuncts                      
+c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C       oc=1;tf=8;volume=13.6959      
+c<A>r<64>a<459>R<PHE>A<CB>  22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
+c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
+c<A>r<64>a<455>R<PHE>A<N>   22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
+c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
 Summary of atoms: count=5 volume=108.978
 
 
 > print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
-chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags  adjuncts                      
-A    64    .   457   .   PHE   C     22.774  27.253  36.518  1.7   el=C  oc=1;tf=25.26;volume=32.7555  
-A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C  oc=1;tf=8;volume=13.6959      
-A    64    .   459   .   PHE   CB    22.114  28.438  34.513  1.7   el=C  oc=1;tf=6.88;volume=23.2725   
-A    64    .   455   .   PHE   N     22.25   29.62   36.583  1.55  el=N  oc=1;tf=10.19;volume=10.4155  
-A    64    .   458   .   PHE   O     22.313  26.147  36.761  1.52  el=O  oc=1;tf=9.64;volume=28.8387   
+chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags       adjuncts                      
+A    64    .   457   .   PHE   C     22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
+A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C       oc=1;tf=8;volume=13.6959      
+A    64    .   459   .   PHE   CB    22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
+A    64    .   455   .   PHE   N     22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
+A    64    .   458   .   PHE   O     22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
 Summary of atoms: count=5 volume=108.978
 
 
