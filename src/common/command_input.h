@@ -271,24 +271,6 @@ public:
 	}
 
 private:
-	static char string_back(const std::string& str)
-	{
-		if(str.empty())
-		{
-			return 0;
-		}
-		return str[str.size()-1];
-	}
-
-	static void string_pop_back(std::string& str)
-	{
-		if(str.empty())
-		{
-			return;
-		}
-		str.erase(str.size()-1, 1);
-	}
-
 	static bool is_flag_string_true(const std::string& str)
 	{
 		return (str=="true" || str=="1");
@@ -353,78 +335,23 @@ private:
 		output.swap(tokens);
 	}
 
-	static std::string remove_spaces_around_equal_signs(const std::string& input_str)
+	static std::string canonicalize_command_string(const std::string& input_str)
 	{
-		std::string collapsed_str;
+		std::string canonical_str;
 
 		for(std::size_t i=0;i<input_str.size();i++)
 		{
-			const char c=input_str[i];
-			if(c=='=')
+			if(input_str[i]=='-' && (i+1)<input_str.size())
 			{
-				while(!collapsed_str.empty() && string_back(collapsed_str)<=32)
+				if(i==0 || input_str[i-1]<=' ' || input_str[i-1]=='{' || input_str[i-1]=='(')
 				{
-					string_pop_back(collapsed_str);
-				}
-				collapsed_str.push_back(c);
-			}
-			else if(c<=32)
-			{
-				if(collapsed_str.empty() || string_back(collapsed_str)!='=')
-				{
-					collapsed_str.push_back(c);
-				}
-			}
-			else
-			{
-				collapsed_str.push_back(c);
-			}
-		}
-
-		return collapsed_str;
-	}
-
-	static std::string canonicalize_command_string(const std::string& input_str)
-	{
-		const std::string collapsed_str=remove_spaces_around_equal_signs(input_str);
-
-		std::string canonical_str;
-		std::size_t last_eq=0;
-		std::size_t last_sep=0;
-
-		for(std::size_t i=0;i<collapsed_str.size();i++)
-		{
-			const char c=collapsed_str[i];
-			if(c=='=')
-			{
-				if(last_eq<=last_sep && (last_sep+1)<i)
-				{
-					for(std::size_t j=(last_sep+1);j<i;j++)
+					if((input_str[i+1]>='a' && input_str[i+1]<='z') || (input_str[i+1]>='A' && input_str[i+1]<='Z'))
 					{
-						string_pop_back(canonical_str);
+						canonical_str.push_back('-');
 					}
-					std::string token=collapsed_str.substr(last_sep+1, i-(last_sep+1));
-					if(token.compare(0, 1, "-")!=0)
-					{
-						canonical_str+="--";
-					}
-					canonical_str+=token;
-					canonical_str+=" ";
 				}
-				else
-				{
-					canonical_str.push_back(c);
-				}
-				last_eq=i;
 			}
-			else
-			{
-				if(c<=32 || c=='(' || c=='{')
-				{
-					last_sep=i;
-				}
-				canonical_str.push_back(c);
-			}
+			canonical_str.push_back(input_str[i]);
 		}
 
 		return canonical_str;

@@ -7,22 +7,22 @@ mkdir -p $SUBDIR
 cat << EOF
 
 load-atoms --file $INPUTDIR/single/structure.cif
-load-atoms file="$INPUTDIR/single/structure.pdb"
+load-atoms -file "$INPUTDIR/single/structure.pdb"
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
-construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} min-seq-sep=1}'
+construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
 save-contacts '$SUBDIR/plain_contacts'
 load-atoms --file '$SUBDIR/plain_atoms' --format plain
 select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
-select-contacts {--atom1 {R<PHE>} atom2={R<PHE>} min-area=5.0 --min-seq-sep=1} --name cs1
+select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
 tag-contacts {--min-area 6.0} med
 untag-contacts {--min-area 8.0} --tag med
 print-contacts {cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
-print-contacts {no-solvent=1 min-seq-sep=2} desc=true sort='area' limit=3 expand=true
+print-contacts {-no-solvent -min-seq-sep 2} -desc -sort 'area' -limit 3 -expand
 print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
@@ -38,7 +38,7 @@ list-selections-of-contacts
 
 color-contacts 0x00FF00
 color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
-color-contacts {a1={m!=A<C,CA,N,O>} a2!={A<C,CA,N,O>}} 0xFFFF00
+color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00
 show-contacts
 write-contacts-as-pymol-cgo --file '$SUBDIR/cgo_contacts.py' --name contacts
 
