@@ -2460,6 +2460,9 @@ private:
 		ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
 		parameters_to_construct_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
 		parameters_to_construct_contacts.calculate_volumes=cargs.input.get_flag("calculate-volumes");
+		parameters_to_construct_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
+		parameters_to_construct_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
+		parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
 		ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
 		parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 		parameters_to_enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
