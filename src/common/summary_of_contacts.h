@@ -62,16 +62,33 @@ public:
 	typedef std::map<AtomTypeKey, double> AtomTypeMap;
 	typedef std::map<ConditionsKey, double> ConditionsMap;
 
-	struct DerivedSums
+	struct DerivedSumsOfAreas
 	{
-		double sum_of_solvent_areas;
-		double sum_of_nonsolvent_areas;
+		double solvent;
+		double nonsolvent;
 		AtomTypeMap atom_type_map;
 		ConditionsMap conditions_map;
 
-		DerivedSums() :
-			sum_of_solvent_areas(0.0),
-			sum_of_nonsolvent_areas(0.0)
+		DerivedSumsOfAreas() :
+			solvent(0.0),
+			nonsolvent(0.0)
+		{
+		}
+	};
+
+	struct DerivedObservedProbabilities
+	{
+		double full_sum;
+		double atom_type_sum;
+		double conditions_sum;
+		FullMap full_map;
+		AtomTypeMap atom_type_map;
+		ConditionsMap conditions_map;
+
+		DerivedObservedProbabilities() :
+			full_sum(0.0),
+			atom_type_sum(0.0),
+			conditions_sum(0.0)
 		{
 		}
 	};
@@ -107,6 +124,10 @@ public:
 		if(crad_b==CRAD::solvent() || crad_a==CRAD::solvent())
 		{
 			key.conditions.insert("solvent");
+		}
+		else
+		{
+			key.conditions.erase("solvent");
 		}
 
 		if(key.conditions.count("far")==0 && key.conditions.count("near")==0 && key.conditions.count("solvent")==0)
@@ -156,26 +177,51 @@ public:
 		}
 	}
 
-	DerivedSums get_derived_sums() const
+	DerivedSumsOfAreas get_derived_sums_of_areas() const
 	{
-		DerivedSums result;
+		DerivedSumsOfAreas sums_of_areas;
 		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
 		{
 			const FullKey& key=it->first;
 			const double area=it->second;
 			if(key.conditions.count("solvent")>0)
 			{
-				result.sum_of_solvent_areas+=area;
+				sums_of_areas.solvent+=area;
 			}
 			else
 			{
-				result.sum_of_nonsolvent_areas+=area;
+				sums_of_areas.nonsolvent+=area;
 			}
-			result.atom_type_map[key.crads.a]+=area;
-			result.atom_type_map[key.crads.b]+=area;
-			result.conditions_map[key.conditions]+=area;
+			sums_of_areas.atom_type_map[key.crads.a]+=area;
+			sums_of_areas.atom_type_map[key.crads.b]+=area;
+			sums_of_areas.conditions_map[key.conditions]+=area;
 		}
-		return result;
+		return sums_of_areas;
+	}
+
+	DerivedObservedProbabilities get_derived_observed_probabilities() const
+	{
+		const DerivedSumsOfAreas sums_of_areas=get_derived_sums_of_areas();
+		DerivedObservedProbabilities observed_probabilities;
+		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
+		{
+			const double value=(it->second)/(sums_of_areas.solvent+sums_of_areas.nonsolvent);
+			observed_probabilities.full_sum+=value;
+			observed_probabilities.full_map[it->first]=value;
+		}
+		for(AtomTypeMap::const_iterator it=sums_of_areas.atom_type_map.begin();it!=sums_of_areas.atom_type_map.end();++it)
+		{
+			const double value=(it->second)/(sums_of_areas.solvent+(sums_of_areas.nonsolvent*2.0));
+			observed_probabilities.atom_type_sum+=value;
+			observed_probabilities.atom_type_map[it->first]=value;
+		}
+		for(ConditionsMap::const_iterator it=sums_of_areas.conditions_map.begin();it!=sums_of_areas.conditions_map.end();++it)
+		{
+			const double value=(it->second)/(sums_of_areas.solvent+sums_of_areas.nonsolvent);
+			observed_probabilities.conditions_sum+=value;
+			observed_probabilities.conditions_map[it->first]=value;
+		}
+		return observed_probabilities;
 	}
 
 private:
