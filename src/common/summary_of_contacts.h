@@ -93,6 +93,60 @@ public:
 		}
 	};
 
+	static CRAD generalize_crad(const CRAD& input_crad)
+	{
+		CRAD crad=input_crad.without_numbering();
+		if(crad.resName=="ARG" && (crad.name=="NH1" || crad.name=="NH2"))
+		{
+			crad.name="NH1";
+		}
+		else if(crad.resName=="ASP" && (crad.name=="OD1" || crad.name=="OD2"))
+		{
+			crad.name="OD1";
+		}
+		else if(crad.resName=="GLU" && (crad.name=="OE1" || crad.name=="OE2"))
+		{
+			crad.name="OE1";
+		}
+		else if(crad.resName=="PHE" && (crad.name=="CD1" || crad.name=="CD2"))
+		{
+			crad.name="CD1";
+		}
+		else if(crad.resName=="PHE" && (crad.name=="CE1" || crad.name=="CE2"))
+		{
+			crad.name="CE1";
+		}
+		else if(crad.resName=="TYR" && (crad.name=="CD1" || crad.name=="CD2"))
+		{
+			crad.name="CD1";
+		}
+		else if(crad.resName=="TYR" && (crad.name=="CE1" || crad.name=="CE2"))
+		{
+			crad.name="CE1";
+		}
+		else if(crad.name=="OXT")
+		{
+			crad.name="O";
+		}
+		else if(crad.resName=="MSE")
+		{
+			crad.resName="MET";
+			if(crad.name=="SE")
+			{
+				crad.name="SD";
+			}
+		}
+		else if(crad.resName=="SEC")
+		{
+			crad.resName="CYS";
+			if(crad.name=="SE")
+			{
+				crad.name="SG";
+			}
+		}
+		return crad;
+	}
+
 	SummaryOfContacts() : far_seq_sep_min_(6)
 	{
 	}
@@ -119,7 +173,7 @@ public:
 			return;
 		}
 
-		FullKey key(ChainResidueAtomDescriptorsPair(crad_a.without_numbering(), crad_b.without_numbering()), conditions);
+		FullKey key(ChainResidueAtomDescriptorsPair(generalize_crad(crad_a), generalize_crad(crad_b)), conditions);
 
 		if(crad_b==CRAD::solvent() || crad_a==CRAD::solvent())
 		{
