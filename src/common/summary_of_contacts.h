@@ -102,6 +102,11 @@ public:
 			crad.name="O";
 		}
 
+		if(crad.name=="H1" || crad.name=="H2" || crad.name=="H3")
+		{
+			crad.name="H";
+		}
+
 		if(crad.resName=="MSE")
 		{
 			crad.resName="MET";
@@ -110,7 +115,8 @@ public:
 				crad.name="SD";
 			}
 		}
-		else if(crad.resName=="SEC")
+
+		if(crad.resName=="SEC")
 		{
 			crad.resName="CYS";
 			if(crad.name=="SE")
