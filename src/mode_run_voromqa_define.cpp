@@ -45,12 +45,7 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	common::SummaryOfContacts summary_of_contacts;
-
-	std::cin >> std::ws;
-	if(!std::cin.eof())
-	{
-		summary_of_contacts.read(std::cin);
-	}
+	summary_of_contacts.read(std::cin);
 
 	if(!list_of_atom_files.empty())
 	{
