@@ -463,7 +463,7 @@ public:
 			input >> key >> area;
 			if(!input.fail() && area>0.0)
 			{
-				full_map_of_areas_[key]+=area;
+				add(key.crads.a, key.crads.b, key.conditions, area, 1.0);
 			}
 			input >> std::ws;
 		}
@@ -572,8 +572,16 @@ public:
 			{
 				sums_of_areas.nonsolvent+=area;
 			}
-			sums_of_areas.atom_type_map[key.crads.a]+=area;
-			sums_of_areas.atom_type_map[key.crads.b]+=area;
+
+			if(key.crads.a!=CRAD::solvent())
+			{
+				sums_of_areas.atom_type_map[key.crads.a]+=area;
+			}
+			if(key.crads.b!=CRAD::solvent())
+			{
+				sums_of_areas.atom_type_map[key.crads.b]+=area;
+			}
+
 			sums_of_areas.conditions_map[key.conditions]+=area;
 		}
 		return sums_of_areas;
