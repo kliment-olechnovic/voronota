@@ -53,6 +53,38 @@ public:
 			}
 			return false;
 		}
+
+		friend std::ostream& operator<<(std::ostream& output, const FullKey& value)
+		{
+			output << value.crads << " ";
+			if(value.conditions.empty())
+			{
+				output << ".";
+			}
+			else
+			{
+				auxiliaries::IOUtilities(';').write_set(value.conditions, output);
+			}
+			return output;
+		}
+
+		friend std::istream& operator>>(std::istream& input, FullKey& value)
+		{
+			CRADsPair crads;
+			std::string conditions_str;
+			input >> crads >> conditions_str;
+			if(!input.fail())
+			{
+				value.crads=crads;
+				std::set<std::string> conditions;
+				if(!conditions_str.empty() && conditions_str[0]!='.')
+				{
+					auxiliaries::IOUtilities(';').read_string_lines_to_set(conditions_str, conditions);
+				}
+				value.conditions=conditions;
+			}
+			return input;
+		}
 	};
 
 	typedef CRAD AtomTypeKey;
@@ -421,6 +453,28 @@ public:
 		return full_map_of_areas_;
 	}
 
+	void read(std::istream& input)
+	{
+		while(input.good())
+		{
+			FullKey key;
+			double area=0.0;
+			input >> key >> area;
+			if(!input.fail() && area>0.0)
+			{
+				full_map_of_areas_[key]+=area;
+			}
+		}
+	}
+
+	void write(std::ostream& output) const
+	{
+		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
+		{
+			output << (it->first) << " " << (it->second) << "\n";
+		}
+	}
+
 	void add(const CRAD& crad_a, const CRAD& crad_b, const std::set<std::string>& conditions, const double area, const double multiplier)
 	{
 		if(crad_a==CRAD::solvent() && crad_b==CRAD::solvent())
@@ -552,38 +606,6 @@ private:
 	int far_seq_sep_min_;
 	FullMap full_map_of_areas_;
 };
-
-inline std::ostream& operator<<(std::ostream& output, const SummaryOfContacts::FullKey& value)
-{
-	output << value.crads << " ";
-	if(value.conditions.empty())
-	{
-		output << ".";
-	}
-	else
-	{
-		auxiliaries::IOUtilities(';').write_set(value.conditions, output);
-	}
-	return output;
-}
-
-inline std::istream& operator>>(std::istream& input, SummaryOfContacts::FullKey& value)
-{
-	ChainResidueAtomDescriptorsPair crads;
-	std::string conditions_str;
-	input >> crads >> conditions_str;
-	if(!input.fail())
-	{
-		value.crads=crads;
-		std::set<std::string> conditions;
-		if(!conditions_str.empty() && conditions_str[0]!='.')
-		{
-			auxiliaries::IOUtilities(';').read_string_lines_to_set(conditions_str, conditions);
-		}
-		value.conditions=conditions;
-	}
-	return input;
-}
 
 }
 
