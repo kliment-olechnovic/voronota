@@ -421,7 +421,7 @@ public:
 		return full_map_of_areas_;
 	}
 
-	void add(const CRAD& crad_a, const CRAD& crad_b, const std::set<std::string>& conditions, const double area)
+	void add(const CRAD& crad_a, const CRAD& crad_b, const std::set<std::string>& conditions, const double area, const double multiplier)
 	{
 		if(crad_a==CRAD::solvent() && crad_b==CRAD::solvent())
 		{
@@ -461,10 +461,15 @@ public:
 			}
 		}
 
-		full_map_of_areas_[key]+=area;
+		double& accumulated_value=full_map_of_areas_[key];
+		accumulated_value+=area*multiplier;
+		if(accumulated_value<=0.0)
+		{
+			full_map_of_areas_.erase(key);
+		}
 	}
 
-	void add(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts, const std::size_t contact_id)
+	void add(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts, const std::size_t contact_id, const double multiplier)
 	{
 		if(contact_id>=contacts.size())
 		{
@@ -480,19 +485,19 @@ public:
 
 		if(contact.solvent())
 		{
-			add(atoms[contact.ids[0]].crad, CRAD::solvent(), contact.value.props.tags, contact.value.area);
+			add(atoms[contact.ids[0]].crad, CRAD::solvent(), contact.value.props.tags, contact.value.area, multiplier);
 		}
 		else
 		{
-			add(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad, contact.value.props.tags, contact.value.area);
+			add(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad, contact.value.props.tags, contact.value.area, multiplier);
 		}
 	}
 
-	void add(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts)
+	void add(const std::vector<Atom>& atoms, const std::vector<Contact>& contacts, const double multiplier)
 	{
 		for(std::size_t i=0;i<contacts.size();i++)
 		{
-			add(atoms, contacts, i);
+			add(atoms, contacts, i, multiplier);
 		}
 	}
 
