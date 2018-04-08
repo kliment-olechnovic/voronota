@@ -455,6 +455,7 @@ public:
 
 	void read(std::istream& input)
 	{
+		input >> std::ws;
 		while(input.good())
 		{
 			FullKey key;
@@ -464,6 +465,7 @@ public:
 			{
 				full_map_of_areas_[key]+=area;
 			}
+			input >> std::ws;
 		}
 	}
 
