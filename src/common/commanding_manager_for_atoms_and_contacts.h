@@ -369,6 +369,21 @@ public:
 		return execute(command, sink);
 	}
 
+	CommandRecord execute_verbosely(std::ostream& output, const std::string& command)
+	{
+		CommandOutputSink sink;
+		output << "\n> " << command << std::endl;
+		const CommandRecord record=execute(command, sink);
+		output << sink.output_stream.str();
+		output << record.output_log;
+		if(!record.output_error.empty())
+		{
+			output << "Error: " << record.output_error << "\n";
+		}
+		output << std::endl;
+		return record;
+	}
+
 private:
 	class CommandArguments
 	{

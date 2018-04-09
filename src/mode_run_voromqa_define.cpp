@@ -3,32 +3,6 @@
 #include "common/commanding_manager_for_atoms_and_contacts.h"
 #include "common/summary_of_contacts.h"
 
-namespace
-{
-
-void execute(common::CommandingManagerForAtomsAndContacts& manager, const std::string& command)
-{
-	if(command.empty())
-	{
-		return;
-	}
-
-	std::ostream& output=std::clog;
-	common::CommandingManagerForAtomsAndContacts::CommandOutputSink sink;
-
-	output << "\n> " << command << std::endl;
-	const common::CommandingManagerForAtomsAndContacts::CommandRecord record=manager.execute(command, sink);
-	output << sink.output_stream.str();
-	output << record.output_log;
-	if(!record.output_error.empty())
-	{
-		output << "Error: " << record.output_error << "\n";
-	}
-	output << std::endl;
-}
-
-}
-
 void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
@@ -55,14 +29,14 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 
 			common::CommandingManagerForAtomsAndContacts manager;
 
-			execute(manager, std::string("load-atoms --format pdb --file '")+filename+"' --as-assembly --include-heteroatoms"+(include_hydrogens ? " --include-hydrogens" : ""));
-			execute(manager, std::string("restrict-atoms {--match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>}"));
+			manager.execute_verbosely(std::clog, std::string("load-atoms --format pdb --file '")+filename+"' --as-assembly --include-heteroatoms"+(include_hydrogens ? " --include-hydrogens" : ""));
+			manager.execute_verbosely(std::clog, std::string("restrict-atoms {--match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>}"));
 
 			const double uniqueness_of_chains=common::ConstructionOfPrimaryStructure::estimate_uniqueness_of_chains(manager.primary_structure_info(), 0.9);
 			std::clog << "number_of_chains = " << manager.primary_structure_info().chains.size() << "\n";
 			std::clog << "uniqueness_of_chains = " << uniqueness_of_chains << "\n";
 
-			execute(manager, std::string("construct-contacts --tag-centrality --tag-peripherial"));
+			manager.execute_verbosely(std::clog, std::string("construct-contacts --tag-centrality --tag-peripherial"));
 
 			if(!manager.contacts().empty())
 			{
