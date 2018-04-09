@@ -37,7 +37,6 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::string list_of_atom_files=poh.argument<std::string>(pohw.describe_option("--list-of-atom-files", "string", "file path to input list of atom-files"), "");
 	const bool include_hydrogens=poh.contains_option(pohw.describe_option("--include-hydrogens", "", "flag to include hydrogen atoms"));
-	const bool tag_peripherial=poh.contains_option(pohw.describe_option("--tag-peripherial", "", "flag to tag peripheral contacts"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -56,7 +55,7 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 			common::CommandingManagerForAtomsAndContacts manager;
 			execute(manager, std::string("load-atoms --file '")+filename+"' --as-assembly --include-heteroatoms"+(include_hydrogens ? " --include-hydrogens" : ""));
 			execute(manager, std::string("restrict-atoms {--match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>}"));
-			execute(manager, std::string("construct-contacts --tag-centrality")+(tag_peripherial ? " --tag-peripherial" : ""));
+			execute(manager, std::string("construct-contacts --tag-centrality --tag-peripherial"));
 			if(!manager.contacts().empty())
 			{
 				summary_of_contacts.add(manager.atoms(), manager.contacts(), 1.0);
