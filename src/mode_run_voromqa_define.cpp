@@ -45,6 +45,9 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
+	std::clog << "Conditions observed probabilities:\n";
+	auxiliaries::IOUtilities().write_map(summary_of_contacts.get_derived_observed_probabilities().conditions_map, std::clog);
+
 	summary_of_contacts.write(std::cout);
 }
 
