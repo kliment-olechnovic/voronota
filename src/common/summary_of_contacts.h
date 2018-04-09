@@ -15,17 +15,75 @@ public:
 	typedef ChainResidueAtomDescriptor CRAD;
 	typedef ChainResidueAtomDescriptorsPair CRADsPair;
 
+	class Conditions
+	{
+	public:
+		std::set<std::string> tags;
+
+		Conditions()
+		{
+		}
+
+		explicit Conditions(const std::set<std::string>& tags) : tags(tags)
+		{
+		}
+
+		bool operator==(const Conditions& v) const
+		{
+			return (tags==v.tags);
+		}
+
+		bool operator!=(const Conditions& v) const
+		{
+			return (!((*this)==v));
+		}
+
+		bool operator<(const Conditions& v) const
+		{
+			return (tags<v.tags);
+		}
+
+		friend std::ostream& operator<<(std::ostream& output, const Conditions& value)
+		{
+			if(value.tags.empty())
+			{
+				output << ".";
+			}
+			else
+			{
+				auxiliaries::IOUtilities(';').write_set(value.tags, output);
+			}
+			return output;
+		}
+
+		friend std::istream& operator>>(std::istream& input, Conditions& value)
+		{
+			std::string tags_str;
+			input >> tags_str;
+			if(!input.fail())
+			{
+				std::set<std::string> tags;
+				if(!tags_str.empty() && tags_str[0]!='.')
+				{
+					auxiliaries::IOUtilities(';').read_string_lines_to_set(tags_str, tags);
+				}
+				value.tags=tags;
+			}
+			return input;
+		}
+	};
+
 	class FullKey
 	{
 	public:
 		CRADsPair crads;
-		std::set<std::string> conditions;
+		Conditions conditions;
 
 		FullKey()
 		{
 		}
 
-		FullKey(const CRADsPair& crads, const std::set<std::string>& conditions) :
+		FullKey(const CRADsPair& crads, const Conditions& conditions) :
 			crads(crads),
 			conditions(conditions)
 		{
@@ -56,43 +114,20 @@ public:
 
 		friend std::ostream& operator<<(std::ostream& output, const FullKey& value)
 		{
-			output << value.crads << " ";
-			if(value.conditions.empty())
-			{
-				output << ".";
-			}
-			else
-			{
-				auxiliaries::IOUtilities(';').write_set(value.conditions, output);
-			}
+			output << value.crads << " " << value.conditions;
 			return output;
 		}
 
 		friend std::istream& operator>>(std::istream& input, FullKey& value)
 		{
-			CRADsPair crads;
-			std::string conditions_str;
-			input >> crads >> conditions_str;
-			if(!input.fail())
-			{
-				value.crads=crads;
-				std::set<std::string> conditions;
-				if(!conditions_str.empty() && conditions_str[0]!='.')
-				{
-					auxiliaries::IOUtilities(';').read_string_lines_to_set(conditions_str, conditions);
-				}
-				value.conditions=conditions;
-			}
+			input >> value.crads >> value.conditions;
 			return input;
 		}
 	};
 
-	typedef CRAD AtomTypeKey;
-	typedef std::set<std::string> ConditionsKey;
-
 	typedef std::map<FullKey, double> FullMap;
-	typedef std::map<AtomTypeKey, double> AtomTypeMap;
-	typedef std::map<ConditionsKey, double> ConditionsMap;
+	typedef std::map<CRAD, double> AtomTypeMap;
+	typedef std::map<Conditions, double> ConditionsMap;
 
 	struct DerivedSumsOfAreas
 	{
@@ -471,13 +506,10 @@ public:
 
 	void write(std::ostream& output) const
 	{
-		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
-		{
-			output << (it->first) << " " << (it->second) << "\n";
-		}
+		auxiliaries::IOUtilities().write_map(full_map_of_areas_, output);
 	}
 
-	void add(const CRAD& crad_a, const CRAD& crad_b, const std::set<std::string>& conditions, const double area, const double multiplier)
+	void add(const CRAD& crad_a, const CRAD& crad_b, const Conditions& conditions, const double area, const double multiplier)
 	{
 		if(crad_a==CRAD::solvent() && crad_b==CRAD::solvent())
 		{
@@ -498,22 +530,22 @@ public:
 
 		if(crad_b==CRAD::solvent() || crad_a==CRAD::solvent())
 		{
-			key.conditions.insert("solvent");
+			key.conditions.tags.insert("solvent");
 		}
 		else
 		{
-			key.conditions.erase("solvent");
+			key.conditions.tags.erase("solvent");
 		}
 
-		if(key.conditions.count("far")==0 && key.conditions.count("near")==0 && key.conditions.count("solvent")==0)
+		if(key.conditions.tags.count("far")==0 && key.conditions.tags.count("near")==0 && key.conditions.tags.count("solvent")==0)
 		{
 			if(CRAD::match_with_sequence_separation_interval(crad_a, crad_b, far_seq_sep_min_, CRAD::null_num(), true))
 			{
-				key.conditions.insert("far");
+				key.conditions.tags.insert("far");
 			}
 			else
 			{
-				key.conditions.insert("near");
+				key.conditions.tags.insert("near");
 			}
 		}
 
@@ -541,11 +573,11 @@ public:
 
 		if(contact.solvent())
 		{
-			add(atoms[contact.ids[0]].crad, CRAD::solvent(), contact.value.props.tags, contact.value.area, multiplier);
+			add(atoms[contact.ids[0]].crad, CRAD::solvent(), Conditions(contact.value.props.tags), contact.value.area, multiplier);
 		}
 		else
 		{
-			add(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad, contact.value.props.tags, contact.value.area, multiplier);
+			add(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad, Conditions(contact.value.props.tags), contact.value.area, multiplier);
 		}
 	}
 
@@ -564,7 +596,7 @@ public:
 		{
 			const FullKey& key=it->first;
 			const double area=it->second;
-			if(key.conditions.count("solvent")>0)
+			if(key.conditions.tags.count("solvent")>0)
 			{
 				sums_of_areas.solvent+=area;
 			}
