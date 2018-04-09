@@ -52,13 +52,21 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 		for(std::set<std::string>::const_iterator it=filenames.begin();it!=filenames.end();++it)
 		{
 			const std::string& filename=(*it);
+
 			common::CommandingManagerForAtomsAndContacts manager;
-			execute(manager, std::string("load-atoms --file '")+filename+"' --as-assembly --include-heteroatoms"+(include_hydrogens ? " --include-hydrogens" : ""));
+
+			execute(manager, std::string("load-atoms --format pdb --file '")+filename+"' --as-assembly --include-heteroatoms"+(include_hydrogens ? " --include-hydrogens" : ""));
 			execute(manager, std::string("restrict-atoms {--match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>}"));
+
+			const double uniqueness_of_chains=common::ConstructionOfPrimaryStructure::estimate_uniqueness_of_chains(manager.primary_structure_info(), 0.9);
+			std::clog << "number_of_chains = " << manager.primary_structure_info().chains.size() << "\n";
+			std::clog << "uniqueness_of_chains = " << uniqueness_of_chains << "\n";
+
 			execute(manager, std::string("construct-contacts --tag-centrality --tag-peripherial"));
+
 			if(!manager.contacts().empty())
 			{
-				summary_of_contacts.add(manager.atoms(), manager.contacts(), 1.0);
+				summary_of_contacts.add(manager.atoms(), manager.contacts(), uniqueness_of_chains);
 			}
 		}
 	}

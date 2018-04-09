@@ -27,7 +27,7 @@ public:
 		ResidueType residue_type;
 		int segment_id;
 		int position_in_segment;
-		common::ChainResidueAtomDescriptor chain_residue_descriptor;
+		ChainResidueAtomDescriptor chain_residue_descriptor;
 		std::vector<std::size_t> atom_ids;
 
 		Residue() :
@@ -80,7 +80,7 @@ public:
 		}
 
 		{
-			std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residues;
+			std::map< ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residues;
 
 			for(std::size_t i=0;i<atoms.size();i++)
 			{
@@ -91,7 +91,7 @@ public:
 
 			bundle.map_of_atoms_to_residues.resize(atoms.size());
 
-			for(std::map< common::ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
+			for(std::map< ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
 			{
 				Residue residue;
 				residue.chain_residue_descriptor=it->first;
@@ -173,6 +173,57 @@ public:
 			return bundle;
 		}
 		return BundleOfPrimaryStructure();
+	}
+
+	static double estimate_uniqueness_of_chains(const BundleOfPrimaryStructure& bundle, const double chains_similarity_threshold)
+	{
+		if(bundle.chains.empty())
+		{
+			return 0.0;
+		}
+
+		std::size_t number_of_repeats=0;
+		for(std::size_t i=1;i<bundle.chains.size();i++)
+		{
+			double best_similarity=0.0;
+			for(std::size_t j=0;j<i;j++)
+			{
+				std::map<ChainResidueAtomDescriptor, int> map_of_counts;
+				for(std::size_t e=0;e<bundle.chains[i].residue_ids.size();e++)
+				{
+					ChainResidueAtomDescriptor crd=bundle.residues[bundle.chains[i].residue_ids[e]].chain_residue_descriptor;
+					crd.chainID="";
+					map_of_counts[crd]++;
+				}
+				for(std::size_t e=0;e<bundle.chains[j].residue_ids.size();e++)
+				{
+					ChainResidueAtomDescriptor crd=bundle.residues[bundle.chains[j].residue_ids[e]].chain_residue_descriptor;
+					crd.chainID="";
+					map_of_counts[crd]++;
+				}
+
+				int number_of_matches=0;
+				for(std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_of_counts.begin();it!=map_of_counts.end();++it)
+				{
+					if(it->second>1)
+					{
+						number_of_matches++;
+					}
+				}
+
+				const double similarity=static_cast<double>(number_of_matches)/static_cast<double>(map_of_counts.size());
+				if(similarity>best_similarity)
+				{
+					best_similarity=similarity;
+				}
+			}
+			if(best_similarity>chains_similarity_threshold)
+			{
+				number_of_repeats++;
+			}
+		}
+
+		return (static_cast<double>(bundle.chains.size()-number_of_repeats)/static_cast<double>(bundle.chains.size()));
 	}
 
 private:
