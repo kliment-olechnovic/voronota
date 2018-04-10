@@ -46,15 +46,15 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::clog << "\nConditions observed probabilities:\n";
-	auxiliaries::IOUtilities().write_map(summary_of_contacts.get_derived_observed_probabilities().conditions_map, std::clog);
+	auxiliaries::IOUtilities().write_map(summary_of_contacts.derive_observed_probabilities().conditions_map, std::clog);
 
-	const common::SummaryOfContacts::DerivedExpectedProbabilities dep=summary_of_contacts.get_derived_expected_probabilities();
+	const common::SummaryOfContacts::DerivedPotential potential=summary_of_contacts.derive_potential();
 	std::clog << "\nSummary of expected probabilities:\n";
-	std::clog << dep.full_sum << "\n";
-	std::clog << dep.conditions_sum << "\n";
+	std::clog << potential.expected_probabilities.full_sum << "\n";
+	std::clog << potential.expected_probabilities.conditions_sum << "\n";
 
-	std::clog << "\nPotential:\n";
-	auxiliaries::IOUtilities().write_map(dep.potential_map, std::clog);
+//	std::clog << "\nPotential:\n";
+//	auxiliaries::IOUtilities().write_map(potential.potential_map, std::clog);
 
 	summary_of_contacts.write(std::cout);
 }

@@ -160,19 +160,24 @@ public:
 		}
 	};
 
-	struct DerivedExpectedProbabilities
+	struct DerivedPotential
 	{
-		double full_sum;
-		double conditions_sum;
-		FullMap full_map;
-		ConditionsMap conditions_map;
-		FullMap potential_map;
-
-		DerivedExpectedProbabilities() :
-			full_sum(0.0),
-			conditions_sum(0.0)
+		struct ExpectedProbabilities
 		{
-		}
+			double full_sum;
+			double conditions_sum;
+			FullMap full_map;
+			ConditionsMap conditions_map;
+
+			ExpectedProbabilities() :
+				full_sum(0.0),
+				conditions_sum(0.0)
+			{
+			}
+		};
+
+		ExpectedProbabilities expected_probabilities;
+		FullMap potential_map;
 	};
 
 	static CRAD generalize_crad(const CRAD& input_crad)
@@ -604,7 +609,7 @@ public:
 		}
 	}
 
-	DerivedSumsOfAreas get_derived_sums_of_areas() const
+	DerivedSumsOfAreas derive_sums_of_areas() const
 	{
 		DerivedSumsOfAreas sums_of_areas;
 		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
@@ -634,9 +639,9 @@ public:
 		return sums_of_areas;
 	}
 
-	DerivedObservedProbabilities get_derived_observed_probabilities() const
+	DerivedObservedProbabilities derive_observed_probabilities() const
 	{
-		const DerivedSumsOfAreas sums_of_areas=get_derived_sums_of_areas();
+		const DerivedSumsOfAreas sums_of_areas=derive_sums_of_areas();
 		DerivedObservedProbabilities observed_probabilities;
 		for(FullMap::const_iterator it=full_map_of_areas_.begin();it!=full_map_of_areas_.end();++it)
 		{
@@ -659,18 +664,19 @@ public:
 		return observed_probabilities;
 	}
 
-	DerivedExpectedProbabilities get_derived_expected_probabilities(const ConditionsMap& custom_observed_probabilities_conditions_map) const
+	DerivedPotential derive_potential(const ConditionsMap& custom_expected_probabilities_conditions_map) const
 	{
-		DerivedObservedProbabilities observed_probabilities=get_derived_observed_probabilities();
+		DerivedObservedProbabilities observed_probabilities=derive_observed_probabilities();
 
-		DerivedExpectedProbabilities expected_probabilities;
-		if(custom_observed_probabilities_conditions_map.empty())
+		DerivedPotential potential;
+
+		if(custom_expected_probabilities_conditions_map.empty())
 		{
-			expected_probabilities.conditions_map=observed_probabilities.conditions_map;
+			potential.expected_probabilities.conditions_map=observed_probabilities.conditions_map;
 		}
 		else
 		{
-			expected_probabilities.conditions_map=custom_observed_probabilities_conditions_map;
+			potential.expected_probabilities.conditions_map=custom_expected_probabilities_conditions_map;
 		}
 
 		for(FullMap::const_iterator it=observed_probabilities.full_map.begin();it!=observed_probabilities.full_map.end();++it)
@@ -681,11 +687,11 @@ public:
 
 			if(key.conditions.tags.count("solvent")>0)
 			{
-				p_exp=observed_probabilities.atom_type_map[key.crads.a!=CRAD::solvent() ? key.crads.a : key.crads.b]*expected_probabilities.conditions_map[key.conditions];
+				p_exp=observed_probabilities.atom_type_map[key.crads.a!=CRAD::solvent() ? key.crads.a : key.crads.b]*potential.expected_probabilities.conditions_map[key.conditions];
 			}
 			else
 			{
-				p_exp=observed_probabilities.atom_type_map[key.crads.a]*observed_probabilities.atom_type_map[key.crads.b]*expected_probabilities.conditions_map[key.conditions];
+				p_exp=observed_probabilities.atom_type_map[key.crads.a]*observed_probabilities.atom_type_map[key.crads.b]*potential.expected_probabilities.conditions_map[key.conditions];
 				if(key.crads.a!=key.crads.b)
 				{
 					p_exp=p_exp*2.0;
@@ -694,28 +700,28 @@ public:
 
 			if(p_exp>0.0)
 			{
-				expected_probabilities.full_sum+=p_exp;
-				expected_probabilities.full_map[key]=p_exp;
+				potential.expected_probabilities.full_sum+=p_exp;
+				potential.expected_probabilities.full_map[key]=p_exp;
 
 				const double p_obs=it->second;
 				if(p_obs>0.0)
 				{
-					expected_probabilities.potential_map[key]=log(p_exp/p_obs);
+					potential.potential_map[key]=log(p_exp/p_obs);
 				}
 			}
 		}
 
-		for(ConditionsMap::const_iterator it=expected_probabilities.conditions_map.begin();it!=expected_probabilities.conditions_map.end();++it)
+		for(ConditionsMap::const_iterator it=potential.expected_probabilities.conditions_map.begin();it!=potential.expected_probabilities.conditions_map.end();++it)
 		{
-			expected_probabilities.conditions_sum+=(it->second);
+			potential.expected_probabilities.conditions_sum+=(it->second);
 		}
 
-		return expected_probabilities;
+		return potential;
 	}
 
-	DerivedExpectedProbabilities get_derived_expected_probabilities() const
+	DerivedPotential derive_potential() const
 	{
-		return get_derived_expected_probabilities(ConditionsMap());
+		return derive_potential(ConditionsMap());
 	}
 
 private:
