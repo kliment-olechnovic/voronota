@@ -176,8 +176,16 @@ public:
 			}
 		};
 
+		double min_value;
+		double max_value;
 		ExpectedProbabilities expected_probabilities;
 		FullMap potential_map;
+
+		DerivedPotential() :
+			min_value(0.0),
+			max_value(0.0)
+		{
+		}
 	};
 
 	static CRAD generalize_crad(const CRAD& input_crad)
@@ -706,7 +714,16 @@ public:
 				const double p_obs=it->second;
 				if(p_obs>0.0)
 				{
-					potential.potential_map[key]=log(p_exp/p_obs);
+					const double value=log(p_exp/p_obs);
+					if(value<potential.min_value || potential.potential_map.empty())
+					{
+						potential.min_value=value;
+					}
+					if(value>potential.max_value || potential.potential_map.empty())
+					{
+						potential.max_value=value;
+					}
+					potential.potential_map[key]=value;
 				}
 			}
 		}
