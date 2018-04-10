@@ -160,6 +160,21 @@ public:
 		}
 	};
 
+	struct DerivedExpectedProbabilities
+	{
+		double full_sum;
+		double conditions_sum;
+		FullMap full_map;
+		ConditionsMap conditions_map;
+		FullMap potential_map;
+
+		DerivedExpectedProbabilities() :
+			full_sum(0.0),
+			conditions_sum(0.0)
+		{
+		}
+	};
+
 	static CRAD generalize_crad(const CRAD& input_crad)
 	{
 		CRAD crad=input_crad.without_numbering();
@@ -642,6 +657,65 @@ public:
 			observed_probabilities.conditions_map[it->first]=value;
 		}
 		return observed_probabilities;
+	}
+
+	DerivedExpectedProbabilities get_derived_expected_probabilities(const ConditionsMap& custom_observed_probabilities_conditions_map) const
+	{
+		DerivedObservedProbabilities observed_probabilities=get_derived_observed_probabilities();
+
+		DerivedExpectedProbabilities expected_probabilities;
+		if(custom_observed_probabilities_conditions_map.empty())
+		{
+			expected_probabilities.conditions_map=observed_probabilities.conditions_map;
+		}
+		else
+		{
+			expected_probabilities.conditions_map=custom_observed_probabilities_conditions_map;
+		}
+
+		for(FullMap::const_iterator it=observed_probabilities.full_map.begin();it!=observed_probabilities.full_map.end();++it)
+		{
+			const FullKey& key=it->first;
+
+			double p_exp=0.0;
+
+			if(key.conditions.tags.count("solvent")>0)
+			{
+				p_exp=observed_probabilities.atom_type_map[key.crads.a!=CRAD::solvent() ? key.crads.a : key.crads.b]*expected_probabilities.conditions_map[key.conditions];
+			}
+			else
+			{
+				p_exp=observed_probabilities.atom_type_map[key.crads.a]*observed_probabilities.atom_type_map[key.crads.b]*expected_probabilities.conditions_map[key.conditions];
+				if(key.crads.a!=key.crads.b)
+				{
+					p_exp=p_exp*2.0;
+				}
+			}
+
+			if(p_exp>0.0)
+			{
+				expected_probabilities.full_sum+=p_exp;
+				expected_probabilities.full_map[key]=p_exp;
+
+				const double p_obs=it->second;
+				if(p_obs>0.0)
+				{
+					expected_probabilities.potential_map[key]=log(p_exp/p_obs);
+				}
+			}
+		}
+
+		for(ConditionsMap::const_iterator it=expected_probabilities.conditions_map.begin();it!=expected_probabilities.conditions_map.end();++it)
+		{
+			expected_probabilities.conditions_sum+=(it->second);
+		}
+
+		return expected_probabilities;
+	}
+
+	DerivedExpectedProbabilities get_derived_expected_probabilities() const
+	{
+		return get_derived_expected_probabilities(ConditionsMap());
 	}
 
 private:
