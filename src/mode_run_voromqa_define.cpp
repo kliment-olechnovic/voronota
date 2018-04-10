@@ -53,8 +53,9 @@ void run_voromqa_define(const auxiliaries::ProgramOptionsHandler& poh)
 	std::clog << potential.expected_probabilities.full_sum << "\n";
 	std::clog << potential.expected_probabilities.conditions_sum << "\n";
 
-//	std::clog << "\nPotential:\n";
-//	auxiliaries::IOUtilities().write_map(potential.potential_map, std::clog);
+	std::clog << "\nSummary of potential:\n";
+	std::clog << potential.min_value << "\n";
+	std::clog << potential.max_value << "\n";
 
 	summary_of_contacts.write(std::cout);
 }
