@@ -507,8 +507,11 @@ public:
 		return crad;
 	}
 
-	SummaryOfContacts() : far_seq_sep_min_(6)
+	SummaryOfContacts() :
+		ignored_seq_sep_max_(1),
+		far_seq_sep_min_(6)
 	{
+		auxiliaries::IOUtilities(';').read_string_lines_to_set("LEU;ALA;GLY;VAL;GLU;SER;LYS;ILE;ASP;THR;ARG;PRO;ASN;PHE;GLN;TYR;HIS;MET;TRP;CYS;MSE", allowed_residue_names_);
 	}
 
 	const FullMap& get_full_map_of_areas() const
@@ -549,7 +552,17 @@ public:
 			return;
 		}
 
-		if(CRAD::match_with_sequence_separation_interval(crad_a, crad_b, 0, 1, false))
+		if(crad_a!=CRAD::solvent() && allowed_residue_names_.count(crad_a.resName)==0)
+		{
+			return;
+		}
+
+		if(crad_b!=CRAD::solvent() && allowed_residue_names_.count(crad_b.resName)==0)
+		{
+			return;
+		}
+
+		if(CRAD::match_with_sequence_separation_interval(crad_a, crad_b, 0, ignored_seq_sep_max_, false))
 		{
 			return;
 		}
@@ -742,7 +755,9 @@ public:
 	}
 
 private:
+	int ignored_seq_sep_max_;
 	int far_seq_sep_min_;
+	std::set<std::string> allowed_residue_names_;
 	FullMap full_map_of_areas_;
 };
 
