@@ -369,9 +369,8 @@ public:
 		return execute(command, sink);
 	}
 
-	CommandRecord execute_verbosely(std::ostream& output, const std::string& command)
+	CommandRecord execute_verbosely(std::ostream& output, const std::string& command, CommandOutputSink& sink)
 	{
-		CommandOutputSink sink;
 		output << "\n> " << command << std::endl;
 		const CommandRecord record=execute(command, sink);
 		output << sink.output_stream.str();
@@ -382,6 +381,12 @@ public:
 		}
 		output << std::endl;
 		return record;
+	}
+
+	CommandRecord execute_verbosely(std::ostream& output, const std::string& command)
+	{
+		CommandOutputSink sink;
+		return execute_verbosely(output, command, sink);
 	}
 
 private:
