@@ -62,6 +62,7 @@ CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
 REBUILD_SIDECHAINS_COMMAND=""
+ADD_HYDROGENS_COMMAND=""
 SCREENSHOT_WIDTH="500"
 SCREENSHOT_HEIGHT="500"
 SCREENSHOT_BACKGROUND="black"
@@ -190,6 +191,10 @@ do
 		;;
 	--rebuild-sidechains)
 		REBUILD_SIDECHAINS_COMMAND="$OPTARG"
+		shift
+		;;
+	--add-hydrogens)
+		ADD_HYDROGENS_COMMAND="$OPTARG"
 		shift
 		;;
 	--screenshot-width)
@@ -328,6 +333,11 @@ then
 	command -v $REBUILD_SIDECHAINS_COMMAND &> /dev/null || { echo >&2 "Error: '$REBUILD_SIDECHAINS_COMMAND' command, requested for rebuilding side-chains, is not available"; exit 1; }
 fi
 
+if [ -n "$ADD_HYDROGENS_COMMAND" ]
+then
+	command -v $ADD_HYDROGENS_COMMAND &> /dev/null || { echo >&2 "Error: '$ADD_HYDROGENS_COMMAND' command, requested for adding hydrogens, is not available"; exit 1; }
+fi
+
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
@@ -421,6 +431,31 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		| voronota get-balls-from-atoms-file \
 		  --annotated \
 		  --radii-file <(voronota-resources radii) \
+		| voronota query-balls \
+		  --drop-adjuncts
+	else
+		cat
+	fi
+} \
+| \
+{
+	if [ -n "$ADD_HYDROGENS_COMMAND" ]
+	then
+		voronota query-balls \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output $TMPLDIR/atoms_heavy.pdb \
+		> /dev/null
+
+		$ADD_HYDROGENS_COMMAND \
+		  -FLIP $TMPLDIR/atoms_heavy.pdb \
+		> $TMPLDIR/atoms_heavy_and_hydrogens.pdb \
+		2> /dev/null
+
+		cat $TMPLDIR/atoms_heavy_and_hydrogens.pdb \
+		| voronota get-balls-from-atoms-file \
+		  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
+		  --radii-file <(voronota-resources radii) \
+		  --include-hydrogens \
 		| voronota query-balls \
 		  --drop-adjuncts
 	else
