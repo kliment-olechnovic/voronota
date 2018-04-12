@@ -40,6 +40,7 @@ INPUT_FILTER_QUERY_PARAMETERS=""
 OUTFILE_SEQUENCE_ALIGNMENT=""
 OUTFILE_BALLS=""
 OUTFILE_CONTACTS=""
+OUTFILE_ATOM_ENERGIES=""
 OUTFILE_ATOM_SCORES=""
 OUTFILE_ATOM_SCORES_PDB=""
 OUTFILE_RESIDUE_SCORES=""
@@ -108,6 +109,10 @@ do
 		;;
 	--output-sequence-alignment)
 		OUTFILE_SEQUENCE_ALIGNMENT="$OPTARG"
+		shift
+		;;
+	--output-atom-energies)
+		OUTFILE_ATOM_ENERGIES="$OPTARG"
 		shift
 		;;
 	--output-atom-scores)
@@ -650,6 +655,12 @@ then
 	  --potential-file $TMPLDIR/untaught_potential \
 	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
+fi
+
+if [ -n "$OUTFILE_ATOM_ENERGIES" ]
+then
+	mkdir -p $(dirname "$OUTFILE_ATOM_ENERGIES")
+	cp $TMPLDIR/foundation/atom_energies "$OUTFILE_ATOM_ENERGIES"
 fi
 
 cat $TMPLDIR/foundation/atom_energies \
