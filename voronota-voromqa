@@ -495,7 +495,7 @@ then
 	| tr ';' '_' \
 	| tee $TMPLDIR/contacts \
 	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential) \
 	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
 	
@@ -523,7 +523,7 @@ then
 	| tr ';' '_' \
 	| sed 's|c<solvent>\s\+.\s\+\S\+$|c<solvent> . 0.001|' \
 	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential) \
 	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
 fi
@@ -534,7 +534,7 @@ then
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential | voronota x-simulate-potential-for-membrane-proteins) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential | voronota x-simulate-potential-for-membrane-proteins) \
 	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
 	> /dev/null
 fi
@@ -546,7 +546,7 @@ then
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
 	| voronota x-score-contacts-global-energy-by-cuts \
-	  --potential-file <(voronota-resources energy_potential) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential) \
 	  --limit-results 10 \
 	| column -t \
 	> "$OUTFILE_CUTTING_SUGGESTIONS"
@@ -616,7 +616,7 @@ cat $TMPLDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
-  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
+  --means-and-sds-file <(voronota-resources voromqa_v1_energy_means_and_sds) \
   --external-weights-file $TMPLDIR/foundation/depth_values \
   --smoothing-window $SMOOTHING_WINDOW \
   --atom-scores-file $TMPLDIR/atom_quality_scores \
@@ -760,7 +760,7 @@ cat $TMPLDIR/foundation/atom_energies \
 | voronota score-contacts-quality \
   --default-mean -0.34 \
   --default-sd 0.19 \
-  --means-and-sds-file <(voronota-resources energy_means_and_sds) \
+  --means-and-sds-file <(voronota-resources voromqa_v1_energy_means_and_sds) \
   --external-weights-file $TMPLDIR/foundation/depth_values \
   --smoothing-window "$(echo "0,$SMOOTHING_WINDOW" | sed 's|^0,\(.\+,.\+\).*|\1|')" \
   --residue-scores-file $TMPLDIR/residue_quality_scores_for_plot \
@@ -987,7 +987,7 @@ then
 	| awk '{print $1 " " $2 " " $5 " " $3}' \
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential) \
 	| awk '{print $5 " " $2 " " $3 " " $4 " " ($4/($2+$3))}' \
 	> $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
@@ -1025,7 +1025,7 @@ then
 	| awk '{if($2=="c<solvent>") {print $1 " " $2 " " $5 " " $3} else {print $1 " " $2 " " $5 " 0"}}' \
 	| tr ';' '_' \
 	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources energy_potential) \
+	  --potential-file <(voronota-resources voromqa_v1_energy_potential) \
 	  --depth "$SURFACE_CRAVING_DEPTH_VALUE" \
 	  --atom-scores-file $TMPLDIR/surface_atom_energies \
 	> /dev/null

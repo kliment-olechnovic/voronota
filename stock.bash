@@ -21,13 +21,13 @@ RESOURCE_NAME=$1
 
 if [ -z $RESOURCE_NAME ]
 then
-echo -e 'Need resource name as argument, available options are:\n  radii\n  energy_potential\n  energy_means_and_sds' >&2
+echo -e 'Need resource name as argument, available options are:\n  radii\n  voromqa_v1_energy_potential\n  voromqa_v1_energy_means_and_sds' >&2
 fi
 EOF
 
 write_resource_file ./resources/radii
-write_resource_file ./resources/energy_potential
-write_resource_file ./resources/energy_means_and_sds
+write_resource_file ./resources/voromqa_v1_energy_potential
+write_resource_file ./resources/voromqa_v1_energy_means_and_sds
 
 } > ./voronota-resources
 
