@@ -4,7 +4,7 @@ RESOURCE_NAME=$1
 
 if [ -z $RESOURCE_NAME ]
 then
-echo -e 'Need resource name as argument, available options are:\n  radii\n  energy_potential\n  energy_means_and_sds' >&2
+echo -e 'Need resource name as argument, available options are:\n  radii\n  voromqa_v1_energy_potential\n  voromqa_v1_energy_means_and_sds' >&2
 fi
 
 if [ "$RESOURCE_NAME" == "radii" ]
@@ -132,7 +132,7 @@ VAL  CG2  1.92
 EOF
 fi
 
-if [ "$RESOURCE_NAME" == "energy_potential" ]
+if [ "$RESOURCE_NAME" == "voromqa_v1_energy_potential" ]
 then
 cat << 'EOF'
 R<ALA>A<C> R<ALA>A<C> central_sep1 4.17568
@@ -51810,7 +51810,7 @@ R<VAL>A<O> c<solvent> . 0.829146
 EOF
 fi
 
-if [ "$RESOURCE_NAME" == "energy_means_and_sds" ]
+if [ "$RESOURCE_NAME" == "voromqa_v1_energy_means_and_sds" ]
 then
 cat << 'EOF'
 R<ALA>A<C> -0.361355 0.271633
