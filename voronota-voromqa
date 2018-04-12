@@ -54,7 +54,7 @@ OUTFILE_SCORES_FOR_CASP=""
 OUTFILE_SCORES_FOR_CASP_PDB=""
 OUTFILE_SCORES_FOR_CASP_LOG=""
 OUTFILE_CUTTING_SUGGESTIONS=""
-OUTDIR_SUMMARY_FOR_POTENTIAL=""
+OUTFILE_SUMMARY_FOR_POTENTIAL=""
 SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
@@ -167,8 +167,8 @@ do
 		OUTFILE_CUTTING_SUGGESTIONS="$OPTARG"
 		shift
 		;;
-	--outdir-summary-for-potential)
-		OUTDIR_SUMMARY_FOR_POTENTIAL="$OPTARG"
+	--output-summary-for-potential)
+		OUTFILE_SUMMARY_FOR_POTENTIAL="$OPTARG"
 		shift
 		;;
 	--smoothing-window)
@@ -510,10 +510,10 @@ then
 	fi
 fi
 
-if [ ! -d "$TMPLDIR/foundation" ]
-then
-	mkdir -p $TMPLDIR/foundation
+mkdir -p $TMPLDIR/foundation
 	
+if [ ! -s "$TMPLDIR/foundation/all_contacts" ]
+then
 	cat $TMPLDIR/balls \
 	| voronota calculate-contacts \
 	  --annotated \
@@ -535,30 +535,64 @@ then
 	  --match-min-seq-sep 2 \
 	  --no-solvent \
 	  --set-tags 'sep2' \
-	| tee $TMPLDIR/foundation/all_contacts \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| tr ';' '_' \
-	| tee $TMPLDIR/contacts \
-	| voronota score-contacts-energy \
-	  --potential-file <(voronota-resources ${ENERGY_MODE}_energy_potential) \
-	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
-	> /dev/null
-	
-	cat $TMPLDIR/contacts \
-	| voronota x-query-contacts-depth-values \
-	> $TMPLDIR/foundation/depth_values
-	
-	if [ -n "$CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
-	then
-		mkdir -p $CACHE_DIRECTORY
-		cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
-	fi
+	> $TMPLDIR/foundation/all_contacts
 fi
+
+cat $TMPLDIR/foundation/all_contacts \
+| awk '{print $1 " " $2 " " $5 " " $3}' \
+| tr ';' '_' \
+> $TMPLDIR/contacts
 
 if [ -n "$OUTFILE_CONTACTS" ]
 then
 	mkdir -p $(dirname $OUTFILE_CONTACTS)
 	cp "$TMPLDIR/foundation/all_contacts" "$OUTFILE_CONTACTS"
+fi
+
+if [ -n "$OUTFILE_SUMMARY_FOR_POTENTIAL" ]
+then
+	mkdir -p $(dirname "$OUTFILE_SUMMARY_FOR_POTENTIAL")
+
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --chains-summary-output $TMPLDIR/chains_counts \
+	> /dev/null
+
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts \
+	  --match-min-seq-sep 2 \
+	  --match-max-seq-sep 6 \
+	  --set-tags 'sep1' \
+	| sed 's/sep1;sep2/sep1/' \
+	| awk '{print $1 " " $2 " " $5 " " $3}' \
+	| tr ';' '_' \
+	| voronota score-contacts-potential \
+	  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
+	> "$OUTFILE_SUMMARY_FOR_POTENTIAL"
+
+	exit 0
+fi
+
+if [ ! -s "$TMPLDIR/foundation/atom_energies" ]
+then
+	cat $TMPLDIR/contacts \
+	| voronota score-contacts-energy \
+	  --potential-file <(voronota-resources ${ENERGY_MODE}_energy_potential) \
+	  --atom-scores-file $TMPLDIR/foundation/atom_energies \
+	> /dev/null
+fi
+
+if [ ! -s "$TMPLDIR/foundation/depth_values" ]
+then
+	cat $TMPLDIR/contacts \
+	| voronota x-query-contacts-depth-values \
+	> $TMPLDIR/foundation/depth_values
+fi
+
+if [ -n "$CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ] && [ ! -d "$CACHE_DIRECTORY/$BALLS_MD5" ]
+then
+	mkdir -p $CACHE_DIRECTORY
+	cp -r $TMPLDIR/foundation $CACHE_DIRECTORY/$BALLS_MD5
 fi
 
 if $NEGLECT_SAS
@@ -595,30 +629,6 @@ then
 	  --limit-results 10 \
 	| column -t \
 	> "$OUTFILE_CUTTING_SUGGESTIONS"
-fi
-
-if [ -n "$OUTDIR_SUMMARY_FOR_POTENTIAL" ]
-then
-	mkdir -p "$OUTDIR_SUMMARY_FOR_POTENTIAL"
-
-	cat $TMPLDIR/balls \
-	| voronota query-balls \
-	  --chains-summary-output $TMPLDIR/chains_counts \
-	> /dev/null
-
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts \
-	  --match-min-seq-sep 2 \
-	  --match-max-seq-sep 6 \
-	  --set-tags 'sep1' \
-	| sed 's/sep1;sep2/sep1/' \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| tr ';' '_' \
-	| voronota score-contacts-potential \
-	  --multiply-areas $(cat $TMPLDIR/chains_counts | head -1 | awk '{print (24.0/$1*$2)}') \
-	> "$OUTDIR_SUMMARY_FOR_POTENTIAL/$(basename $INFILE .gz)"
-
-	exit 0
 fi
 
 if [ -n "$UNTEACHING_DIRECTORY" ] && [ -s "$UNTEACHING_DIRECTORY/contact_areas" ] && [ -s "$UNTEACHING_DIRECTORY/contact_categories" ]
