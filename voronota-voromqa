@@ -286,6 +286,29 @@ then
 	print_help_and_exit
 fi
 
+if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2a" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ]
+then
+	echo >&2 "Error: unsupported energy mode '$ENERGY_MODE'"
+	exit 1
+fi
+
+if [ "$ENERGY_MODE" == "voromqa_v2b" ] && [ -z "$ADD_HYDROGENS_COMMAND" ]
+then
+	ADD_HYDROGENS_COMMAND="reduce"
+fi
+
+if [ -n "$ENERGY_INPUT_POTENTIAL" ] && [ ! -s "$ENERGY_INPUT_POTENTIAL" ]
+then
+	echo >&2 "Error: no file '$ENERGY_INPUT_POTENTIAL'"
+	exit 1
+fi
+
+if [ -n "$ENERGY_INPUT_STATISTICS" ] && [ ! -s "$ENERGY_INPUT_STATISTICS" ]
+then
+	echo >&2 "Error: no file '$ENERGY_INPUT_STATISTICS'"
+	exit 1
+fi
+
 if [ -n "$OUTFILE_CAMEO_RESIDUE_SCORES" ] && [ -n "$MULTIPLE_MODELS_CHAINS_OPTION" ]
 then
 	echo >&2 "Error: '--output-residue-scores-for-CAMEO' and '--multiple-models' cannot be used together"
@@ -356,24 +379,6 @@ fi
 if [ -n "$ADD_HYDROGENS_COMMAND" ]
 then
 	command -v $ADD_HYDROGENS_COMMAND &> /dev/null || { echo >&2 "Error: '$ADD_HYDROGENS_COMMAND' command, requested for adding hydrogens, is not available"; exit 1; }
-fi
-
-if [ "$ENERGY_MODE" != "voromqa_v1" ]
-then
-	echo >&2 "Error: unsupported energy mode '$ENERGY_MODE'"
-	exit 1
-fi
-
-if [ -n "$ENERGY_INPUT_POTENTIAL" ] && [ ! -s "$ENERGY_INPUT_POTENTIAL" ]
-then
-	echo >&2 "Error: no file '$ENERGY_INPUT_POTENTIAL'"
-	exit 1
-fi
-
-if [ -n "$ENERGY_INPUT_STATISTICS" ] && [ ! -s "$ENERGY_INPUT_STATISTICS" ]
-then
-	echo >&2 "Error: no file '$ENERGY_INPUT_STATISTICS'"
-	exit 1
 fi
 
 readonly TMPLDIR=$(mktemp -d)

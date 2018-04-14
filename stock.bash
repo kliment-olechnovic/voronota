@@ -28,6 +28,10 @@ EOF
 write_resource_file ./resources/radii
 write_resource_file ./resources/voromqa_v1_energy_potential
 write_resource_file ./resources/voromqa_v1_energy_means_and_sds
+write_resource_file ./resources/voromqa_v2a_energy_potential
+write_resource_file ./resources/voromqa_v2a_energy_means_and_sds
+write_resource_file ./resources/voromqa_v2b_energy_potential
+write_resource_file ./resources/voromqa_v2b_energy_means_and_sds
 
 } > ./voronota-resources
 
