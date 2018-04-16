@@ -77,6 +77,8 @@ SURFACE_CRAVING_DEPTH_VALUE="3"
 ENERGY_MODE="voromqa_v1"
 ENERGY_INPUT_POTENTIAL=""
 ENERGY_INPUT_STATISTICS=""
+MUTATION_QUERY=""
+MUTATION_GOAL=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -253,6 +255,14 @@ do
 		ENERGY_INPUT_STATISTICS="$OPTARG"
 		shift
 		;;
+	--mutation-query)
+		MUTATION_QUERY="$OPTARG"
+		shift
+		;;
+	--mutation-goal)
+		MUTATION_GOAL="$OPTARG"
+		shift
+		;;
 	--multiple-models)
 		MULTIPLE_MODELS_CHAINS_OPTION="--multimodel-chains"
 		;;
@@ -348,6 +358,24 @@ fi
 if [ -z "$OUTFILE_SCORES_FOR_CASP" ] && [ -n "$OUTFILE_SCORES_FOR_CASP_LOG" ]
 then
 	echo >&2 "Error: '--output-scores-for-CASP-log' cannot be used without '--output-scores-for-CASP'"
+	exit 1
+fi
+
+if [ -n "$MUTATION_QUERY" ] && [ -z "$REBUILD_SIDECHAINS_COMMAND" ]
+then
+	echo >&2 "Error: '--mutation-query' cannot be used without '--rebuild-sidechains'"
+	exit 1
+fi
+
+if [ -n "$MUTATION_QUERY" ] && [ -z "$MUTATION_GOAL" ]
+then
+	echo >&2 "Error: '--mutation-query' cannot be used without '--mutation-goal'"
+	exit 1
+fi
+
+if [ -n "$MUTATION_GOAL" ] && [ -z "$MUTATION_QUERY" ]
+then
+	echo >&2 "Error: '--mutation-goal' cannot be used without '--mutation-query'"
 	exit 1
 fi
 
@@ -451,6 +479,22 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		  --renumber-from-adjunct refseq \
 		| voronota query-balls \
 		  --drop-adjuncts
+	else
+		cat
+	fi
+} \
+| \
+{
+	if [ -n "$MUTATION_QUERY" ]
+	then
+		voronota query-balls $MUTATION_QUERY \
+		  --set-tags mutating \
+		| sed 's/\(.*R<\)\(...\)\(.*mutating.*\)/\1XXX\3/' \
+		| sed "s/R<XXX>/R<$MUTATION_GOAL>/" \
+		| sed 's/;mutating;/;/' \
+		| sed 's/;mutating//' \
+		| sed 's/mutating;//' \
+		| sed 's/mutating/./'
 	else
 		cat
 	fi
