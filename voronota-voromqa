@@ -79,6 +79,7 @@ ENERGY_INPUT_POTENTIAL=""
 ENERGY_INPUT_STATISTICS=""
 MUTATION_QUERY=""
 MUTATION_GOAL=""
+OPTIONS_FOR_CALCULATING_CONTACTS=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -261,6 +262,10 @@ do
 		;;
 	--mutation-goal)
 		MUTATION_GOAL="$OPTARG"
+		shift
+		;;
+	--options-for-calculating-contacts)
+		OPTIONS_FOR_CALCULATING_CONTACTS="$OPTARG"
 		shift
 		;;
 	--multiple-models)
@@ -594,7 +599,7 @@ then
 	cat $TMPLDIR/balls \
 	| voronota calculate-contacts \
 	  --annotated \
-	  --tag-centrality \
+	  --tag-centrality $OPTIONS_FOR_CALCULATING_CONTACTS \
 	| tee $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
 	  --match-min-seq-sep 1 \
