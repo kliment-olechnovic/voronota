@@ -562,6 +562,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		| voronota get-balls-from-atoms-file \
 		  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
 		  --radii-file <(voronota-resources radii) \
+		  --include-heteroatoms \
 		  --include-hydrogens \
 		| voronota query-balls \
 		  --drop-adjuncts
