@@ -86,6 +86,7 @@ REINTERPRET_SAS=false
 MORE_LOGGING=false
 PRINT_ENERGY_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
+PRINT_GLOBAL_SCORES_VERTICALLY=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -294,6 +295,9 @@ do
 	--print-header)
 		PRINT_GLOBAL_SCORES_HEADER=true
 		;;
+	--print-vertically)
+		PRINT_GLOBAL_SCORES_VERTICALLY=true
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -304,9 +308,15 @@ do
 	esac
 done
 
-if [ -z "$INFILE" ] || $HELP_MODE
+if $HELP_MODE
 then
 	print_help_and_exit
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: no input"
+	exit 1
 fi
 
 if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2a" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ] && [ "$ENERGY_MODE" != "voromqa_v3a" ] && [ "$ENERGY_MODE" != "voromqa_v3b" ]
@@ -1175,27 +1185,45 @@ then
 	> $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
 
-if $PRINT_GLOBAL_SCORES_HEADER
-then
+{
+	if $PRINT_GLOBAL_SCORES_HEADER
+	then
+		{
+			echo "input ${ENERGY_MODE} ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
+			[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE} sel_${ENERGY_MODE}_atoms"
+			[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_contacts sel_${ENERGY_MODE}_area sel_${ENERGY_MODE}_area_unk sel_${ENERGY_MODE}_energy sel_${ENERGY_MODE}_energy_norm"
+		} \
+		| tr '\n' ' ' \
+		| sed 's/\s$/\n/'
+	fi
+	
 	{
-		echo "model ${ENERGY_MODE} ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
-		[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE} sel_${ENERGY_MODE}_atoms"
-		[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_contacts sel_${ENERGY_MODE}_area sel_${ENERGY_MODE}_area_unk sel_${ENERGY_MODE}_energy sel_${ENERGY_MODE}_energy_norm"
+		echo $INFILE
+		cat $TMPLDIR/global_quality_score
+		cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
+		cat $TMPLDIR/balls | wc -l
+		[ -s "$TMPLDIR/global_quality_score_of_selection" ] && cat $TMPLDIR/global_quality_score_of_selection
+		[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && cat $TMPLDIR/energy_descriptor_of_contacts_selection
 	} \
 	| tr '\n' ' ' \
 	| sed 's/\s$/\n/'
-fi
-
-{
-	echo $INFILE
-	cat $TMPLDIR/global_quality_score
-	cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
-	cat $TMPLDIR/balls | wc -l
-	[ -s "$TMPLDIR/global_quality_score_of_selection" ] && cat $TMPLDIR/global_quality_score_of_selection
-	[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && cat $TMPLDIR/energy_descriptor_of_contacts_selection
 } \
-| tr '\n' ' ' \
-| sed 's/\s$/\n/'
+| \
+{
+	if $PRINT_GLOBAL_SCORES_VERTICALLY
+	then
+		cat > "$TMPLDIR/htable"
+		if [ "$(cat "$TMPLDIR/htable" | wc -l)" == "2" ]
+		then
+			paste -d ' ' <(cat "$TMPLDIR/htable" | head -1 | tr ' ' '\n') <(cat "$TMPLDIR/htable" | tail -1 | tr ' ' '\n')
+		else
+			cat "$TMPLDIR/htable" | tr ' ' '\n'
+		fi
+	else
+		cat
+	fi
+}
+
 
 if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT" ]
 then
