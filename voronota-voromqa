@@ -85,6 +85,7 @@ NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
 PRINT_ENERGY_OF_CONTACTS_SELECTION=false
+PRINT_GLOBAL_SCORES_HEADER=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -289,6 +290,9 @@ do
 		;;
 	--print-energy-of-contacts-selection)
 		PRINT_ENERGY_OF_CONTACTS_SELECTION=true
+		;;
+	--print-header)
+		PRINT_GLOBAL_SCORES_HEADER=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -1171,19 +1175,24 @@ then
 	> $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
 
+if $PRINT_GLOBAL_SCORES_HEADER
+then
+	{
+		echo "model ${ENERGY_MODE} ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
+		[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE} sel_${ENERGY_MODE}_atoms"
+		[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_contacts sel_${ENERGY_MODE}_area sel_${ENERGY_MODE}_area_unk sel_${ENERGY_MODE}_energy sel_${ENERGY_MODE}_energy_norm"
+	} \
+	| tr '\n' ' ' \
+	| sed 's/\s$/\n/'
+fi
+
 {
-echo $INFILE
-cat $TMPLDIR/global_quality_score
-cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
-cat $TMPLDIR/balls | wc -l
-if [ -s "$TMPLDIR/global_quality_score_of_selection" ]
-then
-	cat $TMPLDIR/global_quality_score_of_selection
-fi
-if [ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ]
-then
-	cat $TMPLDIR/energy_descriptor_of_contacts_selection
-fi
+	echo $INFILE
+	cat $TMPLDIR/global_quality_score
+	cat $TMPLDIR/balls | grep 'A<CA>' | wc -l
+	cat $TMPLDIR/balls | wc -l
+	[ -s "$TMPLDIR/global_quality_score_of_selection" ] && cat $TMPLDIR/global_quality_score_of_selection
+	[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && cat $TMPLDIR/energy_descriptor_of_contacts_selection
 } \
 | tr '\n' ' ' \
 | sed 's/\s$/\n/'
