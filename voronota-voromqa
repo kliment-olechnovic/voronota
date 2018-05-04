@@ -34,6 +34,7 @@ exit 1
 }
 
 readonly ZEROARG=$0
+ALLARGS=("$@")
 INFILE=""
 REFERENCE_SEQUENCE=""
 INPUT_FILTER_QUERY_PARAMETERS=""
@@ -75,6 +76,7 @@ SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT=""
 SURFACE_CRAVING_DEPTH_VALUE="3"
 ENERGY_MODE="voromqa_v1"
+MULTIPLE_ENERGY_MODES=""
 ENERGY_INPUT_POTENTIAL=""
 ENERGY_INPUT_STATISTICS=""
 MUTATION_QUERY=""
@@ -249,6 +251,10 @@ do
 		;;
 	--energy-mode)
 		ENERGY_MODE="$OPTARG"
+		shift
+		;;
+	--multiple-energy-modes)
+		MULTIPLE_ENERGY_MODES="$OPTARG"
 		shift
 		;;
 	--energy-input-potential)
@@ -445,6 +451,29 @@ fi
 
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
+
+if [ -n "$MULTIPLE_ENERGY_MODES" ]
+then
+	{
+		echo "$MULTIPLE_ENERGY_MODES" |sed 's/\s\+/\n/g' | sed 's/,\+/\n/g' | egrep '\S' | while read ONEMODE
+		do
+			"$ZEROARG" "${ALLARGS[@]}" --print-header --print-vertically --multiple-energy-modes "" --energy-mode "$ONEMODE"
+		done
+	} \
+	| awk '{if(NR==1 || $1!="input") print $0}' \
+	| \
+	{
+		if $PRINT_GLOBAL_SCORES_VERTICALLY
+		then
+			cat
+		else
+			cat > "$TMPLDIR/multiple_global_scores"
+			cat "$TMPLDIR/multiple_global_scores" | awk '{print $1}' | tr '\n' ' ' | sed 's/\s$/\n/'
+			cat "$TMPLDIR/multiple_global_scores" | awk '{print $2}' | tr '\n' ' ' | sed 's/\s$/\n/'
+		fi
+	}
+	exit 0
+fi
 
 if [ -n "$REFERENCE_SEQUENCE" ] && [ ! -s "$REFERENCE_SEQUENCE" ]
 then
@@ -1189,8 +1218,8 @@ fi
 	if $PRINT_GLOBAL_SCORES_HEADER
 	then
 		{
-			echo "input ${ENERGY_MODE} ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
-			[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE} sel_${ENERGY_MODE}_atoms"
+			echo "input ${ENERGY_MODE}_score ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
+			[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE}_score sel_${ENERGY_MODE}_atoms"
 			[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_contacts sel_${ENERGY_MODE}_area sel_${ENERGY_MODE}_area_unk sel_${ENERGY_MODE}_energy sel_${ENERGY_MODE}_energy_norm"
 		} \
 		| tr '\n' ' ' \
