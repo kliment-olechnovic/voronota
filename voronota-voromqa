@@ -319,6 +319,11 @@ then
 	print_help_and_exit
 fi
 
+if [ -z "$INFILE" ] && [ ! -t 0 ]
+then
+	INFILE="-"
+fi
+
 if [ -z "$INFILE" ]
 then
 	echo >&2 "Error: no input"
@@ -452,29 +457,6 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-if [ -n "$MULTIPLE_ENERGY_MODES" ]
-then
-	{
-		echo "$MULTIPLE_ENERGY_MODES" |sed 's/\s\+/\n/g' | sed 's/,\+/\n/g' | egrep '\S' | while read ONEMODE
-		do
-			"$ZEROARG" "${ALLARGS[@]}" --print-header --print-vertically --multiple-energy-modes "" --energy-mode "$ONEMODE"
-		done
-	} \
-	| awk '{if(NR==1 || $1!="input") print $0}' \
-	| \
-	{
-		if $PRINT_GLOBAL_SCORES_VERTICALLY
-		then
-			cat
-		else
-			cat > "$TMPLDIR/multiple_global_scores"
-			cat "$TMPLDIR/multiple_global_scores" | awk '{print $1}' | tr '\n' ' ' | sed 's/\s$/\n/'
-			cat "$TMPLDIR/multiple_global_scores" | awk '{print $2}' | tr '\n' ' ' | sed 's/\s$/\n/'
-		fi
-	}
-	exit 0
-fi
-
 if [ -n "$REFERENCE_SEQUENCE" ] && [ ! -s "$REFERENCE_SEQUENCE" ]
 then
 	if [ "$REFERENCE_SEQUENCE" == "$(echo $REFERENCE_SEQUENCE | tr -dc '[:alpha:]')" ]
@@ -488,10 +470,17 @@ then
 fi
 
 INFILE_CONTENTS=$INFILE
+
 if [[ "$INFILE" == *"://"* ]]
 then
 	INFILE_CONTENTS=$TMPLDIR/downloaded_input_file
 	curl -s "$INFILE" > $INFILE_CONTENTS
+fi
+
+if [ "$INFILE" == "-" ]
+then
+	INFILE_CONTENTS=$TMPLDIR/downloaded_input_file
+	cat > $INFILE_CONTENTS
 fi
 
 if [ ! -s "$INFILE_CONTENTS" ]
@@ -501,6 +490,7 @@ then
 fi
 
 INFILE_CONTENTS_EXTRACTED=$INFILE_CONTENTS
+
 if [[ "$INFILE" == *".gz" ]]
 then
 	INFILE_CONTENTS_EXTRACTED=$TMPLDIR/extracted_input_file
@@ -510,6 +500,34 @@ then
 		echo >&2 "Error: could not extract gzipped file"
 		exit 1
 	fi
+fi
+
+if [ -n "$MULTIPLE_ENERGY_MODES" ]
+then
+	{
+		echo "$MULTIPLE_ENERGY_MODES" |sed 's/\s\+/\n/g' | sed 's/,\+/\n/g' | egrep '\S' | sort | uniq | while read ONEMODE
+		do
+			"$ZEROARG" "${ALLARGS[@]}" --print-header --print-vertically --multiple-energy-modes "" --energy-mode "$ONEMODE" --input "$INFILE_CONTENTS_EXTRACTED"
+		done
+	} \
+	| egrep -v '^input' \
+	| \
+	{
+		echo "input $INFILE"
+		cat
+	} \
+	| \
+	{
+		if $PRINT_GLOBAL_SCORES_VERTICALLY
+		then
+			cat
+		else
+			cat > "$TMPLDIR/multiple_global_scores"
+			cat "$TMPLDIR/multiple_global_scores" | awk '{print $1}' | tr '\n' ' ' | sed 's/\s$/\n/'
+			cat "$TMPLDIR/multiple_global_scores" | awk '{print $2}' | tr '\n' ' ' | sed 's/\s$/\n/'
+		fi
+	}
+	exit 0
 fi
 
 cat $INFILE_CONTENTS_EXTRACTED \
