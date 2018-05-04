@@ -537,7 +537,11 @@ then
 	
 	find "$TMPLDIR/children_global_scores" -type f -not -empty \
 	| xargs -L 1 cat \
-	| awk '{if(NR==1 || $1!="input") print $0}'
+	| awk '{if(NR==1 || $1!="input") print $0}' \
+	> "$TMPLDIR/unsorted_table"
+	
+	cat "$TMPLDIR/unsorted_table" | head -1
+	cat "$TMPLDIR/unsorted_table" | tail -n +2 | sort
 	
 	exit 0
 fi
