@@ -89,6 +89,7 @@ MORE_LOGGING=false
 PRINT_ENERGY_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
 PRINT_GLOBAL_SCORES_VERTICALLY=false
+TREAT_INPUT_AS_LIST_OF_FILES=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -304,6 +305,15 @@ do
 	--print-vertically)
 		PRINT_GLOBAL_SCORES_VERTICALLY=true
 		;;
+	--print-horizontally)
+		PRINT_GLOBAL_SCORES_VERTICALLY=false
+		;;
+	--input-is-list-of-files)
+		TREAT_INPUT_AS_LIST_OF_FILES=true
+		;;
+	--input-is-structure)
+		TREAT_INPUT_AS_LIST_OF_FILES=false
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -500,6 +510,18 @@ then
 		echo >&2 "Error: could not extract gzipped file"
 		exit 1
 	fi
+fi
+
+if $TREAT_INPUT_AS_LIST_OF_FILES
+then
+	{
+		cat "$INFILE_CONTENTS_EXTRACTED" | uniq | while read ONEINFILE
+		do
+			"$ZEROARG" "${ALLARGS[@]}" --print-header --print-horizontally --input-is-structure --input "$ONEINFILE"
+		done
+	} \
+	| awk '{if(NR==1 || $1!="input") print $0}'
+	exit 0
 fi
 
 if [ -n "$MULTIPLE_ENERGY_MODES" ]
