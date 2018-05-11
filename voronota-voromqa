@@ -84,6 +84,7 @@ MUTATION_QUERY=""
 MUTATION_GOAL=""
 OPTIONS_FOR_CALCULATING_CONTACTS=""
 MAX_PROCESSORS="1"
+SBATCH_PARAMETERS=""
 TAG_PERIPHERAL_CONTACTS=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
@@ -92,6 +93,7 @@ PRINT_ENERGY_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
 PRINT_GLOBAL_SCORES_VERTICALLY=false
 TREAT_INPUT_AS_LIST_OF_FILES=false
+USE_SLURM=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -288,6 +290,10 @@ do
 		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
+	--sbatch-parameters)
+		SBATCH_PARAMETERS="$OPTARG"
+		shift
+		;;
 	--tag-peripheral-contacts)
 		TAG_PERIPHERAL_CONTACTS="--tag-peripherial"
 		;;
@@ -323,6 +329,9 @@ do
 		;;
 	--input-is-structure)
 		TREAT_INPUT_AS_LIST_OF_FILES=false
+		;;
+	--use-slurm)
+		USE_SLURM=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -474,6 +483,11 @@ then
 	command -v $ADD_HYDROGENS_COMMAND &> /dev/null || { echo >&2 "Error: '$ADD_HYDROGENS_COMMAND' command, requested for adding hydrogens, is not available"; exit 1; }
 fi
 
+if [ "$USE_SLURM" == "true" ]
+then
+	command -v sbatch &> /dev/null || { echo >&2 "Error: 'sbatch' command, needed for using Slurm, is not available"; exit 1; }
+fi
+
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
@@ -524,16 +538,54 @@ fi
 
 if $TREAT_INPUT_AS_LIST_OF_FILES
 then
-	cat "$INFILE_CONTENTS_EXTRACTED" \
-	| sort \
-	| uniq \
-	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" \
-	  --print-header \
-	  --print-horizontally \
-	  --output-directory-for-global-scores "$TMPLDIR/children_global_scores" \
-	  --input-is-structure \
-	  --input \
-	> /dev/null
+	mkdir -p "$TMPLDIR/children_global_scores"
+	
+	if $USE_SLURM
+	then
+		mkdir -p "./slurm_job_logs"
+		
+		cat "$INFILE_CONTENTS_EXTRACTED" \
+		| sort \
+		| uniq \
+		| xargs -L 1 sbatch -o "./slurm_job_logs/slurmjob-%j.out" -e "./slurm_job_logs/slurmjob-%j.err" $SBATCH_PARAMETERS \
+		"$ZEROARG" "${ALLARGS[@]}" \
+		  --print-header \
+		  --print-horizontally \
+		  --input-is-structure \
+		  --input \
+		| egrep '^Submitted batch job ' \
+		| awk '{print $4}' \
+		> "$TMPLDIR/slurm_job_ids"
+		
+		if [ ! -s "$TMPLDIR/slurm_job_ids" ]
+		then
+			echo >&2 "Error: no Slurm jobs submitted"
+			exit 1
+		fi
+		
+		REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		while [ "$REMAINING_SLURM_JOBS" -gt "0" ]
+		do
+			sleep 5
+			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
+		done
+		
+		cat "$TMPLDIR/slurm_job_ids" | while read SLURM_JOB_ID
+		do
+			cat "./slurm_job_logs/slurmjob-${SLURM_JOB_ID}.out" > "$TMPLDIR/children_global_scores/result_${SLURM_JOB_ID}"
+		done
+	else
+		cat "$INFILE_CONTENTS_EXTRACTED" \
+		| sort \
+		| uniq \
+		| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" \
+		  --print-header \
+		  --print-horizontally \
+		  --output-directory-for-global-scores "$TMPLDIR/children_global_scores" \
+		  --input-is-structure \
+		  --input \
+		> /dev/null
+	fi
 	
 	find "$TMPLDIR/children_global_scores" -type f -not -empty > "$TMPLDIR/global_score_files"
 	
