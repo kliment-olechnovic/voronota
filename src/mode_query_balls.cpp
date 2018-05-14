@@ -63,6 +63,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string set_external_adjuncts=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts", "string", "file path to input external adjuncts"), "");
 	const std::string set_external_adjuncts_name=poh.argument<std::string>(pohw.describe_option("--set-external-adjuncts-name", "string", "name for external adjuncts"), "ex");
 	const bool rename_chains=poh.contains_option(pohw.describe_option("--rename-chains", "", "flag to rename input chains to be in interval from 'A' to 'Z'"));
+	const bool guess_chain_names=poh.contains_option(pohw.describe_option("--guess-chain-names", "", "flag to assign input chain names based on residue numbering"));
 	const std::string renumber_from_adjunct=poh.argument<std::string>(pohw.describe_option("--renumber-from-adjunct", "string", "adjunct name to use for input residue renumbering"), "");
 	const bool renumber_positively=poh.contains_option(pohw.describe_option("--renumber-positively", "", "flag to increment residue numbers to make them positive"));
 	const bool reset_serials=poh.contains_option(pohw.describe_option("--reset-serials", "", "flag to reset atom serial numbers"));
@@ -114,6 +115,30 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				list_of_balls[i].first.chainID=renaming_map[list_of_balls[i].first.chainID];
 			}
+		}
+	}
+
+	if(guess_chain_names)
+	{
+		char current_chain_name='A';
+		for(std::size_t i=0;i<list_of_balls.size();i++)
+		{
+			if(i>0 && list_of_balls[i].first.resSeq<list_of_balls[i-1].first.resSeq)
+			{
+				if(current_chain_name=='Z')
+				{
+					current_chain_name='a';
+				}
+				else if(current_chain_name=='z')
+				{
+					throw std::runtime_error("Too many chains to guess their names.");
+				}
+				else
+				{
+					current_chain_name++;
+				}
+			}
+			list_of_balls[i].first.chainID=std::string(1, current_chain_name);
 		}
 	}
 

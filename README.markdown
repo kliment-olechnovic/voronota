@@ -426,6 +426,7 @@ Using "--help" option without specific command results in printing help for all 
     --set-external-adjuncts         string      file path to input external adjuncts
     --set-external-adjuncts-name    string      name for external adjuncts
     --rename-chains                             flag to rename input chains to be in interval from 'A' to 'Z'
+    --guess-chain-names                         flag to assign input chain names based on residue numbering
     --renumber-from-adjunct         string      adjunct name to use for input residue renumbering
     --renumber-positively                       flag to increment residue numbers to make them positive
     --reset-serials                             flag to reset atom serial numbers
