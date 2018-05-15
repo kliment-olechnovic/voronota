@@ -12,9 +12,14 @@ then
 	exit 1
 fi
 
-if [ -z "$INFILE" ] || [ ! -s "$INFILE" ]
+if [ -z "$INFILE" ] && [ ! -t 0 ]
 then
-	echo >&2 "Error: missing input file '$INFILE'"
+	INFILE="-"
+fi
+
+if [ -z "$INFILE" ]
+then
+	echo >&2 "Error: no input"
 	exit 1
 fi
 
@@ -27,7 +32,23 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
-R --vanilla --args "$TMPLDIR/outfile" "$INFILE" "$@" \
+{
+	if [ "$INFILE" == "-" ]
+	then
+		cat
+	else
+		cat "$INFILE"
+	fi
+} \
+> "$TMPLDIR/infile"
+
+if [ ! -s "$TMPLDIR/infile" ]
+then
+	echo >&2 "Error: no input data"
+	exit 1
+fi
+
+R --vanilla --args "$TMPLDIR/outfile" "$TMPLDIR/infile" "$@" \
 > /dev/null \
 << 'EOF'
 
