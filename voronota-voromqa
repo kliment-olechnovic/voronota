@@ -90,6 +90,7 @@ NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
 PRINT_ENERGY_OF_CONTACTS_SELECTION=false
+PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
 PRINT_GLOBAL_SCORES_VERTICALLY=false
 TREAT_INPUT_AS_LIST_OF_FILES=false
@@ -314,6 +315,9 @@ do
 		;;
 	--print-energy-of-contacts-selection)
 		PRINT_ENERGY_OF_CONTACTS_SELECTION=true
+		;;
+	--print-clash-score-of-contacts-selection)
+		PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=true
 		;;
 	--print-header)
 		PRINT_GLOBAL_SCORES_HEADER=true
@@ -1358,6 +1362,42 @@ then
 	> $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
 
+if $PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION
+then
+	CLASH_DIST_HEAVY_HEAVY="2.5"
+	CLASH_DIST_HEAVY_HYDROGEN="2.0"
+	CLASH_DIST_HYDROGEN_HYDROGEN="1.5"
+	HYDROGEN_NAMES="A<H,HA,HA2,HB,HB1,HB2,HD1,HD11,HD2,HD21,HE,HE1,HE2,HE21,HE3,HG,HG1,HG11,HG12,HG2,HG21,HH,HH11,HH2,HZ,HZ1,HZ2,HZ3>"
+
+	echo \
+	"$(cat $TMPLDIR/foundation/all_contacts \
+	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+	"$(cat $TMPLDIR/foundation/all_contacts \
+	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	  | voronota query-contacts \
+	    --match-first-not "$HYDROGEN_NAMES" \
+	    --match-second-not "$HYDROGEN_NAMES" \
+	    --match-max-dist "$CLASH_DIST_HEAVY_HEAVY" \
+	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+	"$(cat $TMPLDIR/foundation/all_contacts \
+	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	  | voronota query-contacts \
+	    --match-first-not "$HYDROGEN_NAMES" \
+	    --match-second "$HYDROGEN_NAMES" \
+	    --match-max-dist "$CLASH_DIST_HEAVY_HYDROGEN" \
+	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+	"$(cat $TMPLDIR/foundation/all_contacts \
+	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	  | voronota query-contacts \
+	    --match-first "$HYDROGEN_NAMES" \
+	    --match-second "$HYDROGEN_NAMES" \
+	    --match-max-dist "$CLASH_DIST_HYDROGEN_HYDROGEN" \
+	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+	| awk '{ if($1>0) {print (($2+$3+$4)/$1)} else {print "0"} }' \
+	> $TMPLDIR/clash_score_of_contacts_selection
+fi
+
 {
 	if $PRINT_GLOBAL_SCORES_HEADER
 	then
@@ -1365,6 +1405,7 @@ fi
 			echo "input ${ENERGY_MODE}_score ${ENERGY_MODE}_residues ${ENERGY_MODE}_atoms"
 			[ -s "$TMPLDIR/global_quality_score_of_selection" ] && echo "sel_${ENERGY_MODE}_score sel_${ENERGY_MODE}_atoms"
 			[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_contacts sel_${ENERGY_MODE}_area sel_${ENERGY_MODE}_area_unk sel_${ENERGY_MODE}_energy sel_${ENERGY_MODE}_energy_norm"
+			[ -s "$TMPLDIR/clash_score_of_contacts_selection" ] && echo "sel_${ENERGY_MODE}_clash_score"
 		} \
 		| tr '\n' ' ' \
 		| sed 's/\s$/\n/'
@@ -1377,6 +1418,7 @@ fi
 		cat $TMPLDIR/balls | wc -l
 		[ -s "$TMPLDIR/global_quality_score_of_selection" ] && cat $TMPLDIR/global_quality_score_of_selection
 		[ -s "$TMPLDIR/energy_descriptor_of_contacts_selection" ] && cat $TMPLDIR/energy_descriptor_of_contacts_selection
+		[ -s "$TMPLDIR/clash_score_of_contacts_selection" ] && cat $TMPLDIR/clash_score_of_contacts_selection
 	} \
 	| tr '\n' ' ' \
 	| sed 's/\s$/\n/'
