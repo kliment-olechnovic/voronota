@@ -84,7 +84,9 @@ MUTATION_QUERY=""
 MUTATION_GOAL=""
 OPTIONS_FOR_CALCULATING_CONTACTS=""
 MAX_PROCESSORS="1"
+USE_SLURM_DIR=""
 SBATCH_PARAMETERS=""
+SPLIT_INTO_MODELS_DIR=""
 TAG_PERIPHERAL_CONTACTS=""
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
@@ -94,7 +96,6 @@ PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
 PRINT_GLOBAL_SCORES_VERTICALLY=false
 TREAT_INPUT_AS_LIST_OF_FILES=false
-USE_SLURM=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -267,6 +268,9 @@ do
 		MULTIPLE_ENERGY_MODES="$OPTARG"
 		shift
 		;;
+	--no-multiple-energy-modes)
+		MULTIPLE_ENERGY_MODES=""
+		;;
 	--energy-input-potential)
 		ENERGY_INPUT_POTENTIAL="$OPTARG"
 		shift
@@ -291,9 +295,23 @@ do
 		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
+	--use-slurm)
+		USE_SLURM_DIR="$OPTARG"
+		shift
+		;;
+	--no-use-slurm)
+		USE_SLURM_DIR=""
+		;;
 	--sbatch-parameters)
 		SBATCH_PARAMETERS="$OPTARG"
 		shift
+		;;
+	--split-into-models)
+		SPLIT_INTO_MODELS_DIR="$OPTARG"
+		shift
+		;;
+	--no-split-into-models)
+		SPLIT_INTO_MODELS_DIR=""
 		;;
 	--tag-peripheral-contacts)
 		TAG_PERIPHERAL_CONTACTS="--tag-peripherial"
@@ -333,9 +351,6 @@ do
 		;;
 	--input-is-structure)
 		TREAT_INPUT_AS_LIST_OF_FILES=false
-		;;
-	--use-slurm)
-		USE_SLURM=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -487,7 +502,7 @@ then
 	command -v $ADD_HYDROGENS_COMMAND &> /dev/null || { echo >&2 "Error: '$ADD_HYDROGENS_COMMAND' command, requested for adding hydrogens, is not available"; exit 1; }
 fi
 
-if [ "$USE_SLURM" == "true" ]
+if [ -n "$USE_SLURM_DIR" ]
 then
 	command -v sbatch &> /dev/null || { echo >&2 "Error: 'sbatch' command, needed for using Slurm, is not available"; exit 1; }
 fi
@@ -544,14 +559,14 @@ if $TREAT_INPUT_AS_LIST_OF_FILES
 then
 	mkdir -p "$TMPLDIR/children_global_scores"
 	
-	if $USE_SLURM
+	if [ -n "$USE_SLURM_DIR" ]
 	then
-		mkdir -p "./slurm_job_logs"
+		mkdir -p "$USE_SLURM_DIR"
 		
 		cat "$INFILE_CONTENTS_EXTRACTED" \
 		| sort \
 		| uniq \
-		| xargs -L 1 sbatch -o "./slurm_job_logs/slurmjob-%j.out" -e "./slurm_job_logs/slurmjob-%j.err" $SBATCH_PARAMETERS \
+		| xargs -L 1 sbatch -o "$USE_SLURM_DIR/slurmjob-%j.out" -e "$USE_SLURM_DIR/slurmjob-%j.err" $SBATCH_PARAMETERS \
 		"$ZEROARG" "${ALLARGS[@]}" \
 		  --print-header \
 		  --print-horizontally \
@@ -576,7 +591,7 @@ then
 		
 		cat "$TMPLDIR/slurm_job_ids" | while read SLURM_JOB_ID
 		do
-			cat "./slurm_job_logs/slurmjob-${SLURM_JOB_ID}.out" > "$TMPLDIR/children_global_scores/result_${SLURM_JOB_ID}"
+			cat "$USE_SLURM_DIR/slurmjob-${SLURM_JOB_ID}.out" > "$TMPLDIR/children_global_scores/result_${SLURM_JOB_ID}"
 		done
 	else
 		cat "$INFILE_CONTENTS_EXTRACTED" \
@@ -614,6 +629,50 @@ then
 	exit 0
 fi
 
+if [ -n "$SPLIT_INTO_MODELS_DIR" ]
+then
+	mkdir -p "$SPLIT_INTO_MODELS_DIR"
+	
+	OUTPREFIX="${SPLIT_INTO_MODELS_DIR}/$(basename $INFILE)"
+	
+	{
+		OUTFILE=""
+		cat "$INFILE_CONTENTS_EXTRACTED" | while read LINE
+		do
+			if [[ "$LINE" == "MODEL "* ]]
+			then
+				MODELNUM="$(echo $LINE | sed 's/^MODEL//' | sed 's/\s//g')"
+				OUTFILE="${OUTPREFIX}__${MODELNUM}.pdb"
+				true > "$OUTFILE"
+				echo "$OUTFILE"
+			fi
+			
+			if [ -n "$OUTFILE" ]
+			then
+				echo "$LINE" >> "$OUTFILE"
+			fi
+			
+			if [[ "$LINE" == "ENDMDL"* ]]
+			then
+				OUTFILE=""
+			fi
+		done
+	} \
+	| "$ZEROARG" "${ALLARGS[@]}" --input - --input-is-list --no-split-into-models \
+	| \
+	{
+		if [ -n "$OUTDIR_GLOBAL_SCORES" ]
+		then
+			mkdir -p "$OUTDIR_GLOBAL_SCORES"
+			cat | tee "$(mktemp "$OUTDIR_GLOBAL_SCORES/vgs.XXXXXXXXXX")"
+		else
+			cat
+		fi
+	}
+	
+	exit 0
+fi
+
 if [ -n "$MULTIPLE_ENERGY_MODES" ]
 then
 	echo "$MULTIPLE_ENERGY_MODES" \
@@ -625,7 +684,7 @@ then
 	| xargs -L 1 "$ZEROARG" "${ALLARGS[@]}" \
 	  --print-header \
 	  --print-vertically \
-	  --multiple-energy-modes "" \
+	  --no-multiple-energy-modes \
 	  --output-directory-for-global-scores "" \
 	  --input "$INFILE_CONTENTS_EXTRACTED" \
 	  --energy-mode \
@@ -1368,27 +1427,28 @@ then
 	CLASH_DIST_HEAVY_HYDROGEN="2.0"
 	CLASH_DIST_HYDROGEN_HYDROGEN="1.5"
 	HYDROGEN_NAMES="A<H,HA,HA2,HB,HB1,HB2,HD1,HD11,HD2,HD21,HE,HE1,HE2,HE21,HE3,HG,HG1,HG11,HG12,HG2,HG21,HH,HH11,HH2,HZ,HZ1,HZ2,HZ3>"
+	
+	cat $TMPLDIR/foundation/all_contacts \
+	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	| voronota query-contacts --match-min-seq-sep 2 \
+	> $TMPLDIR/clash_interest_contacts
 
 	echo \
-	"$(cat $TMPLDIR/foundation/all_contacts \
-	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	"$(cat $TMPLDIR/clash_interest_contacts \
 	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/foundation/all_contacts \
-	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	"$(cat $TMPLDIR/clash_interest_contacts \
 	  | voronota query-contacts \
 	    --match-first-not "$HYDROGEN_NAMES" \
 	    --match-second-not "$HYDROGEN_NAMES" \
 	    --match-max-dist "$CLASH_DIST_HEAVY_HEAVY" \
 	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/foundation/all_contacts \
-	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	"$(cat $TMPLDIR/clash_interest_contacts \
 	  | voronota query-contacts \
 	    --match-first-not "$HYDROGEN_NAMES" \
 	    --match-second "$HYDROGEN_NAMES" \
 	    --match-max-dist "$CLASH_DIST_HEAVY_HYDROGEN" \
 	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/foundation/all_contacts \
-	  | voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+	"$(cat $TMPLDIR/clash_interest_contacts \
 	  | voronota query-contacts \
 	    --match-first "$HYDROGEN_NAMES" \
 	    --match-second "$HYDROGEN_NAMES" \
