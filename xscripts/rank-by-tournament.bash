@@ -56,7 +56,26 @@ args=commandArgs(TRUE);
 
 outfile=args[1];
 infile=args[2];
-scorenames=args[3:length(args)];
+scorenames_input=args[3:length(args)];
+
+scorenames=c();
+scorenames_to_negate=c();
+
+negate=FALSE;
+for(sinput in scorenames_input)
+{
+	if(sinput=="-")
+	{
+		negate=TRUE;
+	} else
+	{
+		scorenames=c(scorenames, sinput);
+		if(negate==TRUE)
+		{
+			scorenames_to_negate=c(scorenames_to_negate, sinput);
+		}
+	}
+}
 
 t=read.table(infile, header=TRUE, stringsAsFactors=FALSE);
 
@@ -64,6 +83,7 @@ M=length(scorenames);
 N=nrow(t);
 
 indices=rep(1, M);
+modifiers=rep(1, M);
 for(m in 1:M)
 {
 	index=which(colnames(t)==scorenames[m]);
@@ -72,6 +92,10 @@ for(m in 1:M)
 		stop(paste("Invalid score name '", scorenames[m], "'.", sep=""));
 	}
 	indices[m]=index;
+	if(is.element(scorenames[m], scorenames_to_negate))
+	{
+		modifiers[m]=(0-1);
+	}
 }
 
 signs=rep(0, M);
@@ -86,7 +110,7 @@ while(i<=N)
 	{
 		for(m in 1:M)
 		{
-			signs[m]=sign(t[i, indices[m]]-t[j, indices[m]]);
+			signs[m]=sign(t[i, indices[m]]-t[j, indices[m]])*modifiers[m];
 		}
 		
 		if(length(which(signs>0))==M)
