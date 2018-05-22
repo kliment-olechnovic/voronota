@@ -89,6 +89,7 @@ USE_SLURM_DIR=""
 SBATCH_PARAMETERS=""
 SPLIT_INTO_MODELS_DIR=""
 TAG_PERIPHERAL_CONTACTS=""
+STRIP_ROTAMERS=false
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
@@ -326,6 +327,9 @@ do
 		;;
 	--small-plot)
 		PLOT_MODE="small"
+		;;
+	--strip-rotamers)
+		STRIP_ROTAMERS=true
 		;;
 	--neglect-SAS)
 		NEGLECT_SAS=true
@@ -821,6 +825,15 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		  --include-hydrogens \
 		| voronota query-balls \
 		  --drop-adjuncts
+	else
+		cat
+	fi
+} \
+| \
+{
+	if $STRIP_ROTAMERS
+	then
+		voronota query-balls --match 'A<C,N,O,CA,CB,OXT>'
 	else
 		cat
 	fi
