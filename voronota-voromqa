@@ -881,7 +881,7 @@ fi
 CACHE_MD5=""
 if [ -n "$CACHE_DIRECTORY" ]
 then
-	CACHE_MD5=$(cat $TMPLDIR/balls <(echo "$TAG_PERIPHERAL_CONTACTS $OPTIONS_FOR_CALCULATING_CONTACTS") | md5sum | awk '{print $1}')
+	CACHE_MD5=$(cat $TMPLDIR/balls <(echo "$PROBE_RADIUS" "$TAG_PERIPHERAL_CONTACTS $OPTIONS_FOR_CALCULATING_CONTACTS") | md5sum | awk '{print $1}')
 	if [ -n "$CACHE_MD5" ]
 	then
 		CACHE_MD5="${CACHE_MD5}.voronota.voromqa"
