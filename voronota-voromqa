@@ -80,6 +80,7 @@ ENERGY_MODE="voromqa_v1"
 MULTIPLE_ENERGY_MODES=""
 ENERGY_INPUT_POTENTIAL=""
 ENERGY_INPUT_STATISTICS=""
+PROBE_RADIUS="1.4"
 MUTATION_QUERY=""
 MUTATION_GOAL=""
 OPTIONS_FOR_CALCULATING_CONTACTS=""
@@ -277,6 +278,10 @@ do
 		;;
 	--energy-input-statistics)
 		ENERGY_INPUT_STATISTICS="$OPTARG"
+		shift
+		;;
+	--probe-radius)
+		PROBE_RADIUS="$OPTARG"
 		shift
 		;;
 	--mutation-query)
@@ -865,6 +870,7 @@ then
 	cat $TMPLDIR/balls \
 	| voronota calculate-contacts \
 	  --annotated \
+	  --probe "$PROBE_RADIUS" \
 	  --tag-centrality $TAG_PERIPHERAL_CONTACTS $OPTIONS_FOR_CALCULATING_CONTACTS \
 	| tee $TMPLDIR/foundation/raw_contacts \
 	| voronota query-contacts \
