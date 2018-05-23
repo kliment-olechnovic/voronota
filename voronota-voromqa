@@ -479,7 +479,7 @@ then
 	exit 1
 fi
 
-if [ -n "$MUTATION_QUERY" ] && [ -z "$REBUILD_SIDECHAINS_COMMAND" ]
+if [ -n "$MUTATION_QUERY" ] && [ -z "$REBUILD_SIDECHAINS_COMMAND" ] && [ "$STRIP_ROTAMERS" != "true" ]
 then
 	echo >&2 "Error: '--mutation-query' cannot be used without '--rebuild-sidechains'"
 	exit 1
