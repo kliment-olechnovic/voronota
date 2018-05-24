@@ -48,6 +48,7 @@ void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler&);
 void reprint_hbp(const auxiliaries::ProgramOptionsHandler&);
 void compare_files_as_sets(const auxiliaries::ProgramOptionsHandler&);
 void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler&);
+void query_balls_distances(const auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
@@ -115,6 +116,7 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-reprint-hbp", ModeDescriptor::FunctionPtr(reprint_hbp)));
 	list_of_modes.push_back(ModeDescriptor("x-compare-files-as-sets", ModeDescriptor::FunctionPtr(compare_files_as_sets)));
 	list_of_modes.push_back(ModeDescriptor("x-calculate-path-centralities", ModeDescriptor::FunctionPtr(calculate_path_centralities)));
+	list_of_modes.push_back(ModeDescriptor("x-query-balls-distances", ModeDescriptor::FunctionPtr(query_balls_distances)));
 	return list_of_modes;
 }
 
