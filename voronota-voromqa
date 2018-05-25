@@ -48,6 +48,7 @@ OUTFILE_RESIDUE_SCORES=""
 OUTFILE_RESIDUE_SCORES_PDB=""
 OUTFILE_ATOM_DEPTHS=""
 OUTFILE_CAMEO_RESIDUE_SCORES=""
+OUTFILE_CASPLIKE_RESIDUE_SCORES=""
 OUTFILE_PLOT=""
 OUTFILE_MAP=""
 OUTFILE_SCREENSHOT=""
@@ -156,6 +157,10 @@ do
 		;;
 	--output-residue-scores-for-CAMEO)
 		OUTFILE_CAMEO_RESIDUE_SCORES="$OPTARG"
+		shift
+		;;
+	--output-residue-scores-like-for-CASP)
+		OUTFILE_CASPLIKE_RESIDUE_SCORES="$OPTARG"
 		shift
 		;;
 	--output-residue-scores-plot)
@@ -1212,6 +1217,21 @@ then
 	  --pdb-output $OUTFILE_CAMEO_RESIDUE_SCORES \
 	  --pdb-output-b-factor rqscore \
 	  --pdb-output-template $INFILE_CONTENTS_EXTRACTED \
+	> /dev/null
+fi
+
+if [ -n "$OUTFILE_CASPLIKE_RESIDUE_SCORES" ]
+then
+	mkdir -p $(dirname "$OUTFILE_CASPLIKE_RESIDUE_SCORES")
+	cat $TMPLDIR/balls \
+	| voronota query-balls \
+	  --drop-altloc-indicators \
+	  --set-adjuncts 'oc=1' \
+	  --set-external-adjuncts <(awk 'BEGIN {a_mean=0.310; a_sd=0.097; b_mean=0.487; b_sd=0.203; d0=3.0;} {s=((($2-a_mean)/a_sd)*b_sd+b_mean); if(s<0.01){s=0.01;} if(s>1.0){s=1.0;} print $1 " " (d0*sqrt((1-s)/s)); }' $TMPLDIR/residue_quality_scores) \
+	  --set-external-adjuncts-name score \
+	| voronota write-balls-to-atoms-file \
+	  --pdb-output "$OUTFILE_CASPLIKE_RESIDUE_SCORES" \
+	  --pdb-output-b-factor score \
 	> /dev/null
 fi
 
