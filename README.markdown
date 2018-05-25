@@ -639,6 +639,7 @@ Using "--help" option without specific command results in printing help for all 
     --pdb-output                    string      file path to output query result in PDB format
     --pdb-output-b-factor           string      name of adjunct to output as B-factor in PDB format
     --pdb-output-template           string      file path to input template for B-factor insertions
+    --add-chain-terminators                     flag to add TER lines after chains
     --help                                      flag to print usage help to stdout and exit
 
 ### Input stream:
