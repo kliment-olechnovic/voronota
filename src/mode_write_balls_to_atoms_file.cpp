@@ -94,6 +94,7 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string pdb_output=poh.argument<std::string>(pohw.describe_option("--pdb-output", "string", "file path to output query result in PDB format"), "");
 	const std::string pdb_output_b_factor=poh.argument<std::string>(pohw.describe_option("--pdb-output-b-factor", "string", "name of adjunct to output as B-factor in PDB format"), "tf");
 	const std::string pdb_output_template=poh.argument<std::string>(pohw.describe_option("--pdb-output-template", "string", "file path to input template for B-factor insertions"), "");
+	const bool add_chain_terminators=poh.contains_option(pohw.describe_option("--add-chain-terminators", "", "flag to add TER lines after chains"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -131,6 +132,12 @@ void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					{
 						const std::size_t i=models_it->second[j];
 						foutput << auxiliaries::AtomsIO::PDBWriter::write_atom_record_in_line(convert_ball_record_to_single_atom_record(list_of_balls[i].first, list_of_balls[i].second, pdb_output_b_factor)) << "\n";
+						if(add_chain_terminators &&
+								((j+1)>=models_it->second.size() ||
+										list_of_balls[i].first.chainID!=list_of_balls[models_it->second[j+1]].first.chainID))
+						{
+							foutput << "TER\n";
+						}
 					}
 					if(models.size()>1)
 					{
