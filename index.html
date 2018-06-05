@@ -567,7 +567,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <h2 id="voromqa-method-script">VoroMQA method script</h2>
 <p>'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
-    --input | -i                   string   *  input structure file in PDB format
+    --input | -i                   string      input structure file in PDB format
     --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -585,6 +585,7 @@ Advanced options:
     --reference-sequence           string      sequence file or string for residue renumbering
     --output-sequence-alignment    string      output text file with sequence alignment
     --multiple-models                          flag to handle multiple models in PDB file
+    --list-all-options                         flag to display list of all command line options and exit
 
 Standard output (one line):
     {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]</code></pre>
