@@ -693,7 +693,7 @@ Using "--help" option without specific command results in printing help for all 
 The script interface is presented below:
     
     Basic options:
-        --input | -i                   string   *  input structure file in PDB format
+        --input | -i                   string      input structure file in PDB format
         --input-filter-query           string      input atoms filtering query parameters
         --output-atom-scores           string      output text file with atom scores
         --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -711,6 +711,7 @@ The script interface is presented below:
         --reference-sequence           string      sequence file or string for residue renumbering
         --output-sequence-alignment    string      output text file with sequence alignment
         --multiple-models                          flag to handle multiple models in PDB file
+        --list-all-options                         flag to display list of all command line options and exit
     
     Standard output (one line):
         {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]
