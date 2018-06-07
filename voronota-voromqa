@@ -109,7 +109,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --surface-craving-residues-output          string      output text file with residue scores
     --tag-peripheral-contacts                              flag to tag peripheral contacts
     --unteaching-dir                           string      path to directory with potential-defining files
-    --use-slurm                                string      flag to use Slurm workload manage
+    --use-slurm                                string      path to directory to use for Slurm logs
 
 EOF
 exit 1
