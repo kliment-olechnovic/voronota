@@ -530,14 +530,14 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				input >> tester.match_adjuncts_not;
 			}
 			else if(token_index==0
-					&& token.compare(0, 1, "-")!=0
+					&& token.rfind("-", 0)!=0
 					&& token.find('<')!=std::string::npos
 					&& token.find('>')!=std::string::npos)
 			{
 				tester.match_crad=token;
 			}
 			else if(token_index==0
-					&& token.compare(0, 1, "-")!=0
+					&& token.rfind("-", 0)!=0
 					&& token.find('<')==std::string::npos
 					&& token.find('>')==std::string::npos)
 			{
@@ -670,7 +670,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				tester.no_same_chain=read_tester_flag_value(input);
 				tester.no_solvent=tester.no_same_chain;
 			}
-			else if(token_index==0 && token.compare(0, 1, "-")!=0)
+			else if(token_index==0 && token.rfind("-", 0)!=0)
 			{
 				tester.name_of_base_selection_of_contacts=token;
 			}

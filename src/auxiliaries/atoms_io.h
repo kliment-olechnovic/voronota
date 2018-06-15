@@ -259,7 +259,7 @@ public:
 				{
 					std::vector<std::string> header;
 					token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
-					while(token_status && token.compare(0, atom_site_prefix.size(), atom_site_prefix)==0)
+					while(token_status && token.rfind(atom_site_prefix, 0)==0)
 					{
 						header.push_back(token);
 						token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
@@ -417,7 +417,7 @@ public:
 				{
 					if(!records_started)
 					{
-						if(line.compare(0, header_prefix.size(), header_prefix)==0)
+						if(line.rfind(header_prefix, 0)==0)
 						{
 							records_started=true;
 						}
