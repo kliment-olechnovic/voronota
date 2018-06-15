@@ -794,7 +794,7 @@ private:
 					if(!input.is_unnamed_value_used(i))
 					{
 						const std::string& candidate_str=input.get_list_of_unnamed_values()[i];
-						if(candidate_str.size()>2 && candidate_str.compare(0, 2, "0x")==0)
+						if(candidate_str.size()>2 && candidate_str.rfind("0x", 0)==0)
 						{
 							auxiliaries::ColorUtilities::ColorInteger candidate_color=auxiliaries::ColorUtilities::color_from_name(candidate_str);
 							if(candidate_color!=auxiliaries::ColorUtilities::null_color())
@@ -1420,7 +1420,7 @@ private:
 		{
 			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
 		}
-		else if(name.compare(0, 1, "-")==0 || name.compare(0, 1, "_")==0)
+		else if(name.rfind("-", 0)==0 || name.rfind("_", 0)==0)
 		{
 			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
 		}
@@ -1436,7 +1436,7 @@ private:
 		{
 			throw std::runtime_error(std::string("Tag contains invalid symbols."));
 		}
-		else if(tag.compare(0, 1, "-")==0)
+		else if(tag.rfind("-", 0)==0)
 		{
 			throw std::runtime_error(std::string("Tag starts with invalid symbol."));
 		}

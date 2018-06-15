@@ -69,7 +69,7 @@ public:
 			}
 			else
 			{
-				if(token_wrapped==0 && token_str.size()>2 && token_str.compare(0, 2, "--")==0)
+				if(token_wrapped==0 && token_str.size()>2 && token_str.rfind("--", 0)==0)
 				{
 					current_key=token_str.substr(2);
 					map_of_values_[current_key];

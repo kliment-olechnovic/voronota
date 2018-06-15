@@ -36,11 +36,11 @@ public:
 			for(std::size_t i=0;i<original_argv_.size();i++)
 			{
 				const std::string& str=original_argv_[i];
-				if(i>0 && str.compare(0, option_prefix_str().size(), option_prefix_str())==0)
+				if(i>0 && str.rfind(option_prefix_str(), 0)==0)
 				{
 					options_[str]="";
 				}
-				else if(i>1 && original_argv_[i-1].compare(0, option_prefix_str().size(), option_prefix_str())==0)
+				else if(i>1 && original_argv_[i-1].rfind(option_prefix_str(), 0)==0)
 				{
 					options_[original_argv_[i-1]]=str;
 				}
@@ -79,7 +79,7 @@ public:
 
 	void set_option(const std::string& name)
 	{
-		if(name.compare(0, option_prefix_str().size(), option_prefix_str())==0)
+		if(name.rfind(option_prefix_str(), 0)==0)
 		{
 			options_[name]="";
 		}
@@ -88,7 +88,7 @@ public:
 	template<typename T>
 	void set_option_with_argument(const std::string& name, const T value)
 	{
-		if(name.compare(0, option_prefix_str().size(), option_prefix_str())==0)
+		if(name.rfind(option_prefix_str(), 0)==0)
 		{
 			std::ostringstream output;
 			output << value;

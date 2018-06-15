@@ -134,7 +134,7 @@ public:
 		{
 			return 0xFFFFFF;
 		}
-		else if(name.size()==8 && name.compare(0, 2, "0x")==0 && name.find_first_not_of("0123456789ABCDEF", 2)==std::string::npos)
+		else if(name.size()==8 && name.rfind("0x", 0)==0 && name.find_first_not_of("0123456789ABCDEF", 2)==std::string::npos)
 		{
 			ColorInteger color_int=0;
 			std::istringstream color_input(name);
