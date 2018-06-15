@@ -765,31 +765,8 @@ if [ -n "$SPLIT_INTO_MODELS_DIR" ]
 then
 	mkdir -p "$SPLIT_INTO_MODELS_DIR"
 	
-	OUTPREFIX="${SPLIT_INTO_MODELS_DIR}/$(basename $INFILE)"
-	
-	{
-		OUTFILE=""
-		cat "$INFILE_CONTENTS_EXTRACTED" | while read LINE
-		do
-			if [[ "$LINE" == "MODEL "* ]]
-			then
-				MODELNUM="$(echo $LINE | sed 's/^MODEL//' | sed 's/\s//g')"
-				OUTFILE="${OUTPREFIX}__${MODELNUM}.pdb"
-				true > "$OUTFILE"
-				echo "$OUTFILE"
-			fi
-			
-			if [ -n "$OUTFILE" ]
-			then
-				echo "$LINE" >> "$OUTFILE"
-			fi
-			
-			if [[ "$LINE" == "ENDMDL"* ]]
-			then
-				OUTFILE=""
-			fi
-		done
-	} \
+	cat "$INFILE_CONTENTS_EXTRACTED" \
+	| voronota x-split-atoms-file --prefix "${SPLIT_INTO_MODELS_DIR}/$(basename $INFILE)__" --postfix '.pdb' \
 	| "$ZEROARG" "${ALLARGS[@]}" --input - --input-is-list --no-split-into-models \
 	| \
 	{
