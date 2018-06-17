@@ -154,7 +154,7 @@ then
 	  --pdb-output "$TMPLDIR/balls.pdb" \
 	> /dev/null
 	
-	./voronota-voromqa \
+	voronota-voromqa \
 	  --multiple-models \
 	  --input "$TMPLDIR/balls.pdb" \
 	  --surface-craving-atoms-output "$TMPLDIR/all_mscores" \
@@ -168,12 +168,12 @@ then
 fi
 
 cat "$TMPLDIR/balls" \
-| ./voronota x-place-membrane \
+| voronota x-place-membrane \
   --membrane-width "$WIDTH" $OPTIMIZE_WIDTH \
   --membrane-width-extension "$WIDTH_EXTENSION" $OPTIMIZE_WIDTH_EXTENSION \
   --scores-file <(cat "$TMPLDIR/all_mscores" | awk '{ if($2<0.75) {print $1 " 0"} else {print $1 " 1"} }') \
   --placement-output "$TMPLDIR/mplace" \
-| ./voronota write-balls-to-atoms-file \
+| voronota write-balls-to-atoms-file \
   --pdb-output-b-factor membrane \
   --pdb-output "$TMPLDIR/statuses.pdb" \
 > /dev/null
