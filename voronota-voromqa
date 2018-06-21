@@ -107,6 +107,8 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --surface-craving-depth-value              number      depth for surface frustration calculation, default is 3
     --surface-craving-residues-output-pdb      string      output PDB file with residue scores as B-factors
     --surface-craving-residues-output          string      output text file with residue scores
+    --w-surface-craving-residues-output-pdb    string      output PDB file with residue scores as B-factors
+    --w-surface-craving-residues-output        string      output text file with residue scores
     --tag-peripheral-contacts                              flag to tag peripheral contacts
     --unteaching-dir                           string      path to directory with potential-defining files
     --use-slurm                                string      path to directory to use for Slurm logs
@@ -170,6 +172,8 @@ SURFACE_CRAVING_RESIDUES_OUTPUT=""
 SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT=""
 SURFACE_CRAVING_DEPTH_VALUE="3"
+WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT=""
+WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 ENERGY_MODE="voromqa_v1"
 MULTIPLE_ENERGY_MODES=""
 ENERGY_INPUT_POTENTIAL=""
@@ -359,6 +363,14 @@ do
 		;;
 	--surface-craving-depth-value)
 		SURFACE_CRAVING_DEPTH_VALUE="$OPTARG"
+		shift
+		;;
+	--w-surface-craving-residues-output)
+		WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT="$OPTARG"
+		shift
+		;;
+	--w-surface-craving-residues-output-pdb)
+		WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$OPTARG"
 		shift
 		;;
 	--energy-mode)
@@ -854,6 +866,8 @@ SURFACE_CRAVING_ATOMS_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERG
 SURFACE_CRAVING_RESIDUES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_RESIDUES_OUTPUT")"
 SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")"
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT")"
+WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT")"
+WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")"
 
 cat $INFILE_CONTENTS_EXTRACTED \
 | voronota get-balls-from-atoms-file \
@@ -1674,7 +1688,7 @@ fi
 }
 
 
-if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT" ]
+if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
 then
 	{
 		echo "c<solvent>"
@@ -1760,5 +1774,48 @@ then
 		  --pdb-output "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" \
 		  --pdb-output-b-factor score \
 		> /dev/null
+	fi
+	
+	if [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
+	then
+		
+R --slave --vanilla --args \
+  "$TMPLDIR/residue_quality_scores" \
+  "$TMPLDIR/surface_residue_craving_scores" \
+  "$TMPLDIR/weighted_surface_residue_craving_scores" \
+&> /dev/null \
+<< 'EOF'
+args=commandArgs(TRUE);
+infile1=args[1];
+infile2=args[2];
+outfile=args[3];
+t1=read.table(infile1, header=FALSE, stringsAsFactors=FALSE);
+t2=read.table(infile2, header=FALSE, stringsAsFactors=FALSE);
+t=merge(t1, t2, by="V1");
+result=data.frame(residue_id=t$V1, score=(t$V2.x*t$V2.y));
+write.table(result, outfile, quote=FALSE, row.names=FALSE, col.names=FALSE);
+EOF
+		
+		if [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT" ]
+		then
+			mkdir -p $(dirname "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT")
+			cp $TMPLDIR/weighted_surface_residue_craving_scores "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT"
+		fi
+		
+		if [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
+		then
+			mkdir -p $(dirname "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")
+			
+			cat $TMPLDIR/balls \
+			| voronota query-balls \
+			  --drop-altloc-indicators \
+			  --set-adjuncts 'oc=1' \
+			  --set-external-adjuncts $TMPLDIR/weighted_surface_residue_craving_scores \
+			  --set-external-adjuncts-name score \
+			| voronota write-balls-to-atoms-file \
+			  --pdb-output "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" \
+			  --pdb-output-b-factor score \
+			> /dev/null
+		fi
 	fi
 fi
