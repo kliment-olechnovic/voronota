@@ -33,6 +33,10 @@ Constructed contacts (count=12469 drawable=120 area=47017.2)
 Wrote atoms to file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 
 
+> save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume
+Wrote atoms to file './jobs_output/self_scripting/pdb_atoms' (count=1717 volume=41027.8)
+
+
 > save-contacts './jobs_output/self_scripting/plain_contacts'
 Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
 

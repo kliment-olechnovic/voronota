@@ -6,6 +6,7 @@
 #include "selection_manager_for_atoms_and_contacts.h"
 #include "command_input.h"
 #include "construction_of_secondary_structure.h"
+#include "writing_atomic_balls_in_pdb_format.h"
 
 namespace common
 {
@@ -1470,6 +1471,18 @@ private:
 		return std::string();
 	}
 
+	template<typename T>
+	static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)
+	{
+		T sliced_vector;
+		sliced_vector.reserve(ids.size());
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			sliced_vector.push_back(full_vector.at(*it));
+		}
+		return sliced_vector;
+	}
+
 	void assert_atoms_representations_availability() const
 	{
 		if(atoms_representation_names_.empty())
@@ -1806,15 +1819,9 @@ private:
 
 		if(ids.size()<atoms_.size())
 		{
-			std::vector<Atom> atoms;
-			atoms.reserve(ids.size());
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				atoms.push_back(atoms_.at(*it));
-			}
-
 			const SummaryOfAtoms old_summary=SummaryOfAtoms::collect_summary(atoms_);
 
+			std::vector<Atom> atoms=slice_vector_by_ids(atoms_, ids);
 			reset_atoms(atoms);
 			cargs.changed_atoms=true;
 
@@ -1838,21 +1845,41 @@ private:
 
 		CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 		parameters_for_output_destinations.read(true, cargs.input);
+		CommandParametersForGenericSelecting parameters_for_selecting;
+		parameters_for_selecting.read(cargs.input);
+		const bool as_pdb=cargs.input.get_flag("as-pdb");
+		const std::string pdb_b_factor_name=cargs.input.get_value_or_default<std::string>("pdb-b-factor", "tf");
+		const bool pdb_ter=cargs.input.get_flag("pdb-ter");
 
 		cargs.input.assert_nothing_unusable();
 
+		const std::set<std::size_t> ids=selection_manager_.select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
 		std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+		const std::vector<Atom> atoms=slice_vector_by_ids(atoms_, ids);
 
 		for(std::size_t i=0;i<outputs.size();i++)
 		{
 			std::ostream& output=(*(outputs[i]));
-			auxiliaries::IOUtilities().write_set(atoms_, output);
+			if(as_pdb)
+			{
+				WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
+			}
+			else
+			{
+				auxiliaries::IOUtilities().write_set(atoms, output);
+			}
 		}
 
 		if(!parameters_for_output_destinations.file.empty())
 		{
 			cargs.output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' (";
-			SummaryOfAtoms::collect_summary(atoms_).print(cargs.output_for_log);
+			SummaryOfAtoms::collect_summary(atoms).print(cargs.output_for_log);
 			cargs.output_for_log << ")\n";
 		}
 	}
