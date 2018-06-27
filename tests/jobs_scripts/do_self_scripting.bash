@@ -13,6 +13,7 @@ print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
 construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
+save-atoms --file '$SUBDIR/pdb_atoms' --as-pdb --pdb-b-factor volume
 save-contacts '$SUBDIR/plain_contacts'
 load-atoms --file '$SUBDIR/plain_atoms' --format plain
 select-contacts
