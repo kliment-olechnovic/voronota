@@ -5,6 +5,7 @@
 
 #include "selection_manager_for_atoms_and_contacts.h"
 #include "command_input.h"
+#include "command_aliasing.h"
 #include "construction_of_secondary_structure.h"
 #include "writing_atomic_balls_in_pdb_format.h"
 
@@ -171,6 +172,8 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &CommandingManagerForAtomsAndContacts::command_load_atoms_and_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-atoms", &CommandingManagerForAtomsAndContacts::command_zoom_by_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-contacts", &CommandingManagerForAtomsAndContacts::command_zoom_by_contacts));
+		map_of_command_function_pointers_.insert(std::make_pair("add-alias", &CommandingManagerForAtomsAndContacts::command_add_alias));
+		map_of_command_function_pointers_.insert(std::make_pair("remove-aliases", &CommandingManagerForAtomsAndContacts::command_remove_aliases));
 	}
 
 	const std::vector<Atom>& atoms() const
@@ -3400,6 +3403,44 @@ private:
 		cargs.output_for_log << "Bounding box: (" << cargs.bounding_box.p_min << ") (" << cargs.bounding_box.p_max << ")\n";
 	}
 
+	void command_add_alias(CommandArguments& cargs)
+	{
+		const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
+
+		if(strings.size()!=2)
+		{
+			throw std::runtime_error(std::string("Not exactly two strings provided."));
+		}
+
+		cargs.input.mark_all_unnamed_values_as_used();
+
+		cargs.input.assert_nothing_unusable();
+
+		command_aliasing_.add_alias(strings[0], strings[1]);
+
+		cargs.output_for_log << "Added alias '" << strings[0] << "' for '" << strings[1] << "'\n";
+	}
+
+	void command_remove_aliases(CommandArguments& cargs)
+	{
+		const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+
+		if(names.empty())
+		{
+			throw std::runtime_error(std::string("No names provided."));
+		}
+
+		cargs.input.mark_all_unnamed_values_as_used();
+
+		cargs.input.assert_nothing_unusable();
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			command_aliasing_.remove_alias(names[i]);
+			cargs.output_for_log << "Removed alias '" << names[i] << "'\n";
+		}
+	}
+
 	std::map<std::string, CommandFunctionPointer> map_of_command_function_pointers_;
 	std::vector<std::string> atoms_representation_names_;
 	std::vector<std::string> contacts_representation_names_;
@@ -3412,6 +3453,7 @@ private:
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
+	CommandAliasing command_aliasing_;
 };
 
 }
