@@ -25,6 +25,82 @@ public:
 		init(command_str);
 	}
 
+	static int read_string_considering_quotes_and_brackets(std::istream& input, std::string& output)
+	{
+		output.clear();
+		input >> std::ws;
+		const char opener=std::char_traits<char>::to_char_type(input.peek());
+		int wrapped=0;
+		if(opener=='"' || opener=='\'')
+		{
+			wrapped=1;
+			input.get();
+			std::getline(input, output, opener);
+		}
+		else if(opener=='{' || opener=='(' || opener=='[')
+		{
+			wrapped=2;
+			const char closer=(opener=='{' ? '}' : (opener=='(' ? ')' : ']'));
+			int level=0;
+			do
+			{
+				const char curent_char=std::char_traits<char>::to_char_type(input.get());
+				output.push_back(curent_char);
+				if(curent_char==opener)
+				{
+					level++;
+				}
+				else if(curent_char==closer)
+				{
+					level--;
+				}
+			}
+			while(level>0 && input.good());
+		}
+		else
+		{
+			input >> output;
+		}
+		return wrapped;
+	}
+
+	static void read_all_strings_considering_quotes_and_brackets(std::istream& input, std::vector< std::pair<int, std::string> >& output)
+	{
+		std::vector< std::pair<int, std::string> > tokens;
+		while(input.good())
+		{
+			std::pair<int, std::string> token;
+			token.first=read_string_considering_quotes_and_brackets(input, token.second);
+			if(!token.second.empty() || token.first==1)
+			{
+				tokens.push_back(token);
+			}
+		}
+		output.swap(tokens);
+	}
+
+	static std::string canonicalize_command_string(const std::string& input_str)
+	{
+		std::string canonical_str;
+
+		for(std::size_t i=0;i<input_str.size();i++)
+		{
+			if(input_str[i]=='-' && (i+1)<input_str.size())
+			{
+				if(i==0 || input_str[i-1]<=' ' || input_str[i-1]=='{' || input_str[i-1]=='(')
+				{
+					if((input_str[i+1]>='a' && input_str[i+1]<='z') || (input_str[i+1]>='A' && input_str[i+1]<='Z'))
+					{
+						canonical_str.push_back('-');
+					}
+				}
+			}
+			canonical_str.push_back(input_str[i]);
+		}
+
+		return canonical_str;
+	}
+
 	void init(const std::string& command_str)
 	{
 		command_name_.clear();
@@ -279,82 +355,6 @@ private:
 	static bool is_flag_string_false(const std::string& str)
 	{
 		return (str=="false" || str=="0");
-	}
-
-	static int read_string_considering_quotes_and_brackets(std::istream& input, std::string& output)
-	{
-		output.clear();
-		input >> std::ws;
-		const char opener=std::char_traits<char>::to_char_type(input.peek());
-		int wrapped=0;
-		if(opener=='"' || opener=='\'')
-		{
-			wrapped=1;
-			input.get();
-			std::getline(input, output, opener);
-		}
-		else if(opener=='{' || opener=='(' || opener=='[')
-		{
-			wrapped=2;
-			const char closer=(opener=='{' ? '}' : (opener=='(' ? ')' : ']'));
-			int level=0;
-			do
-			{
-				const char curent_char=std::char_traits<char>::to_char_type(input.get());
-				output.push_back(curent_char);
-				if(curent_char==opener)
-				{
-					level++;
-				}
-				else if(curent_char==closer)
-				{
-					level--;
-				}
-			}
-			while(level>0 && input.good());
-		}
-		else
-		{
-			input >> output;
-		}
-		return wrapped;
-	}
-
-	static void read_all_strings_considering_quotes_and_brackets(std::istream& input, std::vector< std::pair<int, std::string> >& output)
-	{
-		std::vector< std::pair<int, std::string> > tokens;
-		while(input.good())
-		{
-			std::pair<int, std::string> token;
-			token.first=read_string_considering_quotes_and_brackets(input, token.second);
-			if(!token.second.empty() || token.first==1)
-			{
-				tokens.push_back(token);
-			}
-		}
-		output.swap(tokens);
-	}
-
-	static std::string canonicalize_command_string(const std::string& input_str)
-	{
-		std::string canonical_str;
-
-		for(std::size_t i=0;i<input_str.size();i++)
-		{
-			if(input_str[i]=='-' && (i+1)<input_str.size())
-			{
-				if(i==0 || input_str[i-1]<=' ' || input_str[i-1]=='{' || input_str[i-1]=='(')
-				{
-					if((input_str[i+1]>='a' && input_str[i+1]<='z') || (input_str[i+1]>='A' && input_str[i+1]<='Z'))
-					{
-						canonical_str.push_back('-');
-					}
-				}
-			}
-			canonical_str.push_back(input_str[i]);
-		}
-
-		return canonical_str;
 	}
 
 	const std::vector<std::string>& get_value_vector_ref(const std::string& name)
