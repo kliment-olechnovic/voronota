@@ -111,12 +111,16 @@ public:
 			throw std::runtime_error(std::string("Empty command string"));
 		}
 
+		input_command_string_=command_str;
+
 		const std::string canonical_command_str=canonicalize_command_string(command_str);
 
 		if(canonical_command_str.empty())
 		{
 			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
 		}
+
+		canonical_input_command_string_=canonical_command_str;
 
 		std::istringstream input(canonical_command_str);
 		std::vector< std::pair<int, std::string> > tokens;
@@ -163,6 +167,16 @@ public:
 				}
 			}
 		}
+	}
+
+	const std::string& get_input_command_string() const
+	{
+		return input_command_string_;
+	}
+
+	const std::string& get_canonical_input_command_string() const
+	{
+		return canonical_input_command_string_;
 	}
 
 	const std::string& get_command_name() const
@@ -422,6 +436,8 @@ private:
 		output=values.front();
 	}
 
+	std::string input_command_string_;
+	std::string canonical_input_command_string_;
 	std::string command_name_;
 	MapOfValues map_of_values_;
 	std::set<std::string> set_of_requested_names_;
