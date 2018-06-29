@@ -3436,8 +3436,10 @@ private:
 
 		for(std::size_t i=0;i<names.size();i++)
 		{
-			command_aliasing_.remove_alias(names[i]);
-			cargs.output_for_log << "Removed alias '" << names[i] << "'\n";
+			if(command_aliasing_.remove_alias(names[i]))
+			{
+				cargs.output_for_log << "Removed alias '" << names[i] << "'\n";
+			}
 		}
 	}
 
