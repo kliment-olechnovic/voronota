@@ -66,32 +66,6 @@ public:
 		}
 	};
 
-	struct CommandRecord
-	{
-		std::string command;
-		bool successful;
-		bool changed_atoms;
-		bool changed_contacts;
-		bool changed_atoms_tags;
-		bool changed_contacts_tags;
-		bool changed_atoms_display_states;
-		bool changed_contacts_display_states;
-		std::string output_log;
-		std::string output_error;
-
-		explicit CommandRecord(const std::string& command) :
-			command(command),
-			successful(false),
-			changed_atoms(false),
-			changed_contacts(false),
-			changed_atoms_tags(false),
-			changed_contacts_tags(false),
-			changed_atoms_display_states(false),
-			changed_contacts_display_states(false)
-		{
-		}
-	};
-
 	struct BoundingBox
 	{
 		bool filled;
@@ -123,11 +97,45 @@ public:
 		}
 	};
 
-	struct CommandOutputSink
+	struct CommandRecord
 	{
-		std::ostringstream output_stream;
+		std::string command;
+		bool successful;
+		bool changed_atoms;
+		bool changed_contacts;
+		bool changed_atoms_tags;
+		bool changed_contacts_tags;
+		bool changed_atoms_display_states;
+		bool changed_contacts_display_states;
+		std::string output_log;
+		std::string output_error;
+		std::string output_text_data;
 		std::set<std::size_t> output_set_of_ids;
 		BoundingBox bounding_box;
+
+		explicit CommandRecord(const std::string& command) :
+			command(command),
+			successful(false),
+			changed_atoms(false),
+			changed_contacts(false),
+			changed_atoms_tags(false),
+			changed_contacts_tags(false),
+			changed_atoms_display_states(false),
+			changed_contacts_display_states(false)
+		{
+		}
+
+		void print(std::ostream& output, const std::string& prefix) const
+		{
+			output << prefix << command << std::endl;
+			output << output_text_data;
+			output << output_log;
+			if(!output_error.empty())
+			{
+				output << "Error: " << output_error << "\n";
+			}
+			output << std::endl;
+		}
 	};
 
 	CommandingManagerForAtomsAndContacts()
@@ -312,7 +320,7 @@ public:
 		return (!verb.empty() && map_of_command_function_pointers_.count(verb)>0);
 	}
 
-	CommandRecord execute(const std::string& command, CommandOutputSink& sink)
+	CommandRecord execute(const std::string& command)
 	{
 		CommandRecord record(command);
 
@@ -320,9 +328,10 @@ public:
 		{
 			std::ostringstream output_for_log;
 			std::ostringstream output_for_errors;
+			std::ostringstream output_for_data;
 
 			CommandInput input;
-			CommandArguments cargs(input, output_for_log, sink.output_stream, sink.output_set_of_ids, sink.bounding_box);
+			CommandArguments cargs(input, output_for_log, output_for_data);
 
 			try
 			{
@@ -339,6 +348,9 @@ public:
 
 			record.output_log=output_for_log.str();
 			record.output_error=output_for_errors.str();
+			record.output_text_data=output_for_data.str();
+			record.output_set_of_ids=cargs.output_set_of_ids;
+			record.bounding_box=cargs.bounding_box;
 
 			record.changed_atoms=cargs.changed_atoms;
 			record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
@@ -363,34 +375,12 @@ public:
 				}
 			}
 		}
-
-		return record;
-	}
-
-	CommandRecord execute(const std::string& command)
-	{
-		CommandOutputSink sink;
-		return execute(command, sink);
-	}
-
-	CommandRecord execute_verbosely(std::ostream& output, const std::string& command, CommandOutputSink& sink)
-	{
-		output << "\n> " << command << std::endl;
-		const CommandRecord record=execute(command, sink);
-		output << sink.output_stream.str();
-		output << record.output_log;
-		if(!record.output_error.empty())
+		else
 		{
-			output << "Error: " << record.output_error << "\n";
+			record.output_error=std::string("Command '")+command+"'is not recognized as executable.";
 		}
-		output << std::endl;
-		return record;
-	}
 
-	CommandRecord execute_verbosely(std::ostream& output, const std::string& command)
-	{
-		CommandOutputSink sink;
-		return execute_verbosely(output, command, sink);
+		return record;
 	}
 
 private:
@@ -400,26 +390,22 @@ private:
 		CommandInput& input;
 		std::ostream& output_for_log;
 		std::ostream& output_for_data;
-		std::set<std::size_t>& output_set_of_ids;
-		BoundingBox& bounding_box;
 		bool changed_atoms;
 		bool changed_contacts;
 		bool changed_atoms_tags;
 		bool changed_contacts_tags;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
+		std::set<std::size_t> output_set_of_ids;
+		BoundingBox bounding_box;
 
 		CommandArguments(
 				CommandInput& input,
 				std::ostream& output_for_log,
-				std::ostream& output_for_data,
-				std::set<std::size_t>& output_set_of_ids,
-				BoundingBox& bounding_box) :
+				std::ostream& output_for_data) :
 					input(input),
 					output_for_log(output_for_log),
 					output_for_data(output_for_data),
-					output_set_of_ids(output_set_of_ids),
-					bounding_box(bounding_box),
 					changed_atoms(false),
 					changed_contacts(false),
 					changed_atoms_tags(false),
