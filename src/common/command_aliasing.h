@@ -38,9 +38,9 @@ public:
 		aliases_[name]=command_template;
 	}
 
-	void remove_alias(const std::string& name)
+	bool remove_alias(const std::string& name)
 	{
-		aliases_.erase(name);
+		return (aliases_.erase(name)>0);
 	}
 
 	std::string decode_alias(const std::string& alias_str) const
