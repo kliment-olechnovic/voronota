@@ -107,6 +107,7 @@ public:
 		bool changed_contacts_tags;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
+		CommandInput command_input;
 		std::string output_log;
 		std::string output_error;
 		std::string output_text_data;
@@ -330,14 +331,13 @@ public:
 			std::ostringstream output_for_errors;
 			std::ostringstream output_for_data;
 
-			CommandInput input;
-			CommandArguments cargs(input, output_for_log, output_for_data);
+			CommandArguments cargs(record.command_input, output_for_log, output_for_data);
 
 			try
 			{
-				input=CommandInput(command);
-				sync_selections_with_display_states_if_needed(command);
-				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(input.get_command_name())->second;
+				record.command_input=CommandInput(command);
+				sync_selections_with_display_states_if_needed(record.command_input.get_canonical_input_command_string());
+				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(record.command_input.get_command_name())->second;
 				(this->*cfp)(cargs);
 				record.successful=true;
 			}
