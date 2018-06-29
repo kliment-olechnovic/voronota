@@ -30,7 +30,7 @@ void run_loop(std::istream& input)
 			}
 			if(!line.empty())
 			{
-				manager.execute_verbosely(std::cout, line);
+				manager.execute(line).print(std::cout, "\n> ");
 			}
 		}
 	}
