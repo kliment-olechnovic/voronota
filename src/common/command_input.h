@@ -16,13 +16,75 @@ class CommandInput
 public:
 	typedef std::map< std::string, std::vector<std::string> > MapOfValues;
 
-	CommandInput()
+	CommandInput() : initialized_(false)
 	{
 	}
 
-	explicit CommandInput(const std::string& command_str)
+	explicit CommandInput(const std::string& command_str) : initialized_(false)
 	{
-		init(command_str);
+		if(command_str.empty())
+		{
+			throw std::runtime_error(std::string("Empty command string"));
+		}
+
+		input_command_string_=command_str;
+
+		const std::string canonical_command_str=canonicalize_command_string(command_str);
+
+		if(canonical_command_str.empty())
+		{
+			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
+		}
+
+		canonical_input_command_string_=canonical_command_str;
+
+		std::istringstream input(canonical_command_str);
+		std::vector< std::pair<int, std::string> > tokens;
+		read_all_strings_considering_quotes_and_brackets(input, tokens);
+
+		if(tokens.empty())
+		{
+			throw std::runtime_error(std::string("Failed to read command string '")+canonical_command_str+"'.");
+		}
+
+		std::string current_key;
+		for(std::size_t i=0;i<tokens.size();i++)
+		{
+			const int token_wrapped=tokens[i].first;
+			const std::string& token_str=tokens[i].second;
+			if(i==0)
+			{
+				if(token_wrapped!=0 || token_str.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command name in string '")+canonical_command_str+"'.");
+				}
+				else
+				{
+					command_name_=token_str;
+				}
+			}
+			else
+			{
+				if(token_wrapped==0 && token_str.size()>2 && token_str.rfind("--", 0)==0)
+				{
+					current_key=token_str.substr(2);
+					map_of_values_[current_key];
+				}
+				else
+				{
+					if(current_key.empty())
+					{
+						list_of_unnamed_values_.push_back(token_str);
+					}
+					else
+					{
+						map_of_values_[current_key].push_back(token_str);
+					}
+				}
+			}
+		}
+
+		initialized_=true;
 	}
 
 	static int read_string_considering_quotes_and_brackets(std::istream& input, std::string& output)
@@ -101,72 +163,9 @@ public:
 		return canonical_str;
 	}
 
-	void init(const std::string& command_str)
+	bool initialized() const
 	{
-		command_name_.clear();
-		map_of_values_.clear();
-
-		if(command_str.empty())
-		{
-			throw std::runtime_error(std::string("Empty command string"));
-		}
-
-		input_command_string_=command_str;
-
-		const std::string canonical_command_str=canonicalize_command_string(command_str);
-
-		if(canonical_command_str.empty())
-		{
-			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
-		}
-
-		canonical_input_command_string_=canonical_command_str;
-
-		std::istringstream input(canonical_command_str);
-		std::vector< std::pair<int, std::string> > tokens;
-		read_all_strings_considering_quotes_and_brackets(input, tokens);
-
-		if(tokens.empty())
-		{
-			throw std::runtime_error(std::string("Failed to read command string '")+canonical_command_str+"'.");
-		}
-
-		std::string current_key;
-		for(std::size_t i=0;i<tokens.size();i++)
-		{
-			const int token_wrapped=tokens[i].first;
-			const std::string& token_str=tokens[i].second;
-			if(i==0)
-			{
-				if(token_wrapped!=0 || token_str.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command name in string '")+canonical_command_str+"'.");
-				}
-				else
-				{
-					command_name_=token_str;
-				}
-			}
-			else
-			{
-				if(token_wrapped==0 && token_str.size()>2 && token_str.rfind("--", 0)==0)
-				{
-					current_key=token_str.substr(2);
-					map_of_values_[current_key];
-				}
-				else
-				{
-					if(current_key.empty())
-					{
-						list_of_unnamed_values_.push_back(token_str);
-					}
-					else
-					{
-						map_of_values_[current_key].push_back(token_str);
-					}
-				}
-			}
-		}
+		return initialized_;
 	}
 
 	const std::string& get_input_command_string() const
@@ -436,6 +435,7 @@ private:
 		output=values.front();
 	}
 
+	bool initialized_;
 	std::string input_command_string_;
 	std::string canonical_input_command_string_;
 	std::string command_name_;
