@@ -335,7 +335,7 @@ public:
 
 			try
 			{
-				input.init(command);
+				input=CommandInput(command);
 				sync_selections_with_display_states_if_needed(command);
 				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(input.get_command_name())->second;
 				(this->*cfp)(cargs);
