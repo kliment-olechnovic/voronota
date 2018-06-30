@@ -6,7 +6,7 @@
 #include "selection_manager_for_atoms_and_contacts.h"
 #include "command_input.h"
 #include "construction_of_secondary_structure.h"
-#include "scripting_aliasing.h"
+#include "script_partitioning.h"
 #include "writing_atomic_balls_in_pdb_format.h"
 
 namespace common
@@ -3402,7 +3402,7 @@ private:
 
 		cargs.input.assert_nothing_unusable();
 
-		scripting_aliasing_.set_alias(strings[0], strings[1]);
+		script_partitioning_.set_alias(strings[0], strings[1]);
 
 		cargs.output_for_log << "Set alias '" << strings[0] << "' to '" << strings[1] << "'\n";
 	}
@@ -3422,7 +3422,7 @@ private:
 
 		for(std::size_t i=0;i<names.size();i++)
 		{
-			if(scripting_aliasing_.unset_alias(names[i]))
+			if(script_partitioning_.unset_alias(names[i]))
 			{
 				cargs.output_for_log << "Unset alias '" << names[i] << "'\n";
 			}
@@ -3441,7 +3441,7 @@ private:
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
-	ScriptingAliasing scripting_aliasing_;
+	ScriptPartitioning script_partitioning_;
 };
 
 }
