@@ -30,7 +30,7 @@ void run_loop(std::istream& input)
 			}
 			if(!line.empty())
 			{
-				manager.execute(line).print(std::cout, "\n> ");
+				manager.execute_command(line).print(std::cout, "\n> ");
 			}
 		}
 	}

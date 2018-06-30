@@ -1,15 +1,15 @@
-#ifndef COMMON_COMMAND_ALIASING_H_
-#define COMMON_COMMAND_ALIASING_H_
+#ifndef COMMON_SCRIPTING_ALIASING_H_
+#define COMMON_SCRIPTING_ALIASING_H_
 
 #include "command_input.h"
 
 namespace common
 {
 
-class CommandAliasing
+class ScriptingAliasing
 {
 public:
-	CommandAliasing()
+	ScriptingAliasing()
 	{
 	}
 
@@ -18,7 +18,7 @@ public:
 		return aliases_;
 	}
 
-	void add_alias(const std::string& name, const std::string& command_template)
+	void set_alias(const std::string& name, const std::string& script_template)
 	{
 		if(name.empty())
 		{
@@ -30,20 +30,20 @@ public:
 			throw std::runtime_error(std::string("Alias name '")+name+"' contains whitespace characters.");
 		}
 
-		if(command_template.empty())
+		if(script_template.empty())
 		{
-			throw std::runtime_error(std::string("Command template is empty for alias '")+name+"'.");
+			throw std::runtime_error(std::string("Script template is empty for alias '")+name+"'.");
 		}
 
-		aliases_[name]=command_template;
+		aliases_[name]=script_template;
 	}
 
-	bool remove_alias(const std::string& name)
+	bool unset_alias(const std::string& name)
 	{
 		return (aliases_.erase(name)>0);
 	}
 
-	std::string decode_alias(const std::string& alias_str) const
+	std::string translate_alias(const std::string& alias_str) const
 	{
 		if(alias_str.empty())
 		{
@@ -66,9 +66,9 @@ public:
 			return alias_str;
 		}
 
-		const std::string& command_template=aliases_.find(alias_name)->second;
+		const std::string& script_template=aliases_.find(alias_name)->second;
 
-		std::string result=command_template;
+		std::string result=script_template;
 
 		for(std::size_t i=1;i<tokens.size();i++)
 		{
@@ -89,13 +89,13 @@ public:
 			}
 			if(!found_id)
 			{
-				throw std::runtime_error(std::string("Failed to find variable ")+id+" in template '"+command_template+"'.");
+				throw std::runtime_error(std::string()+"Failed to find variable "+id+" in alias '"+alias_name+"' template '"+script_template+"'.");
 			}
 		}
 
 		if(result.find("${")!=std::string::npos)
 		{
-			throw std::runtime_error(std::string("Some substrings starting with '${' were left unsubstituted in '")+result+"'.");
+			throw std::runtime_error(std::string()+"Some substrings starting with '${' were left unsubstituted in alias '"+alias_name+"' translation '"+result+"'.");
 		}
 
 		return result;
@@ -107,4 +107,4 @@ private:
 
 }
 
-#endif /* COMMON_COMMAND_ALIASING_H_ */
+#endif /* COMMON_SCRIPTING_ALIASING_H_ */
