@@ -5,8 +5,8 @@
 
 #include "selection_manager_for_atoms_and_contacts.h"
 #include "command_input.h"
-#include "command_aliasing.h"
 #include "construction_of_secondary_structure.h"
+#include "scripting_aliasing.h"
 #include "writing_atomic_balls_in_pdb_format.h"
 
 namespace common
@@ -181,8 +181,8 @@ public:
 		map_of_command_function_pointers_.insert(std::make_pair("load-atoms-and-contacts", &CommandingManagerForAtomsAndContacts::command_load_atoms_and_contacts));
 		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-atoms", &CommandingManagerForAtomsAndContacts::command_zoom_by_atoms));
 		map_of_command_function_pointers_.insert(std::make_pair("zoom-by-contacts", &CommandingManagerForAtomsAndContacts::command_zoom_by_contacts));
-		map_of_command_function_pointers_.insert(std::make_pair("add-alias", &CommandingManagerForAtomsAndContacts::command_add_alias));
-		map_of_command_function_pointers_.insert(std::make_pair("remove-aliases", &CommandingManagerForAtomsAndContacts::command_remove_aliases));
+		map_of_command_function_pointers_.insert(std::make_pair("set-alias", &CommandingManagerForAtomsAndContacts::command_set_alias));
+		map_of_command_function_pointers_.insert(std::make_pair("unset-aliases", &CommandingManagerForAtomsAndContacts::command_unset_aliases));
 	}
 
 	const std::vector<Atom>& atoms() const
@@ -313,7 +313,7 @@ public:
 		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
 	}
 
-	bool executable(const std::string& command) const
+	bool check_if_command_is_executable(const std::string& command) const
 	{
 		std::string verb;
 		std::istringstream input(command);
@@ -321,11 +321,11 @@ public:
 		return (!verb.empty() && map_of_command_function_pointers_.count(verb)>0);
 	}
 
-	CommandRecord execute(const std::string& command)
+	CommandRecord execute_command(const std::string& command)
 	{
 		CommandRecord record(command);
 
-		if(executable(command))
+		if(check_if_command_is_executable(command))
 		{
 			std::ostringstream output_for_log;
 			std::ostringstream output_for_errors;
@@ -3389,7 +3389,7 @@ private:
 		cargs.output_for_log << "Bounding box: (" << cargs.bounding_box.p_min << ") (" << cargs.bounding_box.p_max << ")\n";
 	}
 
-	void command_add_alias(CommandArguments& cargs)
+	void command_set_alias(CommandArguments& cargs)
 	{
 		const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
 
@@ -3402,12 +3402,12 @@ private:
 
 		cargs.input.assert_nothing_unusable();
 
-		command_aliasing_.add_alias(strings[0], strings[1]);
+		scripting_aliasing_.set_alias(strings[0], strings[1]);
 
-		cargs.output_for_log << "Added alias '" << strings[0] << "' for '" << strings[1] << "'\n";
+		cargs.output_for_log << "Set alias '" << strings[0] << "' to '" << strings[1] << "'\n";
 	}
 
-	void command_remove_aliases(CommandArguments& cargs)
+	void command_unset_aliases(CommandArguments& cargs)
 	{
 		const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
 
@@ -3422,9 +3422,9 @@ private:
 
 		for(std::size_t i=0;i<names.size();i++)
 		{
-			if(command_aliasing_.remove_alias(names[i]))
+			if(scripting_aliasing_.unset_alias(names[i]))
 			{
-				cargs.output_for_log << "Removed alias '" << names[i] << "'\n";
+				cargs.output_for_log << "Unset alias '" << names[i] << "'\n";
 			}
 		}
 	}
@@ -3441,7 +3441,7 @@ private:
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManagerForAtomsAndContacts selection_manager_;
-	CommandAliasing command_aliasing_;
+	ScriptingAliasing scripting_aliasing_;
 };
 
 }
