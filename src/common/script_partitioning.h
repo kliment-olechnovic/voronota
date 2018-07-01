@@ -32,9 +32,9 @@ public:
 		return aliases_;
 	}
 
-	std::vector<Sentence> partition(const std::string& script)
+	std::vector<Sentence> partition_script_into_sentences(const std::string& script)
 	{
-		return translate_sentences(split_script_into_sentences(script));
+		return translate_sentences_fully(split_script_into_sentences(script));
 	}
 
 	void set_alias(const std::string& name, const std::string& script_template)
@@ -140,25 +140,54 @@ private:
 		return result;
 	}
 
-	std::vector<Sentence> translate_sentences(const std::vector<Sentence>& input_sentences)
+	std::vector<Sentence> translate_sentences(const std::vector<Sentence>& input_sentences, bool& any_aliased_used)
 	{
 		std::vector<Sentence> result;
 
+		any_aliased_used=false;
+
 		for(std::size_t i=0;i<input_sentences.size();i++)
 		{
-			std::vector<Sentence> subsentences=split_script_into_sentences(translate_sentence_body_with_alias(input_sentences[i].body));
-			const bool used_alias=(subsentences.size()>1 || subsentences[0].body!=input_sentences[i].body);
-			for(std::size_t j=0;j<subsentences.size();j++)
+			const std::string& input_body=input_sentences[i].body;
+			std::vector<Sentence> subsentences=split_script_into_sentences(translate_sentence_body_with_alias(input_body));
+			if(!subsentences.empty())
 			{
-				subsentences[j].parents=input_sentences[i].parents;
-				if(used_alias)
+				const bool alias_used=(subsentences.size()>1 || subsentences[0].body!=input_body);
+				any_aliased_used=(any_aliased_used || alias_used);
+				if(alias_used)
 				{
-					subsentences[j].parents.push_back(input_sentences[i].body);
+					for(std::size_t j=0;j<input_sentences[i].parents.size();j++)
+					{
+						if(input_body==input_sentences[i].parents[j])
+						{
+							throw std::runtime_error(std::string()+"Recursive translation for script sentence '"+input_body+"'.");
+						}
+					}
 				}
+				for(std::size_t j=0;j<subsentences.size();j++)
+				{
+					subsentences[j].parents=input_sentences[i].parents;
+					if(alias_used)
+					{
+						subsentences[j].parents.push_back(input_body);
+					}
+				}
+				result.insert(result.end(), subsentences.begin(), subsentences.end());
 			}
-			result.insert(result.end(), subsentences.begin(), subsentences.end());
 		}
 
+		return result;
+	}
+
+	std::vector<Sentence> translate_sentences_fully(const std::vector<Sentence>& input_sentences)
+	{
+		std::vector<Sentence> result=input_sentences;
+		bool any_aliased_used=false;
+		do
+		{
+			result=translate_sentences(result, any_aliased_used);
+		}
+		while(any_aliased_used);
 		return result;
 	}
 
