@@ -74,6 +74,53 @@ private:
 			if(p1<script.size())
 			{
 				std::size_t p2=script.find_first_of(";\n", p1);
+
+				if(p2<script.size() && script[p2]==';')
+				{
+					const char symbols_open[6]={'\'', '"', '{', '(', '<', '['};
+					const char symbols_close[6]={'\'', '"', '}', ')', '>', ']'};
+					int counts_open[6];
+					for(int i=0;i<6;i++)
+					{
+						counts_open[i]=0;
+					}
+					std::size_t p1_extended=p1;
+					bool check_for_extension=true;
+					while(check_for_extension)
+					{
+						for(std::size_t t=p1_extended;t<p2;t++)
+						{
+							const char c=script[t];
+							for(int i=0;i<6;i++)
+							{
+								if(c==symbols_close[i] && counts_open[i]>0)
+								{
+									counts_open[i]--;
+								}
+								else if(c==symbols_open[i])
+								{
+									counts_open[i]++;
+								}
+							}
+						}
+						int sum_open=0;
+						for(int i=0;i<6;i++)
+						{
+							sum_open+=counts_open[i];
+						}
+						if(sum_open==0)
+						{
+							check_for_extension=false;
+						}
+						else
+						{
+							p1_extended=script.find_first_not_of(";\n \t", p2);
+							p2=script.find_first_of(";\n", p1_extended);
+							check_for_extension=(p2<script.size() && script[p2]==';');
+						}
+					}
+				}
+
 				sentences.push_back(Sentence(script.substr(p1, p2-p1)));
 				p1=p2;
 			}

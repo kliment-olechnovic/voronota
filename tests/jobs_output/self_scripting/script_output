@@ -58,6 +58,10 @@ Summary of contacts: count=5 drawable=1 area=33.8164
 Set selection of contacts named 'cs1'
 
 
+> set-alias multitag 'tag-contacts {--min-area ${1}} med; untag-contacts {--min-area ${2}} --tag med'
+Set alias 'multitag' to 'tag-contacts {--min-area ${1}} med; untag-contacts {--min-area ${2}} --tag med'
+
+
 > tag-contacts {--min-area 6.0} med
 Summary of contacts: count=2636 drawable=5 area=29458.6
 
