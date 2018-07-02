@@ -32,7 +32,7 @@ public:
 		return aliases_;
 	}
 
-	std::vector<Sentence> partition_script_into_sentences(const std::string& script)
+	std::vector<Sentence> partition_script_into_sentences(const std::string& script) const
 	{
 		return translate_sentences_fully(split_script_into_sentences(script));
 	}
@@ -140,7 +140,7 @@ private:
 		return result;
 	}
 
-	std::vector<Sentence> translate_sentences(const std::vector<Sentence>& input_sentences, bool& any_aliased_used)
+	std::vector<Sentence> translate_sentences(const std::vector<Sentence>& input_sentences, bool& any_aliased_used) const
 	{
 		std::vector<Sentence> result;
 
@@ -179,7 +179,7 @@ private:
 		return result;
 	}
 
-	std::vector<Sentence> translate_sentences_fully(const std::vector<Sentence>& input_sentences)
+	std::vector<Sentence> translate_sentences_fully(const std::vector<Sentence>& input_sentences) const
 	{
 		std::vector<Sentence> result=input_sentences;
 		bool any_aliased_used=false;
