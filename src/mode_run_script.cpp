@@ -30,7 +30,11 @@ void run_loop(std::istream& input)
 			}
 			if(!line.empty())
 			{
-				manager.execute_command(line).print(std::cout, "\n> ");
+				const common::CommandingManagerForAtomsAndContacts::ScriptRecord script_record=manager.execute_script(line);
+				for(std::size_t i=0;i<script_record.output_command_records.size();i++)
+				{
+					script_record.output_command_records[i].print(std::cout, "\n> ");
+				}
 			}
 		}
 	}

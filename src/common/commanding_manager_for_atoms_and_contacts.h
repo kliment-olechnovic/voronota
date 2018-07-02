@@ -139,6 +139,21 @@ public:
 		}
 	};
 
+	struct ScriptRecord
+	{
+		std::string script;
+		bool successful;
+		std::vector<ScriptPartitioning::Sentence> script_sentences;
+		std::vector<CommandRecord> output_command_records;
+		std::string output_error;
+
+		ScriptRecord(const std::string& script) :
+			script(script),
+			successful(false)
+		{
+		}
+	};
+
 	CommandingManagerForAtomsAndContacts()
 	{
 		map_of_command_function_pointers_.insert(std::make_pair("load-atoms", &CommandingManagerForAtomsAndContacts::command_load_atoms));
@@ -313,72 +328,83 @@ public:
 		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
 	}
 
-	bool check_if_command_is_executable(const std::string& command) const
+	ScriptRecord check_if_script_is_executable(const std::string& script) const
 	{
-		std::string verb;
-		std::istringstream input(command);
-		input >> verb;
-		return (!verb.empty() && map_of_command_function_pointers_.count(verb)>0);
+		ScriptRecord record(script);
+
+		try
+		{
+			record.script_sentences=script_partitioning_.partition_script_into_sentences(script);
+		}
+		catch(const std::exception& e)
+		{
+			record.output_error=e.what();
+			return record;
+		}
+
+		if(record.script_sentences.empty())
+		{
+			record.output_error="No sentences in script.";
+			return record;
+		}
+
+		for(std::size_t i=0;i<record.script_sentences.size();i++)
+		{
+			const std::string& command=record.script_sentences[i].body;
+			if(!check_if_command_is_executable(command))
+			{
+				record.output_error=std::string("Script command '")+command+"' is not recognized as executable.";
+				return record;
+			}
+		}
+
+		record.successful=true;
+
+		return record;
 	}
 
-	CommandRecord execute_command(const std::string& command)
+	ScriptRecord execute_script(const std::string& script)
 	{
-		CommandRecord record(command);
+		ScriptRecord record(script);
 
-		if(check_if_command_is_executable(command))
+		try
 		{
-			std::ostringstream output_for_log;
-			std::ostringstream output_for_errors;
-			std::ostringstream output_for_data;
+			record.script_sentences=script_partitioning_.partition_script_into_sentences(script);
+		}
+		catch(const std::exception& e)
+		{
+			record.output_error=e.what();
+			return record;
+		}
 
-			CommandArguments cargs(record.command_input, output_for_log, output_for_data);
+		if(record.script_sentences.empty())
+		{
+			record.output_error="No sentences in script.";
+			return record;
+		}
 
-			try
+		for(std::size_t i=0;i<record.script_sentences.size();i++)
+		{
+			const std::string& command=record.script_sentences[i].body;
+			if(!check_if_command_is_executable(command))
 			{
-				record.command_input=CommandInput(command);
-				sync_selections_with_display_states_if_needed(record.command_input.get_canonical_input_command_string());
-				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(record.command_input.get_command_name())->second;
-				(this->*cfp)(cargs);
-				record.successful=true;
-			}
-			catch(const std::exception& e)
-			{
-				output_for_errors << e.what();
-			}
-
-			record.output_log=output_for_log.str();
-			record.output_error=output_for_errors.str();
-			record.output_text_data=output_for_data.str();
-			record.output_set_of_ids=cargs.output_set_of_ids;
-			record.bounding_box=cargs.bounding_box;
-
-			record.changed_atoms=cargs.changed_atoms;
-			record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
-			record.changed_atoms_tags=(cargs.changed_atoms_tags || record.changed_atoms);
-			record.changed_contacts_tags=(cargs.changed_contacts_tags || record.changed_contacts);
-			record.changed_atoms_display_states=(cargs.changed_atoms_display_states || record.changed_atoms);
-			record.changed_contacts_display_states=(cargs.changed_contacts_display_states || record.changed_contacts);
-
-			if(record.changed_atoms && !atoms_representations_implemented_always_.empty())
-			{
-				for(std::set<std::size_t>::const_iterator it=atoms_representations_implemented_always_.begin();it!=atoms_representations_implemented_always_.end();++it)
-				{
-					set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
-				}
-			}
-
-			if(record.changed_contacts && !contacts_representations_implemented_always_.empty())
-			{
-				for(std::set<std::size_t>::const_iterator it=contacts_representations_implemented_always_.begin();it!=contacts_representations_implemented_always_.end();++it)
-				{
-					set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
-				}
+				record.output_error=std::string("Script command '")+command+"' is not recognized as executable.";
+				return record;
 			}
 		}
-		else
+
+		for(std::size_t i=0;i<record.script_sentences.size();i++)
 		{
-			record.output_error=std::string("Command '")+command+"'is not recognized as executable.";
+			const std::string& command=record.script_sentences[i].body;
+			record.output_command_records.push_back(execute_command(command));
+			if(!record.output_command_records.back().successful)
+			{
+				record.output_error=std::string("Script command '")+command+"' was not executed successfully.";
+				return record;
+			}
 		}
+
+		record.successful=true;
 
 		return record;
 	}
@@ -3427,6 +3453,76 @@ private:
 				cargs.output_for_log << "Unset alias '" << names[i] << "'\n";
 			}
 		}
+	}
+
+	bool check_if_command_is_executable(const std::string& command) const
+	{
+		std::string verb;
+		std::istringstream input(command);
+		input >> verb;
+		return (!verb.empty() && map_of_command_function_pointers_.count(verb)>0);
+	}
+
+	CommandRecord execute_command(const std::string& command)
+	{
+		CommandRecord record(command);
+
+		if(check_if_command_is_executable(command))
+		{
+			std::ostringstream output_for_log;
+			std::ostringstream output_for_errors;
+			std::ostringstream output_for_data;
+
+			CommandArguments cargs(record.command_input, output_for_log, output_for_data);
+
+			try
+			{
+				record.command_input=CommandInput(command);
+				sync_selections_with_display_states_if_needed(record.command_input.get_canonical_input_command_string());
+				CommandFunctionPointer cfp=map_of_command_function_pointers_.find(record.command_input.get_command_name())->second;
+				(this->*cfp)(cargs);
+				record.successful=true;
+			}
+			catch(const std::exception& e)
+			{
+				output_for_errors << e.what();
+			}
+
+			record.output_log=output_for_log.str();
+			record.output_error=output_for_errors.str();
+			record.output_text_data=output_for_data.str();
+			record.output_set_of_ids=cargs.output_set_of_ids;
+			record.bounding_box=cargs.bounding_box;
+
+			record.changed_atoms=cargs.changed_atoms;
+			record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
+			record.changed_atoms_tags=(cargs.changed_atoms_tags || record.changed_atoms);
+			record.changed_contacts_tags=(cargs.changed_contacts_tags || record.changed_contacts);
+			record.changed_atoms_display_states=(cargs.changed_atoms_display_states || record.changed_atoms);
+			record.changed_contacts_display_states=(cargs.changed_contacts_display_states || record.changed_contacts);
+
+			if(record.changed_atoms && !atoms_representations_implemented_always_.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=atoms_representations_implemented_always_.begin();it!=atoms_representations_implemented_always_.end();++it)
+				{
+					set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
+				}
+			}
+
+			if(record.changed_contacts && !contacts_representations_implemented_always_.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=contacts_representations_implemented_always_.begin();it!=contacts_representations_implemented_always_.end();++it)
+				{
+					set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
+				}
+			}
+		}
+		else
+		{
+			record.output_error=std::string("Command '")+command+"' is not recognized as executable.";
+		}
+
+		return record;
 	}
 
 	std::map<std::string, CommandFunctionPointer> map_of_command_function_pointers_;
