@@ -100,6 +100,7 @@ public:
 	struct CommandRecord
 	{
 		std::string command;
+		bool executable;
 		bool successful;
 		bool changed_atoms;
 		bool changed_contacts;
@@ -116,6 +117,7 @@ public:
 
 		explicit CommandRecord(const std::string& command) :
 			command(command),
+			executable(false),
 			successful(false),
 			changed_atoms(false),
 			changed_contacts(false),
@@ -125,31 +127,26 @@ public:
 			changed_contacts_display_states(false)
 		{
 		}
+	};
 
-		void print(std::ostream& output, const std::string& prefix) const
+	struct SimpleCommandRecordHandler
+	{
+		void operator ()(const CommandRecord&) const
 		{
-			output << prefix << command << std::endl;
-			output << output_text_data;
-			output << output_log;
-			if(!output_error.empty())
-			{
-				output << "Error: " << output_error << "\n";
-			}
-			output << std::endl;
 		}
 	};
 
 	struct ScriptRecord
 	{
 		std::string script;
-		bool successful;
 		std::vector<ScriptPartitioning::Sentence> script_sentences;
+		std::set<std::size_t> executable;
+		std::set<std::size_t> successful;
 		std::vector<CommandRecord> output_command_records;
 		std::string output_error;
 
 		ScriptRecord(const std::string& script) :
-			script(script),
-			successful(false)
+			script(script)
 		{
 		}
 	};
@@ -342,71 +339,57 @@ public:
 			return record;
 		}
 
-		if(record.script_sentences.empty())
-		{
-			record.output_error="No sentences in script.";
-			return record;
-		}
-
 		for(std::size_t i=0;i<record.script_sentences.size();i++)
 		{
 			const std::string& command=record.script_sentences[i].body;
-			if(!check_if_command_is_executable(command))
+			if(check_if_command_is_executable(command))
 			{
-				record.output_error=std::string("Script command '")+command+"' is not recognized as executable.";
-				return record;
+				record.executable.insert(i);
 			}
 		}
-
-		record.successful=true;
 
 		return record;
 	}
 
-	ScriptRecord execute_script(const std::string& script)
+	template<typename CommandRecordHandler>
+	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure, CommandRecordHandler handler)
 	{
-		ScriptRecord record(script);
+		ScriptRecord record=check_if_script_is_executable(script);
 
-		try
+		if(record.executable.empty())
 		{
-			record.script_sentences=script_partitioning_.partition_script_into_sentences(script);
-		}
-		catch(const std::exception& e)
-		{
-			record.output_error=e.what();
-			return record;
-		}
-
-		if(record.script_sentences.empty())
-		{
-			record.output_error="No sentences in script.";
-			return record;
-		}
-
-		for(std::size_t i=0;i<record.script_sentences.size();i++)
-		{
-			const std::string& command=record.script_sentences[i].body;
-			if(!check_if_command_is_executable(command))
+			if(record.output_error.empty())
 			{
-				record.output_error=std::string("Script command '")+command+"' is not recognized as executable.";
-				return record;
+				record.output_error="Script does not contain executable commands.";
 			}
+			return record;
 		}
 
 		for(std::size_t i=0;i<record.script_sentences.size();i++)
 		{
 			const std::string& command=record.script_sentences[i].body;
+
 			record.output_command_records.push_back(execute_command(command));
-			if(!record.output_command_records.back().successful)
+			const CommandRecord& command_record=record.output_command_records.back();
+
+			if(command_record.successful)
 			{
-				record.output_error=std::string("Script command '")+command+"' was not executed successfully.";
+				record.successful.insert(i);
+			}
+			else if(exit_on_first_failure)
+			{
 				return record;
 			}
-		}
 
-		record.successful=true;
+			handler(command_record);
+		}
 
 		return record;
+	}
+
+	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
+	{
+		return execute_script(script, exit_on_first_failure, SimpleCommandRecordHandler());
 	}
 
 private:
@@ -3469,6 +3452,8 @@ private:
 
 		if(check_if_command_is_executable(command))
 		{
+			record.executable=true;
+
 			std::ostringstream output_for_log;
 			std::ostringstream output_for_errors;
 			std::ostringstream output_for_data;
