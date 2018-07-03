@@ -34,20 +34,7 @@ void run_loop(std::istream& input)
 	{
 		std::string line;
 		std::getline(input, line);
-		if(!line.empty())
-		{
-			{
-				const std::size_t comments_pos=line.find("#", 0);
-				if(comments_pos!=std::string::npos)
-				{
-					line=line.substr(0, comments_pos);
-				}
-			}
-			if(!line.empty())
-			{
-				const common::CommandingManagerForAtomsAndContacts::ScriptRecord script_record=manager.execute_script(line, false, CommandRecordPrinter());
-			}
-		}
+		manager.execute_script(line, false, CommandRecordPrinter());
 	}
 }
 

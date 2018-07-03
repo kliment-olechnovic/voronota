@@ -34,7 +34,7 @@ public:
 
 	std::vector<Sentence> partition_script_into_sentences(const std::string& script) const
 	{
-		return translate_sentences_fully(split_script_into_sentences(script));
+		return translate_sentences_fully(split_script_into_sentences(remove_comments_from_script(script)));
 	}
 
 	void set_alias(const std::string& name, const std::string& script_template)
@@ -63,6 +63,37 @@ public:
 	}
 
 private:
+	static std::string remove_comments_from_script(const std::string& script)
+	{
+		if(script.find("#", 0)==std::string::npos)
+		{
+			return script;
+		}
+
+		std::istringstream input(script);
+		std::ostringstream output;
+
+		while(input.good())
+		{
+			std::string line;
+			std::getline(input, line);
+			if(!line.empty())
+			{
+				const std::size_t p=line.find("#", 0);
+				if(p!=std::string::npos)
+				{
+					line=line.substr(0, p);
+				}
+				if(!line.empty())
+				{
+					output << line;
+				}
+			}
+		}
+
+		return output.str();
+	}
+
 	static std::vector<Sentence> split_script_into_sentences(const std::string& script)
 	{
 		std::vector<Sentence> sentences;
@@ -121,7 +152,12 @@ private:
 					}
 				}
 
-				sentences.push_back(Sentence(script.substr(p1, p2-p1)));
+				const std::string sentence_body=script.substr(p1, p2-p1);
+				if(!sentence_body.empty())
+				{
+					sentences.push_back(Sentence(sentence_body));
+				}
+
 				p1=p2;
 			}
 		}
