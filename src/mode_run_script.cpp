@@ -5,6 +5,21 @@
 namespace
 {
 
+struct CommandRecordPrinter
+{
+	void operator ()(const common::CommandingManagerForAtomsAndContacts::CommandRecord& cr) const
+	{
+		std::cout << "\n> " << cr.command << std::endl;
+		std::cout << cr.output_text_data;
+		std::cout << cr.output_log;
+		if(!cr.output_error.empty())
+		{
+			std::cout << "Error: " << cr.output_error << "\n";
+		}
+		std::cout << std::endl;
+	}
+};
+
 void run_loop(std::istream& input)
 {
 	common::CommandingManagerForAtomsAndContacts manager;
@@ -30,11 +45,7 @@ void run_loop(std::istream& input)
 			}
 			if(!line.empty())
 			{
-				const common::CommandingManagerForAtomsAndContacts::ScriptRecord script_record=manager.execute_script(line);
-				for(std::size_t i=0;i<script_record.output_command_records.size();i++)
-				{
-					script_record.output_command_records[i].print(std::cout, "\n> ");
-				}
+				const common::CommandingManagerForAtomsAndContacts::ScriptRecord script_record=manager.execute_script(line, false, CommandRecordPrinter());
 			}
 		}
 	}
