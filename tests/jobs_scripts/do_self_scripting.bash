@@ -6,6 +6,8 @@ mkdir -p $SUBDIR
 {
 cat << EOF
 
+# Note the same use of both "-" and "--"
+
 load-atoms --file $INPUTDIR/single/structure.cif
 load-atoms -file "$INPUTDIR/single/structure.pdb"
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
@@ -23,7 +25,7 @@ select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1}
 
 set-alias multitag 'tag-contacts {--min-area \${1}} med; untag-contacts {--min-area \${2}} --tag med'
 
-multitag 6.0 8.0
+multitag 6.0 8.0 # Arguments to an alias are unnamed
 
 print-contacts {cs1} --desc --sort area --file '$SUBDIR/printed_contacts'
 print-contacts {-no-solvent -min-seq-sep 2} -desc -sort 'area' -limit 3 -expand
