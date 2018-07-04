@@ -32,9 +32,14 @@ public:
 		return aliases_;
 	}
 
-	std::vector<Sentence> partition_script_into_sentences(const std::string& script) const
+	std::vector<Sentence> partition_script(const std::string& script) const
 	{
 		return translate_sentences_fully(split_script_into_sentences(remove_comments_from_script(script)));
+	}
+
+	std::vector<Sentence> partition_sentence(const Sentence& sentence) const
+	{
+		return translate_sentences_fully(std::vector<Sentence>(1, sentence));
 	}
 
 	void set_alias(const std::string& name, const std::string& script_template)
@@ -86,7 +91,7 @@ private:
 				}
 				if(!line.empty())
 				{
-					output << line;
+					output << line << "\n";
 				}
 			}
 		}
