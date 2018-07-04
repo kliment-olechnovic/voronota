@@ -23,7 +23,7 @@ load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
 
-set-alias multitag 'tag-contacts {--min-area \${1}} med; untag-contacts {--min-area \${2}} --tag med'
+set-alias multitag "tag-contacts {--min-area \${1}} med; untag-contacts {--min-area \${2}} --tag med"
 
 multitag 6.0 8.0 # Arguments to an alias are unnamed
 
