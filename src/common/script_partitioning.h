@@ -108,10 +108,10 @@ private:
 
 				if(p2<script.size() && script[p2]==';')
 				{
-					const char symbols_open[6]={'\'', '"', '{', '(', '<', '['};
-					const char symbols_close[6]={'\'', '"', '}', ')', '>', ']'};
-					int counts_open[6];
-					for(int i=0;i<6;i++)
+					const char symbols_open[5]={'"', '{', '(', '<', '['};
+					const char symbols_close[5]={'"', '}', ')', '>', ']'};
+					int counts_open[5];
+					for(int i=0;i<5;i++)
 					{
 						counts_open[i]=0;
 					}
@@ -122,7 +122,7 @@ private:
 						for(std::size_t t=p1_extended;t<p2;t++)
 						{
 							const char c=script[t];
-							for(int i=0;i<6;i++)
+							for(int i=0;i<5;i++)
 							{
 								if(c==symbols_close[i] && counts_open[i]>0)
 								{
@@ -135,7 +135,7 @@ private:
 							}
 						}
 						int sum_open=0;
-						for(int i=0;i<6;i++)
+						for(int i=0;i<5;i++)
 						{
 							sum_open+=counts_open[i];
 						}
