@@ -138,15 +138,11 @@ public:
 
 	struct ScriptRecord
 	{
-		std::string script;
-		std::vector<ScriptPartitioning::Sentence> script_sentences;
-		std::set<std::size_t> executable;
-		std::set<std::size_t> successful;
 		std::vector<CommandRecord> output_command_records;
+		std::set<std::size_t> successful;
 		std::string output_error;
 
-		ScriptRecord(const std::string& script) :
-			script(script)
+		ScriptRecord()
 		{
 		}
 	};
@@ -325,13 +321,17 @@ public:
 		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
 	}
 
-	ScriptRecord check_if_script_is_executable(const std::string& script) const
+	template<typename CommandRecordHandler>
+	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure, CommandRecordHandler handler)
 	{
-		ScriptRecord record(script);
+		ScriptRecord record;
+
+		std::list<ScriptPartitioning::Sentence> sentences;
 
 		try
 		{
-			record.script_sentences=script_partitioning_.partition_script_into_sentences(script);
+			std::vector<ScriptPartitioning::Sentence> script_sentences=script_partitioning_.partition_script(script);
+			sentences.insert(sentences.end(), script_sentences.begin(), script_sentences.end());
 		}
 		catch(const std::exception& e)
 		{
@@ -339,49 +339,34 @@ public:
 			return record;
 		}
 
-		for(std::size_t i=0;i<record.script_sentences.size();i++)
+		std::list<ScriptPartitioning::Sentence>::iterator sentences_it=sentences.begin();
+
+		while(sentences_it!=sentences.end())
 		{
-			const std::string& command=record.script_sentences[i].body;
-			if(check_if_command_is_executable(command))
+			std::vector<ScriptPartitioning::Sentence> subsentences=script_partitioning_.partition_sentence(*sentences_it);
+
+			if(!subsentences.empty())
 			{
-				record.executable.insert(i);
-			}
-		}
+				sentences_it=sentences.erase(sentences_it);
+				sentences_it=sentences.insert(sentences_it, subsentences.begin(), subsentences.end());
 
-		return record;
-	}
+				const std::string& command=sentences_it->body;
+				record.output_command_records.push_back(execute_command(command));
+				const CommandRecord& command_record=record.output_command_records.back();
 
-	template<typename CommandRecordHandler>
-	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure, CommandRecordHandler handler)
-	{
-		ScriptRecord record=check_if_script_is_executable(script);
+				handler(command_record);
 
-		if(record.executable.empty())
-		{
-			if(record.output_error.empty())
-			{
-				record.output_error="Script does not contain executable commands.";
-			}
-			return record;
-		}
-
-		for(std::size_t i=0;i<record.script_sentences.size();i++)
-		{
-			const std::string& command=record.script_sentences[i].body;
-
-			record.output_command_records.push_back(execute_command(command));
-			const CommandRecord& command_record=record.output_command_records.back();
-
-			if(command_record.successful)
-			{
-				record.successful.insert(i);
-			}
-			else if(exit_on_first_failure)
-			{
-				return record;
+				if(command_record.successful)
+				{
+					record.successful.insert(record.output_command_records.size()-1);
+				}
+				else if(exit_on_first_failure)
+				{
+					return record;
+				}
 			}
 
-			handler(command_record);
+			++sentences_it;
 		}
 
 		return record;
