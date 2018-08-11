@@ -1,0 +1,668 @@
+#ifndef COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+#define COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+
+#include "selection_manager_for_atoms_and_contacts.h"
+#include "construction_of_secondary_structure.h"
+
+namespace common
+{
+
+class DataManagerForAtomsAndContacts
+{
+public:
+	typedef SelectionManagerForAtomsAndContacts::Atom Atom;
+	typedef SelectionManagerForAtomsAndContacts::Contact Contact;
+
+	struct DisplayState
+	{
+		struct Visual
+		{
+			bool implemented;
+			bool visible;
+			unsigned int color;
+
+			Visual() : implemented(false), visible(false), color(0x7F7F7F)
+			{
+			}
+		};
+
+		bool drawable;
+		bool marked;
+		std::vector<Visual> visuals;
+
+		DisplayState() : drawable(false), marked(false)
+		{
+		}
+
+		bool visible() const
+		{
+			bool result=false;
+			if(drawable)
+			{
+				for(std::size_t i=0;i<visuals.size() && !result;i++)
+				{
+					result=(result || visuals[i].visible);
+				}
+			}
+			return result;
+		}
+
+		bool implemented() const
+		{
+			bool result=false;
+			if(drawable)
+			{
+				for(std::size_t i=0;i<visuals.size() && !result;i++)
+				{
+					result=(result || visuals[i].implemented);
+				}
+			}
+			return result;
+		}
+	};
+
+	struct BoundingBox
+	{
+		bool filled;
+		apollota::SimplePoint p_min;
+		apollota::SimplePoint p_max;
+
+		BoundingBox() : filled(false)
+		{
+		}
+
+		template<typename Point>
+		void update(const Point& p)
+		{
+			if(!filled)
+			{
+				p_min=apollota::SimplePoint(p);
+				p_max=p_min;
+			}
+			else
+			{
+				p_min.x=std::min(p_min.x, p.x);
+				p_min.y=std::min(p_min.y, p.y);
+				p_min.z=std::min(p_min.z, p.z);
+				p_max.x=std::max(p_max.x, p.x);
+				p_max.y=std::max(p_max.y, p.y);
+				p_max.z=std::max(p_max.z, p.z);
+			}
+			filled=true;
+		}
+	};
+
+	struct SummaryOfAtoms
+	{
+		std::size_t number_total;
+		double volume;
+
+		SummaryOfAtoms() : number_total(0), volume(0.0)
+		{
+		}
+
+		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms)
+		{
+			SummaryOfAtoms summary;
+			for(std::vector<Atom>::const_iterator it=atoms.begin();it!=atoms.end();++it)
+			{
+				summary.feed(*it);
+			}
+			return summary;
+		}
+
+		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms, const std::set<std::size_t>& ids)
+		{
+			SummaryOfAtoms summary;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<atoms.size())
+				{
+					summary.feed(atoms[*it]);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
+				}
+			}
+			return summary;
+		}
+
+		void feed(const Atom& atom)
+		{
+			number_total++;
+			if(atom.value.props.adjuncts.count("volume")>0)
+			{
+				volume+=atom.value.props.adjuncts.find("volume")->second;
+			}
+		}
+	};
+
+	struct SummaryOfContacts
+	{
+		std::size_t number_total;
+		std::size_t number_drawable;
+		double area;
+
+		SummaryOfContacts() : number_total(0), number_drawable(0), area(0.0)
+		{
+		}
+
+		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts)
+		{
+			SummaryOfContacts summary;
+			for(std::vector<Contact>::const_iterator it=contacts.begin();it!=contacts.end();++it)
+			{
+				summary.feed(*it);
+			}
+			return summary;
+		}
+
+		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts, const std::set<std::size_t>& ids)
+		{
+			SummaryOfContacts summary;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				if((*it)<contacts.size())
+				{
+					summary.feed(contacts[*it]);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
+				}
+			}
+			return summary;
+		}
+
+		void feed(const Contact& contact)
+		{
+			number_total++;
+			area+=contact.value.area;
+			if(!contact.value.graphics.empty())
+			{
+				number_drawable++;
+			}
+		}
+	};
+
+	DataManagerForAtomsAndContacts()
+	{
+	}
+
+	const std::vector<Atom>& atoms() const
+	{
+		return atoms_;
+	}
+
+	const std::vector<Contact>& contacts() const
+	{
+		return contacts_;
+	}
+
+	const std::vector<DisplayState>& atoms_display_states() const
+	{
+		return atoms_display_states_;
+	}
+
+	const std::vector<DisplayState>& contacts_display_states() const
+	{
+		return contacts_display_states_;
+	}
+
+	const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure_info() const
+	{
+		return primary_structure_info_;
+	}
+
+	const ConstructionOfSecondaryStructure::BundleOfSecondaryStructure& secondary_structure_info() const
+	{
+		return secondary_structure_info_;
+	}
+
+	const std::vector<std::string>& atoms_representation_names() const
+	{
+		return atoms_representation_names_;
+	}
+
+	const std::vector<std::string>& contacts_representation_names() const
+	{
+		return contacts_representation_names_;
+	}
+
+	void assert_atoms_representations_availability() const
+	{
+		if(atoms_representation_names_.empty())
+		{
+			throw std::runtime_error(std::string("No atoms representations available."));
+		}
+	}
+
+	void assert_atoms_availability() const
+	{
+		if(atoms_.empty())
+		{
+			throw std::runtime_error(std::string("No atoms available."));
+		}
+	}
+
+	void assert_atoms_selections_availability() const
+	{
+		if(selection_manager_.map_of_atoms_selections().empty())
+		{
+			throw std::runtime_error(std::string("No atoms selections available."));
+		}
+	}
+
+	void assert_atoms_selections_availability(const std::vector<std::string>& names) const
+	{
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			if(selection_manager_.map_of_atoms_selections().count(names[i])==0)
+			{
+				throw std::runtime_error(std::string("Invalid atoms selection name '")+names[i]+"'.");
+			}
+		}
+	}
+
+	void assert_contacts_representations_availability() const
+	{
+		if(contacts_representation_names_.empty())
+		{
+			throw std::runtime_error(std::string("No contacts representations available."));
+		}
+	}
+
+	void assert_contacts_availability() const
+	{
+		if(contacts_.empty())
+		{
+			throw std::runtime_error(std::string("No contacts available."));
+		}
+	}
+
+	void assert_contacts_selections_availability() const
+	{
+		if(selection_manager_.map_of_contacts_selections().empty())
+		{
+			throw std::runtime_error(std::string("No contacts selections available."));
+		}
+	}
+
+	void assert_contacts_selections_availability(const std::vector<std::string>& names) const
+	{
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			if(selection_manager_.map_of_contacts_selections().count(names[i])==0)
+			{
+				throw std::runtime_error(std::string("Invalid contacts selection name '")+names[i]+"'.");
+			}
+		}
+	}
+
+	bool is_any_atom_visible() const
+	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			if(atoms_display_states_[i].visible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_atom_marked() const
+	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			if(atoms_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_visible() const
+	{
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			if(contacts_display_states_[i].visible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_marked() const
+	{
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			if(contacts_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool add_representations_of_atoms(const std::vector<std::string>& names)
+	{
+		if(add_names_to_representations(names, atoms_representation_names_))
+		{
+			resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
+			return true;
+		}
+		return false;
+	}
+
+	bool add_representations_of_contacts(const std::vector<std::string>& names)
+	{
+		if(add_names_to_representations(names, contacts_representation_names_))
+		{
+			resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
+			return true;
+		}
+		return false;
+	}
+
+	bool set_atoms_representation_implemented_always(const std::size_t representation_id, const bool status)
+	{
+		return set_representation_implemented_always(atoms_representation_names_, representation_id, status, atoms_representations_implemented_always_);
+	}
+
+	bool set_contacts_representation_implemented_always(const std::size_t representation_id, const bool status)
+	{
+		return set_representation_implemented_always(contacts_representation_names_, representation_id, status, contacts_representations_implemented_always_);
+	}
+
+	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(atoms_representation_names_, representation_id, statuses, atoms_display_states_);
+	}
+
+	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
+	}
+
+	void reset_atoms(std::vector<Atom>& atoms)
+	{
+		if(atoms.empty())
+		{
+			throw std::runtime_error(std::string("No atoms to set."));
+		}
+		atoms_.swap(atoms);
+		reset_atoms_display_states();
+		contacts_.clear();
+		contacts_display_states_.clear();
+		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
+		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
+	}
+
+	void reset_atoms_display_states()
+	{
+		atoms_display_states_.clear();
+		atoms_display_states_.resize(atoms_.size());
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			atoms_display_states_[i].drawable=true;
+		}
+		resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
+	}
+
+	void reset_contacts(std::vector<Contact>& contacts)
+	{
+		if(contacts.empty())
+		{
+			throw std::runtime_error(std::string("No contacts to set."));
+		}
+		assert_atoms_availability();
+		if(!SelectionManagerForAtomsAndContacts::check_contacts_compatibility_with_atoms(atoms_, contacts))
+		{
+			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
+		}
+		contacts_.swap(contacts);
+		reset_contacts_display_states();
+		selection_manager_.set_contacts(&contacts_);
+	}
+
+	void reset_contacts_display_states()
+	{
+		contacts_display_states_.clear();
+		contacts_display_states_.resize(contacts_.size());
+		for(std::size_t i=0;i<contacts_display_states_.size();i++)
+		{
+			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
+		}
+		resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
+	}
+
+	void sync_atoms_selections_with_display_states()
+	{
+		if(!atoms_display_states_.empty())
+		{
+			std::set<std::size_t> ids_visible;
+			std::set<std::size_t> ids_marked;
+			for(std::size_t i=0;i<atoms_display_states_.size();i++)
+			{
+				const DisplayState& ds=atoms_display_states_[i];
+				if(ds.visible())
+				{
+					ids_visible.insert(i);
+				}
+				if(ds.marked)
+				{
+					ids_marked.insert(i);
+				}
+			}
+
+			if(ids_visible.empty())
+			{
+				selection_manager_.delete_atoms_selection("_visible");
+			}
+			else
+			{
+				selection_manager_.set_atoms_selection("_visible", ids_visible);
+			}
+
+			if(ids_marked.empty())
+			{
+				selection_manager_.delete_atoms_selection("_marked");
+			}
+			else
+			{
+				selection_manager_.set_atoms_selection("_marked", ids_marked);
+			}
+		}
+	}
+
+	void sync_contacts_selections_with_display_states()
+	{
+		if(!contacts_display_states_.empty())
+		{
+			std::set<std::size_t> ids_visible;
+			std::set<std::size_t> ids_marked;
+			for(std::size_t i=0;i<contacts_display_states_.size();i++)
+			{
+				const DisplayState& ds=contacts_display_states_[i];
+				if(ds.visible())
+				{
+					ids_visible.insert(i);
+				}
+				if(ds.marked)
+				{
+					ids_marked.insert(i);
+				}
+			}
+
+			if(ids_visible.empty())
+			{
+				selection_manager_.delete_contacts_selection("_visible");
+			}
+			else
+			{
+				selection_manager_.set_contacts_selection("_visible", ids_visible);
+			}
+
+			if(ids_marked.empty())
+			{
+				selection_manager_.delete_contacts_selection("_marked");
+			}
+			else
+			{
+				selection_manager_.set_contacts_selection("_marked", ids_marked);
+			}
+		}
+	}
+
+private:
+	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
+	{
+		if(names.empty())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<names.size();i++)
+		{
+			const std::string& name=names[i];
+			if(name.empty())
+			{
+				return false;
+			}
+			else if(std::find(representations.begin(), representations.end(), name)!=representations.end())
+			{
+				return false;
+			}
+		}
+
+		representations.insert(representations.end(), names.begin(), names.end());
+
+		return true;
+	}
+
+	static bool set_representation_implemented_always(
+			const std::vector<std::string>& representations,
+			const std::size_t representation_id,
+			const bool status,
+			std::set<std::size_t>& representations_implemented_always)
+	{
+		if(representation_id>=representations.size())
+		{
+			return false;
+		}
+
+		if(status)
+		{
+			representations_implemented_always.insert(representation_id);
+		}
+		else
+		{
+			representations_implemented_always.erase(representation_id);
+		}
+
+		return true;
+	}
+
+	static bool set_representation_implemented(
+			const std::vector<std::string>& representations,
+			const std::size_t representation_id,
+			const std::vector<bool>& statuses,
+			std::vector<DisplayState>& display_states)
+	{
+		if(statuses.size()!=display_states.size())
+		{
+			return false;
+		}
+
+		if(representation_id>=representations.size())
+		{
+			return false;
+		}
+
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			if(display_states[i].drawable && representation_id>=display_states[i].visuals.size())
+			{
+				return false;
+			}
+		}
+
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			if(display_states[i].drawable)
+			{
+				display_states[i].visuals[representation_id].implemented=statuses[i];
+			}
+		}
+
+		return true;
+	}
+
+	static void resize_visuals_in_display_states(const std::size_t size, std::vector<DisplayState>& display_states)
+	{
+		for(std::size_t i=0;i<display_states.size();i++)
+		{
+			if(display_states[i].drawable && display_states[i].visuals.size()!=size)
+			{
+				display_states[i].visuals.resize(size);
+			}
+		}
+	}
+
+	static std::set<std::size_t> filter_drawable_implemented_ids(
+			const std::vector<DisplayState>& display_states,
+			const std::set<std::size_t>& visual_ids,
+			const std::set<std::size_t>& ids,
+			const bool only_visible)
+	{
+		std::set<std::size_t> drawable_ids;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			if((*it)<display_states.size() && display_states[*it].drawable)
+			{
+				bool good=false;
+				if(visual_ids.empty())
+				{
+					good=display_states[*it].implemented() && (!only_visible || display_states[*it].visible());
+				}
+				else
+				{
+					for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end() && !good;++jt)
+					{
+						good=(good ||
+								((*jt)<display_states[*it].visuals.size() &&
+										display_states[*it].visuals[*jt].implemented &&
+										(!only_visible || display_states[*it].visuals[*jt].visible)));
+					}
+				}
+
+				if(good)
+				{
+					drawable_ids.insert(*it);
+				}
+			}
+		}
+		return drawable_ids;
+	}
+
+	std::vector<std::string> atoms_representation_names_;
+	std::vector<std::string> contacts_representation_names_;
+	std::set<std::size_t> atoms_representations_implemented_always_;
+	std::set<std::size_t> contacts_representations_implemented_always_;
+	std::vector<Atom> atoms_;
+	std::vector<Contact> contacts_;
+	std::vector<DisplayState> atoms_display_states_;
+	std::vector<DisplayState> contacts_display_states_;
+	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
+	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
+	SelectionManagerForAtomsAndContacts selection_manager_;
+};
+
+}
+
+#endif /* COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_ */
