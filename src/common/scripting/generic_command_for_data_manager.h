@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_H_
-#define COMMON_SCRIPTING_GENERIC_COMMAND_H_
+#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
+#define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 
 #include "command_input.h"
 #include "data_manager.h"
@@ -10,7 +10,7 @@ namespace common
 namespace scripting
 {
 
-class GenericCommand
+class GenericCommandForDataManager
 {
 public:
 	typedef typename DataManager::Atom Atom;
@@ -50,17 +50,17 @@ public:
 		}
 	};
 
-	GenericCommand()
+	GenericCommandForDataManager()
 	{
 	}
 
-	virtual ~GenericCommand()
+	virtual ~GenericCommandForDataManager()
 	{
 	}
 
-	CommandRecord execute(DataManager& data_manager, const std::string& command)
+	CommandRecord execute(DataManager& data_manager, const std::string& command_string)
 	{
-		CommandRecord record(command);
+		CommandRecord record(command_string);
 
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
@@ -70,7 +70,7 @@ public:
 
 		try
 		{
-			record.command_input=CommandInput(command);
+			record.command_input=CommandInput(command_string);
 			data_manager.sync_selections_with_display_states_if_requested_in_string(record.command_input.get_canonical_input_command_string());
 			run(cargs);
 			record.successful=true;
@@ -147,4 +147,4 @@ protected:
 
 }
 
-#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_H_ */
+#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_ */
