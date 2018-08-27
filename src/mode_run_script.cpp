@@ -7,7 +7,7 @@ namespace
 
 struct CommandRecordPrinter
 {
-	void operator ()(const common::CommandingManagerForAtomsAndContacts::CommandRecord& cr) const
+	void operator ()(const common::scripting::CommandingManagerForAtomsAndContacts::CommandRecord& cr) const
 	{
 		std::cout << "\n> " << cr.command << std::endl;
 		std::cout << cr.output_text_data;
@@ -36,7 +36,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	std::istreambuf_iterator<char> eos;
 	std::string script(std::istreambuf_iterator<char>(std::cin), eos);
 
-	common::CommandingManagerForAtomsAndContacts manager;
+	common::scripting::CommandingManagerForAtomsAndContacts manager;
 
 	manager.add_representations_of_atoms(std::vector<std::string>(1, "atoms"));
 	manager.set_atoms_representation_implemented_always(0, true);

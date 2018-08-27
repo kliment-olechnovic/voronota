@@ -6,16 +6,19 @@
 namespace common
 {
 
-class SelectionManagerForAtomsAndContacts : public TestingOfAtomsAndContacts
+namespace scripting
+{
+
+class SelectionManager : public TestingOfAtomsAndContacts
 {
 public:
-	SelectionManagerForAtomsAndContacts() :
+	SelectionManager() :
 		atoms_ptr_(0),
 		contacts_ptr_(0)
 	{
 	}
 
-	SelectionManagerForAtomsAndContacts(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr=0) :
+	SelectionManager(const std::vector<Atom>* atoms_ptr, const std::vector<Contact>* contacts_ptr=0) :
 		atoms_ptr_(0),
 		contacts_ptr_(0)
 	{
@@ -559,6 +562,8 @@ private:
 	std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 	std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 };
+
+}
 
 }
 
