@@ -34,6 +34,11 @@ public:
 		{
 		}
 
+		bool visible(const std::size_t visual_id) const
+		{
+			return (drawable && visual_id<visuals.size() && visuals[visual_id].visible);
+		}
+
 		bool visible() const
 		{
 			bool result=false;
@@ -45,6 +50,11 @@ public:
 				}
 			}
 			return result;
+		}
+
+		bool implemented(const std::size_t visual_id) const
+		{
+			return (drawable && visual_id<visuals.size() && visuals[visual_id].implemented);
 		}
 
 		bool implemented() const
@@ -348,7 +358,7 @@ public:
 		return false;
 	}
 
-	bool add_representations_of_atoms(const std::vector<std::string>& names)
+	bool add_atoms_representations(const std::vector<std::string>& names)
 	{
 		if(add_names_to_representations(names, atoms_representation_names_))
 		{
@@ -358,7 +368,7 @@ public:
 		return false;
 	}
 
-	bool add_representations_of_contacts(const std::vector<std::string>& names)
+	bool add_contacts_representations(const std::vector<std::string>& names)
 	{
 		if(add_names_to_representations(names, contacts_representation_names_))
 		{
@@ -388,7 +398,7 @@ public:
 		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
 	}
 
-	void reset_atoms(std::vector<Atom>& atoms)
+	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
 	{
 		if(atoms.empty())
 		{
@@ -403,6 +413,12 @@ public:
 		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
 	}
 
+	void reset_atoms_by_copying(const std::vector<Atom>& atoms)
+	{
+		std::vector<Atom> atoms_copy=atoms;
+		reset_atoms_by_swapping(atoms_copy);
+	}
+
 	void reset_atoms_display_states()
 	{
 		atoms_display_states_.clear();
@@ -414,7 +430,7 @@ public:
 		resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
 	}
 
-	void reset_contacts(std::vector<Contact>& contacts)
+	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
 	{
 		if(contacts.empty())
 		{
@@ -428,6 +444,12 @@ public:
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
 		selection_manager_.set_contacts(&contacts_);
+	}
+
+	void reset_contacts_by_copying(const std::vector<Contact>& contacts)
+	{
+		std::vector<Contact> contacts_copy=contacts;
+		reset_contacts_by_swapping(contacts_copy);
 	}
 
 	void reset_contacts_display_states()
@@ -518,6 +540,27 @@ public:
 			}
 		}
 	}
+
+	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible)
+	{
+		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible)
+	{
+		return filter_drawable_implemented_ids(atoms_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible)
+	{
+		return filter_drawable_implemented_ids(contacts_display_states_, visual_ids, ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible)
+	{
+		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
 
 private:
 	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
@@ -626,6 +669,7 @@ private:
 			if((*it)<display_states.size() && display_states[*it].drawable)
 			{
 				bool good=false;
+
 				if(visual_ids.empty())
 				{
 					good=display_states[*it].implemented() && (!only_visible || display_states[*it].visible());
@@ -634,10 +678,7 @@ private:
 				{
 					for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end() && !good;++jt)
 					{
-						good=(good ||
-								((*jt)<display_states[*it].visuals.size() &&
-										display_states[*it].visuals[*jt].implemented &&
-										(!only_visible || display_states[*it].visuals[*jt].visible)));
+						good=(good || (display_states[*it].implemented(*jt) && (!only_visible || display_states[*it].visible(*jt))));
 					}
 				}
 
