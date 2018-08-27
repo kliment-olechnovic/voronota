@@ -358,6 +358,26 @@ public:
 		return false;
 	}
 
+	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(atoms_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(contacts_display_states_, visual_ids, ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
 	bool add_atoms_representations(const std::vector<std::string>& names)
 	{
 		if(add_names_to_representations(names, atoms_representation_names_))
@@ -540,27 +560,6 @@ public:
 			}
 		}
 	}
-
-	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible)
-	{
-		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible)
-	{
-		return filter_drawable_implemented_ids(atoms_display_states_, std::set<std::size_t>(), ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible)
-	{
-		return filter_drawable_implemented_ids(contacts_display_states_, visual_ids, ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible)
-	{
-		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
-	}
-
 
 private:
 	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
