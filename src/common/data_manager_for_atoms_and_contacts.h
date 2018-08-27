@@ -106,6 +106,7 @@ public:
 	{
 		std::size_t number_total;
 		double volume;
+		BoundingBox bounding_box;
 
 		SummaryOfAtoms() : number_total(0), volume(0.0)
 		{
@@ -145,6 +146,7 @@ public:
 			{
 				volume+=atom.value.props.adjuncts.find("volume")->second;
 			}
+			bounding_box.update(atom.value);
 		}
 	};
 
@@ -238,6 +240,16 @@ public:
 	const std::vector<std::string>& contacts_representation_names() const
 	{
 		return contacts_representation_names_;
+	}
+
+	const std::set<std::size_t>& atoms_representations_implemented_always() const
+	{
+		return atoms_representations_implemented_always_;
+	}
+
+	const std::set<std::size_t>& contacts_representations_implemented_always() const
+	{
+		return contacts_representations_implemented_always_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -400,12 +412,22 @@ public:
 
 	bool set_atoms_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		return set_representation_implemented_always(atoms_representation_names_, representation_id, status, atoms_representations_implemented_always_);
+		if(set_representation_implemented_always(atoms_representation_names_, representation_id, status, atoms_representations_implemented_always_))
+		{
+			set_atoms_representations_implemented_if_required_always();
+			return true;
+		}
+		return false;
 	}
 
 	bool set_contacts_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		return set_representation_implemented_always(contacts_representation_names_, representation_id, status, contacts_representations_implemented_always_);
+		if(set_representation_implemented_always(contacts_representation_names_, representation_id, status, contacts_representations_implemented_always_))
+		{
+			set_contacts_representations_implemented_if_required_always();
+			return true;
+		}
+		return false;
 	}
 
 	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
@@ -448,6 +470,7 @@ public:
 			atoms_display_states_[i].drawable=true;
 		}
 		resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
+		set_atoms_representations_implemented_if_required_always();
 	}
 
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
@@ -481,6 +504,7 @@ public:
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
 		resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
+		set_contacts_representations_implemented_if_required_always();
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -558,6 +582,15 @@ public:
 			{
 				selection_manager_.set_contacts_selection("_marked", ids_marked);
 			}
+		}
+	}
+
+	void sync_selections_with_display_states_if_requested_in_string(const std::string& request)
+	{
+		if(request.find("_marked")!=std::string::npos || request.find("_visible")!=std::string::npos)
+		{
+			sync_atoms_selections_with_display_states();
+			sync_contacts_selections_with_display_states();
 		}
 	}
 
@@ -688,6 +721,28 @@ private:
 			}
 		}
 		return drawable_ids;
+	}
+
+	void set_atoms_representations_implemented_if_required_always()
+	{
+		if(!atoms_representations_implemented_always_.empty() && !atoms_.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=atoms_representations_implemented_always_.begin();it!=atoms_representations_implemented_always_.end();++it)
+			{
+				set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
+			}
+		}
+	}
+
+	void set_contacts_representations_implemented_if_required_always()
+	{
+		if(!contacts_representations_implemented_always_.empty() && !contacts_.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=contacts_representations_implemented_always_.begin();it!=contacts_representations_implemented_always_.end();++it)
+			{
+				set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
+			}
+		}
 	}
 
 	std::vector<std::string> atoms_representation_names_;
