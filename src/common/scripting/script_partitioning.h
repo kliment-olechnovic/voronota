@@ -1,9 +1,12 @@
-#ifndef COMMON_SCRIPT_PARTITIONING_H_
-#define COMMON_SCRIPT_PARTITIONING_H_
+#ifndef COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_
+#define COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_
 
 #include "command_input.h"
 
 namespace common
+{
+
+namespace scripting
 {
 
 class ScriptPartitioning
@@ -284,4 +287,6 @@ private:
 
 }
 
-#endif /* COMMON_SCRIPT_PARTITIONING_H_ */
+}
+
+#endif /* COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_ */

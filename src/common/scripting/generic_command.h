@@ -1,19 +1,22 @@
-#ifndef COMMON_COMMAND_FOR_ATOMS_AND_CONTACTS_H_
-#define COMMON_COMMAND_FOR_ATOMS_AND_CONTACTS_H_
+#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_H_
+#define COMMON_SCRIPTING_GENERIC_COMMAND_H_
 
 #include "command_input.h"
-#include "data_manager_for_atoms_and_contacts.h"
+#include "data_manager.h"
 
 namespace common
 {
 
-class CommandForAtomsAndContacts
+namespace scripting
+{
+
+class GenericCommand
 {
 public:
-	typedef typename DataManagerForAtomsAndContacts::Atom Atom;
-	typedef typename DataManagerForAtomsAndContacts::Contact Contact;
-	typedef typename DataManagerForAtomsAndContacts::SummaryOfAtoms SummaryOfAtoms;
-	typedef typename DataManagerForAtomsAndContacts::SummaryOfContacts SummaryOfContacts;
+	typedef typename DataManager::Atom Atom;
+	typedef typename DataManager::Contact Contact;
+	typedef typename DataManager::SummaryOfAtoms SummaryOfAtoms;
+	typedef typename DataManager::SummaryOfContacts SummaryOfContacts;
 
 	struct CommandRecord
 	{
@@ -47,15 +50,15 @@ public:
 		}
 	};
 
-	CommandForAtomsAndContacts()
+	GenericCommand()
 	{
 	}
 
-	virtual ~CommandForAtomsAndContacts()
+	virtual ~GenericCommand()
 	{
 	}
 
-	CommandRecord execute(DataManagerForAtomsAndContacts& data_manager, const std::string& command)
+	CommandRecord execute(DataManager& data_manager, const std::string& command)
 	{
 		CommandRecord record(command);
 
@@ -101,7 +104,7 @@ protected:
 	class CommandArguments
 	{
 	public:
-		DataManagerForAtomsAndContacts& data_manager;
+		DataManager& data_manager;
 		CommandInput& input;
 		std::ostream& output_for_log;
 		std::ostream& output_for_text;
@@ -117,7 +120,7 @@ protected:
 		SummaryOfContacts summary_of_contacts;
 
 		CommandArguments(
-				DataManagerForAtomsAndContacts& data_manager,
+				DataManager& data_manager,
 				CommandInput& input,
 				std::ostream& output_for_log,
 				std::ostream& output_for_text) :
@@ -142,4 +145,6 @@ protected:
 
 }
 
-#endif /* COMMON_COMMAND_FOR_ATOMS_AND_CONTACTS_H_ */
+}
+
+#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_H_ */

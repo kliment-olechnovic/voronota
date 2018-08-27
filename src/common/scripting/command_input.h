@@ -1,5 +1,5 @@
-#ifndef COMMON_COMMAND_INPUT_H_
-#define COMMON_COMMAND_INPUT_H_
+#ifndef COMMON_SCRIPTING_COMMAND_INPUT_H_
+#define COMMON_SCRIPTING_COMMAND_INPUT_H_
 
 #include <string>
 #include <sstream>
@@ -9,6 +9,9 @@
 #include <set>
 
 namespace common
+{
+
+namespace scripting
 {
 
 class CommandInput
@@ -447,5 +450,7 @@ private:
 
 }
 
-#endif /* COMMON_COMMAND_INPUT_H_ */
+}
+
+#endif /* COMMON_SCRIPTING_COMMAND_INPUT_H_ */
 

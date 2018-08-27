@@ -1,17 +1,21 @@
-#ifndef COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
-#define COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+#ifndef COMMON_SCRIPTING_DATA_MANAGER_H_
+#define COMMON_SCRIPTING_DATA_MANAGER_H_
 
-#include "selection_manager_for_atoms_and_contacts.h"
-#include "construction_of_secondary_structure.h"
+#include "../construction_of_secondary_structure.h"
+
+#include "selection_manager.h"
 
 namespace common
 {
 
-class DataManagerForAtomsAndContacts
+namespace scripting
+{
+
+class DataManager
 {
 public:
-	typedef SelectionManagerForAtomsAndContacts::Atom Atom;
-	typedef SelectionManagerForAtomsAndContacts::Contact Contact;
+	typedef SelectionManager::Atom Atom;
+	typedef SelectionManager::Contact Contact;
 
 	struct DisplayState
 	{
@@ -198,7 +202,7 @@ public:
 		}
 	};
 
-	DataManagerForAtomsAndContacts()
+	DataManager()
 	{
 	}
 
@@ -452,7 +456,7 @@ public:
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
-		selection_manager_=SelectionManagerForAtomsAndContacts(&atoms_, 0);
+		selection_manager_=SelectionManager(&atoms_, 0);
 	}
 
 	void reset_atoms_by_copying(const std::vector<Atom>& atoms)
@@ -480,7 +484,7 @@ public:
 			throw std::runtime_error(std::string("No contacts to set."));
 		}
 		assert_atoms_availability();
-		if(!SelectionManagerForAtomsAndContacts::check_contacts_compatibility_with_atoms(atoms_, contacts))
+		if(!SelectionManager::check_contacts_compatibility_with_atoms(atoms_, contacts))
 		{
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
 		}
@@ -755,9 +759,11 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
-	SelectionManagerForAtomsAndContacts selection_manager_;
+	SelectionManager selection_manager_;
 };
 
 }
 
-#endif /* COMMON_DATA_MANAGER_FOR_ATOMS_AND_CONTACTS_H_ */
+}
+
+#endif /* COMMON_SCRIPTING_DATA_MANAGER_H_ */
