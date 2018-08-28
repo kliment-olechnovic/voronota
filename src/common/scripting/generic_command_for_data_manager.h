@@ -32,14 +32,14 @@ public:
 		DataManager::SummaryOfContacts summary_of_contacts;
 
 		explicit CommandRecord(const CommandInput& command_input) :
-				command_input(command_input),
-				successful(false),
-				changed_atoms(false),
-				changed_contacts(false),
-				changed_atoms_tags(false),
-				changed_contacts_tags(false),
-				changed_atoms_display_states(false),
-				changed_contacts_display_states(false)
+			command_input(command_input),
+			successful(false),
+			changed_atoms(false),
+			changed_contacts(false),
+			changed_atoms_tags(false),
+			changed_contacts_tags(false),
+			changed_atoms_display_states(false),
+			changed_contacts_display_states(false)
 		{
 		}
 	};
