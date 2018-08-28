@@ -1,9 +1,12 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
+#include "../auxiliaries/color_utilities.h"
+
 #include "../writing_atomic_balls_in_pdb_format.h"
 
 #include "generic_command_for_data_manager.h"
+#include "table_printing.h"
 
 namespace common
 {
@@ -14,7 +17,7 @@ namespace scripting
 class CustomCommandsForDataManager
 {
 public:
-	class LoadAtoms : public GenericCommandForDataManager
+	class load_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -133,7 +136,7 @@ public:
 		}
 	};
 
-	class RestrictAtoms : public GenericCommandForDataManager
+	class restrict_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -174,7 +177,7 @@ public:
 		}
 	};
 
-	class SaveAtoms : public GenericCommandForDataManager
+	class save_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -223,7 +226,7 @@ public:
 		}
 	};
 
-	class SelectAtoms : public GenericCommandForDataManager
+	class select_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -280,6 +283,286 @@ public:
 			}
 
 			cargs.output_set_of_atoms_ids.swap(ids);
+		}
+	};
+
+	class tag_atoms : public GenericCommandForDataManager
+	{
+	public:
+		tag_atoms() : positive_(true)
+		{
+		}
+
+		tag_atoms(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_tag_input(tag);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
+				if(positive_)
+				{
+					atom.value.props.tags.insert(tag);
+				}
+				else
+				{
+					atom.value.props.tags.erase(tag);
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class untag_atoms : public tag_atoms
+	{
+	public:
+		untag_atoms() : tag_atoms(false)
+		{
+		}
+	};
+
+	class mark_atoms : public GenericCommandForDataManager
+	{
+	public:
+		mark_atoms() : positive_(true)
+		{
+		}
+
+		mark_atoms(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable atoms selected."));
+			}
+
+			{
+				CommandParametersForGenericViewing parameters_for_viewing;
+				parameters_for_viewing.mark=positive_;
+				parameters_for_viewing.unmark=!positive_;
+				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+				{
+					cargs.changed_atoms_display_states=true;
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class unmark_atoms : public mark_atoms
+	{
+	public:
+		unmark_atoms() : mark_atoms(false)
+		{
+		}
+	};
+
+	class show_atoms : public GenericCommandForDataManager
+	{
+	public:
+		show_atoms() : positive_(true)
+		{
+		}
+
+		show_atoms(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_atoms_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(positive_ && parameters_for_representation_selecting.visual_ids.empty())
+			{
+				parameters_for_representation_selecting.visual_ids.insert(0);
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable atoms selected."));
+			}
+
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.show=positive_;
+			parameters_for_viewing.hide=!positive_;
+
+			parameters_for_viewing.assert_state();
+
+			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+			{
+				cargs.changed_atoms_display_states=true;
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class hide_atoms : public show_atoms
+	{
+	public:
+		hide_atoms() : show_atoms(false)
+		{
+		}
+	};
+
+	class color_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_atoms_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+			CommandParametersForGenericColoring parameters_for_coloring;
+			parameters_for_coloring.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
+			{
+				throw std::runtime_error(std::string("Atoms color not specified."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable atoms selected."));
+			}
+
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.color=parameters_for_coloring.color;
+
+			parameters_for_viewing.assert_state();
+
+			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+			{
+				cargs.changed_atoms_display_states=true;
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class print_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericTablePrinting parameters_for_printing;
+			parameters_for_printing.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				TablePrinting::print_atoms(cargs.data_manager.atoms(), ids, parameters_for_printing.values, output);
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
 		}
 	};
 
@@ -548,6 +831,116 @@ private:
 		}
 	};
 
+	class CommandParametersForGenericRepresentationSelecting
+	{
+	public:
+		const std::vector<std::string>& available_representations;
+		std::set<std::size_t> visual_ids;
+
+		explicit CommandParametersForGenericRepresentationSelecting(const std::vector<std::string>& available_representations) : available_representations(available_representations)
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			if(input.is_option("rep"))
+			{
+				const std::vector<std::string> names=input.get_value_vector<std::string>("rep");
+				std::set<std::size_t> ids;
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					const std::string& name=names[i];
+					std::size_t id=find_name_id(available_representations, name);
+					if(id<available_representations.size())
+					{
+						ids.insert(id);
+					}
+					else
+					{
+						throw std::runtime_error(std::string("Representation '")+name+"' does not exist.");
+					}
+				}
+				visual_ids.swap(ids);
+			}
+		}
+	};
+
+	class CommandParametersForGenericColoring
+	{
+	public:
+		auxiliaries::ColorUtilities::ColorInteger color;
+
+		CommandParametersForGenericColoring() : color(auxiliaries::ColorUtilities::null_color())
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			if(input.is_option("col"))
+			{
+				color=auxiliaries::ColorUtilities::color_from_name(input.get_value<std::string>("col"));
+			}
+			else if(input.is_any_unnamed_value_unused())
+			{
+				bool found=false;
+				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
+				{
+					if(!input.is_unnamed_value_used(i))
+					{
+						const std::string& candidate_str=input.get_list_of_unnamed_values()[i];
+						if(candidate_str.size()>2 && candidate_str.rfind("0x", 0)==0)
+						{
+							auxiliaries::ColorUtilities::ColorInteger candidate_color=auxiliaries::ColorUtilities::color_from_name(candidate_str);
+							if(candidate_color!=auxiliaries::ColorUtilities::null_color())
+							{
+								color=candidate_color;
+								input.mark_unnamed_value_as_used(i);
+								found=true;
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+
+	class CommandParametersForGenericTablePrinting
+	{
+	public:
+		TablePrinting::ParametersForGenericTablePrinting values;
+
+		CommandParametersForGenericTablePrinting()
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			values.reversed_sorting=input.get_flag("desc");
+			values.expanded_descriptors=input.get_flag("expand");
+			values.limit=input.get_value_or_default<std::size_t>("limit", std::numeric_limits<std::size_t>::max());
+			values.sort_column=input.get_value_or_default<std::string>("sort", "");
+		}
+	};
+
+	class CommandParametersForContactsTablePrinting
+	{
+	public:
+		TablePrinting::ParametersForContactsTablePrinting values;
+
+		CommandParametersForContactsTablePrinting()
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			values.reversed_sorting=input.get_flag("desc");
+			values.expanded_descriptors=input.get_flag("expand");
+			values.limit=input.get_value_or_default<std::size_t>("limit", std::numeric_limits<std::size_t>::max());
+			values.sort_column=input.get_value_or_default<std::string>("sort", "");
+			values.inter_residue=input.get_flag("inter-residue");
+		}
+	};
+
 	template<typename T>
 	static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)
 	{
@@ -597,6 +990,35 @@ private:
 		{
 			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
 		}
+	}
+
+	static void assert_tag_input(const std::string& tag)
+	{
+		if(tag.empty())
+		{
+			throw std::runtime_error(std::string("Tag is empty."));
+		}
+		else if(tag.find_first_of("{}()[]<>,;.:\\/+*/'\"@#$%^&`~?|")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("Tag contains invalid symbols."));
+		}
+		else if(tag.rfind("-", 0)==0)
+		{
+			throw std::runtime_error(std::string("Tag starts with invalid symbol."));
+		}
+	}
+
+	static std::size_t find_name_id(const std::vector<std::string>& names, const std::string& name)
+	{
+		std::size_t id=names.size();
+		for(std::size_t i=0;i<names.size() && !(id<names.size());i++)
+		{
+			if(names[i]==name)
+			{
+				id=i;
+			}
+		}
+		return id;
 	}
 };
 
