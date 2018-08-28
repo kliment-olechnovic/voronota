@@ -13,11 +13,6 @@ namespace scripting
 class GenericCommandForDataManager
 {
 public:
-	typedef typename DataManager::Atom Atom;
-	typedef typename DataManager::Contact Contact;
-	typedef typename DataManager::SummaryOfAtoms SummaryOfAtoms;
-	typedef typename DataManager::SummaryOfContacts SummaryOfContacts;
-
 	struct CommandRecord
 	{
 		std::string command;
@@ -34,8 +29,8 @@ public:
 		std::string output_text;
 		std::vector<std::size_t> output_set_of_atoms_ids;
 		std::vector<std::size_t> output_set_of_contacts_ids;
-		SummaryOfAtoms summary_of_atoms;
-		SummaryOfContacts summary_of_contacts;
+		DataManager::SummaryOfAtoms summary_of_atoms;
+		DataManager::SummaryOfContacts summary_of_contacts;
 
 		explicit CommandRecord(const std::string& command) :
 			command(command),
@@ -116,8 +111,8 @@ protected:
 		bool changed_contacts_display_states;
 		std::set<std::size_t> output_set_of_atoms_ids;
 		std::set<std::size_t> output_set_of_contacts_ids;
-		SummaryOfAtoms summary_of_atoms;
-		SummaryOfContacts summary_of_contacts;
+		DataManager::SummaryOfAtoms summary_of_atoms;
+		DataManager::SummaryOfContacts summary_of_contacts;
 
 		CommandArguments(
 				DataManager& data_manager,

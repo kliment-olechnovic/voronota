@@ -9,7 +9,7 @@ namespace common
 namespace scripting
 {
 
-class SelectionManager : public TestingOfAtomsAndContacts
+class SelectionManager
 {
 public:
 	SelectionManager() :
@@ -117,7 +117,7 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_atoms(from_ids.empty(), from_ids, read_expression_from_string<test_atom>(expression_string), false);
+				result=select_atoms(from_ids.empty(), from_ids, read_expression_from_string<TAC::test_atom>(expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
@@ -184,7 +184,7 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_contacts(from_ids.empty(), from_ids, read_expression_from_string<test_contact>(expression_string), false);
+				result=select_contacts(from_ids.empty(), from_ids, read_expression_from_string<TAC::test_contact>(expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
@@ -232,6 +232,8 @@ public:
 	}
 
 private:
+	typedef TestingOfAtomsAndContacts TAC;
+
 	static bool check_selection_ids(const std::set<std::size_t>& ids, const std::size_t id_limit)
 	{
 		if(ids.size()<=id_limit)
@@ -275,9 +277,9 @@ private:
 	}
 
 	template<typename Tester>
-	static std::vector< TestingExpressionToken<Tester> > read_expression_from_string(const std::string& expression_string)
+	static std::vector< TAC::TestingExpressionToken<Tester> > read_expression_from_string(const std::string& expression_string)
 	{
-		std::vector< TestingExpressionToken<Tester> > result;
+		std::vector< TAC::TestingExpressionToken<Tester> > result;
 		if(!expression_string.empty())
 		{
 			std::string prepared_string;
@@ -339,7 +341,7 @@ private:
 			std::istringstream input(prepared_string);
 			while(input.good())
 			{
-				TestingExpressionToken<Tester> token;
+				TAC::TestingExpressionToken<Tester> token;
 				input >> token;
 				result.push_back(token);
 			}
@@ -369,7 +371,7 @@ private:
 		return result;
 	}
 
-	void fix_atom_tester(test_atom& tester) const
+	void fix_atom_tester(TAC::test_atom& tester) const
 	{
 		tester.atoms_ptr=atoms_ptr_;
 
@@ -391,7 +393,7 @@ private:
 		}
 	}
 
-	void fix_contact_tester(test_contact& tester) const
+	void fix_contact_tester(TAC::test_contact& tester) const
 	{
 		tester.atoms_ptr=atoms_ptr_;
 		tester.contacts_ptr=contacts_ptr_;
@@ -408,13 +410,13 @@ private:
 		fix_atom_tester(tester.test_atom_b_not);
 	}
 
-	std::set<std::size_t> select_atoms(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_atom> >& expression, const bool postfix) const
+	std::set<std::size_t> select_atoms(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TAC::TestingExpressionToken<TAC::test_atom> >& expression, const bool postfix) const
 	{
 		std::set<std::size_t> result;
 
 		if(from_all || !from_ids.empty())
 		{
-			std::vector< TestingExpressionToken<test_atom> > postfix_expression=(postfix ? expression : convert_testing_expression_from_infix_to_postfix_form(expression));
+			std::vector< TAC::TestingExpressionToken<TAC::test_atom> > postfix_expression=(postfix ? expression : TAC::convert_testing_expression_from_infix_to_postfix_form(expression));
 
 			for(std::size_t i=0;i<postfix_expression.size();i++)
 			{
@@ -428,7 +430,7 @@ private:
 			{
 				for(std::size_t id=0;id<atoms().size();id++)
 				{
-					if(evaluate_testing_expression_in_postfix_form(postfix_expression, id))
+					if(TAC::evaluate_testing_expression_in_postfix_form(postfix_expression, id))
 					{
 						result.insert(id);
 					}
@@ -439,7 +441,7 @@ private:
 				for(std::set<std::size_t>::const_iterator it=from_ids.begin();it!=from_ids.end();++it)
 				{
 					const std::size_t id=(*it);
-					if(id<atoms().size() && evaluate_testing_expression_in_postfix_form(postfix_expression, id))
+					if(id<atoms().size() && TAC::evaluate_testing_expression_in_postfix_form(postfix_expression, id))
 					{
 						result.insert(id);
 					}
@@ -450,13 +452,13 @@ private:
 		return result;
 	}
 
-	std::set<std::size_t> select_contacts(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TestingExpressionToken<test_contact> >& expression, const bool postfix) const
+	std::set<std::size_t> select_contacts(const bool from_all, const std::set<std::size_t>& from_ids, const std::vector< TAC::TestingExpressionToken<TAC::test_contact> >& expression, const bool postfix) const
 	{
 		std::set<std::size_t> result;
 
 		if(from_all || !from_ids.empty())
 		{
-			std::vector< TestingExpressionToken<test_contact> > postfix_expression=(postfix ? expression : convert_testing_expression_from_infix_to_postfix_form(expression));
+			std::vector< TAC::TestingExpressionToken<TAC::test_contact> > postfix_expression=(postfix ? expression : TAC::convert_testing_expression_from_infix_to_postfix_form(expression));
 
 			for(std::size_t i=0;i<postfix_expression.size();i++)
 			{
@@ -470,7 +472,7 @@ private:
 			{
 				for(std::size_t id=0;id<contacts().size();id++)
 				{
-					if(evaluate_testing_expression_in_postfix_form(postfix_expression, id))
+					if(TAC::evaluate_testing_expression_in_postfix_form(postfix_expression, id))
 					{
 						result.insert(id);
 					}
@@ -481,7 +483,7 @@ private:
 				for(std::set<std::size_t>::const_iterator it=from_ids.begin();it!=from_ids.end();++it)
 				{
 					const std::size_t id=(*it);
-					if(id<contacts().size() && evaluate_testing_expression_in_postfix_form(postfix_expression, id))
+					if(id<contacts().size() && TAC::evaluate_testing_expression_in_postfix_form(postfix_expression, id))
 					{
 						result.insert(id);
 					}

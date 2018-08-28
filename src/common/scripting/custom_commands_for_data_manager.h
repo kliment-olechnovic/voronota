@@ -3,7 +3,6 @@
 
 #include "generic_command_for_data_manager.h"
 
-
 namespace common
 {
 
@@ -92,7 +91,7 @@ public:
 				{
 					cargs.data_manager.reset_atoms_by_swapping(atoms);
 					cargs.changed_atoms=true;
-					cargs.summary_of_atoms=SummaryOfAtoms::collect_summary(cargs.data_manager.atoms());
+					cargs.summary_of_atoms=DataManager::SummaryOfAtoms::collect_summary(cargs.data_manager.atoms());
 					cargs.output_for_log << "Read " << cargs.summary_of_atoms.number_total << " atoms from file '" << atoms_file << "'";
 				}
 			}
