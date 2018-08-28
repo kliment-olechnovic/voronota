@@ -5,6 +5,8 @@
 #include "../construction_of_contacts.h"
 #include "../matching_utilities.h"
 
+#include "basic_types.h"
+
 namespace common
 {
 
@@ -14,9 +16,6 @@ namespace scripting
 class TestingOfAtomsAndContacts
 {
 public:
-	typedef ConstructionOfAtomicBalls::AtomicBall Atom;
-	typedef ConstructionOfContacts::Contact Contact;
-
 	class test_id
 	{
 	public:

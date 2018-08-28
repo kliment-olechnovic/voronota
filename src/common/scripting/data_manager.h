@@ -14,9 +14,6 @@ namespace scripting
 class DataManager
 {
 public:
-	typedef SelectionManager::Atom Atom;
-	typedef SelectionManager::Contact Contact;
-
 	struct DisplayState
 	{
 		struct Visual

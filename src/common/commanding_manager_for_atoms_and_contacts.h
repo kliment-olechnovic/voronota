@@ -19,9 +19,6 @@ namespace scripting
 class CommandingManagerForAtomsAndContacts
 {
 public:
-	typedef SelectionManager::Atom Atom;
-	typedef SelectionManager::Contact Contact;
-
 	struct DisplayState
 	{
 		struct Visual
