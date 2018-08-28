@@ -28,8 +28,8 @@ public:
 		std::string output_text;
 		std::vector<std::size_t> output_set_of_atoms_ids;
 		std::vector<std::size_t> output_set_of_contacts_ids;
-		DataManager::SummaryOfAtoms summary_of_atoms;
-		DataManager::SummaryOfContacts summary_of_contacts;
+		SummaryOfAtoms summary_of_atoms;
+		SummaryOfContacts summary_of_contacts;
 
 		explicit CommandRecord(const CommandInput& command_input) :
 			command_input(command_input),
@@ -109,8 +109,8 @@ protected:
 		bool changed_contacts_display_states;
 		std::set<std::size_t> output_set_of_atoms_ids;
 		std::set<std::size_t> output_set_of_contacts_ids;
-		DataManager::SummaryOfAtoms summary_of_atoms;
-		DataManager::SummaryOfContacts summary_of_contacts;
+		SummaryOfAtoms summary_of_atoms;
+		SummaryOfContacts summary_of_contacts;
 
 		CommandArguments(
 				DataManager& data_manager,

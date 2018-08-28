@@ -64,14 +64,6 @@ public:
 		}
 	}
 
-	void set_atoms(const std::vector<Atom>* atoms_ptr)
-	{
-		atoms_ptr_=atoms_ptr;
-		map_of_atoms_selections_.clear();
-		construct_atoms_residues_definition_and_reference();
-		set_contacts(0);
-	}
-
 	void set_contacts(const std::vector<Contact>* contacts_ptr)
 	{
 		if(contacts_ptr==0 || check_contacts_compatibility_with_atoms(atoms(), *contacts_ptr))
@@ -492,6 +484,14 @@ private:
 		}
 
 		return result;
+	}
+
+	void set_atoms(const std::vector<Atom>* atoms_ptr)
+	{
+		atoms_ptr_=atoms_ptr;
+		map_of_atoms_selections_.clear();
+		construct_atoms_residues_definition_and_reference();
+		set_contacts(0);
 	}
 
 	void construct_atoms_residues_definition_and_reference()

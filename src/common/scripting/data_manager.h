@@ -72,133 +72,6 @@ public:
 		}
 	};
 
-	struct BoundingBox
-	{
-		bool filled;
-		apollota::SimplePoint p_min;
-		apollota::SimplePoint p_max;
-
-		BoundingBox() : filled(false)
-		{
-		}
-
-		template<typename Point>
-		void update(const Point& p)
-		{
-			if(!filled)
-			{
-				p_min=apollota::SimplePoint(p);
-				p_max=p_min;
-			}
-			else
-			{
-				p_min.x=std::min(p_min.x, p.x);
-				p_min.y=std::min(p_min.y, p.y);
-				p_min.z=std::min(p_min.z, p.z);
-				p_max.x=std::max(p_max.x, p.x);
-				p_max.y=std::max(p_max.y, p.y);
-				p_max.z=std::max(p_max.z, p.z);
-			}
-			filled=true;
-		}
-	};
-
-	struct SummaryOfAtoms
-	{
-		std::size_t number_total;
-		double volume;
-		BoundingBox bounding_box;
-
-		SummaryOfAtoms() : number_total(0), volume(0.0)
-		{
-		}
-
-		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms)
-		{
-			SummaryOfAtoms summary;
-			for(std::vector<Atom>::const_iterator it=atoms.begin();it!=atoms.end();++it)
-			{
-				summary.feed(*it);
-			}
-			return summary;
-		}
-
-		static SummaryOfAtoms collect_summary(const std::vector<Atom>& atoms, const std::set<std::size_t>& ids)
-		{
-			SummaryOfAtoms summary;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				if((*it)<atoms.size())
-				{
-					summary.feed(atoms[*it]);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
-				}
-			}
-			return summary;
-		}
-
-		void feed(const Atom& atom)
-		{
-			number_total++;
-			if(atom.value.props.adjuncts.count("volume")>0)
-			{
-				volume+=atom.value.props.adjuncts.find("volume")->second;
-			}
-			bounding_box.update(atom.value);
-		}
-	};
-
-	struct SummaryOfContacts
-	{
-		std::size_t number_total;
-		std::size_t number_drawable;
-		double area;
-
-		SummaryOfContacts() : number_total(0), number_drawable(0), area(0.0)
-		{
-		}
-
-		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts)
-		{
-			SummaryOfContacts summary;
-			for(std::vector<Contact>::const_iterator it=contacts.begin();it!=contacts.end();++it)
-			{
-				summary.feed(*it);
-			}
-			return summary;
-		}
-
-		static SummaryOfContacts collect_summary(const std::vector<Contact>& contacts, const std::set<std::size_t>& ids)
-		{
-			SummaryOfContacts summary;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				if((*it)<contacts.size())
-				{
-					summary.feed(contacts[*it]);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
-				}
-			}
-			return summary;
-		}
-
-		void feed(const Contact& contact)
-		{
-			number_total++;
-			area+=contact.value.area;
-			if(!contact.value.graphics.empty())
-			{
-				number_drawable++;
-			}
-		}
-	};
-
 	DataManager()
 	{
 	}
@@ -389,6 +262,31 @@ public:
 	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
 	{
 		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
+	SelectionManager& selection_manager()
+	{
+		return selection_manager_;
+	}
+
+	std::vector<Atom>& atoms_mutable()
+	{
+		return atoms_;
+	}
+
+	std::vector<Contact>& contacts_mutable()
+	{
+		return contacts_;
+	}
+
+	std::vector<DisplayState>& atoms_display_states_mutable()
+	{
+		return atoms_display_states_;
+	}
+
+	std::vector<DisplayState>& contacts_display_states_mutable()
+	{
+		return contacts_display_states_;
 	}
 
 	bool add_atoms_representations(const std::vector<std::string>& names)
