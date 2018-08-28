@@ -15,7 +15,7 @@ class GenericCommandForDataManager
 public:
 	struct CommandRecord
 	{
-		std::string command;
+		CommandInput command_input;
 		bool successful;
 		bool changed_atoms;
 		bool changed_contacts;
@@ -23,7 +23,6 @@ public:
 		bool changed_contacts_tags;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
-		CommandInput command_input;
 		std::string output_log;
 		std::string output_error;
 		std::string output_text;
@@ -32,15 +31,15 @@ public:
 		DataManager::SummaryOfAtoms summary_of_atoms;
 		DataManager::SummaryOfContacts summary_of_contacts;
 
-		explicit CommandRecord(const std::string& command) :
-			command(command),
-			successful(false),
-			changed_atoms(false),
-			changed_contacts(false),
-			changed_atoms_tags(false),
-			changed_contacts_tags(false),
-			changed_atoms_display_states(false),
-			changed_contacts_display_states(false)
+		explicit CommandRecord(const CommandInput& command_input) :
+				command_input(command_input),
+				successful(false),
+				changed_atoms(false),
+				changed_contacts(false),
+				changed_atoms_tags(false),
+				changed_contacts_tags(false),
+				changed_atoms_display_states(false),
+				changed_contacts_display_states(false)
 		{
 		}
 	};
@@ -53,9 +52,9 @@ public:
 	{
 	}
 
-	CommandRecord execute(DataManager& data_manager, const std::string& command_string)
+	CommandRecord execute(DataManager& data_manager, const CommandInput& command_input)
 	{
-		CommandRecord record(command_string);
+		CommandRecord record(command_input);
 
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
@@ -65,7 +64,6 @@ public:
 
 		try
 		{
-			record.command_input=CommandInput(command_string);
 			data_manager.sync_selections_with_display_states_if_requested_in_string(record.command_input.get_canonical_input_command_string());
 			run(cargs);
 			record.successful=true;
