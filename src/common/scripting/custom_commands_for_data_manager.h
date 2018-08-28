@@ -1,6 +1,8 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
+#include "../writing_atomic_balls_in_pdb_format.h"
+
 #include "generic_command_for_data_manager.h"
 
 namespace common
@@ -91,8 +93,8 @@ public:
 				{
 					cargs.data_manager.reset_atoms_by_swapping(atoms);
 					cargs.changed_atoms=true;
-					cargs.summary_of_atoms=DataManager::SummaryOfAtoms::collect_summary(cargs.data_manager.atoms());
-					cargs.output_for_log << "Read " << cargs.summary_of_atoms.number_total << " atoms from file '" << atoms_file << "'";
+					cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms());
+					cargs.output_for_log << "Read " << cargs.summary_of_atoms.number_total << " atoms from file '" << atoms_file << "'\n";
 				}
 			}
 			else
@@ -130,6 +132,472 @@ public:
 			return std::string();
 		}
 	};
+
+	class RestrictAtoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.size()<4)
+			{
+				throw std::runtime_error(std::string("Less than 4 atoms selected."));
+			}
+
+			if(ids.size()<cargs.data_manager.atoms().size())
+			{
+				const SummaryOfAtoms old_summary=SummaryOfAtoms(cargs.data_manager.atoms());
+
+				std::vector<Atom> atoms=slice_vector_by_ids(cargs.data_manager.atoms(), ids);
+				cargs.data_manager.reset_atoms_by_swapping(atoms);
+				cargs.changed_atoms=true;
+
+				cargs.output_for_log << "Restricted atoms from ";
+				print_summary_of_atoms(old_summary, cargs.output_for_log);
+				cargs.output_for_log << " to ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+			else
+			{
+				cargs.output_for_log << "No need to restrict because all atoms were selected ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class SaveAtoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(true, cargs.input);
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const bool as_pdb=cargs.input.get_flag("as-pdb");
+			const std::string pdb_b_factor_name=cargs.input.get_value_or_default<std::string>("pdb-b-factor", "tf");
+			const bool pdb_ter=cargs.input.get_flag("pdb-ter");
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			const std::vector<Atom> atoms=slice_vector_by_ids(cargs.data_manager.atoms(), ids);
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				if(as_pdb)
+				{
+					WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
+				}
+				else
+				{
+					auxiliaries::IOUtilities().write_set(atoms, output);
+				}
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' ";
+				print_summary_of_atoms(SummaryOfAtoms(atoms), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class SelectAtoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
+					cargs.input.get_value_or_first_unused_unnamed_value("name") :
+					cargs.input.get_value_or_default<std::string>("name", ""));
+			const bool no_marking=cargs.input.get_flag("no-marking");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_selection_name_input(name, true);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+
+			if(!name.empty())
+			{
+				cargs.data_manager.selection_manager().set_atoms_selection(name, ids);
+				cargs.output_for_log << "Set selection of atoms named '" << name << "'\n";
+			}
+
+			if(!no_marking)
+			{
+				{
+					CommandParametersForGenericViewing params;
+					params.unmark=true;
+					if(params.apply_to_display_states(cargs.data_manager.atoms_display_states_mutable()))
+					{
+						cargs.changed_atoms_display_states=true;
+					}
+				}
+				{
+					CommandParametersForGenericViewing params;
+					params.mark=true;
+					if(params.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+					{
+						cargs.changed_atoms_display_states=true;
+					}
+				}
+			}
+
+			cargs.output_set_of_atoms_ids.swap(ids);
+		}
+	};
+
+private:
+	class CommandParametersForGenericSelecting
+	{
+	public:
+		std::string type_for_expression;
+		std::string type_for_full_residues;
+		std::string type_for_forced_id;
+		std::string expression;
+		bool full_residues;
+		std::set<std::size_t> forced_ids;
+
+		CommandParametersForGenericSelecting() :
+			type_for_expression("use"),
+			type_for_full_residues("full-residues"),
+			type_for_forced_id("id"),
+			expression("{}"),
+			full_residues(false)
+		{
+		}
+
+		CommandParametersForGenericSelecting(const std::string& types_prefix, const std::string& default_expression) :
+			type_for_expression(types_prefix+"use"),
+			type_for_full_residues(types_prefix+"full-residues"),
+			type_for_forced_id(types_prefix+"id"),
+			expression(default_expression),
+			full_residues(false)
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			if(input.is_option(type_for_expression))
+			{
+				expression=input.get_value<std::string>(type_for_expression);
+			}
+			else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
+			{
+				bool found=false;
+				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
+				{
+					if(!input.is_unnamed_value_used(i))
+					{
+						const std::string& candidate=input.get_list_of_unnamed_values()[i];
+						if(!candidate.empty() && candidate.find_first_of("({")==0)
+						{
+							expression=candidate;
+							input.mark_unnamed_value_as_used(i);
+							found=true;
+						}
+					}
+				}
+			}
+
+			full_residues=input.get_flag(type_for_full_residues);
+
+			{
+				const std::vector<std::size_t> forced_ids_vector=input.get_value_vector_or_default<std::size_t>(type_for_forced_id, std::vector<std::size_t>());
+				if(!forced_ids_vector.empty())
+				{
+					forced_ids.insert(forced_ids_vector.begin(), forced_ids_vector.end());
+				}
+			}
+		}
+	};
+
+	class CommandParametersForGenericOutputDestinations
+	{
+	public:
+		std::string file;
+		bool use_stdout;
+		std::ofstream foutput;
+
+		explicit CommandParametersForGenericOutputDestinations(const bool use_stdout) : use_stdout(use_stdout)
+		{
+		}
+
+		void read(const bool allow_use_of_unnamed_value, CommandInput& input)
+		{
+			if(input.is_option("file") || (allow_use_of_unnamed_value && input.is_any_unnamed_value_unused()))
+			{
+				const std::string str=(allow_use_of_unnamed_value ? input.get_value_or_first_unused_unnamed_value("file") : input.get_value<std::string>("file"));
+				if(!str.empty() && str.find_first_of("?*$'\";:<>,|")==std::string::npos)
+				{
+					file=str;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Invalid file name '")+str+"'.");
+				}
+			}
+
+			if(input.is_option("use-stdout"))
+			{
+				use_stdout=input.get_flag("use-stdout");
+			}
+		}
+
+		std::vector<std::ostream*> get_output_destinations(std::ostream* stdout_ptr, const bool allow_empty_list=false)
+		{
+			std::vector<std::ostream*> list;
+
+			if(use_stdout && stdout_ptr!=0)
+			{
+				list.push_back(stdout_ptr);
+			}
+
+			if(!file.empty())
+			{
+				if(!foutput.is_open())
+				{
+					foutput.open(file.c_str(), std::ios::out);
+					if(!foutput.good())
+					{
+						throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
+					}
+				}
+				if(!foutput.good())
+				{
+					throw std::runtime_error(std::string("Failed to use file '")+file+"' for writing.");
+				}
+				list.push_back(&foutput);
+			}
+
+			if(list.empty() && !allow_empty_list)
+			{
+				throw std::runtime_error(std::string("No output destinations specified."));
+			}
+
+			return list;
+		}
+	};
+
+	class CommandParametersForGenericViewing
+	{
+	public:
+		bool mark;
+		bool unmark;
+		bool show;
+		bool hide;
+		unsigned int color;
+		std::set<std::size_t> visual_ids_;
+
+		CommandParametersForGenericViewing() :
+			mark(false),
+			unmark(false),
+			show(false),
+			hide(false),
+			color(0)
+		{
+		}
+
+		void assert_state() const
+		{
+			if(hide && show)
+			{
+				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+			}
+
+			if(mark && unmark)
+			{
+				throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
+			}
+		}
+
+		bool apply_to_display_state(const std::size_t id, std::vector<DataManager::DisplayState>& display_states) const
+		{
+			bool updated=false;
+			if((show || hide || mark || unmark || color>0) && id<display_states.size())
+			{
+				DataManager::DisplayState& ds=display_states[id];
+				if(ds.implemented())
+				{
+					if(mark || unmark)
+					{
+						updated=(updated || (ds.marked!=mark));
+						ds.marked=mark;
+					}
+
+					if(show || hide || color>0)
+					{
+						if(visual_ids_.empty())
+						{
+							for(std::size_t i=0;i<ds.visuals.size();i++)
+							{
+								if(apply_to_display_state_visual(ds.visuals[i]))
+								{
+									updated=true;
+								}
+							}
+						}
+						else
+						{
+							for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+							{
+								const std::size_t visual_id=(*jt);
+								if(visual_id<ds.visuals.size())
+								{
+									if(apply_to_display_state_visual(ds.visuals[visual_id]))
+									{
+										updated=true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return updated;
+		}
+
+		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DataManager::DisplayState>& display_states) const
+		{
+			bool updated=false;
+			if(show || hide || mark || unmark || color>0)
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					if(apply_to_display_state((*it), display_states))
+					{
+						updated=true;
+					}
+				}
+			}
+			return updated;
+		}
+
+		bool apply_to_display_states(std::vector<DataManager::DisplayState>& display_states) const
+		{
+			bool updated=false;
+			if(show || hide || mark || unmark || color>0)
+			{
+				for(std::size_t i=0;i<display_states.size();i++)
+				{
+					if(apply_to_display_state(i, display_states))
+					{
+						updated=true;
+					}
+				}
+			}
+			return updated;
+		}
+
+		bool apply_to_display_state_visual(DataManager::DisplayState::Visual& visual) const
+		{
+			bool updated=false;
+
+			if(visual.implemented)
+			{
+				if(show || hide)
+				{
+					updated=(updated || (visual.visible!=show));
+					visual.visible=show;
+				}
+
+				if(color>0)
+				{
+					updated=(updated || (visual.color!=color));
+					visual.color=color;
+				}
+			}
+
+			return updated;
+		}
+	};
+
+	template<typename T>
+	static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)
+	{
+		T sliced_vector;
+		sliced_vector.reserve(ids.size());
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			sliced_vector.push_back(full_vector.at(*it));
+		}
+		return sliced_vector;
+	}
+
+	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output) const
+	{
+		output << "(";
+		output << "count=" << summary.number_total;
+		if(summary.volume>0.0)
+		{
+			output << " volume=" << summary.volume;
+		}
+		output << ")";
+	}
+
+	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output) const
+	{
+		output << "(";
+		output << "count=" << summary.number_total;
+		output << " drawable=" << summary.number_drawable;
+		output << " area=" << summary.area;
+		output << ")";
+	}
+
+	static void assert_selection_name_input(const std::string& name, const bool allow_empty)
+	{
+		if(name.empty())
+		{
+			if(!allow_empty)
+			{
+				throw std::runtime_error(std::string("Selection name is empty."));
+			}
+		}
+		else if(name.find_first_of("{}()[]<>,;.:\\/+*/='\"@#$%^&`~?|")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
+		}
+		else if(name.rfind("-", 0)==0 || name.rfind("_", 0)==0)
+		{
+			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
+		}
+	}
 };
 
 }
