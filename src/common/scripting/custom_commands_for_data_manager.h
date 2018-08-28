@@ -763,6 +763,30 @@ public:
 		}
 	};
 
+	class zoom_by_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), ids);
+
+			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+		}
+	};
+
 	class list_selections_of_atoms : public GenericCommandForDataManager
 	{
 	protected:
@@ -1519,6 +1543,43 @@ public:
 				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
+		}
+	};
+
+	class zoom_by_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> contacts_ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+
+			if(contacts_ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			std::set<std::size_t> atoms_ids;
+			for(std::set<std::size_t>::const_iterator it=contacts_ids.begin();it!=contacts_ids.end();++it)
+			{
+				atoms_ids.insert(cargs.data_manager.contacts()[*it].ids[0]);
+				atoms_ids.insert(cargs.data_manager.contacts()[*it].ids[1]);
+			}
+
+			if(atoms_ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), atoms_ids);
+
+			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
 		}
 	};
 
