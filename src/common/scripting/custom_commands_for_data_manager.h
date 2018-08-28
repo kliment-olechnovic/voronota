@@ -528,6 +528,203 @@ public:
 		}
 	};
 
+	class spectrum_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_atoms_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
+			const std::string by=adjunct.empty() ? cargs.input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
+			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+			const bool min_val_present=cargs.input.is_option("min-val");
+			const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+			const bool max_val_present=cargs.input.is_option("max-val");
+			const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+			const bool only_summarize=cargs.input.get_flag("only-summarize");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id")
+			{
+				throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
+			}
+
+			if(by=="adjunct" && adjunct.empty())
+			{
+				throw std::runtime_error(std::string("No adjunct name provided."));
+			}
+
+			if(by!="adjunct" && !adjunct.empty())
+			{
+				throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
+			}
+
+			if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+			{
+				throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
+			}
+
+			if(min_val_present && max_val_present && max_val<=min_val)
+			{
+				throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable atoms selected."));
+			}
+
+			std::map<std::size_t, double> map_of_ids_values;
+
+			if(by=="adjunct")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::map<std::string, double>& adjuncts=cargs.data_manager.atoms()[*it].value.props.adjuncts;
+					std::map<std::string, double>::const_iterator jt=adjuncts.find(adjunct);
+					if(jt!=adjuncts.end())
+					{
+						map_of_ids_values[*it]=jt->second;
+					}
+				}
+			}
+			else if(by=="residue-number")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					map_of_ids_values[*it]=cargs.data_manager.atoms()[*it].crad.resSeq;
+				}
+			}
+			else if(by=="chain")
+			{
+				std::map<std::string, double> chains_to_values;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					chains_to_values[cargs.data_manager.atoms()[*it].crad.chainID]=0.5;
+				}
+				if(chains_to_values.size()>1)
+				{
+					int i=0;
+					for(std::map<std::string, double>::iterator it=chains_to_values.begin();it!=chains_to_values.end();++it)
+					{
+						it->second=static_cast<double>(i)/static_cast<double>(chains_to_values.size()-1);
+						i++;
+					}
+				}
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					map_of_ids_values[*it]=chains_to_values[cargs.data_manager.atoms()[*it].crad.chainID];
+				}
+			}
+			else if(by=="residue-id")
+			{
+				std::map<common::ChainResidueAtomDescriptor, double> residue_ids_to_values;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					residue_ids_to_values[cargs.data_manager.atoms()[*it].crad.without_atom()]=0.5;
+				}
+				if(residue_ids_to_values.size()>1)
+				{
+					int i=0;
+					for(std::map<common::ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
+					{
+						it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
+						i++;
+					}
+				}
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					map_of_ids_values[*it]=residue_ids_to_values[cargs.data_manager.atoms()[*it].crad.without_atom()];
+				}
+			}
+
+			if(map_of_ids_values.empty())
+			{
+				throw std::runtime_error(std::string("Nothing colorable."));
+			}
+
+			double min_val_actual=0.0;
+			double max_val_actual=0.0;
+
+			{
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					const double val=it->second;
+					if(it==map_of_ids_values.begin() || min_val_actual>val)
+					{
+						min_val_actual=val;
+					}
+					if(it==map_of_ids_values.begin() || max_val_actual<val)
+					{
+						max_val_actual=val;
+					}
+				}
+
+				const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
+				const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
+
+				if(max_val_to_use<=min_val_to_use)
+				{
+					throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+				}
+
+				for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					double& val=it->second;
+					if(val<=min_val_to_use)
+					{
+						val=0.0;
+					}
+					else if(val>=max_val_to_use)
+					{
+						val=1.0;
+					}
+					else
+					{
+						val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
+					}
+				}
+			}
+
+			if(!only_summarize)
+			{
+				CommandParametersForGenericViewing parameters_for_viewing;
+				parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+				parameters_for_viewing.assert_state();
+
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.atoms_display_states_mutable()))
+					{
+						cargs.changed_atoms_display_states=true;
+					}
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary: ";
+				cargs.output_for_log << "count=" << ids.size() << " ";
+				cargs.output_for_log << "min=" << min_val_actual << " ";
+				cargs.output_for_log << "max=" << max_val_actual;
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+
 	class print_atoms : public GenericCommandForDataManager
 	{
 	protected:
@@ -1083,6 +1280,425 @@ public:
 				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
+		}
+	};
+
+	class spectrum_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+			cargs.data_manager.assert_contacts_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
+			const std::string by=adjunct.empty() ? cargs.input.get_value<std::string>("by") : std::string("adjunct");
+			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+			const bool min_val_present=cargs.input.is_option("min-val");
+			const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+			const bool max_val_present=cargs.input.is_option("max-val");
+			const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+			const bool only_summarize=cargs.input.get_flag("only-summarize");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep")
+			{
+				throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
+			}
+
+			if(by=="adjunct" && adjunct.empty())
+			{
+				throw std::runtime_error(std::string("No adjunct name provided."));
+			}
+
+			if(by!="adjunct" && !adjunct.empty())
+			{
+				throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
+			}
+
+			if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+			{
+				throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
+			}
+
+			if(min_val_present && max_val_present && max_val<=min_val)
+			{
+				throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable contacts selected."));
+			}
+
+			std::map<std::size_t, double> map_of_ids_values;
+
+			if(by=="adjunct")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::map<std::string, double>& adjuncts=cargs.data_manager.contacts()[*it].value.props.adjuncts;
+					std::map<std::string, double>::const_iterator jt=adjuncts.find(adjunct);
+					if(jt!=adjuncts.end())
+					{
+						map_of_ids_values[*it]=jt->second;
+					}
+				}
+			}
+			else if(by=="area")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					map_of_ids_values[*it]=cargs.data_manager.contacts()[*it].value.area;
+				}
+			}
+			else if(by=="dist-centers")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					map_of_ids_values[*it]=cargs.data_manager.contacts()[*it].value.dist;
+				}
+			}
+			else if(by=="dist-balls")
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id0=cargs.data_manager.contacts()[*it].ids[0];
+					const std::size_t id1=cargs.data_manager.contacts()[*it].ids[1];
+					if(cargs.data_manager.contacts()[*it].solvent())
+					{
+						map_of_ids_values[*it]=(cargs.data_manager.contacts()[*it].value.dist-cargs.data_manager.atoms()[id0].value.r)/3.0*2.0;
+					}
+					else
+					{
+						map_of_ids_values[*it]=apollota::minimal_distance_from_sphere_to_sphere(cargs.data_manager.atoms()[id0].value, cargs.data_manager.atoms()[id1].value);
+					}
+				}
+			}
+			else if(by=="seq-sep")
+			{
+				double max_seq_sep=0.0;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id0=cargs.data_manager.contacts()[*it].ids[0];
+					const std::size_t id1=cargs.data_manager.contacts()[*it].ids[1];
+					if(cargs.data_manager.atoms()[id0].crad.chainID==cargs.data_manager.atoms()[id1].crad.chainID)
+					{
+						const double seq_sep=fabs(static_cast<double>(cargs.data_manager.atoms()[id0].crad.resSeq-cargs.data_manager.atoms()[id1].crad.resSeq));
+						map_of_ids_values[*it]=seq_sep;
+						max_seq_sep=((max_seq_sep<seq_sep) ? seq_sep : max_seq_sep);
+					}
+				}
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id0=cargs.data_manager.contacts()[*it].ids[0];
+					const std::size_t id1=cargs.data_manager.contacts()[*it].ids[1];
+					if(cargs.data_manager.atoms()[id0].crad.chainID!=cargs.data_manager.atoms()[id1].crad.chainID)
+					{
+						map_of_ids_values[*it]=max_seq_sep+1.0;
+					}
+				}
+			}
+
+			if(map_of_ids_values.empty())
+			{
+				throw std::runtime_error(std::string("Nothing colorable."));
+			}
+
+			double min_val_actual=0.0;
+			double max_val_actual=0.0;
+
+			{
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					const double val=it->second;
+					if(it==map_of_ids_values.begin() || min_val_actual>val)
+					{
+						min_val_actual=val;
+					}
+					if(it==map_of_ids_values.begin() || max_val_actual<val)
+					{
+						max_val_actual=val;
+					}
+				}
+
+				const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
+				const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
+
+				if(max_val_to_use<=min_val_to_use)
+				{
+					throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+				}
+
+				for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					double& val=it->second;
+					if(val<=min_val_to_use)
+					{
+						val=0.0;
+					}
+					else if(val>=max_val_to_use)
+					{
+						val=1.0;
+					}
+					else
+					{
+						val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
+					}
+				}
+			}
+
+			if(!only_summarize)
+			{
+				CommandParametersForGenericViewing parameters_for_viewing;
+				parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+				parameters_for_viewing.assert_state();
+
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.contacts_display_states_mutable()))
+					{
+						cargs.changed_contacts_display_states=true;
+					}
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary: ";
+				cargs.output_for_log << "count=" << ids.size() << " ";
+				cargs.output_for_log << "min=" << min_val_actual << " ";
+				cargs.output_for_log << "max=" << max_val_actual;
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class print_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForContactsTablePrinting parameters_for_printing;
+			parameters_for_printing.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				TablePrinting::print_contacts(cargs.data_manager.atoms(), cargs.data_manager.contacts(), ids, parameters_for_printing.values, output);
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class write_contacts_as_pymol_cgo : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+			cargs.data_manager.assert_contacts_representations_availability();
+
+			std::string name=cargs.input.get_value_or_default<std::string>("name", "contacts");
+			bool wireframe=cargs.input.get_flag("wireframe");
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Missing object name."));
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.empty())
+			{
+				parameters_for_representation_selecting.visual_ids.insert(0);
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			{
+				throw std::runtime_error(std::string("More than one representation requested."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable visible contacts selected."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			auxiliaries::OpenGLPrinter opengl_printer;
+			{
+				unsigned int prev_color=0;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id=(*it);
+					for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+					{
+						const std::size_t visual_id=(*jt);
+						if(visual_id<cargs.data_manager.contacts_display_states()[id].visuals.size())
+						{
+							const DataManager::DisplayState::Visual& dsv=cargs.data_manager.contacts_display_states()[id].visuals[visual_id];
+							if(prev_color==0 || dsv.color!=prev_color)
+							{
+								opengl_printer.add_color(dsv.color);
+							}
+							prev_color=dsv.color;
+							if(wireframe)
+							{
+								opengl_printer.add_as_wireframe(cargs.data_manager.contacts()[id].value.graphics);
+							}
+							else
+							{
+								opengl_printer.add(cargs.data_manager.contacts()[id].value.graphics);
+							}
+						}
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				opengl_printer.print_pymol_script(name, true, output);
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' (";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+
+				cargs.output_for_log << ")\n";
+			}
+		}
+	};
+
+	class list_selections_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.assert_contacts_selections_availability();
+			const std::map< std::string, std::set<std::size_t> >& map_of_selections=cargs.data_manager.selection_manager().map_of_contacts_selections();
+			cargs.output_for_log << "Selections of contacts:\n";
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
+			{
+				cargs.output_for_log << "  name='" << (it->first) << "' ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), it->second), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class delete_all_selections_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.assert_contacts_selections_availability();
+			cargs.data_manager.selection_manager().delete_contacts_selections();
+			cargs.output_for_log << "Removed all selections of contacts\n";
+		}
+	};
+
+	class delete_selections_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_selections_availability();
+
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+			cargs.input.mark_all_unnamed_values_as_used();
+
+			cargs.input.assert_nothing_unusable();
+
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selections names provided."));
+			}
+
+			cargs.data_manager.assert_contacts_selections_availability(names);
+
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.data_manager.selection_manager().delete_contacts_selection(names[i]);
+			}
+
+			cargs.output_for_log << "Removed selections of contacts:";
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.output_for_log << " " << names[i];
+			}
+			cargs.output_for_log << "\n";
+		}
+	};
+
+	class rename_selection_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_selections_availability();
+
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+
+			if(names.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
+			}
+
+			cargs.input.mark_all_unnamed_values_as_used();
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().get_contacts_selection(names[0]);
+			cargs.data_manager.selection_manager().set_contacts_selection(names[1], ids);
+			cargs.data_manager.selection_manager().delete_contacts_selection(names[0]);
+			cargs.output_for_log << "Renamed selection of contacts from '" << names[0] << "' to '" << names[1] << "'\n";
 		}
 	};
 
