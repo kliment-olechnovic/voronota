@@ -1702,6 +1702,105 @@ public:
 		}
 	};
 
+	class save_atoms_and_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(true, cargs.input);
+			const bool no_graphics=cargs.input.get_flag("no-graphics");
+
+			cargs.input.assert_nothing_unusable();
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				auxiliaries::IOUtilities().write_set(cargs.data_manager.atoms(), output);
+				output << "_end_atoms\n";
+				enabled_output_of_ContactValue_graphics()=!no_graphics;
+				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
+				output << "_end_contacts\n";
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote atoms and contacts to file '" << parameters_for_output_destinations.file << "'";
+				cargs.output_for_log << " ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				cargs.output_for_log << " ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class load_atoms_and_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input file name."));
+			}
+
+			std::ifstream finput(file.c_str(), std::ios::in);
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
+			std::vector<Atom> atoms;
+			std::vector<Contact> contacts;
+
+			auxiliaries::IOUtilities(true, '\n', ' ', "_end_atoms").read_lines_to_set(finput, atoms);
+
+			if(atoms.empty())
+			{
+				throw std::runtime_error(std::string("Failed to read atoms from file '")+file+"'.");
+			}
+			else if(atoms.size()<4)
+			{
+				throw std::runtime_error(std::string("Less than 4 atoms read."));
+			}
+			else
+			{
+				cargs.data_manager.reset_atoms_by_swapping(atoms);
+				cargs.changed_atoms=true;
+
+				cargs.output_for_log << "Read atoms from file '" << file << "' ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+
+			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, contacts);
+
+			if(contacts.empty())
+			{
+				cargs.output_for_log << "No contacts read from file '" << file << "'.";
+			}
+			else
+			{
+				cargs.data_manager.reset_contacts_by_swapping(contacts);
+				cargs.changed_contacts=true;
+
+				cargs.output_for_log << "Read contacts from file '" << file << "' (";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				cargs.output_for_log << ")\n";
+			}
+		}
+	};
+
 private:
 	class CommandParametersForGenericSelecting
 	{
