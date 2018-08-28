@@ -844,6 +844,248 @@ public:
 		}
 	};
 
+	class tag_contacts : public GenericCommandForDataManager
+	{
+	public:
+		tag_contacts() : positive_(true)
+		{
+		}
+
+		tag_contacts(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_tag_input(tag);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
+				if(positive_)
+				{
+					contact.value.props.tags.insert(tag);
+				}
+				else
+				{
+					contact.value.props.tags.erase(tag);
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class untag_contacts : public tag_contacts
+	{
+	public:
+		untag_contacts() : tag_contacts(false)
+		{
+		}
+	};
+
+	class mark_contacts : public GenericCommandForDataManager
+	{
+	public:
+		mark_contacts() : positive_(true)
+		{
+		}
+
+		mark_contacts(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable contacts selected."));
+			}
+
+			{
+				CommandParametersForGenericViewing parameters_for_viewing;
+				parameters_for_viewing.mark=positive_;
+				parameters_for_viewing.unmark=!positive_;
+				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+				{
+					cargs.changed_contacts_display_states=true;
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class unmark_contacts : public mark_contacts
+	{
+	public:
+		unmark_contacts() : mark_contacts(false)
+		{
+		}
+	};
+
+	class show_contacts : public GenericCommandForDataManager
+	{
+	public:
+		show_contacts() : positive_(true)
+		{
+		}
+
+		show_contacts(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+			cargs.data_manager.assert_contacts_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(positive_ && parameters_for_representation_selecting.visual_ids.empty() && cargs.data_manager.contacts_representation_names().size()>1)
+			{
+				parameters_for_representation_selecting.visual_ids.insert(0);
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable contacts selected."));
+			}
+
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.show=positive_;
+			parameters_for_viewing.hide=!positive_;
+
+			parameters_for_viewing.assert_state();
+
+			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+			{
+				cargs.changed_contacts_display_states=true;
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class hide_contacts : public show_contacts
+	{
+	public:
+		hide_contacts() : show_contacts(false)
+		{
+		}
+	};
+
+	class color_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+			cargs.data_manager.assert_contacts_representations_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			parameters_for_representation_selecting.read(cargs.input);
+			CommandParametersForGenericColoring parameters_for_coloring;
+			parameters_for_coloring.read(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
+			{
+				throw std::runtime_error(std::string("Contacts color not specified."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable contacts selected."));
+			}
+
+			CommandParametersForGenericViewing parameters_for_viewing;
+			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.color=parameters_for_coloring.color;
+
+			parameters_for_viewing.assert_state();
+
+			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+			{
+				cargs.changed_contacts_display_states=true;
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
 private:
 	class CommandParametersForGenericSelecting
 	{
