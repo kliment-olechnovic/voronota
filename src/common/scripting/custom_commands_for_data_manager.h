@@ -566,6 +566,284 @@ public:
 		}
 	};
 
+	class list_selections_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.assert_atoms_selections_availability();
+			const std::map< std::string, std::set<std::size_t> >& map_of_selections=cargs.data_manager.selection_manager().map_of_atoms_selections();
+			cargs.output_for_log << "Selections of atoms:\n";
+			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
+			{
+				cargs.output_for_log << "  name='" << (it->first) << "' ";
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), it->second), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class delete_all_selections_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.assert_atoms_selections_availability();
+			cargs.data_manager.selection_manager().delete_atoms_selections();
+			cargs.output_for_log << "Removed all selections of atoms\n";
+		}
+	};
+
+	class delete_selections_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_selections_availability();
+
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+			cargs.input.mark_all_unnamed_values_as_used();
+
+			cargs.input.assert_nothing_unusable();
+
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selections names provided."));
+			}
+
+			cargs.data_manager.assert_atoms_selections_availability(names);
+
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.data_manager.selection_manager().delete_atoms_selection(names[i]);
+			}
+
+			cargs.output_for_log << "Removed selections of atoms:";
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.output_for_log << " " << names[i];
+			}
+			cargs.output_for_log << "\n";
+		}
+	};
+
+	class rename_selection_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_selections_availability();
+
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+
+			if(names.size()!=2)
+			{
+				throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
+			}
+
+			cargs.input.mark_all_unnamed_values_as_used();
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().get_atoms_selection(names[0]);
+			cargs.data_manager.selection_manager().set_atoms_selection(names[1], ids);
+			cargs.data_manager.selection_manager().delete_atoms_selection(names[0]);
+			cargs.output_for_log << "Renamed selection of atoms from '" << names[0] << "' to '" << names[1] << "'\n";
+		}
+	};
+
+	class construct_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
+			parameters_to_construct_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
+			parameters_to_construct_contacts.calculate_volumes=cargs.input.get_flag("calculate-volumes");
+			parameters_to_construct_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
+			parameters_to_construct_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
+			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
+			ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
+			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
+			parameters_to_enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
+			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
+			CommandParametersForGenericSelecting render_parameters_for_selecting("render-", "{--min-seq-sep 1}");
+			render_parameters_for_selecting.read(cargs.input);
+			const bool render=(cargs.input.get_flag("render-default") ||
+					cargs.input.is_option(render_parameters_for_selecting.type_for_expression) ||
+					cargs.input.is_option(render_parameters_for_selecting.type_for_full_residues) ||
+					cargs.input.is_option(render_parameters_for_selecting.type_for_forced_id));
+
+			cargs.input.assert_nothing_unusable();
+
+			ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+			ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
+
+			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms()), bundle_of_triangulation_information, bundle_of_contact_information))
+			{
+				cargs.data_manager.reset_contacts_by_swapping(bundle_of_contact_information.contacts);
+				cargs.changed_contacts=true;
+
+				if(parameters_to_construct_contacts.calculate_volumes)
+				{
+					for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<cargs.data_manager.atoms().size();i++)
+					{
+						cargs.data_manager.atoms_mutable()[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
+					}
+				}
+
+				std::set<std::size_t> draw_ids;
+				if(render)
+				{
+					draw_ids=cargs.data_manager.selection_manager().select_contacts(render_parameters_for_selecting.forced_ids, render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
+				}
+
+				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, bundle_of_triangulation_information, draw_ids, cargs.data_manager.contacts_mutable());
+
+				cargs.data_manager.reset_contacts_display_states();
+
+				cargs.output_for_log << "Constructed contacts ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Failed to construct contacts."));
+			}
+		}
+	};
+
+	class save_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(true, cargs.input);
+			const bool no_graphics=cargs.input.get_flag("no-graphics");
+
+			cargs.input.assert_nothing_unusable();
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				enabled_output_of_ContactValue_graphics()=!no_graphics;
+				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote contacts to file '" << parameters_for_output_destinations.file << "' ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class load_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input contacts file name."));
+			}
+
+			std::vector<Contact> contacts;
+
+			auxiliaries::IOUtilities().read_file_lines_to_set(file, contacts);
+
+			if(!contacts.empty())
+			{
+				cargs.data_manager.reset_contacts_by_swapping(contacts);
+				cargs.changed_contacts=true;
+
+				cargs.output_for_log << "Read contacts from file '" << file << "' ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Failed to read contacts from file '")+file+"'.");
+			}
+		}
+	};
+
+	class select_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
+					cargs.input.get_value_or_first_unused_unnamed_value("name") :
+					cargs.input.get_value_or_default<std::string>("name", ""));
+			const bool no_marking=cargs.input.get_flag("no-marking");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_selection_name_input(name, true);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+
+			if(!name.empty())
+			{
+				cargs.data_manager.selection_manager().set_contacts_selection(name, ids);
+				cargs.output_for_log << "Set selection of contacts named '" << name << "'\n";
+			}
+
+			if(!no_marking)
+			{
+				{
+					CommandParametersForGenericViewing params;
+					params.unmark=true;
+					if(params.apply_to_display_states(cargs.data_manager.contacts_display_states_mutable()))
+					{
+						cargs.changed_contacts_display_states=true;
+					}
+				}
+				{
+					CommandParametersForGenericViewing params;
+					params.mark=true;
+					if(params.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+					{
+						cargs.changed_contacts_display_states=true;
+					}
+				}
+			}
+
+			cargs.output_set_of_contacts_ids.swap(ids);
+		}
+	};
+
 private:
 	class CommandParametersForGenericSelecting
 	{
