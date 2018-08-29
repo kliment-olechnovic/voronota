@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_
-#define COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_
+#ifndef COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
+#define COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
 
 #include "command_input.h"
 
@@ -9,7 +9,7 @@ namespace common
 namespace scripting
 {
 
-class ScriptPartitioning
+class ScriptPartitioner
 {
 public:
 	struct Sentence
@@ -26,7 +26,7 @@ public:
 		}
 	};
 
-	ScriptPartitioning()
+	ScriptPartitioner()
 	{
 	}
 
@@ -289,4 +289,4 @@ private:
 
 }
 
-#endif /* COMMON_SCRIPTING_SCRIPT_PARTITIONING_H_ */
+#endif /* COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_ */

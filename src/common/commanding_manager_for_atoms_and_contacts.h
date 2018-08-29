@@ -7,7 +7,7 @@
 #include "writing_atomic_balls_in_pdb_format.h"
 
 #include "scripting/command_input.h"
-#include "scripting/script_partitioning.h"
+#include "scripting/script_partitioner.h"
 #include "scripting/selection_manager.h"
 
 namespace common
@@ -327,11 +327,11 @@ public:
 	{
 		ScriptRecord record;
 
-		std::list<ScriptPartitioning::Sentence> sentences;
+		std::list<ScriptPartitioner::Sentence> sentences;
 
 		try
 		{
-			std::vector<ScriptPartitioning::Sentence> script_sentences=script_partitioning_.partition_script(script);
+			std::vector<ScriptPartitioner::Sentence> script_sentences=script_partitioning_.partition_script(script);
 			sentences.insert(sentences.end(), script_sentences.begin(), script_sentences.end());
 		}
 		catch(const std::exception& e)
@@ -340,11 +340,11 @@ public:
 			return record;
 		}
 
-		std::list<ScriptPartitioning::Sentence>::iterator sentences_it=sentences.begin();
+		std::list<ScriptPartitioner::Sentence>::iterator sentences_it=sentences.begin();
 
 		while(sentences_it!=sentences.end())
 		{
-			std::vector<ScriptPartitioning::Sentence> subsentences=script_partitioning_.partition_sentence(*sentences_it);
+			std::vector<ScriptPartitioner::Sentence> subsentences=script_partitioning_.partition_sentence(*sentences_it);
 
 			if(!subsentences.empty())
 			{
@@ -3508,7 +3508,7 @@ private:
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	SelectionManager selection_manager_;
-	ScriptPartitioning script_partitioning_;
+	ScriptPartitioner script_partitioning_;
 };
 
 }
