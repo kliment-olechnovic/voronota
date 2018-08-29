@@ -52,7 +52,7 @@ public:
 	{
 	}
 
-	CommandRecord execute(DataManager& data_manager, const CommandInput& command_input)
+	CommandRecord execute(const CommandInput& command_input, DataManager& data_manager)
 	{
 		CommandRecord record(command_input);
 
