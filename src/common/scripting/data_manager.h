@@ -14,6 +14,12 @@ namespace scripting
 class DataManager
 {
 public:
+	struct RepresentationsDescriptor
+	{
+		std::vector<std::string> names;
+		std::set<std::size_t> implemented_always;
+	};
+
 	struct DisplayState
 	{
 		struct Visual
@@ -106,29 +112,19 @@ public:
 		return secondary_structure_info_;
 	}
 
-	const std::vector<std::string>& atoms_representation_names() const
+	const RepresentationsDescriptor& atoms_representation_descriptor() const
 	{
-		return atoms_representation_names_;
+		return atoms_representations_descriptor_;
 	}
 
-	const std::vector<std::string>& contacts_representation_names() const
+	const RepresentationsDescriptor& contacts_representation_descriptor() const
 	{
-		return contacts_representation_names_;
-	}
-
-	const std::set<std::size_t>& atoms_representations_implemented_always() const
-	{
-		return atoms_representations_implemented_always_;
-	}
-
-	const std::set<std::size_t>& contacts_representations_implemented_always() const
-	{
-		return contacts_representations_implemented_always_;
+		return contacts_representations_descriptor_;
 	}
 
 	void assert_atoms_representations_availability() const
 	{
-		if(atoms_representation_names_.empty())
+		if(atoms_representations_descriptor_.names.empty())
 		{
 			throw std::runtime_error(std::string("No atoms representations available."));
 		}
@@ -163,7 +159,7 @@ public:
 
 	void assert_contacts_representations_availability() const
 	{
-		if(contacts_representation_names_.empty())
+		if(contacts_representations_descriptor_.names.empty())
 		{
 			throw std::runtime_error(std::string("No contacts representations available."));
 		}
@@ -291,9 +287,9 @@ public:
 
 	bool add_atoms_representations(const std::vector<std::string>& names)
 	{
-		if(add_names_to_representations(names, atoms_representation_names_))
+		if(add_names_to_representations(names, atoms_representations_descriptor_.names))
 		{
-			resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
+			resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_);
 			return true;
 		}
 		return false;
@@ -301,9 +297,9 @@ public:
 
 	bool add_contacts_representations(const std::vector<std::string>& names)
 	{
-		if(add_names_to_representations(names, contacts_representation_names_))
+		if(add_names_to_representations(names, contacts_representations_descriptor_.names))
 		{
-			resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
+			resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
 			return true;
 		}
 		return false;
@@ -311,7 +307,7 @@ public:
 
 	bool set_atoms_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		if(set_representation_implemented_always(atoms_representation_names_, representation_id, status, atoms_representations_implemented_always_))
+		if(set_representation_implemented_always(atoms_representations_descriptor_.names, representation_id, status, atoms_representations_descriptor_.implemented_always))
 		{
 			set_atoms_representations_implemented_if_required_always();
 			return true;
@@ -321,7 +317,7 @@ public:
 
 	bool set_contacts_representation_implemented_always(const std::size_t representation_id, const bool status)
 	{
-		if(set_representation_implemented_always(contacts_representation_names_, representation_id, status, contacts_representations_implemented_always_))
+		if(set_representation_implemented_always(contacts_representations_descriptor_.names, representation_id, status, contacts_representations_descriptor_.implemented_always))
 		{
 			set_contacts_representations_implemented_if_required_always();
 			return true;
@@ -331,12 +327,12 @@ public:
 
 	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(atoms_representation_names_, representation_id, statuses, atoms_display_states_);
+		return set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, atoms_display_states_);
 	}
 
 	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(contacts_representation_names_, representation_id, statuses, contacts_display_states_);
+		return set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, contacts_display_states_);
 	}
 
 	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
@@ -368,7 +364,7 @@ public:
 		{
 			atoms_display_states_[i].drawable=true;
 		}
-		resize_visuals_in_display_states(atoms_representation_names_.size(), atoms_display_states_);
+		resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_);
 		set_atoms_representations_implemented_if_required_always();
 	}
 
@@ -402,7 +398,7 @@ public:
 		{
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
-		resize_visuals_in_display_states(contacts_representation_names_.size(), contacts_display_states_);
+		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
 		set_contacts_representations_implemented_if_required_always();
 	}
 
@@ -624,9 +620,9 @@ private:
 
 	void set_atoms_representations_implemented_if_required_always()
 	{
-		if(!atoms_representations_implemented_always_.empty() && !atoms_.empty())
+		if(!atoms_representations_descriptor_.implemented_always.empty() && !atoms_.empty())
 		{
-			for(std::set<std::size_t>::const_iterator it=atoms_representations_implemented_always_.begin();it!=atoms_representations_implemented_always_.end();++it)
+			for(std::set<std::size_t>::const_iterator it=atoms_representations_descriptor_.implemented_always.begin();it!=atoms_representations_descriptor_.implemented_always.end();++it)
 			{
 				set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
 			}
@@ -635,19 +631,17 @@ private:
 
 	void set_contacts_representations_implemented_if_required_always()
 	{
-		if(!contacts_representations_implemented_always_.empty() && !contacts_.empty())
+		if(!contacts_representations_descriptor_.implemented_always.empty() && !contacts_.empty())
 		{
-			for(std::set<std::size_t>::const_iterator it=contacts_representations_implemented_always_.begin();it!=contacts_representations_implemented_always_.end();++it)
+			for(std::set<std::size_t>::const_iterator it=contacts_representations_descriptor_.implemented_always.begin();it!=contacts_representations_descriptor_.implemented_always.end();++it)
 			{
 				set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
 			}
 		}
 	}
 
-	std::vector<std::string> atoms_representation_names_;
-	std::vector<std::string> contacts_representation_names_;
-	std::set<std::size_t> atoms_representations_implemented_always_;
-	std::set<std::size_t> contacts_representations_implemented_always_;
+	RepresentationsDescriptor atoms_representations_descriptor_;
+	RepresentationsDescriptor contacts_representations_descriptor_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
