@@ -140,17 +140,15 @@ public:
 					return script_record;
 				}
 
-				if(command_record.recognized==0 && use_map_with_handler(map_of_commands_for_script_partitioner_, handler_for_script_partitioning, script_partitioner_, command_record))
+				if(use_map_with_handler(map_of_commands_for_script_partitioner_, handler_for_script_partitioning, script_partitioner_, command_record))
 				{
 					command_record.recognized=1;
 				}
-
-				if(command_record.recognized==0 && use_map_with_handler(map_of_commands_for_data_manager_, handler_for_data_management, data_manager_, command_record))
+				else if(use_map_with_handler(map_of_commands_for_data_manager_, handler_for_data_management, data_manager_, command_record))
 				{
 					command_record.recognized=2;
 				}
-
-				if(command_record.recognized==0)
+				else
 				{
 					handler_for_unrecognized_command_input(command_record.command_input);
 				}
