@@ -82,7 +82,7 @@ public:
 	{
 	}
 
-	DataManager(const bool init_default_representations)
+	explicit DataManager(const bool init_default_representations)
 	{
 		if(init_default_representations)
 		{

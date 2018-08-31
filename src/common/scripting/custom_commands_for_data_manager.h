@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
-#include "../auxiliaries/color_utilities.h"
+#include "../../auxiliaries/color_utilities.h"
 
 #include "../writing_atomic_balls_in_pdb_format.h"
 
@@ -97,7 +97,9 @@ public:
 					cargs.data_manager.reset_atoms_by_swapping(atoms);
 					cargs.changed_atoms=true;
 					cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms());
-					cargs.output_for_log << "Read " << cargs.summary_of_atoms.number_total << " atoms from file '" << atoms_file << "'\n";
+					cargs.output_for_log << "Read atoms from file '" << atoms_file << "' ";
+					print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+					cargs.output_for_log << "\n";
 				}
 			}
 			else
@@ -252,7 +254,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 
@@ -293,7 +295,7 @@ public:
 		{
 		}
 
-		tag_atoms(const bool positive) : positive_(positive)
+		explicit tag_atoms(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -331,7 +333,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -355,7 +357,7 @@ public:
 		{
 		}
 
-		mark_atoms(const bool positive) : positive_(positive)
+		explicit mark_atoms(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -390,7 +392,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -414,7 +416,7 @@ public:
 		{
 		}
 
-		show_atoms(const bool positive) : positive_(positive)
+		explicit show_atoms(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -460,7 +462,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -522,7 +524,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -757,7 +759,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log);
+				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -793,6 +795,7 @@ public:
 		void run(CommandArguments& cargs)
 		{
 			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.sync_atoms_selections_with_display_states();
 			cargs.data_manager.assert_atoms_selections_availability();
 			const std::map< std::string, std::set<std::size_t> >& map_of_selections=cargs.data_manager.selection_manager().map_of_atoms_selections();
 			cargs.output_for_log << "Selections of atoms:\n";
@@ -1031,7 +1034,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 
@@ -1072,7 +1075,7 @@ public:
 		{
 		}
 
-		tag_contacts(const bool positive) : positive_(positive)
+		explicit tag_contacts(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -1110,7 +1113,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1134,7 +1137,7 @@ public:
 		{
 		}
 
-		mark_contacts(const bool positive) : positive_(positive)
+		explicit mark_contacts(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -1169,7 +1172,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1193,7 +1196,7 @@ public:
 		{
 		}
 
-		show_contacts(const bool positive) : positive_(positive)
+		explicit show_contacts(const bool positive) : positive_(positive)
 		{
 		}
 
@@ -1239,7 +1242,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1301,7 +1304,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1540,7 +1543,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1667,10 +1670,9 @@ public:
 
 			if(!parameters_for_output_destinations.file.empty())
 			{
-				cargs.output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' (";
+				cargs.output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' ";
 				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
-
-				cargs.output_for_log << ")\n";
+				cargs.output_for_log << "\n";
 			}
 		}
 	};
@@ -1681,6 +1683,7 @@ public:
 		void run(CommandArguments& cargs)
 		{
 			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.sync_contacts_selections_with_display_states();
 			cargs.data_manager.assert_contacts_selections_availability();
 			const std::map< std::string, std::set<std::size_t> >& map_of_selections=cargs.data_manager.selection_manager().map_of_contacts_selections();
 			cargs.output_for_log << "Selections of contacts:\n";
@@ -1855,9 +1858,9 @@ public:
 				cargs.data_manager.reset_contacts_by_swapping(contacts);
 				cargs.changed_contacts=true;
 
-				cargs.output_for_log << "Read contacts from file '" << file << "' (";
+				cargs.output_for_log << "Read contacts from file '" << file << "' ";
 				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
-				cargs.output_for_log << ")\n";
+				cargs.output_for_log << "\n";
 			}
 		}
 	};
@@ -2249,24 +2252,24 @@ private:
 		return sliced_vector;
 	}
 
-	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output) const
+	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output, bool no_brackets=false)
 	{
-		output << "(";
+		output << (no_brackets ? "" : "(");
 		output << "count=" << summary.number_total;
 		if(summary.volume>0.0)
 		{
 			output << " volume=" << summary.volume;
 		}
-		output << ")";
+		output << (no_brackets ? "" : ")");
 	}
 
-	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output) const
+	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output, bool no_brackets=false)
 	{
-		output << "(";
+		output << (no_brackets ? "" : "(");
 		output << "count=" << summary.number_total;
 		output << " drawable=" << summary.number_drawable;
 		output << " area=" << summary.area;
-		output << ")";
+		output << (no_brackets ? "" : ")");
 	}
 
 	static void assert_selection_name_input(const std::string& name, const bool allow_empty)

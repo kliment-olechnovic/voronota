@@ -139,14 +139,14 @@ Error: Invalid contacts selection name 'nosel1'.
 
 > list-selections-of-atoms
 Selections of atoms:
-  name='_marked' count=5 volume=108.978
-  name='as1' count=5 volume=108.978
+  name='_marked' (count=5 volume=108.978)
+  name='as1' (count=5 volume=108.978)
 
 
 > list-selections-of-contacts
 Selections of contacts:
-  name='_marked' count=1 drawable=1 area=6.57156
-  name='cs1' count=5 drawable=1 area=33.8164
+  name='_marked' (count=1 drawable=1 area=6.57156)
+  name='cs1' (count=5 drawable=1 area=33.8164)
 
 
 > color-contacts 0x00FF00
@@ -166,7 +166,7 @@ Summary of contacts: count=120 drawable=120 area=211.8
 
 
 > write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
-Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts.py' (count=12469 drawable=120 area=47017.2)
+Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts.py' (count=120 drawable=120 area=211.8)
 
 
 > color-contacts 0xFF00FF
@@ -174,7 +174,7 @@ Summary of contacts: count=120 drawable=120 area=211.8
 
 
 > write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf
-Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts_wf.py' (count=12469 drawable=120 area=47017.2)
+Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts_wf.py' (count=120 drawable=120 area=211.8)
 
 
 > save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'

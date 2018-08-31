@@ -1,21 +1,47 @@
 #include "auxiliaries/program_options_handler.h"
 
-#include "common/commanding_manager_for_atoms_and_contacts.h"
+#include "common/scripting/script_execution_manager.h"
 
 namespace
 {
 
-struct CommandRecordPrinter
+struct HandlerForScriptPartitioning
 {
-	void operator ()(const common::scripting::CommandingManagerForAtomsAndContacts::CommandRecord& cr) const
+	bool operator()(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr) const
 	{
-		std::cout << "\n> " << cr.command << std::endl;
-		std::cout << cr.output_text_data;
+		std::cout << "\n> " << cr.command_input.get_input_command_string() << std::endl;
 		std::cout << cr.output_log;
 		if(!cr.output_error.empty())
 		{
 			std::cout << "Error: " << cr.output_error << "\n";
 		}
+		std::cout << std::endl;
+		return cr.successful;
+	}
+};
+
+struct HandlerForDataManagment
+{
+	bool operator()(const common::scripting::GenericCommandForDataManager::CommandRecord& cr) const
+	{
+		std::cout << "\n> " << cr.command_input.get_input_command_string() << std::endl;
+		std::cout << cr.output_text;
+		std::cout << cr.output_log;
+		if(!cr.output_error.empty())
+		{
+			std::cout << "Error: " << cr.output_error << "\n";
+		}
+		std::cout << std::endl;
+		return cr.successful;
+	}
+};
+
+struct HandlerForUnrecognizedCommandInput
+{
+	void operator()(const common::scripting::CommandInput& command_input) const
+	{
+		std::cout << "\n> " << command_input.get_input_command_string() << "\n";
+		std::cout << "Error: unrecognized command";
 		std::cout << std::endl;
 	}
 };
@@ -36,14 +62,23 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	std::istreambuf_iterator<char> eos;
 	std::string script(std::istreambuf_iterator<char>(std::cin), eos);
 
-	common::scripting::CommandingManagerForAtomsAndContacts manager;
+	common::scripting::ScriptExecutionManager manager;
 
-	manager.add_representations_of_atoms(std::vector<std::string>(1, "atoms"));
-	manager.set_atoms_representation_implemented_always(0, true);
+	HandlerForScriptPartitioning handler_for_script_partitioning;
+	HandlerForDataManagment handler_for_data_management;
+	HandlerForUnrecognizedCommandInput handler_for_unrecognized_command_input;
 
-	manager.add_representations_of_contacts(std::vector<std::string>(1, "contacts"));
-	manager.set_contacts_representation_implemented_always(0, true);
+	common::scripting::ScriptExecutionManager::ScriptRecord script_record=
+			manager.execute_script(
+					script,
+					false,
+					handler_for_script_partitioning,
+					handler_for_data_management,
+					handler_for_unrecognized_command_input);
 
-	manager.execute_script(script, false, CommandRecordPrinter());
+	if(!script_record.termination_error.empty())
+	{
+		std::cout << "Script termnation errot: " << script_record.termination_error << std::endl;
+	}
 }
 
