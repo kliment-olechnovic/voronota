@@ -16,6 +16,7 @@ public:
 	struct CommandRecord
 	{
 		CommandInput command_input;
+		DataManager* data_manager_ptr;
 		bool successful;
 		bool changed_atoms;
 		bool changed_contacts;
@@ -31,8 +32,9 @@ public:
 		SummaryOfAtoms summary_of_atoms;
 		SummaryOfContacts summary_of_contacts;
 
-		explicit CommandRecord(const CommandInput& command_input) :
+		explicit CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
 			command_input(command_input),
+			data_manager_ptr(&data_manager),
 			successful(false),
 			changed_atoms(false),
 			changed_contacts(false),
@@ -54,13 +56,13 @@ public:
 
 	CommandRecord execute(const CommandInput& command_input, DataManager& data_manager)
 	{
-		CommandRecord record(command_input);
+		CommandRecord record(command_input, data_manager);
 
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 		std::ostringstream output_for_text;
 
-		CommandArguments cargs(data_manager, record.command_input, output_for_log, output_for_text);
+		CommandArguments cargs(record.command_input, data_manager, output_for_log, output_for_text);
 
 		try
 		{
@@ -97,8 +99,8 @@ protected:
 	class CommandArguments
 	{
 	public:
-		DataManager& data_manager;
 		CommandInput& input;
+		DataManager& data_manager;
 		std::ostream& output_for_log;
 		std::ostream& output_for_text;
 		bool changed_atoms;
@@ -113,12 +115,12 @@ protected:
 		SummaryOfContacts summary_of_contacts;
 
 		CommandArguments(
-				DataManager& data_manager,
 				CommandInput& input,
+				DataManager& data_manager,
 				std::ostream& output_for_log,
 				std::ostream& output_for_text) :
-					data_manager(data_manager),
 					input(input),
+					data_manager(data_manager),
 					output_for_log(output_for_log),
 					output_for_text(output_for_text),
 					changed_atoms(false),

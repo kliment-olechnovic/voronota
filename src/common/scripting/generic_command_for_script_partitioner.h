@@ -16,12 +16,14 @@ public:
 	struct CommandRecord
 	{
 		CommandInput command_input;
+		ScriptPartitioner* script_partitioner_ptr;
 		bool successful;
 		std::string output_log;
 		std::string output_error;
 
-		explicit CommandRecord(const CommandInput& command_input) :
+		explicit CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
 			command_input(command_input),
+			script_partitioner_ptr(&script_partitioner),
 			successful(false)
 		{
 		}
@@ -37,12 +39,12 @@ public:
 
 	CommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
 	{
-		CommandRecord record(command_input);
+		CommandRecord record(command_input, script_partitioner);
 
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 
-		CommandArguments cargs(script_partitioner, record.command_input, output_for_log);
+		CommandArguments cargs(record.command_input, script_partitioner, output_for_log);
 
 		try
 		{
@@ -64,16 +66,16 @@ protected:
 	class CommandArguments
 	{
 	public:
-		ScriptPartitioner& script_partitioner;
 		CommandInput& input;
+		ScriptPartitioner& script_partitioner;
 		std::ostream& output_for_log;
 
 		CommandArguments(
-				ScriptPartitioner& script_partitioner,
 				CommandInput& input,
+				ScriptPartitioner& script_partitioner,
 				std::ostream& output_for_log) :
-					script_partitioner(script_partitioner),
 					input(input),
+					script_partitioner(script_partitioner),
 					output_for_log(output_for_log)
 		{
 		}
