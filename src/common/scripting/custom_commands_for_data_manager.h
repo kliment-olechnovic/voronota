@@ -426,7 +426,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
@@ -487,7 +487,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			CommandParametersForGenericColoring parameters_for_coloring;
 			parameters_for_coloring.read(cargs.input);
@@ -538,7 +538,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
@@ -1205,12 +1205,12 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
-			if(positive_ && parameters_for_representation_selecting.visual_ids.empty() && cargs.data_manager.contacts_representation_names().size()>1)
+			if(positive_ && parameters_for_representation_selecting.visual_ids.empty() && cargs.data_manager.contacts_representation_descriptor().names.size()>1)
 			{
 				parameters_for_representation_selecting.visual_ids.insert(0);
 			}
@@ -1266,7 +1266,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			CommandParametersForGenericColoring parameters_for_coloring;
 			parameters_for_coloring.read(cargs.input);
@@ -1317,7 +1317,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value<std::string>("by") : std::string("adjunct");
@@ -1595,7 +1595,7 @@ public:
 			bool wireframe=cargs.input.get_flag("wireframe");
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_names());
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
 			parameters_for_output_destinations.read(false, cargs.input);
