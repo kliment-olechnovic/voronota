@@ -35,6 +35,7 @@ public:
 		map_of_commands_for_script_partitioner_["set-alias"]=new CustomCommandsForScriptPartitioner::set_alias();
 		map_of_commands_for_script_partitioner_["unset-aliases"]=new CustomCommandsForScriptPartitioner::unset_aliases();
 
+		map_of_commands_for_data_manager_["title"]=new CustomCommandsForDataManager::title();
 		map_of_commands_for_data_manager_["load-atoms"]=new CustomCommandsForDataManager::load_atoms();
 		map_of_commands_for_data_manager_["restrict-atoms"]=new CustomCommandsForDataManager::restrict_atoms();
 		map_of_commands_for_data_manager_["save-atoms"]=new CustomCommandsForDataManager::save_atoms();
