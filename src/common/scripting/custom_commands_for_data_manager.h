@@ -17,6 +17,17 @@ namespace scripting
 class CustomCommandsForDataManager
 {
 public:
+	class title : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string title=cargs.input.get_value_or_first_unused_unnamed_value("title");
+			cargs.input.assert_nothing_unusable();
+			cargs.data_manager.set_title(title);
+		}
+	};
+
 	class load_atoms : public GenericCommandForDataManager
 	{
 	protected:
@@ -31,6 +42,8 @@ public:
 			const double default_radius=cargs.input.get_value_or_default<double>("default-radii", ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile::default_default_radius());
 			const bool only_default_radius=cargs.input.get_flag("same-radius-for-all");
 			std::string format=cargs.input.get_value_or_default<std::string>("format", "");
+			CommandParametersForTitling parameters_for_titling;
+			parameters_for_titling.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -51,6 +64,11 @@ public:
 			if(format!="pdb" && format!="mmcif" && format!="plain")
 			{
 				throw std::runtime_error(std::string("Unrecognized format '")+format+"', allowed formats are 'pdb', 'mmcif' or 'plain'.");
+			}
+
+			if(parameters_for_titling.title_available)
+			{
+				cargs.data_manager.set_title(parameters_for_titling.title);
 			}
 
 			if(!radii_file.empty() || only_default_radius || default_radius!=ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile::default_default_radius())
@@ -1810,12 +1828,19 @@ public:
 		void run(CommandArguments& cargs)
 		{
 			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			CommandParametersForTitling parameters_for_titling;
+			parameters_for_titling.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			if(file.empty())
 			{
 				throw std::runtime_error(std::string("Empty input file name."));
+			}
+
+			if(parameters_for_titling.title_available)
+			{
+				cargs.data_manager.set_title(parameters_for_titling.title);
 			}
 
 			std::ifstream finput(file.c_str(), std::ios::in);
@@ -2237,6 +2262,26 @@ private:
 			values.limit=input.get_value_or_default<std::size_t>("limit", std::numeric_limits<std::size_t>::max());
 			values.sort_column=input.get_value_or_default<std::string>("sort", "");
 			values.inter_residue=input.get_flag("inter-residue");
+		}
+	};
+
+	class CommandParametersForTitling
+	{
+	public:
+		bool title_available;
+		std::string title;
+
+		CommandParametersForTitling() : title_available(false)
+		{
+		}
+
+		void read(CommandInput& input)
+		{
+			title_available=input.is_option("title");
+			if(title_available)
+			{
+				title=input.get_value<std::string>("title");
+			}
 		}
 	};
 
