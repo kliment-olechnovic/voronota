@@ -59,6 +59,10 @@ public:
 			{
 				cargs.data_manager.set_title(parameters_for_titling.title);
 			}
+			else
+			{
+				cargs.data_manager.set_title(get_basename_from_path(atoms_file));
+			}
 
 			if(!radii_file.empty() || only_default_radius || default_radius!=ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile::default_default_radius())
 			{
@@ -1831,6 +1835,10 @@ public:
 			{
 				cargs.data_manager.set_title(parameters_for_titling.title);
 			}
+			else
+			{
+				cargs.data_manager.set_title(get_basename_from_path(file));
+			}
 
 			std::ifstream finput(file.c_str(), std::ios::in);
 			if(!finput.good())
@@ -2352,6 +2360,23 @@ private:
 			}
 		}
 		return id;
+	}
+
+	static std::string get_basename_from_path(const std::string& path)
+	{
+		const std::size_t pos=path.find_last_of("/\\");
+		if(pos==std::string::npos)
+		{
+			return path;
+		}
+		else if((pos+1)<path.size())
+		{
+			return path.substr(pos+1);
+		}
+		else
+		{
+			return std::string();
+		}
 	}
 };
 
