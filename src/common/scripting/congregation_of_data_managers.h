@@ -33,6 +33,32 @@ public:
 	{
 	}
 
+	void assert_objects_availability() const
+	{
+		if(all_data_managers_.empty())
+		{
+			throw std::runtime_error(std::string("No objects available."));
+		}
+	}
+
+	void assert_objects_availability(const std::vector<std::string>& names)
+	{
+		ensure_unique_names();
+		const std::set<std::string> set_of_names(names.begin(), names.end());
+		for(std::list<WrapperForDataManager>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		{
+			if(set_of_names.count(it->name)==0)
+			{
+				throw std::runtime_error(std::string("Invalid object name '")+(it->name)+"'.");
+			}
+		}
+	}
+
+	void assert_object_availability(const std::string& name)
+	{
+		assert_objects_availability(std::vector<std::string>(1, name));
+	}
+
 	std::vector<ObjectDescriptor> get_descriptors(const bool only_enabled)
 	{
 		ensure_unique_names();
@@ -41,7 +67,7 @@ public:
 		{
 			if(!only_enabled || it->enabled)
 			{
-				result.push_back(ObjectDescriptor(it->name, it->enabled, it->data_manager));
+				result.push_back(it->get_descriptor());
 			}
 		}
 		return result;
@@ -55,16 +81,23 @@ public:
 		{
 			if(name==it->name)
 			{
-				result.push_back(ObjectDescriptor(it->name, it->enabled, it->data_manager));
+				result.push_back(it->get_descriptor());
 				return result;
 			}
 		}
 		return result;
 	}
 
-	void add_object(const DataManager& data_manager)
+	std::vector<ObjectDescriptor> add_object(const DataManager& data_manager)
 	{
 		all_data_managers_.push_back(WrapperForDataManager(data_manager));
+		ensure_unique_names();
+		return std::vector<ObjectDescriptor>(1, all_data_managers_.back().get_descriptor());
+	}
+
+	void delete_all_objects()
+	{
+		all_data_managers_.clear();
 	}
 
 	void delete_object(const std::string& name)
@@ -80,7 +113,7 @@ public:
 		}
 	}
 
-	void disable_objects()
+	void disable_all_objects()
 	{
 		for(std::list<WrapperForDataManager>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
 		{
@@ -91,7 +124,7 @@ public:
 	void enable_object(const std::string& name)
 	{
 		ensure_unique_names();
-		disable_objects();
+		disable_all_objects();
 		for(std::list<WrapperForDataManager>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
 		{
 			if(name==it->name)
@@ -113,6 +146,11 @@ private:
 			enabled(false),
 			data_manager(data_manager)
 		{
+		}
+
+		ObjectDescriptor get_descriptor()
+		{
+			return ObjectDescriptor(name, enabled, data_manager);
 		}
 	};
 

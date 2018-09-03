@@ -17,17 +17,6 @@ namespace scripting
 class CustomCommandsForDataManager
 {
 public:
-	class title : public GenericCommandForDataManager
-	{
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			const std::string title=cargs.input.get_value_or_first_unused_unnamed_value("title");
-			cargs.input.assert_nothing_unusable();
-			cargs.data_manager.set_title(title);
-		}
-	};
-
 	class load_atoms : public GenericCommandForDataManager
 	{
 	protected:
