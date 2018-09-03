@@ -5,44 +5,57 @@
 namespace
 {
 
-struct HandlerForScriptPartitioning
+class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManager::HandlerForExecutionEvents
 {
-	bool operator()(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr) const
+public:
+	void on_before_executing_command(const common::scripting::CommandInput& command_input)
 	{
-		std::cout << "\n> " << cr.command_input.get_input_command_string() << std::endl;
-		std::cout << cr.output_log;
-		if(!cr.output_error.empty())
-		{
-			std::cout << "Error: " << cr.output_error << "\n";
-		}
+		std::cout << "\n> " << command_input.get_input_command_string() << std::endl;
+	}
+
+	void on_after_executing_command()
+	{
 		std::cout << std::endl;
+	}
+
+	bool on_command_for_script_partitioner(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr)
+	{
+		print_command_log(cr);
 		return cr.successful;
 	}
-};
 
-struct HandlerForDataManagment
-{
-	bool operator()(const common::scripting::GenericCommandForDataManager::CommandRecord& cr) const
+	bool on_command_for_congregation_of_data_managers(const common::scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
-		std::cout << "\n> " << cr.command_input.get_input_command_string() << std::endl;
+		print_command_log(cr);
+		return cr.successful;
+	}
+
+	bool on_command_for_data_manager(const common::scripting::GenericCommandForDataManager::CommandRecord& cr)
+	{
 		std::cout << cr.output_text;
+		print_command_log(cr);
+		return cr.successful;
+	}
+
+	void on_no_enabled_data_manager()
+	{
+		std::cout << "Error: no object enabled";
+	}
+
+	void  on_unrecognized_command(const common::scripting::CommandInput& command_input)
+	{
+		std::cout << "Error: unrecognized command '" << command_input.get_command_name() << "'";
+	}
+
+private:
+	template<typename CommandRecord>
+	void print_command_log(const CommandRecord& cr)
+	{
 		std::cout << cr.output_log;
 		if(!cr.output_error.empty())
 		{
 			std::cout << "Error: " << cr.output_error << "\n";
 		}
-		std::cout << std::endl;
-		return cr.successful;
-	}
-};
-
-struct HandlerForUnrecognizedCommandInput
-{
-	void operator()(const common::scripting::CommandInput& command_input) const
-	{
-		std::cout << "\n> " << command_input.get_input_command_string() << "\n";
-		std::cout << "Error: unrecognized command";
-		std::cout << std::endl;
 	}
 };
 
@@ -64,17 +77,9 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 
 	common::scripting::ScriptExecutionManager manager;
 
-	HandlerForScriptPartitioning handler_for_script_partitioning;
-	HandlerForDataManagment handler_for_data_management;
-	HandlerForUnrecognizedCommandInput handler_for_unrecognized_command_input;
+	HandlerForExecutionEvents handler_for_execution_events;
 
-	common::scripting::ScriptExecutionManager::ScriptRecord script_record=
-			manager.execute_script(
-					script,
-					false,
-					handler_for_script_partitioning,
-					handler_for_data_management,
-					handler_for_unrecognized_command_input);
+	common::scripting::ScriptExecutionManager::ScriptRecord script_record=manager.execute_script(script, false, handler_for_execution_events);
 
 	if(!script_record.termination_error.empty())
 	{

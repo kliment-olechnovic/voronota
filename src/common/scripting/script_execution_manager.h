@@ -2,6 +2,7 @@
 #define COMMON_SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
 #include "custom_commands_for_script_partitioner.h"
+#include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_data_manager.h"
 
 namespace common
@@ -30,65 +31,98 @@ public:
 		std::string termination_error;
 	};
 
-	ScriptExecutionManager() : data_manager_(true)
+	class HandlerForExecutionEvents
 	{
-		map_of_commands_for_script_partitioner_["set-alias"]=new CustomCommandsForScriptPartitioner::set_alias();
-		map_of_commands_for_script_partitioner_["unset-aliases"]=new CustomCommandsForScriptPartitioner::unset_aliases();
+	public:
+		HandlerForExecutionEvents()
+		{
+		}
 
-		map_of_commands_for_data_manager_["load-atoms"]=new CustomCommandsForDataManager::load_atoms();
-		map_of_commands_for_data_manager_["restrict-atoms"]=new CustomCommandsForDataManager::restrict_atoms();
-		map_of_commands_for_data_manager_["save-atoms"]=new CustomCommandsForDataManager::save_atoms();
-		map_of_commands_for_data_manager_["select-atoms"]=new CustomCommandsForDataManager::select_atoms();
-		map_of_commands_for_data_manager_["tag-atoms"]=new CustomCommandsForDataManager::tag_atoms();
-		map_of_commands_for_data_manager_["untag-atoms"]=new CustomCommandsForDataManager::untag_atoms();
-		map_of_commands_for_data_manager_["mark-atoms"]=new CustomCommandsForDataManager::mark_atoms();
-		map_of_commands_for_data_manager_["unmark-atoms"]=new CustomCommandsForDataManager::unmark_atoms();
-		map_of_commands_for_data_manager_["show-atoms"]=new CustomCommandsForDataManager::show_atoms();
-		map_of_commands_for_data_manager_["hide-atoms"]=new CustomCommandsForDataManager::hide_atoms();
-		map_of_commands_for_data_manager_["color-atoms"]=new CustomCommandsForDataManager::color_atoms();
-		map_of_commands_for_data_manager_["spectrum-atoms"]=new CustomCommandsForDataManager::spectrum_atoms();
-		map_of_commands_for_data_manager_["print-atoms"]=new CustomCommandsForDataManager::print_atoms();
-		map_of_commands_for_data_manager_["zoom-by-atoms"]=new CustomCommandsForDataManager::zoom_by_atoms();
-		map_of_commands_for_data_manager_["list-selections-of-atoms"]=new CustomCommandsForDataManager::list_selections_of_atoms();
-		map_of_commands_for_data_manager_["delete-all-selections-of-atoms"]=new CustomCommandsForDataManager::delete_all_selections_of_atoms();
-		map_of_commands_for_data_manager_["delete-selections-of-atoms"]=new CustomCommandsForDataManager::delete_selections_of_atoms();
-		map_of_commands_for_data_manager_["rename-selection-of-atoms"]=new CustomCommandsForDataManager::rename_selection_of_atoms();
-		map_of_commands_for_data_manager_["construct-contacts"]=new CustomCommandsForDataManager::construct_contacts();
-		map_of_commands_for_data_manager_["save-contacts"]=new CustomCommandsForDataManager::save_contacts();
-		map_of_commands_for_data_manager_["load-contacts"]=new CustomCommandsForDataManager::load_contacts();
-		map_of_commands_for_data_manager_["select-contacts"]=new CustomCommandsForDataManager::select_contacts();
-		map_of_commands_for_data_manager_["tag-contacts"]=new CustomCommandsForDataManager::tag_contacts();
-		map_of_commands_for_data_manager_["untag-contacts"]=new CustomCommandsForDataManager::untag_contacts();
-		map_of_commands_for_data_manager_["mark-contacts"]=new CustomCommandsForDataManager::mark_contacts();
-		map_of_commands_for_data_manager_["unmark-contacts"]=new CustomCommandsForDataManager::unmark_contacts();
-		map_of_commands_for_data_manager_["show-contacts"]=new CustomCommandsForDataManager::show_contacts();
-		map_of_commands_for_data_manager_["hide-contacts"]=new CustomCommandsForDataManager::hide_contacts();
-		map_of_commands_for_data_manager_["color-contacts"]=new CustomCommandsForDataManager::color_contacts();
-		map_of_commands_for_data_manager_["spectrum-contacts"]=new CustomCommandsForDataManager::spectrum_contacts();
-		map_of_commands_for_data_manager_["print-contacts"]=new CustomCommandsForDataManager::print_contacts();
-		map_of_commands_for_data_manager_["zoom-by-contacts"]=new CustomCommandsForDataManager::zoom_by_contacts();
-		map_of_commands_for_data_manager_["write-contacts-as-pymol-cgo"]=new CustomCommandsForDataManager::write_contacts_as_pymol_cgo();
-		map_of_commands_for_data_manager_["list-selections-of-contacts"]=new CustomCommandsForDataManager::list_selections_of_contacts();
-		map_of_commands_for_data_manager_["delete-all-selections-of-contacts"]=new CustomCommandsForDataManager::delete_all_selections_of_contacts();
-		map_of_commands_for_data_manager_["delete-selections-of-contacts"]=new CustomCommandsForDataManager::delete_selections_of_contacts();
-		map_of_commands_for_data_manager_["rename-selection-of-contacts"]=new CustomCommandsForDataManager::rename_selection_of_contacts();
-		map_of_commands_for_data_manager_["save-atoms-and-contacts"]=new CustomCommandsForDataManager::save_atoms_and_contacts();
-		map_of_commands_for_data_manager_["load-atoms-and-contacts"]=new CustomCommandsForDataManager::load_atoms_and_contacts();
+		virtual ~HandlerForExecutionEvents()
+		{
+		}
+
+		virtual void on_before_executing_command(const CommandInput&)
+		{
+		}
+
+		virtual void on_after_executing_command()
+		{
+		}
+
+		virtual bool on_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)=0;
+
+		virtual bool on_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord&)=0;
+
+		virtual bool on_command_for_data_manager(const GenericCommandForDataManager::CommandRecord&)=0;
+
+		virtual void on_no_enabled_data_manager()=0;
+
+		virtual void on_unrecognized_command(const CommandInput&)=0;
+	};
+
+	ScriptExecutionManager()
+	{
+		commands_for_script_partitioner_["set-alias"]=new CustomCommandsForScriptPartitioner::set_alias();
+		commands_for_script_partitioner_["unset-aliases"]=new CustomCommandsForScriptPartitioner::unset_aliases();
+
+		commands_for_congregation_of_data_managers_["list-objects"]=new CustomCommandsForCongregationOfDataManagers::list_objects();
+		commands_for_congregation_of_data_managers_["delete-all-objects"]=new CustomCommandsForCongregationOfDataManagers::delete_all_objects();
+		commands_for_congregation_of_data_managers_["delete-objects"]=new CustomCommandsForCongregationOfDataManagers::delete_objects();
+		commands_for_congregation_of_data_managers_["rename-object"]=new CustomCommandsForCongregationOfDataManagers::rename_object();
+		commands_for_congregation_of_data_managers_["copy-object"]=new CustomCommandsForCongregationOfDataManagers::copy_object();
+		commands_for_congregation_of_data_managers_["load-atoms"]=new CustomCommandsForCongregationOfDataManagers::load_atoms();
+		commands_for_congregation_of_data_managers_["load-atoms-and-contacts"]=new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts();
+
+		commands_for_data_manager_["restrict-atoms"]=new CustomCommandsForDataManager::restrict_atoms();
+		commands_for_data_manager_["save-atoms"]=new CustomCommandsForDataManager::save_atoms();
+		commands_for_data_manager_["select-atoms"]=new CustomCommandsForDataManager::select_atoms();
+		commands_for_data_manager_["tag-atoms"]=new CustomCommandsForDataManager::tag_atoms();
+		commands_for_data_manager_["untag-atoms"]=new CustomCommandsForDataManager::untag_atoms();
+		commands_for_data_manager_["mark-atoms"]=new CustomCommandsForDataManager::mark_atoms();
+		commands_for_data_manager_["unmark-atoms"]=new CustomCommandsForDataManager::unmark_atoms();
+		commands_for_data_manager_["show-atoms"]=new CustomCommandsForDataManager::show_atoms();
+		commands_for_data_manager_["hide-atoms"]=new CustomCommandsForDataManager::hide_atoms();
+		commands_for_data_manager_["color-atoms"]=new CustomCommandsForDataManager::color_atoms();
+		commands_for_data_manager_["spectrum-atoms"]=new CustomCommandsForDataManager::spectrum_atoms();
+		commands_for_data_manager_["print-atoms"]=new CustomCommandsForDataManager::print_atoms();
+		commands_for_data_manager_["zoom-by-atoms"]=new CustomCommandsForDataManager::zoom_by_atoms();
+		commands_for_data_manager_["list-selections-of-atoms"]=new CustomCommandsForDataManager::list_selections_of_atoms();
+		commands_for_data_manager_["delete-all-selections-of-atoms"]=new CustomCommandsForDataManager::delete_all_selections_of_atoms();
+		commands_for_data_manager_["delete-selections-of-atoms"]=new CustomCommandsForDataManager::delete_selections_of_atoms();
+		commands_for_data_manager_["rename-selection-of-atoms"]=new CustomCommandsForDataManager::rename_selection_of_atoms();
+		commands_for_data_manager_["construct-contacts"]=new CustomCommandsForDataManager::construct_contacts();
+		commands_for_data_manager_["save-contacts"]=new CustomCommandsForDataManager::save_contacts();
+		commands_for_data_manager_["load-contacts"]=new CustomCommandsForDataManager::load_contacts();
+		commands_for_data_manager_["select-contacts"]=new CustomCommandsForDataManager::select_contacts();
+		commands_for_data_manager_["tag-contacts"]=new CustomCommandsForDataManager::tag_contacts();
+		commands_for_data_manager_["untag-contacts"]=new CustomCommandsForDataManager::untag_contacts();
+		commands_for_data_manager_["mark-contacts"]=new CustomCommandsForDataManager::mark_contacts();
+		commands_for_data_manager_["unmark-contacts"]=new CustomCommandsForDataManager::unmark_contacts();
+		commands_for_data_manager_["show-contacts"]=new CustomCommandsForDataManager::show_contacts();
+		commands_for_data_manager_["hide-contacts"]=new CustomCommandsForDataManager::hide_contacts();
+		commands_for_data_manager_["color-contacts"]=new CustomCommandsForDataManager::color_contacts();
+		commands_for_data_manager_["spectrum-contacts"]=new CustomCommandsForDataManager::spectrum_contacts();
+		commands_for_data_manager_["print-contacts"]=new CustomCommandsForDataManager::print_contacts();
+		commands_for_data_manager_["zoom-by-contacts"]=new CustomCommandsForDataManager::zoom_by_contacts();
+		commands_for_data_manager_["write-contacts-as-pymol-cgo"]=new CustomCommandsForDataManager::write_contacts_as_pymol_cgo();
+		commands_for_data_manager_["list-selections-of-contacts"]=new CustomCommandsForDataManager::list_selections_of_contacts();
+		commands_for_data_manager_["delete-all-selections-of-contacts"]=new CustomCommandsForDataManager::delete_all_selections_of_contacts();
+		commands_for_data_manager_["delete-selections-of-contacts"]=new CustomCommandsForDataManager::delete_selections_of_contacts();
+		commands_for_data_manager_["rename-selection-of-contacts"]=new CustomCommandsForDataManager::rename_selection_of_contacts();
+		commands_for_data_manager_["save-atoms-and-contacts"]=new CustomCommandsForDataManager::save_atoms_and_contacts();
 	}
 
 	~ScriptExecutionManager()
 	{
-		delete_map_contents(map_of_commands_for_script_partitioner_);
-		delete_map_contents(map_of_commands_for_data_manager_);
+		delete_map_contents(commands_for_script_partitioner_);
+		delete_map_contents(commands_for_data_manager_);
 	}
 
-	template<typename HandlerForScriptPartitioning, typename HandlerForDataManagment, typename HandlerForUnrecognizedCommandInput>
 	ScriptRecord execute_script(
 			const std::string& script,
 			const bool exit_on_first_failure,
-			HandlerForScriptPartitioning& handler_for_script_partitioning,
-			HandlerForDataManagment& handler_for_data_management,
-			HandlerForUnrecognizedCommandInput& handler_for_unrecognized_command_input)
+			HandlerForExecutionEvents& handler)
 	{
 		ScriptRecord script_record;
 
@@ -140,18 +174,7 @@ public:
 					return script_record;
 				}
 
-				if(use_map_with_handler(map_of_commands_for_script_partitioner_, handler_for_script_partitioning, script_partitioner_, command_record))
-				{
-					command_record.recognized=1;
-				}
-				else if(use_map_with_handler(map_of_commands_for_data_manager_, handler_for_data_management, data_manager_, command_record))
-				{
-					command_record.recognized=2;
-				}
-				else
-				{
-					handler_for_unrecognized_command_input(command_record.command_input);
-				}
+				execute_command(handler, command_record);
 
 				script_record.command_records.push_back(command_record);
 
@@ -181,22 +204,51 @@ private:
 		}
 	}
 
-	template<typename Map, typename Handler, typename Object>
-	bool use_map_with_handler(Map& map, Handler& handler, Object& object, CommandRecord& command_record)
+	void execute_command(HandlerForExecutionEvents& handler, CommandRecord& command_record)
 	{
+		handler.on_before_executing_command(command_record.command_input);
+
 		const std::string& command_name=command_record.command_input.get_command_name();
-		if(map.count(command_name)==1)
+
+		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
-			command_record.successful=handler(map[command_name]->execute(command_record.command_input, object));
-			return true;
+			command_record.recognized=1;
+			command_record.successful=handler.on_command_for_script_partitioner(commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_));
 		}
-		return false;
+		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
+		{
+			command_record.recognized=2;
+			command_record.successful=handler.on_command_for_congregation_of_data_managers(commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_));
+		}
+		else if(commands_for_data_manager_.count(command_name)==1)
+		{
+			command_record.recognized=3;
+			std::vector<CongregationOfDataManagers::ObjectDescriptor> descriptors_of_enabled_data_managers=congregation_of_data_managers_.get_descriptors(true);
+			if(!descriptors_of_enabled_data_managers.empty())
+			{
+				for(std::size_t i=0;i<descriptors_of_enabled_data_managers.size();i++)
+				{
+					command_record.successful=handler.on_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, descriptors_of_enabled_data_managers[i].data_manager()));
+				}
+			}
+			else
+			{
+				handler.on_no_enabled_data_manager();
+			}
+		}
+		else
+		{
+			handler.on_unrecognized_command(command_record.command_input);
+		}
+
+		handler.on_after_executing_command();
 	}
 
-	std::map<std::string, GenericCommandForScriptPartitioner*> map_of_commands_for_script_partitioner_;
-	std::map<std::string, GenericCommandForDataManager*> map_of_commands_for_data_manager_;
+	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
+	std::map<std::string, GenericCommandForCongregationOfDataManagers*> commands_for_congregation_of_data_managers_;
+	std::map<std::string, GenericCommandForDataManager*> commands_for_data_manager_;
 	ScriptPartitioner script_partitioner_;
-	DataManager data_manager_;
+	CongregationOfDataManagers congregation_of_data_managers_;
 };
 
 }

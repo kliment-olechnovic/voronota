@@ -20,6 +20,8 @@ public:
 		bool successful;
 		std::string output_log;
 		std::string output_error;
+		std::vector<DataManager*> set_of_added_objects;
+		std::vector<DataManager*> set_of_deleted_objects;
 
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
 			command_input(command_input),
@@ -59,6 +61,9 @@ public:
 		record.output_log=output_for_log.str();
 		record.output_error=output_for_errors.str();
 
+		record.set_of_added_objects=std::vector<DataManager*>(cargs.set_of_added_objects.begin(), cargs.set_of_added_objects.end());
+		record.set_of_deleted_objects=std::vector<DataManager*>(cargs.set_of_deleted_objects.begin(), cargs.set_of_deleted_objects.end());
+
 		return record;
 	}
 
@@ -69,6 +74,8 @@ protected:
 		CommandInput& input;
 		CongregationOfDataManagers& congregation_of_data_managers;
 		std::ostream& output_for_log;
+		std::set<DataManager*> set_of_added_objects;
+		std::set<DataManager*> set_of_deleted_objects;
 
 		CommandArguments(
 				CommandInput& input,
