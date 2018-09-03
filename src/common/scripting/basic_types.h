@@ -86,6 +86,17 @@ struct SummaryOfAtoms
 		}
 		bounding_box.update(atom.value);
 	}
+
+	void print(std::ostream& output, bool no_brackets=false) const
+	{
+		output << (no_brackets ? "" : "(");
+		output << "count=" << number_total;
+		if(volume>0.0)
+		{
+			output << " volume=" << volume;
+		}
+		output << (no_brackets ? "" : ")");
+	}
 };
 
 struct SummaryOfContacts
@@ -129,6 +140,15 @@ struct SummaryOfContacts
 		{
 			number_drawable++;
 		}
+	}
+
+	void print(std::ostream& output, bool no_brackets=false) const
+	{
+		output << (no_brackets ? "" : "(");
+		output << "count=" << number_total;
+		output << " drawable=" << number_drawable;
+		output << " area=" << area;
+		output << (no_brackets ? "" : ")");
 	}
 };
 

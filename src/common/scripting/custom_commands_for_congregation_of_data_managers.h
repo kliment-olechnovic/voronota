@@ -228,7 +228,8 @@ public:
 					data_manager.reset_atoms_by_swapping(atoms);
 
 					cargs.output_for_log << "Read atoms from file '" << atoms_file << "' ";
-					cargs.output_for_log << "(count=" << data_manager.atoms().size() << ")\n";
+					SummaryOfAtoms(data_manager.atoms()).print(cargs.output_for_log);
+					cargs.output_for_log << "\n";
 
 					cargs.set_of_added_objects.insert(object_new.data_manager_ptr);
 
@@ -329,14 +330,16 @@ public:
 				data_manager.reset_atoms_by_swapping(atoms);
 
 				cargs.output_for_log << "Read atoms from file '" << file << "' ";
-				cargs.output_for_log << "(count=" << data_manager.atoms().size() << ")\n";
+				SummaryOfAtoms(data_manager.atoms()).print(cargs.output_for_log);
+				cargs.output_for_log << "\n";
 
 				if(!contacts.empty())
 				{
 					data_manager.reset_contacts_by_swapping(contacts);
 
 					cargs.output_for_log << "Read contacts from file '" << file << "' ";
-					cargs.output_for_log << "(count=" << data_manager.contacts().size() << ")\n";
+					SummaryOfContacts(data_manager.contacts()).print(cargs.output_for_log);
+					cargs.output_for_log << "\n";
 				}
 				else
 				{

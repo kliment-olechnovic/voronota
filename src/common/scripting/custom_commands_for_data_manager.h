@@ -44,15 +44,15 @@ public:
 				cargs.changed_atoms=true;
 
 				cargs.output_for_log << "Restricted atoms from ";
-				print_summary_of_atoms(old_summary, cargs.output_for_log);
+				old_summary.print(cargs.output_for_log);
 				cargs.output_for_log << " to ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				SummaryOfAtoms(cargs.data_manager.atoms()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 			else
 			{
 				cargs.output_for_log << "No need to restrict because all atoms were selected ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				SummaryOfAtoms(cargs.data_manager.atoms()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -101,7 +101,7 @@ public:
 			if(!parameters_for_output_destinations.file.empty())
 			{
 				cargs.output_for_log << "Wrote atoms to file '" << parameters_for_output_destinations.file << "' ";
-				print_summary_of_atoms(SummaryOfAtoms(atoms), cargs.output_for_log);
+				SummaryOfAtoms(atoms).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -133,7 +133,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 
@@ -212,7 +212,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -271,7 +271,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -341,7 +341,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -403,7 +403,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -638,7 +638,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of atoms: ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.output_for_log, true);
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -681,7 +681,7 @@ public:
 			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 			{
 				cargs.output_for_log << "  name='" << (it->first) << "' ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms(), it->second), cargs.output_for_log);
+				SummaryOfAtoms(cargs.data_manager.atoms(), it->second).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -810,7 +810,7 @@ public:
 				cargs.data_manager.reset_contacts_display_states();
 
 				cargs.output_for_log << "Constructed contacts ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 			else
@@ -845,7 +845,7 @@ public:
 			if(!parameters_for_output_destinations.file.empty())
 			{
 				cargs.output_for_log << "Wrote contacts to file '" << parameters_for_output_destinations.file << "' ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -877,7 +877,7 @@ public:
 				cargs.changed_contacts=true;
 
 				cargs.output_for_log << "Read contacts from file '" << file << "' ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 			else
@@ -913,7 +913,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 
@@ -992,7 +992,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1051,7 +1051,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1121,7 +1121,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1183,7 +1183,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1422,7 +1422,7 @@ public:
 
 			{
 				cargs.output_for_log << "Summary of contacts: ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log, true);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1550,7 +1550,7 @@ public:
 			if(!parameters_for_output_destinations.file.empty())
 			{
 				cargs.output_for_log << "Wrote contacts as PyMol CGO to file '" << parameters_for_output_destinations.file << "' ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1569,7 +1569,7 @@ public:
 			for(std::map< std::string, std::set<std::size_t> >::const_iterator it=map_of_selections.begin();it!=map_of_selections.end();++it)
 			{
 				cargs.output_for_log << "  name='" << (it->first) << "' ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts(), it->second), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts(), it->second).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -1675,9 +1675,9 @@ public:
 			{
 				cargs.output_for_log << "Wrote atoms and contacts to file '" << parameters_for_output_destinations.file << "'";
 				cargs.output_for_log << " ";
-				print_summary_of_atoms(SummaryOfAtoms(cargs.data_manager.atoms()), cargs.output_for_log);
+				SummaryOfAtoms(cargs.data_manager.atoms()).print(cargs.output_for_log);
 				cargs.output_for_log << " ";
-				print_summary_of_contacts(SummaryOfContacts(cargs.data_manager.contacts()), cargs.output_for_log);
+				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
 		}
@@ -2068,26 +2068,6 @@ private:
 			sliced_vector.push_back(full_vector.at(*it));
 		}
 		return sliced_vector;
-	}
-
-	static void print_summary_of_atoms(const SummaryOfAtoms& summary, std::ostream& output, bool no_brackets=false)
-	{
-		output << (no_brackets ? "" : "(");
-		output << "count=" << summary.number_total;
-		if(summary.volume>0.0)
-		{
-			output << " volume=" << summary.volume;
-		}
-		output << (no_brackets ? "" : ")");
-	}
-
-	static void print_summary_of_contacts(const SummaryOfContacts& summary, std::ostream& output, bool no_brackets=false)
-	{
-		output << (no_brackets ? "" : "(");
-		output << "count=" << summary.number_total;
-		output << " drawable=" << summary.number_drawable;
-		output << " area=" << summary.area;
-		output << (no_brackets ? "" : ")");
 	}
 
 	static void assert_selection_name_input(const std::string& name, const bool allow_empty)
