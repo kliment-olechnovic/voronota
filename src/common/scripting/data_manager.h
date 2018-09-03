@@ -303,14 +303,6 @@ public:
 
 	void set_title(const std::string& title)
 	{
-		if(title.find_first_of("{}()[]<>\\/*/'\"@#$%^&`~?|")!=std::string::npos)
-		{
-			throw std::runtime_error(std::string("Title contains invalid symbols."));
-		}
-		else if(title.find_first_of("-+,;.: ", 0)==0)
-		{
-			throw std::runtime_error(std::string("Title starts with invalid symbol."));
-		}
 		title_=title;
 	}
 
