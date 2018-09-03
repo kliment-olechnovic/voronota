@@ -196,7 +196,7 @@ private:
 		DataManager data_manager;
 		std::string name;
 
-		WrapperForDataManager(const DataManager& data_manager) :
+		explicit WrapperForDataManager(const DataManager& data_manager) :
 			enabled(false),
 			data_manager(data_manager)
 		{

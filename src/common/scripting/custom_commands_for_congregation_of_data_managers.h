@@ -66,7 +66,7 @@ public:
 				add_data_manager_pointers_to_set(cargs.congregation_of_data_managers.delete_object(names[i]), cargs.set_of_deleted_objects);
 			}
 
-			cargs.output_for_log << "Removed objects:";
+			cargs.output_for_log << "Removed objects:\n";
 			for(std::size_t i=0;i<names.size();i++)
 			{
 				cargs.output_for_log << "  '" << names[i] << "'";

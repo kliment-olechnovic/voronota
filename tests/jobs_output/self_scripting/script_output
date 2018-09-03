@@ -41,8 +41,24 @@ Wrote atoms to file './jobs_output/self_scripting/pdb_atoms' (count=1717 volume=
 Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
 
 
+> list-objects
+Objects:
+  'structure.cif'
+  'structure.pdb[0]'
+  'structure.pdb[1]' *
+
+
+> delete-all-objects
+Removed all objects
+
+
 > load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
+
+
+> list-objects
+Objects:
+  'plain_atoms' *
 
 
 > select-contacts
@@ -189,3 +205,21 @@ Read contacts from file './jobs_output/self_scripting/plain_atoms_and_contacts' 
 > load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms'
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 No contacts read from file './jobs_output/self_scripting/plain_atoms'.
+
+> list-objects
+Objects:
+  'plain_atoms[0]'
+  'plain_atoms_and_contacts'
+  'plain_atoms[1]' *
+
+
+> delete-objects plain_atoms[0]
+Removed objects:
+  'plain_atoms[0]'
+
+
+> list-objects
+Objects:
+  'plain_atoms_and_contacts'
+  'plain_atoms' *
+
