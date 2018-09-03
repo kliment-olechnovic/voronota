@@ -17,7 +17,12 @@ construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-s
 save-atoms --file '$SUBDIR/plain_atoms'
 save-atoms --file '$SUBDIR/pdb_atoms' --as-pdb --pdb-b-factor volume
 save-contacts '$SUBDIR/plain_contacts'
+
+list-objects
+delete-all-objects
 load-atoms --file '$SUBDIR/plain_atoms' --format plain
+list-objects
+
 select-contacts
 load-contacts --file '$SUBDIR/plain_contacts'
 
@@ -54,6 +59,10 @@ write-contacts-as-pymol-cgo --wireframe --file '$SUBDIR/cgo_contacts_wf.py' --na
 save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms'
+
+list-objects
+delete-objects plain_atoms[0]
+list-objects
 
 EOF
 } \
