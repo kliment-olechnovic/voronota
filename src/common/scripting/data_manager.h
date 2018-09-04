@@ -80,17 +80,10 @@ public:
 
 	DataManager()
 	{
-	}
-
-	explicit DataManager(const bool init_default_representations)
-	{
-		if(init_default_representations)
-		{
-			add_atoms_representations(std::vector<std::string>(1, "atoms"));
-			set_atoms_representation_implemented_always(0, true);
-			add_contacts_representations(std::vector<std::string>(1, "contacts"));
-			set_contacts_representation_implemented_always(0, true);
-		}
+		add_atoms_representations(std::vector<std::string>(1, "atoms"));
+		set_atoms_representation_implemented_always(0, true);
+		add_contacts_representations(std::vector<std::string>(1, "contacts"));
+		set_contacts_representation_implemented_always(0, true);
 	}
 
 	const std::string& title() const
