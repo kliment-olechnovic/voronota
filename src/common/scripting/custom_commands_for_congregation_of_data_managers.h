@@ -213,7 +213,7 @@ public:
 				}
 				else
 				{
-					CongregationOfDataManagers::ObjectDescriptor object_new=cargs.congregation_of_data_managers.add_object(DataManager(true));
+					CongregationOfDataManagers::ObjectDescriptor object_new=cargs.congregation_of_data_managers.add_object(DataManager());
 					DataManager& data_manager=object_new.data_manager();
 
 					if(parameters_for_titling.title_available)
@@ -315,7 +315,7 @@ public:
 			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, contacts);
 
 			{
-				CongregationOfDataManagers::ObjectDescriptor object_new=cargs.congregation_of_data_managers.add_object(DataManager(true));
+				CongregationOfDataManagers::ObjectDescriptor object_new=cargs.congregation_of_data_managers.add_object(DataManager());
 				DataManager& data_manager=object_new.data_manager();
 
 				if(parameters_for_titling.title_available)
