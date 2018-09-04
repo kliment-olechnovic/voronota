@@ -8,13 +8,15 @@ cat << EOF
 
 # Note the same use of both "-" and "--"
 
+set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
+
 load-atoms --file $INPUTDIR/single/structure.cif
 load-atoms -file "$INPUTDIR/single/structure.pdb"
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
-print-sequence
+printseq
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
-print-sequence
+printseq
 construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
 save-atoms --file '$SUBDIR/pdb_atoms' --as-pdb --pdb-b-factor volume
