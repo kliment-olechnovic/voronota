@@ -73,6 +73,7 @@ public:
 		commands_for_congregation_of_data_managers_["copy-object"]=new CustomCommandsForCongregationOfDataManagers::copy_object();
 		commands_for_congregation_of_data_managers_["load-atoms"]=new CustomCommandsForCongregationOfDataManagers::load_atoms();
 		commands_for_congregation_of_data_managers_["load-atoms-and-contacts"]=new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts();
+		commands_for_congregation_of_data_managers_["with"]=new CustomCommandsForCongregationOfDataManagers::with();
 
 		commands_for_data_manager_["restrict-atoms"]=new CustomCommandsForDataManager::restrict_atoms();
 		commands_for_data_manager_["save-atoms"]=new CustomCommandsForDataManager::save_atoms();
