@@ -127,12 +127,9 @@ public:
 	{
 		ScriptRecord script_record;
 
-		std::list<ScriptPartitioner::Sentence> sentences;
-
 		try
 		{
-			std::vector<ScriptPartitioner::Sentence> script_sentences=script_partitioner_.partition_script(script);
-			sentences.insert(sentences.end(), script_sentences.begin(), script_sentences.end());
+			script_partitioner_.add_pending_sentences_from_string_to_front(script);
 		}
 		catch(const std::exception& e)
 		{
@@ -140,15 +137,13 @@ public:
 			return script_record;
 		}
 
-		std::list<ScriptPartitioner::Sentence>::iterator sentences_it=sentences.begin();
-
-		while(sentences_it!=sentences.end())
+		while(!script_partitioner_.pending_sentences().empty())
 		{
-			std::vector<ScriptPartitioner::Sentence> subsentences;
+			std::string command_string;
 
 			try
 			{
-				subsentences=script_partitioner_.partition_sentence(*sentences_it);
+				command_string=script_partitioner_.extract_pending_sentence();
 			}
 			catch(const std::exception& e)
 			{
@@ -156,37 +151,27 @@ public:
 				return script_record;
 			}
 
-			if(!subsentences.empty())
+			CommandRecord command_record;
+
+			try
 			{
-				sentences_it=sentences.erase(sentences_it);
-				sentences_it=sentences.insert(sentences_it, subsentences.begin(), subsentences.end());
-
-				const std::string& command_string=sentences_it->body;
-
-				CommandRecord command_record;
-
-				try
-				{
-					command_record.command_input=CommandInput(command_string);
-				}
-				catch(const std::exception& e)
-				{
-					script_record.termination_error=e.what();
-					return script_record;
-				}
-
-				execute_command(handler, command_record);
-
-				script_record.command_records.push_back(command_record);
-
-				if(!command_record.successful && exit_on_first_failure)
-				{
-					script_record.termination_error="Terminated on the first failure.";
-					return script_record;
-				}
+				command_record.command_input=CommandInput(command_string);
+			}
+			catch(const std::exception& e)
+			{
+				script_record.termination_error=e.what();
+				return script_record;
 			}
 
-			++sentences_it;
+			execute_command(handler, command_record);
+
+			script_record.command_records.push_back(command_record);
+
+			if(!command_record.successful && exit_on_first_failure)
+			{
+				script_record.termination_error="Terminated on the first failure.";
+				return script_record;
+			}
 		}
 
 		return script_record;
