@@ -1,4 +1,7 @@
 
+> run-script './jobs_output/self_scripting/script_input'
+
+
 > load-atoms --file ./input/single/structure.cif
 Read atoms from file './input/single/structure.cif' (count=1771)
 
