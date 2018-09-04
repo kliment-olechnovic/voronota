@@ -11,8 +11,10 @@ cat << EOF
 load-atoms --file $INPUTDIR/single/structure.cif
 load-atoms -file "$INPUTDIR/single/structure.pdb"
 load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
+print-sequence
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
+print-sequence
 construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 save-atoms --file '$SUBDIR/plain_atoms'
 save-atoms --file '$SUBDIR/pdb_atoms' --as-pdb --pdb-b-factor volume

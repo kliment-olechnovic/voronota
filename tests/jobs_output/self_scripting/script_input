@@ -4,8 +4,10 @@
 load-atoms --file ./input/single/structure.cif
 load-atoms -file "./input/single/structure.pdb"
 load-atoms ./input/single/structure.pdb --include-heteroatoms
+print-sequence
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
+print-sequence
 construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 save-atoms --file './jobs_output/self_scripting/plain_atoms'
 save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume

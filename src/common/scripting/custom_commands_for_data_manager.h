@@ -2,6 +2,7 @@
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
 #include "../../auxiliaries/color_utilities.h"
+#include "../../auxiliaries/residue_letters_coding.h"
 
 #include "../writing_atomic_balls_in_pdb_format.h"
 
@@ -639,6 +640,99 @@ public:
 				cargs.output_for_log << "Summary of atoms: ";
 				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class print_sequence : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
+
+			std::set<std::size_t> residue_ids;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				residue_ids.insert(cargs.data_manager.primary_structure_info().map_of_atoms_to_residues[*it]);
+			}
+
+			std::map< std::pair<int, int>, std::size_t > segmentation;
+			for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
+			{
+				const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[*it];
+				segmentation[std::make_pair(r.segment_id, r.position_in_segment)]=(*it);
+			}
+
+			std::vector< std::vector<std::size_t> > groups;
+			{
+				std::map<std::pair<int, int>, std::size_t>::const_iterator it=segmentation.begin();
+				while(it!=segmentation.end())
+				{
+					if(it==segmentation.begin())
+					{
+						groups.push_back(std::vector<std::size_t>(1, it->second));
+					}
+					else
+					{
+						std::map<std::pair<int, int>, std::size_t>::const_iterator it_prev=it;
+						--it_prev;
+						if(it->first.first==it_prev->first.first && it->first.second==(it_prev->first.second+1))
+						{
+							groups.back().push_back(it->second);
+						}
+						else
+						{
+							groups.push_back(std::vector<std::size_t>(1, it->second));
+						}
+					}
+					++it;
+				}
+			}
+
+			std::ostringstream output;
+			for(std::size_t i=0;i<groups.size();i++)
+			{
+				{
+					const ConstructionOfPrimaryStructure::Residue& r1=cargs.data_manager.primary_structure_info().residues[groups[i].front()];
+					const ConstructionOfPrimaryStructure::Residue& r2=cargs.data_manager.primary_structure_info().residues[groups[i].back()];
+					output << ">";
+					output << r1.chain_residue_descriptor.chainID << r1.chain_residue_descriptor.resSeq << r1.chain_residue_descriptor.iCode;
+					output << ":";
+					output << r2.chain_residue_descriptor.chainID << r2.chain_residue_descriptor.resSeq << r2.chain_residue_descriptor.iCode;
+					output << "\n";
+				}
+				for(std::size_t j=0;j<groups[i].size();j++)
+				{
+					const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[groups[i][j]];
+					output << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
+					if((j+1)<groups[i].size() && (j+1)%50==0)
+					{
+						output << "\n";
+					}
+				}
+				output << "\n";
+			}
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& suboutput=(*(outputs[i]));
+				suboutput << output.str();
 			}
 		}
 	};
