@@ -1,6 +1,8 @@
 #ifndef COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
 #define COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
 
+#include <list>
+
 #include "command_input.h"
 
 namespace common
@@ -33,6 +35,11 @@ public:
 	const std::map<std::string, std::string>& aliases() const
 	{
 		return aliases_;
+	}
+
+	const std::list<Sentence>& pending_sentences() const
+	{
+		return pending_sentences_;
 	}
 
 	std::vector<Sentence> partition_script(const std::string& script) const
@@ -68,6 +75,43 @@ public:
 	bool unset_alias(const std::string& name)
 	{
 		return (aliases_.erase(name)>0);
+	}
+
+	void add_pending_sentences_from_string_to_front(const std::string& script)
+	{
+		std::vector<Sentence> script_sentences=partition_script(script);
+		pending_sentences_.insert(pending_sentences_.begin(), script_sentences.begin(), script_sentences.end());
+	}
+
+	std::string extract_pending_sentence()
+	{
+		std::string body;
+
+		if(pending_sentences_.empty())
+		{
+			return body;
+		}
+
+		std::vector<ScriptPartitioner::Sentence> subsentences=partition_sentence(pending_sentences_.front());
+		pending_sentences_.pop_front();
+
+		if(subsentences.empty())
+		{
+			return body;
+		}
+
+		std::vector<ScriptPartitioner::Sentence>::iterator subsentences_it=subsentences.begin();
+
+		body=subsentences_it->body;
+
+		++subsentences_it;
+
+		if(subsentences_it!=subsentences.end())
+		{
+			pending_sentences_.insert(pending_sentences_.begin(), subsentences_it, subsentences.end());
+		}
+
+		return body;
 	}
 
 private:
@@ -283,6 +327,7 @@ private:
 	}
 
 	std::map<std::string, std::string> aliases_;
+	std::list<Sentence> pending_sentences_;
 };
 
 }
