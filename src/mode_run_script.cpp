@@ -72,18 +72,21 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::istreambuf_iterator<char> eos;
-	std::string script(std::istreambuf_iterator<char>(std::cin), eos);
-
 	common::scripting::ScriptExecutionManager manager;
-
 	HandlerForExecutionEvents handler_for_execution_events;
 
-	common::scripting::ScriptExecutionManager::ScriptRecord script_record=manager.execute_script(script, false, handler_for_execution_events);
-
-	if(!script_record.termination_error.empty())
+	while(std::cin.good())
 	{
-		std::cout << "Script termnation errot: " << script_record.termination_error << std::endl;
+		std::string line;
+		std::getline(std::cin, line);
+		if(!line.empty())
+		{
+			common::scripting::ScriptExecutionManager::ScriptRecord script_record=manager.execute_script(line, false, handler_for_execution_events);
+			if(!script_record.termination_error.empty())
+			{
+				std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
+			}
+		}
 	}
 }
 

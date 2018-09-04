@@ -60,10 +60,16 @@ save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load-atoms-and-contacts '$SUBDIR/plain_atoms'
 
+EOF
+} \
+> $SUBDIR/script_input
+
+{
+cat << EOF
+run-script '$SUBDIR/script_input'
 list-objects
 delete-objects plain_atoms[0]
 list-objects
-
 EOF
 } \
 | $VORONOTA x-run-script \
