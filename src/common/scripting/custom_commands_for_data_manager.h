@@ -39,8 +39,7 @@ public:
 			{
 				const SummaryOfAtoms old_summary=SummaryOfAtoms(cargs.data_manager.atoms());
 
-				std::vector<Atom> atoms=slice_vector_by_ids(cargs.data_manager.atoms(), ids);
-				cargs.data_manager.reset_atoms_by_swapping(atoms);
+				cargs.data_manager.restrict_atoms(ids);
 				cargs.changed_atoms=true;
 
 				cargs.output_for_log << "Restricted atoms from ";

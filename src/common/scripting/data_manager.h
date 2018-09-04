@@ -382,6 +382,47 @@ public:
 		set_atoms_representations_implemented_if_required_always();
 	}
 
+	void restrict_atoms(const std::set<std::size_t>& ids)
+	{
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No ids provided to restric atoms."));
+		}
+		if(*ids.rbegin()>=atoms_.size())
+		{
+			throw std::runtime_error(std::string("Invalid ids provided to restric atoms."));
+		}
+
+		std::vector<Atom> restricted_atoms;
+		restricted_atoms.reserve(ids.size());
+
+		std::vector<DisplayState> restricted_atoms_display_states;
+		restricted_atoms_display_states.reserve(ids.size());
+
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t id=(*it);
+
+			restricted_atoms.push_back(atoms_[id]);
+			restricted_atoms_display_states.push_back(atoms_display_states_[id]);
+
+			DisplayState& ds=restricted_atoms_display_states.back();
+			for(std::size_t i=0;i<ds.visuals.size();i++)
+			{
+				ds.visuals[i].implemented=(atoms_representations_descriptor_.implemented_always.count(i)>0);
+			}
+		}
+
+		atoms_.swap(restricted_atoms);
+		atoms_display_states_.swap(restricted_atoms_display_states);
+
+		contacts_.clear();
+		contacts_display_states_.clear();
+		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
+		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		selection_manager_=SelectionManager(&atoms_, 0);
+	}
+
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
 	{
 		if(contacts.empty())
