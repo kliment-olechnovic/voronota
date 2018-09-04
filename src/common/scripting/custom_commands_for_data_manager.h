@@ -655,8 +655,15 @@ public:
 			parameters_for_selecting.read(cargs.input);
 			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
 			parameters_for_output_destinations.read(false, cargs.input);
+			const unsigned int line_width=cargs.input.get_value_or_default<unsigned int>("line-width", 50);
+			const bool secondary_structure=cargs.input.get_flag("secondary-structure");
 
 			cargs.input.assert_nothing_unusable();
+
+			if(line_width<1)
+			{
+				throw std::runtime_error(std::string("Line width is too small."));
+			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
@@ -672,58 +679,95 @@ public:
 				residue_ids.insert(cargs.data_manager.primary_structure_info().map_of_atoms_to_residues[*it]);
 			}
 
-			std::map< std::pair<int, int>, std::size_t > segmentation;
-			for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
+			std::vector< std::vector<std::size_t> > grouping;
 			{
-				const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[*it];
-				segmentation[std::make_pair(r.segment_id, r.position_in_segment)]=(*it);
-			}
-
-			std::vector< std::vector<std::size_t> > groups;
-			{
-				std::map<std::pair<int, int>, std::size_t>::const_iterator it=segmentation.begin();
-				while(it!=segmentation.end())
+				std::map<ChainResidueAtomDescriptor, std::size_t> ordering;
+				for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
 				{
-					if(it==segmentation.begin())
+					const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[*it];
+					ordering[r.chain_residue_descriptor]=(*it);
+				}
+
+				std::map<ChainResidueAtomDescriptor, std::size_t>::const_iterator it=ordering.begin();
+				while(it!=ordering.end())
+				{
+					if(it==ordering.begin())
 					{
-						groups.push_back(std::vector<std::size_t>(1, it->second));
+						grouping.push_back(std::vector<std::size_t>(1, it->second));
 					}
 					else
 					{
-						std::map<std::pair<int, int>, std::size_t>::const_iterator it_prev=it;
+						std::map<ChainResidueAtomDescriptor, std::size_t>::const_iterator it_prev=it;
 						--it_prev;
-						if(it->first.first==it_prev->first.first && it->first.second==(it_prev->first.second+1))
+						if(it->first.chainID==it_prev->first.chainID && (it->first.resSeq-it_prev->first.resSeq)<=1)
 						{
-							groups.back().push_back(it->second);
+							grouping.back().push_back(it->second);
 						}
 						else
 						{
-							groups.push_back(std::vector<std::size_t>(1, it->second));
+							grouping.push_back(std::vector<std::size_t>(1, it->second));
 						}
 					}
 					++it;
 				}
 			}
 
-			std::ostringstream output;
-			for(std::size_t i=0;i<groups.size();i++)
+			std::map< std::string, std::vector<std::size_t> > chaining;
+			for(std::size_t i=0;i<grouping.size();i++)
 			{
+				const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[grouping[i].front()];
+				chaining[r.chain_residue_descriptor.chainID].push_back(i);
+			}
+
+			std::ostringstream output;
+			for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=chaining.begin();it!=chaining.end();++it)
+			{
+				output << ">Chain '" << (it->first) << "'";
+				const std::vector<std::size_t>& group_ids=it->second;
+				if(group_ids.size()>1)
 				{
-					const ConstructionOfPrimaryStructure::Residue& r1=cargs.data_manager.primary_structure_info().residues[groups[i].front()];
-					const ConstructionOfPrimaryStructure::Residue& r2=cargs.data_manager.primary_structure_info().residues[groups[i].back()];
-					output << ">";
-					output << r1.chain_residue_descriptor.chainID << r1.chain_residue_descriptor.resSeq << r1.chain_residue_descriptor.iCode;
-					output << ":";
-					output << r2.chain_residue_descriptor.chainID << r2.chain_residue_descriptor.resSeq << r2.chain_residue_descriptor.iCode;
-					output << "\n";
+					output << " with " << group_ids.size() << " continuous segments";
 				}
-				for(std::size_t j=0;j<groups[i].size();j++)
+				output << "\n";
+				unsigned int item_counter=0;
+				for(std::size_t i=0;i<group_ids.size();i++)
 				{
-					const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[groups[i][j]];
-					output << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
-					if((j+1)<groups[i].size() && (j+1)%50==0)
+					if(i!=0)
 					{
-						output << "\n";
+						output << "+";
+						if((++item_counter)%line_width==0)
+						{
+							output << "\n";
+						}
+					}
+					const std::vector<std::size_t>& group=grouping[group_ids[i]];
+					for(std::size_t j=0;j<group.size();j++)
+					{
+						if(secondary_structure)
+						{
+							const ConstructionOfSecondaryStructure::ResidueDescriptor& r=cargs.data_manager.secondary_structure_info().residue_descriptors[group[j]];
+							if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+							{
+								output << "H";
+							}
+							else if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+							{
+								output << "S";
+							}
+							else
+							{
+								output << "-";
+							}
+						}
+						else
+						{
+							const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[group[j]];
+							output << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
+						}
+						if((++item_counter)%line_width==0)
+						{
+							output << "\n";
+						}
 					}
 				}
 				output << "\n";

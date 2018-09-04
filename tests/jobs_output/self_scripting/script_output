@@ -2,6 +2,10 @@
 > run-script './jobs_output/self_scripting/script_input'
 
 
+> set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
+Set alias 'printseq' to 'print-sequence --line-width 80 ; print-sequence --line-width 80 --secondary-structure'
+
+
 > load-atoms --file ./input/single/structure.cif
 Read atoms from file './input/single/structure.cif' (count=1771)
 
@@ -14,17 +18,18 @@ Read atoms from file './input/single/structure.pdb' (count=1717)
 Read atoms from file './input/single/structure.pdb' (count=1771)
 
 
-> print-sequence
->A2:A64
-SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTG
-KLPVPWPTLVTTF
->A66:A66
-X
->A68:A229
-VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGD
-TLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKI
-RHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH
-XVLLEFVTAAGI
+> print-sequence --line-width 80 
+>Chain 'A' with 3 continuous segments
+SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF+X+VQCFSRYPDHXKRH
+DFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGI
+KVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI
+
+
+> print-sequence --line-width 80 --secondary-structure
+>Chain 'A' with 3 continuous segments
+--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----+-+-----S--------
+----------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SS
+SSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--
 
 
 > print-atoms {--tags het --adjuncts tf:0:10}
@@ -41,22 +46,18 @@ Summary of atoms: count=5
 Restricted atoms from (count=1771) to (count=1717)
 
 
-> print-sequence
->A2:A64
-SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTG
-KLPVPWPTLVTTF
->A68:A77
-VQCFSRYPDH
->A79:A87
-KRHDFFKSA
->A89:A152
-PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILG
-HKLEYNYNSHNVYI
->A154:A217
-ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLST
-QSALSKDPNEKRDH
->A219:A229
-VLLEFVTAAGI
+> print-sequence --line-width 80 
+>Chain 'A' with 6 continuous segments
+SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF+VQCFSRYPDH+KRHDF
+FKSA+PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI+ADKQKNGIKV
+NFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH+VLLEFVTAAGI
+
+
+> print-sequence --line-width 80 --secondary-structure
+>Chain 'A' with 6 continuous segments
+--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----+-----S----+-----
+----+---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS+-S----SSSS
+SSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------+-SSSSSSSS--
 
 
 > construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
