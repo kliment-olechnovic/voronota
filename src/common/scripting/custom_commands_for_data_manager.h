@@ -931,6 +931,7 @@ public:
 				if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
 				{
 					cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
+					cargs.changed_contacts=true;
 				}
 				else
 				{
