@@ -10,20 +10,8 @@ namespace common
 class ConstructionOfTriangulation
 {
 public:
-	struct BundleOfTriangulationInformation
+	struct ParametersToConstructBundleOfTriangulationInformation
 	{
-		std::size_t number_of_input_spheres;
-		std::vector<apollota::SimpleSphere> spheres;
-		apollota::Triangulation::QuadruplesMap quadruples_map;
-
-		BundleOfTriangulationInformation() : number_of_input_spheres(0)
-		{
-		}
-	};
-
-	class ParametersToConstructBundleOfTriangulationInformation
-	{
-	public:
 		double artificial_boundary_shift;
 		bool exclude_hidden_balls;
 		double init_radius_for_BSH;
@@ -36,6 +24,18 @@ public:
 		}
 	};
 
+	struct BundleOfTriangulationInformation
+	{
+		ParametersToConstructBundleOfTriangulationInformation parameters_of_construction;
+		std::size_t number_of_input_spheres;
+		std::vector<apollota::SimpleSphere> spheres;
+		apollota::Triangulation::QuadruplesMap quadruples_map;
+
+		BundleOfTriangulationInformation() : number_of_input_spheres(0)
+		{
+		}
+	};
+
 	template<typename ContainerOfBalls>
 	static bool construct_bundle_of_triangulation_information(
 			const ParametersToConstructBundleOfTriangulationInformation& parameters,
@@ -43,6 +43,7 @@ public:
 			BundleOfTriangulationInformation& bundle_of_triangulation_information)
 	{
 		bundle_of_triangulation_information=BundleOfTriangulationInformation();
+		bundle_of_triangulation_information.parameters_of_construction=parameters;
 
 		if(balls.size()<4)
 		{
