@@ -921,7 +921,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
-			parameters_to_construct_triangulation.artificial_boundary_shift=parameters_to_construct_contacts.probe*2.0;
+			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
 
 			const std::vector<apollota::SimpleSphere> atomic_balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
 
