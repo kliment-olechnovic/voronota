@@ -17,6 +17,7 @@ export VORONOTADIR=./voronota_package/
 export INPUTDIR=./input
 export OUTPUTDIR=./jobs_output
 
+mkdir $VORONOTADIR/resources
 $VORONOTADIR/voronota-resources voromqa_v1_energy_means_and_sds > $VORONOTADIR/resources/voromqa_v1_energy_means_and_sds
 $VORONOTADIR/voronota-resources voromqa_v1_energy_potential > $VORONOTADIR/resources/voromqa_v1_energy_potential
 $VORONOTADIR/voronota-resources radii > $VORONOTADIR/resources/radii
