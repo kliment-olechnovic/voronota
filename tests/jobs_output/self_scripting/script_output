@@ -60,7 +60,12 @@ NFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH+VLLEFVTAAGI
 SSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------+-SSSSSSSS--
 
 
+> construct-contacts
+Constructed contacts (count=12469 drawable=0 area=47017.2)
+
+
 > construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
+Using cached triangulation
 Constructed contacts (count=12469 drawable=120 area=47017.2)
 
 

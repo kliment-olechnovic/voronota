@@ -920,10 +920,31 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+			parameters_to_construct_triangulation.artificial_boundary_shift=parameters_to_construct_contacts.probe*2.0;
+
+			const std::vector<apollota::SimpleSphere> atomic_balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
+
+			if(!cargs.data_manager.triangulation_info().equivalent(parameters_to_construct_triangulation, atomic_balls))
+			{
+				ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+				if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
+				{
+					cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Failed to construct triangulation."));
+				}
+			}
+			else
+			{
+				cargs.output_for_log << "Using cached triangulation\n";
+			}
+
 			ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
 
-			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms()), bundle_of_triangulation_information, bundle_of_contact_information))
+			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, cargs.data_manager.triangulation_info(), bundle_of_contact_information))
 			{
 				cargs.data_manager.reset_contacts_by_swapping(bundle_of_contact_information.contacts);
 				cargs.changed_contacts=true;
@@ -942,7 +963,7 @@ public:
 					draw_ids=cargs.data_manager.selection_manager().select_contacts(render_parameters_for_selecting.forced_ids, render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
 				}
 
-				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, bundle_of_triangulation_information, draw_ids, cargs.data_manager.contacts_mutable());
+				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, cargs.data_manager.triangulation_info(), draw_ids, cargs.data_manager.contacts_mutable());
 
 				cargs.data_manager.reset_contacts_display_states();
 

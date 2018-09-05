@@ -22,6 +22,13 @@ public:
 			init_radius_for_BSH(3.5)
 		{
 		}
+
+		bool equals(const ParametersToConstructBundleOfTriangulationInformation& b) const
+		{
+			return (artificial_boundary_shift==b.artificial_boundary_shift
+					&& exclude_hidden_balls==b.exclude_hidden_balls
+					&& init_radius_for_BSH==b.init_radius_for_BSH);
+		}
 	};
 
 	struct BundleOfTriangulationInformation
@@ -33,6 +40,45 @@ public:
 
 		BundleOfTriangulationInformation() : number_of_input_spheres(0)
 		{
+		}
+
+		template<typename ContainerOfBalls>
+		bool matching(const ContainerOfBalls& balls) const
+		{
+			if(balls.empty() || number_of_input_spheres!=balls.size())
+			{
+				return false;
+			}
+
+			{
+				std::vector<apollota::SimpleSphere>::const_iterator spheres_it=spheres.begin();
+				typename ContainerOfBalls::const_iterator balls_it=balls.begin();
+				while(spheres_it!=spheres.end() && balls_it!=balls.end())
+				{
+					if(!apollota::spheres_equal(*spheres_it, *balls_it, apollota::default_comparison_epsilon()))
+					{
+						return false;
+					}
+					++spheres_it;
+					++balls_it;
+				}
+			}
+
+			return true;
+		}
+
+		template<typename ContainerOfBalls>
+		bool equivalent(const ParametersToConstructBundleOfTriangulationInformation& parameters, const ContainerOfBalls& balls) const
+		{
+			return (parameters_of_construction.equals(parameters) && matching(balls));
+		}
+
+		void swap(BundleOfTriangulationInformation& b)
+		{
+			parameters_of_construction=b.parameters_of_construction;
+			number_of_input_spheres=b.number_of_input_spheres;
+			spheres.swap(b.spheres);
+			quadruples_map.swap(b.quadruples_map);
 		}
 	};
 
