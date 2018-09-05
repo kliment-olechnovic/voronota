@@ -42,16 +42,6 @@ public:
 		return pending_sentences_;
 	}
 
-	std::vector<Sentence> partition_script(const std::string& script) const
-	{
-		return translate_sentences_fully(split_script_into_sentences(remove_comments_from_script(script)));
-	}
-
-	std::vector<Sentence> partition_sentence(const Sentence& sentence) const
-	{
-		return translate_sentences_fully(std::vector<Sentence>(1, sentence));
-	}
-
 	void set_alias(const std::string& name, const std::string& script_template)
 	{
 		if(name.empty())
@@ -324,6 +314,16 @@ private:
 		}
 		while(any_aliased_used);
 		return result;
+	}
+
+	std::vector<Sentence> partition_script(const std::string& script) const
+	{
+		return translate_sentences_fully(split_script_into_sentences(remove_comments_from_script(script)));
+	}
+
+	std::vector<Sentence> partition_sentence(const Sentence& sentence) const
+	{
+		return translate_sentences_fully(std::vector<Sentence>(1, sentence));
 	}
 
 	std::map<std::string, std::string> aliases_;
