@@ -1,4 +1,5 @@
 #include "auxiliaries/program_options_handler.h"
+#include "auxiliaries/time_utilities.h"
 
 #include "common/scripting/script_execution_manager.h"
 
@@ -8,13 +9,24 @@ namespace
 class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManager::HandlerForExecutionEvents
 {
 public:
+	bool print_time;
+
+	explicit HandlerForExecutionEvents(const bool print_time=false) : print_time(print_time)
+	{
+	}
+
 	void on_before_executing_command(const common::scripting::CommandInput& command_input)
 	{
 		std::cout << "\n> " << command_input.get_input_command_string() << std::endl;
+		elapsed_processor_time_.reset();
 	}
 
 	void on_after_executing_command()
 	{
+		if(print_time)
+		{
+			std::cout << "Command execution time: " << elapsed_processor_time_.elapsed_miliseconds() << " ms\n";
+		}
 		std::cout << std::endl;
 	}
 
@@ -57,6 +69,8 @@ private:
 			std::cout << "Error: " << cr.output_error << "\n";
 		}
 	}
+
+	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
 };
 
 }
@@ -73,7 +87,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	common::scripting::ScriptExecutionManager manager;
-	HandlerForExecutionEvents handler_for_execution_events;
+	HandlerForExecutionEvents handler_for_execution_events(false);
 
 	while(std::cin.good())
 	{
