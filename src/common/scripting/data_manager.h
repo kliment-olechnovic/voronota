@@ -357,11 +357,7 @@ public:
 		}
 		atoms_.swap(atoms);
 		reset_atoms_display_states();
-		contacts_.clear();
-		contacts_display_states_.clear();
-		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
-		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
-		selection_manager_=SelectionManager(&atoms_, 0);
+		reset_data_dependent_on_atoms();
 	}
 
 	void reset_atoms_by_copying(const std::vector<Atom>& atoms)
@@ -416,11 +412,7 @@ public:
 		atoms_.swap(restricted_atoms);
 		atoms_display_states_.swap(restricted_atoms_display_states);
 
-		contacts_.clear();
-		contacts_display_states_.clear();
-		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
-		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
-		selection_manager_=SelectionManager(&atoms_, 0);
+		reset_data_dependent_on_atoms();
 	}
 
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
@@ -693,6 +685,15 @@ private:
 				set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
 			}
 		}
+	}
+
+	void reset_data_dependent_on_atoms()
+	{
+		contacts_.clear();
+		contacts_display_states_.clear();
+		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
+		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		selection_manager_=SelectionManager(&atoms_, 0);
 	}
 
 	std::string title_;
