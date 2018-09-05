@@ -121,6 +121,11 @@ public:
 		return secondary_structure_info_;
 	}
 
+	const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info() const
+	{
+		return triangulation_info_;
+	}
+
 	const RepresentationsDescriptor& atoms_representation_descriptor() const
 	{
 		return atoms_representations_descriptor_;
@@ -415,6 +420,31 @@ public:
 		reset_data_dependent_on_atoms();
 	}
 
+	void reset_triangulation_info_by_swapping(ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
+	{
+		if(triangulation_info.quadruples_map.empty())
+		{
+			throw std::runtime_error(std::string("No triangulation info to set."));
+		}
+
+		if(!triangulation_info.matching(ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_)))
+		{
+			throw std::runtime_error(std::string("Triangulation info does not match atoms."));
+		}
+
+		triangulation_info_.swap(triangulation_info);
+
+		contacts_.clear();
+		contacts_display_states_.clear();
+		selection_manager_.set_contacts(0);
+	}
+
+	void reset_triangulation_info_by_copying(const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
+	{
+		ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_copy=triangulation_info;
+		reset_triangulation_info_by_swapping(triangulation_info_copy);
+	}
+
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
 	{
 		if(contacts.empty())
@@ -693,6 +723,7 @@ private:
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
 		selection_manager_=SelectionManager(&atoms_, 0);
 	}
 
@@ -705,6 +736,7 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
+	ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
 };
 
