@@ -44,8 +44,27 @@ public:
 		}
 	};
 
+	struct ParametersToConstructBundleOfContactInformation
+	{
+		double probe;
+		double step;
+		int projections;
+		int sih_depth;
+		bool calculate_volumes;
+
+		ParametersToConstructBundleOfContactInformation() :
+			probe(1.4),
+			step(0.2),
+			projections(5),
+			sih_depth(3),
+			calculate_volumes(false)
+		{
+		}
+	};
+
 	struct BundleOfContactInformation
 	{
+		ParametersToConstructBundleOfContactInformation parameters_of_construction;
 		std::vector<Contact> contacts;
 		std::vector<double> volumes;
 	};
@@ -66,31 +85,13 @@ public:
 		}
 	};
 
-	class ParametersToConstructBundleOfContactInformation
-	{
-	public:
-		double probe;
-		double step;
-		int projections;
-		int sih_depth;
-		bool calculate_volumes;
-
-		ParametersToConstructBundleOfContactInformation() :
-			probe(1.4),
-			step(0.2),
-			projections(5),
-			sih_depth(3),
-			calculate_volumes(false)
-		{
-		}
-	};
-
 	static bool construct_bundle_of_contact_information(
 			const ParametersToConstructBundleOfContactInformation& parameters,
 			const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
 			BundleOfContactInformation& bundle_of_contact_information)
 	{
 		bundle_of_contact_information=BundleOfContactInformation();
+		bundle_of_contact_information.parameters_of_construction=parameters;
 
 		if(bundle_of_triangulation_information.number_of_input_spheres<4 || bundle_of_triangulation_information.quadruples_map.empty())
 		{
@@ -205,9 +206,8 @@ public:
 		return construct_bundle_of_contact_information(parameters, balls, parameters_to_construct_triangulation, bundle_of_triangulation_information, bundle_of_contact_information);
 	}
 
-	class ParametersToEnhanceContacts
+	struct ParametersToEnhanceContacts
 	{
-	public:
 		double probe;
 		double step;
 		int projections;
