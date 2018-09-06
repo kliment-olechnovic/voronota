@@ -45,6 +45,13 @@ delete-selections-of-contacts nosel1
 list-selections-of-atoms
 list-selections-of-contacts
 
+color-atoms 0xFFFF00
+color-atoms {A<C,CA,N,O>} 0xFF0000
+color-atoms (not {A<C,CA,N,O>}) 0x00FF00
+show-atoms
+write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms
+write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf
+
 color-contacts 0x00FF00
 color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
 color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00

@@ -63,7 +63,7 @@ public:
 			const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure,
 			BundleOfBondingLinks& bundle_of_bonding_links)
 	{
-		if(atoms.empty() || primary_structure.valid(atoms))
+		if(atoms.empty() || !primary_structure.valid(atoms))
 		{
 			return false;
 		}
@@ -72,7 +72,7 @@ public:
 		construct_atomic_bonds_directed_links(atoms, bundle_of_bonding_links.bonds_links, bundle_of_bonding_links.map_of_atoms_to_bonds_links, parameters.ball_collision_radius, parameters.bsh_initial_radius);
 		construct_residue_trace_directed_links(atoms, primary_structure, bundle_of_bonding_links.residue_trace_links, bundle_of_bonding_links.map_of_atoms_to_residue_trace_links, bundle_of_bonding_links.continuous_chains_of_residue_trace);
 
-		return true;
+		return bundle_of_bonding_links.valid(atoms, primary_structure);
 	}
 
 private:

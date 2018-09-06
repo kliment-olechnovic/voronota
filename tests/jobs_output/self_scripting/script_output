@@ -205,6 +205,30 @@ Selections of contacts:
   name='cs1' (count=5 drawable=1 area=33.8164)
 
 
+> color-atoms 0xFFFF00
+Summary of atoms: count=1717 volume=41027.8
+
+
+> color-atoms {A<C,CA,N,O>} 0xFF0000
+Summary of atoms: count=884 volume=15442.3
+
+
+> color-atoms (not {A<C,CA,N,O>}) 0x00FF00
+Summary of atoms: count=833 volume=25585.5
+
+
+> show-atoms
+Summary of atoms: count=1717 volume=41027.8
+
+
+> write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms
+Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms.py' (count=167 volume=3864.44)
+
+
+> write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf
+Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms_wf.py' (count=167 volume=3864.44)
+
+
 > color-contacts 0x00FF00
 Summary of contacts: count=120 drawable=120 area=211.8
 
