@@ -5,6 +5,7 @@
 #include "../../auxiliaries/residue_letters_coding.h"
 
 #include "../writing_atomic_balls_in_pdb_format.h"
+#include "../construction_of_bonding_links.h"
 
 #include "generic_command_for_data_manager.h"
 #include "table_printing.h"
@@ -802,6 +803,114 @@ public:
 			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), ids);
 
 			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+		}
+	};
+
+	class write_atoms_as_pymol_cgo : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_atoms_representations_availability();
+
+			std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
+			bool wireframe=cargs.input.get_flag("wireframe");
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
+			parameters_for_representation_selecting.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Missing object name."));
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.empty())
+			{
+				parameters_for_representation_selecting.visual_ids.insert(0);
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			{
+				throw std::runtime_error(std::string("More than one representation requested."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable visible atoms selected."));
+			}
+
+			ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks parameters_for_bonding_links;
+			ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+			if(wireframe)
+			{
+				if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(parameters_for_bonding_links, cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info(), bundle_of_bonding_links))
+				{
+					throw std::runtime_error(std::string("Failed to define bonding links."));
+				}
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			auxiliaries::OpenGLPrinter opengl_printer;
+			{
+				unsigned int prev_color=0;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id=(*it);
+					for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+					{
+						const std::size_t visual_id=(*jt);
+						if(visual_id<cargs.data_manager.atoms_display_states()[id].visuals.size())
+						{
+							const DataManager::DisplayState::Visual& dsv=cargs.data_manager.atoms_display_states()[id].visuals[visual_id];
+							if(prev_color==0 || dsv.color!=prev_color)
+							{
+								opengl_printer.add_color(dsv.color);
+							}
+							prev_color=dsv.color;
+							if(wireframe)
+							{
+								const std::vector<std::size_t>& link_ids=bundle_of_bonding_links.map_of_atoms_to_bonds_links[id];
+								for(std::size_t i=0;i<link_ids.size();i++)
+								{
+									const ConstructionOfBondingLinks::DirectedLink& dl=bundle_of_bonding_links.bonds_links[link_ids[i]];
+									const apollota::SimplePoint pa(cargs.data_manager.atoms()[dl.a].value);
+									const apollota::SimplePoint pb(cargs.data_manager.atoms()[dl.b].value);
+									opengl_printer.add_line_strip(pa, (pa+pb)*0.5);
+								}
+							}
+							else
+							{
+								opengl_printer.add_sphere(cargs.data_manager.atoms()[id].value);
+							}
+						}
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				opengl_printer.print_pymol_script(name, true, output);
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote atoms as PyMol CGO to file '" << parameters_for_output_destinations.file << "' ";
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
 		}
 	};
 
