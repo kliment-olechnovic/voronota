@@ -6,6 +6,7 @@
 
 #include "../writing_atomic_balls_in_pdb_format.h"
 #include "../construction_of_bonding_links.h"
+#include "../construction_of_structural_cartoon.h"
 
 #include "generic_command_for_data_manager.h"
 #include "table_printing.h"
@@ -911,6 +912,138 @@ public:
 			if(!parameters_for_output_destinations.file.empty())
 			{
 				cargs.output_for_log << "Wrote atoms as PyMol CGO to file '" << parameters_for_output_destinations.file << "' ";
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class write_cartoon_as_pymol_cgo : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_atoms_representations_availability();
+
+			std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
+			bool wireframe=cargs.input.get_flag("wireframe");
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
+			parameters_for_representation_selecting.read(cargs.input);
+			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
+			parameters_for_output_destinations.read(false, cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Missing object name."));
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.empty())
+			{
+				parameters_for_representation_selecting.visual_ids.insert(0);
+			}
+
+			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			{
+				throw std::runtime_error(std::string("More than one representation requested."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
+					parameters_for_representation_selecting.visual_ids,
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable visible atoms selected."));
+			}
+
+			ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+			if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+					ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
+					cargs.data_manager.atoms(),
+					cargs.data_manager.primary_structure_info(),
+					bundle_of_bonding_links))
+			{
+				throw std::runtime_error(std::string("Failed to define bonding links."));
+			}
+
+			ConstructionOfStructuralCartoon::Parameters parameters_for_cartoon;
+			ConstructionOfStructuralCartoon::BundleOfMeshInformation bundle_of_cartoon_mesh;
+			if(!ConstructionOfStructuralCartoon::construct_bundle_of_mesh_information(
+					parameters_for_cartoon,
+					cargs.data_manager.atoms(),
+					cargs.data_manager.primary_structure_info(),
+					cargs.data_manager.secondary_structure_info(),
+					bundle_of_bonding_links,
+					bundle_of_cartoon_mesh))
+			{
+				throw std::runtime_error(std::string("Failed to construct cartoon mesh."));
+			}
+
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+
+			auxiliaries::OpenGLPrinter opengl_printer;
+			{
+				std::vector<apollota::SimplePoint> vertices(3);
+				std::vector<apollota::SimplePoint> normals(3);
+				unsigned int prev_color=0;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const std::size_t id=(*it);
+					const std::vector<unsigned int>& indices=bundle_of_cartoon_mesh.mapped_indices[id];
+					if(!indices.empty() && indices.size()%3==0)
+					{
+						for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+						{
+							const std::size_t visual_id=(*jt);
+							if(visual_id<cargs.data_manager.atoms_display_states()[id].visuals.size())
+							{
+								const DataManager::DisplayState::Visual& dsv=cargs.data_manager.atoms_display_states()[id].visuals[visual_id];
+								if(prev_color==0 || dsv.color!=prev_color)
+								{
+									opengl_printer.add_color(dsv.color);
+								}
+								prev_color=dsv.color;
+								for(std::size_t i=0;i<indices.size();i+=3)
+								{
+									for(std::size_t j=0;j<3;j++)
+									{
+										vertices[j].x=bundle_of_cartoon_mesh.global_buffer_of_vertices[indices[i+j]*3+0];
+										vertices[j].y=bundle_of_cartoon_mesh.global_buffer_of_vertices[indices[i+j]*3+1];
+										vertices[j].z=bundle_of_cartoon_mesh.global_buffer_of_vertices[indices[i+j]*3+2];
+										normals[j].x=bundle_of_cartoon_mesh.global_buffer_of_normals[indices[i+j]*3+0];
+										normals[j].y=bundle_of_cartoon_mesh.global_buffer_of_normals[indices[i+j]*3+1];
+										normals[j].z=bundle_of_cartoon_mesh.global_buffer_of_normals[indices[i+j]*3+2];
+									}
+									if(wireframe)
+									{
+										opengl_printer.add_line_loop(vertices);
+									}
+									else
+									{
+										opengl_printer.add_triangle_strip(vertices, normals);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<outputs.size();i++)
+			{
+				std::ostream& output=(*(outputs[i]));
+				opengl_printer.print_pymol_script(name, true, output);
+			}
+
+			if(!parameters_for_output_destinations.file.empty())
+			{
+				cargs.output_for_log << "Wrote cartoon as PyMol CGO to file '" << parameters_for_output_destinations.file << "' ";
 				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}

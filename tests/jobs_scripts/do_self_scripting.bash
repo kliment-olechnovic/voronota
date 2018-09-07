@@ -59,6 +59,10 @@ show-atoms
 write-atoms-as-pymol-cgo {r<70:90>} -file '$SUBDIR/cgo_atoms.py' -name atoms
 write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file '$SUBDIR/cgo_atoms_wf.py' -name atoms_wf
 
+spectrum-atoms
+write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file '$SUBDIR/cgo_cartoon.py' -name cartoon
+write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file '$SUBDIR/cgo_cartoon_wf.py' -name cartoon_wf
+
 color-contacts 0x00FF00
 color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
 color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00

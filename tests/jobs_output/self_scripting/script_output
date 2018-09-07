@@ -229,6 +229,18 @@ Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms.py' (co
 Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms_wf.py' (count=167 volume=3864.44)
 
 
+> spectrum-atoms
+Summary: count=1717 min=2 max=229
+
+
+> write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon
+Wrote cartoon as PyMol CGO to file './jobs_output/self_scripting/cgo_cartoon.py' (count=16 volume=262.219)
+
+
+> write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf
+Wrote cartoon as PyMol CGO to file './jobs_output/self_scripting/cgo_cartoon_wf.py' (count=16 volume=262.219)
+
+
 > color-contacts 0x00FF00
 Summary of contacts: count=120 drawable=120 area=211.8
 
