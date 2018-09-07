@@ -75,6 +75,19 @@ public:
 		return bundle_of_bonding_links.valid(atoms, primary_structure);
 	}
 
+	static BundleOfBondingLinks construct_bundle_of_bonding_links(
+			const ParametersToConstructBundleOfBondingLinks& parameters,
+			const std::vector<Atom>& atoms,
+			const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure)
+	{
+		BundleOfBondingLinks bundle_of_bonding_links;
+		if(construct_bundle_of_bonding_links(parameters, atoms, primary_structure, bundle_of_bonding_links))
+		{
+			return bundle_of_bonding_links;
+		}
+		return BundleOfBondingLinks();
+	}
+
 private:
 	typedef common::ConstructionOfPrimaryStructure COPS;
 

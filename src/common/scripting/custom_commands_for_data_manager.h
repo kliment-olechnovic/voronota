@@ -850,11 +850,14 @@ public:
 				throw std::runtime_error(std::string("No drawable visible atoms selected."));
 			}
 
-			ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks parameters_for_bonding_links;
 			ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
 			if(wireframe)
 			{
-				if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(parameters_for_bonding_links, cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info(), bundle_of_bonding_links))
+				if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+						ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
+						cargs.data_manager.atoms(),
+						cargs.data_manager.primary_structure_info(),
+						bundle_of_bonding_links))
 				{
 					throw std::runtime_error(std::string("Failed to define bonding links."));
 				}
