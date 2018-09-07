@@ -89,7 +89,7 @@ public:
 	}
 
 private:
-	typedef common::ConstructionOfPrimaryStructure COPS;
+	typedef ConstructionOfPrimaryStructure COPS;
 
 	static void construct_atomic_bonds_directed_links(
 			const std::vector<Atom>& atoms,

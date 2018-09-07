@@ -512,7 +512,7 @@ public:
 			}
 			else if(by=="residue-id")
 			{
-				std::map<common::ChainResidueAtomDescriptor, double> residue_ids_to_values;
+				std::map<ChainResidueAtomDescriptor, double> residue_ids_to_values;
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					residue_ids_to_values[cargs.data_manager.atoms()[*it].crad.without_atom()]=0.5;
@@ -520,7 +520,7 @@ public:
 				if(residue_ids_to_values.size()>1)
 				{
 					int i=0;
-					for(std::map<common::ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
+					for(std::map<ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
 					{
 						it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
 						i++;
@@ -1035,7 +1035,7 @@ public:
 			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
 			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
 
-			const std::vector<apollota::SimpleSphere> atomic_balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
+			const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
 
 			if(!cargs.data_manager.triangulation_info().equivalent(parameters_to_construct_triangulation, atomic_balls))
 			{
