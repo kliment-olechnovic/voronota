@@ -46,7 +46,7 @@ public:
 		{
 		}
 
-		virtual void on_after_executing_command()
+		virtual void on_after_executing_command(const CommandInput&)
 		{
 		}
 
@@ -231,7 +231,7 @@ private:
 			handler.on_unrecognized_command(command_record.command_input);
 		}
 
-		handler.on_after_executing_command();
+		handler.on_after_executing_command(command_record.command_input);
 	}
 
 	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
