@@ -73,6 +73,11 @@ public:
 		pending_sentences_.insert(pending_sentences_.begin(), script_sentences.begin(), script_sentences.end());
 	}
 
+	void clear_pending_sentences()
+	{
+		pending_sentences_.clear();
+	}
+
 	std::string extract_pending_sentence()
 	{
 		std::string body;

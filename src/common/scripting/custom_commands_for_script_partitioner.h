@@ -98,6 +98,16 @@ public:
 			cargs.script_partitioner.add_pending_sentences_from_string_to_front(script);
 		}
 	};
+
+	class exit : public GenericCommandForScriptPartitioner
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.script_partitioner.clear_pending_sentences();
+		}
+	};
 };
 
 }
