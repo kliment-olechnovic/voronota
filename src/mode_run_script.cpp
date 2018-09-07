@@ -10,8 +10,9 @@ class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManag
 {
 public:
 	bool print_time;
+	bool exit_requested;
 
-	explicit HandlerForExecutionEvents(const bool print_time=false) : print_time(print_time)
+	explicit HandlerForExecutionEvents(const bool print_time=false) : print_time(print_time), exit_requested(false)
 	{
 	}
 
@@ -33,6 +34,10 @@ public:
 	bool on_command_for_script_partitioner(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr)
 	{
 		print_command_log(cr);
+		if(cr.successful && cr.command_input.get_command_name()=="exit")
+		{
+			exit_requested=true;
+		}
 		return cr.successful;
 	}
 
@@ -97,7 +102,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	common::scripting::ScriptExecutionManager manager;
 	HandlerForExecutionEvents handler_for_execution_events(false);
 
-	while(std::cin.good())
+	while(!handler_for_execution_events.exit_requested && std::cin.good())
 	{
 		std::string line;
 		std::getline(std::cin, line);

@@ -299,3 +299,10 @@ Objects:
   'plain_atoms_and_contacts'
   'plain_atoms' *
 
+
+> set-alias quit exit
+Set alias 'quit' to 'exit'
+
+
+> exit
+

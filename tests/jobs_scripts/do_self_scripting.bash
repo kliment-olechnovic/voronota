@@ -86,6 +86,9 @@ run-script '$SUBDIR/script_input'
 list-objects
 delete-objects plain_atoms[0]
 list-objects
+set-alias quit exit
+quit
+list-objects
 EOF
 } \
 | $VORONOTA x-run-script \
