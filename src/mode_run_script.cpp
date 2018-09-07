@@ -39,6 +39,14 @@ public:
 	bool on_command_for_congregation_of_data_managers(const common::scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
 		print_command_log(cr);
+		for(std::vector<common::scripting::DataManager*>::const_iterator it=cr.set_of_added_objects.begin();it!=cr.set_of_added_objects.end();++it)
+		{
+			common::scripting::DataManager& dm=(*(*it));
+			dm.add_atoms_representations(std::vector<std::string>(1, "atoms"));
+			dm.set_atoms_representation_implemented_always(0, true);
+			dm.add_contacts_representations(std::vector<std::string>(1, "contacts"));
+			dm.set_contacts_representation_implemented_always(0, true);
+		}
 		return cr.successful;
 	}
 
