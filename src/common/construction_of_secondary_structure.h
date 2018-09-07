@@ -34,16 +34,6 @@ public:
 		}
 	};
 
-	struct BundleOfSecondaryStructure
-	{
-		std::vector<ResidueDescriptor> residue_descriptors;
-
-		bool valid(const std::vector<Atom>& atoms, const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bundle_of_primary_structure) const
-		{
-			return (!residue_descriptors.empty() && residue_descriptors.size()==bundle_of_primary_structure.residues.size() && bundle_of_primary_structure.valid(atoms));
-		}
-	};
-
 	class ParametersToConstructBundleOfSecondaryStructure
 	{
 	public:
@@ -57,6 +47,17 @@ public:
 		}
 	};
 
+	struct BundleOfSecondaryStructure
+	{
+		ParametersToConstructBundleOfSecondaryStructure parameters_of_construction;
+		std::vector<ResidueDescriptor> residue_descriptors;
+
+		bool valid(const std::vector<Atom>& atoms, const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& bundle_of_primary_structure) const
+		{
+			return (!residue_descriptors.empty() && residue_descriptors.size()==bundle_of_primary_structure.residues.size() && bundle_of_primary_structure.valid(atoms));
+		}
+	};
+
 	static bool construct_bundle_of_secondary_structure(
 			const ParametersToConstructBundleOfSecondaryStructure& parameters,
 			const std::vector<Atom>& atoms,
@@ -64,6 +65,7 @@ public:
 			BundleOfSecondaryStructure& bundle_of_secondary_structure)
 	{
 		bundle_of_secondary_structure=BundleOfSecondaryStructure();
+		bundle_of_secondary_structure.parameters_of_construction=parameters;
 
 		if(!bundle_of_primary_structure.valid(atoms))
 		{
