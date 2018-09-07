@@ -1,5 +1,5 @@
 
-> run-script './jobs_output/self_scripting/script_input'
+> source './jobs_output/self_scripting/script_input'
 
 
 > set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
