@@ -119,9 +119,10 @@ public:
 		commands_for_data_manager_["save-atoms-and-contacts"]=new CustomCommandsForDataManager::save_atoms_and_contacts();
 	}
 
-	~ScriptExecutionManager()
+	virtual ~ScriptExecutionManager()
 	{
 		delete_map_contents(commands_for_script_partitioner_);
+		delete_map_contents(commands_for_congregation_of_data_managers_);
 		delete_map_contents(commands_for_data_manager_);
 	}
 
