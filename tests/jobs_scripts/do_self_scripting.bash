@@ -82,7 +82,7 @@ EOF
 
 {
 cat << EOF
-run-script '$SUBDIR/script_input'
+source '$SUBDIR/script_input'
 list-objects
 delete-objects plain_atoms[0]
 list-objects

@@ -65,7 +65,7 @@ public:
 	{
 		commands_for_script_partitioner_["set-alias"]=new CustomCommandsForScriptPartitioner::set_alias();
 		commands_for_script_partitioner_["unset-aliases"]=new CustomCommandsForScriptPartitioner::unset_aliases();
-		commands_for_script_partitioner_["run-script"]=new CustomCommandsForScriptPartitioner::run_script();
+		commands_for_script_partitioner_["source"]=new CustomCommandsForScriptPartitioner::source();
 		commands_for_script_partitioner_["exit"]=new CustomCommandsForScriptPartitioner::exit();
 
 		commands_for_congregation_of_data_managers_["list-objects"]=new CustomCommandsForCongregationOfDataManagers::list_objects();

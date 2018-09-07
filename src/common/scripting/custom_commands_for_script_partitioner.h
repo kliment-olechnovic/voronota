@@ -62,7 +62,7 @@ public:
 		}
 	};
 
-	class run_script : public GenericCommandForScriptPartitioner
+	class source : public GenericCommandForScriptPartitioner
 	{
 	protected:
 		void run(CommandArguments& cargs)
