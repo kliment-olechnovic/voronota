@@ -91,6 +91,7 @@ public:
 		commands_for_data_manager_["print-sequence"]=new CustomCommandsForDataManager::print_sequence();
 		commands_for_data_manager_["zoom-by-atoms"]=new CustomCommandsForDataManager::zoom_by_atoms();
 		commands_for_data_manager_["write-atoms-as-pymol-cgo"]=new CustomCommandsForDataManager::write_atoms_as_pymol_cgo();
+		commands_for_data_manager_["write-cartoon-as-pymol-cgo"]=new CustomCommandsForDataManager::write_cartoon_as_pymol_cgo();
 		commands_for_data_manager_["list-selections-of-atoms"]=new CustomCommandsForDataManager::list_selections_of_atoms();
 		commands_for_data_manager_["delete-all-selections-of-atoms"]=new CustomCommandsForDataManager::delete_all_selections_of_atoms();
 		commands_for_data_manager_["delete-selections-of-atoms"]=new CustomCommandsForDataManager::delete_selections_of_atoms();
