@@ -21,7 +21,7 @@ public:
 		elapsed_processor_time_.reset();
 	}
 
-	void on_after_executing_command()
+	void on_after_executing_command(const common::scripting::CommandInput&)
 	{
 		if(print_time)
 		{
