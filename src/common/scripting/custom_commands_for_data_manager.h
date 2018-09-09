@@ -854,19 +854,7 @@ public:
 			{
 				if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 				{
-					ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
-					if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
-							ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
-							cargs.data_manager.atoms(),
-							cargs.data_manager.primary_structure_info(),
-							bundle_of_bonding_links))
-					{
-						cargs.data_manager.reset_bonding_links_info_by_swapping(bundle_of_bonding_links);
-					}
-					else
-					{
-						throw std::runtime_error(std::string("Failed to define bonding links."));
-					}
+					cargs.data_manager.reset_bonding_links_info_by_creating(ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
 				}
 			}
 
@@ -970,19 +958,7 @@ public:
 
 			if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 			{
-				ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
-				if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
-						ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
-						cargs.data_manager.atoms(),
-						cargs.data_manager.primary_structure_info(),
-						bundle_of_bonding_links))
-				{
-					cargs.data_manager.reset_bonding_links_info_by_swapping(bundle_of_bonding_links);
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Failed to define bonding links."));
-				}
+				cargs.data_manager.reset_bonding_links_info_by_creating(ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
 			}
 
 			ConstructionOfStructuralCartoon::Parameters parameters_for_cartoon;
