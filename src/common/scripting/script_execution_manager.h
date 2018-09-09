@@ -4,6 +4,7 @@
 #include "custom_commands_for_script_partitioner.h"
 #include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_data_manager.h"
+#include "generic_command_for_extra_actions.h"
 
 namespace common
 {
@@ -42,19 +43,17 @@ public:
 		{
 		}
 
-		virtual void on_before_executing_command(const CommandInput&)
-		{
-		}
+		virtual void on_before_executing_command(const CommandInput&)=0;
 
-		virtual void on_after_executing_command(const CommandInput&)
-		{
-		}
+		virtual void on_after_executing_command(const CommandInput&)=0;
 
 		virtual bool on_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)=0;
 
 		virtual bool on_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord&)=0;
 
 		virtual bool on_command_for_data_manager(const GenericCommandForDataManager::CommandRecord&)=0;
+
+		virtual bool on_command_for_extra_actions(const GenericCommandForExtraActions::CommandRecord&)=0;
 
 		virtual void on_no_enabled_data_manager()=0;
 
@@ -63,60 +62,60 @@ public:
 
 	ScriptExecutionManager()
 	{
-		set_command(new CustomCommandsForScriptPartitioner::set_alias(), "set-alias");
-		set_command(new CustomCommandsForScriptPartitioner::unset_aliases(), "unset-aliases");
-		set_command(new CustomCommandsForScriptPartitioner::source(), "source");
-		set_command(new CustomCommandsForScriptPartitioner::exit(), "exit");
+		set_command("set-alias", new CustomCommandsForScriptPartitioner::set_alias());
+		set_command("unset-aliases", new CustomCommandsForScriptPartitioner::unset_aliases());
+		set_command("source", new CustomCommandsForScriptPartitioner::source());
+		set_command("exit", new CustomCommandsForScriptPartitioner::exit());
 
-		set_command(new CustomCommandsForCongregationOfDataManagers::list_objects(), "list-objects");
-		set_command(new CustomCommandsForCongregationOfDataManagers::delete_all_objects(), "delete-all-objects");
-		set_command(new CustomCommandsForCongregationOfDataManagers::delete_objects(), "delete-objects");
-		set_command(new CustomCommandsForCongregationOfDataManagers::rename_object(), "rename-object");
-		set_command(new CustomCommandsForCongregationOfDataManagers::copy_object(), "copy-object");
-		set_command(new CustomCommandsForCongregationOfDataManagers::load_atoms(), "load-atoms");
-		set_command(new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts(), "load-atoms-and-contacts");
-		set_command(new CustomCommandsForCongregationOfDataManagers::with(), "with");
+		set_command("list-objects", new CustomCommandsForCongregationOfDataManagers::list_objects());
+		set_command("delete-all-objects", new CustomCommandsForCongregationOfDataManagers::delete_all_objects());
+		set_command("delete-objects", new CustomCommandsForCongregationOfDataManagers::delete_objects());
+		set_command("rename-object", new CustomCommandsForCongregationOfDataManagers::rename_object());
+		set_command("copy-object", new CustomCommandsForCongregationOfDataManagers::copy_object());
+		set_command("load-atoms", new CustomCommandsForCongregationOfDataManagers::load_atoms());
+		set_command("load-atoms-and-contacts", new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts());
+		set_command("with", new CustomCommandsForCongregationOfDataManagers::with());
 
-		set_command(new CustomCommandsForDataManager::restrict_atoms(), "restrict-atoms");
-		set_command(new CustomCommandsForDataManager::save_atoms(), "save-atoms");
-		set_command(new CustomCommandsForDataManager::select_atoms(), "select-atoms");
-		set_command(new CustomCommandsForDataManager::tag_atoms(), "tag-atoms");
-		set_command(new CustomCommandsForDataManager::untag_atoms(), "untag-atoms");
-		set_command(new CustomCommandsForDataManager::mark_atoms(), "mark-atoms");
-		set_command(new CustomCommandsForDataManager::unmark_atoms(), "unmark-atoms");
-		set_command(new CustomCommandsForDataManager::show_atoms(), "show-atoms");
-		set_command(new CustomCommandsForDataManager::hide_atoms(), "hide-atoms");
-		set_command(new CustomCommandsForDataManager::color_atoms(), "color-atoms");
-		set_command(new CustomCommandsForDataManager::spectrum_atoms(), "spectrum-atoms");
-		set_command(new CustomCommandsForDataManager::print_atoms(), "print-atoms");
-		set_command(new CustomCommandsForDataManager::print_sequence(), "print-sequence");
-		set_command(new CustomCommandsForDataManager::zoom_by_atoms(), "zoom-by-atoms");
-		set_command(new CustomCommandsForDataManager::write_atoms_as_pymol_cgo(), "write-atoms-as-pymol-cgo");
-		set_command(new CustomCommandsForDataManager::write_cartoon_as_pymol_cgo(), "write-cartoon-as-pymol-cgo");
-		set_command(new CustomCommandsForDataManager::list_selections_of_atoms(), "list-selections-of-atoms");
-		set_command(new CustomCommandsForDataManager::delete_all_selections_of_atoms(), "delete-all-selections-of-atoms");
-		set_command(new CustomCommandsForDataManager::delete_selections_of_atoms(), "delete-selections-of-atoms");
-		set_command(new CustomCommandsForDataManager::rename_selection_of_atoms(), "rename-selection-of-atoms");
-		set_command(new CustomCommandsForDataManager::construct_contacts(), "construct-contacts");
-		set_command(new CustomCommandsForDataManager::save_contacts(), "save-contacts");
-		set_command(new CustomCommandsForDataManager::load_contacts(), "load-contacts");
-		set_command(new CustomCommandsForDataManager::select_contacts(), "select-contacts");
-		set_command(new CustomCommandsForDataManager::tag_contacts(), "tag-contacts");
-		set_command(new CustomCommandsForDataManager::untag_contacts(), "untag-contacts");
-		set_command(new CustomCommandsForDataManager::mark_contacts(), "mark-contacts");
-		set_command(new CustomCommandsForDataManager::unmark_contacts(), "unmark-contacts");
-		set_command(new CustomCommandsForDataManager::show_contacts(), "show-contacts");
-		set_command(new CustomCommandsForDataManager::hide_contacts(), "hide-contacts");
-		set_command(new CustomCommandsForDataManager::color_contacts(), "color-contacts");
-		set_command(new CustomCommandsForDataManager::spectrum_contacts(), "spectrum-contacts");
-		set_command(new CustomCommandsForDataManager::print_contacts(), "print-contacts");
-		set_command(new CustomCommandsForDataManager::zoom_by_contacts(), "zoom-by-contacts");
-		set_command(new CustomCommandsForDataManager::write_contacts_as_pymol_cgo(), "write-contacts-as-pymol-cgo");
-		set_command(new CustomCommandsForDataManager::list_selections_of_contacts(), "list-selections-of-contacts");
-		set_command(new CustomCommandsForDataManager::delete_all_selections_of_contacts(), "delete-all-selections-of-contacts");
-		set_command(new CustomCommandsForDataManager::delete_selections_of_contacts(), "delete-selections-of-contacts");
-		set_command(new CustomCommandsForDataManager::rename_selection_of_contacts(), "rename-selection-of-contacts");
-		set_command(new CustomCommandsForDataManager::save_atoms_and_contacts(), "save-atoms-and-contacts");
+		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
+		set_command("save-atoms", new CustomCommandsForDataManager::save_atoms());
+		set_command("select-atoms", new CustomCommandsForDataManager::select_atoms());
+		set_command("tag-atoms", new CustomCommandsForDataManager::tag_atoms());
+		set_command("untag-atoms", new CustomCommandsForDataManager::untag_atoms());
+		set_command("mark-atoms", new CustomCommandsForDataManager::mark_atoms());
+		set_command("unmark-atoms", new CustomCommandsForDataManager::unmark_atoms());
+		set_command("show-atoms", new CustomCommandsForDataManager::show_atoms());
+		set_command("hide-atoms", new CustomCommandsForDataManager::hide_atoms());
+		set_command("color-atoms", new CustomCommandsForDataManager::color_atoms());
+		set_command("spectrum-atoms", new CustomCommandsForDataManager::spectrum_atoms());
+		set_command("print-atoms", new CustomCommandsForDataManager::print_atoms());
+		set_command("print-sequence", new CustomCommandsForDataManager::print_sequence());
+		set_command("zoom-by-atoms", new CustomCommandsForDataManager::zoom_by_atoms());
+		set_command("write-atoms-as-pymol-cgo", new CustomCommandsForDataManager::write_atoms_as_pymol_cgo());
+		set_command("write-cartoon-as-pymol-cgo", new CustomCommandsForDataManager::write_cartoon_as_pymol_cgo());
+		set_command("list-selections-of-atoms", new CustomCommandsForDataManager::list_selections_of_atoms());
+		set_command("delete-all-selections-of-atoms", new CustomCommandsForDataManager::delete_all_selections_of_atoms());
+		set_command("delete-selections-of-atoms", new CustomCommandsForDataManager::delete_selections_of_atoms());
+		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
+		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
+		set_command("save-contacts", new CustomCommandsForDataManager::save_contacts());
+		set_command("load-contacts", new CustomCommandsForDataManager::load_contacts());
+		set_command("select-contacts", new CustomCommandsForDataManager::select_contacts());
+		set_command("tag-contacts", new CustomCommandsForDataManager::tag_contacts());
+		set_command("untag-contacts", new CustomCommandsForDataManager::untag_contacts());
+		set_command("mark-contacts", new CustomCommandsForDataManager::mark_contacts());
+		set_command("unmark-contacts", new CustomCommandsForDataManager::unmark_contacts());
+		set_command("show-contacts", new CustomCommandsForDataManager::show_contacts());
+		set_command("hide-contacts", new CustomCommandsForDataManager::hide_contacts());
+		set_command("color-contacts", new CustomCommandsForDataManager::color_contacts());
+		set_command("spectrum-contacts", new CustomCommandsForDataManager::spectrum_contacts());
+		set_command("print-contacts", new CustomCommandsForDataManager::print_contacts());
+		set_command("zoom-by-contacts", new CustomCommandsForDataManager::zoom_by_contacts());
+		set_command("write-contacts-as-pymol-cgo", new CustomCommandsForDataManager::write_contacts_as_pymol_cgo());
+		set_command("list-selections-of-contacts", new CustomCommandsForDataManager::list_selections_of_contacts());
+		set_command("delete-all-selections-of-contacts", new CustomCommandsForDataManager::delete_all_selections_of_contacts());
+		set_command("delete-selections-of-contacts", new CustomCommandsForDataManager::delete_selections_of_contacts());
+		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
+		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
 	}
 
 	virtual ~ScriptExecutionManager()
@@ -124,16 +123,22 @@ public:
 		delete_map_contents(commands_for_script_partitioner_);
 		delete_map_contents(commands_for_congregation_of_data_managers_);
 		delete_map_contents(commands_for_data_manager_);
+		delete_map_contents(commands_for_extra_actions_);
 	}
 
-	GenericCommandForCongregationOfDataManagers* set_command(GenericCommandForCongregationOfDataManagers* command_ptr, const std::string& name)
+	GenericCommandForCongregationOfDataManagers* set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_congregation_of_data_managers_, name, command_ptr);
 	}
 
-	GenericCommandForDataManager* set_command(GenericCommandForDataManager* command_ptr, const std::string& name)
+	GenericCommandForDataManager* set_command(const std::string& name, GenericCommandForDataManager* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_data_manager_, name, command_ptr);
+	}
+
+	GenericCommandForExtraActions* set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
+	{
+		return set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
 	}
 
 	void unset_command(const std::string& name)
@@ -141,6 +146,7 @@ public:
 		unset_map_key_safely(commands_for_script_partitioner_, name);
 		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
 		unset_map_key_safely(commands_for_data_manager_, name);
+		unset_map_key_safely(commands_for_extra_actions_, name);
 	}
 
 	ScriptRecord execute_script(
@@ -219,12 +225,22 @@ private:
 		typename Map::iterator it=map.find(key);
 		if(it==map.end())
 		{
-			map[key]=value;
+			if(value!=0)
+			{
+				map[key]=value;
+			}
 		}
 		else
 		{
 			delete it->second;
-			it->second=value;
+			if(value==0)
+			{
+				map.erase(it);
+			}
+			else
+			{
+				it->second=value;
+			}
 		}
 		return value;
 	}
@@ -240,7 +256,7 @@ private:
 		}
 	}
 
-	GenericCommandForScriptPartitioner* set_command(GenericCommandForScriptPartitioner* command_ptr, const std::string& name)
+	GenericCommandForScriptPartitioner* set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
 	}
@@ -277,6 +293,11 @@ private:
 				handler.on_no_enabled_data_manager();
 			}
 		}
+		else if(commands_for_extra_actions_.count(command_name)==1)
+		{
+			command_record.recognized=4;
+			command_record.successful=handler.on_command_for_extra_actions(commands_for_extra_actions_[command_name]->execute(command_record.command_input));
+		}
 		else
 		{
 			handler.on_unrecognized_command(command_record.command_input);
@@ -288,6 +309,7 @@ private:
 	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
 	std::map<std::string, GenericCommandForCongregationOfDataManagers*> commands_for_congregation_of_data_managers_;
 	std::map<std::string, GenericCommandForDataManager*> commands_for_data_manager_;
+	std::map<std::string, GenericCommandForExtraActions*> commands_for_extra_actions_;
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
 };
