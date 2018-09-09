@@ -4,7 +4,7 @@
 #include "custom_commands_for_script_partitioner.h"
 #include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_data_manager.h"
-#include "generic_command_for_extra_actions.h"
+#include "custom_commands_for_extra_actions.h"
 
 namespace common
 {
@@ -116,6 +116,9 @@ public:
 		set_command("delete-selections-of-contacts", new CustomCommandsForDataManager::delete_selections_of_contacts());
 		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
 		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
+
+		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
+		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 	}
 
 	virtual ~ScriptExecutionManager()
@@ -312,6 +315,7 @@ private:
 	std::map<std::string, GenericCommandForExtraActions*> commands_for_extra_actions_;
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
+	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
 };
 
 }
