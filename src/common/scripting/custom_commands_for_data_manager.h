@@ -5,7 +5,6 @@
 #include "../../auxiliaries/residue_letters_coding.h"
 
 #include "../writing_atomic_balls_in_pdb_format.h"
-#include "../construction_of_bonding_links.h"
 #include "../construction_of_structural_cartoon.h"
 
 #include "generic_command_for_data_manager.h"
@@ -851,16 +850,23 @@ public:
 				throw std::runtime_error(std::string("No drawable visible atoms selected."));
 			}
 
-			ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
 			if(wireframe)
 			{
-				if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
-						ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
-						cargs.data_manager.atoms(),
-						cargs.data_manager.primary_structure_info(),
-						bundle_of_bonding_links))
+				if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 				{
-					throw std::runtime_error(std::string("Failed to define bonding links."));
+					ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+					if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+							ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
+							cargs.data_manager.atoms(),
+							cargs.data_manager.primary_structure_info(),
+							bundle_of_bonding_links))
+					{
+						cargs.data_manager.reset_bonding_links_info_by_swapping(bundle_of_bonding_links);
+					}
+					else
+					{
+						throw std::runtime_error(std::string("Failed to define bonding links."));
+					}
 				}
 			}
 
@@ -885,10 +891,10 @@ public:
 							prev_color=dsv.color;
 							if(wireframe)
 							{
-								const std::vector<std::size_t>& link_ids=bundle_of_bonding_links.map_of_atoms_to_bonds_links[id];
+								const std::vector<std::size_t>& link_ids=cargs.data_manager.bonding_links_info().map_of_atoms_to_bonds_links[id];
 								for(std::size_t i=0;i<link_ids.size();i++)
 								{
-									const ConstructionOfBondingLinks::DirectedLink& dl=bundle_of_bonding_links.bonds_links[link_ids[i]];
+									const ConstructionOfBondingLinks::DirectedLink& dl=cargs.data_manager.bonding_links_info().bonds_links[link_ids[i]];
 									const apollota::SimplePoint pa(cargs.data_manager.atoms()[dl.a].value);
 									const apollota::SimplePoint pb(cargs.data_manager.atoms()[dl.b].value);
 									opengl_printer.add_line_strip(pa, (pa+pb)*0.5);
@@ -962,14 +968,21 @@ public:
 				throw std::runtime_error(std::string("No drawable visible atoms selected."));
 			}
 
-			ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
-			if(!ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
-					ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
-					cargs.data_manager.atoms(),
-					cargs.data_manager.primary_structure_info(),
-					bundle_of_bonding_links))
+			if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 			{
-				throw std::runtime_error(std::string("Failed to define bonding links."));
+				ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+				if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+						ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks(),
+						cargs.data_manager.atoms(),
+						cargs.data_manager.primary_structure_info(),
+						bundle_of_bonding_links))
+				{
+					cargs.data_manager.reset_bonding_links_info_by_swapping(bundle_of_bonding_links);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Failed to define bonding links."));
+				}
 			}
 
 			ConstructionOfStructuralCartoon::Parameters parameters_for_cartoon;
@@ -979,7 +992,7 @@ public:
 					cargs.data_manager.atoms(),
 					cargs.data_manager.primary_structure_info(),
 					cargs.data_manager.secondary_structure_info(),
-					bundle_of_bonding_links,
+					cargs.data_manager.bonding_links_info(),
 					bundle_of_cartoon_mesh))
 			{
 				throw std::runtime_error(std::string("Failed to construct cartoon mesh."));

@@ -2,6 +2,7 @@
 #define COMMON_SCRIPTING_DATA_MANAGER_H_
 
 #include "../construction_of_secondary_structure.h"
+#include "../construction_of_bonding_links.h"
 
 #include "selection_manager.h"
 
@@ -115,6 +116,11 @@ public:
 	const ConstructionOfSecondaryStructure::BundleOfSecondaryStructure& secondary_structure_info() const
 	{
 		return secondary_structure_info_;
+	}
+
+	const ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info() const
+	{
+		return bonding_links_info_;
 	}
 
 	const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info() const
@@ -414,6 +420,22 @@ public:
 		atoms_display_states_.swap(restricted_atoms_display_states);
 
 		reset_data_dependent_on_atoms();
+	}
+
+	void reset_bonding_links_info_by_swapping(ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
+	{
+		if(!bonding_links_info.valid(atoms_, primary_structure_info_))
+		{
+			throw std::runtime_error(std::string("Invalid bonding links info provided."));
+		}
+
+		bonding_links_info_.swap(bonding_links_info);
+	}
+
+	void reset_bonding_links_info_by_copying(const ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
+	{
+		ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_copy=bonding_links_info;
+		reset_bonding_links_info_by_swapping(bonding_links_info_copy);
 	}
 
 	void reset_triangulation_info_by_swapping(ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
@@ -719,6 +741,7 @@ private:
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		bonding_links_info_=ConstructionOfBondingLinks::BundleOfBondingLinks();
 		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
 		selection_manager_=SelectionManager(&atoms_, 0);
 	}
@@ -732,6 +755,7 @@ private:
 	std::vector<DisplayState> contacts_display_states_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
+	ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
 	ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
 };
