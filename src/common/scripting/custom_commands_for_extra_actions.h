@@ -17,7 +17,7 @@ public:
 	class reset_time : public GenericCommandForExtraActions
 	{
 	public:
-		reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
+		explicit reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
 			elapsed_processor_time_(elapsed_processor_time)
 		{
 		}
@@ -36,7 +36,7 @@ public:
 	class print_time : public GenericCommandForExtraActions
 	{
 	public:
-		print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
+		explicit print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
 			elapsed_processor_time_(elapsed_processor_time)
 		{
 		}
