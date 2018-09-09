@@ -62,6 +62,12 @@ public:
 		return cr.successful;
 	}
 
+	bool on_command_for_extra_actions(const common::scripting::GenericCommandForExtraActions::CommandRecord& cr)
+	{
+		print_command_log(cr);
+		return cr.successful;
+	}
+
 	void on_no_enabled_data_manager()
 	{
 		std::cout << "Error: no object enabled";
