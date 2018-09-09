@@ -1,67 +1,17 @@
 #include "auxiliaries/program_options_handler.h"
-#include "auxiliaries/time_utilities.h"
 
 #include "common/scripting/script_execution_manager.h"
 
 namespace
 {
 
-class CustomsCommandsForExtraActions
-{
-public:
-	class reset_time : public common::scripting::GenericCommandForExtraActions
-	{
-	public:
-		reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
-			elapsed_processor_time_(elapsed_processor_time)
-		{
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			elapsed_processor_time_.reset();
-		}
-
-	private:
-		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
-	};
-
-	class print_time : public common::scripting::GenericCommandForExtraActions
-	{
-	public:
-		print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
-			elapsed_processor_time_(elapsed_processor_time)
-		{
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			const bool reset=cargs.input.get_flag("reset");
-			cargs.input.assert_nothing_unusable();
-			cargs.output_for_log << "Elapsed time: " << elapsed_processor_time_.elapsed_miliseconds() << " ms\n";
-			if(reset)
-			{
-				elapsed_processor_time_.reset();
-			}
-		}
-
-	private:
-		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
-	};
-};
-
 class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManager::HandlerForExecutionEvents
 {
 public:
 	bool exit_requested;
 
-	explicit HandlerForExecutionEvents(common::scripting::ScriptExecutionManager& esecution_manager) : exit_requested(false)
+	explicit HandlerForExecutionEvents() : exit_requested(false)
 	{
-		esecution_manager.set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
-		esecution_manager.set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 	}
 
 	void on_before_executing_command(const common::scripting::CommandInput& command_input)
@@ -131,8 +81,6 @@ private:
 			std::cout << "Error: " << cr.output_error << "\n";
 		}
 	}
-
-	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
 };
 
 }
@@ -149,7 +97,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	common::scripting::ScriptExecutionManager esecution_manager;
-	HandlerForExecutionEvents handler_for_execution_events(esecution_manager);
+	HandlerForExecutionEvents handler_for_execution_events;
 
 	while(!handler_for_execution_events.exit_requested && std::cin.good())
 	{
