@@ -438,6 +438,23 @@ public:
 		reset_bonding_links_info_by_swapping(bonding_links_info_copy);
 	}
 
+	void reset_bonding_links_info_by_creating(const ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks& parameters)
+	{
+		ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+		if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+				parameters,
+				atoms(),
+				primary_structure_info(),
+				bundle_of_bonding_links))
+		{
+			reset_bonding_links_info_by_swapping(bundle_of_bonding_links);
+		}
+		else
+		{
+			throw std::runtime_error(std::string("Failed to define bonding links."));
+		}
+	}
+
 	void reset_triangulation_info_by_swapping(ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
 	{
 		if(triangulation_info.quadruples_map.empty())
