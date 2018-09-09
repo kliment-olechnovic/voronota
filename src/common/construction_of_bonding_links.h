@@ -55,6 +55,16 @@ public:
 					&& map_of_atoms_to_bonds_links.size()==atoms.size()
 					&& map_of_atoms_to_residue_trace_links.size()==atoms.size());
 		}
+
+		void swap(BundleOfBondingLinks& b)
+		{
+			parameters_of_construction=b.parameters_of_construction;
+			bonds_links.swap(b.bonds_links);
+			map_of_atoms_to_bonds_links.swap(b.map_of_atoms_to_bonds_links);
+			residue_trace_links.swap(b.residue_trace_links);
+			map_of_atoms_to_residue_trace_links.swap(b.map_of_atoms_to_residue_trace_links);
+			continuous_chains_of_residue_trace.swap(b.continuous_chains_of_residue_trace);
+		}
 	};
 
 	static bool construct_bundle_of_bonding_links(
