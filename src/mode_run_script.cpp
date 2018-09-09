@@ -6,28 +6,71 @@
 namespace
 {
 
+class CustomsCommandsForExtraActions
+{
+public:
+	class reset_time : public common::scripting::GenericCommandForExtraActions
+	{
+	public:
+		reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
+			elapsed_processor_time_(elapsed_processor_time)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			elapsed_processor_time_.reset();
+		}
+
+	private:
+		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
+	};
+
+	class print_time : public common::scripting::GenericCommandForExtraActions
+	{
+	public:
+		print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
+			elapsed_processor_time_(elapsed_processor_time)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const bool reset=cargs.input.get_flag("reset");
+			cargs.input.assert_nothing_unusable();
+			cargs.output_for_log << "Elapsed time: " << elapsed_processor_time_.elapsed_miliseconds() << " ms\n";
+			if(reset)
+			{
+				elapsed_processor_time_.reset();
+			}
+		}
+
+	private:
+		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
+	};
+};
+
 class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManager::HandlerForExecutionEvents
 {
 public:
-	bool print_time;
 	bool exit_requested;
 
-	explicit HandlerForExecutionEvents(const bool print_time=false) : print_time(print_time), exit_requested(false)
+	explicit HandlerForExecutionEvents(common::scripting::ScriptExecutionManager& esecution_manager) : exit_requested(false)
 	{
+		esecution_manager.set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
+		esecution_manager.set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 	}
 
 	void on_before_executing_command(const common::scripting::CommandInput& command_input)
 	{
 		std::cout << "\n> " << command_input.get_input_command_string() << std::endl;
-		elapsed_processor_time_.reset();
 	}
 
 	void on_after_executing_command(const common::scripting::CommandInput&)
 	{
-		if(print_time)
-		{
-			std::cout << "Command execution time: " << elapsed_processor_time_.elapsed_miliseconds() << " ms\n";
-		}
 		std::cout << std::endl;
 	}
 
@@ -105,8 +148,8 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	common::scripting::ScriptExecutionManager manager;
-	HandlerForExecutionEvents handler_for_execution_events(false);
+	common::scripting::ScriptExecutionManager esecution_manager;
+	HandlerForExecutionEvents handler_for_execution_events(esecution_manager);
 
 	while(!handler_for_execution_events.exit_requested && std::cin.good())
 	{
@@ -114,7 +157,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		std::getline(std::cin, line);
 		if(!line.empty())
 		{
-			common::scripting::ScriptExecutionManager::ScriptRecord script_record=manager.execute_script(line, false, handler_for_execution_events);
+			common::scripting::ScriptExecutionManager::ScriptRecord script_record=esecution_manager.execute_script(line, false, handler_for_execution_events);
 			if(!script_record.termination_error.empty())
 			{
 				std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
