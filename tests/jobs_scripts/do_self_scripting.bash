@@ -84,7 +84,7 @@ EOF
 cat << EOF
 source '$SUBDIR/script_input'
 list-objects
-delete-objects plain_atoms[0]
+delete-objects plain_atoms
 list-objects
 set-alias quit exit
 quit

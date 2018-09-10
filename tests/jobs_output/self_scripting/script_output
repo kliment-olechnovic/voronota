@@ -84,8 +84,8 @@ Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=1246
 > list-objects
 Objects:
   'structure.cif'
-  'structure.pdb[0]'
-  'structure.pdb[1]' *
+  'structure.pdb'
+  'structure.pdb_2' *
 
 
 > delete-all-objects
@@ -284,20 +284,20 @@ No contacts read from file './jobs_output/self_scripting/plain_atoms'.
 
 > list-objects
 Objects:
-  'plain_atoms[0]'
+  'plain_atoms'
   'plain_atoms_and_contacts'
-  'plain_atoms[1]' *
+  'plain_atoms_2' *
 
 
-> delete-objects plain_atoms[0]
+> delete-objects plain_atoms
 Removed objects:
-  'plain_atoms[0]'
+  'plain_atoms'
 
 
 > list-objects
 Objects:
   'plain_atoms_and_contacts'
-  'plain_atoms' *
+  'plain_atoms_2' *
 
 
 > set-alias quit exit
