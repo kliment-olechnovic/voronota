@@ -283,12 +283,12 @@ private:
 		else if(commands_for_data_manager_.count(command_name)==1)
 		{
 			command_record.recognized=3;
-			std::vector<CongregationOfDataManagers::ObjectDescriptor> descriptors_of_picked_data_managers=congregation_of_data_managers_.get_descriptors(true);
+			std::vector<CongregationOfDataManagers::ObjectDescriptor*> descriptors_of_picked_data_managers=congregation_of_data_managers_.get_descriptors(true);
 			if(!descriptors_of_picked_data_managers.empty())
 			{
 				for(std::size_t i=0;i<descriptors_of_picked_data_managers.size();i++)
 				{
-					command_record.successful=handler.on_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, descriptors_of_picked_data_managers[i].data_manager()));
+					command_record.successful=handler.on_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, descriptors_of_picked_data_managers[i]->data_manager));
 				}
 			}
 			else
