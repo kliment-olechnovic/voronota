@@ -75,6 +75,10 @@ public:
 		set_command("load-atoms", new CustomCommandsForCongregationOfDataManagers::load_atoms());
 		set_command("load-atoms-and-contacts", new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts());
 		set_command("with", new CustomCommandsForCongregationOfDataManagers::with());
+		set_command("show-all-objects", new CustomCommandsForCongregationOfDataManagers::show_all_objects());
+		set_command("hide-all-objects", new CustomCommandsForCongregationOfDataManagers::hide_all_objects());
+		set_command("show-objects", new CustomCommandsForCongregationOfDataManagers::show_objects());
+		set_command("hide-objects", new CustomCommandsForCongregationOfDataManagers::hide_objects());
 
 		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
 		set_command("save-atoms", new CustomCommandsForDataManager::save_atoms());
@@ -283,7 +287,7 @@ private:
 		else if(commands_for_data_manager_.count(command_name)==1)
 		{
 			command_record.recognized=3;
-			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(true);
+			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(true, false);
 			if(!picked_data_managers.empty())
 			{
 				for(std::size_t i=0;i<picked_data_managers.size();i++)
