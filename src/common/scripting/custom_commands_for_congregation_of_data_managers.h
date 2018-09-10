@@ -40,7 +40,8 @@ public:
 		{
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
-			add_data_manager_pointers_to_set(cargs.congregation_of_data_managers.delete_all_objects(), cargs.set_of_deleted_objects);
+			std::vector<DataManager*> ptrs=cargs.congregation_of_data_managers.delete_all_objects();
+			cargs.set_of_deleted_objects.insert(ptrs.begin(), ptrs.end());
 			cargs.output_for_log << "Removed all objects\n";
 		}
 	};
@@ -63,7 +64,11 @@ public:
 
 			for(std::size_t i=0;i<names.size();i++)
 			{
-				add_data_manager_pointers_to_set(cargs.congregation_of_data_managers.delete_object(names[i]), cargs.set_of_deleted_objects);
+				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(names[i]);
+				if(ptr!=0)
+				{
+					cargs.set_of_deleted_objects.insert(ptr);
+				}
 			}
 
 			cargs.output_for_log << "Removed objects:\n";
@@ -96,8 +101,7 @@ public:
 
 			cargs.congregation_of_data_managers.assert_object_availability(name_original);
 
-			DataManager& data_manager_original=cargs.congregation_of_data_managers.get_descriptor(name_original).at(0)->data_manager;
-			data_manager_original.set_title(name_new);
+			cargs.congregation_of_data_managers.rename_object(name_original, name_new);
 		}
 	};
 
@@ -122,9 +126,8 @@ public:
 
 			cargs.congregation_of_data_managers.assert_object_availability(name_original);
 
-			CongregationOfDataManagers::ObjectDescriptor* object_original=cargs.congregation_of_data_managers.get_descriptor(name_original).at(0);
-			CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(object_original->data_manager);
-			object_new->data_manager.set_title(name_new);
+			CongregationOfDataManagers::ObjectDescriptor* object_original=cargs.congregation_of_data_managers.get_descriptor(name_original);
+			CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(object_original->data_manager, name_new);
 			cargs.set_of_added_objects.insert(&object_new->data_manager);
 		}
 	};
@@ -213,17 +216,10 @@ public:
 				}
 				else
 				{
-					CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager());
-					DataManager& data_manager=object_new->data_manager;
+					const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(atoms_file));
 
-					if(parameters_for_titling.title_available)
-					{
-						data_manager.set_title(parameters_for_titling.title);
-					}
-					else
-					{
-						data_manager.set_title(get_basename_from_path(atoms_file));
-					}
+					CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
+					DataManager& data_manager=object_new->data_manager;
 
 					data_manager.reset_atoms_by_swapping(atoms);
 
@@ -315,17 +311,10 @@ public:
 			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, contacts);
 
 			{
-				CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager());
-				DataManager& data_manager=object_new->data_manager;
+				const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(file));
 
-				if(parameters_for_titling.title_available)
-				{
-					data_manager.set_title(parameters_for_titling.title);
-				}
-				else
-				{
-					data_manager.set_title(get_basename_from_path(file));
-				}
+				CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
+				DataManager& data_manager=object_new->data_manager;
 
 				data_manager.reset_atoms_by_swapping(atoms);
 
@@ -432,14 +421,6 @@ private:
 		else
 		{
 			return std::string();
-		}
-	}
-
-	static void add_data_manager_pointers_to_set(const std::vector<CongregationOfDataManagers::ObjectDescriptor*>& object_descriptors, std::set<DataManager*>& set)
-	{
-		for(std::size_t i=0;i<object_descriptors.size();i++)
-		{
-			set.insert(&object_descriptors[i]->data_manager);
 		}
 	}
 };

@@ -15,11 +15,12 @@ public:
 	struct ObjectDescriptor
 	{
 		DataManager data_manager;
-		bool picked;
 		std::string name;
+		bool picked;
 
-		explicit ObjectDescriptor(const DataManager& data_manager) :
+		ObjectDescriptor(const DataManager& data_manager, const std::string& name) :
 			data_manager(data_manager),
+			name(name),
 			picked(false)
 		{
 		}
@@ -31,21 +32,20 @@ public:
 
 	void assert_objects_availability() const
 	{
-		if(all_data_managers_.empty())
+		if(objects_.empty())
 		{
 			throw std::runtime_error(std::string("No objects available."));
 		}
 	}
 
-	void assert_objects_availability(const std::vector<std::string>& names)
+	void assert_objects_availability(const std::vector<std::string>& names) const
 	{
-		ensure_unique_names();
 		std::map<std::string, bool> map_of_names;
 		for(std::size_t i=0;i<names.size();i++)
 		{
 			map_of_names[names[i]]=false;
 		}
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		for(std::list<ObjectDescriptor>::const_iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			map_of_names[it->name]=true;
 		}
@@ -58,24 +58,15 @@ public:
 		}
 	}
 
-	void assert_object_availability(const std::string& name)
+	void assert_object_availability(const std::string& name) const
 	{
 		assert_objects_availability(std::vector<std::string>(1, name));
 	}
 
-	void assert_object_availability(DataManager* pointer)
-	{
-		if(get_iterator(pointer)==all_data_managers_.end())
-		{
-			throw std::runtime_error(std::string("Invalid object."));
-		}
-	}
-
 	std::vector<ObjectDescriptor*> get_descriptors(const bool only_picked)
 	{
-		ensure_unique_names();
 		std::vector<ObjectDescriptor*> result;
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			if(!only_picked || it->picked)
 			{
@@ -87,10 +78,9 @@ public:
 
 	std::vector<ObjectDescriptor*> get_descriptors(const std::vector<std::string>& names)
 	{
-		ensure_unique_names();
 		std::set<std::string> set_of_names(names.begin(), names.end());
 		std::vector<ObjectDescriptor*> result;
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			if(set_of_names.count(it->name)>0)
 			{
@@ -100,125 +90,128 @@ public:
 		return result;
 	}
 
-	std::vector<ObjectDescriptor*> get_descriptor(const std::string& name)
+	ObjectDescriptor* get_descriptor(const std::string& name)
 	{
-		return get_descriptors(std::vector<std::string>(1, name));
-	}
-
-	std::vector<ObjectDescriptor*> get_descriptor(DataManager* pointer)
-	{
-		std::vector<ObjectDescriptor*> result;
-		std::list<ObjectDescriptor>::iterator it=get_iterator(pointer);
-		if(it!=all_data_managers_.end())
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			ensure_unique_names();
-			result.push_back(&(*it));
+			if(name==it->name)
+			{
+				return (&(*it));
+			}
 		}
-		return result;
+		return 0;
 	}
 
-	ObjectDescriptor* add_object(const DataManager& data_manager)
+	ObjectDescriptor* get_descriptor(DataManager* data_manager_ptr)
 	{
-		all_data_managers_.push_back(ObjectDescriptor(data_manager));
-		return (&all_data_managers_.back());
-	}
-
-	std::vector<ObjectDescriptor*> delete_all_objects()
-	{
-		std::vector<ObjectDescriptor*> result=get_descriptors(false);
-		all_data_managers_.clear();
-		return result;
-	}
-
-	std::vector<ObjectDescriptor*> delete_object(const std::string& name)
-	{
-		std::vector<ObjectDescriptor*> result=get_descriptor(name);
-		if(!result.empty())
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			all_data_managers_.erase(get_iterator(&result[0]->data_manager));
+			if(data_manager_ptr==&it->data_manager)
+			{
+				return (&(*it));
+			}
 		}
+		return 0;
+	}
+
+	ObjectDescriptor* add_object(const DataManager& data_manager, const std::string& name)
+	{
+		objects_.push_back(ObjectDescriptor(data_manager, unique_name(name)));
+		return (&objects_.back());
+	}
+
+	ObjectDescriptor* rename_object(const std::string& current_name, const std::string& new_name)
+	{
+		ObjectDescriptor* result=get_descriptor(current_name);
+		if(result!=0)
+		{
+			if(new_name!=current_name)
+			{
+				result->name=unique_name(new_name);
+			}
+			return result;
+		}
+		return 0;
+	}
+
+	std::vector<DataManager*> delete_all_objects()
+	{
+		std::vector<DataManager*> result;
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			result.push_back(&it->data_manager);
+		}
+		objects_.clear();
 		return result;
 	}
 
-	std::vector<ObjectDescriptor*> delete_object(DataManager* pointer)
+	DataManager* delete_object(const std::string& name)
 	{
-		std::vector<ObjectDescriptor*> result=get_descriptor(pointer);
-		if(!result.empty())
+		std::list<ObjectDescriptor>::iterator it=objects_.begin();
+		while(it!=objects_.end())
 		{
-			all_data_managers_.erase(get_iterator(&result[0]->data_manager));
+			if(it->name==name)
+			{
+				DataManager* result=&it->data_manager;
+				objects_.erase(it++);
+				return result;
+			}
+			else
+			{
+				++it;
+			}
 		}
-		return result;
+		return 0;
 	}
 
 	void unpick_all_objects()
 	{
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			it->picked=false;
 		}
 	}
 
-	std::vector<ObjectDescriptor*> pick_object(const std::string& name)
+	ObjectDescriptor* pick_object(const std::string& name)
 	{
 		unpick_all_objects();
-		std::vector<ObjectDescriptor*> result=get_descriptor(name);
-		if(!result.empty())
+		ObjectDescriptor* result=get_descriptor(name);
+		if(result!=0)
 		{
-			get_iterator(&result[0]->data_manager)->picked=true;
+			result->picked=true;
 		}
 		return result;
 	}
 
-	std::vector<ObjectDescriptor*> pick_object(DataManager* pointer)
+	ObjectDescriptor* pick_object(DataManager* data_manager_ptr)
 	{
 		unpick_all_objects();
-		std::vector<ObjectDescriptor*> result=get_descriptor(pointer);
-		if(!result.empty())
+		ObjectDescriptor* result=get_descriptor(data_manager_ptr);
+		if(result!=0)
 		{
-			get_iterator(&result[0]->data_manager)->picked=true;
+			result->picked=true;
 		}
 		return result;
 	}
 
 private:
-	void ensure_unique_names()
+	std::string unique_name(const std::string& name)
 	{
-		std::map<std::string, int> max_counters;
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
+		std::string candidate=name;
+		ObjectDescriptor* present_object=get_descriptor(candidate);
+		int i=1;
+		while(present_object!=0)
 		{
-			const std::string& title=it->data_manager.title();
-			max_counters[title]++;
+			i++;
+			std::ostringstream output;
+			output << name << "_" << i;
+			candidate=output.str();
+			present_object=get_descriptor(candidate);
 		}
-		std::map<std::string, int> current_counters;
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
-		{
-			const std::string& title=it->data_manager.title();
-			if(max_counters[title]<=1)
-			{
-				it->name=title;
-			}
-			else
-			{
-				std::ostringstream output;
-				output << title << "[" << (current_counters[title]++) << "]";
-				it->name=output.str();
-			}
-		}
+		return candidate;
 	}
 
-	std::list<ObjectDescriptor>::iterator get_iterator(DataManager* pointer)
-	{
-		for(std::list<ObjectDescriptor>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
-		{
-			if(pointer==&(it->data_manager))
-			{
-				return it;
-			}
-		}
-		return all_data_managers_.end();
-	}
-
-	std::list<ObjectDescriptor> all_data_managers_;
+	std::list<ObjectDescriptor> objects_;
 };
 
 }

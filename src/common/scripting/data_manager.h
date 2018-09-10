@@ -83,11 +83,6 @@ public:
 	{
 	}
 
-	const std::string& title() const
-	{
-		return title_;
-	}
-
 	const std::vector<Atom>& atoms() const
 	{
 		return atoms_;
@@ -299,11 +294,6 @@ public:
 	std::vector<DisplayState>& contacts_display_states_mutable()
 	{
 		return contacts_display_states_;
-	}
-
-	void set_title(const std::string& title)
-	{
-		title_=title;
 	}
 
 	bool add_atoms_representations(const std::vector<std::string>& names)
@@ -763,7 +753,6 @@ private:
 		selection_manager_=SelectionManager(&atoms_, 0);
 	}
 
-	std::string title_;
 	RepresentationsDescriptor atoms_representations_descriptor_;
 	RepresentationsDescriptor contacts_representations_descriptor_;
 	std::vector<Atom> atoms_;
