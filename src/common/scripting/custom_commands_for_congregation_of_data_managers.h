@@ -19,7 +19,7 @@ public:
 		{
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
-			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(false);
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(false, false);
 			cargs.output_for_log << "Objects:\n";
 			for(std::size_t i=0;i<objects.size();i++)
 			{
@@ -27,6 +27,10 @@ public:
 				if(cargs.congregation_of_data_managers.get_object_picked(objects[i]))
 				{
 					cargs.output_for_log << " *";
+				}
+				if(!cargs.congregation_of_data_managers.get_object_visible(objects[i]))
+				{
+					cargs.output_for_log << " h";
 				}
 				cargs.output_for_log << "\n";
 			}
@@ -367,6 +371,80 @@ public:
 			{
 				cargs.congregation_of_data_managers.pick_object(names[i]);
 			}
+		}
+	};
+
+	class show_all_objects : public GenericCommandForCongregationOfDataManagers
+	{
+	public:
+		show_all_objects() : positive_(true)
+		{
+		}
+
+		explicit show_all_objects(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.congregation_of_data_managers.assert_objects_availability();
+			cargs.congregation_of_data_managers.set_all_objects_visible(positive_);
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class hide_all_objects : public show_all_objects
+	{
+	public:
+		hide_all_objects() : show_all_objects(false)
+		{
+		}
+	};
+
+	class show_objects : public GenericCommandForCongregationOfDataManagers
+	{
+	public:
+		show_objects() : positive_(true)
+		{
+		}
+
+		explicit show_objects(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+			cargs.input.mark_all_unnamed_values_as_used();
+			cargs.input.assert_nothing_unusable();
+
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No object names provided."));
+			}
+
+			cargs.congregation_of_data_managers.assert_objects_availability(names);
+
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.congregation_of_data_managers.set_object_visible(names[i], positive_);
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class hide_objects : public show_objects
+	{
+	public:
+		hide_objects() : show_objects(false)
+		{
 		}
 	};
 

@@ -49,12 +49,12 @@ public:
 		assert_objects_availability(std::vector<std::string>(1, name));
 	}
 
-	std::vector<DataManager*> get_objects(const bool only_picked)
+	std::vector<DataManager*> get_objects(const bool only_picked, const bool only_visible)
 	{
 		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if(!only_picked || it->picked)
+			if((!only_picked || it->picked) && (!only_visible || it->visible))
 			{
 				result.push_back(&it->data_manager);
 			}
@@ -106,6 +106,26 @@ public:
 			return (it->picked);
 		}
 		return false;
+	}
+
+	bool get_object_picked(const std::string& name)
+	{
+		return get_object_picked(get_object(name));
+	}
+
+	bool get_object_visible(DataManager* id)
+	{
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
+		{
+			return (it->visible);
+		}
+		return false;
+	}
+
+	bool get_object_visible(const std::string& name)
+	{
+		return get_object_visible(get_object(name));
 	}
 
 	DataManager* add_object(const DataManager& data_manager, const std::string& name)
@@ -186,17 +206,43 @@ public:
 		return pick_object(get_object(name));
 	}
 
+	void set_all_objects_visible(const bool visible)
+	{
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			it->visible=visible;
+		}
+	}
+
+	bool set_object_visible(DataManager* id, const bool visible)
+	{
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
+		{
+			it->visible=visible;
+			return true;
+		}
+		return false;
+	}
+
+	bool set_object_visible(const std::string& name, const bool visible)
+	{
+		return set_object_visible(get_object(name), visible);
+	}
+
 private:
 	struct ObjectDescriptor
 	{
 		DataManager data_manager;
 		std::string name;
 		bool picked;
+		bool visible;
 
 		ObjectDescriptor(const DataManager& data_manager, const std::string& name) :
 			data_manager(data_manager),
 			name(name),
-			picked(false)
+			picked(false),
+			visible(true)
 		{
 		}
 	};
