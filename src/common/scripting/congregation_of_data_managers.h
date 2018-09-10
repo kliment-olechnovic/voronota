@@ -15,15 +15,15 @@ public:
 	struct ObjectDescriptor
 	{
 		std::string name;
-		bool enabled;
+		bool picked;
 		DataManager* data_manager_ptr;
 
 		ObjectDescriptor(
 				const std::string& name,
-				const bool enabled,
+				const bool picked,
 				DataManager& data_manager) :
 					name(name),
-					enabled(enabled),
+					picked(picked),
 					data_manager_ptr(&data_manager)
 		{
 		}
@@ -80,13 +80,13 @@ public:
 		}
 	}
 
-	std::vector<ObjectDescriptor> get_descriptors(const bool only_enabled)
+	std::vector<ObjectDescriptor> get_descriptors(const bool only_picked)
 	{
 		ensure_unique_names();
 		std::vector<ObjectDescriptor> result;
 		for(std::list<WrapperForDataManager>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
 		{
-			if(!only_enabled || it->enabled)
+			if(!only_picked || it->picked)
 			{
 				result.push_back(it->get_descriptor());
 			}
@@ -159,32 +159,32 @@ public:
 		return result;
 	}
 
-	void disable_all_objects()
+	void unpick_all_objects()
 	{
 		for(std::list<WrapperForDataManager>::iterator it=all_data_managers_.begin();it!=all_data_managers_.end();++it)
 		{
-			it->enabled=false;
+			it->picked=false;
 		}
 	}
 
-	std::vector<ObjectDescriptor> enable_object(const std::string& name)
+	std::vector<ObjectDescriptor> pick_object(const std::string& name)
 	{
-		disable_all_objects();
+		unpick_all_objects();
 		std::vector<ObjectDescriptor> result=get_descriptor(name);
 		if(!result.empty())
 		{
-			get_iterator(result[0].data_manager_ptr)->enabled=true;
+			get_iterator(result[0].data_manager_ptr)->picked=true;
 		}
 		return result;
 	}
 
-	std::vector<ObjectDescriptor> enable_object(DataManager* pointer)
+	std::vector<ObjectDescriptor> pick_object(DataManager* pointer)
 	{
-		disable_all_objects();
+		unpick_all_objects();
 		std::vector<ObjectDescriptor> result=get_descriptor(pointer);
 		if(!result.empty())
 		{
-			get_iterator(result[0].data_manager_ptr)->enabled=true;
+			get_iterator(result[0].data_manager_ptr)->picked=true;
 		}
 		return result;
 	}
@@ -192,19 +192,19 @@ public:
 private:
 	struct WrapperForDataManager
 	{
-		bool enabled;
+		bool picked;
 		DataManager data_manager;
 		std::string name;
 
 		explicit WrapperForDataManager(const DataManager& data_manager) :
-			enabled(false),
+			picked(false),
 			data_manager(data_manager)
 		{
 		}
 
 		ObjectDescriptor get_descriptor()
 		{
-			return ObjectDescriptor(name, enabled, data_manager);
+			return ObjectDescriptor(name, picked, data_manager);
 		}
 	};
 

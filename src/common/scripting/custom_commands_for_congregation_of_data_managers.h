@@ -24,7 +24,7 @@ public:
 			for(std::size_t i=0;i<descriptors.size();i++)
 			{
 				cargs.output_for_log << "  '" << descriptors[i].name << "'";
-				if(descriptors[i].enabled)
+				if(descriptors[i].picked)
 				{
 					cargs.output_for_log << " *";
 				}
@@ -233,7 +233,7 @@ public:
 
 					cargs.set_of_added_objects.insert(object_new.data_manager_ptr);
 
-					cargs.congregation_of_data_managers.enable_object(object_new.data_manager_ptr);
+					cargs.congregation_of_data_managers.pick_object(object_new.data_manager_ptr);
 				}
 			}
 			else
@@ -348,7 +348,7 @@ public:
 
 				cargs.set_of_added_objects.insert(object_new.data_manager_ptr);
 
-				cargs.congregation_of_data_managers.enable_object(object_new.data_manager_ptr);
+				cargs.congregation_of_data_managers.pick_object(object_new.data_manager_ptr);
 			}
 		}
 	};
@@ -376,7 +376,7 @@ public:
 
 			for(std::size_t i=0;i<names.size();i++)
 			{
-				cargs.congregation_of_data_managers.enable_object(names[i]);
+				cargs.congregation_of_data_managers.pick_object(names[i]);
 			}
 		}
 	};

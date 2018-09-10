@@ -61,9 +61,9 @@ public:
 		return cr.successful;
 	}
 
-	void on_no_enabled_data_manager()
+	void on_no_picked_data_manager()
 	{
-		std::cout << "Error: no object enabled";
+		std::cout << "Error: no object picked";
 	}
 
 	void  on_unrecognized_command(const common::scripting::CommandInput& command_input)
