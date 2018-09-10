@@ -12,20 +12,6 @@ namespace scripting
 class CongregationOfDataManagers
 {
 public:
-	struct ObjectDescriptor
-	{
-		DataManager data_manager;
-		std::string name;
-		bool picked;
-
-		ObjectDescriptor(const DataManager& data_manager, const std::string& name) :
-			data_manager(data_manager),
-			name(name),
-			picked(false)
-		{
-		}
-	};
-
 	CongregationOfDataManagers()
 	{
 	}
@@ -63,75 +49,88 @@ public:
 		assert_objects_availability(std::vector<std::string>(1, name));
 	}
 
-	std::vector<ObjectDescriptor*> get_descriptors(const bool only_picked)
+	std::vector<DataManager*> get_objects(const bool only_picked)
 	{
-		std::vector<ObjectDescriptor*> result;
+		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			if(!only_picked || it->picked)
 			{
-				result.push_back(&(*it));
+				result.push_back(&it->data_manager);
 			}
 		}
 		return result;
 	}
 
-	std::vector<ObjectDescriptor*> get_descriptors(const std::vector<std::string>& names)
+	std::vector<DataManager*> get_objects(const std::vector<std::string>& names)
 	{
 		std::set<std::string> set_of_names(names.begin(), names.end());
-		std::vector<ObjectDescriptor*> result;
+		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			if(set_of_names.count(it->name)>0)
 			{
-				result.push_back(&(*it));
+				result.push_back(&it->data_manager);
 			}
 		}
 		return result;
 	}
 
-	ObjectDescriptor* get_descriptor(const std::string& name)
+	DataManager* get_object(const std::string& name)
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			if(name==it->name)
 			{
-				return (&(*it));
+				return (&it->data_manager);
 			}
 		}
 		return 0;
 	}
 
-	ObjectDescriptor* get_descriptor(DataManager* data_manager_ptr)
+	std::string get_object_name(DataManager* id)
 	{
-		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
 		{
-			if(data_manager_ptr==&it->data_manager)
-			{
-				return (&(*it));
-			}
+			return (it->name);
 		}
-		return 0;
+		return std::string();
 	}
 
-	ObjectDescriptor* add_object(const DataManager& data_manager, const std::string& name)
+	bool get_object_picked(DataManager* id)
+	{
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
+		{
+			return (it->picked);
+		}
+		return false;
+	}
+
+	DataManager* add_object(const DataManager& data_manager, const std::string& name)
 	{
 		objects_.push_back(ObjectDescriptor(data_manager, unique_name(name)));
-		return (&objects_.back());
+		return (&objects_.back().data_manager);
 	}
 
-	ObjectDescriptor* rename_object(const std::string& current_name, const std::string& new_name)
+	DataManager* rename_object(DataManager* id, const std::string& new_name)
 	{
-		ObjectDescriptor* result=get_descriptor(current_name);
-		if(result!=0)
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
 		{
-			if(new_name!=current_name)
+			if(new_name!=it->name)
 			{
-				result->name=unique_name(new_name);
+				it->name=unique_name(new_name);
 			}
-			return result;
+			return (&it->data_manager);
 		}
 		return 0;
+	}
+
+	DataManager* rename_object(const std::string& current_name, const std::string& new_name)
+	{
+		return rename_object(get_object(current_name), new_name);
 	}
 
 	std::vector<DataManager*> delete_all_objects()
@@ -145,23 +144,21 @@ public:
 		return result;
 	}
 
-	DataManager* delete_object(const std::string& name)
+	DataManager* delete_object(DataManager* id)
 	{
-		std::list<ObjectDescriptor>::iterator it=objects_.begin();
-		while(it!=objects_.end())
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
 		{
-			if(it->name==name)
-			{
-				DataManager* result=&it->data_manager;
-				objects_.erase(it++);
-				return result;
-			}
-			else
-			{
-				++it;
-			}
+			DataManager* result=&it->data_manager;
+			objects_.erase(it++);
+			return result;
 		}
 		return 0;
+	}
+
+	DataManager* delete_object(const std::string& name)
+	{
+		return delete_object(get_object(name));
 	}
 
 	void unpick_all_objects()
@@ -172,41 +169,62 @@ public:
 		}
 	}
 
-	ObjectDescriptor* pick_object(const std::string& name)
+	bool pick_object(DataManager* id)
 	{
 		unpick_all_objects();
-		ObjectDescriptor* result=get_descriptor(name);
-		if(result!=0)
+		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
+		if(it!=objects_.end())
 		{
-			result->picked=true;
+			it->picked=true;
+			return true;
 		}
-		return result;
+		return false;
 	}
 
-	ObjectDescriptor* pick_object(DataManager* data_manager_ptr)
+	bool pick_object(const std::string& name)
 	{
-		unpick_all_objects();
-		ObjectDescriptor* result=get_descriptor(data_manager_ptr);
-		if(result!=0)
-		{
-			result->picked=true;
-		}
-		return result;
+		return pick_object(get_object(name));
 	}
 
 private:
+	struct ObjectDescriptor
+	{
+		DataManager data_manager;
+		std::string name;
+		bool picked;
+
+		ObjectDescriptor(const DataManager& data_manager, const std::string& name) :
+			data_manager(data_manager),
+			name(name),
+			picked(false)
+		{
+		}
+	};
+
+	std::list<ObjectDescriptor>::iterator get_iterator(DataManager* id)
+	{
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			if(id==&it->data_manager)
+			{
+				return it;
+			}
+		}
+		return objects_.end();
+	}
+
 	std::string unique_name(const std::string& name)
 	{
 		std::string candidate=name;
-		ObjectDescriptor* present_object=get_descriptor(candidate);
+		DataManager* present_id=get_object(candidate);
 		int i=1;
-		while(present_object!=0)
+		while(present_id!=0)
 		{
 			i++;
 			std::ostringstream output;
 			output << name << "_" << i;
 			candidate=output.str();
-			present_object=get_descriptor(candidate);
+			present_id=get_object(candidate);
 		}
 		return candidate;
 	}

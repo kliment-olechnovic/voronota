@@ -19,12 +19,12 @@ public:
 		{
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
-			const std::vector<CongregationOfDataManagers::ObjectDescriptor*> descriptors=cargs.congregation_of_data_managers.get_descriptors(false);
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(false);
 			cargs.output_for_log << "Objects:\n";
-			for(std::size_t i=0;i<descriptors.size();i++)
+			for(std::size_t i=0;i<objects.size();i++)
 			{
-				cargs.output_for_log << "  '" << descriptors[i]->name << "'";
-				if(descriptors[i]->picked)
+				cargs.output_for_log << "  '" << cargs.congregation_of_data_managers.get_object_name(objects[i]) << "'";
+				if(cargs.congregation_of_data_managers.get_object_picked(objects[i]))
 				{
 					cargs.output_for_log << " *";
 				}
@@ -126,9 +126,9 @@ public:
 
 			cargs.congregation_of_data_managers.assert_object_availability(name_original);
 
-			CongregationOfDataManagers::ObjectDescriptor* object_original=cargs.congregation_of_data_managers.get_descriptor(name_original);
-			CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(object_original->data_manager, name_new);
-			cargs.set_of_added_objects.insert(&object_new->data_manager);
+			DataManager* object_original=cargs.congregation_of_data_managers.get_object(name_original);
+			DataManager* object_new=cargs.congregation_of_data_managers.add_object(*object_original, name_new);
+			cargs.set_of_added_objects.insert(object_new);
 		}
 	};
 
@@ -218,8 +218,8 @@ public:
 				{
 					const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(atoms_file));
 
-					CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
-					DataManager& data_manager=object_new->data_manager;
+					DataManager* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
+					DataManager& data_manager=*object_new;
 
 					data_manager.reset_atoms_by_swapping(atoms);
 
@@ -227,9 +227,9 @@ public:
 					SummaryOfAtoms(data_manager.atoms()).print(cargs.output_for_log);
 					cargs.output_for_log << "\n";
 
-					cargs.set_of_added_objects.insert(&object_new->data_manager);
+					cargs.set_of_added_objects.insert(object_new);
 
-					cargs.congregation_of_data_managers.pick_object(&object_new->data_manager);
+					cargs.congregation_of_data_managers.pick_object(object_new);
 				}
 			}
 			else
@@ -313,8 +313,8 @@ public:
 			{
 				const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(file));
 
-				CongregationOfDataManagers::ObjectDescriptor* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
-				DataManager& data_manager=object_new->data_manager;
+				DataManager* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
+				DataManager& data_manager=*object_new;
 
 				data_manager.reset_atoms_by_swapping(atoms);
 
@@ -335,9 +335,9 @@ public:
 					cargs.output_for_log << "No contacts read from file '" << file << "'.";
 				}
 
-				cargs.set_of_added_objects.insert(&object_new->data_manager);
+				cargs.set_of_added_objects.insert(object_new);
 
-				cargs.congregation_of_data_managers.pick_object(&object_new->data_manager);
+				cargs.congregation_of_data_managers.pick_object(object_new);
 			}
 		}
 	};
