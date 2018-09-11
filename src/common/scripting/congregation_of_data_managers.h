@@ -26,7 +26,7 @@ public:
 		{
 		}
 
-		ObjectAttributes(const std::string& name) :
+		explicit ObjectAttributes(const std::string& name) :
 			name(name),
 			valid(true),
 			picked(false),
