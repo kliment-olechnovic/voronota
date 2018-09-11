@@ -23,12 +23,13 @@ public:
 			cargs.output_for_log << "Objects:\n";
 			for(std::size_t i=0;i<objects.size();i++)
 			{
-				cargs.output_for_log << "  '" << cargs.congregation_of_data_managers.get_object_name(objects[i]) << "'";
-				if(cargs.congregation_of_data_managers.get_object_picked(objects[i]))
+				const CongregationOfDataManagers::ObjectAttributes attributes=cargs.congregation_of_data_managers.get_object_attributes(objects[i]);
+				cargs.output_for_log << "  '" << attributes.name << "'";
+				if(attributes.picked)
 				{
 					cargs.output_for_log << " *";
 				}
-				if(!cargs.congregation_of_data_managers.get_object_visible(objects[i]))
+				if(!attributes.visible)
 				{
 					cargs.output_for_log << " h";
 				}

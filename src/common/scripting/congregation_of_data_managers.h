@@ -12,6 +12,29 @@ namespace scripting
 class CongregationOfDataManagers
 {
 public:
+	struct ObjectAttributes
+	{
+		std::string name;
+		bool valid;
+		bool picked;
+		bool visible;
+
+		ObjectAttributes() :
+			valid(false),
+			picked(false),
+			visible(false)
+		{
+		}
+
+		ObjectAttributes(const std::string& name) :
+			name(name),
+			valid(true),
+			picked(false),
+			visible(true)
+		{
+		}
+	};
+
 	CongregationOfDataManagers()
 	{
 	}
@@ -33,7 +56,7 @@ public:
 		}
 		for(std::list<ObjectDescriptor>::const_iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			map_of_names[it->name]=true;
+			map_of_names[it->attributes.name]=true;
 		}
 		for(std::map<std::string, bool>::const_iterator it=map_of_names.begin();it!=map_of_names.end();++it)
 		{
@@ -54,7 +77,7 @@ public:
 		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if((!only_picked || it->picked) && (!only_visible || it->visible))
+			if((!only_picked || it->attributes.picked) && (!only_visible || it->attributes.visible))
 			{
 				result.push_back(&it->data_manager);
 			}
@@ -68,7 +91,7 @@ public:
 		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if(set_of_names.count(it->name)>0)
+			if(set_of_names.count(it->attributes.name)>0)
 			{
 				result.push_back(&it->data_manager);
 			}
@@ -80,7 +103,7 @@ public:
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if(name==it->name)
+			if(name==it->attributes.name)
 			{
 				return (&it->data_manager);
 			}
@@ -88,44 +111,19 @@ public:
 		return 0;
 	}
 
-	std::string get_object_name(DataManager* id)
+	ObjectAttributes get_object_attributes(DataManager* id)
 	{
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			return (it->name);
+			return (it->attributes);
 		}
-		return std::string();
+		return ObjectAttributes();
 	}
 
-	bool get_object_picked(DataManager* id)
+	ObjectAttributes get_object_attributes(const std::string& name)
 	{
-		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
-		if(it!=objects_.end())
-		{
-			return (it->picked);
-		}
-		return false;
-	}
-
-	bool get_object_picked(const std::string& name)
-	{
-		return get_object_picked(get_object(name));
-	}
-
-	bool get_object_visible(DataManager* id)
-	{
-		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
-		if(it!=objects_.end())
-		{
-			return (it->visible);
-		}
-		return false;
-	}
-
-	bool get_object_visible(const std::string& name)
-	{
-		return get_object_visible(get_object(name));
+		return get_object_attributes(get_object(name));
 	}
 
 	DataManager* add_object(const DataManager& data_manager, const std::string& name)
@@ -139,9 +137,9 @@ public:
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			if(new_name!=it->name)
+			if(new_name!=it->attributes.name)
 			{
-				it->name=unique_name(new_name);
+				it->attributes.name=unique_name(new_name);
 			}
 			return (&it->data_manager);
 		}
@@ -185,7 +183,7 @@ public:
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			it->picked=false;
+			it->attributes.picked=false;
 		}
 	}
 
@@ -195,7 +193,7 @@ public:
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			it->picked=true;
+			it->attributes.picked=true;
 			return true;
 		}
 		return false;
@@ -210,7 +208,7 @@ public:
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			it->visible=visible;
+			it->attributes.visible=visible;
 		}
 	}
 
@@ -219,7 +217,7 @@ public:
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			it->visible=visible;
+			it->attributes.visible=visible;
 			return true;
 		}
 		return false;
@@ -234,15 +232,11 @@ private:
 	struct ObjectDescriptor
 	{
 		DataManager data_manager;
-		std::string name;
-		bool picked;
-		bool visible;
+		ObjectAttributes attributes;
 
 		ObjectDescriptor(const DataManager& data_manager, const std::string& name) :
 			data_manager(data_manager),
-			name(name),
-			picked(false),
-			visible(true)
+			attributes(name)
 		{
 		}
 	};
