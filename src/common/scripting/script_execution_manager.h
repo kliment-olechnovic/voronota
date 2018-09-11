@@ -32,34 +32,6 @@ public:
 		std::string termination_error;
 	};
 
-	class HandlerForExecutionEvents
-	{
-	public:
-		HandlerForExecutionEvents()
-		{
-		}
-
-		virtual ~HandlerForExecutionEvents()
-		{
-		}
-
-		virtual void on_before_executing_command(const CommandInput&)=0;
-
-		virtual void on_after_executing_command(const CommandInput&)=0;
-
-		virtual bool on_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)=0;
-
-		virtual bool on_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord&)=0;
-
-		virtual bool on_command_for_data_manager(const GenericCommandForDataManager::CommandRecord&)=0;
-
-		virtual bool on_command_for_extra_actions(const GenericCommandForExtraActions::CommandRecord&)=0;
-
-		virtual void on_no_picked_data_manager()=0;
-
-		virtual void on_unrecognized_command(const CommandInput&)=0;
-	};
-
 	ScriptExecutionManager()
 	{
 		set_command("set-alias", new CustomCommandsForScriptPartitioner::set_alias());
@@ -156,10 +128,7 @@ public:
 		unset_map_key_safely(commands_for_extra_actions_, name);
 	}
 
-	ScriptRecord execute_script(
-			const std::string& script,
-			const bool exit_on_first_failure,
-			HandlerForExecutionEvents& handler)
+	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
 	{
 		ScriptRecord script_record;
 
@@ -199,7 +168,7 @@ public:
 				return script_record;
 			}
 
-			execute_command(handler, command_record);
+			execute_command(command_record);
 
 			script_record.command_records.push_back(command_record);
 
@@ -211,6 +180,48 @@ public:
 		}
 
 		return script_record;
+	}
+
+protected:
+	CongregationOfDataManagers& congregation_of_data_managers()
+	{
+		return congregation_of_data_managers_;
+	}
+
+	virtual void on_before_executing_command(const CommandInput&)
+	{
+	}
+
+	virtual void on_after_executing_command(const CommandInput&)
+	{
+	}
+
+	virtual bool on_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord& cr)
+	{
+		return cr.successful;
+	}
+
+	virtual bool on_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
+	{
+		return cr.successful;
+	}
+
+	virtual bool on_command_for_data_manager(const GenericCommandForDataManager::CommandRecord& cr)
+	{
+		return cr.successful;
+	}
+
+	virtual bool on_command_for_extra_actions(const GenericCommandForExtraActions::CommandRecord& cr)
+	{
+		return cr.successful;
+	}
+
+	virtual void on_no_picked_data_manager()
+	{
+	}
+
+	virtual void on_unrecognized_command(const CommandInput&)
+	{
 	}
 
 private:
@@ -268,21 +279,21 @@ private:
 		return set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
 	}
 
-	void execute_command(HandlerForExecutionEvents& handler, CommandRecord& command_record)
+	void execute_command(CommandRecord& command_record)
 	{
-		handler.on_before_executing_command(command_record.command_input);
+		on_before_executing_command(command_record.command_input);
 
 		const std::string& command_name=command_record.command_input.get_command_name();
 
 		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
 			command_record.recognized=1;
-			command_record.successful=handler.on_command_for_script_partitioner(commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_));
+			command_record.successful=on_command_for_script_partitioner(commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_));
 		}
 		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
 		{
 			command_record.recognized=2;
-			command_record.successful=handler.on_command_for_congregation_of_data_managers(commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_));
+			command_record.successful=on_command_for_congregation_of_data_managers(commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_));
 		}
 		else if(commands_for_data_manager_.count(command_name)==1)
 		{
@@ -292,25 +303,25 @@ private:
 			{
 				for(std::size_t i=0;i<picked_data_managers.size();i++)
 				{
-					command_record.successful=handler.on_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]));
+					command_record.successful=on_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]));
 				}
 			}
 			else
 			{
-				handler.on_no_picked_data_manager();
+				on_no_picked_data_manager();
 			}
 		}
 		else if(commands_for_extra_actions_.count(command_name)==1)
 		{
 			command_record.recognized=4;
-			command_record.successful=handler.on_command_for_extra_actions(commands_for_extra_actions_[command_name]->execute(command_record.command_input));
+			command_record.successful=on_command_for_extra_actions(commands_for_extra_actions_[command_name]->execute(command_record.command_input));
 		}
 		else
 		{
-			handler.on_unrecognized_command(command_record.command_input);
+			on_unrecognized_command(command_record.command_input);
 		}
 
-		handler.on_after_executing_command(command_record.command_input);
+		on_after_executing_command(command_record.command_input);
 	}
 
 	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
