@@ -32,12 +32,12 @@ public:
 		std::string termination_error;
 	};
 
-	ScriptExecutionManager()
+	ScriptExecutionManager() :
+		exit_requested_(false)
 	{
 		set_command("set-alias", new CustomCommandsForScriptPartitioner::set_alias());
 		set_command("unset-aliases", new CustomCommandsForScriptPartitioner::unset_aliases());
 		set_command("source", new CustomCommandsForScriptPartitioner::source());
-		set_command("exit", new CustomCommandsForScriptPartitioner::exit());
 
 		set_command("list-objects", new CustomCommandsForCongregationOfDataManagers::list_objects());
 		set_command("delete-all-objects", new CustomCommandsForCongregationOfDataManagers::delete_all_objects());
@@ -95,6 +95,7 @@ public:
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
+		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
 	}
 
 	virtual ~ScriptExecutionManager()
@@ -103,6 +104,11 @@ public:
 		delete_map_contents(commands_for_congregation_of_data_managers_);
 		delete_map_contents(commands_for_data_manager_);
 		delete_map_contents(commands_for_extra_actions_);
+	}
+
+	bool exit_requested() const
+	{
+		return exit_requested_;
 	}
 
 	GenericCommandForCongregationOfDataManagers* set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
@@ -131,6 +137,12 @@ public:
 	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
 	{
 		ScriptRecord script_record;
+
+		if(exit_requested())
+		{
+			script_record.termination_error="Cannot execute anything because exit was requested.";
+			return script_record;
+		}
 
 		try
 		{
@@ -175,6 +187,11 @@ public:
 			if(!command_record.successful && exit_on_first_failure)
 			{
 				script_record.termination_error="Terminated on the first failure.";
+				return script_record;
+			}
+
+			if(exit_requested())
+			{
 				return script_record;
 			}
 		}
@@ -331,6 +348,7 @@ private:
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
 	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
+	bool exit_requested_;
 };
 
 }
