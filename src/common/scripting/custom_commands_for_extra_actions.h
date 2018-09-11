@@ -56,6 +56,25 @@ public:
 	private:
 		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
 	};
+
+	class exit : public GenericCommandForExtraActions
+	{
+	public:
+		explicit exit(bool& exit_status) :
+			exit_status_(exit_status)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			exit_status_=true;
+		}
+
+	private:
+		bool& exit_status_;
+	};
 };
 
 }

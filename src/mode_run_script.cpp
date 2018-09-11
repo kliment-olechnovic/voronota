@@ -8,9 +8,7 @@ namespace
 class ScriptExecutionManager : public common::scripting::ScriptExecutionManager
 {
 public:
-	bool exit_requested;
-
-	ScriptExecutionManager() : exit_requested(false)
+	ScriptExecutionManager()
 	{
 	}
 
@@ -27,10 +25,6 @@ public:
 	bool on_command_for_script_partitioner(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr)
 	{
 		print_command_log(cr);
-		if(cr.successful && cr.command_input.get_command_name()=="exit")
-		{
-			exit_requested=true;
-		}
 		return cr.successful;
 	}
 
@@ -96,15 +90,15 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	ScriptExecutionManager esecution_manager;
+	ScriptExecutionManager execution_manager;
 
-	while(!esecution_manager.exit_requested && std::cin.good())
+	while(!execution_manager.exit_requested() && std::cin.good())
 	{
 		std::string line;
 		std::getline(std::cin, line);
 		if(!line.empty())
 		{
-			ScriptExecutionManager::ScriptRecord script_record=esecution_manager.execute_script(line, false);
+			ScriptExecutionManager::ScriptRecord script_record=execution_manager.execute_script(line, false);
 			if(!script_record.termination_error.empty())
 			{
 				std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
