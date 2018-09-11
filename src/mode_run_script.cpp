@@ -12,23 +12,23 @@ public:
 	{
 	}
 
-	void on_before_executing_command(const common::scripting::CommandInput& command_input)
+	void on_before_any_command(const common::scripting::CommandInput& command_input)
 	{
 		std::cout << "\n> " << command_input.get_input_command_string() << std::endl;
 	}
 
-	void on_after_executing_command(const common::scripting::CommandInput&)
+	void on_after_any_command(const common::scripting::CommandInput&)
 	{
 		std::cout << std::endl;
 	}
 
-	bool on_command_for_script_partitioner(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr)
+	bool on_after_command_for_script_partitioner(const common::scripting::GenericCommandForScriptPartitioner::CommandRecord& cr)
 	{
 		print_command_log(cr);
 		return cr.successful;
 	}
 
-	bool on_command_for_congregation_of_data_managers(const common::scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
+	bool on_after_command_for_congregation_of_data_managers(const common::scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
 		print_command_log(cr);
 		for(std::vector<common::scripting::DataManager*>::const_iterator it=cr.set_of_added_objects.begin();it!=cr.set_of_added_objects.end();++it)
@@ -42,14 +42,14 @@ public:
 		return cr.successful;
 	}
 
-	bool on_command_for_data_manager(const common::scripting::GenericCommandForDataManager::CommandRecord& cr)
+	bool on_after_command_for_data_manager(const common::scripting::GenericCommandForDataManager::CommandRecord& cr)
 	{
 		std::cout << cr.output_text;
 		print_command_log(cr);
 		return cr.successful;
 	}
 
-	bool on_command_for_extra_actions(const common::scripting::GenericCommandForExtraActions::CommandRecord& cr)
+	bool on_after_command_for_extra_actions(const common::scripting::GenericCommandForExtraActions::CommandRecord& cr)
 	{
 		print_command_log(cr);
 		return cr.successful;
