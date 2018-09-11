@@ -18,6 +18,10 @@ public:
 		CommandInput command_input;
 		CongregationOfDataManagers* congregation_of_data_managers;
 		bool successful;
+		bool changed_objects;
+		bool changed_objects_names;
+		bool changed_objects_picks;
+		bool changed_objects_visibilities;
 		std::string output_log;
 		std::string output_error;
 		std::vector<DataManager*> set_of_added_objects;
@@ -26,7 +30,11 @@ public:
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
 			command_input(command_input),
 			congregation_of_data_managers(&congregation_of_data_managers),
-			successful(false)
+			successful(false),
+			changed_objects(false),
+			changed_objects_names(false),
+			changed_objects_picks(false),
+			changed_objects_visibilities(false)
 		{
 		}
 	};
@@ -64,6 +72,11 @@ public:
 		record.set_of_added_objects=std::vector<DataManager*>(cargs.set_of_added_objects.begin(), cargs.set_of_added_objects.end());
 		record.set_of_deleted_objects=std::vector<DataManager*>(cargs.set_of_deleted_objects.begin(), cargs.set_of_deleted_objects.end());
 
+		record.changed_objects=(cargs.changed_objects || !record.set_of_added_objects.empty() || !record.set_of_deleted_objects.empty());
+		record.changed_objects_names=(cargs.changed_objects_names || record.changed_objects);
+		record.changed_objects_picks=(cargs.changed_objects_picks || record.changed_objects);
+		record.changed_objects_visibilities=(cargs.changed_objects_visibilities || record.changed_objects);
+
 		return record;
 	}
 
@@ -74,6 +87,10 @@ protected:
 		CommandInput& input;
 		CongregationOfDataManagers& congregation_of_data_managers;
 		std::ostream& output_for_log;
+		bool changed_objects;
+		bool changed_objects_names;
+		bool changed_objects_picks;
+		bool changed_objects_visibilities;
 		std::set<DataManager*> set_of_added_objects;
 		std::set<DataManager*> set_of_deleted_objects;
 
@@ -83,7 +100,11 @@ protected:
 				std::ostream& output_for_log) :
 					input(input),
 					congregation_of_data_managers(congregation_of_data_managers),
-					output_for_log(output_for_log)
+					output_for_log(output_for_log),
+					changed_objects(false),
+					changed_objects_names(false),
+					changed_objects_picks(false),
+					changed_objects_visibilities(false)
 		{
 		}
 	};
