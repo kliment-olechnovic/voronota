@@ -200,6 +200,11 @@ public:
 	}
 
 protected:
+	ScriptPartitioner& script_partitioner()
+	{
+		return script_partitioner_;
+	}
+
 	CongregationOfDataManagers& congregation_of_data_managers()
 	{
 		return congregation_of_data_managers_;
