@@ -12,6 +12,7 @@ public:
 	{
 	}
 
+protected:
 	void on_before_any_command(const common::scripting::CommandInput& command_input)
 	{
 		std::cout << "\n> " << command_input.get_input_command_string() << std::endl;
