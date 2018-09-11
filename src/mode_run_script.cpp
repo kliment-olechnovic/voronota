@@ -5,12 +5,12 @@
 namespace
 {
 
-class HandlerForExecutionEvents : public common::scripting::ScriptExecutionManager::HandlerForExecutionEvents
+class ScriptExecutionManager : public common::scripting::ScriptExecutionManager
 {
 public:
 	bool exit_requested;
 
-	explicit HandlerForExecutionEvents() : exit_requested(false)
+	ScriptExecutionManager() : exit_requested(false)
 	{
 	}
 
@@ -96,16 +96,15 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	common::scripting::ScriptExecutionManager esecution_manager;
-	HandlerForExecutionEvents handler_for_execution_events;
+	ScriptExecutionManager esecution_manager;
 
-	while(!handler_for_execution_events.exit_requested && std::cin.good())
+	while(!esecution_manager.exit_requested && std::cin.good())
 	{
 		std::string line;
 		std::getline(std::cin, line);
 		if(!line.empty())
 		{
-			common::scripting::ScriptExecutionManager::ScriptRecord script_record=esecution_manager.execute_script(line, false, handler_for_execution_events);
+			ScriptExecutionManager::ScriptRecord script_record=esecution_manager.execute_script(line, false);
 			if(!script_record.termination_error.empty())
 			{
 				std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
