@@ -64,6 +64,14 @@ public:
 		}
 	}
 
+	void set_atoms(const std::vector<Atom>* atoms_ptr)
+	{
+		atoms_ptr_=atoms_ptr;
+		map_of_atoms_selections_.clear();
+		construct_atoms_residues_definition_and_reference();
+		set_contacts(0);
+	}
+
 	void set_contacts(const std::vector<Contact>* contacts_ptr)
 	{
 		if(contacts_ptr==0 || check_contacts_compatibility_with_atoms(atoms(), *contacts_ptr))
@@ -365,7 +373,7 @@ private:
 
 	void fix_atom_tester(TAC::test_atom& tester) const
 	{
-		tester.atoms_ptr=atoms_ptr_;
+		tester.atoms_ptr=&atoms();
 
 		if(!tester.name_of_base_selection_of_atoms.empty())
 		{
@@ -387,8 +395,8 @@ private:
 
 	void fix_contact_tester(TAC::test_contact& tester) const
 	{
-		tester.atoms_ptr=atoms_ptr_;
-		tester.contacts_ptr=contacts_ptr_;
+		tester.atoms_ptr=&atoms();
+		tester.contacts_ptr=&contacts();
 
 		if(!tester.name_of_base_selection_of_contacts.empty())
 		{
@@ -484,14 +492,6 @@ private:
 		}
 
 		return result;
-	}
-
-	void set_atoms(const std::vector<Atom>* atoms_ptr)
-	{
-		atoms_ptr_=atoms_ptr;
-		map_of_atoms_selections_.clear();
-		construct_atoms_residues_definition_and_reference();
-		set_contacts(0);
 	}
 
 	void construct_atoms_residues_definition_and_reference()
