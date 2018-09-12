@@ -86,6 +86,35 @@ public:
 		}
 	}
 
+	SelectionManager make_adjusted_copy(const std::vector<Atom>& copy_of_atoms, const std::vector<Contact>& copy_of_contacts) const
+	{
+		if(atoms_ptr_==0 && contacts_ptr_==0)
+		{
+			return (*this);
+		}
+
+		if(atoms_ptr_!=0 && copy_of_atoms.size()!=atoms_ptr_->size())
+		{
+			throw std::runtime_error(std::string("Invalid atoms for making adjusted copy."));
+		}
+
+		if(contacts_ptr_!=0 && copy_of_contacts.size()!=contacts_ptr_->size())
+		{
+			throw std::runtime_error(std::string("Invalid contacts for making adjusted copy."));
+		}
+
+		SelectionManager copy_of_sm=(*this);
+		if(copy_of_sm.atoms_ptr_!=0)
+		{
+			copy_of_sm.atoms_ptr_=&copy_of_atoms;
+		}
+		if(copy_of_sm.contacts_ptr_!=0)
+		{
+			copy_of_sm.contacts_ptr_=&copy_of_contacts;
+		}
+		return copy_of_sm;
+	}
+
 	std::set<std::size_t> get_atoms_selection(const std::string& name) const
 	{
 		if(atoms().empty())

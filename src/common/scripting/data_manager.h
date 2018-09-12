@@ -83,6 +83,31 @@ public:
 	{
 	}
 
+	DataManager(const DataManager& dm)
+	{
+		(*this)=dm;
+	}
+
+	virtual ~DataManager()
+	{
+	}
+
+	DataManager& operator=(const DataManager& dm)
+	{
+		atoms_representations_descriptor_=dm.atoms_representations_descriptor_;
+		contacts_representations_descriptor_=dm.contacts_representations_descriptor_;
+		atoms_=dm.atoms_;
+		contacts_=dm.contacts_;
+		atoms_display_states_=dm.atoms_display_states_;
+		contacts_display_states_=dm.contacts_display_states_;
+		primary_structure_info_=dm.primary_structure_info_;
+		secondary_structure_info_=dm.secondary_structure_info_;
+		bonding_links_info_=dm.bonding_links_info_;
+		triangulation_info_=dm.triangulation_info_;
+		selection_manager_=dm.selection_manager_.make_adjusted_copy(atoms_, contacts_);
+		return (*this);
+	}
+
 	const std::vector<Atom>& atoms() const
 	{
 		return atoms_;
