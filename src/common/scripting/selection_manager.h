@@ -103,15 +103,23 @@ public:
 			throw std::runtime_error(std::string("Invalid contacts for making adjusted copy."));
 		}
 
+		if(contacts_ptr_!=0 && !check_contacts_compatibility_with_atoms(copy_of_atoms, copy_of_contacts))
+		{
+			throw std::runtime_error(std::string("Incompatable atoms and contacts for making adjusted copy."));
+		}
+
 		SelectionManager copy_of_sm=(*this);
+
 		if(copy_of_sm.atoms_ptr_!=0)
 		{
 			copy_of_sm.atoms_ptr_=&copy_of_atoms;
 		}
+
 		if(copy_of_sm.contacts_ptr_!=0)
 		{
 			copy_of_sm.contacts_ptr_=&copy_of_contacts;
 		}
+
 		return copy_of_sm;
 	}
 
