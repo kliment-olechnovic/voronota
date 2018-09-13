@@ -23,6 +23,15 @@ struct BoundingBox
 	{
 	}
 
+	void update(const BoundingBox& b)
+	{
+		if(b.filled)
+		{
+			update(b.p_min);
+			update(b.p_max);
+		}
+	}
+
 	template<typename Point>
 	void update(const Point& p)
 	{
@@ -75,6 +84,13 @@ struct SummaryOfAtoms
 				throw std::runtime_error(std::string("Invalid atom id encountered when summarizing atoms."));
 			}
 		}
+	}
+
+	void feed(const SummaryOfAtoms& s)
+	{
+		number_total+=s.number_total;
+		volume+=s.volume;
+		bounding_box.update(s.bounding_box);
 	}
 
 	void feed(const Atom& atom)
@@ -130,6 +146,13 @@ struct SummaryOfContacts
 				throw std::runtime_error(std::string("Invalid contact id encountered when summarizing contacts."));
 			}
 		}
+	}
+
+	void feed(const SummaryOfContacts& s)
+	{
+		number_total+=s.number_total;
+		number_drawable+=s.number_drawable;
+		area+=s.area;
 	}
 
 	void feed(const Contact& contact)

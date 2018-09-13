@@ -230,8 +230,10 @@ public:
 
 					data_manager.reset_atoms_by_swapping(atoms);
 
+					cargs.summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
+
 					cargs.output_for_log << "Read atoms from file '" << atoms_file << "' ";
-					SummaryOfAtoms(data_manager.atoms()).print(cargs.output_for_log);
+					cargs.summary_of_atoms.print(cargs.output_for_log);
 					cargs.output_for_log << "\n";
 
 					cargs.set_of_added_objects.insert(object_new);
@@ -329,8 +331,10 @@ public:
 
 				data_manager.reset_atoms_by_swapping(atoms);
 
+				cargs.summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
+
 				cargs.output_for_log << "Read atoms from file '" << file << "' ";
-				SummaryOfAtoms(data_manager.atoms()).print(cargs.output_for_log);
+				cargs.summary_of_atoms.print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 
 				if(!contacts.empty())
@@ -459,6 +463,49 @@ public:
 	public:
 		hide_objects() : show_objects(false)
 		{
+		}
+	};
+
+	class zoom_by_objects : public GenericCommandForCongregationOfDataManagers
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+			cargs.input.mark_all_unnamed_values_as_used();
+			cargs.input.assert_nothing_unusable();
+
+			if(names.empty())
+			{
+				std::vector<DataManager*> dms=cargs.congregation_of_data_managers.get_objects(false, true);
+				for(std::size_t i=0;i<dms.size();i++)
+				{
+					cargs.summary_of_atoms.feed(SummaryOfAtoms(dms[i]->atoms()));
+				}
+			}
+			else
+			{
+				cargs.congregation_of_data_managers.assert_objects_availability(names);
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					DataManager* dm=cargs.congregation_of_data_managers.get_object(names[i]);
+					if(dm!=0)
+					{
+						cargs.summary_of_atoms.feed(SummaryOfAtoms(dm->atoms()));
+					}
+				}
+			}
+
+			if(cargs.summary_of_atoms.bounding_box.filled)
+			{
+				cargs.extra_values["zoom"]=true;
+				cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+			}
+			else
+			{
+				cargs.output_for_log << "No visible objects to zoom by.\n";
+			}
+
 		}
 	};
 
