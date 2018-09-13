@@ -74,6 +74,8 @@ public:
 		record.set_of_added_objects=std::vector<DataManager*>(cargs.set_of_added_objects.begin(), cargs.set_of_added_objects.end());
 		record.set_of_deleted_objects=std::vector<DataManager*>(cargs.set_of_deleted_objects.begin(), cargs.set_of_deleted_objects.end());
 
+		record.summary_of_atoms=cargs.summary_of_atoms;
+
 		record.extra_values.swap(cargs.extra_values);
 
 		record.changed_objects=(cargs.changed_objects || !record.set_of_added_objects.empty() || !record.set_of_deleted_objects.empty());
