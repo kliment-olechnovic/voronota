@@ -72,6 +72,19 @@ public:
 		assert_objects_availability(std::vector<std::string>(1, name));
 	}
 
+	unsigned int count_objects(const bool only_picked, const bool only_visible) const
+	{
+		unsigned int counter=0;
+		for(std::list<ObjectDescriptor>::const_iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			if((!only_picked || it->attributes.picked) && (!only_visible || it->attributes.visible))
+			{
+				counter++;
+			}
+		}
+		return counter;
+	}
+
 	std::vector<DataManager*> get_objects(const bool only_picked, const bool only_visible)
 	{
 		std::vector<DataManager*> result;
