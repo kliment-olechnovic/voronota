@@ -66,6 +66,14 @@ protected:
 		std::cout << "Error: unrecognized command '" << command_input.get_command_name() << "'";
 	}
 
+	void on_after_script(ScriptRecord& script_record)
+	{
+		if(!script_record.termination_error.empty())
+		{
+			std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
+		}
+	}
+
 private:
 	template<typename CommandRecord>
 	void print_command_log(const CommandRecord& cr)
@@ -99,11 +107,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		std::getline(std::cin, line);
 		if(!line.empty())
 		{
-			ScriptExecutionManager::ScriptRecord script_record=execution_manager.execute_script(line, false);
-			if(!script_record.termination_error.empty())
-			{
-				std::cout << "Script termnation error: " << script_record.termination_error << std::endl;
-			}
+			execution_manager.execute_script(line, false);
 		}
 	}
 }

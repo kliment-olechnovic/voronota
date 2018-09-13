@@ -111,6 +111,38 @@ public:
 		return exit_requested_;
 	}
 
+	void unset_command(const std::string& name)
+	{
+		unset_map_key_safely(commands_for_script_partitioner_, name);
+		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
+		unset_map_key_safely(commands_for_data_manager_, name);
+		unset_map_key_safely(commands_for_extra_actions_, name);
+	}
+
+	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
+	{
+		ScriptRecord script_record;
+		execute_script(script, exit_on_first_failure, script_record);
+		on_after_script(script_record);
+		return script_record;
+	}
+
+protected:
+	ScriptPartitioner& script_partitioner()
+	{
+		return script_partitioner_;
+	}
+
+	CongregationOfDataManagers& congregation_of_data_managers()
+	{
+		return congregation_of_data_managers_;
+	}
+
+	GenericCommandForScriptPartitioner* set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
+	{
+		return set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
+	}
+
 	GenericCommandForCongregationOfDataManagers* set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_congregation_of_data_managers_, name, command_ptr);
@@ -124,90 +156,6 @@ public:
 	GenericCommandForExtraActions* set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
-	}
-
-	void unset_command(const std::string& name)
-	{
-		unset_map_key_safely(commands_for_script_partitioner_, name);
-		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
-		unset_map_key_safely(commands_for_data_manager_, name);
-		unset_map_key_safely(commands_for_extra_actions_, name);
-	}
-
-	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
-	{
-		ScriptRecord script_record;
-
-		if(exit_requested())
-		{
-			script_record.termination_error="Cannot execute anything because exit was requested.";
-			return script_record;
-		}
-
-		try
-		{
-			script_partitioner_.add_pending_sentences_from_string_to_front(script);
-		}
-		catch(const std::exception& e)
-		{
-			script_record.termination_error=e.what();
-			return script_record;
-		}
-
-		while(!script_partitioner_.pending_sentences().empty())
-		{
-			std::string command_string;
-
-			try
-			{
-				command_string=script_partitioner_.extract_pending_sentence();
-			}
-			catch(const std::exception& e)
-			{
-				script_record.termination_error=e.what();
-				return script_record;
-			}
-
-			CommandRecord command_record;
-
-			try
-			{
-				command_record.command_input=CommandInput(command_string);
-			}
-			catch(const std::exception& e)
-			{
-				script_record.termination_error=e.what();
-				return script_record;
-			}
-
-			execute_command(command_record);
-
-			script_record.command_records.push_back(command_record);
-
-			if(!command_record.successful && exit_on_first_failure)
-			{
-				script_record.termination_error="Terminated on the first failure.";
-				return script_record;
-			}
-
-			if(exit_requested())
-			{
-				return script_record;
-			}
-		}
-
-		return script_record;
-	}
-
-protected:
-	ScriptPartitioner& script_partitioner()
-	{
-		return script_partitioner_;
-	}
-
-	CongregationOfDataManagers& congregation_of_data_managers()
-	{
-		return congregation_of_data_managers_;
 	}
 
 	virtual void on_before_any_command(const CommandInput&)
@@ -243,6 +191,10 @@ protected:
 	}
 
 	virtual void on_unrecognized_command(const CommandInput&)
+	{
+	}
+
+	virtual void on_after_script(ScriptRecord&)
 	{
 	}
 
@@ -296,9 +248,67 @@ private:
 		}
 	}
 
-	GenericCommandForScriptPartitioner* set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
+	void execute_script(const std::string& script, const bool exit_on_first_failure, ScriptRecord& script_record)
 	{
-		return set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
+		if(exit_requested())
+		{
+			script_record.termination_error="Cannot execute anything because exit was requested.";
+			return;
+		}
+
+		try
+		{
+			script_partitioner_.add_pending_sentences_from_string_to_front(script);
+		}
+		catch(const std::exception& e)
+		{
+			script_record.termination_error=e.what();
+			return;
+		}
+
+		while(!script_partitioner_.pending_sentences().empty())
+		{
+			std::string command_string;
+
+			try
+			{
+				command_string=script_partitioner_.extract_pending_sentence();
+			}
+			catch(const std::exception& e)
+			{
+				script_record.termination_error=e.what();
+				return;
+			}
+
+			CommandRecord command_record;
+
+			try
+			{
+				command_record.command_input=CommandInput(command_string);
+			}
+			catch(const std::exception& e)
+			{
+				script_record.termination_error=e.what();
+				return;
+			}
+
+			execute_command(command_record);
+
+			script_record.command_records.push_back(command_record);
+
+			if(!command_record.successful && exit_on_first_failure)
+			{
+				script_record.termination_error="Terminated on the first failure.";
+				return;
+			}
+
+			if(exit_requested())
+			{
+				return;
+			}
+		}
+
+		return;
 	}
 
 	void execute_command(CommandRecord& command_record)
