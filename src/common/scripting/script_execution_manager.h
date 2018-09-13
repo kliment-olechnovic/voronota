@@ -51,6 +51,7 @@ public:
 		set_command("hide-all-objects", new CustomCommandsForCongregationOfDataManagers::hide_all_objects());
 		set_command("show-objects", new CustomCommandsForCongregationOfDataManagers::show_objects());
 		set_command("hide-objects", new CustomCommandsForCongregationOfDataManagers::hide_objects());
+		set_command("zoom-by-objects", new CustomCommandsForCongregationOfDataManagers::zoom_by_objects());
 
 		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
 		set_command("save-atoms", new CustomCommandsForDataManager::save_atoms());

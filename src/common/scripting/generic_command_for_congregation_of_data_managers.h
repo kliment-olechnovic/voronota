@@ -26,6 +26,7 @@ public:
 		std::string output_error;
 		std::vector<DataManager*> set_of_added_objects;
 		std::vector<DataManager*> set_of_deleted_objects;
+		SummaryOfAtoms summary_of_atoms;
 		std::map<std::string, VariantValue> extra_values;
 
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
@@ -96,6 +97,7 @@ protected:
 		bool changed_objects_visibilities;
 		std::set<DataManager*> set_of_added_objects;
 		std::set<DataManager*> set_of_deleted_objects;
+		SummaryOfAtoms summary_of_atoms;
 		std::map<std::string, VariantValue> extra_values;
 
 		CommandArguments(
