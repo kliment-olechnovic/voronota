@@ -801,6 +801,7 @@ public:
 			}
 
 			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), ids);
+			cargs.extra_values["zoom"]=true;
 
 			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
 		}
@@ -1853,6 +1854,7 @@ public:
 			}
 
 			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), atoms_ids);
+			cargs.extra_values["zoom"]=true;
 
 			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
 		}

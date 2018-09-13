@@ -26,6 +26,7 @@ public:
 		std::string output_error;
 		std::vector<DataManager*> set_of_added_objects;
 		std::vector<DataManager*> set_of_deleted_objects;
+		std::map<std::string, VariantValue> extra_values;
 
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
 			command_input(command_input),
@@ -72,6 +73,8 @@ public:
 		record.set_of_added_objects=std::vector<DataManager*>(cargs.set_of_added_objects.begin(), cargs.set_of_added_objects.end());
 		record.set_of_deleted_objects=std::vector<DataManager*>(cargs.set_of_deleted_objects.begin(), cargs.set_of_deleted_objects.end());
 
+		record.extra_values.swap(cargs.extra_values);
+
 		record.changed_objects=(cargs.changed_objects || !record.set_of_added_objects.empty() || !record.set_of_deleted_objects.empty());
 		record.changed_objects_names=(cargs.changed_objects_names || record.changed_objects);
 		record.changed_objects_picks=(cargs.changed_objects_picks || record.changed_objects);
@@ -93,6 +96,7 @@ protected:
 		bool changed_objects_visibilities;
 		std::set<DataManager*> set_of_added_objects;
 		std::set<DataManager*> set_of_deleted_objects;
+		std::map<std::string, VariantValue> extra_values;
 
 		CommandArguments(
 				CommandInput& input,

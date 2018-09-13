@@ -18,6 +18,7 @@ public:
 		bool successful;
 		std::string output_log;
 		std::string output_error;
+		std::map<std::string, VariantValue> extra_values;
 
 		explicit CommandRecord(const CommandInput& command_input) :
 			command_input(command_input),
@@ -56,6 +57,8 @@ public:
 		record.output_log=output_for_log.str();
 		record.output_error=output_for_errors.str();
 
+		record.extra_values.swap(cargs.extra_values);
+
 		return record;
 	}
 
@@ -65,6 +68,7 @@ protected:
 	public:
 		CommandInput& input;
 		std::ostream& output_for_log;
+		std::map<std::string, VariantValue> extra_values;
 
 		CommandArguments(
 				CommandInput& input,
