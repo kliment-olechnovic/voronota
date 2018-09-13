@@ -111,14 +111,6 @@ public:
 		return exit_requested_;
 	}
 
-	void unset_command(const std::string& name)
-	{
-		unset_map_key_safely(commands_for_script_partitioner_, name);
-		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
-		unset_map_key_safely(commands_for_data_manager_, name);
-		unset_map_key_safely(commands_for_extra_actions_, name);
-	}
-
 	ScriptRecord execute_script(const std::string& script, const bool exit_on_first_failure)
 	{
 		ScriptRecord script_record;
@@ -156,6 +148,14 @@ protected:
 	GenericCommandForExtraActions* set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
+	}
+
+	void unset_command(const std::string& name)
+	{
+		unset_map_key_safely(commands_for_script_partitioner_, name);
+		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
+		unset_map_key_safely(commands_for_data_manager_, name);
+		unset_map_key_safely(commands_for_extra_actions_, name);
 	}
 
 	virtual void on_before_any_command(const CommandInput&)
