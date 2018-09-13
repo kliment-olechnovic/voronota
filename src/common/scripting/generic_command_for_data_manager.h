@@ -31,6 +31,7 @@ public:
 		std::vector<std::size_t> output_set_of_contacts_ids;
 		SummaryOfAtoms summary_of_atoms;
 		SummaryOfContacts summary_of_contacts;
+		std::map<std::string, VariantValue> extra_values;
 
 		explicit CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
 			command_input(command_input),
@@ -85,6 +86,8 @@ public:
 		record.summary_of_atoms=cargs.summary_of_atoms;
 		record.summary_of_contacts=cargs.summary_of_contacts;
 
+		record.extra_values.swap(cargs.extra_values);
+
 		record.changed_atoms=cargs.changed_atoms;
 		record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
 		record.changed_atoms_tags=(cargs.changed_atoms_tags || record.changed_atoms);
@@ -113,6 +116,7 @@ protected:
 		std::set<std::size_t> output_set_of_contacts_ids;
 		SummaryOfAtoms summary_of_atoms;
 		SummaryOfContacts summary_of_contacts;
+		std::map<std::string, VariantValue> extra_values;
 
 		CommandArguments(
 				CommandInput& input,

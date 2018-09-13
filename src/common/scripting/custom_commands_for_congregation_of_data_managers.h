@@ -237,6 +237,10 @@ public:
 					cargs.set_of_added_objects.insert(object_new);
 
 					cargs.congregation_of_data_managers.pick_object(object_new);
+
+					cargs.extra_values["loaded"]=true;
+
+					cargs.changed_objects_picks=true;
 				}
 			}
 			else
@@ -345,6 +349,10 @@ public:
 				cargs.set_of_added_objects.insert(object_new);
 
 				cargs.congregation_of_data_managers.pick_object(object_new);
+
+				cargs.extra_values["loaded"]=true;
+
+				cargs.changed_objects_picks=true;
 			}
 		}
 	};
