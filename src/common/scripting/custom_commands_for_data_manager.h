@@ -21,6 +21,12 @@ class CustomCommandsForDataManager
 public:
 	class restrict_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -110,6 +116,12 @@ public:
 
 	class select_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -179,6 +191,11 @@ public:
 		{
 		}
 
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -241,6 +258,11 @@ public:
 		{
 		}
 
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -298,6 +320,11 @@ public:
 
 		explicit show_atoms(const bool positive) : positive_(positive)
 		{
+		}
+
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
 		}
 
 	protected:
@@ -361,6 +388,12 @@ public:
 
 	class color_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -412,6 +445,12 @@ public:
 
 	class spectrum_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1061,6 +1100,12 @@ public:
 
 	class delete_all_selections_of_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1073,6 +1118,12 @@ public:
 
 	class delete_selections_of_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1106,6 +1157,12 @@ public:
 
 	class rename_selection_of_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1131,6 +1188,12 @@ public:
 
 	class construct_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1283,6 +1346,12 @@ public:
 
 	class select_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1352,6 +1421,11 @@ public:
 		{
 		}
 
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1414,6 +1488,11 @@ public:
 		{
 		}
 
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1471,6 +1550,11 @@ public:
 
 		explicit show_contacts(const bool positive) : positive_(positive)
 		{
+		}
+
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
 		}
 
 	protected:
@@ -1534,6 +1618,12 @@ public:
 
 	class color_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1585,6 +1675,12 @@ public:
 
 	class spectrum_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1972,6 +2068,12 @@ public:
 
 	class delete_all_selections_of_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1984,6 +2086,12 @@ public:
 
 	class delete_selections_of_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2017,6 +2125,12 @@ public:
 
 	class rename_selection_of_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
