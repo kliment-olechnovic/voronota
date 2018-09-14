@@ -49,6 +49,7 @@ public:
 		set_command("pick-all-objects", new CustomCommandsForCongregationOfDataManagers::pick_all_objects());
 		set_command("unpick-all-objects", new CustomCommandsForCongregationOfDataManagers::unpick_all_objects());
 		set_command("pick-objects", new CustomCommandsForCongregationOfDataManagers::pick_objects());
+		set_command("pick-more-objects", new CustomCommandsForCongregationOfDataManagers::pick_more_objects());
 		set_command("unpick-objects", new CustomCommandsForCongregationOfDataManagers::unpick_objects());
 		set_command("show-all-objects", new CustomCommandsForCongregationOfDataManagers::show_all_objects());
 		set_command("hide-all-objects", new CustomCommandsForCongregationOfDataManagers::hide_all_objects());
