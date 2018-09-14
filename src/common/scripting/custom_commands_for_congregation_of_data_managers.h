@@ -238,11 +238,11 @@ public:
 
 					cargs.set_of_added_objects.insert(object_new);
 
-					cargs.congregation_of_data_managers.pick_object(object_new);
+					cargs.congregation_of_data_managers.set_all_objects_picked(false);
+					cargs.congregation_of_data_managers.set_object_picked(object_new, true);
+					cargs.changed_objects_picks=true;
 
 					cargs.extra_values["loaded"]=true;
-
-					cargs.changed_objects_picks=true;
 				}
 			}
 			else
@@ -352,17 +352,58 @@ public:
 
 				cargs.set_of_added_objects.insert(object_new);
 
-				cargs.congregation_of_data_managers.pick_object(object_new);
+				cargs.congregation_of_data_managers.set_all_objects_picked(false);
+				cargs.congregation_of_data_managers.set_object_picked(object_new, true);
+				cargs.changed_objects_picks=true;
 
 				cargs.extra_values["loaded"]=true;
-
-				cargs.changed_objects_picks=true;
 			}
 		}
 	};
 
-	class with : public GenericCommandForCongregationOfDataManagers
+	class pick_all_objects : public GenericCommandForCongregationOfDataManagers
 	{
+	public:
+		pick_all_objects() : positive_(true)
+		{
+		}
+
+		explicit pick_all_objects(const bool positive) : positive_(positive)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+			cargs.congregation_of_data_managers.assert_objects_availability();
+			cargs.congregation_of_data_managers.set_all_objects_picked(positive_);
+			cargs.changed_objects_picks=true;
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class unpick_all_objects : public pick_all_objects
+	{
+	public:
+		unpick_all_objects() : pick_all_objects(false)
+		{
+		}
+	};
+
+	class pick_objects : public GenericCommandForCongregationOfDataManagers
+	{
+	public:
+		pick_objects() : positive_(true)
+		{
+		}
+
+		explicit pick_objects(const bool positive) : positive_(positive)
+		{
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -372,21 +413,27 @@ public:
 
 			if(names.empty())
 			{
-				throw std::runtime_error(std::string("No object name provided."));
-			}
-
-			if(names.size()!=1)
-			{
-				throw std::runtime_error(std::string("Not exactly one object name provided."));
+				throw std::runtime_error(std::string("No object names provided."));
 			}
 
 			cargs.congregation_of_data_managers.assert_objects_availability(names);
 
 			for(std::size_t i=0;i<names.size();i++)
 			{
-				cargs.congregation_of_data_managers.pick_object(names[i]);
+				cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
 				cargs.changed_objects_picks=true;
 			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class unpick_objects : public pick_objects
+	{
+	public:
+		unpick_objects() : pick_objects(false)
+		{
 		}
 	};
 
