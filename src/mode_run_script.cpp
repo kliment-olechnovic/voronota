@@ -56,6 +56,11 @@ protected:
 		return cr.successful;
 	}
 
+	void on_disallowed_command_for_data_manager()
+	{
+		std::cout << "Error: command is not allowed to use on multiple picked objects.";
+	}
+
 	void on_no_picked_data_manager()
 	{
 		std::cout << "Error: no object picked";

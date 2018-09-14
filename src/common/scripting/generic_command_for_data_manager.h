@@ -98,6 +98,11 @@ public:
 		return record;
 	}
 
+	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+	{
+		return false;
+	}
+
 protected:
 	class CommandArguments
 	{

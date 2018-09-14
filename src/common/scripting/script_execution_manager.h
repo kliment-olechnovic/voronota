@@ -190,6 +190,10 @@ protected:
 		return cr.successful;
 	}
 
+	virtual void on_disallowed_command_for_data_manager()
+	{
+	}
+
 	virtual void on_no_picked_data_manager()
 	{
 	}
@@ -337,9 +341,17 @@ private:
 			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(true, false);
 			if(!picked_data_managers.empty())
 			{
-				for(std::size_t i=0;i<picked_data_managers.size();i++)
+				GenericCommandForDataManager* command_for_data_manager=commands_for_data_manager_[command_name];
+				if(picked_data_managers.size()==1 || command_for_data_manager->allowed_to_work_on_multiple_data_managers(command_record.command_input))
 				{
-					command_record.successful=on_after_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]));
+					for(std::size_t i=0;i<picked_data_managers.size();i++)
+					{
+						command_record.successful=on_after_command_for_data_manager(commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]));
+					}
+				}
+				else
+				{
+					on_disallowed_command_for_data_manager();
 				}
 			}
 			else
