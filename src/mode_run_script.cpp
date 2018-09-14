@@ -32,7 +32,7 @@ protected:
 	bool on_after_command_for_congregation_of_data_managers(const common::scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
 		print_command_log(cr);
-		for(std::vector<common::scripting::DataManager*>::const_iterator it=cr.set_of_added_objects.begin();it!=cr.set_of_added_objects.end();++it)
+		for(std::set<common::scripting::DataManager*>::const_iterator it=cr.change_indicator.added_objects.begin();it!=cr.change_indicator.added_objects.end();++it)
 		{
 			common::scripting::DataManager& dm=(*(*it));
 			dm.add_atoms_representations(std::vector<std::string>(1, "atoms"));
