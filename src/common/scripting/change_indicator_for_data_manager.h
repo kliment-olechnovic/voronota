@@ -35,7 +35,7 @@ struct ChangeIndicatorForDataManager
 		changed_contacts_display_states=(changed_contacts_display_states || changed_contacts);
 	}
 
-	bool changed()
+	bool changed() const
 	{
 		return (changed_atoms
 				|| changed_contacts

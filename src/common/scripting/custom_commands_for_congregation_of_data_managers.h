@@ -46,7 +46,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
 			std::vector<DataManager*> ptrs=cargs.congregation_of_data_managers.delete_all_objects();
-			cargs.set_of_deleted_objects.insert(ptrs.begin(), ptrs.end());
+			cargs.change_indicator.deleted_objects.insert(ptrs.begin(), ptrs.end());
 			cargs.output_for_log << "Removed all objects\n";
 		}
 	};
@@ -72,7 +72,7 @@ public:
 				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(names[i]);
 				if(ptr!=0)
 				{
-					cargs.set_of_deleted_objects.insert(ptr);
+					cargs.change_indicator.deleted_objects.insert(ptr);
 				}
 			}
 
@@ -108,7 +108,7 @@ public:
 
 			cargs.congregation_of_data_managers.rename_object(name_original, name_new);
 
-			cargs.changed_objects_names=true;
+			cargs.change_indicator.changed_objects_names=true;
 		}
 	};
 
@@ -135,7 +135,7 @@ public:
 
 			DataManager* object_original=cargs.congregation_of_data_managers.get_object(name_original);
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(*object_original, name_new);
-			cargs.set_of_added_objects.insert(object_new);
+			cargs.change_indicator.added_objects.insert(object_new);
 		}
 	};
 
@@ -236,11 +236,11 @@ public:
 					cargs.summary_of_atoms.print(cargs.output_for_log);
 					cargs.output_for_log << "\n";
 
-					cargs.set_of_added_objects.insert(object_new);
+					cargs.change_indicator.added_objects.insert(object_new);
 
 					cargs.congregation_of_data_managers.set_all_objects_picked(false);
 					cargs.congregation_of_data_managers.set_object_picked(object_new, true);
-					cargs.changed_objects_picks=true;
+					cargs.change_indicator.changed_objects_picks=true;
 
 					cargs.extra_values["loaded"]=true;
 				}
@@ -350,11 +350,11 @@ public:
 					cargs.output_for_log << "No contacts read from file '" << file << "'.";
 				}
 
-				cargs.set_of_added_objects.insert(object_new);
+				cargs.change_indicator.added_objects.insert(object_new);
 
 				cargs.congregation_of_data_managers.set_all_objects_picked(false);
 				cargs.congregation_of_data_managers.set_object_picked(object_new, true);
-				cargs.changed_objects_picks=true;
+				cargs.change_indicator.changed_objects_picks=true;
 
 				cargs.extra_values["loaded"]=true;
 			}
@@ -378,7 +378,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
 			cargs.congregation_of_data_managers.set_all_objects_picked(positive_);
-			cargs.changed_objects_picks=true;
+			cargs.change_indicator.changed_objects_picks=true;
 		}
 
 	private:
@@ -426,7 +426,7 @@ public:
 			for(std::size_t i=0;i<names.size();i++)
 			{
 				cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
-				cargs.changed_objects_picks=true;
+				cargs.change_indicator.changed_objects_picks=true;
 			}
 		}
 
@@ -468,7 +468,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
 			cargs.congregation_of_data_managers.set_all_objects_visible(positive_);
-			cargs.changed_objects_visibilities=true;
+			cargs.change_indicator.changed_objects_visibilities=true;
 		}
 
 	private:
@@ -511,7 +511,7 @@ public:
 			for(std::size_t i=0;i<names.size();i++)
 			{
 				cargs.congregation_of_data_managers.set_object_visible(names[i], positive_);
-				cargs.changed_objects_visibilities=true;
+				cargs.change_indicator.changed_objects_visibilities=true;
 			}
 		}
 
