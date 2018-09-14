@@ -192,29 +192,28 @@ public:
 		return delete_object(get_object(name));
 	}
 
-	void unpick_all_objects()
+	void set_all_objects_picked(const bool picked)
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			it->attributes.picked=false;
+			it->attributes.picked=picked;
 		}
 	}
 
-	bool pick_object(DataManager* id)
+	bool set_object_picked(DataManager* id, const bool picked)
 	{
-		unpick_all_objects();
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			it->attributes.picked=true;
+			it->attributes.picked=picked;
 			return true;
 		}
 		return false;
 	}
 
-	bool pick_object(const std::string& name)
+	bool set_object_picked(const std::string& name, const bool picked)
 	{
-		return pick_object(get_object(name));
+		return set_object_picked(get_object(name), picked);
 	}
 
 	void set_all_objects_visible(const bool visible)
