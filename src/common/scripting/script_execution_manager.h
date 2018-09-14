@@ -101,6 +101,7 @@ public:
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
+		set_command("echo", new CustomsCommandsForExtraActions::echo());
 	}
 
 	virtual ~ScriptExecutionManager()
