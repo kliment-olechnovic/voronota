@@ -396,11 +396,11 @@ public:
 	class pick_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	public:
-		pick_objects() : positive_(true)
+		pick_objects() : positive_(true), add_(false)
 		{
 		}
 
-		explicit pick_objects(const bool positive) : positive_(positive)
+		explicit pick_objects(const bool positive, const bool add) : positive_(positive), add_(add)
 		{
 		}
 
@@ -418,6 +418,11 @@ public:
 
 			cargs.congregation_of_data_managers.assert_objects_availability(names);
 
+			if(positive_ && !add_)
+			{
+				cargs.congregation_of_data_managers.set_all_objects_picked(false);
+			}
+
 			for(std::size_t i=0;i<names.size();i++)
 			{
 				cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
@@ -427,12 +432,21 @@ public:
 
 	private:
 		bool positive_;
+		bool add_;
+	};
+
+	class pick_more_objects : public pick_objects
+	{
+	public:
+		pick_more_objects() : pick_objects(true, true)
+		{
+		}
 	};
 
 	class unpick_objects : public pick_objects
 	{
 	public:
-		unpick_objects() : pick_objects(false)
+		unpick_objects() : pick_objects(false, false)
 		{
 		}
 	};
