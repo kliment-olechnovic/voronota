@@ -48,7 +48,7 @@ public:
 				const SummaryOfAtoms old_summary=SummaryOfAtoms(cargs.data_manager.atoms());
 
 				cargs.data_manager.restrict_atoms(ids);
-				cargs.changed_atoms=true;
+				cargs.change_indicator.changed_atoms=true;
 
 				cargs.output_for_log << "Restricted atoms from ";
 				old_summary.print(cargs.output_for_log);
@@ -163,7 +163,7 @@ public:
 					params.unmark=true;
 					if(params.apply_to_display_states(cargs.data_manager.atoms_display_states_mutable()))
 					{
-						cargs.changed_atoms_display_states=true;
+						cargs.change_indicator.changed_atoms_display_states=true;
 					}
 				}
 				{
@@ -171,7 +171,7 @@ public:
 					params.mark=true;
 					if(params.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
 					{
-						cargs.changed_atoms_display_states=true;
+						cargs.change_indicator.changed_atoms_display_states=true;
 					}
 				}
 			}
@@ -288,7 +288,7 @@ public:
 				parameters_for_viewing.unmark=!positive_;
 				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
 				{
-					cargs.changed_atoms_display_states=true;
+					cargs.change_indicator.changed_atoms_display_states=true;
 				}
 			}
 
@@ -364,7 +364,7 @@ public:
 
 			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
 			{
-				cargs.changed_atoms_display_states=true;
+				cargs.change_indicator.changed_atoms_display_states=true;
 			}
 
 			{
@@ -432,7 +432,7 @@ public:
 
 			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
 			{
-				cargs.changed_atoms_display_states=true;
+				cargs.change_indicator.changed_atoms_display_states=true;
 			}
 
 			{
@@ -630,7 +630,7 @@ public:
 					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
 					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.atoms_display_states_mutable()))
 					{
-						cargs.changed_atoms_display_states=true;
+						cargs.change_indicator.changed_atoms_display_states=true;
 					}
 				}
 			}
@@ -1229,7 +1229,7 @@ public:
 				if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
 				{
 					cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
-					cargs.changed_contacts=true;
+					cargs.change_indicator.changed_contacts=true;
 				}
 				else
 				{
@@ -1246,7 +1246,7 @@ public:
 			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, cargs.data_manager.triangulation_info(), bundle_of_contact_information))
 			{
 				cargs.data_manager.reset_contacts_by_swapping(bundle_of_contact_information.contacts);
-				cargs.changed_contacts=true;
+				cargs.change_indicator.changed_contacts=true;
 
 				if(parameters_to_construct_contacts.calculate_volumes)
 				{
@@ -1331,7 +1331,7 @@ public:
 			if(!contacts.empty())
 			{
 				cargs.data_manager.reset_contacts_by_swapping(contacts);
-				cargs.changed_contacts=true;
+				cargs.change_indicator.changed_contacts=true;
 
 				cargs.output_for_log << "Read contacts from file '" << file << "' ";
 				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
@@ -1393,7 +1393,7 @@ public:
 					params.unmark=true;
 					if(params.apply_to_display_states(cargs.data_manager.contacts_display_states_mutable()))
 					{
-						cargs.changed_contacts_display_states=true;
+						cargs.change_indicator.changed_contacts_display_states=true;
 					}
 				}
 				{
@@ -1401,7 +1401,7 @@ public:
 					params.mark=true;
 					if(params.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
 					{
-						cargs.changed_contacts_display_states=true;
+						cargs.change_indicator.changed_contacts_display_states=true;
 					}
 				}
 			}
@@ -1518,7 +1518,7 @@ public:
 				parameters_for_viewing.unmark=!positive_;
 				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
 				{
-					cargs.changed_contacts_display_states=true;
+					cargs.change_indicator.changed_contacts_display_states=true;
 				}
 			}
 
@@ -1594,7 +1594,7 @@ public:
 
 			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
 			{
-				cargs.changed_contacts_display_states=true;
+				cargs.change_indicator.changed_contacts_display_states=true;
 			}
 
 			{
@@ -1662,7 +1662,7 @@ public:
 
 			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
 			{
-				cargs.changed_contacts_display_states=true;
+				cargs.change_indicator.changed_contacts_display_states=true;
 			}
 
 			{
@@ -1865,7 +1865,7 @@ public:
 					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
 					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.contacts_display_states_mutable()))
 					{
-						cargs.changed_contacts_display_states=true;
+						cargs.change_indicator.changed_contacts_display_states=true;
 					}
 				}
 			}

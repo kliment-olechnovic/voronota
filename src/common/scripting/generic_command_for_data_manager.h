@@ -3,6 +3,7 @@
 
 #include "command_input.h"
 #include "data_manager.h"
+#include "change_indicator_for_data_manager.h"
 
 namespace common
 {
@@ -18,12 +19,7 @@ public:
 		CommandInput command_input;
 		DataManager* data_manager_ptr;
 		bool successful;
-		bool changed_atoms;
-		bool changed_contacts;
-		bool changed_atoms_tags;
-		bool changed_contacts_tags;
-		bool changed_atoms_display_states;
-		bool changed_contacts_display_states;
+		ChangeIndicatorForDataManager change_indicator;
 		std::string output_log;
 		std::string output_error;
 		std::string output_text;
@@ -36,13 +32,7 @@ public:
 		explicit CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
 			command_input(command_input),
 			data_manager_ptr(&data_manager),
-			successful(false),
-			changed_atoms(false),
-			changed_contacts(false),
-			changed_atoms_tags(false),
-			changed_contacts_tags(false),
-			changed_atoms_display_states(false),
-			changed_contacts_display_states(false)
+			successful(false)
 		{
 		}
 	};
@@ -63,7 +53,7 @@ public:
 		std::ostringstream output_for_errors;
 		std::ostringstream output_for_text;
 
-		CommandArguments cargs(record.command_input, data_manager, output_for_log, output_for_text);
+		CommandArguments cargs(record.command_input, data_manager, record.change_indicator, output_for_log, output_for_text);
 
 		try
 		{
@@ -88,12 +78,7 @@ public:
 
 		record.extra_values.swap(cargs.extra_values);
 
-		record.changed_atoms=cargs.changed_atoms;
-		record.changed_contacts=(cargs.changed_contacts || record.changed_atoms);
-		record.changed_atoms_tags=(cargs.changed_atoms_tags || record.changed_atoms);
-		record.changed_contacts_tags=(cargs.changed_contacts_tags || record.changed_contacts);
-		record.changed_atoms_display_states=(cargs.changed_atoms_display_states || record.changed_atoms);
-		record.changed_contacts_display_states=(cargs.changed_contacts_display_states || record.changed_contacts);
+		record.change_indicator.ensure_correctness();
 
 		return record;
 	}
@@ -109,14 +94,9 @@ protected:
 	public:
 		CommandInput& input;
 		DataManager& data_manager;
+		ChangeIndicatorForDataManager& change_indicator;
 		std::ostream& output_for_log;
 		std::ostream& output_for_text;
-		bool changed_atoms;
-		bool changed_contacts;
-		bool changed_atoms_tags;
-		bool changed_contacts_tags;
-		bool changed_atoms_display_states;
-		bool changed_contacts_display_states;
 		std::set<std::size_t> output_set_of_atoms_ids;
 		std::set<std::size_t> output_set_of_contacts_ids;
 		SummaryOfAtoms summary_of_atoms;
@@ -126,18 +106,14 @@ protected:
 		CommandArguments(
 				CommandInput& input,
 				DataManager& data_manager,
+				ChangeIndicatorForDataManager& change_indicator,
 				std::ostream& output_for_log,
 				std::ostream& output_for_text) :
 					input(input),
 					data_manager(data_manager),
+					change_indicator(change_indicator),
 					output_for_log(output_for_log),
-					output_for_text(output_for_text),
-					changed_atoms(false),
-					changed_contacts(false),
-					changed_atoms_tags(false),
-					changed_contacts_tags(false),
-					changed_atoms_display_states(false),
-					changed_contacts_display_states(false)
+					output_for_text(output_for_text)
 		{
 		}
 	};
