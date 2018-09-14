@@ -73,6 +73,12 @@ public:
 		pending_sentences_.insert(pending_sentences_.begin(), script_sentences.begin(), script_sentences.end());
 	}
 
+	void add_pending_sentences_from_string_to_back(const std::string& script)
+	{
+		std::vector<Sentence> script_sentences=partition_script(script);
+		pending_sentences_.insert(pending_sentences_.end(), script_sentences.begin(), script_sentences.end());
+	}
+
 	void clear_pending_sentences()
 	{
 		pending_sentences_.clear();
