@@ -75,6 +75,21 @@ public:
 	private:
 		bool& exit_status_;
 	};
+
+	class echo : public GenericCommandForExtraActions
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
+			cargs.input.assert_nothing_unusable();
+
+			for(std::size_t i=0;i<strings.size();i++)
+			{
+				cargs.output_for_log << strings[i] << "\n";
+			}
+		}
+	};
 };
 
 }
