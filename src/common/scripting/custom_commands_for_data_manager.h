@@ -247,6 +247,45 @@ public:
 		}
 	};
 
+	class tag_atoms_by_secondary_structure : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string tag_for_alpha=cargs.input.get_value_or_default<std::string>("tag-for-alpha", "ss=H");
+			const std::string tag_for_beta=cargs.input.get_value_or_default<std::string>("tag-for-beta", "ss=S");
+
+			cargs.input.assert_nothing_unusable();
+
+			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[i];
+				atom.value.props.tags.erase(tag_for_alpha);
+				atom.value.props.tags.erase(tag_for_beta);
+			}
+
+			for(std::size_t residue_id=0;residue_id<cargs.data_manager.secondary_structure_info().residue_descriptors.size();residue_id++)
+			{
+				const ConstructionOfSecondaryStructure::ResidueDescriptor& residue_descriptor=cargs.data_manager.secondary_structure_info().residue_descriptors[residue_id];
+				const std::vector<std::size_t>& atom_ids=cargs.data_manager.primary_structure_info().residues[residue_id].atom_ids;
+				for(std::size_t i=0;i<atom_ids.size();i++)
+				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[atom_ids[i]];
+					if(residue_descriptor.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+					{
+						atom.value.props.tags.insert(tag_for_alpha);
+					}
+					else if(residue_descriptor.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+					{
+						atom.value.props.tags.insert(tag_for_beta);
+					}
+				}
+			}
+		}
+	};
+
 	class mark_atoms : public GenericCommandForDataManager
 	{
 	public:

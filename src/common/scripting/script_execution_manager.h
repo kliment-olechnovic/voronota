@@ -62,6 +62,7 @@ public:
 		set_command("select-atoms", new CustomCommandsForDataManager::select_atoms());
 		set_command("tag-atoms", new CustomCommandsForDataManager::tag_atoms());
 		set_command("untag-atoms", new CustomCommandsForDataManager::untag_atoms());
+		set_command("tag-atoms-by-secondary-structure", new CustomCommandsForDataManager::tag_atoms_by_secondary_structure());
 		set_command("mark-atoms", new CustomCommandsForDataManager::mark_atoms());
 		set_command("unmark-atoms", new CustomCommandsForDataManager::unmark_atoms());
 		set_command("show-atoms", new CustomCommandsForDataManager::show_atoms());
