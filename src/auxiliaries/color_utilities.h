@@ -97,6 +97,10 @@ public:
 		{
 			return 0x4F4F4F;
 		}
+		else if(name=='n')
+		{
+			return 0x000000;
+		}
 		return null_color();
 	}
 
@@ -133,6 +137,10 @@ public:
 		else if(name=="white")
 		{
 			return 0xFFFFFF;
+		}
+		else if(name=="black")
+		{
+			return 0x000000;
 		}
 		else if(name.size()==8 && name.rfind("0x", 0)==0 && name.find_first_not_of("0123456789ABCDEF", 2)==std::string::npos)
 		{
