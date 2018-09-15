@@ -211,6 +211,7 @@ public:
 		double probe;
 		double step;
 		int projections;
+		bool simplify;
 		int sih_depth;
 		bool tag_centrality;
 		bool tag_peripherial;
@@ -219,6 +220,7 @@ public:
 			probe(1.4),
 			step(0.2),
 			projections(5),
+			simplify(false),
 			sih_depth(3),
 			tag_centrality(false),
 			tag_peripherial(false)
@@ -306,7 +308,7 @@ public:
 			for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_nonsolvent_ids.end();++it)
 			{
 				Contact& contact=contacts[*it];
-				contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections);
+				contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections, parameters.simplify);
 			}
 		}
 

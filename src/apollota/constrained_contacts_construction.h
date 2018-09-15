@@ -36,7 +36,7 @@ public:
 			if((a_is_not_mock_solvent || b_is_not_mock_solvent) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
 				double sum=0.0;
-				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections);
+				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections, false);
 				for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 				{
 					const ConstrainedContactContour::Contour& contour=(*contours_it);
@@ -294,7 +294,7 @@ typedef std::unordered_map< Pair, std::list<std::size_t>, Pair::HashFunctor > Pa
 				}
 				if(has_surface)
 				{
-					const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, a, b, probe, step, projections);
+					const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pair_vertices_list, a, b, probe, step, projections, false);
 					for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 					{
 						const ConstrainedContactContour::Contour& contour=(*contours_it);

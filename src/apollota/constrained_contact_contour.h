@@ -48,7 +48,8 @@ public:
 			const std::size_t b_id,
 			const double probe,
 			const double step,
-			const int projections)
+			const int projections,
+			const bool simplify)
 	{
 		std::list<Contour> result;
 		if(a_id<spheres.size() && b_id<spheres.size())
@@ -116,6 +117,35 @@ public:
 						}
 					}
 				}
+			}
+		}
+		if(simplify)
+		{
+			std::list<Contour> simplified_result;
+			for(std::list<Contour>::const_iterator it=result.begin();it!=result.end();++it)
+			{
+				Contour simplified_contour;
+				const Contour& contour=(*it);
+				for(Contour::const_iterator jt=contour.begin();jt!=contour.end();++jt)
+				{
+					const PointRecord& pr=(*jt);
+					if(pr.left_id!=pr.right_id || pr.left_id==a_id)
+					{
+						simplified_contour.push_back(pr);
+					}
+				}
+				if(simplified_contour.size()>2)
+				{
+					simplified_result.push_back(simplified_contour);
+				}
+				else
+				{
+					simplified_result.push_back(contour);
+				}
+			}
+			if(!simplified_result.empty())
+			{
+				result.swap(simplified_result);
 			}
 		}
 		return result;
