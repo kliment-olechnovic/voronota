@@ -15,7 +15,8 @@ std::string draw_inter_atom_contact(
 		const std::size_t b_id,
 		const double probe,
 		const double step,
-		const int projections)
+		const int projections,
+		const bool simplify)
 {
 	OpenGLPrinter opengl_printer;
 	if(a_id<spheres.size() && b_id<spheres.size())
@@ -24,7 +25,7 @@ std::string draw_inter_atom_contact(
 		if(pairs_vertices_it!=pairs_vertices.end())
 		{
 			const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(
-					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections);
+					spheres, vertices_vector, pairs_vertices_it->second, a_id, b_id, probe, step, projections, simplify);
 			for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 			{
 				const ConstrainedContactContour::ContourAreaDescriptor d=ConstrainedContactContour::construct_contour_area_descriptor(*contours_it, spheres[a_id], spheres[b_id], false);
