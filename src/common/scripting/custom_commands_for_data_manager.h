@@ -2382,8 +2382,13 @@ private:
 			unmark(false),
 			show(false),
 			hide(false),
-			color(0)
+			color(auxiliaries::ColorUtilities::null_color())
 		{
+		}
+
+		bool color_valid() const
+		{
+			return auxiliaries::ColorUtilities::color_valid(color);
 		}
 
 		void assert_state() const
@@ -2402,7 +2407,7 @@ private:
 		bool apply_to_display_state(const std::size_t id, std::vector<DataManager::DisplayState>& display_states) const
 		{
 			bool updated=false;
-			if((show || hide || mark || unmark || color>0) && id<display_states.size())
+			if((show || hide || mark || unmark || color_valid()) && id<display_states.size())
 			{
 				DataManager::DisplayState& ds=display_states[id];
 				if(ds.implemented())
@@ -2413,7 +2418,7 @@ private:
 						ds.marked=mark;
 					}
 
-					if(show || hide || color>0)
+					if(show || hide || color_valid())
 					{
 						if(visual_ids_.empty())
 						{
@@ -2448,7 +2453,7 @@ private:
 		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DataManager::DisplayState>& display_states) const
 		{
 			bool updated=false;
-			if(show || hide || mark || unmark || color>0)
+			if(show || hide || mark || unmark || color_valid())
 			{
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
@@ -2464,7 +2469,7 @@ private:
 		bool apply_to_display_states(std::vector<DataManager::DisplayState>& display_states) const
 		{
 			bool updated=false;
-			if(show || hide || mark || unmark || color>0)
+			if(show || hide || mark || unmark || color_valid())
 			{
 				for(std::size_t i=0;i<display_states.size();i++)
 				{
@@ -2489,7 +2494,7 @@ private:
 					visual.visible=show;
 				}
 
-				if(color>0)
+				if(color_valid())
 				{
 					updated=(updated || (visual.color!=color));
 					visual.color=color;
