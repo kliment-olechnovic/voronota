@@ -1207,6 +1207,10 @@ public:
 			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
 			ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
+			parameters_to_enhance_contacts.step=cargs.input.get_value_or_default<double>("visual-step", parameters_to_enhance_contacts.step);
+			parameters_to_enhance_contacts.projections=cargs.input.get_value_or_default<int>("visual-projections", parameters_to_enhance_contacts.projections);
+			parameters_to_enhance_contacts.simplify=cargs.input.get_flag("visual-simplify");
+			parameters_to_enhance_contacts.sih_depth=cargs.input.get_value_or_default<int>("visual-sih-depth", parameters_to_enhance_contacts.sih_depth);
 			parameters_to_enhance_contacts.tag_centrality=cargs.input.get_flag("tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
 			CommandParametersForGenericSelecting render_parameters_for_selecting("render-", "{--min-seq-sep 1}");
