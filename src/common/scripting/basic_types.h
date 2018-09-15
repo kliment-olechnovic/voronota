@@ -205,8 +205,13 @@ public:
 	{
 	}
 
+	VariantValue(const VariantValue& value)
+	{
+		(*this)=value;
+	}
+
 	template<typename T>
-	VariantValue(const T& value)
+	explicit VariantValue(const T& value)
 	{
 		(*this)=value;
 	}
