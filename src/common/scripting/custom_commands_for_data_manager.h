@@ -182,6 +182,12 @@ public:
 
 	class tag_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -219,6 +225,12 @@ public:
 
 	class tag_atoms_by_secondary_structure : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -260,6 +272,12 @@ public:
 
 	class delete_tags_of_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -311,6 +329,12 @@ public:
 
 	class adjunct_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -363,6 +387,12 @@ public:
 
 	class delete_adjuncts_of_atoms : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1581,6 +1611,12 @@ public:
 
 	class tag_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1618,6 +1654,12 @@ public:
 
 	class delete_tags_of_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1669,6 +1711,12 @@ public:
 
 	class adjunct_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1721,6 +1769,12 @@ public:
 
 	class delete_adjuncts_of_contacts : public GenericCommandForDataManager
 	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
 	protected:
 		void run(CommandArguments& cargs)
 		{
