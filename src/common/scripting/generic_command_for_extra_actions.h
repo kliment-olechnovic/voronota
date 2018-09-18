@@ -1,8 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_EXTRA_ACTIONS_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_EXTRA_ACTIONS_H_
 
-#include "command_input.h"
-#include "heterogeneous_storage.h"
+#include "generic_command_record.h"
 
 namespace common
 {
@@ -13,18 +12,7 @@ namespace scripting
 class GenericCommandForExtraActions
 {
 public:
-	struct CommandRecord
-	{
-		CommandInput command_input;
-		bool successful;
-		HeterogeneousStorage heterostorage;
-
-		explicit CommandRecord(const CommandInput& command_input) :
-			command_input(command_input),
-			successful(false)
-		{
-		}
-	};
+	typedef GenericCommandRecord CommandRecord;
 
 	GenericCommandForExtraActions()
 	{
