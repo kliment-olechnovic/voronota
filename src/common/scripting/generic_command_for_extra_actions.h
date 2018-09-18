@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_EXTRA_ACTIONS_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_EXTRA_ACTIONS_H_
 
-#include "generic_command_record.h"
+#include "generic_command_description.h"
 
 namespace common
 {
@@ -12,7 +12,7 @@ namespace scripting
 class GenericCommandForExtraActions
 {
 public:
-	typedef GenericCommandRecord CommandRecord;
+	typedef GenericCommandDescription::CommandRecord CommandRecord;
 
 	GenericCommandForExtraActions()
 	{
@@ -26,10 +26,7 @@ public:
 	{
 		CommandRecord record(command_input);
 
-		std::ostringstream output_for_log;
-		std::ostringstream output_for_errors;
-
-		CommandArguments cargs(record.command_input, output_for_log, record.heterostorage);
+		CommandArguments cargs(record);
 
 		try
 		{
@@ -38,33 +35,16 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			output_for_errors << e.what();
+			cargs.output_for_errors << e.what();
 		}
 
-		record.heterostorage.log+=output_for_log.str();
-		record.heterostorage.error+=output_for_errors.str();
+		cargs.save_output_streams_data();
 
 		return record;
 	}
 
 protected:
-	class CommandArguments
-	{
-	public:
-		CommandInput& input;
-		std::ostream& output_for_log;
-		HeterogeneousStorage& heterostorage;
-
-		CommandArguments(
-				CommandInput& input,
-				std::ostream& output_for_log,
-				HeterogeneousStorage& heterostorage) :
-					input(input),
-					output_for_log(output_for_log),
-					heterostorage(heterostorage)
-		{
-		}
-	};
+	typedef GenericCommandDescription::CommandArguments CommandArguments;
 
 	virtual void run(CommandArguments& /*cargs*/)
 	{

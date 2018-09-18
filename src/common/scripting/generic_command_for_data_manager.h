@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 
-#include "generic_command_record.h"
+#include "generic_command_description.h"
 #include "data_manager.h"
 
 namespace common
@@ -13,13 +13,13 @@ namespace scripting
 class GenericCommandForDataManager
 {
 public:
-	struct CommandRecord : public GenericCommandRecord
+	struct CommandRecord : public GenericCommandDescription::CommandRecord
 	{
 		DataManager* data_manager_ptr;
 		DataManager::ChangeIndicator change_indicator;
 
 		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
-			GenericCommandRecord(command_input),
+			GenericCommandDescription::CommandRecord(command_input),
 			data_manager_ptr(&data_manager)
 		{
 		}
@@ -37,11 +37,7 @@ public:
 	{
 		CommandRecord record(command_input, data_manager);
 
-		std::ostringstream output_for_log;
-		std::ostringstream output_for_errors;
-		std::ostringstream output_for_text;
-
-		CommandArguments cargs(record.command_input, data_manager, record.change_indicator, output_for_log, output_for_text, record.heterostorage);
+		CommandArguments cargs(record);
 
 		try
 		{
@@ -51,12 +47,10 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			output_for_errors << e.what();
+			cargs.output_for_errors << e.what();
 		}
 
-		record.heterostorage.log+=output_for_log.str();
-		record.heterostorage.error+=output_for_errors.str();
-		record.heterostorage.text+=output_for_text.str();
+		cargs.save_output_streams_data();
 
 		record.change_indicator.ensure_correctness();
 
@@ -69,29 +63,15 @@ public:
 	}
 
 protected:
-	class CommandArguments
+	struct CommandArguments : public GenericCommandDescription::CommandArguments
 	{
-	public:
-		CommandInput& input;
 		DataManager& data_manager;
 		DataManager::ChangeIndicator& change_indicator;
-		std::ostream& output_for_log;
-		std::ostream& output_for_text;
-		HeterogeneousStorage& heterostorage;
 
-		CommandArguments(
-				CommandInput& input,
-				DataManager& data_manager,
-				DataManager::ChangeIndicator& change_indicator,
-				std::ostream& output_for_log,
-				std::ostream& output_for_text,
-				HeterogeneousStorage& heterostorage) :
-					input(input),
-					data_manager(data_manager),
-					change_indicator(change_indicator),
-					output_for_log(output_for_log),
-					output_for_text(output_for_text),
-					heterostorage(heterostorage)
+		explicit CommandArguments(CommandRecord& command_record) :
+			GenericCommandDescription::CommandArguments(command_record),
+			data_manager(*command_record.data_manager_ptr),
+			change_indicator(command_record.change_indicator)
 		{
 		}
 	};
