@@ -45,7 +45,6 @@ protected:
 
 	bool on_after_command_for_data_manager(const common::scripting::GenericCommandForDataManager::CommandRecord& cr)
 	{
-		std::cout << cr.output_text;
 		print_command_log(cr);
 		return cr.successful;
 	}
@@ -83,10 +82,11 @@ private:
 	template<typename CommandRecord>
 	void print_command_log(const CommandRecord& cr)
 	{
-		std::cout << cr.output_log;
-		if(!cr.output_error.empty())
+		std::cout << cr.heterostorage.text;
+		std::cout << cr.heterostorage.log;
+		if(!cr.heterostorage.error.empty())
 		{
-			std::cout << "Error: " << cr.output_error << "\n";
+			std::cout << "Error: " << cr.heterostorage.error << "\n";
 		}
 	}
 };

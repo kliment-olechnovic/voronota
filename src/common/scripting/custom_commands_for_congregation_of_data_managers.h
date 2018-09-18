@@ -230,10 +230,11 @@ public:
 
 					data_manager.reset_atoms_by_swapping(atoms);
 
-					cargs.summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
+					SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
+					summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
 					cargs.output_for_log << "Read atoms from file '" << atoms_file << "' ";
-					cargs.summary_of_atoms.print(cargs.output_for_log);
+					summary_of_atoms.print(cargs.output_for_log);
 					cargs.output_for_log << "\n";
 
 					cargs.change_indicator.added_objects.insert(object_new);
@@ -241,8 +242,6 @@ public:
 					cargs.congregation_of_data_managers.set_all_objects_picked(false);
 					cargs.congregation_of_data_managers.set_object_picked(object_new, true);
 					cargs.change_indicator.changed_objects_picks=true;
-
-					cargs.extra_values["loaded"]=true;
 				}
 			}
 			else
@@ -331,10 +330,11 @@ public:
 
 				data_manager.reset_atoms_by_swapping(atoms);
 
-				cargs.summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
+				SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
+				summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
 				cargs.output_for_log << "Read atoms from file '" << file << "' ";
-				cargs.summary_of_atoms.print(cargs.output_for_log);
+				summary_of_atoms.print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 
 				if(!contacts.empty())
@@ -355,8 +355,6 @@ public:
 				cargs.congregation_of_data_managers.set_all_objects_picked(false);
 				cargs.congregation_of_data_managers.set_object_picked(object_new, true);
 				cargs.change_indicator.changed_objects_picks=true;
-
-				cargs.extra_values["loaded"]=true;
 			}
 		}
 	};
@@ -536,12 +534,14 @@ public:
 			cargs.input.mark_all_unnamed_values_as_used();
 			cargs.input.assert_nothing_unusable();
 
+			SummaryOfAtoms summary_of_atoms;
+
 			if(names.empty())
 			{
 				std::vector<DataManager*> dms=cargs.congregation_of_data_managers.get_objects(false, true);
 				for(std::size_t i=0;i<dms.size();i++)
 				{
-					cargs.summary_of_atoms.feed(SummaryOfAtoms(dms[i]->atoms()));
+					summary_of_atoms.feed(SummaryOfAtoms(dms[i]->atoms()));
 				}
 			}
 			else
@@ -552,15 +552,15 @@ public:
 					DataManager* dm=cargs.congregation_of_data_managers.get_object(names[i]);
 					if(dm!=0)
 					{
-						cargs.summary_of_atoms.feed(SummaryOfAtoms(dm->atoms()));
+						summary_of_atoms.feed(SummaryOfAtoms(dm->atoms()));
 					}
 				}
 			}
 
-			if(cargs.summary_of_atoms.bounding_box.filled)
+			if(summary_of_atoms.bounding_box.filled)
 			{
-				cargs.extra_values["zoom"]=true;
-				cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+				cargs.heterostorage.summaries_of_atoms["zoomed"]=summary_of_atoms;
+				cargs.output_for_log << "Bounding box: (" << summary_of_atoms.bounding_box.p_min << ") (" << summary_of_atoms.bounding_box.p_max << ")\n";
 			}
 			else
 			{
