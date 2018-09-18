@@ -3,7 +3,6 @@
 
 #include "command_input.h"
 #include "congregation_of_data_managers.h"
-#include "change_indicator_for_congregation_of_data_managers.h"
 #include "heterogeneous_storage.h"
 
 namespace common
@@ -20,7 +19,7 @@ public:
 		CommandInput command_input;
 		CongregationOfDataManagers* congregation_of_data_managers;
 		bool successful;
-		ChangeIndicatorForCongregationOfDataManagers change_indicator;
+		CongregationOfDataManagers::ChangeIndicator change_indicator;
 		HeterogeneousStorage heterostorage;
 
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
@@ -72,14 +71,14 @@ protected:
 	public:
 		CommandInput& input;
 		CongregationOfDataManagers& congregation_of_data_managers;
-		ChangeIndicatorForCongregationOfDataManagers& change_indicator;
+		CongregationOfDataManagers::ChangeIndicator& change_indicator;
 		std::ostream& output_for_log;
 		HeterogeneousStorage& heterostorage;
 
 		CommandArguments(
 				CommandInput& input,
 				CongregationOfDataManagers& congregation_of_data_managers,
-				ChangeIndicatorForCongregationOfDataManagers& change_indicator,
+				CongregationOfDataManagers::ChangeIndicator& change_indicator,
 				std::ostream& output_for_log,
 				HeterogeneousStorage& heterostorage) :
 					input(input),
