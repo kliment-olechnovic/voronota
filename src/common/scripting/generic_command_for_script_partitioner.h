@@ -1,10 +1,8 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_SCRIPT_PARTITIONER_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_SCRIPT_PARTITIONER_H_
 
-#include "command_input.h"
+#include "generic_command_record.h"
 #include "script_partitioner.h"
-#include "basic_types.h"
-#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -15,17 +13,13 @@ namespace scripting
 class GenericCommandForScriptPartitioner
 {
 public:
-	struct CommandRecord
+	struct CommandRecord : public GenericCommandRecord
 	{
-		CommandInput command_input;
 		ScriptPartitioner* script_partitioner_ptr;
-		bool successful;
-		HeterogeneousStorage heterostorage;
 
-		explicit CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
-			command_input(command_input),
-			script_partitioner_ptr(&script_partitioner),
-			successful(false)
+		CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
+			GenericCommandRecord(command_input),
+			script_partitioner_ptr(&script_partitioner)
 		{
 		}
 	};

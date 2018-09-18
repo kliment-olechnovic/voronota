@@ -1,9 +1,8 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 
-#include "command_input.h"
+#include "generic_command_record.h"
 #include "data_manager.h"
-#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -14,18 +13,14 @@ namespace scripting
 class GenericCommandForDataManager
 {
 public:
-	struct CommandRecord
+	struct CommandRecord : public GenericCommandRecord
 	{
-		CommandInput command_input;
 		DataManager* data_manager_ptr;
-		bool successful;
 		DataManager::ChangeIndicator change_indicator;
-		HeterogeneousStorage heterostorage;
 
-		explicit CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
-			command_input(command_input),
-			data_manager_ptr(&data_manager),
-			successful(false)
+		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
+			GenericCommandRecord(command_input),
+			data_manager_ptr(&data_manager)
 		{
 		}
 	};

@@ -1,9 +1,8 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 
-#include "command_input.h"
+#include "generic_command_record.h"
 #include "congregation_of_data_managers.h"
-#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -14,18 +13,14 @@ namespace scripting
 class GenericCommandForCongregationOfDataManagers
 {
 public:
-	struct CommandRecord
+	struct CommandRecord : public GenericCommandRecord
 	{
-		CommandInput command_input;
-		CongregationOfDataManagers* congregation_of_data_managers;
-		bool successful;
+		CongregationOfDataManagers* congregation_of_data_managers_ptr;
 		CongregationOfDataManagers::ChangeIndicator change_indicator;
-		HeterogeneousStorage heterostorage;
 
-		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
-			command_input(command_input),
-			congregation_of_data_managers(&congregation_of_data_managers),
-			successful(false)
+		CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
+			GenericCommandRecord(command_input),
+			congregation_of_data_managers_ptr(&congregation_of_data_managers)
 		{
 		}
 	};
