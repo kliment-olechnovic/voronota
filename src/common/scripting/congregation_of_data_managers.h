@@ -12,6 +12,55 @@ namespace scripting
 class CongregationOfDataManagers
 {
 public:
+	struct ChangeIndicator
+	{
+		bool changed_objects;
+		bool changed_objects_names;
+		bool changed_objects_picks;
+		bool changed_objects_visibilities;
+		std::set<DataManager*> added_objects;
+		std::set<DataManager*> deleted_objects;
+		std::map<DataManager*, DataManager::ChangeIndicator> handled_objects;
+
+		ChangeIndicator() :
+			changed_objects(false),
+			changed_objects_names(false),
+			changed_objects_picks(false),
+			changed_objects_visibilities(false)
+		{
+		}
+
+		void ensure_correctness()
+		{
+			changed_objects=(changed_objects || !added_objects.empty() || !deleted_objects.empty());
+			changed_objects_names=(changed_objects_names || changed_objects);
+			changed_objects_picks=(changed_objects_picks || changed_objects);
+			changed_objects_visibilities=(changed_objects_visibilities || changed_objects);
+		}
+
+		bool changed() const
+		{
+			return (changed_objects
+					|| changed_objects_names
+					|| changed_objects_picks
+					|| changed_objects_visibilities
+					|| !added_objects.empty()
+					|| !deleted_objects.empty());
+		}
+
+		bool handled_objects_changed() const
+		{
+			for(std::map<DataManager*, DataManager::ChangeIndicator>::const_iterator it=handled_objects.begin();it!=handled_objects.end();++it)
+			{
+				if(it->second.changed())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+
 	struct ObjectAttributes
 	{
 		std::string name;
