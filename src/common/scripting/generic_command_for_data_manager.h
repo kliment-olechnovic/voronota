@@ -4,6 +4,7 @@
 #include "command_input.h"
 #include "data_manager.h"
 #include "change_indicator_for_data_manager.h"
+#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -20,14 +21,7 @@ public:
 		DataManager* data_manager_ptr;
 		bool successful;
 		ChangeIndicatorForDataManager change_indicator;
-		std::string output_log;
-		std::string output_error;
-		std::string output_text;
-		std::vector<std::size_t> output_set_of_atoms_ids;
-		std::vector<std::size_t> output_set_of_contacts_ids;
-		SummaryOfAtoms summary_of_atoms;
-		SummaryOfContacts summary_of_contacts;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage heterostorage;
 
 		explicit CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
 			command_input(command_input),
@@ -53,7 +47,7 @@ public:
 		std::ostringstream output_for_errors;
 		std::ostringstream output_for_text;
 
-		CommandArguments cargs(record.command_input, data_manager, record.change_indicator, output_for_log, output_for_text);
+		CommandArguments cargs(record.command_input, data_manager, record.change_indicator, output_for_log, output_for_text, record.heterostorage);
 
 		try
 		{
@@ -66,17 +60,9 @@ public:
 			output_for_errors << e.what();
 		}
 
-		record.output_log=output_for_log.str();
-		record.output_error=output_for_errors.str();
-		record.output_text=output_for_text.str();
-
-		record.output_set_of_atoms_ids=std::vector<std::size_t>(cargs.output_set_of_atoms_ids.begin(), cargs.output_set_of_atoms_ids.end());
-		record.output_set_of_contacts_ids=std::vector<std::size_t>(cargs.output_set_of_contacts_ids.begin(), cargs.output_set_of_contacts_ids.end());
-
-		record.summary_of_atoms=cargs.summary_of_atoms;
-		record.summary_of_contacts=cargs.summary_of_contacts;
-
-		record.extra_values.swap(cargs.extra_values);
+		record.heterostorage.log+=output_for_log.str();
+		record.heterostorage.error+=output_for_errors.str();
+		record.heterostorage.text+=output_for_text.str();
 
 		record.change_indicator.ensure_correctness();
 
@@ -97,23 +83,21 @@ protected:
 		ChangeIndicatorForDataManager& change_indicator;
 		std::ostream& output_for_log;
 		std::ostream& output_for_text;
-		std::set<std::size_t> output_set_of_atoms_ids;
-		std::set<std::size_t> output_set_of_contacts_ids;
-		SummaryOfAtoms summary_of_atoms;
-		SummaryOfContacts summary_of_contacts;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage& heterostorage;
 
 		CommandArguments(
 				CommandInput& input,
 				DataManager& data_manager,
 				ChangeIndicatorForDataManager& change_indicator,
 				std::ostream& output_for_log,
-				std::ostream& output_for_text) :
+				std::ostream& output_for_text,
+				HeterogeneousStorage& heterostorage) :
 					input(input),
 					data_manager(data_manager),
 					change_indicator(change_indicator),
 					output_for_log(output_for_log),
-					output_for_text(output_for_text)
+					output_for_text(output_for_text),
+					heterostorage(heterostorage)
 		{
 		}
 	};

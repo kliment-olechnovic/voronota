@@ -4,6 +4,7 @@
 #include "command_input.h"
 #include "congregation_of_data_managers.h"
 #include "change_indicator_for_congregation_of_data_managers.h"
+#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -20,10 +21,7 @@ public:
 		CongregationOfDataManagers* congregation_of_data_managers;
 		bool successful;
 		ChangeIndicatorForCongregationOfDataManagers change_indicator;
-		std::string output_log;
-		std::string output_error;
-		SummaryOfAtoms summary_of_atoms;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage heterostorage;
 
 		explicit CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
 			command_input(command_input),
@@ -48,7 +46,7 @@ public:
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 
-		CommandArguments cargs(record.command_input, congregation_of_data_managers, record.change_indicator, output_for_log);
+		CommandArguments cargs(record.command_input, congregation_of_data_managers, record.change_indicator, output_for_log, record.heterostorage);
 
 		try
 		{
@@ -60,12 +58,8 @@ public:
 			output_for_errors << e.what();
 		}
 
-		record.output_log=output_for_log.str();
-		record.output_error=output_for_errors.str();
-
-		record.summary_of_atoms=cargs.summary_of_atoms;
-
-		record.extra_values.swap(cargs.extra_values);
+		record.heterostorage.log+=output_for_log.str();
+		record.heterostorage.error+=output_for_errors.str();
 
 		record.change_indicator.ensure_correctness();
 
@@ -80,18 +74,19 @@ protected:
 		CongregationOfDataManagers& congregation_of_data_managers;
 		ChangeIndicatorForCongregationOfDataManagers& change_indicator;
 		std::ostream& output_for_log;
-		SummaryOfAtoms summary_of_atoms;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage& heterostorage;
 
 		CommandArguments(
 				CommandInput& input,
 				CongregationOfDataManagers& congregation_of_data_managers,
 				ChangeIndicatorForCongregationOfDataManagers& change_indicator,
-				std::ostream& output_for_log) :
+				std::ostream& output_for_log,
+				HeterogeneousStorage& heterostorage) :
 					input(input),
 					congregation_of_data_managers(congregation_of_data_managers),
 					change_indicator(change_indicator),
-					output_for_log(output_for_log)
+					output_for_log(output_for_log),
+					heterostorage(heterostorage)
 		{
 		}
 	};

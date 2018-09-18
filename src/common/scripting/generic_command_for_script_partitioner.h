@@ -4,6 +4,7 @@
 #include "command_input.h"
 #include "script_partitioner.h"
 #include "basic_types.h"
+#include "heterogeneous_storage.h"
 
 namespace common
 {
@@ -19,9 +20,7 @@ public:
 		CommandInput command_input;
 		ScriptPartitioner* script_partitioner_ptr;
 		bool successful;
-		std::string output_log;
-		std::string output_error;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage heterostorage;
 
 		explicit CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
 			command_input(command_input),
@@ -46,7 +45,7 @@ public:
 		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 
-		CommandArguments cargs(record.command_input, script_partitioner, output_for_log);
+		CommandArguments cargs(record.command_input, script_partitioner, output_for_log, record.heterostorage);
 
 		try
 		{
@@ -58,10 +57,8 @@ public:
 			output_for_errors << e.what();
 		}
 
-		record.output_log=output_for_log.str();
-		record.output_error=output_for_errors.str();
-
-		record.extra_values.swap(cargs.extra_values);
+		record.heterostorage.log+=output_for_log.str();
+		record.heterostorage.error+=output_for_errors.str();
 
 		return record;
 	}
@@ -73,15 +70,17 @@ protected:
 		CommandInput& input;
 		ScriptPartitioner& script_partitioner;
 		std::ostream& output_for_log;
-		std::map<std::string, VariantValue> extra_values;
+		HeterogeneousStorage& heterostorage;
 
 		CommandArguments(
 				CommandInput& input,
 				ScriptPartitioner& script_partitioner,
-				std::ostream& output_for_log) :
+				std::ostream& output_for_log,
+				HeterogeneousStorage& heterostorage) :
 					input(input),
 					script_partitioner(script_partitioner),
-					output_for_log(output_for_log)
+					output_for_log(output_for_log),
+					heterostorage(heterostorage)
 		{
 		}
 	};

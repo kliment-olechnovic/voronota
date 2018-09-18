@@ -176,7 +176,7 @@ public:
 				}
 			}
 
-			cargs.output_set_of_atoms_ids.swap(ids);
+			cargs.heterostorage.vectors_of_ids["selection_of_atoms"]=std::vector<std::size_t>(ids.begin(), ids.end());
 		}
 	};
 
@@ -878,10 +878,10 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), ids);
-			cargs.extra_values["zoom"]=true;
+			SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["zoomed"];
+			summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), ids);
 
-			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+			cargs.output_for_log << "Bounding box: (" << summary_of_atoms.bounding_box.p_min << ") (" << summary_of_atoms.bounding_box.p_max << ")\n";
 		}
 	};
 
@@ -1449,7 +1449,7 @@ public:
 				}
 			}
 
-			cargs.output_set_of_contacts_ids.swap(ids);
+			cargs.heterostorage.vectors_of_ids["selection_of_contacts"]=std::vector<std::size_t>(ids.begin(), ids.end());
 		}
 	};
 
@@ -1992,10 +1992,10 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), atoms_ids);
-			cargs.extra_values["zoom"]=true;
+			SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["zoomed"];
+			summary_of_atoms=SummaryOfAtoms(cargs.data_manager.atoms(), atoms_ids);
 
-			cargs.output_for_log << "Bounding box: (" << cargs.summary_of_atoms.bounding_box.p_min << ") (" << cargs.summary_of_atoms.bounding_box.p_max << ")\n";
+			cargs.output_for_log << "Bounding box: (" << summary_of_atoms.bounding_box.p_min << ") (" << summary_of_atoms.bounding_box.p_max << ")\n";
 		}
 	};
 
