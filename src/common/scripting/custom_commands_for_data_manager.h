@@ -182,20 +182,6 @@ public:
 
 	class tag_atoms : public GenericCommandForDataManager
 	{
-	public:
-		tag_atoms() : positive_(true)
-		{
-		}
-
-		explicit tag_atoms(const bool positive) : positive_(positive)
-		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -220,14 +206,7 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
-				if(positive_)
-				{
-					atom.value.props.tags.insert(tag);
-				}
-				else
-				{
-					atom.value.props.tags.erase(tag);
-				}
+				atom.value.props.tags.insert(tag);
 			}
 
 			{
@@ -235,17 +214,6 @@ public:
 				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
 				cargs.output_for_log << "\n";
 			}
-		}
-
-	private:
-		bool positive_;
-	};
-
-	class untag_atoms : public tag_atoms
-	{
-	public:
-		untag_atoms() : tag_atoms(false)
-		{
 		}
 	};
 
@@ -286,6 +254,57 @@ public:
 						atom.value.props.tags.insert(tag_for_beta);
 					}
 				}
+			}
+		}
+	};
+
+	class delete_tags_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const bool all=cargs.input.get_flag("all");
+			const std::vector<std::string> tags=cargs.input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!all && tags.empty())
+			{
+				throw std::runtime_error(std::string("No tags specified."));
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_tags=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
+				if(all)
+				{
+					atom.value.props.tags.clear();
+				}
+				else
+				{
+					for(std::size_t i=0;i<tags.size();i++)
+					{
+						atom.value.props.tags.erase(tags[i]);
+					}
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
 			}
 		}
 	};
@@ -331,6 +350,57 @@ public:
 				else
 				{
 					atom.value.props.adjuncts[name]=value;
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class delete_adjuncts_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const bool all=cargs.input.get_flag("all");
+			const std::vector<std::string> adjuncts=cargs.input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!all && adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("No adjuncts specified."));
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
+				if(all)
+				{
+					atom.value.props.adjuncts.clear();
+				}
+				else
+				{
+					for(std::size_t i=0;i<adjuncts.size();i++)
+					{
+						atom.value.props.adjuncts.erase(adjuncts[i]);
+					}
 				}
 			}
 
@@ -1511,20 +1581,6 @@ public:
 
 	class tag_contacts : public GenericCommandForDataManager
 	{
-	public:
-		tag_contacts() : positive_(true)
-		{
-		}
-
-		explicit tag_contacts(const bool positive) : positive_(positive)
-		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1544,18 +1600,62 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_tags=true;
+			cargs.change_indicator.changed_contacts_tags=true;
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
-				if(positive_)
+				contact.value.props.tags.insert(tag);
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class delete_tags_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const bool all=cargs.input.get_flag("all");
+			const std::vector<std::string> tags=cargs.input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!all && tags.empty())
+			{
+				throw std::runtime_error(std::string("No tags specified."));
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			cargs.change_indicator.changed_contacts_tags=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
+				if(all)
 				{
-					contact.value.props.tags.insert(tag);
+					contact.value.props.tags.clear();
 				}
 				else
 				{
-					contact.value.props.tags.erase(tag);
+					for(std::size_t i=0;i<tags.size();i++)
+					{
+						contact.value.props.tags.erase(tags[i]);
+					}
 				}
 			}
 
@@ -1565,17 +1665,6 @@ public:
 				cargs.output_for_log << "\n";
 			}
 		}
-
-	private:
-		bool positive_;
-	};
-
-	class untag_contacts : public tag_contacts
-	{
-	public:
-		untag_contacts() : tag_contacts(false)
-		{
-		}
 	};
 
 	class adjunct_contacts : public GenericCommandForDataManager
@@ -1583,7 +1672,7 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_contacts_availability();
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
@@ -1607,7 +1696,7 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
+			cargs.change_indicator.changed_contacts_adjuncts=true;
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
@@ -1629,6 +1718,58 @@ public:
 			}
 		}
 	};
+
+	class delete_adjuncts_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const bool all=cargs.input.get_flag("all");
+			const std::vector<std::string> adjuncts=cargs.input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!all && adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("No adjuncts specified."));
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			cargs.change_indicator.changed_contacts_adjuncts=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
+				if(all)
+				{
+					contact.value.props.adjuncts.clear();
+				}
+				else
+				{
+					for(std::size_t i=0;i<adjuncts.size();i++)
+					{
+						contact.value.props.adjuncts.erase(adjuncts[i]);
+					}
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
 
 	class mark_contacts : public GenericCommandForDataManager
 	{

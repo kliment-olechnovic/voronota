@@ -114,15 +114,15 @@ Summary of contacts: count=5 drawable=1 area=33.8164
 Set selection of contacts named 'cs1'
 
 
-> set-alias multitag "tag-contacts {--min-area ${1}} med; untag-contacts {--min-area ${2}} --tag med"
-Set alias 'multitag' to 'tag-contacts {--min-area ${1}} med; untag-contacts {--min-area ${2}} --tag med'
+> set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"
+Set alias 'multitag' to 'tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med'
 
 
 > tag-contacts {--min-area 6.0} med
 Summary of contacts: count=2636 drawable=5 area=29458.6
 
 
-> untag-contacts {--min-area 8.0} --tag med
+> delete-tags-of-contacts {--min-area 8.0} --tags med
 Summary of contacts: count=1675 drawable=1 area=22795.8
 
 
@@ -161,7 +161,7 @@ Set selection of atoms named 'as1'
 Summary of atoms: count=1083 volume=20982.5
 
 
-> untag-atoms {A<CA,CB>} pept
+> delete-tags-of-atoms {A<CA,CB>} --tags pept
 Summary of atoms: count=420 volume=9160.61
 
 

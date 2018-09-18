@@ -33,7 +33,7 @@ load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
 
-set-alias multitag "tag-contacts {--min-area \${1}} med; untag-contacts {--min-area \${2}} --tag med"
+set-alias multitag "tag-contacts {--min-area \${1}} med; delete-tags-of-contacts {--min-area \${2}} --tags med"
 
 multitag 6.0 8.0 # Arguments to an alias are unnamed
 
@@ -43,7 +43,7 @@ print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --exp
 
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 tag-atoms {A<C,N,O,CA,CB>} --tag pept
-untag-atoms {A<CA,CB>} pept
+delete-tags-of-atoms {A<CA,CB>} --tags pept
 print-atoms {as1} --sort tags --file '$SUBDIR/printed_atoms'
 print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 
