@@ -215,6 +215,8 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
+			cargs.change_indicator.changed_atoms_tags=true;
+
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
@@ -259,6 +261,8 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
+			cargs.change_indicator.changed_atoms_tags=true;
+
 			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 			{
 				Atom& atom=cargs.data_manager.atoms_mutable()[i];
@@ -282,6 +286,58 @@ public:
 						atom.value.props.tags.insert(tag_for_beta);
 					}
 				}
+			}
+		}
+	};
+
+	class adjunct_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const bool value_present=cargs.input.is_option("value");
+			const double value=cargs.input.get_value_or_default<double>("value", 0.0);
+			const bool remove=cargs.input.get_flag("remove");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(value_present && remove)
+			{
+				throw std::runtime_error(std::string("Value setting and removing options used together."));
+			}
+
+			assert_adjunct_name_input(name);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[*it];
+				if(remove)
+				{
+					atom.value.props.adjuncts.erase(name);
+				}
+				else
+				{
+					atom.value.props.adjuncts[name]=value;
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of atoms: ";
+				SummaryOfAtoms(cargs.data_manager.atoms(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
 			}
 		}
 	};
@@ -1488,6 +1544,8 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
+			cargs.change_indicator.changed_atoms_tags=true;
+
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
@@ -1517,6 +1575,58 @@ public:
 	public:
 		untag_contacts() : tag_contacts(false)
 		{
+		}
+	};
+
+	class adjunct_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const bool value_present=cargs.input.is_option("value");
+			const double value=cargs.input.get_value_or_default<double>("value", 0.0);
+			const bool remove=cargs.input.get_flag("remove");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(value_present && remove)
+			{
+				throw std::runtime_error(std::string("Value setting and removing options used together."));
+			}
+
+			assert_adjunct_name_input(name);
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				Contact& contact=cargs.data_manager.contacts_mutable()[*it];
+				if(remove)
+				{
+					contact.value.props.adjuncts.erase(name);
+				}
+				else
+				{
+					contact.value.props.adjuncts[name]=value;
+				}
+			}
+
+			{
+				cargs.output_for_log << "Summary of contacts: ";
+				SummaryOfContacts(cargs.data_manager.contacts(), ids).print(cargs.output_for_log, true);
+				cargs.output_for_log << "\n";
+			}
 		}
 	};
 
@@ -2652,13 +2762,29 @@ private:
 		{
 			throw std::runtime_error(std::string("Tag is empty."));
 		}
-		else if(tag.find_first_of("{}()[]<>,;.:\\/+*/'\"@#$%^&`~?|")!=std::string::npos)
+		else if(tag.find_first_of(" {}()[]<>,;.:\\/+*/'\"@#$%^&`~?|")!=std::string::npos)
 		{
 			throw std::runtime_error(std::string("Tag contains invalid symbols."));
 		}
 		else if(tag.rfind("-", 0)==0)
 		{
 			throw std::runtime_error(std::string("Tag starts with invalid symbol."));
+		}
+	}
+
+	static void assert_adjunct_name_input(const std::string& name)
+	{
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("Adjunct name is empty."));
+		}
+		else if(name.find_first_of(" {}()[]<>,;.:\\/+*/'\"@#$%^&`~?|=")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("Adjunct name contains invalid symbols."));
+		}
+		else if(name.rfind("-", 0)==0)
+		{
+			throw std::runtime_error(std::string("Adjunct name starts with invalid symbol."));
 		}
 	}
 
