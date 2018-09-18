@@ -21,6 +21,8 @@ public:
 		bool changed_contacts;
 		bool changed_atoms_tags;
 		bool changed_contacts_tags;
+		bool changed_atoms_adjuncts;
+		bool changed_contacts_adjuncts;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
 
@@ -29,6 +31,8 @@ public:
 			changed_contacts(false),
 			changed_atoms_tags(false),
 			changed_contacts_tags(false),
+			changed_atoms_adjuncts(false),
+			changed_contacts_adjuncts(false),
 			changed_atoms_display_states(false),
 			changed_contacts_display_states(false)
 		{
@@ -39,6 +43,8 @@ public:
 			changed_contacts=(changed_contacts || changed_atoms);
 			changed_atoms_tags=(changed_atoms_tags || changed_atoms);
 			changed_contacts_tags=(changed_contacts_tags || changed_contacts);
+			changed_atoms_adjuncts=(changed_atoms_adjuncts || changed_atoms);
+			changed_contacts_adjuncts=(changed_contacts_adjuncts || changed_contacts);
 			changed_atoms_display_states=(changed_atoms_display_states || changed_atoms);
 			changed_contacts_display_states=(changed_contacts_display_states || changed_contacts);
 		}
@@ -49,6 +55,8 @@ public:
 					|| changed_contacts
 					|| changed_atoms_tags
 					|| changed_contacts_tags
+					|| changed_atoms_adjuncts
+					|| changed_contacts_adjuncts
 					|| changed_atoms_display_states
 					|| changed_contacts_display_states);
 		}
