@@ -467,19 +467,108 @@ public:
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
 			const std::size_t id=(*it);
-
 			restricted_atoms.push_back(atoms_[id]);
 			restricted_atoms_display_states.push_back(atoms_display_states_[id]);
-
-			DisplayState& ds=restricted_atoms_display_states.back();
-			for(std::size_t i=0;i<ds.visuals.size();i++)
-			{
-				ds.visuals[i].implemented=(atoms_representations_descriptor_.implemented_always.count(i)>0);
-			}
 		}
 
 		atoms_.swap(restricted_atoms);
 		atoms_display_states_.swap(restricted_atoms_display_states);
+
+		reset_data_dependent_on_atoms();
+	}
+
+	void transform_coordinates_of_atoms(
+			const std::set<std::size_t>& ids,
+			const std::vector<double>& pre_translation_vector,
+			const std::vector<double>& rotation_matrix,
+			const std::vector<double>& rotation_axis_and_angle,
+			const std::vector<double>& post_translation_vector)
+	{
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No ids provided to transform atoms."));
+		}
+
+		if(pre_translation_vector.empty() && post_translation_vector.empty() && rotation_matrix.empty() && rotation_axis_and_angle.empty())
+		{
+			throw std::runtime_error(std::string("No transformations provided to transform atoms."));
+		}
+
+		if(*ids.rbegin()>=atoms_.size())
+		{
+			throw std::runtime_error(std::string("Invalid ids provided to transform atoms."));
+		}
+
+		if(!pre_translation_vector.empty() && pre_translation_vector.size()!=3)
+		{
+			throw std::runtime_error(std::string("Invalid translation-before vector provided to transform atoms."));
+		}
+
+		if(!post_translation_vector.empty() && post_translation_vector.size()!=3)
+		{
+			throw std::runtime_error(std::string("Invalid translation-after vector provided to transform atoms."));
+		}
+
+		if(!rotation_matrix.empty() && rotation_matrix.size()!=9)
+		{
+			throw std::runtime_error(std::string("Invalid rotation matrix provided to transform atoms."));
+		}
+
+		if(!rotation_axis_and_angle.empty() && rotation_axis_and_angle.size()!=4)
+		{
+			throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
+		}
+
+		if(!pre_translation_vector.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				BallValue& ball=atoms_[*it].value;
+				ball.x+=pre_translation_vector[0];
+				ball.y+=pre_translation_vector[1];
+				ball.z+=pre_translation_vector[2];
+			}
+		}
+
+		if(!rotation_matrix.empty())
+		{
+			const std::vector<double>& m=rotation_matrix;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				BallValue& ball=atoms_[*it].value;
+				const apollota::SimplePoint p(ball);
+				ball.x=p.x*m[0]+p.y*m[1]+p.z*m[2];
+				ball.y=p.x*m[3]+p.y*m[4]+p.z*m[5];
+				ball.z=p.x*m[6]+p.y*m[7]+p.z*m[8];
+			}
+		}
+
+		if(!rotation_axis_and_angle.empty())
+		{
+			apollota::Rotation rotation(
+					apollota::SimplePoint(rotation_axis_and_angle[0], rotation_axis_and_angle[1], rotation_axis_and_angle[2]),
+					rotation_axis_and_angle[3]);
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				BallValue& ball=atoms_[*it].value;
+				const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
+				ball.x=p.x;
+				ball.y=p.y;
+				ball.z=p.z;
+			}
+		}
+
+		if(!post_translation_vector.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				BallValue& ball=atoms_[*it].value;
+				ball.x+=post_translation_vector[0];
+				ball.y+=post_translation_vector[1];
+				ball.z+=post_translation_vector[2];
+			}
+		}
 
 		reset_data_dependent_on_atoms();
 	}
@@ -816,6 +905,14 @@ private:
 
 	void reset_data_dependent_on_atoms()
 	{
+		for(std::size_t i=0;i<atoms_display_states_.size();i++)
+		{
+			for(std::size_t j=0;j<atoms_display_states_[i].visuals.size();j++)
+			{
+				atoms_display_states_[i].visuals[j].implemented=(atoms_representations_descriptor_.implemented_always.count(j)>0);
+			}
+		}
+
 		contacts_.clear();
 		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
