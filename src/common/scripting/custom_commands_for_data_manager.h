@@ -9,6 +9,7 @@
 
 #include "generic_command_for_data_manager.h"
 #include "table_printing.h"
+#include "basic_assertions.h"
 
 namespace common
 {
@@ -233,7 +234,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			assert_tag_input(tag);
+			assert_tag_input(tag, false);
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
@@ -393,7 +394,7 @@ public:
 				throw std::runtime_error(std::string("Value setting and removing options used together."));
 			}
 
-			assert_adjunct_name_input(name);
+			assert_adjunct_name_input(name, false);
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
@@ -1666,7 +1667,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			assert_tag_input(tag);
+			assert_tag_input(tag, false);
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
@@ -1779,7 +1780,7 @@ public:
 				throw std::runtime_error(std::string("Value setting and removing options used together."));
 			}
 
-			assert_adjunct_name_input(name);
+			assert_adjunct_name_input(name, false);
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
@@ -2971,57 +2972,6 @@ private:
 			sliced_vector.push_back(full_vector.at(*it));
 		}
 		return sliced_vector;
-	}
-
-	static void assert_selection_name_input(const std::string& name, const bool allow_empty)
-	{
-		if(name.empty())
-		{
-			if(!allow_empty)
-			{
-				throw std::runtime_error(std::string("Selection name is empty."));
-			}
-		}
-		else if(name.find_first_of("{}()[]<>,;.:\\/+*/='\"@#$%^&`~?|")!=std::string::npos)
-		{
-			throw std::runtime_error(std::string("Selection name contains invalid symbols."));
-		}
-		else if(name.rfind("-", 0)==0 || name.rfind("_", 0)==0)
-		{
-			throw std::runtime_error(std::string("Selection name starts with invalid symbol."));
-		}
-	}
-
-	static void assert_tag_input(const std::string& tag)
-	{
-		if(tag.empty())
-		{
-			throw std::runtime_error(std::string("Tag is empty."));
-		}
-		else if(tag.find_first_of(" {}()[]<>,;.:\\/+*/'\"@#$%^&`~?|")!=std::string::npos)
-		{
-			throw std::runtime_error(std::string("Tag contains invalid symbols."));
-		}
-		else if(tag.rfind("-", 0)==0)
-		{
-			throw std::runtime_error(std::string("Tag starts with invalid symbol."));
-		}
-	}
-
-	static void assert_adjunct_name_input(const std::string& name)
-	{
-		if(name.empty())
-		{
-			throw std::runtime_error(std::string("Adjunct name is empty."));
-		}
-		else if(name.find_first_of(" {}()[]<>,;.:\\/+*/'\"@#$%^&`~?|=")!=std::string::npos)
-		{
-			throw std::runtime_error(std::string("Adjunct name contains invalid symbols."));
-		}
-		else if(name.rfind("-", 0)==0)
-		{
-			throw std::runtime_error(std::string("Adjunct name starts with invalid symbol."));
-		}
 	}
 
 	static std::size_t find_name_id(const std::vector<std::string>& names, const std::string& name)
