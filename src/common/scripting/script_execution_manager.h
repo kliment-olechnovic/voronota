@@ -40,19 +40,14 @@ public:
 		set_command("source", new CustomCommandsForScriptPartitioner::source());
 
 		set_command("list-objects", new CustomCommandsForCongregationOfDataManagers::list_objects());
-		set_command("delete-all-objects", new CustomCommandsForCongregationOfDataManagers::delete_all_objects());
 		set_command("delete-objects", new CustomCommandsForCongregationOfDataManagers::delete_objects());
 		set_command("rename-object", new CustomCommandsForCongregationOfDataManagers::rename_object());
 		set_command("copy-object", new CustomCommandsForCongregationOfDataManagers::copy_object());
 		set_command("load-atoms", new CustomCommandsForCongregationOfDataManagers::load_atoms());
 		set_command("load-atoms-and-contacts", new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts());
-		set_command("pick-all-objects", new CustomCommandsForCongregationOfDataManagers::pick_all_objects());
-		set_command("unpick-all-objects", new CustomCommandsForCongregationOfDataManagers::unpick_all_objects());
 		set_command("pick-objects", new CustomCommandsForCongregationOfDataManagers::pick_objects());
 		set_command("pick-more-objects", new CustomCommandsForCongregationOfDataManagers::pick_more_objects());
 		set_command("unpick-objects", new CustomCommandsForCongregationOfDataManagers::unpick_objects());
-		set_command("show-all-objects", new CustomCommandsForCongregationOfDataManagers::show_all_objects());
-		set_command("hide-all-objects", new CustomCommandsForCongregationOfDataManagers::hide_all_objects());
 		set_command("show-objects", new CustomCommandsForCongregationOfDataManagers::show_objects());
 		set_command("hide-objects", new CustomCommandsForCongregationOfDataManagers::hide_objects());
 		set_command("zoom-by-objects", new CustomCommandsForCongregationOfDataManagers::zoom_by_objects());

@@ -38,50 +38,51 @@ public:
 		}
 	};
 
-	class delete_all_objects : public GenericCommandForCongregationOfDataManagers
-	{
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			cargs.congregation_of_data_managers.assert_objects_availability();
-			std::vector<DataManager*> ptrs=cargs.congregation_of_data_managers.delete_all_objects();
-			cargs.change_indicator.deleted_objects.insert(ptrs.begin(), ptrs.end());
-			cargs.output_for_log << "Removed all objects\n";
-		}
-	};
-
 	class delete_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
-			cargs.input.assert_nothing_unusable();
+			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			if(names.empty())
+			const bool all=cargs.input.get_flag("all");
+
+			if(all)
 			{
-				throw std::runtime_error(std::string("No object names provided."));
+				cargs.input.assert_nothing_unusable();
+				std::vector<DataManager*> ptrs=cargs.congregation_of_data_managers.delete_all_objects();
+				cargs.change_indicator.deleted_objects.insert(ptrs.begin(), ptrs.end());
+				cargs.output_for_log << "Removed all objects\n";
 			}
-
-			cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-			for(std::size_t i=0;i<names.size();i++)
+			else
 			{
-				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(names[i]);
-				if(ptr!=0)
+				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+				cargs.input.mark_all_unnamed_values_as_used();
+				cargs.input.assert_nothing_unusable();
+
+				if(names.empty())
 				{
-					cargs.change_indicator.deleted_objects.insert(ptr);
+					throw std::runtime_error(std::string("No object names provided."));
 				}
-			}
 
-			cargs.output_for_log << "Removed objects:\n";
-			for(std::size_t i=0;i<names.size();i++)
-			{
-				cargs.output_for_log << "  '" << names[i] << "'";
+				cargs.congregation_of_data_managers.assert_objects_availability(names);
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					DataManager* ptr=cargs.congregation_of_data_managers.delete_object(names[i]);
+					if(ptr!=0)
+					{
+						cargs.change_indicator.deleted_objects.insert(ptr);
+					}
+				}
+
+				cargs.output_for_log << "Removed objects:\n";
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.output_for_log << "  '" << names[i] << "'";
+				}
+				cargs.output_for_log << "\n";
 			}
-			cargs.output_for_log << "\n";
 		}
 	};
 
@@ -359,38 +360,6 @@ public:
 		}
 	};
 
-	class pick_all_objects : public GenericCommandForCongregationOfDataManagers
-	{
-	public:
-		pick_all_objects() : positive_(true)
-		{
-		}
-
-		explicit pick_all_objects(const bool positive) : positive_(positive)
-		{
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			cargs.congregation_of_data_managers.assert_objects_availability();
-			cargs.congregation_of_data_managers.set_all_objects_picked(positive_);
-			cargs.change_indicator.changed_objects_picks=true;
-		}
-
-	private:
-		bool positive_;
-	};
-
-	class unpick_all_objects : public pick_all_objects
-	{
-	public:
-		unpick_all_objects() : pick_all_objects(false)
-		{
-		}
-	};
-
 	class pick_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	public:
@@ -405,26 +374,40 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
-			cargs.input.assert_nothing_unusable();
+			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			if(names.empty())
+			const bool all=cargs.input.get_flag("all");
+
+			if(all)
 			{
-				throw std::runtime_error(std::string("No object names provided."));
-			}
-
-			cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-			if(positive_ && !add_)
-			{
-				cargs.congregation_of_data_managers.set_all_objects_picked(false);
-			}
-
-			for(std::size_t i=0;i<names.size();i++)
-			{
-				cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
+				cargs.input.assert_nothing_unusable();
+				cargs.congregation_of_data_managers.set_all_objects_picked(positive_);
 				cargs.change_indicator.changed_objects_picks=true;
+			}
+			else
+			{
+				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+				cargs.input.mark_all_unnamed_values_as_used();
+				cargs.input.assert_nothing_unusable();
+
+				if(names.empty())
+				{
+					throw std::runtime_error(std::string("No object names provided."));
+				}
+
+				cargs.congregation_of_data_managers.assert_objects_availability(names);
+
+				if(positive_ && !add_)
+				{
+					cargs.congregation_of_data_managers.set_all_objects_picked(false);
+				}
+
+				cargs.change_indicator.changed_objects_picks=true;
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
+				}
 			}
 		}
 
@@ -449,38 +432,6 @@ public:
 		}
 	};
 
-	class show_all_objects : public GenericCommandForCongregationOfDataManagers
-	{
-	public:
-		show_all_objects() : positive_(true)
-		{
-		}
-
-		explicit show_all_objects(const bool positive) : positive_(positive)
-		{
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			cargs.congregation_of_data_managers.assert_objects_availability();
-			cargs.congregation_of_data_managers.set_all_objects_visible(positive_);
-			cargs.change_indicator.changed_objects_visibilities=true;
-		}
-
-	private:
-		bool positive_;
-	};
-
-	class hide_all_objects : public show_all_objects
-	{
-	public:
-		hide_all_objects() : show_all_objects(false)
-		{
-		}
-	};
-
 	class show_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	public:
@@ -495,21 +446,36 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
-			cargs.input.assert_nothing_unusable();
+			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			if(names.empty())
+			const bool all=cargs.input.get_flag("all");
+
+			if(all)
 			{
-				throw std::runtime_error(std::string("No object names provided."));
-			}
-
-			cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-			for(std::size_t i=0;i<names.size();i++)
-			{
-				cargs.congregation_of_data_managers.set_object_visible(names[i], positive_);
+				cargs.input.assert_nothing_unusable();
+				cargs.congregation_of_data_managers.set_all_objects_visible(positive_);
 				cargs.change_indicator.changed_objects_visibilities=true;
+			}
+			else
+			{
+				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+				cargs.input.mark_all_unnamed_values_as_used();
+
+				cargs.input.assert_nothing_unusable();
+
+				if(names.empty())
+				{
+					throw std::runtime_error(std::string("No object names provided."));
+				}
+
+				cargs.congregation_of_data_managers.assert_objects_availability(names);
+
+				cargs.change_indicator.changed_objects_visibilities=true;
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.congregation_of_data_managers.set_object_visible(names[i], positive_);
+				}
 			}
 		}
 

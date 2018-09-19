@@ -88,7 +88,7 @@ Objects:
   'structure.pdb_2' *
 
 
-> delete-all-objects
+> delete-objects -all
 Removed all objects
 
 

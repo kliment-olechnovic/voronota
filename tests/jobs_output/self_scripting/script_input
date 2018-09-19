@@ -17,7 +17,7 @@ save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-fact
 save-contacts './jobs_output/self_scripting/plain_contacts'
 
 list-objects
-delete-all-objects
+delete-objects -all
 load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
 list-objects
 
