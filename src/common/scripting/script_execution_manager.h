@@ -77,7 +77,6 @@ public:
 		set_command("write-atoms-as-pymol-cgo", new CustomCommandsForDataManager::write_atoms_as_pymol_cgo());
 		set_command("write-cartoon-as-pymol-cgo", new CustomCommandsForDataManager::write_cartoon_as_pymol_cgo());
 		set_command("list-selections-of-atoms", new CustomCommandsForDataManager::list_selections_of_atoms());
-		set_command("delete-all-selections-of-atoms", new CustomCommandsForDataManager::delete_all_selections_of_atoms());
 		set_command("delete-selections-of-atoms", new CustomCommandsForDataManager::delete_selections_of_atoms());
 		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
@@ -98,7 +97,6 @@ public:
 		set_command("zoom-by-contacts", new CustomCommandsForDataManager::zoom_by_contacts());
 		set_command("write-contacts-as-pymol-cgo", new CustomCommandsForDataManager::write_contacts_as_pymol_cgo());
 		set_command("list-selections-of-contacts", new CustomCommandsForDataManager::list_selections_of_contacts());
-		set_command("delete-all-selections-of-contacts", new CustomCommandsForDataManager::delete_all_selections_of_contacts());
 		set_command("delete-selections-of-contacts", new CustomCommandsForDataManager::delete_selections_of_contacts());
 		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
 		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
