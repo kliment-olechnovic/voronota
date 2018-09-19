@@ -1293,24 +1293,6 @@ public:
 		}
 	};
 
-	class delete_all_selections_of_atoms : public GenericCommandForDataManager
-	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			cargs.data_manager.assert_atoms_selections_availability();
-			cargs.data_manager.selection_manager().delete_atoms_selections();
-			cargs.output_for_log << "Removed all selections of atoms\n";
-		}
-	};
-
 	class delete_selections_of_atoms : public GenericCommandForDataManager
 	{
 	public:
@@ -1324,29 +1306,41 @@ public:
 		{
 			cargs.data_manager.assert_atoms_selections_availability();
 
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
+			const bool all=cargs.input.get_flag("all");
 
-			cargs.input.assert_nothing_unusable();
-
-			if(names.empty())
+			if(all)
 			{
-				throw std::runtime_error(std::string("No atoms selections names provided."));
+				cargs.input.assert_nothing_unusable();
+				cargs.data_manager.selection_manager().delete_atoms_selections();
+				cargs.output_for_log << "Removed all selections of atoms\n";
 			}
-
-			cargs.data_manager.assert_atoms_selections_availability(names);
-
-			for(std::size_t i=0;i<names.size();i++)
+			else
 			{
-				cargs.data_manager.selection_manager().delete_atoms_selection(names[i]);
-			}
 
-			cargs.output_for_log << "Removed selections of atoms:";
-			for(std::size_t i=0;i<names.size();i++)
-			{
-				cargs.output_for_log << " " << names[i];
+				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+				cargs.input.mark_all_unnamed_values_as_used();
+
+				cargs.input.assert_nothing_unusable();
+
+				if(names.empty())
+				{
+					throw std::runtime_error(std::string("No atoms selections names specified."));
+				}
+
+				cargs.data_manager.assert_atoms_selections_availability(names);
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.data_manager.selection_manager().delete_atoms_selection(names[i]);
+				}
+
+				cargs.output_for_log << "Removed selections of atoms:";
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.output_for_log << " " << names[i];
+				}
+				cargs.output_for_log << "\n";
 			}
-			cargs.output_for_log << "\n";
 		}
 	};
 
@@ -2414,24 +2408,6 @@ public:
 		}
 	};
 
-	class delete_all_selections_of_contacts : public GenericCommandForDataManager
-	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
-	protected:
-		void run(CommandArguments& cargs)
-		{
-			cargs.input.assert_nothing_unusable();
-			cargs.data_manager.assert_contacts_selections_availability();
-			cargs.data_manager.selection_manager().delete_contacts_selections();
-			cargs.output_for_log << "Removed all selections of contacts\n";
-		}
-	};
-
 	class delete_selections_of_contacts : public GenericCommandForDataManager
 	{
 	public:
@@ -2445,29 +2421,40 @@ public:
 		{
 			cargs.data_manager.assert_contacts_selections_availability();
 
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
+			const bool all=cargs.input.get_flag("all");
 
-			cargs.input.assert_nothing_unusable();
-
-			if(names.empty())
+			if(all)
 			{
-				throw std::runtime_error(std::string("No contacts selections names provided."));
+				cargs.input.assert_nothing_unusable();
+				cargs.data_manager.selection_manager().delete_contacts_selections();
+				cargs.output_for_log << "Removed all selections of contacts\n";
 			}
-
-			cargs.data_manager.assert_contacts_selections_availability(names);
-
-			for(std::size_t i=0;i<names.size();i++)
+			else
 			{
-				cargs.data_manager.selection_manager().delete_contacts_selection(names[i]);
-			}
+				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
+				cargs.input.mark_all_unnamed_values_as_used();
 
-			cargs.output_for_log << "Removed selections of contacts:";
-			for(std::size_t i=0;i<names.size();i++)
-			{
-				cargs.output_for_log << " " << names[i];
+				cargs.input.assert_nothing_unusable();
+
+				if(names.empty())
+				{
+					throw std::runtime_error(std::string("No contacts selections names specified."));
+				}
+
+				cargs.data_manager.assert_contacts_selections_availability(names);
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.data_manager.selection_manager().delete_contacts_selection(names[i]);
+				}
+
+				cargs.output_for_log << "Removed selections of contacts:";
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					cargs.output_for_log << " " << names[i];
+				}
+				cargs.output_for_log << "\n";
 			}
-			cargs.output_for_log << "\n";
 		}
 	};
 
