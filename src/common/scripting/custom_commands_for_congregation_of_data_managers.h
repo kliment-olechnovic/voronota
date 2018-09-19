@@ -546,8 +546,8 @@ public:
 		{
 			const std::string target_name=cargs.input.get_value<std::string>("target");
 			const std::string model_name=cargs.input.get_value<std::string>("model");
-			const std::string target_sel=cargs.input.get_value_or_default<std::string>("t-sel", "{-no-solvent -min-seq-sep 1}");
-			const std::string model_sel=cargs.input.get_value_or_default<std::string>("m-sel", "{-no-solvent -min-seq-sep 1}");
+			const std::string target_sel=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
+			const std::string model_sel=cargs.input.get_value_or_default<std::string>("m-sel", "{--no-solvent --min-seq-sep 1}");
 			const std::string target_atom_scores=cargs.input.get_value_or_default<std::string>("t-atom-scores", "");
 			const std::string model_atom_scores=cargs.input.get_value_or_default<std::string>("m-atom-scores", "");
 			const std::string target_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-inter-atom-scores", "");
@@ -556,6 +556,7 @@ public:
 			const std::string model_residue_scores=cargs.input.get_value_or_default<std::string>("m-residue-scores", "");
 			const std::string target_inter_residue_scores=cargs.input.get_value_or_default<std::string>("t-inter-residue-scores", "");
 			const std::string model_inter_residue_scores=cargs.input.get_value_or_default<std::string>("m-inter-residue-scores", "");
+			const unsigned int smoothing_window=cargs.input.get_value_or_default<unsigned int>("smoothing-window", 0);
 			const bool ignore_residue_names=cargs.input.get_flag("ignore-residue-names");
 
 			cargs.input.assert_nothing_unusable();
@@ -620,8 +621,8 @@ public:
 			DataManager::ChangeIndicator target_dm_ci;
 			DataManager::ChangeIndicator model_dm_ci;
 
-			write_adjuncts(bundle, target_ids, target_atom_scores, target_residue_scores, target_inter_atom_scores, target_inter_residue_scores, target_dm, target_dm_ci);
-			write_adjuncts(bundle, model_ids, model_atom_scores, model_residue_scores, model_inter_atom_scores, model_inter_residue_scores, model_dm, model_dm_ci);
+			write_adjuncts(bundle, smoothing_window, target_ids, target_atom_scores, target_residue_scores, target_inter_atom_scores, target_inter_residue_scores, target_dm, target_dm_ci);
+			write_adjuncts(bundle, smoothing_window, model_ids, model_atom_scores, model_residue_scores, model_inter_atom_scores, model_inter_residue_scores, model_dm, model_dm_ci);
 
 			cargs.change_indicator.handled_objects[&target_dm]=target_dm_ci;
 			cargs.change_indicator.handled_objects[&model_dm]=model_dm_ci;
@@ -644,6 +645,7 @@ public:
 	private:
 		static void write_adjuncts(
 				const ConstructionOfCADScore::BundleOfCADScoreInformation& bundle,
+				const unsigned int smoothing_window,
 				const std::set<std::size_t>& contact_ids,
 				const std::string& adjunct_atom_scores,
 				const std::string& adjunct_residue_scores,
@@ -669,11 +671,12 @@ public:
 					}
 					if(!adjunct_residue_scores.empty())
 					{
-						std::map<ConstructionOfCADScore::CRAD, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
-								bundle.map_of_residue_cad_descriptors.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
-						if(jt!=bundle.map_of_residue_cad_descriptors.end())
+						std::map<ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
+						std::map<ConstructionOfCADScore::CRAD, double>::const_iterator jt=
+								smoothed_residue_scores.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
+						if(jt!=smoothed_residue_scores.end())
 						{
-							atom.value.props.adjuncts[adjunct_residue_scores]=jt->second.score();
+							atom.value.props.adjuncts[adjunct_residue_scores]=jt->second;
 							dm_ci.changed_atoms_adjuncts=true;
 						}
 					}
@@ -694,8 +697,11 @@ public:
 									bundle.map_of_inter_atom_cad_descriptors.find(crads);
 							if(jt!=bundle.map_of_inter_atom_cad_descriptors.end())
 							{
-								contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
-								dm_ci.changed_contacts_adjuncts=true;
+								if(jt->second.target_area_sum>0.0)
+								{
+									contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+									dm_ci.changed_contacts_adjuncts=true;
+								}
 							}
 						}
 						if(!adjunct_inter_residue_scores.empty())
@@ -707,8 +713,11 @@ public:
 									bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
 							if(jt!=bundle.map_of_inter_residue_cad_descriptors.end())
 							{
-								contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
-								dm_ci.changed_contacts_adjuncts=true;
+								if(jt->second.target_area_sum>0.0)
+								{
+									contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+									dm_ci.changed_contacts_adjuncts=true;
+								}
 							}
 						}
 					}
