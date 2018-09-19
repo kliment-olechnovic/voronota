@@ -1,7 +1,10 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 
+#include "../construction_of_cad_score.h"
+
 #include "generic_command_for_congregation_of_data_managers.h"
+#include "basic_assertions.h"
 
 namespace common
 {
@@ -533,6 +536,194 @@ public:
 				cargs.output_for_log << "No visible objects to zoom by.\n";
 			}
 
+		}
+	};
+
+	class cad_score : public GenericCommandForCongregationOfDataManagers
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string target_name=cargs.input.get_value<std::string>("target");
+			const std::string model_name=cargs.input.get_value<std::string>("model");
+			const std::string target_sel=cargs.input.get_value_or_default<std::string>("t-sel", "{-no-solvent -min-seq-sep 1}");
+			const std::string model_sel=cargs.input.get_value_or_default<std::string>("m-sel", "{-no-solvent -min-seq-sep 1}");
+			const std::string target_atom_scores=cargs.input.get_value_or_default<std::string>("t-atom-scores", "");
+			const std::string model_atom_scores=cargs.input.get_value_or_default<std::string>("m-atom-scores", "");
+			const std::string target_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-inter-atom-scores", "");
+			const std::string model_inter_atom_scores=cargs.input.get_value_or_default<std::string>("m-inter-atom-scores", "");
+			const std::string target_residue_scores=cargs.input.get_value_or_default<std::string>("t-residue-scores", "");
+			const std::string model_residue_scores=cargs.input.get_value_or_default<std::string>("m-residue-scores", "");
+			const std::string target_inter_residue_scores=cargs.input.get_value_or_default<std::string>("t-inter-residue-scores", "");
+			const std::string model_inter_residue_scores=cargs.input.get_value_or_default<std::string>("m-inter-residue-scores", "");
+			const bool ignore_residue_names=cargs.input.get_flag("ignore-residue-names");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(target_name==model_name)
+			{
+				throw std::runtime_error(std::string("Target and model are the same."));
+			}
+
+			assert_adjunct_name_input(target_atom_scores, true);
+			assert_adjunct_name_input(model_atom_scores, true);
+			assert_adjunct_name_input(target_inter_atom_scores, true);
+			assert_adjunct_name_input(model_inter_atom_scores, true);
+			assert_adjunct_name_input(target_residue_scores, true);
+			assert_adjunct_name_input(model_residue_scores, true);
+			assert_adjunct_name_input(target_inter_residue_scores, true);
+			assert_adjunct_name_input(model_inter_residue_scores, true);
+
+			cargs.congregation_of_data_managers.assert_object_availability(target_name);
+			cargs.congregation_of_data_managers.assert_object_availability(model_name);
+
+			DataManager& target_dm=*cargs.congregation_of_data_managers.get_object(target_name);
+			DataManager& model_dm=*cargs.congregation_of_data_managers.get_object(model_name);
+
+			target_dm.assert_contacts_availability();
+			model_dm.assert_contacts_availability();
+
+			const std::set<std::size_t> target_ids=target_dm.selection_manager().select_contacts(std::set<std::size_t>(), target_sel, false);
+			if(target_ids.empty())
+			{
+				throw std::runtime_error(std::string("No target contacts selected."));
+			}
+
+			const std::set<std::size_t> model_ids=model_dm.selection_manager().select_contacts(std::set<std::size_t>(), model_sel, false);
+			if(model_ids.empty())
+			{
+				throw std::runtime_error(std::string("No model contacts selected."));
+			}
+
+			ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters;
+			parameters.ignore_residue_names=ignore_residue_names;
+			parameters.atom_level=!(
+					target_atom_scores.empty()
+					&& model_atom_scores.empty()
+					&& target_inter_atom_scores.empty()
+					&& model_inter_atom_scores.empty());
+
+			ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
+			if(!ConstructionOfCADScore::construct_bundle_of_cadscore_information(
+					parameters,
+					target_dm.atoms(),
+					target_dm.contacts(),
+					target_ids,
+					model_dm.atoms(),
+					model_dm.contacts(),
+					model_ids,
+					bundle))
+			{
+				throw std::runtime_error(std::string("Failed to calculate CAD-score."));
+			}
+
+			DataManager::ChangeIndicator target_dm_ci;
+			DataManager::ChangeIndicator model_dm_ci;
+
+			write_adjuncts(bundle, target_ids, target_atom_scores, target_residue_scores, target_inter_atom_scores, target_inter_residue_scores, target_dm, target_dm_ci);
+			write_adjuncts(bundle, model_ids, model_atom_scores, model_residue_scores, model_inter_atom_scores, model_inter_residue_scores, model_dm, model_dm_ci);
+
+			cargs.change_indicator.handled_objects[&target_dm]=target_dm_ci;
+			cargs.change_indicator.handled_objects[&model_dm]=model_dm_ci;
+
+			if(parameters.atom_level)
+			{
+				cargs.output_for_log << "atom_level_global ";
+				print_cad_descriptor(cargs.output_for_log, bundle.atom_level_global_descriptor);
+				cargs.output_for_log << "\n";
+			}
+
+			if(parameters.residue_level)
+			{
+				cargs.output_for_log << "residue_level_global ";
+				print_cad_descriptor(cargs.output_for_log, bundle.residue_level_global_descriptor);
+				cargs.output_for_log << "\n";
+			}
+		}
+
+	private:
+		static void write_adjuncts(
+				const ConstructionOfCADScore::BundleOfCADScoreInformation& bundle,
+				const std::set<std::size_t>& contact_ids,
+				const std::string& adjunct_atom_scores,
+				const std::string& adjunct_residue_scores,
+				const std::string& adjunct_inter_atom_scores,
+				const std::string& adjunct_inter_residue_scores,
+				DataManager& dm,
+				DataManager::ChangeIndicator& dm_ci)
+		{
+			if(!adjunct_atom_scores.empty() || !adjunct_residue_scores.empty())
+			{
+				for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
+				{
+					ConstructionOfCADScore::Atom& atom=dm.atoms_mutable()[i];
+					if(!adjunct_atom_scores.empty())
+					{
+						std::map<ConstructionOfCADScore::CRAD, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+								bundle.map_of_atom_cad_descriptors.find(atom.crad);
+						if(jt!=bundle.map_of_atom_cad_descriptors.end())
+						{
+							atom.value.props.adjuncts[adjunct_atom_scores]=jt->second.score();
+							dm_ci.changed_atoms_adjuncts=true;
+						}
+					}
+					if(!adjunct_residue_scores.empty())
+					{
+						std::map<ConstructionOfCADScore::CRAD, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+								bundle.map_of_residue_cad_descriptors.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
+						if(jt!=bundle.map_of_residue_cad_descriptors.end())
+						{
+							atom.value.props.adjuncts[adjunct_residue_scores]=jt->second.score();
+							dm_ci.changed_atoms_adjuncts=true;
+						}
+					}
+				}
+			}
+
+			if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_residue_scores.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+				{
+					ConstructionOfCADScore::Contact& contact=dm.contacts_mutable()[*it];
+					const ConstructionOfCADScore::CRADsPair crads=ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
+					if(crads.valid())
+					{
+						if(!adjunct_inter_atom_scores.empty())
+						{
+							std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+									bundle.map_of_inter_atom_cad_descriptors.find(crads);
+							if(jt!=bundle.map_of_inter_atom_cad_descriptors.end())
+							{
+								contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+								dm_ci.changed_contacts_adjuncts=true;
+							}
+						}
+						if(!adjunct_inter_residue_scores.empty())
+						{
+							const ConstructionOfCADScore::CRADsPair ir_crads(
+									crads.a.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names),
+									crads.b.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
+							std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+									bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
+							if(jt!=bundle.map_of_inter_residue_cad_descriptors.end())
+							{
+								contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+								dm_ci.changed_contacts_adjuncts=true;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		static void print_cad_descriptor(std::ostream& output, const ConstructionOfCADScore::CADDescriptor& cadd)
+		{
+			output << cadd.score();
+			output << " " << cadd.target_area_sum
+					<< " " << cadd.model_area_sum
+					<< " " << cadd.raw_differences_sum
+					<< " " << cadd.constrained_differences_sum
+					<< " " << cadd.model_target_area_sum;
 		}
 	};
 

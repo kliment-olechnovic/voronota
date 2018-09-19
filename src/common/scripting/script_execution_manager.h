@@ -51,6 +51,7 @@ public:
 		set_command("show-objects", new CustomCommandsForCongregationOfDataManagers::show_objects());
 		set_command("hide-objects", new CustomCommandsForCongregationOfDataManagers::hide_objects());
 		set_command("zoom-by-objects", new CustomCommandsForCongregationOfDataManagers::zoom_by_objects());
+		set_command("cad-score", new CustomCommandsForCongregationOfDataManagers::cad_score());
 
 		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
 		set_command("move-atoms", new CustomCommandsForDataManager::move_atoms());

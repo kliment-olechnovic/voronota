@@ -500,6 +500,11 @@ public:
 	{
 		return (a==v || b==v);
 	}
+
+	bool valid() const
+	{
+		return (a.valid() && b.valid());
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)
