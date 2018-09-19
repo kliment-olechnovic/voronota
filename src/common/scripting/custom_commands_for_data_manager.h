@@ -295,6 +295,11 @@ public:
 				throw std::runtime_error(std::string("No tags specified."));
 			}
 
+			if(all && !tags.empty())
+			{
+				throw std::runtime_error(std::string("Conflicting specification of tags."));
+			}
+
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
 			{
@@ -408,6 +413,11 @@ public:
 			if(!all && adjuncts.empty())
 			{
 				throw std::runtime_error(std::string("No adjuncts specified."));
+			}
+
+			if(all && !adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
 			}
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
@@ -1671,6 +1681,11 @@ public:
 				throw std::runtime_error(std::string("No tags specified."));
 			}
 
+			if(all && !tags.empty())
+			{
+				throw std::runtime_error(std::string("Conflicting specification of tags."));
+			}
+
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
 			{
@@ -1784,6 +1799,11 @@ public:
 			if(!all && adjuncts.empty())
 			{
 				throw std::runtime_error(std::string("No adjuncts specified."));
+			}
+
+			if(all && !adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
 			}
 
 			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
