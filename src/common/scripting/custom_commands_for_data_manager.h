@@ -100,6 +100,42 @@ public:
 		}
 	};
 
+	class center_atoms : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms("{}", false);
+			if(ids.size()!=cargs.data_manager.atoms().size())
+			{
+				throw std::runtime_error(std::string("Not all atoms selected."));
+			}
+
+			const SummaryOfAtoms summary_of_atoms(cargs.data_manager.atoms(), ids);
+
+			const apollota::SimplePoint translation=apollota::SimplePoint(0.0, 0.0, 0.0)-((summary_of_atoms.bounding_box.p_min+summary_of_atoms.bounding_box.p_max)*0.5);
+
+			std::vector<double> translation_vector(3);
+			translation_vector[0]=translation.x;
+			translation_vector[1]=translation.y;
+			translation_vector[2]=translation.z;
+
+			cargs.data_manager.transform_coordinates_of_atoms(ids, translation_vector, std::vector<double>(), std::vector<double>(), std::vector<double>());
+
+			cargs.change_indicator.changed_atoms=true;
+		}
+	};
+
 	class save_atoms : public GenericCommandForDataManager
 	{
 	protected:
