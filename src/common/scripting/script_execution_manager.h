@@ -98,6 +98,7 @@ public:
 		set_command("delete-selections-of-contacts", new CustomCommandsForDataManager::delete_selections_of_contacts());
 		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
 		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
+		set_command("calculate-burial-depth", new CustomCommandsForDataManager::calculate_burial_depth());
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));

@@ -6,6 +6,7 @@
 
 #include "../writing_atomic_balls_in_pdb_format.h"
 #include "../construction_of_structural_cartoon.h"
+#include "../conversion_of_descriptors.h"
 
 #include "generic_command_for_data_manager.h"
 #include "table_printing.h"
@@ -2614,6 +2615,53 @@ public:
 				cargs.output_for_log << " ";
 				SummaryOfContacts(cargs.data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
+			}
+		}
+	};
+
+	class calculate_burial_depth : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const int min_seq_sep=cargs.input.get_value_or_default<int>("min-seq-sep", 1);
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(name, false);
+
+			std::set<ChainResidueAtomDescriptorsPair> set_of_contacts;
+			for(std::size_t i=0;i<cargs.data_manager.contacts().size();i++)
+			{
+				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(cargs.data_manager.atoms(), cargs.data_manager.contacts()[i]);
+				if(ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, min_seq_sep, ChainResidueAtomDescriptor::null_num(), true))
+				{
+					set_of_contacts.insert(crads);
+				}
+			}
+
+			const std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth=ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(name);
+				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
+				if(it!=map_crad_to_depth.end())
+				{
+					atom.value.props.adjuncts[name]=it->second;
+				}
 			}
 		}
 	};
