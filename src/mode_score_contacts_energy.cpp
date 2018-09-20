@@ -1,7 +1,7 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-#include "common/contacts_scoring_utilities.h"
+#include "common/construction_of_voromqa_score.h"
 
 namespace
 {
@@ -42,40 +42,18 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No potential values input.");
 	}
 
-	std::map<CRADsPair, EnergyDescriptor> inter_atom_energy_descriptors;
+	common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters;
+	parameters.ignorable_max_seq_sep=ignorable_max_seq_sep;
+	parameters.depth=depth;
+
+	common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle;
+
+	if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(parameters, map_of_potential_values, map_of_contacts, bundle))
 	{
-		for(std::map<InteractionName, double>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-		{
-			const CRADsPair& crads=it->first.crads;
-			EnergyDescriptor& ed=inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, ignorable_max_seq_sep, false) && !common::check_crads_pair_for_peptide_bond(crads))
-			{
-				ed.total_area=(it->second);
-				ed.contacts_count=1;
-				std::map<InteractionName, double>::const_iterator potential_value_it=
-						map_of_potential_values.find(InteractionName(common::generalize_crads_pair(crads), it->first.tag));
-				if(potential_value_it!=map_of_potential_values.end())
-				{
-					ed.energy=ed.total_area*(potential_value_it->second);
-				}
-				else
-				{
-					ed.strange_area=ed.total_area;
-				}
-			}
-		}
-		auxiliaries::IOUtilities().write_map_to_file(inter_atom_energy_descriptors, inter_atom_scores_file);
+		throw std::runtime_error("Failed to calculate energies.");
 	}
 
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(inter_atom_energy_descriptors, depth);
-	auxiliaries::IOUtilities().write_map_to_file(atom_energy_descriptors, atom_scores_file);
-
-	{
-		EnergyDescriptor global_ed;
-		for(std::map< CRADsPair, EnergyDescriptor >::const_iterator it=inter_atom_energy_descriptors.begin();it!=inter_atom_energy_descriptors.end();++it)
-		{
-			global_ed.add(it->second);
-		}
-		std::cout << "global " << global_ed << "\n";
-	}
+	auxiliaries::IOUtilities().write_map_to_file(bundle.inter_atom_energy_descriptors, inter_atom_scores_file);
+	auxiliaries::IOUtilities().write_map_to_file(bundle.atom_energy_descriptors, atom_scores_file);
+	std::cout << "global " << bundle.global_energy_descriptor << "\n";
 }
