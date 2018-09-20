@@ -2,6 +2,7 @@
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 
 #include "../construction_of_cad_score.h"
+#include "../conversion_of_descriptors.h"
 
 #include "generic_command_for_congregation_of_data_managers.h"
 #include "basic_assertions.h"
@@ -607,12 +608,8 @@ public:
 			ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
 			if(!ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 					parameters,
-					target_dm.atoms(),
-					target_dm.contacts(),
-					target_ids,
-					model_dm.atoms(),
-					model_dm.contacts(),
-					model_ids,
+					collect_map_of_contacts(target_dm.atoms(), target_dm.contacts(), target_ids),
+					collect_map_of_contacts(model_dm.atoms(), model_dm.contacts(), model_ids),
 					bundle))
 			{
 				throw std::runtime_error(std::string("Failed to calculate CAD-score."));
@@ -643,6 +640,28 @@ public:
 		}
 
 	private:
+		static std::map<ChainResidueAtomDescriptorsPair, double> collect_map_of_contacts(
+				const std::vector<Atom>& atoms,
+				const std::vector<Contact>& contacts,
+				const std::set<std::size_t>& contact_ids)
+		{
+			std::map<ChainResidueAtomDescriptorsPair, double> map_of_contacts;
+			for(std::set<std::size_t>::const_iterator it_contact_ids=contact_ids.begin();it_contact_ids!=contact_ids.end();++it_contact_ids)
+			{
+				const std::size_t contact_id=(*it_contact_ids);
+				if(contact_id<contacts.size())
+				{
+					const Contact& contact=contacts[contact_id];
+					const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
+					if(crads.valid())
+					{
+						map_of_contacts[crads]=contact.value.area;
+					}
+				}
+			}
+			return map_of_contacts;
+		}
+
 		static void write_adjuncts(
 				const ConstructionOfCADScore::BundleOfCADScoreInformation& bundle,
 				const unsigned int smoothing_window,
@@ -658,7 +677,7 @@ public:
 			{
 				for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
 				{
-					ConstructionOfCADScore::Atom& atom=dm.atoms_mutable()[i];
+					Atom& atom=dm.atoms_mutable()[i];
 					if(!adjunct_atom_scores.empty())
 					{
 						std::map<ConstructionOfCADScore::CRAD, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
@@ -687,7 +706,7 @@ public:
 			{
 				for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 				{
-					ConstructionOfCADScore::Contact& contact=dm.contacts_mutable()[*it];
+					Contact& contact=dm.contacts_mutable()[*it];
 					const ConstructionOfCADScore::CRADsPair crads=ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
 					if(crads.valid())
 					{

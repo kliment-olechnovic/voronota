@@ -1,7 +1,7 @@
 #ifndef COMMON_CONSTRUCTION_OF_CAD_SCORE_H_
 #define COMMON_CONSTRUCTION_OF_CAD_SCORE_H_
 
-#include "conversion_of_descriptors.h"
+#include "chain_residue_atom_descriptor.h"
 
 namespace common
 {
@@ -11,8 +11,6 @@ class ConstructionOfCADScore
 public:
 	typedef ChainResidueAtomDescriptor CRAD;
 	typedef ChainResidueAtomDescriptorsPair CRADsPair;
-	typedef ConstructionOfAtomicBalls::AtomicBall Atom;
-	typedef ConstructionOfContacts::Contact Contact;
 
 	struct CADDescriptor
 	{
@@ -168,46 +166,7 @@ public:
 		return true;
 	}
 
-	static bool construct_bundle_of_cadscore_information(
-			const ParametersToConstructBundleOfCADScoreInformation& parameters,
-			const std::vector<Atom>& target_atoms,
-			const std::vector<Contact>& target_contacts,
-			const std::set<std::size_t>& target_contact_ids,
-			const std::vector<Atom>& model_atoms,
-			const std::vector<Contact>& model_contacts,
-			const std::set<std::size_t>& model_contact_ids,
-			BundleOfCADScoreInformation& bundle)
-	{
-		return construct_bundle_of_cadscore_information(
-				parameters,
-				collect_map_of_contacts(target_atoms, target_contacts, target_contact_ids),
-				collect_map_of_contacts(model_atoms, model_contacts, model_contact_ids),
-				bundle);
-	}
-
 private:
-	static std::map<CRADsPair, double> collect_map_of_contacts(
-			const std::vector<Atom>& atoms,
-			const std::vector<Contact>& contacts,
-			const std::set<std::size_t>& contact_ids)
-	{
-		std::map<CRADsPair, double> map_of_contacts;
-		for(std::set<std::size_t>::const_iterator it_contact_ids=contact_ids.begin();it_contact_ids!=contact_ids.end();++it_contact_ids)
-		{
-			const std::size_t contact_id=(*it_contact_ids);
-			if(contact_id<contacts.size())
-			{
-				const Contact& contact=contacts[contact_id];
-				const CRADsPair crads=ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
-				if(crads.valid())
-				{
-					map_of_contacts[crads]=contact.value.area;
-				}
-			}
-		}
-		return map_of_contacts;
-	}
-
 	static std::map<CRADsPair, double> summarize_pair_mapping_of_values(const std::map<CRADsPair, double>& map, const bool ignore_residue_names)
 	{
 		std::map< CRADsPair, double > result;
