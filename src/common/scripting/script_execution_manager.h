@@ -55,6 +55,7 @@ public:
 
 		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
 		set_command("move-atoms", new CustomCommandsForDataManager::move_atoms());
+		set_command("center-atoms", new CustomCommandsForDataManager::center_atoms());
 		set_command("save-atoms", new CustomCommandsForDataManager::save_atoms());
 		set_command("select-atoms", new CustomCommandsForDataManager::select_atoms());
 		set_command("tag-atoms", new CustomCommandsForDataManager::tag_atoms());
