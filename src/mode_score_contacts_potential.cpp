@@ -1,14 +1,14 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-#include "modescommon/contacts_scoring_utilities.h"
+#include "common/contacts_scoring_utilities.h"
 
 namespace
 {
 
 typedef common::ChainResidueAtomDescriptor CRAD;
 typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
-typedef modescommon::InteractionName InteractionName;
+typedef common::InteractionName InteractionName;
 
 inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input, std::map<InteractionName, double>& map_of_interactions_areas)
 {
@@ -17,7 +17,7 @@ inline bool read_and_accumulate_to_map_of_interactions_areas(std::istream& input
 	input >> interaction >> area;
 	if(!input.fail())
 	{
-		map_of_interactions_areas[InteractionName(modescommon::generalize_crads_pair(interaction.crads), interaction.tag)]+=area;
+		map_of_interactions_areas[InteractionName(common::generalize_crads_pair(interaction.crads), interaction.tag)]+=area;
 		return true;
 	}
 	return false;

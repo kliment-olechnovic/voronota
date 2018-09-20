@@ -1,16 +1,16 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-#include "modescommon/contacts_scoring_utilities.h"
-#include "modescommon/statistics_utilities.h"
+#include "common/contacts_scoring_utilities.h"
+#include "common/statistics_utilities.h"
 
 namespace
 {
 
 typedef common::ChainResidueAtomDescriptor CRAD;
-typedef modescommon::EnergyDescriptor EnergyDescriptor;
+typedef common::EnergyDescriptor EnergyDescriptor;
 
-inline bool read_energy_descriptors_and_accumulate_to_map_of_value_stats(std::istream& input, std::map<CRAD, modescommon::ValueStat>& map_of_value_stats)
+inline bool read_energy_descriptors_and_accumulate_to_map_of_value_stats(std::istream& input, std::map<CRAD, common::ValueStat>& map_of_value_stats)
 {
 	CRAD crad;
 	EnergyDescriptor ed;
@@ -19,7 +19,7 @@ inline bool read_energy_descriptors_and_accumulate_to_map_of_value_stats(std::is
 	{
 		if(ed.total_area>0.0)
 		{
-			map_of_value_stats[modescommon::generalize_crad(crad)].add(ed.energy/ed.total_area);
+			map_of_value_stats[common::generalize_crad(crad)].add(ed.energy/ed.total_area);
 		}
 		return true;
 	}
@@ -39,13 +39,13 @@ void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::map<CRAD, modescommon::ValueStat> map_of_value_stats;
+	std::map<CRAD, common::ValueStat> map_of_value_stats;
 	auxiliaries::IOUtilities().read_lines_to_container(std::cin, read_energy_descriptors_and_accumulate_to_map_of_value_stats, map_of_value_stats);
 
-	std::map<CRAD, modescommon::NormalDistributionParameters> means_and_sds;
-	for(std::map<CRAD, modescommon::ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
+	std::map<CRAD, common::NormalDistributionParameters> means_and_sds;
+	for(std::map<CRAD, common::ValueStat>::const_iterator it=map_of_value_stats.begin();it!=map_of_value_stats.end();++it)
 	{
-		means_and_sds[it->first]=modescommon::NormalDistributionParameters(it->second.mean(), it->second.sd());
+		means_and_sds[it->first]=common::NormalDistributionParameters(it->second.mean(), it->second.sd());
 	}
 
 	auxiliaries::IOUtilities().write_map(means_and_sds, std::cout);

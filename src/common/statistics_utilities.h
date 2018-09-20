@@ -1,7 +1,10 @@
-#ifndef MODESCOMMON_STATISTICS_UTILITIES_H_
-#define MODESCOMMON_STATISTICS_UTILITIES_H_
+#ifndef COMMON_STATISTICS_UTILITIES_H_
+#define COMMON_STATISTICS_UTILITIES_H_
 
-namespace modescommon
+#include <cmath>
+#include <iostream>
+
+namespace common
 {
 
 struct ValueStat
@@ -60,4 +63,4 @@ inline std::istream& operator>>(std::istream& input, NormalDistributionParameter
 
 }
 
-#endif /* MODESCOMMON_STATISTICS_UTILITIES_H_ */
+#endif /* COMMON_STATISTICS_UTILITIES_H_ */

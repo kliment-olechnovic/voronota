@@ -1,14 +1,14 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-#include "modescommon/contacts_scoring_utilities.h"
-#include "modescommon/statistics_utilities.h"
+#include "common/contacts_scoring_utilities.h"
+#include "common/statistics_utilities.h"
 
 namespace
 {
 
 typedef common::ChainResidueAtomDescriptor CRAD;
-typedef modescommon::EnergyDescriptor EnergyDescriptor;
+typedef common::EnergyDescriptor EnergyDescriptor;
 
 std::map<CRAD, double> average_atom_scores_by_residue(const std::map<CRAD, double>& atom_scores)
 {
@@ -56,7 +56,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRAD, modescommon::NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, modescommon::NormalDistributionParameters> >(mean_and_sds_file);
+	const std::map<CRAD, common::NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, common::NormalDistributionParameters> >(mean_and_sds_file);
 
 	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
 
@@ -71,7 +71,7 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			const double actuality_score=(1.0-(ed.strange_area/ed.total_area));
 			const double normalized_energy=(ed.energy/ed.total_area);
-			std::map<CRAD, modescommon::NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(modescommon::generalize_crad(crad));
+			std::map<CRAD, common::NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(common::generalize_crad(crad));
 			const double mean=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.mean : default_mean);
 			const double sd=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.sd : default_sd);
 			const double adjusted_normalized_energy=((normalized_energy-mean)/sd);

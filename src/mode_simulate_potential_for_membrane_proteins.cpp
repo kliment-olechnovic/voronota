@@ -1,13 +1,13 @@
 #include "auxiliaries/program_options_handler.h"
 #include "auxiliaries/io_utilities.h"
 
-#include "modescommon/contacts_scoring_utilities.h"
+#include "common/contacts_scoring_utilities.h"
 
 namespace
 {
 	typedef common::ChainResidueAtomDescriptor CRAD;
 	typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
-	typedef modescommon::InteractionName InteractionName;
+	typedef common::InteractionName InteractionName;
 }
 
 void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler& poh)

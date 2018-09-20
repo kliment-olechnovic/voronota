@@ -1,21 +1,21 @@
-#ifndef MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
-#define MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_
+#ifndef COMMON_CONTACTS_SCORING_UTILITIES_H_
+#define COMMON_CONTACTS_SCORING_UTILITIES_H_
 
-#include "../common/chain_residue_atom_descriptor.h"
+#include "chain_residue_atom_descriptor.h"
 
-namespace modescommon
+namespace common
 {
 
 struct InteractionName
 {
-	common::ChainResidueAtomDescriptorsPair crads;
+	ChainResidueAtomDescriptorsPair crads;
 	std::string tag;
 
 	InteractionName()
 	{
 	}
 
-	InteractionName(const common::ChainResidueAtomDescriptorsPair& crads, const std::string& tag) : crads(crads), tag(tag)
+	InteractionName(const ChainResidueAtomDescriptorsPair& crads, const std::string& tag) : crads(crads), tag(tag)
 	{
 	}
 
@@ -74,9 +74,9 @@ inline std::istream& operator>>(std::istream& input, EnergyDescriptor& v)
 	return input;
 }
 
-inline common::ChainResidueAtomDescriptor generalize_crad(const common::ChainResidueAtomDescriptor& input_crad)
+inline ChainResidueAtomDescriptor generalize_crad(const ChainResidueAtomDescriptor& input_crad)
 {
-	common::ChainResidueAtomDescriptor crad=input_crad.without_numbering();
+	ChainResidueAtomDescriptor crad=input_crad.without_numbering();
 
 	if(crad.name=="OXT")
 	{
@@ -393,17 +393,17 @@ inline common::ChainResidueAtomDescriptor generalize_crad(const common::ChainRes
 	return crad;
 }
 
-inline common::ChainResidueAtomDescriptorsPair generalize_crads_pair(const common::ChainResidueAtomDescriptorsPair& input_crads)
+inline ChainResidueAtomDescriptorsPair generalize_crads_pair(const ChainResidueAtomDescriptorsPair& input_crads)
 {
-	return common::ChainResidueAtomDescriptorsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
+	return ChainResidueAtomDescriptorsPair(generalize_crad(input_crads.a), generalize_crad(input_crads.b));
 }
 
-inline bool check_crads_pair_for_peptide_bond(const common::ChainResidueAtomDescriptorsPair& crads)
+inline bool check_crads_pair_for_peptide_bond(const ChainResidueAtomDescriptorsPair& crads)
 {
 	return (((crads.a.name=="C" && crads.b.name=="N" && crads.a.resSeq<crads.b.resSeq) || (crads.a.name=="N" && crads.b.name=="C" && crads.b.resSeq<crads.a.resSeq))
-			&& common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
+			&& ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 0, 1, false));
 }
 
 }
 
-#endif /* MODESCOMMON_CONTACTS_SCORING_UTILITIES_H_ */
+#endif /* COMMON_CONTACTS_SCORING_UTILITIES_H_ */
