@@ -2,7 +2,6 @@
 #define COMMON_CONSTRUCTION_OF_VOROMQA_SCORE_H_
 
 #include "contacts_scoring_utilities.h"
-#include "conversion_of_descriptors.h"
 #include "statistics_utilities.h"
 
 namespace common
@@ -13,8 +12,6 @@ class ConstructionOfVoroMQAScore
 public:
 	typedef ChainResidueAtomDescriptor CRAD;
 	typedef ChainResidueAtomDescriptorsPair CRADsPair;
-	typedef ConstructionOfAtomicBalls::AtomicBall Atom;
-	typedef ConstructionOfContacts::Contact Contact;
 
 	struct ParametersToConstructBundleOfVoroMQAEnergyInformation
 	{
