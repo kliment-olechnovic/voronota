@@ -540,6 +540,62 @@ public:
 		return construct_map_of_single_descriptors(map_of_pair_descriptors, construct_graph(map_of_pair_descriptors, depth));
 	}
 
+	static std::map<ChainResidueAtomDescriptor, int> calculate_burial_depth_values(const std::set<ChainResidueAtomDescriptorsPair>& set_of_contacts)
+	{
+		std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth;
+
+		int level_count=0;
+
+		for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_contacts.begin();it!=set_of_contacts.end();++it)
+		{
+			const ChainResidueAtomDescriptorsPair& crads=(*it);
+			if(crads.b==ChainResidueAtomDescriptor::solvent())
+			{
+				map_crad_to_depth[crads.a]=1;
+				level_count++;
+			}
+		}
+
+		for(int depth=1;level_count>0;depth++)
+		{
+			level_count=0;
+			for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_contacts.begin();it!=set_of_contacts.end();++it)
+			{
+				const ChainResidueAtomDescriptorsPair& crads=(*it);
+				if(!crads.contains(ChainResidueAtomDescriptor::solvent()))
+				{
+					const int depth_a=map_crad_to_depth[crads.a];
+					const int depth_b=map_crad_to_depth[crads.b];
+					if(depth_a==depth && depth_b==0)
+					{
+						map_crad_to_depth[crads.b]=(depth+1);
+						level_count++;
+					}
+					else if(depth_b==depth && depth_a==0)
+					{
+						map_crad_to_depth[crads.a]=(depth+1);
+						level_count++;
+					}
+				}
+			}
+		}
+
+		for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_contacts.begin();it!=set_of_contacts.end();++it)
+		{
+			const ChainResidueAtomDescriptorsPair& crads=(*it);
+			if(crads.a!=ChainResidueAtomDescriptor::solvent() && map_crad_to_depth.find(crads.a)==map_crad_to_depth.end())
+			{
+				map_crad_to_depth[crads.a]=1;
+			}
+			if(crads.b!=ChainResidueAtomDescriptor::solvent() && map_crad_to_depth.find(crads.b)==map_crad_to_depth.end())
+			{
+				map_crad_to_depth[crads.b]=1;
+			}
+		}
+
+		return map_crad_to_depth;
+	}
+
 private:
 	template<typename T>
 	static std::map< ChainResidueAtomDescriptor, std::set<ChainResidueAtomDescriptor> > construct_graph(
