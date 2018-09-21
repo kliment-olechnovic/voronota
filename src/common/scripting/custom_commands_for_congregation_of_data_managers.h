@@ -3,7 +3,7 @@
 
 #include "generic_command_for_congregation_of_data_managers.h"
 #include "basic_assertions.h"
-#include "comparison_of_data_managers_using_cad_score.h"
+#include "scoring_of_data_managers_using_cad_score.h"
 
 namespace common
 {
@@ -545,7 +545,7 @@ public:
 		{
 			const std::string target_name=cargs.input.get_value<std::string>("target");
 			const std::string model_name=cargs.input.get_value<std::string>("model");
-			ComparisonOfDataManagersUsingCADScore::Parameters params;
+			ScoringOfDataManagersUsingCADScore::Parameters params;
 			params.target_sel=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
 			params.model_sel=cargs.input.get_value_or_default<std::string>("m-sel", "{--no-solvent --min-seq-sep 1}");
 			params.target_atom_scores=cargs.input.get_value_or_default<std::string>("t-atom-scores", "");
@@ -572,8 +572,8 @@ public:
 			DataManager& target_dm=*cargs.congregation_of_data_managers.get_object(target_name);
 			DataManager& model_dm=*cargs.congregation_of_data_managers.get_object(model_name);
 
-			ComparisonOfDataManagersUsingCADScore::Result result;
-			ComparisonOfDataManagersUsingCADScore::construct_result(params, target_dm, model_dm, result);
+			ScoringOfDataManagersUsingCADScore::Result result;
+			ScoringOfDataManagersUsingCADScore::construct_result(params, target_dm, model_dm, result);
 
 			cargs.change_indicator.handled_objects[&target_dm]=result.target_dm_ci;
 			cargs.change_indicator.handled_objects[&model_dm]=result.model_dm_ci;

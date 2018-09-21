@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_COMPARISON_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
-#define COMMON_SCRIPTING_COMPARISON_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
+#ifndef COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
+#define COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
 
 #include "../construction_of_cad_score.h"
 #include "../conversion_of_descriptors.h"
@@ -12,7 +12,7 @@ namespace common
 namespace scripting
 {
 
-class ComparisonOfDataManagersUsingCADScore
+class ScoringOfDataManagersUsingCADScore
 {
 public:
 	struct Parameters
@@ -200,5 +200,5 @@ private:
 
 }
 
-#endif /* COMMON_SCRIPTING_COMPARISON_OF_DATA_MANAGERS_USING_CAD_SCORE_H_ */
+#endif /* COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_ */
 
