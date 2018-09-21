@@ -222,7 +222,7 @@ public:
 			projections(5),
 			simplify(false),
 			sih_depth(3),
-			tag_centrality(false),
+			tag_centrality(true),
 			tag_peripherial(false)
 		{
 		}
