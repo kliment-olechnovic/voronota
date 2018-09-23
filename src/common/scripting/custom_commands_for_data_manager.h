@@ -11,6 +11,7 @@
 #include "generic_command_for_data_manager.h"
 #include "table_printing.h"
 #include "basic_assertions.h"
+#include "scoring_of_data_manager_using_voromqa.h"
 
 namespace common
 {
@@ -2663,6 +2664,46 @@ public:
 					atom.value.props.adjuncts[name]=it->second;
 				}
 			}
+		}
+	};
+
+	class voromqa : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			ScoringOfDataManagerUsingVoroMQA::Parameters params;
+			params.inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("inter-atom-energy-raw", "vqa-e");
+			params.inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("inter-atom-energy-normalized", "");
+			params.atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("atom-energy-normalized", "");
+			params.atom_depth_weights=cargs.input.get_value_or_default<std::string>("atom-depth-weights", "");
+			params.atom_quality_scores=cargs.input.get_value_or_default<std::string>("atom-quality", "vqa-a");
+			params.residue_quality_scores_raw=cargs.input.get_value_or_default<std::string>("residue-quality-raw", "");
+			params.residue_quality_scores_smoothed=cargs.input.get_value_or_default<std::string>("residue-quality-smoothed", "vqa-r");
+			params.smoothing_window=cargs.input.get_value_or_default<unsigned int>("smoothing-window", params.smoothing_window);
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(params.inter_atom_energy_scores_raw, true);
+			assert_adjunct_name_input(params.inter_atom_energy_scores_normalized, true);
+			assert_adjunct_name_input(params.atom_energy_scores_normalized, true);
+			assert_adjunct_name_input(params.atom_depth_weights, true);
+			assert_adjunct_name_input(params.atom_quality_scores, true);
+			assert_adjunct_name_input(params.residue_quality_scores_raw, true);
+			assert_adjunct_name_input(params.residue_quality_scores_smoothed, true);
+
+			ScoringOfDataManagerUsingVoroMQA::Result result;
+			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
+
+			cargs.output_for_log << "VoroMQA=" << result.global_quality_score << "\n";
 		}
 	};
 

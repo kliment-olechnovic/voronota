@@ -4,6 +4,7 @@
 #include "../../auxiliaries/time_utilities.h"
 
 #include "generic_command_for_extra_actions.h"
+#include "scoring_of_data_manager_using_voromqa.h"
 
 namespace common
 {
@@ -88,6 +89,24 @@ public:
 			for(std::size_t i=0;i<strings.size();i++)
 			{
 				cargs.output_for_log << strings[i] << "\n";
+			}
+		}
+	};
+
+	class setup_voromqa : public GenericCommandForExtraActions
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string potential_file=cargs.input.get_value<std::string>("potential");
+			const std::string means_and_sds_file=cargs.input.get_value<std::string>("means-and-sds");
+			const bool force=cargs.input.get_flag("force");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file, force))
+			{
+				throw std::runtime_error(std::string("Failed to setup VoroMQA."));
 			}
 		}
 	};
