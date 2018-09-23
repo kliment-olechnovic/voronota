@@ -51,12 +51,12 @@ public:
 		{
 			const CRADsPair& crads=it->first.crads;
 			EnergyDescriptor& ed=bundle.inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, parameters.ignorable_max_seq_sep, false) && !common::check_crads_pair_for_peptide_bond(crads))
+			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, parameters.ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
 			{
 				ed.total_area=(it->second);
 				ed.contacts_count=1;
 				std::map<InteractionName, double>::const_iterator potential_value_it=
-						input_map_of_potential_values.find(InteractionName(common::generalize_crads_pair(crads), it->first.tag));
+						input_map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
 				if(potential_value_it!=input_map_of_potential_values.end())
 				{
 					ed.energy=ed.total_area*(potential_value_it->second);
@@ -68,7 +68,7 @@ public:
 			}
 		}
 
-		bundle.atom_energy_descriptors=common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(
+		bundle.atom_energy_descriptors=ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(
 				bundle.inter_atom_energy_descriptors, parameters.depth);
 
 		for(std::map<CRADsPair, EnergyDescriptor>::const_iterator it=bundle.inter_atom_energy_descriptors.begin();it!=bundle.inter_atom_energy_descriptors.end();++it)
@@ -101,11 +101,12 @@ public:
 
 		std::map<CRAD, double> residue_quality_scores(const unsigned int smoothing_window) const
 		{
-			return common::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
+			return ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(
 					raw_residue_quality_scores, smoothing_window);
 		}
 
-		double global_quality_score(const std::map<CRAD, double>& external_weights, bool only_with_weights) const
+		template<typename MapOfWeights>
+		double global_quality_score(const MapOfWeights& external_weights, bool only_with_weights) const
 		{
 			double sum_of_weighted_scores=0.0;
 			double sum_of_weights=0.0;
@@ -114,7 +115,7 @@ public:
 			{
 				const CRAD& crad=it->first;
 				const double unweighted_quality_score=it->second;
-				std::map<CRAD, double>::const_iterator external_weights_it=external_weights.find(crad);
+				typename MapOfWeights::const_iterator external_weights_it=external_weights.find(crad);
 				if(external_weights_it!=external_weights.end())
 				{
 					const double external_weight=external_weights_it->second;
@@ -154,7 +155,7 @@ public:
 			{
 				const double actuality_score=(1.0-(ed.strange_area/ed.total_area));
 				const double normalized_energy=(ed.energy/ed.total_area);
-				std::map<CRAD, common::NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(common::generalize_crad(crad));
+				std::map<CRAD, NormalDistributionParameters>::const_iterator mean_and_sd_it=means_and_sds.find(generalize_crad(crad));
 				const double mean=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.mean : parameters.default_mean);
 				const double sd=(mean_and_sd_it!=means_and_sds.end() ? mean_and_sd_it->second.sd : parameters.default_sd);
 				const double adjusted_normalized_energy=((normalized_energy-mean)/sd);
