@@ -25,10 +25,9 @@ public:
 			return (!potential_values.empty() && !means_and_sds.empty());
 		}
 
-		static Configuration& get_default_configuration()
+		static const Configuration& get_default_configuration()
 		{
-			static Configuration configuration;
-			return configuration;
+			return default_configuration_mutable();
 		}
 
 		static bool setup_default_configuration(const std::string& potential_file, const std::string& mean_and_sds_file, const bool always_reset)
@@ -57,25 +56,49 @@ public:
 				return false;
 			}
 
-			get_default_configuration().potential_values.swap(potential_values);
-			get_default_configuration().means_and_sds.swap(means_and_sds);
+			default_configuration_mutable().potential_values.swap(potential_values);
+			default_configuration_mutable().means_and_sds.swap(means_and_sds);
 
 			return true;
+		}
+
+	private:
+		static Configuration& default_configuration_mutable()
+		{
+			static Configuration configuration;
+			return configuration;
 		}
 	};
 
 	struct Parameters
 	{
-		std::string inter_atom_energy_scores;
+		unsigned int smoothing_window;
+		std::string inter_atom_energy_scores_raw;
+		std::string inter_atom_energy_scores_normalized;
+		std::string atom_energy_scores_raw;
+		std::string atom_energy_scores_normalized;
+		std::string atom_depth_weights;
 		std::string atom_quality_scores;
-		std::string residue_quality_scores;
+		std::string residue_quality_scores_raw;
+		std::string residue_quality_scores_smoothed;
+
+		Parameters() :
+			smoothing_window(5)
+		{
+		}
 	};
 
 	struct Result
 	{
+		double global_quality_score;
 		ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
 		ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
 		DataManager::ChangeIndicator data_manager_change_index;
+
+		Result() :
+			global_quality_score(0.0)
+		{
+		}
 	};
 
 	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
@@ -165,17 +188,99 @@ public:
 			throw std::runtime_error("Failed to calculate quality scores.");
 		}
 
-		if(params.atom_quality_scores.empty())
+		result.global_quality_score=result.bundle_of_quality.global_quality_score(map_crad_to_depth, false);
+
+		if(!params.inter_atom_energy_scores_raw.empty() || params.inter_atom_energy_scores_normalized.empty())
 		{
-			result.data_manager_change_index.changed_atoms_adjuncts=true;
+			result.data_manager_change_index.changed_contacts_adjuncts=true;
+
+			for(std::size_t i=0;i<data_manager.contacts_mutable().size();i++)
+			{
+				Contact& contact=data_manager.contacts_mutable()[i];
+				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
+				std::map<ChainResidueAtomDescriptorsPair, EnergyDescriptor>::const_iterator it=result.bundle_of_energy.inter_atom_energy_descriptors.find(crads);
+
+				if(!params.inter_atom_energy_scores_raw.empty())
+				{
+					contact.value.props.adjuncts.erase(params.inter_atom_energy_scores_raw);
+					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
+					{
+						const EnergyDescriptor& ed=it->second;
+						if(ed.total_area>0.0 && ed.strange_area==0.0)
+						{
+							contact.value.props.adjuncts[params.inter_atom_energy_scores_raw]=ed.energy;
+						}
+					}
+				}
+
+				if(!params.inter_atom_energy_scores_normalized.empty())
+				{
+					contact.value.props.adjuncts.erase(params.inter_atom_energy_scores_normalized);
+					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
+					{
+						const EnergyDescriptor& ed=it->second;
+						if(ed.total_area>0.0 && ed.strange_area==0.0)
+						{
+							contact.value.props.adjuncts[params.inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
+						}
+					}
+				}
+			}
+		}
+
+		if(!params.atom_depth_weights.empty())
+		{
+			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(params.atom_depth_weights);
+				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
+				if(it!=map_crad_to_depth.end())
+				{
+					atom.value.props.adjuncts[params.atom_depth_weights]=it->second;
+				}
+			}
+		}
+
+		if(!params.atom_quality_scores.empty())
+		{
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
 				atom.value.props.adjuncts.erase(params.atom_quality_scores);
-				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
+				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
 				if(it!=result.bundle_of_quality.atom_quality_scores.end())
 				{
 					atom.value.props.adjuncts[params.atom_quality_scores]=it->second;
+				}
+			}
+		}
+
+		if(!params.residue_quality_scores_raw.empty())
+		{
+			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(params.residue_quality_scores_raw);
+				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad);
+				if(it!=result.bundle_of_quality.raw_residue_quality_scores.end())
+				{
+					atom.value.props.adjuncts[params.residue_quality_scores_raw]=it->second;
+				}
+			}
+		}
+
+		if(!params.residue_quality_scores_smoothed.empty())
+		{
+			const std::map<ChainResidueAtomDescriptor, double> smoothed_scores=result.bundle_of_quality.residue_quality_scores(params.smoothing_window);
+			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(params.residue_quality_scores_smoothed);
+				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad);
+				if(it!=smoothed_scores.end())
+				{
+					atom.value.props.adjuncts[params.residue_quality_scores_smoothed]=it->second;
 				}
 			}
 		}
