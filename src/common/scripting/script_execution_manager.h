@@ -99,11 +99,13 @@ public:
 		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
 		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
 		set_command("calculate-burial-depth", new CustomCommandsForDataManager::calculate_burial_depth());
+		set_command("voromqa", new CustomCommandsForDataManager::voromqa());
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
 		set_command("echo", new CustomsCommandsForExtraActions::echo());
+		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
 	}
 
 	virtual ~ScriptExecutionManager()
