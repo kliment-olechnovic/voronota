@@ -262,7 +262,7 @@ public:
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
 				atom.value.props.adjuncts.erase(params.residue_quality_scores_raw);
-				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad);
+				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad.without_atom());
 				if(it!=result.bundle_of_quality.raw_residue_quality_scores.end())
 				{
 					atom.value.props.adjuncts[params.residue_quality_scores_raw]=it->second;
@@ -277,7 +277,7 @@ public:
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
 				atom.value.props.adjuncts.erase(params.residue_quality_scores_smoothed);
-				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad);
+				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad.without_atom());
 				if(it!=smoothed_scores.end())
 				{
 					atom.value.props.adjuncts[params.residue_quality_scores_smoothed]=it->second;
