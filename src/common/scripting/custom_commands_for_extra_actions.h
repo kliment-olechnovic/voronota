@@ -100,11 +100,10 @@ public:
 		{
 			const std::string potential_file=cargs.input.get_value<std::string>("potential");
 			const std::string means_and_sds_file=cargs.input.get_value<std::string>("means-and-sds");
-			const bool force=cargs.input.get_flag("force");
 
 			cargs.input.assert_nothing_unusable();
 
-			if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file, force))
+			if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file))
 			{
 				throw std::runtime_error(std::string("Failed to setup VoroMQA."));
 			}

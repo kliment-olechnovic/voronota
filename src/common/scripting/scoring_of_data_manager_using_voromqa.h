@@ -15,8 +15,9 @@ namespace scripting
 class ScoringOfDataManagerUsingVoroMQA
 {
 public:
-	struct Configuration
+	class Configuration
 	{
+	public:
 		std::map<InteractionName, double> potential_values;
 		std::map<ChainResidueAtomDescriptor, NormalDistributionParameters> means_and_sds;
 
@@ -30,13 +31,8 @@ public:
 			return get_default_configuration_mutable();
 		}
 
-		static bool setup_default_configuration(const std::string& potential_file, const std::string& mean_and_sds_file, const bool always_reset)
+		static bool setup_default_configuration(const std::string& potential_file, const std::string& mean_and_sds_file)
 		{
-			if(!always_reset && get_default_configuration().valid())
-			{
-				return true;
-			}
-
 			if(potential_file.empty() || mean_and_sds_file.empty())
 			{
 				return false;
