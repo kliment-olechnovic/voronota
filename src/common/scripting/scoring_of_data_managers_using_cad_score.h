@@ -19,16 +19,16 @@ public:
 	{
 		bool ignore_residue_names;
 		unsigned int smoothing_window;
-		std::string target_sel;
-		std::string model_sel;
-		std::string target_atom_scores;
-		std::string model_atom_scores;
-		std::string target_inter_atom_scores;
-		std::string model_inter_atom_scores;
-		std::string target_residue_scores;
-		std::string model_residue_scores;
-		std::string target_inter_residue_scores;
-		std::string model_inter_residue_scores;
+		std::string target_selection_expression;
+		std::string model_selection_expression;
+		std::string target_adjunct_atom_scores;
+		std::string target_adjunct_inter_atom_scores;
+		std::string target_adjunct_residue_scores;
+		std::string target_adjunct_inter_residue_scores;
+		std::string model_adjunct_atom_scores;
+		std::string model_adjunct_inter_atom_scores;
+		std::string model_adjunct_residue_scores;
+		std::string model_adjunct_inter_residue_scores;
 
 		Parameters() :
 			ignore_residue_names(false),
@@ -51,13 +51,13 @@ public:
 		target_dm.assert_contacts_availability();
 		model_dm.assert_contacts_availability();
 
-		const std::set<std::size_t> target_ids=target_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.target_sel, false);
+		const std::set<std::size_t> target_ids=target_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.target_selection_expression, false);
 		if(target_ids.empty())
 		{
 			throw std::runtime_error(std::string("No target contacts selected."));
 		}
 
-		const std::set<std::size_t> model_ids=model_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.model_sel, false);
+		const std::set<std::size_t> model_ids=model_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.model_selection_expression, false);
 		if(model_ids.empty())
 		{
 			throw std::runtime_error(std::string("No model contacts selected."));
@@ -66,10 +66,10 @@ public:
 		ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
 		parameters_for_cad_score.atom_level=!(
-				params.target_atom_scores.empty()
-				&& params.model_atom_scores.empty()
-				&& params.target_inter_atom_scores.empty()
-				&& params.model_inter_atom_scores.empty());
+				params.target_adjunct_atom_scores.empty()
+				&& params.model_adjunct_atom_scores.empty()
+				&& params.target_adjunct_inter_atom_scores.empty()
+				&& params.model_adjunct_inter_atom_scores.empty());
 
 		if(!ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 				parameters_for_cad_score,
@@ -81,12 +81,12 @@ public:
 		}
 
 		write_adjuncts(result.bundle, params.smoothing_window, target_ids,
-				params.target_atom_scores, params.target_residue_scores,
-				params.target_inter_atom_scores, params.target_inter_residue_scores,
+				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
+				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
 				target_dm, result.target_dm_ci);
 		write_adjuncts(result.bundle, params.smoothing_window, model_ids,
-				params.model_atom_scores, params.model_residue_scores,
-				params.model_inter_atom_scores, params.model_inter_residue_scores,
+				params.model_adjunct_atom_scores, params.model_adjunct_residue_scores,
+				params.model_adjunct_inter_atom_scores, params.model_adjunct_inter_residue_scores,
 				model_dm, result.model_dm_ci);
 	}
 

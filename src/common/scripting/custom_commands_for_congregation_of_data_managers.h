@@ -546,16 +546,16 @@ public:
 			const std::string target_name=cargs.input.get_value<std::string>("target");
 			const std::string model_name=cargs.input.get_value<std::string>("model");
 			ScoringOfDataManagersUsingCADScore::Parameters params;
-			params.target_sel=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
-			params.model_sel=cargs.input.get_value_or_default<std::string>("m-sel", "{--no-solvent --min-seq-sep 1}");
-			params.target_atom_scores=cargs.input.get_value_or_default<std::string>("t-atom-scores", "");
-			params.model_atom_scores=cargs.input.get_value_or_default<std::string>("m-atom-scores", "");
-			params.target_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-inter-atom-scores", "");
-			params.model_inter_atom_scores=cargs.input.get_value_or_default<std::string>("m-inter-atom-scores", "");
-			params.target_residue_scores=cargs.input.get_value_or_default<std::string>("t-residue-scores", "");
-			params.model_residue_scores=cargs.input.get_value_or_default<std::string>("m-residue-scores", "");
-			params.target_inter_residue_scores=cargs.input.get_value_or_default<std::string>("t-inter-residue-scores", "");
-			params.model_inter_residue_scores=cargs.input.get_value_or_default<std::string>("m-inter-residue-scores", "");
+			params.target_selection_expression=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
+			params.model_selection_expression=cargs.input.get_value_or_default<std::string>("m-sel", "{--no-solvent --min-seq-sep 1}");
+			params.target_adjunct_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-atom", "");
+			params.target_adjunct_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-inter-atom", "");
+			params.target_adjunct_residue_scores=cargs.input.get_value_or_default<std::string>("t-adj-residue", "");
+			params.target_adjunct_inter_residue_scores=cargs.input.get_value_or_default<std::string>("t-adj-inter-residue", "");
+			params.model_adjunct_atom_scores=cargs.input.get_value_or_default<std::string>("m-adj-atom", "");
+			params.model_adjunct_inter_atom_scores=cargs.input.get_value_or_default<std::string>("m-adj-inter-atom", "");
+			params.model_adjunct_residue_scores=cargs.input.get_value_or_default<std::string>("m-adj-residue", "");
+			params.model_adjunct_inter_residue_scores=cargs.input.get_value_or_default<std::string>("m-adj-inter-residue", "");
 			params.smoothing_window=cargs.input.get_value_or_default<unsigned int>("smoothing-window", 0);
 			params.ignore_residue_names=cargs.input.get_flag("ignore-residue-names");
 
