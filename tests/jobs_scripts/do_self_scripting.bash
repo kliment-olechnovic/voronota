@@ -10,9 +10,11 @@ cat << EOF
 
 set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
 
-load-atoms --file $INPUTDIR/single/structure.cif
-load-atoms -file "$INPUTDIR/single/structure.pdb"
-load-atoms $INPUTDIR/single/structure.pdb --include-heteroatoms
+load --file $INPUTDIR/single/structure.cif
+load -file "$INPUTDIR/single/structure.pdb"
+setup-loading --include-heteroatoms
+load $INPUTDIR/single/structure.pdb
+setup-loading
 printseq
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
@@ -25,7 +27,7 @@ save-contacts '$SUBDIR/plain_contacts'
 
 list-objects
 delete-objects -all
-load-atoms --file '$SUBDIR/plain_atoms' --format plain
+load --file '$SUBDIR/plain_atoms' --format plain
 list-objects
 
 select-contacts
@@ -73,8 +75,8 @@ color-contacts 0xFF00FF
 write-contacts-as-pymol-cgo --wireframe --file '$SUBDIR/cgo_contacts_wf.py' --name contacts_wf
 
 save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
-load-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
-load-atoms-and-contacts '$SUBDIR/plain_atoms'
+load '$SUBDIR/plain_atoms_and_contacts' -format plain
+load '$SUBDIR/plain_atoms' -format plain
 
 EOF
 } \

@@ -43,8 +43,7 @@ public:
 		set_command("delete-objects", new CustomCommandsForCongregationOfDataManagers::delete_objects());
 		set_command("rename-object", new CustomCommandsForCongregationOfDataManagers::rename_object());
 		set_command("copy-object", new CustomCommandsForCongregationOfDataManagers::copy_object());
-		set_command("load-atoms", new CustomCommandsForCongregationOfDataManagers::load_atoms());
-		set_command("load-atoms-and-contacts", new CustomCommandsForCongregationOfDataManagers::load_atoms_and_contacts());
+		set_command("load", new CustomCommandsForCongregationOfDataManagers::load());
 		set_command("pick-objects", new CustomCommandsForCongregationOfDataManagers::pick_objects());
 		set_command("pick-more-objects", new CustomCommandsForCongregationOfDataManagers::pick_more_objects());
 		set_command("unpick-objects", new CustomCommandsForCongregationOfDataManagers::unpick_objects());
@@ -105,6 +104,7 @@ public:
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
 		set_command("echo", new CustomsCommandsForExtraActions::echo());
+		set_command("setup-loading", new CustomsCommandsForExtraActions::setup_loading());
 		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
 	}
 
