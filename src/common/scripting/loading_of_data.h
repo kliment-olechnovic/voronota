@@ -33,32 +33,6 @@ public:
 			return 1.7;
 		}
 
-		static const Configuration& get_default_configuration()
-		{
-			return get_default_configuration_mutable();
-		}
-
-		static void setup_default_configuration(
-				const bool include_heteroatoms,
-				const bool include_hydrogens,
-				const bool multimodel_chains,
-				const double default_radius,
-				const bool only_default_radius,
-				std::istream* radii_file_stream)
-		{
-			get_default_configuration_mutable().include_heteroatoms=include_heteroatoms;
-			get_default_configuration_mutable().include_hydrogens=include_hydrogens;
-			get_default_configuration_mutable().multimodel_chains=multimodel_chains;
-			get_default_configuration_mutable().atom_radius_assigner=generate_atom_radius_assigner(default_radius, only_default_radius, radii_file_stream);
-		}
-
-	private:
-		static Configuration& get_default_configuration_mutable()
-		{
-			static Configuration configuration;
-			return configuration;
-		}
-
 		static auxiliaries::AtomRadiusAssigner generate_atom_radius_assigner(const double default_radius, const bool only_default_radius, std::istream* radii_file_stream)
 		{
 			auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
@@ -83,12 +57,41 @@ public:
 			}
 			return atom_radius_assigner;
 		}
+
+		static const Configuration& get_default_configuration()
+		{
+			return get_default_configuration_mutable();
+		}
+
+		static void setup_default_configuration(const Configuration& configuration)
+		{
+			get_default_configuration_mutable()=configuration;
+		}
+
+	private:
+		static Configuration& get_default_configuration_mutable()
+		{
+			static Configuration configuration;
+			return configuration;
+		}
 	};
 
 	struct Parameters
 	{
 		std::string file;
 		std::string format;
+
+		Parameters()
+		{
+		}
+
+		Parameters(
+				const std::string& file,
+				const std::string& format) :
+					file(file),
+					format(format)
+		{
+		}
 	};
 
 	struct Result

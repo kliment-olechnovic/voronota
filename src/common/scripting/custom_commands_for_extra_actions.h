@@ -99,9 +99,10 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const bool include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
-			const bool include_hydrogens=cargs.input.get_flag("include-hydrogens");
-			const bool multimodel_chains=cargs.input.get_flag("as-assembly");
+			LoadingOfData::Configuration config;
+			config.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
+			config.include_hydrogens=cargs.input.get_flag("include-hydrogens");
+			config.multimodel_chains=cargs.input.get_flag("as-assembly");
 			const std::string radii_file=cargs.input.get_value_or_default<std::string>("radii-file", "");
 			const double default_radius=cargs.input.get_value_or_default<double>("default-radius", LoadingOfData::Configuration::recommended_default_radius());
 			const bool only_default_radius=cargs.input.get_flag("same-radius-for-all");
@@ -115,14 +116,14 @@ public:
 				{
 					throw std::runtime_error(std::string("Failed to read radii file."));
 				}
-				LoadingOfData::Configuration::setup_default_configuration(
-						include_heteroatoms, include_hydrogens, multimodel_chains, default_radius, only_default_radius, &radii_file_stream);
+				config.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(default_radius, only_default_radius, &radii_file_stream);
 			}
 			else
 			{
-				LoadingOfData::Configuration::setup_default_configuration(
-						include_heteroatoms, include_hydrogens, multimodel_chains, default_radius, only_default_radius, 0);
+				config.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(default_radius, only_default_radius, 0);
 			}
+
+			LoadingOfData::Configuration::setup_default_configuration(config);
 		}
 	};
 
