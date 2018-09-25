@@ -30,66 +30,23 @@ public:
 		}
 	};
 
-	class ParametersToCollectAtomicBallsFromFile
+	struct ParametersToCollectAtomicBallsFromFile
 	{
-	public:
 		bool mmcif;
 		bool include_heteroatoms;
 		bool include_hydrogens;
 		bool multimodel_chains;
-		auxiliaries::AtomRadiusAssigner atom_radius_assigner;
 
 		ParametersToCollectAtomicBallsFromFile() :
 			mmcif(false),
 			include_heteroatoms(false),
 			include_hydrogens(false),
-			multimodel_chains(false),
-			atom_radius_assigner(generate_atom_radius_assigner(default_default_radius(), false, ""))
+			multimodel_chains(false)
 		{
-		}
-
-		static double default_default_radius()
-		{
-			return 1.7;
-		}
-
-		void set_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
-		{
-			atom_radius_assigner=generate_atom_radius_assigner(default_radius, only_default_radius, radii_file);
-		}
-
-	private:
-		static auxiliaries::AtomRadiusAssigner generate_atom_radius_assigner(const double default_radius, const bool only_default_radius, const std::string& radii_file)
-		{
-			auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
-			if(!only_default_radius)
-			{
-				if(radii_file.empty())
-				{
-					atom_radius_assigner.add_radius_by_descriptor("*", "C*", 1.70);
-					atom_radius_assigner.add_radius_by_descriptor("*", "N*", 1.55);
-					atom_radius_assigner.add_radius_by_descriptor("*", "O*", 1.52);
-					atom_radius_assigner.add_radius_by_descriptor("*", "S*", 1.80);
-					atom_radius_assigner.add_radius_by_descriptor("*", "P*", 1.80);
-					atom_radius_assigner.add_radius_by_descriptor("*", "H*", 1.20);
-				}
-				else
-				{
-					std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-					if(radii_file_stream.good())
-					{
-						auxiliaries::IOUtilities().read_lines_to_container(
-								radii_file_stream,
-								auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner,
-								atom_radius_assigner);
-					}
-				}
-			}
-			return atom_radius_assigner;
 		}
 	};
 
-	static bool collect_atomic_balls_from_file(const ParametersToCollectAtomicBallsFromFile& parameters, std::istream& input_stream, std::vector<AtomicBall>& atomic_balls)
+	static bool collect_atomic_balls_from_file(const auxiliaries::AtomRadiusAssigner& atom_radius_assigner, const ParametersToCollectAtomicBallsFromFile& parameters, std::istream& input_stream, std::vector<AtomicBall>& atomic_balls)
 	{
 		atomic_balls.clear();
 
@@ -114,7 +71,7 @@ public:
 				value.x=atom.x;
 				value.y=atom.y;
 				value.z=atom.z;
-				value.r=parameters.atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
+				value.r=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 				if(atom.record_name=="HETATM")
 				{
 					value.props.tags.insert("het");
@@ -138,10 +95,10 @@ public:
 		return true;
 	}
 
-	static bool collect_atomic_balls_from_file(const ParametersToCollectAtomicBallsFromFile& parameters, const std::string& input_file, std::vector<AtomicBall>& atomic_balls)
+	static bool collect_atomic_balls_from_file(const auxiliaries::AtomRadiusAssigner& atom_radius_assigner, const ParametersToCollectAtomicBallsFromFile& parameters, const std::string& input_file, std::vector<AtomicBall>& atomic_balls)
 	{
 		std::ifstream input(input_file.c_str(), std::ios::in);
-		return collect_atomic_balls_from_file(parameters, input, atomic_balls);
+		return collect_atomic_balls_from_file(atom_radius_assigner, parameters, input, atomic_balls);
 	}
 
 	template<typename PlainBall>

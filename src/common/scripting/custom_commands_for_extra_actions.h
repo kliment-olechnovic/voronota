@@ -4,6 +4,7 @@
 #include "../../auxiliaries/time_utilities.h"
 
 #include "generic_command_for_extra_actions.h"
+#include "loading_of_data.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 
 namespace common
@@ -89,6 +90,38 @@ public:
 			for(std::size_t i=0;i<strings.size();i++)
 			{
 				cargs.output_for_log << strings[i] << "\n";
+			}
+		}
+	};
+
+	class setup_loading : public GenericCommandForExtraActions
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const bool include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
+			const bool include_hydrogens=cargs.input.get_flag("include-hydrogens");
+			const bool multimodel_chains=cargs.input.get_flag("as-assembly");
+			const std::string radii_file=cargs.input.get_value_or_default<std::string>("radii-file", "");
+			const double default_radius=cargs.input.get_value_or_default<double>("default-radius", LoadingOfData::Configuration::recommended_default_radius());
+			const bool only_default_radius=cargs.input.get_flag("same-radius-for-all");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!radii_file.empty())
+			{
+				std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
+				if(!radii_file_stream.good())
+				{
+					throw std::runtime_error(std::string("Failed to read radii file."));
+				}
+				LoadingOfData::Configuration::setup_default_configuration(
+						include_heteroatoms, include_hydrogens, multimodel_chains, default_radius, only_default_radius, &radii_file_stream);
+			}
+			else
+			{
+				LoadingOfData::Configuration::setup_default_configuration(
+						include_heteroatoms, include_hydrogens, multimodel_chains, default_radius, only_default_radius, 0);
 			}
 		}
 	};

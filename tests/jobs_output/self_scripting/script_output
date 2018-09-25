@@ -6,16 +6,22 @@
 Set alias 'printseq' to 'print-sequence --line-width 80 ; print-sequence --line-width 80 --secondary-structure'
 
 
-> load-atoms --file ./input/single/structure.cif
+> load --file ./input/single/structure.cif
 Read atoms from file './input/single/structure.cif' (count=1771)
 
 
-> load-atoms -file "./input/single/structure.pdb"
+> load -file "./input/single/structure.pdb"
 Read atoms from file './input/single/structure.pdb' (count=1717)
 
 
-> load-atoms ./input/single/structure.pdb --include-heteroatoms
+> setup-loading --include-heteroatoms
+
+
+> load ./input/single/structure.pdb
 Read atoms from file './input/single/structure.pdb' (count=1771)
+
+
+> setup-loading
 
 
 > print-sequence --line-width 80 
@@ -92,7 +98,7 @@ Objects:
 Removed all objects
 
 
-> load-atoms --file './jobs_output/self_scripting/plain_atoms' --format plain
+> load --file './jobs_output/self_scripting/plain_atoms' --format plain
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
 
 
@@ -273,14 +279,14 @@ Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts_w
 Wrote atoms and contacts to file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=1717 volume=41027.8) (count=12469 drawable=120 area=47017.2)
 
 
-> load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
+> load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain
 Read atoms from file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=1717 volume=41027.8)
 Read contacts from file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=12469 drawable=120 area=47017.2)
 
 
-> load-atoms-and-contacts './jobs_output/self_scripting/plain_atoms'
+> load './jobs_output/self_scripting/plain_atoms' -format plain
 Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
-No contacts read from file './jobs_output/self_scripting/plain_atoms'.
+
 
 > list-objects
 Objects:
