@@ -148,23 +148,22 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			LoadingOfData::Parameters params;
-			params.file=cargs.input.get_value_or_first_unused_unnamed_value("file");
-			params.format=cargs.input.get_value_or_default<std::string>("format", "");
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			const std::string  format=cargs.input.get_value_or_default<std::string>("format", "");
 			CommandParametersForTitling parameters_for_titling;
 			parameters_for_titling.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			LoadingOfData::Result result;
-			LoadingOfData::construct_result(params, result);
+			LoadingOfData::construct_result(LoadingOfData::Parameters(file, format), result);
 
 			if(result.atoms.size()<4)
 			{
 				throw std::runtime_error(std::string("Less than 4 atoms read."));
 			}
 
-			const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(params.file));
+			const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(file));
 
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
 			DataManager& data_manager=*object_new;
@@ -175,7 +174,7 @@ public:
 				SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
 				summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
-				cargs.output_for_log << "Read atoms from file '" << params.file << "' ";
+				cargs.output_for_log << "Read atoms from file '" << file << "' ";
 				summary_of_atoms.print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
@@ -184,7 +183,7 @@ public:
 			{
 				data_manager.reset_contacts_by_swapping(result.contacts);
 
-				cargs.output_for_log << "Read contacts from file '" << params.file << "' ";
+				cargs.output_for_log << "Read contacts from file '" << file << "' ";
 				SummaryOfContacts(data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
