@@ -27,7 +27,7 @@ public:
 
 		static const Configuration& get_default_configuration()
 		{
-			return default_configuration_mutable();
+			return get_default_configuration_mutable();
 		}
 
 		static bool setup_default_configuration(const std::string& potential_file, const std::string& mean_and_sds_file, const bool always_reset)
@@ -56,14 +56,14 @@ public:
 				return false;
 			}
 
-			default_configuration_mutable().potential_values.swap(potential_values);
-			default_configuration_mutable().means_and_sds.swap(means_and_sds);
+			get_default_configuration_mutable().potential_values.swap(potential_values);
+			get_default_configuration_mutable().means_and_sds.swap(means_and_sds);
 
 			return true;
 		}
 
 	private:
-		static Configuration& default_configuration_mutable()
+		static Configuration& get_default_configuration_mutable()
 		{
 			static Configuration configuration;
 			return configuration;
