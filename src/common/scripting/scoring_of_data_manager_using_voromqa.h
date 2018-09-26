@@ -69,14 +69,14 @@ public:
 	struct Parameters
 	{
 		unsigned int smoothing_window;
-		std::string inter_atom_energy_scores_raw;
-		std::string inter_atom_energy_scores_normalized;
-		std::string atom_energy_scores_raw;
-		std::string atom_energy_scores_normalized;
-		std::string atom_depth_weights;
-		std::string atom_quality_scores;
-		std::string residue_quality_scores_raw;
-		std::string residue_quality_scores_smoothed;
+		std::string adjunct_inter_atom_energy_scores_raw;
+		std::string adjunct_inter_atom_energy_scores_normalized;
+		std::string adjunct_atom_energy_scores_raw;
+		std::string adjunct_atom_energy_scores_normalized;
+		std::string adjunct_atom_depth_weights;
+		std::string adjunct_atom_quality_scores;
+		std::string adjunct_residue_quality_scores_raw;
+		std::string adjunct_residue_quality_scores_smoothed;
 
 		Parameters() :
 			smoothing_window(5)
@@ -186,7 +186,7 @@ public:
 
 		result.global_quality_score=result.bundle_of_quality.global_quality_score(map_crad_to_depth, false);
 
-		if(!params.inter_atom_energy_scores_raw.empty() || params.inter_atom_energy_scores_normalized.empty())
+		if(!params.adjunct_inter_atom_energy_scores_raw.empty() || params.adjunct_inter_atom_energy_scores_normalized.empty())
 		{
 			result.data_manager_change_index.changed_contacts_adjuncts=true;
 
@@ -196,87 +196,87 @@ public:
 				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
 				std::map<ChainResidueAtomDescriptorsPair, EnergyDescriptor>::const_iterator it=result.bundle_of_energy.inter_atom_energy_descriptors.find(crads);
 
-				if(!params.inter_atom_energy_scores_raw.empty())
+				if(!params.adjunct_inter_atom_energy_scores_raw.empty())
 				{
-					contact.value.props.adjuncts.erase(params.inter_atom_energy_scores_raw);
+					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_raw);
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const EnergyDescriptor& ed=it->second;
 						if(ed.total_area>0.0 && ed.strange_area==0.0)
 						{
-							contact.value.props.adjuncts[params.inter_atom_energy_scores_raw]=ed.energy;
+							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_raw]=ed.energy;
 						}
 					}
 				}
 
-				if(!params.inter_atom_energy_scores_normalized.empty())
+				if(!params.adjunct_inter_atom_energy_scores_normalized.empty())
 				{
-					contact.value.props.adjuncts.erase(params.inter_atom_energy_scores_normalized);
+					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_normalized);
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const EnergyDescriptor& ed=it->second;
 						if(ed.total_area>0.0 && ed.strange_area==0.0)
 						{
-							contact.value.props.adjuncts[params.inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
+							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
 						}
 					}
 				}
 			}
 		}
 
-		if(!params.atom_depth_weights.empty())
+		if(!params.adjunct_atom_depth_weights.empty())
 		{
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.atom_depth_weights);
+				atom.value.props.adjuncts.erase(params.adjunct_atom_depth_weights);
 				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
 				if(it!=map_crad_to_depth.end())
 				{
-					atom.value.props.adjuncts[params.atom_depth_weights]=it->second;
+					atom.value.props.adjuncts[params.adjunct_atom_depth_weights]=it->second;
 				}
 			}
 		}
 
-		if(!params.atom_quality_scores.empty())
+		if(!params.adjunct_atom_quality_scores.empty())
 		{
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.atom_quality_scores);
+				atom.value.props.adjuncts.erase(params.adjunct_atom_quality_scores);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
 				if(it!=result.bundle_of_quality.atom_quality_scores.end())
 				{
-					atom.value.props.adjuncts[params.atom_quality_scores]=it->second;
+					atom.value.props.adjuncts[params.adjunct_atom_quality_scores]=it->second;
 				}
 			}
 		}
 
-		if(!params.residue_quality_scores_raw.empty())
+		if(!params.adjunct_residue_quality_scores_raw.empty())
 		{
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.residue_quality_scores_raw);
+				atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_raw);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad.without_atom());
 				if(it!=result.bundle_of_quality.raw_residue_quality_scores.end())
 				{
-					atom.value.props.adjuncts[params.residue_quality_scores_raw]=it->second;
+					atom.value.props.adjuncts[params.adjunct_residue_quality_scores_raw]=it->second;
 				}
 			}
 		}
 
-		if(!params.residue_quality_scores_smoothed.empty())
+		if(!params.adjunct_residue_quality_scores_smoothed.empty())
 		{
 			const std::map<ChainResidueAtomDescriptor, double> smoothed_scores=result.bundle_of_quality.residue_quality_scores(params.smoothing_window);
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.residue_quality_scores_smoothed);
+				atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_smoothed);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad.without_atom());
 				if(it!=smoothed_scores.end())
 				{
-					atom.value.props.adjuncts[params.residue_quality_scores_smoothed]=it->second;
+					atom.value.props.adjuncts[params.adjunct_residue_quality_scores_smoothed]=it->second;
 				}
 			}
 		}

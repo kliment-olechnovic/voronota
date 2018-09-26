@@ -407,6 +407,15 @@ public:
 				throw std::runtime_error(std::string("Target and model are the same."));
 			}
 
+			assert_adjunct_name_input(params.target_adjunct_atom_scores, true);
+			assert_adjunct_name_input(params.target_adjunct_inter_atom_scores, true);
+			assert_adjunct_name_input(params.target_adjunct_residue_scores, true);
+			assert_adjunct_name_input(params.target_adjunct_inter_residue_scores, true);
+			assert_adjunct_name_input(params.model_adjunct_atom_scores, true);
+			assert_adjunct_name_input(params.model_adjunct_inter_atom_scores, true);
+			assert_adjunct_name_input(params.model_adjunct_residue_scores, true);
+			assert_adjunct_name_input(params.model_adjunct_inter_residue_scores, true);
+
 			cargs.congregation_of_data_managers.assert_object_availability(target_name);
 			cargs.congregation_of_data_managers.assert_object_availability(model_name);
 

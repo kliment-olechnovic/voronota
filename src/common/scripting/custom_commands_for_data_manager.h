@@ -2681,24 +2681,24 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			ScoringOfDataManagerUsingVoroMQA::Parameters params;
-			params.inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("inter-atom-energy-raw", "vqa-e");
-			params.inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("inter-atom-energy-normalized", "");
-			params.atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("atom-energy-normalized", "");
-			params.atom_depth_weights=cargs.input.get_value_or_default<std::string>("atom-depth-weights", "");
-			params.atom_quality_scores=cargs.input.get_value_or_default<std::string>("atom-quality", "vqa-a");
-			params.residue_quality_scores_raw=cargs.input.get_value_or_default<std::string>("residue-quality-raw", "");
-			params.residue_quality_scores_smoothed=cargs.input.get_value_or_default<std::string>("residue-quality-smoothed", "vqa-r");
+			params.adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-inter-atom-energy-raw", "");
+			params.adjunct_inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-inter-atom-energy-normalized", "");
+			params.adjunct_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-atom-energy-normalized", "");
+			params.adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth-weights", "");
+			params.adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "");
+			params.adjunct_residue_quality_scores_raw=cargs.input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
+			params.adjunct_residue_quality_scores_smoothed=cargs.input.get_value_or_default<std::string>("adj-residue-quality-smoothed", "");
 			params.smoothing_window=cargs.input.get_value_or_default<unsigned int>("smoothing-window", params.smoothing_window);
 
 			cargs.input.assert_nothing_unusable();
 
-			assert_adjunct_name_input(params.inter_atom_energy_scores_raw, true);
-			assert_adjunct_name_input(params.inter_atom_energy_scores_normalized, true);
-			assert_adjunct_name_input(params.atom_energy_scores_normalized, true);
-			assert_adjunct_name_input(params.atom_depth_weights, true);
-			assert_adjunct_name_input(params.atom_quality_scores, true);
-			assert_adjunct_name_input(params.residue_quality_scores_raw, true);
-			assert_adjunct_name_input(params.residue_quality_scores_smoothed, true);
+			assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_raw, true);
+			assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_normalized, true);
+			assert_adjunct_name_input(params.adjunct_atom_energy_scores_normalized, true);
+			assert_adjunct_name_input(params.adjunct_atom_depth_weights, true);
+			assert_adjunct_name_input(params.adjunct_atom_quality_scores, true);
+			assert_adjunct_name_input(params.adjunct_residue_quality_scores_raw, true);
+			assert_adjunct_name_input(params.adjunct_residue_quality_scores_smoothed, true);
 
 			ScoringOfDataManagerUsingVoroMQA::Result result;
 			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
