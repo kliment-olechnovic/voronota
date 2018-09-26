@@ -70,9 +70,6 @@ public:
 	{
 		unsigned int smoothing_window;
 		std::string adjunct_inter_atom_energy_scores_raw;
-		std::string adjunct_inter_atom_energy_scores_normalized;
-		std::string adjunct_atom_energy_scores_raw;
-		std::string adjunct_atom_energy_scores_normalized;
 		std::string adjunct_atom_depth_weights;
 		std::string adjunct_atom_quality_scores;
 		std::string adjunct_residue_quality_scores_raw;
@@ -190,7 +187,7 @@ public:
 
 		result.global_quality_score=result.bundle_of_quality.global_quality_score(map_crad_to_depth, false);
 
-		if(!params.adjunct_inter_atom_energy_scores_raw.empty() || params.adjunct_inter_atom_energy_scores_normalized.empty())
+		if(!params.adjunct_inter_atom_energy_scores_raw.empty())
 		{
 			result.data_manager_change_index.changed_contacts_adjuncts=true;
 
@@ -200,10 +197,6 @@ public:
 				if(!params.adjunct_inter_atom_energy_scores_raw.empty())
 				{
 					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_raw);
-				}
-				if(!params.adjunct_inter_atom_energy_scores_normalized.empty())
-				{
-					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_normalized);
 				}
 			}
 
@@ -221,18 +214,6 @@ public:
 						if(ed.total_area>0.0 && ed.strange_area==0.0)
 						{
 							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_raw]=ed.energy;
-						}
-					}
-				}
-
-				if(!params.adjunct_inter_atom_energy_scores_normalized.empty())
-				{
-					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
-					{
-						const EnergyDescriptor& ed=it->second;
-						if(ed.total_area>0.0 && ed.strange_area==0.0)
-						{
-							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
 						}
 					}
 				}
