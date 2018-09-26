@@ -128,7 +128,7 @@ public:
 			throw std::runtime_error(std::string("No suitable contacts."));
 		}
 
-		std::set<ChainResidueAtomDescriptorsPair> set_of_contacts;
+		std::set<ChainResidueAtomDescriptorsPair> set_of_crads;
 		std::map<InteractionName, double> map_of_interactions;
 
 		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
@@ -136,7 +136,7 @@ public:
 			const Contact& contact=data_manager.contacts()[*it];
 			const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
 
-			set_of_contacts.insert(crads);
+			set_of_crads.insert(crads);
 
 			std::string category;
 			if(contact.solvent())
@@ -171,7 +171,7 @@ public:
 		}
 
 		const std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth=
-				ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
+				ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_crads);
 		if(map_crad_to_depth.empty())
 		{
 			throw std::runtime_error(std::string("Failed to calculate burial depths."));
