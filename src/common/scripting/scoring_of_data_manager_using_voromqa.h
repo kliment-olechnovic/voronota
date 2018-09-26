@@ -121,9 +121,9 @@ public:
 				" ) "
 				")";
 
-		const std::set<std::size_t> all_ids=data_manager.selection_manager().select_contacts(selection_expression, false);
+		const std::set<std::size_t> all_contact_ids=data_manager.selection_manager().select_contacts(selection_expression, false);
 
-		if(all_ids.empty())
+		if(all_contact_ids.empty())
 		{
 			throw std::runtime_error(std::string("No suitable contacts."));
 		}
@@ -131,7 +131,7 @@ public:
 		std::set<ChainResidueAtomDescriptorsPair> set_of_contacts;
 		std::map<InteractionName, double> map_of_interactions;
 
-		for(std::set<std::size_t>::const_iterator it=all_ids.begin();it!=all_ids.end();++it)
+		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
 		{
 			const Contact& contact=data_manager.contacts()[*it];
 			const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
@@ -193,12 +193,24 @@ public:
 			for(std::size_t i=0;i<data_manager.contacts_mutable().size();i++)
 			{
 				Contact& contact=data_manager.contacts_mutable()[i];
+				if(!params.adjunct_inter_atom_energy_scores_raw.empty())
+				{
+					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_raw);
+				}
+				if(!params.adjunct_inter_atom_energy_scores_normalized.empty())
+				{
+					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_normalized);
+				}
+			}
+
+			for(std::set<std::size_t>::const_iterator jt=all_contact_ids.begin();jt!=all_contact_ids.end();++jt)
+			{
+				Contact& contact=data_manager.contacts_mutable()[*jt];
 				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
 				std::map<ChainResidueAtomDescriptorsPair, EnergyDescriptor>::const_iterator it=result.bundle_of_energy.inter_atom_energy_descriptors.find(crads);
 
 				if(!params.adjunct_inter_atom_energy_scores_raw.empty())
 				{
-					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_raw);
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const EnergyDescriptor& ed=it->second;
@@ -211,7 +223,6 @@ public:
 
 				if(!params.adjunct_inter_atom_energy_scores_normalized.empty())
 				{
-					contact.value.props.adjuncts.erase(params.adjunct_inter_atom_energy_scores_normalized);
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
 						const EnergyDescriptor& ed=it->second;
@@ -226,57 +237,73 @@ public:
 
 		if(!params.adjunct_atom_depth_weights.empty())
 		{
+			result.data_manager_change_index.changed_atoms_adjuncts=true;
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.adjunct_atom_depth_weights);
 				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
 				if(it!=map_crad_to_depth.end())
 				{
 					atom.value.props.adjuncts[params.adjunct_atom_depth_weights]=it->second;
+				}
+				else
+				{
+					atom.value.props.adjuncts.erase(params.adjunct_atom_depth_weights);
 				}
 			}
 		}
 
 		if(!params.adjunct_atom_quality_scores.empty())
 		{
+			result.data_manager_change_index.changed_atoms_adjuncts=true;
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.adjunct_atom_quality_scores);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
 				if(it!=result.bundle_of_quality.atom_quality_scores.end())
 				{
 					atom.value.props.adjuncts[params.adjunct_atom_quality_scores]=it->second;
+				}
+				else
+				{
+					atom.value.props.adjuncts.erase(params.adjunct_atom_quality_scores);
 				}
 			}
 		}
 
 		if(!params.adjunct_residue_quality_scores_raw.empty())
 		{
+			result.data_manager_change_index.changed_atoms_adjuncts=true;
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_raw);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad.without_atom());
 				if(it!=result.bundle_of_quality.raw_residue_quality_scores.end())
 				{
 					atom.value.props.adjuncts[params.adjunct_residue_quality_scores_raw]=it->second;
+				}
+				else
+				{
+					atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_raw);
 				}
 			}
 		}
 
 		if(!params.adjunct_residue_quality_scores_smoothed.empty())
 		{
+			result.data_manager_change_index.changed_atoms_adjuncts=true;
 			const std::map<ChainResidueAtomDescriptor, double> smoothed_scores=result.bundle_of_quality.residue_quality_scores(params.smoothing_window);
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
-				atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_smoothed);
 				std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad.without_atom());
 				if(it!=smoothed_scores.end())
 				{
 					atom.value.props.adjuncts[params.adjunct_residue_quality_scores_smoothed]=it->second;
+				}
+				else
+				{
+					atom.value.props.adjuncts.erase(params.adjunct_residue_quality_scores_smoothed);
 				}
 			}
 		}
