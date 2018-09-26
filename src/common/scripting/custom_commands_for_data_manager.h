@@ -2682,8 +2682,6 @@ public:
 
 			ScoringOfDataManagerUsingVoroMQA::Parameters params;
 			params.adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-inter-atom-energy-raw", "");
-			params.adjunct_inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-inter-atom-energy-normalized", "");
-			params.adjunct_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-atom-energy-normalized", "");
 			params.adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth-weights", "");
 			params.adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "");
 			params.adjunct_residue_quality_scores_raw=cargs.input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
@@ -2693,8 +2691,6 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_raw, true);
-			assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_normalized, true);
-			assert_adjunct_name_input(params.adjunct_atom_energy_scores_normalized, true);
 			assert_adjunct_name_input(params.adjunct_atom_depth_weights, true);
 			assert_adjunct_name_input(params.adjunct_atom_quality_scores, true);
 			assert_adjunct_name_input(params.adjunct_residue_quality_scores_raw, true);
