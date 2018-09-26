@@ -148,22 +148,29 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
-			const std::string  format=cargs.input.get_value_or_default<std::string>("format", "");
+			LoadingOfData::Parameters params;
+			params.file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			params.format=cargs.input.get_value_or_default<std::string>("format", "");
+			params.forced_include_heteroatoms=cargs.input.is_option("include-heteroatoms");
+			params.forced_include_hydrogens=cargs.input.is_option("include-hydrogens");
+			params.forced_multimodel_chains=cargs.input.is_option("as-assembly");
+			params.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
+			params.include_hydrogens=cargs.input.get_flag("include-hydrogens");
+			params.multimodel_chains=cargs.input.get_flag("as-assembly");
 			CommandParametersForTitling parameters_for_titling;
 			parameters_for_titling.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			LoadingOfData::Result result;
-			LoadingOfData::construct_result(LoadingOfData::Parameters(file, format), result);
+			LoadingOfData::construct_result(params, result);
 
 			if(result.atoms.size()<4)
 			{
 				throw std::runtime_error(std::string("Less than 4 atoms read."));
 			}
 
-			const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(file));
+			const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(params.file));
 
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
 			DataManager& data_manager=*object_new;
@@ -174,7 +181,7 @@ public:
 				SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
 				summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
-				cargs.output_for_log << "Read atoms from file '" << file << "' ";
+				cargs.output_for_log << "Read atoms from file '" << params.file << "' ";
 				summary_of_atoms.print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}
@@ -183,7 +190,7 @@ public:
 			{
 				data_manager.reset_contacts_by_swapping(result.contacts);
 
-				cargs.output_for_log << "Read contacts from file '" << file << "' ";
+				cargs.output_for_log << "Read contacts from file '" << params.file << "' ";
 				SummaryOfContacts(data_manager.contacts()).print(cargs.output_for_log);
 				cargs.output_for_log << "\n";
 			}

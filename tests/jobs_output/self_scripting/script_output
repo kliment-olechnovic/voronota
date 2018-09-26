@@ -14,14 +14,8 @@ Read atoms from file './input/single/structure.cif' (count=1771)
 Read atoms from file './input/single/structure.pdb' (count=1717)
 
 
-> setup-loading --include-heteroatoms
-
-
-> load ./input/single/structure.pdb
+> load ./input/single/structure.pdb --include-heteroatoms
 Read atoms from file './input/single/structure.pdb' (count=1771)
-
-
-> setup-loading
 
 
 > print-sequence --line-width 80 

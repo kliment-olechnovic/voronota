@@ -12,9 +12,7 @@ set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 8
 
 load --file $INPUTDIR/single/structure.cif
 load -file "$INPUTDIR/single/structure.pdb"
-setup-loading --include-heteroatoms
-load $INPUTDIR/single/structure.pdb
-setup-loading
+load $INPUTDIR/single/structure.pdb --include-heteroatoms
 printseq
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
