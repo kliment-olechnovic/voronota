@@ -51,14 +51,14 @@ public:
 		target_dm.assert_contacts_availability();
 		model_dm.assert_contacts_availability();
 
-		const std::set<std::size_t> target_ids=target_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.target_selection_expression, false);
-		if(target_ids.empty())
+		const std::set<std::size_t> target_contacts_ids=target_dm.selection_manager().select_contacts(params.target_selection_expression, false);
+		if(target_contacts_ids.empty())
 		{
 			throw std::runtime_error(std::string("No target contacts selected."));
 		}
 
-		const std::set<std::size_t> model_ids=model_dm.selection_manager().select_contacts(std::set<std::size_t>(), params.model_selection_expression, false);
-		if(model_ids.empty())
+		const std::set<std::size_t> model_contact_ids=model_dm.selection_manager().select_contacts(params.model_selection_expression, false);
+		if(model_contact_ids.empty())
 		{
 			throw std::runtime_error(std::string("No model contacts selected."));
 		}
@@ -73,18 +73,18 @@ public:
 
 		if(!ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 				parameters_for_cad_score,
-				collect_map_of_contacts(target_dm.atoms(), target_dm.contacts(), target_ids),
-				collect_map_of_contacts(model_dm.atoms(), model_dm.contacts(), model_ids),
+				collect_map_of_contacts(target_dm.atoms(), target_dm.contacts(), target_contacts_ids),
+				collect_map_of_contacts(model_dm.atoms(), model_dm.contacts(), model_contact_ids),
 				result.bundle))
 		{
 			throw std::runtime_error(std::string("Failed to calculate CAD-score."));
 		}
 
-		write_adjuncts(result.bundle, params.smoothing_window, target_ids,
+		write_adjuncts(result.bundle, params.smoothing_window, target_contacts_ids,
 				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
 				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
 				target_dm, result.target_dm_ci);
-		write_adjuncts(result.bundle, params.smoothing_window, model_ids,
+		write_adjuncts(result.bundle, params.smoothing_window, model_contact_ids,
 				params.model_adjunct_atom_scores, params.model_adjunct_residue_scores,
 				params.model_adjunct_inter_atom_scores, params.model_adjunct_inter_residue_scores,
 				model_dm, result.model_dm_ci);
@@ -124,7 +124,7 @@ private:
 			DataManager& dm,
 			DataManager::ChangeIndicator& dm_ci)
 	{
-		if(!adjunct_atom_scores.empty() || !adjunct_residue_scores.empty())
+		if(!adjunct_atom_scores.empty())
 		{
 			for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
 			{
@@ -138,10 +138,22 @@ private:
 						atom.value.props.adjuncts[adjunct_atom_scores]=jt->second.score();
 						dm_ci.changed_atoms_adjuncts=true;
 					}
+					else
+					{
+						atom.value.props.adjuncts.erase(adjunct_atom_scores);
+					}
 				}
+			}
+		}
+
+		if(!adjunct_residue_scores.empty())
+		{
+			const std::map<ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
+			for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
+			{
+				Atom& atom=dm.atoms_mutable()[i];
 				if(!adjunct_residue_scores.empty())
 				{
-					std::map<ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
 					std::map<ConstructionOfCADScore::CRAD, double>::const_iterator jt=
 							smoothed_residue_scores.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 					if(jt!=smoothed_residue_scores.end())
@@ -149,12 +161,28 @@ private:
 						atom.value.props.adjuncts[adjunct_residue_scores]=jt->second;
 						dm_ci.changed_atoms_adjuncts=true;
 					}
+					else
+					{
+						atom.value.props.adjuncts.erase(adjunct_residue_scores);
+					}
 				}
 			}
 		}
 
 		if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_residue_scores.empty())
 		{
+			for(std::size_t i=0;i<dm.contacts_mutable().size();i++)
+			{
+				Contact& contact=dm.contacts_mutable()[i];
+				if(!adjunct_inter_atom_scores.empty())
+				{
+					contact.value.props.adjuncts.erase(adjunct_inter_atom_scores);
+				}
+				if(!adjunct_inter_residue_scores.empty())
+				{
+					contact.value.props.adjuncts.erase(adjunct_inter_residue_scores);
+				}
+			}
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				Contact& contact=dm.contacts_mutable()[*it];
@@ -165,13 +193,10 @@ private:
 					{
 						std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_atom_cad_descriptors.find(crads);
-						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end())
+						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							if(jt->second.target_area_sum>0.0)
-							{
-								contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
-								dm_ci.changed_contacts_adjuncts=true;
-							}
+							contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+							dm_ci.changed_contacts_adjuncts=true;
 						}
 					}
 					if(!adjunct_inter_residue_scores.empty())
@@ -181,13 +206,10 @@ private:
 								crads.b.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 						std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
-						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end())
+						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							if(jt->second.target_area_sum>0.0)
-							{
-								contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
-								dm_ci.changed_contacts_adjuncts=true;
-							}
+							contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+							dm_ci.changed_contacts_adjuncts=true;
 						}
 					}
 				}
