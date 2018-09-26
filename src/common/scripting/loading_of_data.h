@@ -78,18 +78,22 @@ public:
 
 	struct Parameters
 	{
+		bool forced_include_heteroatoms;
+		bool forced_include_hydrogens;
+		bool forced_multimodel_chains;
+		bool include_heteroatoms;
+		bool include_hydrogens;
+		bool multimodel_chains;
 		std::string file;
 		std::string format;
 
-		Parameters()
-		{
-		}
-
-		Parameters(
-				const std::string& file,
-				const std::string& format) :
-					file(file),
-					format(format)
+		Parameters() :
+			forced_include_heteroatoms(false),
+			forced_include_hydrogens(false),
+			forced_multimodel_chains(false),
+			include_heteroatoms(false),
+			include_hydrogens(false),
+			multimodel_chains(false)
 		{
 		}
 	};
@@ -137,9 +141,9 @@ public:
 			const Configuration& config=Configuration::get_default_configuration();
 
 			ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
-			parameters_to_collect_atoms.include_heteroatoms=config.include_heteroatoms;
-			parameters_to_collect_atoms.include_hydrogens=config.include_hydrogens;
-			parameters_to_collect_atoms.multimodel_chains=config.multimodel_chains;
+			parameters_to_collect_atoms.include_heteroatoms=(params.forced_include_heteroatoms ? params.include_heteroatoms : config.include_heteroatoms);
+			parameters_to_collect_atoms.include_hydrogens=(params.forced_include_hydrogens ? params.include_hydrogens : config.include_hydrogens);
+			parameters_to_collect_atoms.multimodel_chains=(params.forced_multimodel_chains ? params.multimodel_chains : config.multimodel_chains);
 			parameters_to_collect_atoms.mmcif=(params.format=="mmcif");
 
 			if(!ConstructionOfAtomicBalls::collect_atomic_balls_from_file(config.atom_radius_assigner, parameters_to_collect_atoms, finput, result.atoms))
