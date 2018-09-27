@@ -86,6 +86,7 @@ public:
 	{
 		double global_quality_score;
 		ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
+		std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth;
 		ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
 		DataManager::ChangeIndicator data_manager_change_index;
 
@@ -172,9 +173,9 @@ public:
 			throw std::runtime_error("Failed to calculate energies scores.");
 		}
 
-		const std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth=
+		result.map_crad_to_depth=
 				ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_crads);
-		if(map_crad_to_depth.empty())
+		if(result.map_crad_to_depth.empty())
 		{
 			throw std::runtime_error(std::string("Failed to calculate burial depths."));
 		}
@@ -186,7 +187,7 @@ public:
 			throw std::runtime_error("Failed to calculate quality scores.");
 		}
 
-		result.global_quality_score=result.bundle_of_quality.global_quality_score(map_crad_to_depth, false);
+		result.global_quality_score=result.bundle_of_quality.global_quality_score(result.map_crad_to_depth, false);
 
 		if(!params.adjunct_inter_atom_energy_scores_raw.empty() || params.adjunct_inter_atom_energy_scores_normalized.empty())
 		{
@@ -242,6 +243,8 @@ public:
 				|| !params.adjunct_residue_quality_scores_raw.empty()
 				|| !params.adjunct_residue_quality_scores_smoothed.empty())
 		{
+			result.data_manager_change_index.changed_atoms_adjuncts=true;
+
 			for(std::size_t i=0;i<data_manager.atoms_mutable().size();i++)
 			{
 				Atom& atom=data_manager.atoms_mutable()[i];
@@ -274,8 +277,8 @@ public:
 				Atom& atom=data_manager.atoms_mutable()[*jt];
 				if(!params.adjunct_atom_depth_weights.empty())
 				{
-					std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
-					if(it!=map_crad_to_depth.end())
+					std::map<ChainResidueAtomDescriptor, int>::const_iterator it=result.map_crad_to_depth.find(atom.crad);
+					if(it!=result.map_crad_to_depth.end())
 					{
 						atom.value.props.adjuncts[params.adjunct_atom_depth_weights]=it->second;
 					}

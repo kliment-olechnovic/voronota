@@ -2682,7 +2682,7 @@ public:
 
 			ScoringOfDataManagerUsingVoroMQA::Parameters params;
 			params.adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "VCE");
-			params.adjunct_inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-contact-energy-normalized", "VCEN");
+			params.adjunct_inter_atom_energy_scores_normalized=cargs.input.get_value_or_default<std::string>("adj-contact-energy-normalized", "");
 			params.adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth", "VAD");
 			params.adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "VAQ");
 			params.adjunct_residue_quality_scores_raw=cargs.input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
