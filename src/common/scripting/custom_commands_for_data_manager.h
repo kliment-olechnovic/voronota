@@ -2766,8 +2766,14 @@ public:
 							}
 						}
 					}
-					atom_ids.swap(atom_ids_filtered);
-					contact_ids=std::set<std::size_t>(contact_ids_filtered.begin(), contact_ids_filtered.end());
+					if(atom_ids_filtered.size()<atom_ids.size())
+					{
+						atom_ids.swap(atom_ids_filtered);
+					}
+					if(contact_ids_filtered.size()<contact_ids.size())
+					{
+						contact_ids=std::set<std::size_t>(contact_ids_filtered.begin(), contact_ids_filtered.end());
+					}
 				}
 			}
 
