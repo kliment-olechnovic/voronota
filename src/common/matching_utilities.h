@@ -159,6 +159,10 @@ private:
 			{
 				eq_pos=value.find(':');
 			}
+			if(eq_pos==std::string::npos)
+			{
+				return (adjuncts.count(value)>0);
+			}
 			if(eq_pos!=std::string::npos && (eq_pos+1)<value.size())
 			{
 				const std::size_t sep_pos=value.find(':', eq_pos+1);
