@@ -2699,11 +2699,13 @@ public:
 			ScoringOfDataManagerUsingVoroMQA::Result result;
 			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
 
-			cargs.output_for_log << "VoroMQA quality score   = " << result.global_quality_score << "\n";
-			cargs.output_for_log << "VoroMQA pseudo energy   = " << result.bundle_of_energy.global_energy_descriptor.energy << "\n";
-			cargs.output_for_log << "VoroMQA contacts count  = " << result.bundle_of_energy.global_energy_descriptor.contacts_count << "\n";
-			cargs.output_for_log << "VoroMQA total area      = " << result.bundle_of_energy.global_energy_descriptor.total_area << "\n";
-			cargs.output_for_log << "VoroMQA strange area    = " << result.bundle_of_energy.global_energy_descriptor.strange_area << "\n";
+			cargs.output_for_log << "quality score   = " << result.global_quality_score << "\n";
+			cargs.output_for_log << "atoms count     = " << result.bundle_of_quality.atom_quality_scores.size() << "\n";
+			cargs.output_for_log << "residues count  = " << result.bundle_of_quality.raw_residue_quality_scores.size() << "\n";
+			cargs.output_for_log << "contacts count  = " << result.bundle_of_energy.global_energy_descriptor.contacts_count << "\n";
+			cargs.output_for_log << "pseudo energy   = " << result.bundle_of_energy.global_energy_descriptor.energy << "\n";
+			cargs.output_for_log << "total area      = " << result.bundle_of_energy.global_energy_descriptor.total_area << "\n";
+			cargs.output_for_log << "strange area    = " << result.bundle_of_energy.global_energy_descriptor.strange_area << "\n";
 		}
 	};
 
