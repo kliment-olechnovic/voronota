@@ -98,7 +98,8 @@ public:
 		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
 		set_command("save-atoms-and-contacts", new CustomCommandsForDataManager::save_atoms_and_contacts());
 		set_command("calculate-burial-depth", new CustomCommandsForDataManager::calculate_burial_depth());
-		set_command("voromqa", new CustomCommandsForDataManager::voromqa());
+		set_command("voromqa-global", new CustomCommandsForDataManager::voromqa_global());
+		set_command("voromqa-local-of-atoms", new CustomCommandsForDataManager::voromqa_local_of_atoms);
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
