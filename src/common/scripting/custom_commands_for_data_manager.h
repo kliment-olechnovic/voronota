@@ -2749,20 +2749,21 @@ public:
 					std::set<std::size_t> atom_ids_filtered;
 					std::vector<std::size_t> contact_ids_filtered;
 					contact_ids_filtered.reserve(contact_ids.size());
-					for(std::set<std::size_t>::const_iterator it=contact_ids.end();it!=contact_ids.end();++it)
+					for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 					{
-						const Contact& contact=cargs.data_manager.contacts()[*it];
+						const std::size_t id=(*it);
+						const Contact& contact=cargs.data_manager.contacts()[id];
 						if(atom_ids.count(contact.ids[0])>0)
 						{
 							atom_ids_filtered.insert(contact.ids[0]);
-							contact_ids_filtered.push_back(*it);
+							contact_ids_filtered.push_back(id);
 						}
 						if(contact.ids[0]!=contact.ids[1] && atom_ids.count(contact.ids[1])>0)
 						{
 							atom_ids_filtered.insert(contact.ids[1]);
-							if(contact_ids_filtered.empty() || contact_ids_filtered.back()!=(*it))
+							if(contact_ids_filtered.empty() || contact_ids_filtered.back()!=id)
 							{
-								contact_ids_filtered.push_back(*it);
+								contact_ids_filtered.push_back(id);
 							}
 						}
 					}
@@ -2795,14 +2796,14 @@ public:
 					const double weight=cargs.data_manager.atoms()[id].value.props.adjuncts.find(adjunct_atom_depth_weights)->second;
 					const double score=cargs.data_manager.atoms()[id].value.props.adjuncts.find(adjunct_atom_quality_scores)->second;
 					sum_of_atom_weights+=weight;
-					sum_of_atom_weighted_scores=(weight*score);
+					sum_of_atom_weighted_scores+=(weight*score);
 				}
 
 				const double quality_score=(sum_of_atom_weights>0.0 ? (sum_of_atom_weighted_scores/sum_of_atom_weights) : 0.0);
 
-				cargs.output_for_log << "atoms selected            = " << atom_ids.size() << "\n";
-				cargs.output_for_log << "atoms selected and valid  = " << atom_ids_with_adjuncts.size() << "\n";
-				cargs.output_for_log << "quality score             = " << quality_score<< "\n";
+				cargs.output_for_log << "atoms selected     = " << atom_ids.size() << "\n";
+				cargs.output_for_log << "atoms relevant     = " << atom_ids_with_adjuncts.size() << "\n";
+				cargs.output_for_log << "quality score      = " << quality_score<< "\n";
 			}
 
 			if(!cargs.data_manager.contacts().empty())
@@ -2824,13 +2825,13 @@ public:
 					const double area=cargs.data_manager.contacts()[id].value.area;
 					const double energy=cargs.data_manager.contacts()[id].value.props.adjuncts.find(adjunct_inter_atom_energy_scores_raw)->second;
 					sum_of_areas+=area;
-					sum_of_energies=energy;
+					sum_of_energies+=energy;
 				}
 
-				cargs.output_for_log << "contacts selected            = " << contact_ids.size() << "\n";
-				cargs.output_for_log << "contacts selected and valid  = " << contact_ids_with_adjuncts.size() << "\n";
-				cargs.output_for_log << "area                         = " << sum_of_areas<< "\n";
-				cargs.output_for_log << "energy                       = " << sum_of_energies<< "\n";
+				cargs.output_for_log << "contacts selected  = " << contact_ids.size() << "\n";
+				cargs.output_for_log << "contacts relevant  = " << contact_ids_with_adjuncts.size() << "\n";
+				cargs.output_for_log << "area               = " << sum_of_areas<< "\n";
+				cargs.output_for_log << "energy             = " << sum_of_energies<< "\n";
 			}
 		}
 	};
