@@ -2734,39 +2734,99 @@ public:
 			assert_adjunct_name_input(adjunct_atom_depth_weights, false);
 			assert_adjunct_name_input(adjunct_atom_quality_scores, false);
 
-			const std::set<std::size_t> ids_all=cargs.data_manager.selection_manager().select_atoms(
+			const std::set<std::size_t> atom_ids_all=cargs.data_manager.selection_manager().select_atoms(
 					parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 
-			if(ids_all.empty())
+			if(atom_ids_all.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			const std::set<std::size_t> ids_with_adjuncts=cargs.data_manager.selection_manager().select_atoms(
-					ids_all, (std::string("{")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores)+"}", false);
+			const std::set<std::size_t> atom_ids_with_adjuncts=cargs.data_manager.selection_manager().select_atoms(
+					atom_ids_all, (std::string("{")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores+"}"), false);
 
-			if(ids_all.empty())
+			if(atom_ids_all.empty())
 			{
 				throw std::runtime_error(std::string("No selected atoms with required adjuncts."));
 			}
 
-			double sum_of_weights=0.0;
-			double sum_of_weighted_scores=0.0;
+			double sum_of_atom_weights=0.0;
+			double sum_of_atom_weighted_scores=0.0;
 
-			for(std::set<std::size_t>::const_iterator it=ids_with_adjuncts.begin();it!=ids_with_adjuncts.end();++it)
+			for(std::set<std::size_t>::const_iterator it=atom_ids_with_adjuncts.begin();it!=atom_ids_with_adjuncts.end();++it)
 			{
 				const std::size_t id=(*it);
 				const double weight=cargs.data_manager.atoms()[id].value.props.adjuncts.find(adjunct_atom_depth_weights)->second;
 				const double score=cargs.data_manager.atoms()[id].value.props.adjuncts.find(adjunct_atom_quality_scores)->second;
-				sum_of_weights+=weight;
-				sum_of_weighted_scores=(weight*score);
+				sum_of_atom_weights+=weight;
+				sum_of_atom_weighted_scores=(weight*score);
 			}
 
-			const double final_score=(sum_of_weights>0.0 ? (sum_of_weighted_scores/sum_of_weights) : 0.0);
+			const double quality_score=(sum_of_atom_weights>0.0 ? (sum_of_atom_weighted_scores/sum_of_atom_weights) : 0.0);
 
-			cargs.output_for_log << "quality score             = " << final_score<< "\n";
-			cargs.output_for_log << "atoms selected            = " << ids_all.size() << "\n";
-			cargs.output_for_log << "atoms selected and valid  = " << ids_with_adjuncts.size() << "\n";
+			cargs.output_for_log << "quality score             = " << quality_score<< "\n";
+			cargs.output_for_log << "atoms selected            = " << atom_ids_all.size() << "\n";
+			cargs.output_for_log << "atoms selected and valid  = " << atom_ids_with_adjuncts.size() << "\n";
+		}
+	};
+
+	class voromqa_local_of_contacts : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			CommandParametersForGenericSelecting parameters_for_selecting;
+			parameters_for_selecting.read(cargs.input);
+			const std::string adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
+			const std::string adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
+			const std::string adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(adjunct_inter_atom_energy_scores_raw, false);
+			assert_adjunct_name_input(adjunct_atom_depth_weights, false);
+			assert_adjunct_name_input(adjunct_atom_quality_scores, false);
+
+			const std::set<std::size_t> ids_all=cargs.data_manager.selection_manager().select_contacts(
+					parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+
+			if(ids_all.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			const std::set<std::size_t> ids_with_adjuncts=cargs.data_manager.selection_manager().select_contacts(
+					ids_all, (std::string("{")+"--adjuncts "+adjunct_inter_atom_energy_scores_raw+"}"), false);
+
+			if(ids_all.empty())
+			{
+				throw std::runtime_error(std::string("No selected contacts with required adjuncts."));
+			}
+
+			double sum_of_areas=0.0;
+			double sum_of_energies=0.0;
+
+			for(std::set<std::size_t>::const_iterator it=ids_with_adjuncts.begin();it!=ids_with_adjuncts.end();++it)
+			{
+				const std::size_t id=(*it);
+				const double area=cargs.data_manager.contacts()[id].value.area;
+				const double energy=cargs.data_manager.contacts()[id].value.props.adjuncts.find(adjunct_inter_atom_energy_scores_raw)->second;
+				sum_of_areas+=area;
+				sum_of_energies=energy;
+			}
+
+			cargs.output_for_log << "pseudo energy                = " << sum_of_energies<< "\n";
+			cargs.output_for_log << "area                         = " << sum_of_areas<< "\n";
+			cargs.output_for_log << "contacts selected            = " << ids_all.size() << "\n";
+			cargs.output_for_log << "contacts selected and valid  = " << ids_with_adjuncts.size() << "\n";
 		}
 	};
 
