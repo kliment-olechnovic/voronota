@@ -169,6 +169,17 @@ public:
 		return select_atoms(std::set<std::size_t>(), expression_string, full_residues);
 	}
 
+	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& contact_ids, const bool full_residues) const
+	{
+		const std::set<std::size_t> result=select_atoms_by_contacts(from_ids.empty(), from_ids, contact_ids);
+		return (full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
+	}
+
+	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& contact_ids, const bool full_residues) const
+	{
+		return select_atoms_by_contacts(std::set<std::size_t>(), contact_ids, full_residues);
+	}
+
 	void set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
 	{
 		if(atoms().empty())
@@ -234,6 +245,17 @@ public:
 	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues=false) const
 	{
 		return select_contacts(std::set<std::size_t>(), expression_string, full_residues);
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids, const bool full_residues) const
+	{
+		const std::set<std::size_t> result=select_contacts_by_atoms(from_ids.empty(), from_ids, atom_ids);
+		return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& atom_ids, const bool full_residues) const
+	{
+		return select_contacts_by_atoms(std::set<std::size_t>(), atom_ids, full_residues);
 	}
 
 	void set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)
@@ -528,6 +550,60 @@ private:
 			}
 		}
 
+		return result;
+	}
+
+	std::set<std::size_t> select_atoms_by_contacts(const bool from_all, const std::set<std::size_t>& from_ids, const std::set<std::size_t>& contact_ids) const
+	{
+		std::set<std::size_t> result;
+		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts().size())
+			{
+				const Contact& contact=contacts()[id];
+				if(from_all || from_ids.count(contact.ids[0])>0)
+				{
+					result.insert(contact.ids[0]);
+				}
+				if(contact.ids[0]!=contact.ids[1] && (from_all || from_ids.count(contact.ids[1])>0))
+				{
+					result.insert(contact.ids[1]);
+				}
+			}
+		}
+		return result;
+	}
+
+	std::set<std::size_t> select_contacts_by_atoms(const bool from_all, const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids) const
+	{
+		std::set<std::size_t> result;
+		if(from_all)
+		{
+			for(std::size_t id=0;id<contacts().size();id++)
+			{
+				const Contact& contact=contacts()[id];
+				if(atom_ids.count(contact.ids[0])>0 || (contact.ids[0]!=contact.ids[1] && atom_ids.count(contact.ids[1])>0))
+				{
+					result.insert(id);
+				}
+			}
+		}
+		else
+		{
+			for(std::set<std::size_t>::const_iterator it=from_ids.begin();it!=from_ids.end();++it)
+			{
+				const std::size_t id=(*it);
+				if(id<contacts().size())
+				{
+					const Contact& contact=contacts()[id];
+					if(atom_ids.count(contact.ids[0])>0 || (contact.ids[0]!=contact.ids[1] && atom_ids.count(contact.ids[1])>0))
+					{
+						result.insert(id);
+					}
+				}
+			}
+		}
 		return result;
 	}
 
