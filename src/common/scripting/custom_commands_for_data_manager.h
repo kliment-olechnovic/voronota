@@ -2724,13 +2724,19 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			const std::string use_atoms=cargs.input.get_value_or_default<std::string>("use-atoms", "{}");
-			const std::string use_contacts=cargs.input.get_value_or_default<std::string>("use-contacts", "{}");
+			const std::string selection_expresion_for_atoms=cargs.input.get_value_or_default<std::string>("atoms", "{}");
+			const bool provided_selection_expresion_for_contacts=cargs.input.is_option("contacts");
+			const std::string selection_expresion_for_contacts=cargs.input.get_value_or_default<std::string>("contacts", "{}");
 			const std::string adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 			const std::string adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 			const std::string adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
 
 			cargs.input.assert_nothing_unusable();
+
+			if(provided_selection_expresion_for_contacts)
+			{
+				cargs.data_manager.assert_contacts_availability();
+			}
 
 			assert_adjunct_name_input(adjunct_inter_atom_energy_scores_raw, false);
 			assert_adjunct_name_input(adjunct_atom_depth_weights, false);
@@ -2739,43 +2745,13 @@ public:
 			std::set<std::size_t> atom_ids;
 			std::set<std::size_t> contact_ids;
 
-			atom_ids=cargs.data_manager.selection_manager().select_atoms(use_atoms, false);
+			atom_ids=cargs.data_manager.selection_manager().select_atoms(selection_expresion_for_atoms, false);
 
 			if(!cargs.data_manager.contacts().empty())
 			{
-				contact_ids=cargs.data_manager.selection_manager().select_contacts(use_contacts, false);
-
-				{
-					std::set<std::size_t> atom_ids_filtered;
-					std::vector<std::size_t> contact_ids_filtered;
-					contact_ids_filtered.reserve(contact_ids.size());
-					for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
-					{
-						const std::size_t id=(*it);
-						const Contact& contact=cargs.data_manager.contacts()[id];
-						if(atom_ids.count(contact.ids[0])>0)
-						{
-							atom_ids_filtered.insert(contact.ids[0]);
-							contact_ids_filtered.push_back(id);
-						}
-						if(contact.ids[0]!=contact.ids[1] && atom_ids.count(contact.ids[1])>0)
-						{
-							atom_ids_filtered.insert(contact.ids[1]);
-							if(contact_ids_filtered.empty() || contact_ids_filtered.back()!=id)
-							{
-								contact_ids_filtered.push_back(id);
-							}
-						}
-					}
-					if(atom_ids_filtered.size()<atom_ids.size())
-					{
-						atom_ids.swap(atom_ids_filtered);
-					}
-					if(contact_ids_filtered.size()<contact_ids.size())
-					{
-						contact_ids=std::set<std::size_t>(contact_ids_filtered.begin(), contact_ids_filtered.end());
-					}
-				}
+				contact_ids=cargs.data_manager.selection_manager().select_contacts(selection_expresion_for_contacts, false);
+				atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(atom_ids, contact_ids, false);
+				contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms(contact_ids, atom_ids, false);
 			}
 
 			{
