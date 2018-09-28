@@ -141,12 +141,10 @@ public:
 		}
 	}
 
-
-	std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues=false) const
+	std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) const
 	{
 		if(atoms().empty())
 		{
-			throw std::runtime_error(std::string("No atoms to select from."));
 			return std::set<std::size_t>();
 		}
 		else
@@ -164,7 +162,7 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues=false) const
+	std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues) const
 	{
 		return select_atoms(std::set<std::size_t>(), expression_string, full_residues);
 	}
@@ -220,11 +218,10 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues=false) const
+	std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) const
 	{
 		if(contacts().empty())
 		{
-			throw std::runtime_error(std::string("No contacts to select from."));
 			return std::set<std::size_t>();
 		}
 		else
@@ -242,7 +239,7 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues=false) const
+	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues) const
 	{
 		return select_contacts(std::set<std::size_t>(), expression_string, full_residues);
 	}
