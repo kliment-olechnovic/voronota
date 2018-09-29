@@ -346,7 +346,9 @@ private:
 		else if(commands_for_data_manager_.count(command_name)==1)
 		{
 			command_record.recognized=3;
-			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(true, false);
+			CongregationOfDataManagers::ObjectQuery query;
+			query.picked=true;
+			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(query);
 			if(!picked_data_managers.empty())
 			{
 				GenericCommandForDataManager* command_for_data_manager=commands_for_data_manager_[command_name];

@@ -24,7 +24,7 @@ save-atoms --file '$SUBDIR/pdb_atoms' --as-pdb --pdb-b-factor volume
 save-contacts '$SUBDIR/plain_contacts'
 
 list-objects
-delete-objects -all
+delete-objects
 load --file '$SUBDIR/plain_atoms' --format plain
 list-objects
 
@@ -84,7 +84,7 @@ EOF
 cat << EOF
 source '$SUBDIR/script_input'
 list-objects
-delete-objects plain_atoms
+delete-objects -names plain_atoms
 list-objects
 set-alias quit exit
 quit
