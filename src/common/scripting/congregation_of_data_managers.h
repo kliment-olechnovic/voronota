@@ -84,6 +84,23 @@ public:
 		}
 	};
 
+	struct ObjectQuery
+	{
+		bool picked;
+		bool not_picked;
+		bool visible;
+		bool not_visible;
+		std::set<std::string> names;
+
+		ObjectQuery() :
+			picked(false),
+			not_picked(false),
+			visible(false),
+			not_visible(false)
+		{
+		}
+	};
+
 	CongregationOfDataManagers()
 	{
 	}
@@ -134,12 +151,18 @@ public:
 		return counter;
 	}
 
-	std::vector<DataManager*> get_objects(const bool only_picked, const bool only_visible)
+	std::vector<DataManager*> get_objects(const ObjectQuery& query)
 	{
 		std::vector<DataManager*> result;
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			if((!only_picked || it->attributes.picked) && (!only_visible || it->attributes.visible))
+			if(
+					(!query.picked || it->attributes.picked) &&
+					(!query.not_picked || !it->attributes.picked) &&
+					(!query.visible || it->attributes.visible) &&
+					(!query.not_visible || !it->attributes.visible) &&
+					(query.names.empty() || query.names.count(it->attributes.name)>0)
+				)
 			{
 				result.push_back(&it->data_manager);
 			}
@@ -147,18 +170,9 @@ public:
 		return result;
 	}
 
-	std::vector<DataManager*> get_objects(const std::vector<std::string>& names)
+	std::vector<DataManager*> get_objects()
 	{
-		std::set<std::string> set_of_names(names.begin(), names.end());
-		std::vector<DataManager*> result;
-		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
-		{
-			if(set_of_names.count(it->attributes.name)>0)
-			{
-				result.push_back(&it->data_manager);
-			}
-		}
-		return result;
+		return get_objects(ObjectQuery());
 	}
 
 	DataManager* get_object(const std::string& name)

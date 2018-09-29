@@ -88,8 +88,11 @@ Objects:
   'structure.pdb_2' *
 
 
-> delete-objects -all
-Removed all objects
+> delete-objects
+Removed objects:
+  'structure.cif'
+  'structure.pdb'
+  'structure.pdb_2'
 
 
 > load --file './jobs_output/self_scripting/plain_atoms' --format plain
@@ -289,7 +292,7 @@ Objects:
   'plain_atoms_2' *
 
 
-> delete-objects plain_atoms
+> delete-objects -names plain_atoms
 Removed objects:
   'plain_atoms'
 

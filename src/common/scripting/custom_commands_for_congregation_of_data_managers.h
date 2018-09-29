@@ -20,9 +20,17 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			cargs.input.assert_nothing_unusable();
 			cargs.congregation_of_data_managers.assert_objects_availability();
-			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(false, false);
+
+			const CongregationOfDataManagers::ObjectQuery query=read_query(cargs.input);
+			cargs.input.assert_nothing_unusable();
+
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(query);
+			if(objects.empty())
+			{
+				throw std::runtime_error(std::string("No objects selected."));
+			}
+
 			cargs.output_for_log << "Objects:\n";
 			for(std::size_t i=0;i<objects.size();i++)
 			{
@@ -48,43 +56,26 @@ public:
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			const bool all=cargs.input.get_flag("all");
+			const CongregationOfDataManagers::ObjectQuery query=read_query(cargs.input);
+			cargs.input.assert_nothing_unusable();
 
-			if(all)
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(query);
+			if(objects.empty())
 			{
-				cargs.input.assert_nothing_unusable();
-				std::vector<DataManager*> ptrs=cargs.congregation_of_data_managers.delete_all_objects();
-				cargs.change_indicator.deleted_objects.insert(ptrs.begin(), ptrs.end());
-				cargs.output_for_log << "Removed all objects\n";
+				throw std::runtime_error(std::string("No objects selected."));
 			}
-			else
+
+			cargs.output_for_log << "Removed objects:\n";
+
+			for(std::size_t i=0;i<objects.size();i++)
 			{
-				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-				cargs.input.mark_all_unnamed_values_as_used();
-				cargs.input.assert_nothing_unusable();
+				cargs.output_for_log << "  '" << cargs.congregation_of_data_managers.get_object_attributes(objects[i]).name << "'\n";
 
-				if(names.empty())
+				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(objects[i]);
+				if(ptr!=0)
 				{
-					throw std::runtime_error(std::string("No object names provided."));
+					cargs.change_indicator.deleted_objects.insert(ptr);
 				}
-
-				cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					DataManager* ptr=cargs.congregation_of_data_managers.delete_object(names[i]);
-					if(ptr!=0)
-					{
-						cargs.change_indicator.deleted_objects.insert(ptr);
-					}
-				}
-
-				cargs.output_for_log << "Removed objects:\n";
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.output_for_log << "  '" << names[i] << "'";
-				}
-				cargs.output_for_log << "\n";
 			}
 		}
 	};
@@ -219,38 +210,25 @@ public:
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			const bool all=cargs.input.get_flag("all");
+			const CongregationOfDataManagers::ObjectQuery query=read_query(cargs.input);
+			cargs.input.assert_nothing_unusable();
 
-			if(all)
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(query);
+			if(objects.empty())
 			{
-				cargs.input.assert_nothing_unusable();
-				cargs.congregation_of_data_managers.set_all_objects_picked(positive_);
-				cargs.change_indicator.changed_objects_picks=true;
+				throw std::runtime_error(std::string("No objects selected."));
 			}
-			else
+
+			cargs.change_indicator.changed_objects_picks=true;
+
+			if(positive_ && !add_)
 			{
-				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-				cargs.input.mark_all_unnamed_values_as_used();
-				cargs.input.assert_nothing_unusable();
+				cargs.congregation_of_data_managers.set_all_objects_picked(false);
+			}
 
-				if(names.empty())
-				{
-					throw std::runtime_error(std::string("No object names provided."));
-				}
-
-				cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-				if(positive_ && !add_)
-				{
-					cargs.congregation_of_data_managers.set_all_objects_picked(false);
-				}
-
-				cargs.change_indicator.changed_objects_picks=true;
-
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.congregation_of_data_managers.set_object_picked(names[i], positive_);
-				}
+			for(std::size_t i=0;i<objects.size();i++)
+			{
+				cargs.congregation_of_data_managers.set_object_picked(objects[i], positive_);
 			}
 		}
 
@@ -291,34 +269,20 @@ public:
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
-			const bool all=cargs.input.get_flag("all");
+			const CongregationOfDataManagers::ObjectQuery query=read_query(cargs.input);
+			cargs.input.assert_nothing_unusable();
 
-			if(all)
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(query);
+			if(objects.empty())
 			{
-				cargs.input.assert_nothing_unusable();
-				cargs.congregation_of_data_managers.set_all_objects_visible(positive_);
-				cargs.change_indicator.changed_objects_visibilities=true;
+				throw std::runtime_error(std::string("No objects selected."));
 			}
-			else
+
+			cargs.change_indicator.changed_objects_visibilities=true;
+
+			for(std::size_t i=0;i<objects.size();i++)
 			{
-				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-				cargs.input.mark_all_unnamed_values_as_used();
-
-				cargs.input.assert_nothing_unusable();
-
-				if(names.empty())
-				{
-					throw std::runtime_error(std::string("No object names provided."));
-				}
-
-				cargs.congregation_of_data_managers.assert_objects_availability(names);
-
-				cargs.change_indicator.changed_objects_visibilities=true;
-
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.congregation_of_data_managers.set_object_visible(names[i], positive_);
-				}
+				cargs.congregation_of_data_managers.set_object_visible(objects[i], positive_);
 			}
 		}
 
@@ -339,31 +303,22 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-			cargs.input.mark_all_unnamed_values_as_used();
+			cargs.congregation_of_data_managers.assert_objects_availability();
+
+			const CongregationOfDataManagers::ObjectQuery query=read_query(cargs.input);
 			cargs.input.assert_nothing_unusable();
+
+			const std::vector<DataManager*> objects=cargs.congregation_of_data_managers.get_objects(query);
+			if(objects.empty())
+			{
+				throw std::runtime_error(std::string("No objects selected."));
+			}
 
 			SummaryOfAtoms summary_of_atoms;
 
-			if(names.empty())
+			for(std::size_t i=0;i<objects.size();i++)
 			{
-				std::vector<DataManager*> dms=cargs.congregation_of_data_managers.get_objects(false, true);
-				for(std::size_t i=0;i<dms.size();i++)
-				{
-					summary_of_atoms.feed(SummaryOfAtoms(dms[i]->atoms()));
-				}
-			}
-			else
-			{
-				cargs.congregation_of_data_managers.assert_objects_availability(names);
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					DataManager* dm=cargs.congregation_of_data_managers.get_object(names[i]);
-					if(dm!=0)
-					{
-						summary_of_atoms.feed(SummaryOfAtoms(dm->atoms()));
-					}
-				}
+				summary_of_atoms.feed(SummaryOfAtoms(objects[i]->atoms()));
 			}
 
 			if(summary_of_atoms.bounding_box.filled)
@@ -371,11 +326,6 @@ public:
 				cargs.heterostorage.summaries_of_atoms["zoomed"]=summary_of_atoms;
 				cargs.output_for_log << "Bounding box: (" << summary_of_atoms.bounding_box.p_min << ") (" << summary_of_atoms.bounding_box.p_max << ")\n";
 			}
-			else
-			{
-				cargs.output_for_log << "No visible objects to zoom by.\n";
-			}
-
 		}
 	};
 
@@ -507,6 +457,18 @@ private:
 		{
 			return std::string();
 		}
+	}
+
+	static CongregationOfDataManagers::ObjectQuery read_query(CommandInput& input)
+	{
+		CongregationOfDataManagers::ObjectQuery query;
+		query.picked=input.get_flag("picked");
+		query.not_picked=input.get_flag("not-picked");
+		query.visible=input.get_flag("visible");
+		query.not_visible=input.get_flag("not-visible");
+		std::vector<std::string> names=input.get_value_vector_or_default<std::string>("names", std::vector<std::string>());
+		query.names.insert(names.begin(), names.end());
+		return query;
 	}
 };
 
