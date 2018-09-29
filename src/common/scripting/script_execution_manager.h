@@ -100,6 +100,7 @@ public:
 		set_command("calculate-burial-depth", new CustomCommandsForDataManager::calculate_burial_depth());
 		set_command("voromqa-global", new CustomCommandsForDataManager::voromqa_global());
 		set_command("voromqa-local", new CustomCommandsForDataManager::voromqa_local);
+		set_command("voromqa-frustration", new CustomCommandsForDataManager::voromqa_frustration);
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));

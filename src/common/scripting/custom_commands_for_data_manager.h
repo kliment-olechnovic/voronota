@@ -2812,6 +2812,132 @@ public:
 		}
 	};
 
+	class voromqa_frustration : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
+			const std::string adjunct_contact_frustration_area=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-area", "");
+			const std::string adjunct_contact_frustration_energy=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-energy", "");
+			const std::string adjunct_contact_frustration_energy_mean=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-energy-mean", "frustration_energy_mean");
+			const std::string adjunct_atom_frustration_area=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-area", "");
+			const std::string adjunct_atom_frustration_energy=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy", "");
+			const std::string adjunct_atom_frustration_energy_mean=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy-mean", "frustration_energy_mean");
+			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 2);
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(adjunct_contact_energy, false);
+			assert_adjunct_name_input(adjunct_contact_frustration_area, true);
+			assert_adjunct_name_input(adjunct_contact_frustration_energy, true);
+			assert_adjunct_name_input(adjunct_contact_frustration_energy_mean, true);
+			assert_adjunct_name_input(adjunct_atom_frustration_area, true);
+			assert_adjunct_name_input(adjunct_atom_frustration_energy, true);
+			assert_adjunct_name_input(adjunct_atom_frustration_energy_mean, true);
+
+			const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
+					std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false);
+
+			if(solvent_contact_ids.empty())
+			{
+				throw std::runtime_error(std::string("No solvent contacts with energy values."));
+			}
+
+			const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
+
+			const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms_and_atoms(exterior_atom_ids, exterior_atom_ids, false);
+
+			if(exterior_contact_ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts between exterior atoms."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+			{
+				const std::size_t central_id=(*it);
+
+				std::set<std::size_t> atom_ids;
+				atom_ids.insert(central_id);
+
+				{
+					std::set<std::size_t> contact_ids;
+					for(unsigned int level=0;level<depth;level++)
+					{
+						contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms(exterior_contact_ids, atom_ids, false);
+						atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(exterior_atom_ids, contact_ids, false);
+					}
+				}
+
+				{
+					double sum_of_areas=0.0;
+					double sum_of_energies=0.0;
+					
+					{
+						const std::set<std::size_t> local_solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms(solvent_contact_ids, atom_ids, false);
+						for(std::set<std::size_t>::const_iterator jt=local_solvent_contact_ids.begin();jt!=local_solvent_contact_ids.end();++jt)
+						{
+							const Contact& contact=cargs.data_manager.contacts()[*jt];
+							sum_of_areas+=contact.value.area;
+							sum_of_energies+=contact.value.props.adjuncts.find(adjunct_contact_energy)->second;
+						}
+					}
+					
+					const double energy_mean=(sum_of_areas>0.0 ? (sum_of_energies/sum_of_areas) : 0.0);
+
+					if(!adjunct_contact_frustration_area.empty() || !adjunct_contact_frustration_energy.empty() || !adjunct_contact_frustration_energy_mean.empty())
+					{
+						std::set<std::size_t> atom_id;
+						atom_id.insert(central_id);
+						const std::set<std::size_t> local_solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms(solvent_contact_ids, atom_id, false);
+						if(!local_solvent_contact_ids.empty())
+						{
+							const std::size_t solvent_contact_id=(*local_solvent_contact_ids.begin());
+							Contact& contact=cargs.data_manager.contacts_mutable()[solvent_contact_id];
+							if(!adjunct_contact_frustration_area.empty())
+							{
+								contact.value.props.adjuncts[adjunct_contact_frustration_area]=sum_of_areas;
+							}
+							if(!adjunct_contact_frustration_energy.empty())
+							{
+								contact.value.props.adjuncts[adjunct_contact_frustration_energy]=sum_of_energies;
+							}
+							if(!adjunct_contact_frustration_energy_mean.empty())
+							{
+								contact.value.props.adjuncts[adjunct_contact_frustration_energy_mean]=energy_mean;
+							}
+						}
+					}
+
+					if(!adjunct_atom_frustration_area.empty() || !adjunct_atom_frustration_energy.empty() || !adjunct_atom_frustration_energy_mean.empty())
+					{
+						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+						if(!adjunct_atom_frustration_area.empty())
+						{
+							atom.value.props.adjuncts[adjunct_atom_frustration_area]=sum_of_areas;
+						}
+						if(!adjunct_atom_frustration_energy.empty())
+						{
+							atom.value.props.adjuncts[adjunct_atom_frustration_energy]=sum_of_energies;
+						}
+						if(!adjunct_atom_frustration_energy_mean.empty())
+						{
+							atom.value.props.adjuncts[adjunct_atom_frustration_energy_mean]=energy_mean;
+						}
+					}
+				}
+			}
+		}
+	};
+
 private:
 	class CommandParametersForGenericSelecting
 	{
