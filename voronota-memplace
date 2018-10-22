@@ -100,6 +100,15 @@ command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 command -v voronota-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-voromqa' executable not in binaries path"; exit 1; }
 
+MD5SUM_COMMAND="md5sum"
+if command -v md5sum &> /dev/null
+then
+	MD5SUM_COMMAND="md5sum"
+else
+	MD5SUM_COMMAND="md5"
+fi
+command -v $MD5SUM_COMMAND &> /dev/null || { echo >&2 "Error: 'md5sum' or 'md5' executable not in binaries path"; exit 1; }
+
 if [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file does not exist"
@@ -136,7 +145,7 @@ fi
 BALLS_MD5=""
 if [ -n "$CACHE_DIRECTORY" ]
 then
-	BALLS_MD5=$(cat $TMPLDIR/balls | md5sum | awk '{print $1}')
+	BALLS_MD5=$(cat $TMPLDIR/balls | $MD5SUM_COMMAND | awk '{print $1}')
 	if [ -n "$BALLS_MD5" ]
 	then
 		BALLS_MD5="${BALLS_MD5}.voronota.memplace"
