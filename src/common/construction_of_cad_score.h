@@ -24,6 +24,12 @@ public:
 		{
 		}
 
+		static bool& detailed_output_switch()
+		{
+			static bool detailed_output=false;
+			return detailed_output;
+		}
+
 		void add(const double target_area, const double model_area)
 		{
 			target_area_sum+=target_area;
@@ -429,6 +435,20 @@ private:
 		}
 	}
 };
+
+inline std::ostream& operator<<(std::ostream& output, const ConstructionOfCADScore::CADDescriptor& cadd)
+{
+	output << cadd.score();
+	if(ConstructionOfCADScore::CADDescriptor::detailed_output_switch())
+	{
+		output << " " << cadd.target_area_sum
+				<< " " << cadd.model_area_sum
+				<< " " << cadd.raw_differences_sum
+				<< " " << cadd.constrained_differences_sum
+				<< " " << cadd.model_target_area_sum;
+	}
+	return output;
+}
 
 }
 

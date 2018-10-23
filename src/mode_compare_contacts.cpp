@@ -9,37 +9,11 @@
 
 #include "common/construction_of_cad_score.h"
 
-namespace
-{
-
-typedef common::ConstructionOfCADScore::CRAD CRAD;
-typedef common::ConstructionOfCADScore::CRADsPair CRADsPair;
-typedef common::ConstructionOfCADScore::CADDescriptor CADDescriptor;
-
-inline bool& detailed_output_of_CADDescriptor()
-{
-	static bool detailed_output=false;
-	return detailed_output;
-}
-
-inline std::ostream& operator<<(std::ostream& output, const CADDescriptor& cadd)
-{
-	output << cadd.score();
-	if(detailed_output_of_CADDescriptor())
-	{
-		output << " " << cadd.target_area_sum
-				<< " " << cadd.model_area_sum
-				<< " " << cadd.raw_differences_sum
-				<< " " << cadd.constrained_differences_sum
-				<< " " << cadd.model_target_area_sum;
-	}
-	return output;
-}
-
-}
-
 void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {
+	typedef common::ConstructionOfCADScore::CRADsPair CRADsPair;
+	typedef common::ConstructionOfCADScore::CADDescriptor CADDescriptor;
+
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
 	pohw.describe_io("stdout", false, true, "global scores (atom-level and residue-level)");
@@ -54,7 +28,7 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string smoothed_scores_file=poh.argument<std::string>(pohw.describe_option("--smoothed-scores-file", "string", "file path to output smoothed residue scores"), "");
 	const bool ignore_residue_names=poh.contains_option(pohw.describe_option("--ignore-residue-names", "", "flag to consider just residue numbers and ignore residue names"));
 	const bool residue_level_only=poh.contains_option(pohw.describe_option("--residue-level-only", "", "flag to output only residue-level results"));
-	detailed_output_of_CADDescriptor()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
+	CADDescriptor::detailed_output_switch()=poh.contains_option(pohw.describe_option("--detailed-output", "", "flag to enable detailed output"));
 	const std::string chains_renaming_file=poh.argument<std::string>(pohw.describe_option("--chains-renaming-file", "string", "file path to input chains renaming"), "");
 	const bool remap_chains=poh.contains_option(pohw.describe_option("--remap-chains", "", "flag to calculate optimal chains remapping"));
 	const bool remap_chains_log=poh.contains_option(pohw.describe_option("--remap-chains-log", "", "flag output remapping progress to stderr"));
