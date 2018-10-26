@@ -506,7 +506,9 @@ then
 	exit 1
 fi
 
-if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2a" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ] && [ "$ENERGY_MODE" != "voromqa_v3a" ] && [ "$ENERGY_MODE" != "voromqa_v3b" ] && [ "$ENERGY_MODE" != "voromqa_v4" ] && [ "$ENERGY_MODE" != "voromqa_v5" ]
+# if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2a" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ] && [ "$ENERGY_MODE" != "voromqa_v3a" ] && [ "$ENERGY_MODE" != "voromqa_v3b" ] && [ "$ENERGY_MODE" != "voromqa_v4" ] && [ "$ENERGY_MODE" != "voromqa_v5" ]
+
+if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ]
 then
 	echo >&2 "Error: unsupported energy mode '$ENERGY_MODE'"
 	exit 1
