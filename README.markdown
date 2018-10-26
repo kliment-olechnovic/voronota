@@ -27,10 +27,9 @@ The archive contains ready-to-use statically compiled 'voronota' program for
 64 bit Linux systems. This executable can be rebuilt from the provided
 source code to work on any modern Linux, Mac OS X or Windows operating systems.
 
-Packages in .deb or .rpm formats are currently not available. However,
-installing Voronota in Linux or Mac OS X is easy: just copy Voronota
-executable files ('voronota' program and, if needed, the wrapper scripts)
-to one of the directories listed in $PATH variable.
+On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command:
+
+    sudo apt install voronota
 
 
 # Building from source code
