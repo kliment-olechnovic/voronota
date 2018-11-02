@@ -32,37 +32,14 @@ public:
 	{
 	}
 
-	VariantValue(const bool value) :
-		value_type_(VARIANT_BOOL),
-		value_bool_(value),
+	template<typename T>
+	explicit VariantValue(const T& value) :
+		value_type_(VARIANT_NULL),
+		value_bool_(false),
 		value_int_(0),
 		value_float_(0.0)
 	{
-	}
-
-	VariantValue(const long value) :
-		value_type_(VARIANT_INT),
-		value_bool_(false),
-		value_int_(value),
-		value_float_(0.0)
-	{
-	}
-
-	VariantValue(const double value) :
-		value_type_(VARIANT_FLOAT),
-		value_bool_(false),
-		value_int_(0),
-		value_float_(value)
-	{
-	}
-
-	VariantValue(const std::string& value) :
-		value_type_(VARIANT_STRING),
-		value_bool_(false),
-		value_int_(0),
-		value_float_(0.0),
-		value_string_(value)
-	{
+		(*this)=value;
 	}
 
 	VariantValue& operator=(const bool value)
@@ -77,7 +54,31 @@ public:
 		return (*this);
 	}
 
+	VariantValue& operator=(const int value)
+	{
+		set_value_int(value);
+		return (*this);
+	}
+
+	VariantValue& operator=(const unsigned long value)
+	{
+		set_value_int(value);
+		return (*this);
+	}
+
+	VariantValue& operator=(const unsigned int value)
+	{
+		set_value_int(value);
+		return (*this);
+	}
+
 	VariantValue& operator=(const double value)
+	{
+		set_value_float(value);
+		return (*this);
+	}
+
+	VariantValue& operator=(const float value)
 	{
 		set_value_float(value);
 		return (*this);
@@ -86,6 +87,12 @@ public:
 	VariantValue& operator=(const std::string& value)
 	{
 		set_value_string(value);
+		return (*this);
+	}
+
+	VariantValue& operator=(const char* value)
+	{
+		set_value_string(std::string(value));
 		return (*this);
 	}
 
