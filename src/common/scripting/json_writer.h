@@ -62,10 +62,10 @@ private:
 	{
 		bool separated=false;
 		print_object_start(output);
-		print_map(collection.values, separated, output);
-		print_map(collection.values_array, separated, output);
-		print_map(collection.objects, separated, output);
-		print_map(collection.objects_array, separated, output);
+		print_map(collection.values(), separated, output);
+		print_map(collection.values_arrays(), separated, output);
+		print_map(collection.objects(), separated, output);
+		print_map(collection.objects_arrays(), separated, output);
 		print_object_end(output);
 	}
 
