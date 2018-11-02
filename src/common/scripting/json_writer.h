@@ -62,26 +62,10 @@ private:
 	{
 		bool separated=false;
 		print_object_start(output);
-		for(std::map<std::string, VariantValue>::const_iterator it=collection.values.begin();it!=collection.values.end();++it)
-		{
-			print_separator(separated, output);
-			print(it->first, it->second, output);
-		}
-		for(std::map< std::string, std::vector<VariantValue> >::const_iterator it=collection.values_array.begin();it!=collection.values_array.end();++it)
-		{
-			print_separator(separated, output);
-			print(it->first, it->second, output);
-		}
-		for(std::map<std::string, VariantCollection>::const_iterator it=collection.objects.begin();it!=collection.objects.end();++it)
-		{
-			print_separator(separated, output);
-			print(it->first, it->second, output);
-		}
-		for(std::map< std::string, std::vector<VariantCollection> >::const_iterator it=collection.objects_array.begin();it!=collection.objects_array.end();++it)
-		{
-			print_separator(separated, output);
-			print(it->first, it->second, output);
-		}
+		print_map(collection.values, separated, output);
+		print_map(collection.values_array, separated, output);
+		print_map(collection.objects, separated, output);
+		print_map(collection.objects_array, separated, output);
 		print_object_end(output);
 	}
 
@@ -104,6 +88,16 @@ private:
 		print_indentation(output);
 		output << "\"" << name << "\":";
 		print(value, output);
+	}
+
+	template<typename T>
+	void print_map(const T& map, bool& separation_controller, std::ostream& output)
+	{
+		for(typename T::const_iterator it=map.begin();it!=map.end();++it)
+		{
+			print_separator(separation_controller, output);
+			print(it->first, it->second, output);
+		}
 	}
 
 	void print_indentation(std::ostream& output) const
