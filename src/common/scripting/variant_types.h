@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <algorithm>
 
 namespace common
 {
@@ -379,16 +380,7 @@ private:
 		if(names_.count(name)>0)
 		{
 			names_.erase(name);
-			std::vector<std::string> new_ordered_names;
-			new_ordered_names.reserve(ordered_names_.size()-1);
-			for(std::size_t i=0;i<ordered_names_.size();i++)
-			{
-				if(ordered_names_[i]!=name)
-				{
-					new_ordered_names.push_back(ordered_names_[i]);
-				}
-			}
-			ordered_names_.swap(new_ordered_names);
+			ordered_names_.erase(std::remove(ordered_names_.begin(), ordered_names_.end(), name), ordered_names_.end());
 		}
 	}
 
