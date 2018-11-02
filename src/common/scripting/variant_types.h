@@ -288,10 +288,63 @@ public:
 	{
 	}
 
-	std::map<std::string, VariantValue> values;
-	std::map< std::string, std::vector<VariantValue> > values_array;
-	std::map<std::string, VariantCollection> objects;
-	std::map< std::string, std::vector<VariantCollection> > objects_array;
+	const std::map<std::string, VariantValue>& values() const
+	{
+		return values_;
+	}
+
+	const std::map< std::string, std::vector<VariantValue> >& values_arrays() const
+	{
+		return values_arrays_;
+	}
+
+	const std::map<std::string, VariantCollection>& objects() const
+	{
+		return objects_;
+	}
+
+	const std::map< std::string, std::vector<VariantCollection> >& objects_arrays() const
+	{
+		return objects_arrays_;
+	}
+
+	VariantValue& value(const std::string& name)
+	{
+		values_arrays_.erase(name);
+		objects_.erase(name);
+		objects_arrays_.erase(name);
+		return values_[name];
+	}
+
+	std::vector<VariantValue>& values_array(const std::string& name)
+	{
+		values_.erase(name);
+		objects_.erase(name);
+		objects_arrays_.erase(name);
+		return values_arrays_[name];
+	}
+
+	VariantCollection& object(const std::string& name)
+	{
+		values_.erase(name);
+		values_arrays_.erase(name);
+		objects_arrays_.erase(name);
+		return objects_[name];
+	}
+
+	std::vector<VariantCollection>& objects_array(const std::string& name)
+	{
+		values_.erase(name);
+		values_arrays_.erase(name);
+		objects_.erase(name);
+		return objects_arrays_[name];
+	}
+
+private:
+	std::map<std::string, VariantValue> values_;
+	std::map< std::string, std::vector<VariantValue> > values_arrays_;
+	std::map<std::string, VariantCollection> objects_;
+	std::map< std::string, std::vector<VariantCollection> > objects_arrays_;
 };
 
 }
