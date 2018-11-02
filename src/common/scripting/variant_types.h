@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <set>
 
 namespace common
 {
@@ -308,11 +309,22 @@ public:
 		return objects_arrays_;
 	}
 
+	const std::set<std::string>& names() const
+	{
+		return names_;
+	}
+
+	const std::vector<std::string>& ordered_names() const
+	{
+		return ordered_names_;
+	}
+
 	VariantValue& value(const std::string& name)
 	{
 		values_arrays_.erase(name);
 		objects_.erase(name);
 		objects_arrays_.erase(name);
+		record_name(name);
 		return values_[name];
 	}
 
@@ -321,6 +333,7 @@ public:
 		values_.erase(name);
 		objects_.erase(name);
 		objects_arrays_.erase(name);
+		record_name(name);
 		return values_arrays_[name];
 	}
 
@@ -329,6 +342,7 @@ public:
 		values_.erase(name);
 		values_arrays_.erase(name);
 		objects_arrays_.erase(name);
+		record_name(name);
 		return objects_[name];
 	}
 
@@ -337,14 +351,26 @@ public:
 		values_.erase(name);
 		values_arrays_.erase(name);
 		objects_.erase(name);
+		record_name(name);
 		return objects_arrays_[name];
 	}
 
 private:
+	void record_name(const std::string& name)
+	{
+		if(names_.count(name)==0)
+		{
+			names_.insert(name);
+			ordered_names_.push_back(name);
+		}
+	}
+
 	std::map<std::string, VariantValue> values_;
 	std::map< std::string, std::vector<VariantValue> > values_arrays_;
 	std::map<std::string, VariantCollection> objects_;
 	std::map< std::string, std::vector<VariantCollection> > objects_arrays_;
+	std::set<std::string> names_;
+	std::vector<std::string> ordered_names_;
 };
 
 }
