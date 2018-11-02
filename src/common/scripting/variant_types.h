@@ -355,6 +355,15 @@ public:
 		return objects_arrays_[name];
 	}
 
+	void erase(const std::string& name)
+	{
+		values_.erase(name);
+		values_arrays_.erase(name);
+		objects_.erase(name);
+		objects_arrays_.erase(name);
+		unrecord_name(name);
+	}
+
 private:
 	void record_name(const std::string& name)
 	{
@@ -362,6 +371,24 @@ private:
 		{
 			names_.insert(name);
 			ordered_names_.push_back(name);
+		}
+	}
+
+	void unrecord_name(const std::string& name)
+	{
+		if(names_.count(name)>0)
+		{
+			names_.erase(name);
+			std::vector<std::string> new_ordered_names;
+			new_ordered_names.reserve(ordered_names_.size()-1);
+			for(std::size_t i=0;i<ordered_names_.size();i++)
+			{
+				if(ordered_names_[i]!=name)
+				{
+					new_ordered_names.push_back(ordered_names_[i]);
+				}
+			}
+			ordered_names_.swap(new_ordered_names);
 		}
 	}
 
