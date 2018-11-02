@@ -62,10 +62,15 @@ private:
 	{
 		bool separated=false;
 		print_object_start(output);
-		print_map(collection.values(), separated, output);
-		print_map(collection.values_arrays(), separated, output);
-		print_map(collection.objects(), separated, output);
-		print_map(collection.objects_arrays(), separated, output);
+		for(std::size_t i=0;i<collection.ordered_names().size();i++)
+		{
+			const std::string& name=collection.ordered_names()[i];
+			bool printed=false;
+			printed=printed || print_from_map(collection.values(), name, separated, output);
+			printed=printed || print_from_map(collection.values_arrays(), name, separated, output);
+			printed=printed || print_from_map(collection.objects(), name, separated, output);
+			printed=printed || print_from_map(collection.objects_arrays(), name, separated, output);
+		}
 		print_object_end(output);
 	}
 
@@ -91,13 +96,16 @@ private:
 	}
 
 	template<typename T>
-	void print_map(const T& map, bool& separation_controller, std::ostream& output)
+	bool print_from_map(const T& map, const std::string& name, bool& separation_controller, std::ostream& output)
 	{
-		for(typename T::const_iterator it=map.begin();it!=map.end();++it)
+		typename T::const_iterator it=map.find(name);
+		if(it!=map.end())
 		{
 			print_separator(separation_controller, output);
 			print(it->first, it->second, output);
+			return true;
 		}
+		return false;
 	}
 
 	void print_indentation(std::ostream& output) const
