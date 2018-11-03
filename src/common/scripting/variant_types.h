@@ -283,10 +283,10 @@ private:
 	std::string value_string_;
 };
 
-class VariantCollection
+class VariantObject
 {
 public:
-	VariantCollection()
+	VariantObject()
 	{
 	}
 
@@ -300,12 +300,12 @@ public:
 		return values_arrays_;
 	}
 
-	const std::map<std::string, VariantCollection>& objects() const
+	const std::map<std::string, VariantObject>& objects() const
 	{
 		return objects_;
 	}
 
-	const std::map< std::string, std::vector<VariantCollection> >& objects_arrays() const
+	const std::map< std::string, std::vector<VariantObject> >& objects_arrays() const
 	{
 		return objects_arrays_;
 	}
@@ -338,7 +338,7 @@ public:
 		return values_arrays_[name];
 	}
 
-	VariantCollection& object(const std::string& name)
+	VariantObject& object(const std::string& name)
 	{
 		values_.erase(name);
 		values_arrays_.erase(name);
@@ -347,7 +347,7 @@ public:
 		return objects_[name];
 	}
 
-	std::vector<VariantCollection>& objects_array(const std::string& name)
+	std::vector<VariantObject>& objects_array(const std::string& name)
 	{
 		values_.erase(name);
 		values_arrays_.erase(name);
@@ -386,8 +386,8 @@ private:
 
 	std::map<std::string, VariantValue> values_;
 	std::map< std::string, std::vector<VariantValue> > values_arrays_;
-	std::map<std::string, VariantCollection> objects_;
-	std::map< std::string, std::vector<VariantCollection> > objects_arrays_;
+	std::map<std::string, VariantObject> objects_;
+	std::map< std::string, std::vector<VariantObject> > objects_arrays_;
 	std::set<std::string> names_;
 	std::vector<std::string> ordered_names_;
 };
