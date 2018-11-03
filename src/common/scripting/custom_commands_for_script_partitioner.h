@@ -32,7 +32,9 @@ public:
 
 			cargs.script_partitioner.set_alias(strings[0], strings[1]);
 
-			cargs.output_for_log << "Set alias '" << strings[0] << "' to '" << strings[1] << "'\n";
+			VariantObject& info=cargs.heterostorage.variant_object;
+			info.value("alias")=strings[0];
+			info.value("script")=strings[1];
 		}
 	};
 
@@ -56,7 +58,7 @@ public:
 			{
 				if(cargs.script_partitioner.unset_alias(names[i]))
 				{
-					cargs.output_for_log << "Unset alias '" << names[i] << "'\n";
+					cargs.heterostorage.variant_object.values_array("unset_aliases").push_back(VariantValue(names[i]));
 				}
 			}
 		}

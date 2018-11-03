@@ -3,20 +3,27 @@
 
 
 > set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
-Set alias 'printseq' to 'print-sequence --line-width 80 ; print-sequence --line-width 80 --secondary-structure'
-
+{
+  "alias":"printseq",
+  "script":"print-sequence --line-width 80 ; print-sequence --line-width 80 --secondary-structure"}
 
 > load --file ./input/single/structure.cif
-Read atoms from file './input/single/structure.cif' (count=1771)
-
+{
+  "summary_of_atoms":{
+    "number_total":1771,
+    "volume":null}}
 
 > load -file "./input/single/structure.pdb"
-Read atoms from file './input/single/structure.pdb' (count=1717)
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":null}}
 
 > load ./input/single/structure.pdb --include-heteroatoms
-Read atoms from file './input/single/structure.pdb' (count=1771)
-
+{
+  "summary_of_atoms":{
+    "number_total":1771,
+    "volume":null}}
 
 > print-sequence --line-width 80 
 >Chain 'A' with 3 continuous segments
@@ -39,12 +46,16 @@ c<A>r<66>a<472>R<CRO>A<N2>   26.975  27.732  38.216  1.55  el=N;het  oc=1;tf=9.2
 c<A>r<66>a<474>R<CRO>A<C2>   26.043  27.875  40.37   1.7   el=C;het  oc=1;tf=5.46  
 c<A>r<66>a<481>R<CRO>A<CG2>  29.437  29.37   39.124  1.7   el=C;het  oc=1;tf=7.67  
 c<A>r<66>a<486>R<CRO>A<CZ>   31.718  30.3    37.721  1.7   el=C;het  oc=1;tf=9.48  
-Summary of atoms: count=5
-
+{
+  "summary_of_atoms":{
+    "number_total":5,
+    "volume":null}}
 
 > restrict-atoms {--tags-not het}
-Restricted atoms from (count=1771) to (count=1717)
-
+{
+  "restricted_atoms":{
+    "old_summary":{"number_total":1771,"volume":null},
+    "summary":{"number_total":1717,"volume":null}}}
 
 > print-sequence --line-width 80 
 >Chain 'A' with 6 continuous segments
@@ -61,73 +72,91 @@ SSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------+-SSSSSSSS--
 
 
 > construct-contacts
-Constructed contacts (count=12469 drawable=0 area=47017.2)
-
+{
+  "constructed_contacts":{
+    "summary":{"number_total":12469,"number_drawable":0,"area":47017.2},
+    "used_cached_triangulation":false}}
 
 > construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
-Using cached triangulation
-Constructed contacts (count=12469 drawable=120 area=47017.2)
-
+{
+  "constructed_contacts":{
+    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2},
+    "used_cached_triangulation":true}}
 
 > save-atoms --file './jobs_output/self_scripting/plain_atoms'
-Wrote atoms to file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
-
+{
+  "saved_atoms":{
+    "file":"./jobs_output/self_scripting/plain_atoms",
+    "summary":{"number_total":1717,"volume":41027.8}}}
 
 > save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume
-Wrote atoms to file './jobs_output/self_scripting/pdb_atoms' (count=1717 volume=41027.8)
-
+{
+  "saved_atoms":{
+    "file":"./jobs_output/self_scripting/pdb_atoms",
+    "summary":{"number_total":1717,"volume":41027.8}}}
 
 > save-contacts './jobs_output/self_scripting/plain_contacts'
-Wrote contacts to file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
-
+{
+  "saved_contacts":{
+    "file":"./jobs_output/self_scripting/plain_contacts",
+    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
 
 > list-objects
-Objects:
-  'structure.cif'
-  'structure.pdb'
-  'structure.pdb_2' *
-
+{
+  "objects":[
+    {"name":"structure.cif","picked":false,"visible":true},
+    {"name":"structure.pdb","picked":false,"visible":true},
+    {"name":"structure.pdb_2","picked":true,"visible":true}]}
 
 > delete-objects
-Removed objects:
-  'structure.cif'
-  'structure.pdb'
-  'structure.pdb_2'
-
+{
+  "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]}
 
 > load --file './jobs_output/self_scripting/plain_atoms' --format plain
-Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":41027.8}}
 
 > list-objects
-Objects:
-  'plain_atoms' *
-
+{
+  "objects":[
+    {"name":"plain_atoms","picked":true,"visible":true}]}
 
 > select-contacts
 Error: No contacts available.
 
 
 > load-contacts --file './jobs_output/self_scripting/plain_contacts'
-Read contacts from file './jobs_output/self_scripting/plain_contacts' (count=12469 drawable=120 area=47017.2)
-
+{
+  "read_contacts":{
+    "file":"./jobs_output/self_scripting/plain_contacts",
+    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
 
 > select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
-Summary of contacts: count=5 drawable=1 area=33.8164
-Set selection of contacts named 'cs1'
-
+{
+  "selected_contacts":{
+    "summary":{"number_total":5,"number_drawable":1,"area":33.8164},
+    "selection_name":"cs1"}}
 
 > set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"
-Set alias 'multitag' to 'tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med'
-
+{
+  "alias":"multitag",
+  "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"}
 
 > tag-contacts {--min-area 6.0} med
-Summary of contacts: count=2636 drawable=5 area=29458.6
-
+{
+  "summary_of_contacts":{
+    "number_total":2636,
+    "number_drawable":5,
+    "area":29458.6}}
 
 > delete-tags-of-contacts {--min-area 8.0} --tags med
-Summary of contacts: count=1675 drawable=1 area=22795.8
-
+{
+  "summary_of_contacts":{
+    "number_total":1675,
+    "number_drawable":1,
+    "area":22795.8}}
 
 > print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
 atom1                       atom2                         area     dist     tags         adjuncts  
@@ -136,37 +165,51 @@ c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  cent
 c<A>r<83>a<623>R<PHE>A<C>   c<A>r<84>a<632>R<PHE>A<N>     6.57156  1.35488  central;med  .         
 c<A>r<8>a<53>R<PHE>A<CZ>    c<A>r<114>a<888>R<PHE>A<CE2>  6.42993  3.93888  central;med  .         
 c<A>r<8>a<49>R<PHE>A<CD1>   c<A>r<71>a<518>R<PHE>A<CE1>   5.56317  3.7409   central      .         
-Summary of contacts: count=5 drawable=1 area=33.8164
-
+{
+  "summary_of_contacts":{
+    "number_total":5,
+    "number_drawable":1,
+    "area":33.8164}}
 
 > print-contacts {-no-solvent -min-seq-sep 2} -desc -sort 'area' -limit 3 -expand
 chn1  resi1  ic1  atmi1  al1  resn1  atmn1  chn2  resi2  ic2  atmi2  al2  resn2  atmn2  area         dist     tags         adjuncts  
 A     19     .    132    .    ASP    OD1    A     28     .    199    .    SER    OG     15.6287      2.64731  central      .         
 A     105    .    810    .    ASN    OD1    A     107    .    830    .    LYS    CD     14.6278      3.21398  central      .         
 A     102    .    787    .    ASP    O      A     131    .    1016   .    LYS    CD     14.1631      3.59545  central      .         
-Summary of contacts: count=4820 drawable=86 area=10487.8
-
+{
+  "summary_of_contacts":{
+    "number_total":4820,
+    "number_drawable":86,
+    "area":10487.8}}
 
 > print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
 chn1  resi1  ic1  resn1  chn2  resi2  ic2  resn2  area        dist     tags         adjuncts  
 A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   central;med  .         
 A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  central;med  .         
 A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  central;med  .         
-Summary of contacts: count=4820 drawable=86 area=10487.8
-
+{
+  "summary_of_contacts":{
+    "number_total":4820,
+    "number_drawable":86,
+    "area":10487.8}}
 
 > select-atoms {r<64> & A<C,N,O,CA,CB>} as1
-Summary of atoms: count=5 volume=108.978
-Set selection of atoms named 'as1'
-
+{
+  "selected_atoms":{
+    "summary":{"number_total":5,"volume":108.978},
+    "selection_name":"as1"}}
 
 > tag-atoms {A<C,N,O,CA,CB>} --tag pept
-Summary of atoms: count=1083 volume=20982.5
-
+{
+  "summary_of_atoms":{
+    "number_total":1083,
+    "volume":20982.5}}
 
 > delete-tags-of-atoms {A<CA,CB>} --tags pept
-Summary of atoms: count=420 volume=9160.61
-
+{
+  "summary_of_atoms":{
+    "number_total":420,
+    "volume":9160.61}}
 
 > print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
 atom                        x       y       z       r     tags       adjuncts                      
@@ -175,8 +218,10 @@ c<A>r<64>a<459>R<PHE>A<CB>  22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.8
 c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
 c<A>r<64>a<455>R<PHE>A<N>   22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
 c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
-Summary of atoms: count=5 volume=108.978
-
+{
+  "summary_of_atoms":{
+    "number_total":5,
+    "volume":108.978}}
 
 > print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
 chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags       adjuncts                      
@@ -185,8 +230,10 @@ A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C       oc
 A    64    .   459   .   PHE   CB    22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
 A    64    .   455   .   PHE   N     22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
 A    64    .   458   .   PHE   O     22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
-Summary of atoms: count=5 volume=108.978
-
+{
+  "summary_of_atoms":{
+    "number_total":5,
+    "volume":108.978}}
 
 > rename-selection-of-atoms nosel1 nodel2
 Error: No atoms selection with name 'nosel1'.
@@ -197,115 +244,163 @@ Error: Invalid contacts selection name 'nosel1'.
 
 
 > list-selections-of-atoms
-Selections of atoms:
-  name='_marked' (count=5 volume=108.978)
-  name='as1' (count=5 volume=108.978)
-
+{
+  "selections":[
+    {"name":"_marked","summary":{"number_total":5,"volume":108.978}},
+    {"name":"as1","summary":{"number_total":5,"volume":108.978}}]}
 
 > list-selections-of-contacts
-Selections of contacts:
-  name='_marked' (count=1 drawable=1 area=6.57156)
-  name='cs1' (count=5 drawable=1 area=33.8164)
-
+{
+  "selections":[
+    {"name":"_marked","summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
+    {"name":"cs1","summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}
 
 > color-atoms 0xFFFF00
-Summary of atoms: count=1717 volume=41027.8
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":41027.8}}
 
 > color-atoms {A<C,CA,N,O>} 0xFF0000
-Summary of atoms: count=884 volume=15442.3
-
+{
+  "summary_of_atoms":{
+    "number_total":884,
+    "volume":15442.3}}
 
 > color-atoms (not {A<C,CA,N,O>}) 0x00FF00
-Summary of atoms: count=833 volume=25585.5
-
+{
+  "summary_of_atoms":{
+    "number_total":833,
+    "volume":25585.5}}
 
 > show-atoms
-Summary of atoms: count=1717 volume=41027.8
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":41027.8}}
 
 > write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms
-Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms.py' (count=167 volume=3864.44)
-
+{
+  "wrote_atoms_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_atoms.py",
+    "summary":{"number_total":167,"volume":3864.44}}}
 
 > write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf
-Wrote atoms as PyMol CGO to file './jobs_output/self_scripting/cgo_atoms_wf.py' (count=167 volume=3864.44)
-
+{
+  "wrote_atoms_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
+    "summary":{"number_total":167,"volume":3864.44}}}
 
 > spectrum-atoms
-Summary: count=1717 min=2 max=229
-
+{
+  "spectrum_summary":{
+    "count":1717,
+    "min_value":2,
+    "max_value":229}}
 
 > write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon
-Wrote cartoon as PyMol CGO to file './jobs_output/self_scripting/cgo_cartoon.py' (count=16 volume=262.219)
-
+{
+  "wrote_cartoon_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_cartoon.py",
+    "summary":{"number_total":16,"volume":262.219}}}
 
 > write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf
-Wrote cartoon as PyMol CGO to file './jobs_output/self_scripting/cgo_cartoon_wf.py' (count=16 volume=262.219)
-
+{
+  "wrote_cartoon_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
+    "summary":{"number_total":16,"volume":262.219}}}
 
 > color-contacts 0x00FF00
-Summary of contacts: count=120 drawable=120 area=211.8
-
+{
+  "summary_of_contacts":{
+    "number_total":120,
+    "number_drawable":120,
+    "area":211.8}}
 
 > color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF
-Summary of contacts: count=25 drawable=25 area=52.3005
-
+{
+  "summary_of_contacts":{
+    "number_total":25,
+    "number_drawable":25,
+    "area":52.3005}}
 
 > color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00
-Summary of contacts: count=58 drawable=58 area=99.5972
-
+{
+  "summary_of_contacts":{
+    "number_total":58,
+    "number_drawable":58,
+    "area":99.5972}}
 
 > show-contacts
-Summary of contacts: count=120 drawable=120 area=211.8
-
+{
+  "summary_of_contacts":{
+    "number_total":120,
+    "number_drawable":120,
+    "area":211.8}}
 
 > write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
-Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts.py' (count=120 drawable=120 area=211.8)
-
+{
+  "wrote_contacts_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_contacts.py",
+    "summary":{"number_total":120,"number_drawable":120,"area":211.8}}}
 
 > color-contacts 0xFF00FF
-Summary of contacts: count=120 drawable=120 area=211.8
-
+{
+  "summary_of_contacts":{
+    "number_total":120,
+    "number_drawable":120,
+    "area":211.8}}
 
 > write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf
-Wrote contacts as PyMol CGO to file './jobs_output/self_scripting/cgo_contacts_wf.py' (count=120 drawable=120 area=211.8)
-
+{
+  "wrote_contacts_as_pymol_cgo":{
+    "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
+    "summary":{"number_total":120,"number_drawable":120,"area":211.8}}}
 
 > save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
-Wrote atoms and contacts to file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=1717 volume=41027.8) (count=12469 drawable=120 area=47017.2)
-
+{
+  "saved_atoms_and_contacts":{
+    "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
+    "summary_of_atoms":{"number_total":1717,"volume":41027.8},
+    "summary_of_contacts":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
 
 > load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain
-Read atoms from file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=1717 volume=41027.8)
-Read contacts from file './jobs_output/self_scripting/plain_atoms_and_contacts' (count=12469 drawable=120 area=47017.2)
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":41027.8},
+  "summary_of_contacts":{
+    "number_total":12469,
+    "number_drawable":120,
+    "area":47017.2}}
 
 > load './jobs_output/self_scripting/plain_atoms' -format plain
-Read atoms from file './jobs_output/self_scripting/plain_atoms' (count=1717 volume=41027.8)
-
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":41027.8}}
 
 > list-objects
-Objects:
-  'plain_atoms'
-  'plain_atoms_and_contacts'
-  'plain_atoms_2' *
-
+{
+  "objects":[
+    {"name":"plain_atoms","picked":false,"visible":true},
+    {"name":"plain_atoms_and_contacts","picked":false,"visible":true},
+    {"name":"plain_atoms_2","picked":true,"visible":true}]}
 
 > delete-objects -names plain_atoms
-Removed objects:
-  'plain_atoms'
-
+{
+  "removed_objects":["plain_atoms"]}
 
 > list-objects
-Objects:
-  'plain_atoms_and_contacts'
-  'plain_atoms_2' *
-
+{
+  "objects":[
+    {"name":"plain_atoms_and_contacts","picked":false,"visible":true},
+    {"name":"plain_atoms_2","picked":true,"visible":true}]}
 
 > set-alias quit exit
-Set alias 'quit' to 'exit'
-
+{
+  "alias":"quit",
+  "script":"exit"}
 
 > exit
 

@@ -31,7 +31,6 @@ public:
 	public:
 		CommandInput& input;
 		HeterogeneousStorage& heterostorage;
-		std::ostringstream output_for_log;
 		std::ostringstream output_for_errors;
 		std::ostringstream output_for_text;
 
@@ -43,7 +42,6 @@ public:
 
 		void save_output_streams_data()
 		{
-			heterostorage.log+=output_for_log.str();
 			heterostorage.error+=output_for_errors.str();
 			heterostorage.text+=output_for_text.str();
 		}

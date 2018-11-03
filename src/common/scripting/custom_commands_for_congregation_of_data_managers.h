@@ -5,6 +5,7 @@
 #include "basic_assertions.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_managers_using_cad_score.h"
+#include "variant_serialization.h"
 
 namespace common
 {
@@ -31,20 +32,14 @@ public:
 				throw std::runtime_error(std::string("No objects selected."));
 			}
 
-			cargs.output_for_log << "Objects:\n";
 			for(std::size_t i=0;i<objects.size();i++)
 			{
 				const CongregationOfDataManagers::ObjectAttributes attributes=cargs.congregation_of_data_managers.get_object_attributes(objects[i]);
-				cargs.output_for_log << "  '" << attributes.name << "'";
-				if(attributes.picked)
-				{
-					cargs.output_for_log << " *";
-				}
-				if(!attributes.visible)
-				{
-					cargs.output_for_log << " h";
-				}
-				cargs.output_for_log << "\n";
+				VariantObject info;
+				info.value("name")=attributes.name;
+				info.value("picked")=attributes.picked;
+				info.value("visible")=attributes.visible;
+				cargs.heterostorage.variant_object.objects_array("objects").push_back(info);
 			}
 		}
 	};
@@ -65,12 +60,10 @@ public:
 				throw std::runtime_error(std::string("No objects selected."));
 			}
 
-			cargs.output_for_log << "Removed objects:\n";
-
 			for(std::size_t i=0;i<objects.size();i++)
 			{
-				cargs.output_for_log << "  '" << cargs.congregation_of_data_managers.get_object_attributes(objects[i]).name << "'\n";
-
+				cargs.heterostorage.variant_object.values_array("removed_objects").push_back(
+						VariantValue(cargs.congregation_of_data_managers.get_object_attributes(objects[i]).name));
 				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(objects[i]);
 				if(ptr!=0)
 				{
@@ -172,18 +165,17 @@ public:
 				SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
 				summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
-				cargs.output_for_log << "Read atoms from file '" << params.file << "' ";
-				summary_of_atoms.print(cargs.output_for_log);
-				cargs.output_for_log << "\n";
+				VariantSerialization::write(summary_of_atoms, cargs.heterostorage.variant_object.object("summary_of_atoms"));
 			}
 
 			if(!result.contacts.empty())
 			{
 				data_manager.reset_contacts_by_swapping(result.contacts);
 
-				cargs.output_for_log << "Read contacts from file '" << params.file << "' ";
-				SummaryOfContacts(data_manager.contacts()).print(cargs.output_for_log);
-				cargs.output_for_log << "\n";
+				SummaryOfContacts& summary_of_contacts=cargs.heterostorage.summaries_of_contacts["loaded"];
+				summary_of_contacts=SummaryOfContacts(data_manager.contacts());
+
+				VariantSerialization::write(summary_of_contacts, cargs.heterostorage.variant_object.object("summary_of_contacts"));
 			}
 
 			cargs.change_indicator.added_objects.insert(object_new);
@@ -324,7 +316,7 @@ public:
 			if(summary_of_atoms.bounding_box.filled)
 			{
 				cargs.heterostorage.summaries_of_atoms["zoomed"]=summary_of_atoms;
-				cargs.output_for_log << "Bounding box: (" << summary_of_atoms.bounding_box.p_min << ") (" << summary_of_atoms.bounding_box.p_max << ")\n";
+				VariantSerialization::write(summary_of_atoms.bounding_box, cargs.heterostorage.variant_object.object("bounding_box"));
 			}
 		}
 	};
@@ -380,28 +372,24 @@ public:
 
 			if(result.bundle.parameters_of_construction.atom_level)
 			{
-				cargs.output_for_log << "atom_level_global ";
-				print_cad_descriptor(cargs.output_for_log, result.bundle.atom_level_global_descriptor);
-				cargs.output_for_log << "\n";
+				write_cad_descriptor(result.bundle.atom_level_global_descriptor, cargs.heterostorage.variant_object.object("atom_level_global"));
 			}
 
 			if(result.bundle.parameters_of_construction.residue_level)
 			{
-				cargs.output_for_log << "residue_level_global ";
-				print_cad_descriptor(cargs.output_for_log, result.bundle.residue_level_global_descriptor);
-				cargs.output_for_log << "\n";
+				write_cad_descriptor(result.bundle.residue_level_global_descriptor, cargs.heterostorage.variant_object.object("residue_level_global"));
 			}
 		}
 
 	private:
-		static void print_cad_descriptor(std::ostream& output, const ConstructionOfCADScore::CADDescriptor& cadd)
+		static void write_cad_descriptor(const ConstructionOfCADScore::CADDescriptor& cadd, VariantObject& output)
 		{
-			output << cadd.score();
-			output << " " << cadd.target_area_sum
-					<< " " << cadd.model_area_sum
-					<< " " << cadd.raw_differences_sum
-					<< " " << cadd.constrained_differences_sum
-					<< " " << cadd.model_target_area_sum;
+			output.value("score")=cadd.score();
+			output.value("target_area_sum")=cadd.target_area_sum;
+			output.value("model_area_sum")=cadd.model_area_sum;
+			output.value("raw_differences_sum")=cadd.raw_differences_sum;
+			output.value("constrained_differences_sum")=cadd.constrained_differences_sum;
+			output.value("model_target_area_sum")=cadd.model_target_area_sum;
 		}
 	};
 

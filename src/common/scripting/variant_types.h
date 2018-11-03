@@ -227,7 +227,7 @@ public:
 			std::ostringstream output;
 			if(value_type_==VARIANT_BOOL)
 			{
-				output << value_bool_;
+				output << (value_bool_ ? "true" : "false");
 			}
 			else if(value_type_==VARIANT_INT)
 			{
@@ -288,7 +288,7 @@ class VariantObject
 public:
 	struct LessByNamedValue
 	{
-		LessByNamedValue(const std::string& name) :
+		explicit LessByNamedValue(const std::string& name) :
 			reverse(false),
 			name(name)
 		{
@@ -320,6 +320,11 @@ public:
 
 	VariantObject()
 	{
+	}
+
+	bool empty() const
+	{
+		return names_.empty();
 	}
 
 	const std::map<std::string, VariantValue>& values() const

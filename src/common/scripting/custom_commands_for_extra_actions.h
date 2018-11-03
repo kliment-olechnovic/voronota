@@ -48,7 +48,7 @@ public:
 		{
 			const bool reset=cargs.input.get_flag("reset");
 			cargs.input.assert_nothing_unusable();
-			cargs.output_for_log << "Elapsed time: " << elapsed_processor_time_.elapsed_miliseconds() << " ms\n";
+			cargs.heterostorage.variant_object.value("elapsed_miliseconds")=elapsed_processor_time_.elapsed_miliseconds();
 			if(reset)
 			{
 				elapsed_processor_time_.reset();
@@ -89,7 +89,7 @@ public:
 
 			for(std::size_t i=0;i<strings.size();i++)
 			{
-				cargs.output_for_log << strings[i] << "\n";
+				cargs.output_for_text << strings[i] << "\n";
 			}
 		}
 	};

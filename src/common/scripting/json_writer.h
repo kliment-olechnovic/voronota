@@ -25,7 +25,7 @@ public:
 		{
 		}
 
-		Configuration(int indentation_max_level) :
+		explicit Configuration(int indentation_max_level) :
 			indentation_max_level(indentation_max_level),
 			indentation_length(2),
 			indentation_enabled_for_value_arrays(false)
@@ -57,7 +57,7 @@ public:
 	}
 
 private:
-	JSONWriter(const Configuration& configuration) :
+	explicit JSONWriter(const Configuration& configuration) :
 		level_(0),
 		config_(configuration)
 	{
@@ -71,7 +71,14 @@ private:
 		}
 		else
 		{
-			output << "\"" << value.value_as_string() << "\"";
+			if(value.value_type()==VariantValue::VARIANT_STRING)
+			{
+				output << "\"" << value.value_as_string() << "\"";
+			}
+			else
+			{
+				output << value.value_as_string();
+			}
 		}
 	}
 
@@ -103,6 +110,10 @@ private:
 			printed=printed || print_from_map(object.values_arrays(), name, separated, output);
 			printed=printed || print_from_map(object.objects(), name, separated, output);
 			printed=printed || print_from_map(object.objects_arrays(), name, separated, output);
+			if(!printed)
+			{
+				print(VariantValue(), output);
+			}
 		}
 		print_object_end(output);
 	}
