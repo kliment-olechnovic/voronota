@@ -12,24 +12,57 @@ namespace scripting
 class JSONWriter
 {
 public:
-	JSONWriter() :
-		indentation_max_level(2),
-		indentation_length(2),
-		indentation_enabled_for_value_arrays(false),
-		level_(0)
+	struct Configuration
 	{
+		int indentation_max_level;
+		int indentation_length;
+		bool indentation_enabled_for_value_arrays;
+
+		Configuration() :
+			indentation_max_level(2),
+			indentation_length(2),
+			indentation_enabled_for_value_arrays(false)
+		{
+		}
+
+		Configuration(int indentation_max_level) :
+			indentation_max_level(indentation_max_level),
+			indentation_length(2),
+			indentation_enabled_for_value_arrays(false)
+		{
+		}
+
+		Configuration(int indentation_max_level, int indentation_length, bool indentation_enabled_for_value_arrays) :
+			indentation_max_level(indentation_max_level),
+			indentation_length(indentation_length),
+			indentation_enabled_for_value_arrays(indentation_enabled_for_value_arrays)
+		{
+		}
+	};
+
+	static Configuration& default_configuration()
+	{
+		static Configuration configuration;
+		return configuration;
 	}
 
-	void write(const VariantObject& object, std::ostream& output)
+	static void write(const Configuration& configuration, const VariantObject& object, std::ostream& output)
 	{
-		print(object, output);
+		JSONWriter(configuration).print(object, output);
 	}
 
-	int indentation_max_level;
-	int indentation_length;
-	bool indentation_enabled_for_value_arrays;
+	static void write(const VariantObject& object, std::ostream& output)
+	{
+		write(default_configuration(), object, output);
+	}
 
 private:
+	JSONWriter(const Configuration& configuration) :
+		level_(0),
+		config_(configuration)
+	{
+	}
+
 	void print(const VariantValue& value, std::ostream& output) const
 	{
 		if(value.null())
@@ -49,7 +82,7 @@ private:
 		for(std::size_t i=0;i<values.size();i++)
 		{
 			print_separator(separated, output);
-			if(indentation_enabled_for_value_arrays)
+			if(config_.indentation_enabled_for_value_arrays)
 			{
 				print_indentation(output);
 			}
@@ -110,12 +143,12 @@ private:
 
 	void print_indentation(std::ostream& output) const
 	{
-		if(level_<=indentation_max_level)
+		if(level_<=config_.indentation_max_level)
 		{
 			output << "\n";
 			for(int i=0;i<level_;i++)
 			{
-				for(int j=0;j<indentation_length;j++)
+				for(int j=0;j<config_.indentation_length;j++)
 				{
 					output << " ";
 				}
@@ -157,6 +190,7 @@ private:
 	}
 
 	int level_;
+	Configuration config_;
 };
 
 }
