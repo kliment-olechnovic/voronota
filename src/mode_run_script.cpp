@@ -1,6 +1,7 @@
 #include "auxiliaries/program_options_handler.h"
 
 #include "common/scripting/script_execution_manager.h"
+#include "common/scripting/json_writer.h"
 
 namespace
 {
@@ -83,7 +84,10 @@ private:
 	void print_command_log(const CommandRecord& cr)
 	{
 		std::cout << cr.heterostorage.text;
-		std::cout << cr.heterostorage.log;
+		if(!cr.heterostorage.variant_object.empty())
+		{
+			common::scripting::JSONWriter::write(cr.heterostorage.variant_object, std::cout);
+		}
 		if(!cr.heterostorage.error.empty())
 		{
 			std::cout << "Error: " << cr.heterostorage.error << "\n";
