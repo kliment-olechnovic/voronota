@@ -20,9 +20,9 @@ public:
 	{
 	}
 
-	void write(const VariantCollection& collection, std::ostream& output)
+	void write(const VariantObject& object, std::ostream& output)
 	{
-		print(collection, output);
+		print(object, output);
 	}
 
 	int indentation_max_level;
@@ -58,31 +58,31 @@ private:
 		print_array_end(output);
 	}
 
-	void print(const VariantCollection& collection, std::ostream& output)
+	void print(const VariantObject& object, std::ostream& output)
 	{
 		bool separated=false;
 		print_object_start(output);
-		for(std::size_t i=0;i<collection.ordered_names().size();i++)
+		for(std::size_t i=0;i<object.ordered_names().size();i++)
 		{
-			const std::string& name=collection.ordered_names()[i];
+			const std::string& name=object.ordered_names()[i];
 			bool printed=false;
-			printed=printed || print_from_map(collection.values(), name, separated, output);
-			printed=printed || print_from_map(collection.values_arrays(), name, separated, output);
-			printed=printed || print_from_map(collection.objects(), name, separated, output);
-			printed=printed || print_from_map(collection.objects_arrays(), name, separated, output);
+			printed=printed || print_from_map(object.values(), name, separated, output);
+			printed=printed || print_from_map(object.values_arrays(), name, separated, output);
+			printed=printed || print_from_map(object.objects(), name, separated, output);
+			printed=printed || print_from_map(object.objects_arrays(), name, separated, output);
 		}
 		print_object_end(output);
 	}
 
-	void print(const std::vector<VariantCollection>& collections, std::ostream& output)
+	void print(const std::vector<VariantObject>& objects, std::ostream& output)
 	{
 		bool separated=false;
 		print_array_start(output);
-		for(std::size_t i=0;i<collections.size();i++)
+		for(std::size_t i=0;i<objects.size();i++)
 		{
 			print_separator(separated, output);
 			print_indentation(output);
-			print(collections[i], output);
+			print(objects[i], output);
 		}
 		print_array_end(output);
 	}
