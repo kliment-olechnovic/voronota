@@ -74,7 +74,7 @@ do
 	--optimize-width-extension)
 		OPTIMIZE_WIDTH_EXTENSION="--optimize-width-extension"
 		;;
-	-h)
+	-h|--help)
 		HELP_MODE=true
 		;;
 	*)

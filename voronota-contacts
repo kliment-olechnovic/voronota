@@ -85,7 +85,7 @@ do
 	--wireframe-drawing)
 		WIREFRAME_DRAWING=true
 		;;
-	-h)
+	-h|--help)
 		HELP_MODE=true
 		;;
 	*)
