@@ -46,10 +46,10 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			cargs.output_for_errors << e.what();
+			cargs.save_error(e);
 		}
 
-		cargs.save_output_streams_data();
+		cargs.save_text();
 
 		record.change_indicator.ensure_correctness();
 

@@ -12,8 +12,8 @@ namespace scripting
 
 struct HeterogeneousStorage
 {
-	std::string error;
-	std::string text;
+	std::vector<std::string> errors;
+	std::vector<std::string> texts;
 	std::set< std::string > flags;
 	std::map< std::string, std::vector<std::size_t> > vectors_of_ids;
 	std::map< std::string, SummaryOfAtoms > summaries_of_atoms;
