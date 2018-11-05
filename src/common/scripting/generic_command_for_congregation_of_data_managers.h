@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 
-#include "generic_command_description.h"
+#include "generic_command.h"
 #include "congregation_of_data_managers.h"
 
 namespace common
@@ -13,13 +13,13 @@ namespace scripting
 class GenericCommandForCongregationOfDataManagers
 {
 public:
-	struct CommandRecord : public GenericCommandDescription::CommandRecord
+	struct CommandRecord : public GenericCommand::CommandRecord
 	{
 		CongregationOfDataManagers* congregation_of_data_managers_ptr;
 		CongregationOfDataManagers::ChangeIndicator change_indicator;
 
 		CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
-			GenericCommandDescription::CommandRecord(command_input),
+			GenericCommand::CommandRecord(command_input),
 			congregation_of_data_managers_ptr(&congregation_of_data_managers)
 		{
 		}
@@ -55,13 +55,13 @@ public:
 	}
 
 protected:
-	struct CommandArguments : public GenericCommandDescription::CommandArguments
+	struct CommandArguments : public GenericCommand::CommandArguments
 	{
 		CongregationOfDataManagers& congregation_of_data_managers;
 		CongregationOfDataManagers::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommandDescription::CommandArguments(command_record),
+			GenericCommand::CommandArguments(command_record),
 			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr),
 			change_indicator(command_record.change_indicator)
 		{

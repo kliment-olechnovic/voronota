@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_SCRIPT_PARTITIONER_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_SCRIPT_PARTITIONER_H_
 
-#include "generic_command_description.h"
+#include "generic_command.h"
 #include "script_partitioner.h"
 
 namespace common
@@ -13,12 +13,12 @@ namespace scripting
 class GenericCommandForScriptPartitioner
 {
 public:
-	struct CommandRecord : public GenericCommandDescription::CommandRecord
+	struct CommandRecord : public GenericCommand::CommandRecord
 	{
 		ScriptPartitioner* script_partitioner_ptr;
 
 		CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
-			GenericCommandDescription::CommandRecord(command_input),
+			GenericCommand::CommandRecord(command_input),
 			script_partitioner_ptr(&script_partitioner)
 		{
 		}
@@ -52,12 +52,12 @@ public:
 	}
 
 protected:
-	struct CommandArguments : public GenericCommandDescription::CommandArguments
+	struct CommandArguments : public GenericCommand::CommandArguments
 	{
 		ScriptPartitioner& script_partitioner;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommandDescription::CommandArguments(command_record),
+			GenericCommand::CommandArguments(command_record),
 			script_partitioner(*command_record.script_partitioner_ptr)
 		{
 		}
