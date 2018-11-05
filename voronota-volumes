@@ -67,7 +67,7 @@ do
 	--per-residue)
 		PER_RESIDUE=true
 		;;
-	-h)
+	-h|--help)
 		HELP_MODE=true
 		;;
 	*)
