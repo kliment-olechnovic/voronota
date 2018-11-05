@@ -45,12 +45,12 @@ public:
 
 		void save_text(const std::string& text)
 		{
-			heterostorage.texts.push_back(text);
+			heterostorage.text+=text;
 		}
 
 		void save_text(std::ostringstream& text)
 		{
-			heterostorage.texts.push_back(text.str());
+			save_text(text.str());
 		}
 	};
 
