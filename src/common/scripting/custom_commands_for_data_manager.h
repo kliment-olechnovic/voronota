@@ -920,7 +920,8 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
+			std::ostringstream output_for_text;
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
 
 			for(std::size_t i=0;i<outputs.size();i++)
 			{
@@ -928,6 +929,7 @@ public:
 				TablePrinting::print_atoms(cargs.data_manager.atoms(), ids, parameters_for_printing.values, output);
 			}
 
+			cargs.save_text(output_for_text);
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
 		}
 	};
@@ -958,8 +960,6 @@ public:
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
-
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
 
 			std::set<std::size_t> residue_ids;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -1061,11 +1061,16 @@ public:
 				output << "\n";
 			}
 
+			std::ostringstream output_for_text;
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
+
 			for(std::size_t i=0;i<outputs.size();i++)
 			{
 				std::ostream& suboutput=(*(outputs[i]));
 				suboutput << output.str();
 			}
+
+			cargs.save_text(output_for_text);
 		}
 	};
 
@@ -2285,13 +2290,16 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&cargs.output_for_text);
+			std::ostringstream output_for_text;
+			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
 
 			for(std::size_t i=0;i<outputs.size();i++)
 			{
 				std::ostream& output=(*(outputs[i]));
 				TablePrinting::print_contacts(cargs.data_manager.atoms(), cargs.data_manager.contacts(), ids, parameters_for_printing.values, output);
 			}
+
+			cargs.save_text(output_for_text);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
 		}

@@ -48,8 +48,6 @@ public:
 			cargs.save_error(e);
 		}
 
-		cargs.save_text();
-
 		return record;
 	}
 
