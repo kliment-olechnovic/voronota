@@ -13,12 +13,12 @@ namespace scripting
 struct HeterogeneousStorage
 {
 	std::vector<std::string> errors;
-	std::vector<std::string> texts;
 	std::set< std::string > flags;
 	std::map< std::string, std::vector<std::size_t> > vectors_of_ids;
 	std::map< std::string, SummaryOfAtoms > summaries_of_atoms;
 	std::map< std::string, SummaryOfContacts > summaries_of_contacts;
 	VariantObject variant_object;
+	std::string text;
 };
 
 }
