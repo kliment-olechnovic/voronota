@@ -2,8 +2,8 @@
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
 
 #include "../../auxiliaries/time_utilities.h"
+#include "generic_command.h"
 
-#include "generic_command_for_extra_actions.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 
@@ -16,7 +16,7 @@ namespace scripting
 class CustomsCommandsForExtraActions
 {
 public:
-	class reset_time : public GenericCommandForExtraActions
+	class reset_time : public GenericCommand
 	{
 	public:
 		explicit reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
@@ -35,7 +35,7 @@ public:
 		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
 	};
 
-	class print_time : public GenericCommandForExtraActions
+	class print_time : public GenericCommand
 	{
 	public:
 		explicit print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
@@ -59,7 +59,7 @@ public:
 		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
 	};
 
-	class exit : public GenericCommandForExtraActions
+	class exit : public GenericCommand
 	{
 	public:
 		explicit exit(bool& exit_status) :
@@ -78,7 +78,7 @@ public:
 		bool& exit_status_;
 	};
 
-	class echo : public GenericCommandForExtraActions
+	class echo : public GenericCommand
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -94,7 +94,7 @@ public:
 		}
 	};
 
-	class setup_loading : public GenericCommandForExtraActions
+	class setup_loading : public GenericCommand
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -127,7 +127,7 @@ public:
 		}
 	};
 
-	class setup_voromqa : public GenericCommandForExtraActions
+	class setup_voromqa : public GenericCommand
 	{
 	protected:
 		void run(CommandArguments& cargs)

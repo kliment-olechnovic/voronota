@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 
-#include "generic_command_description.h"
+#include "generic_command.h"
 #include "data_manager.h"
 
 namespace common
@@ -13,13 +13,13 @@ namespace scripting
 class GenericCommandForDataManager
 {
 public:
-	struct CommandRecord : public GenericCommandDescription::CommandRecord
+	struct CommandRecord : public GenericCommand::CommandRecord
 	{
 		DataManager* data_manager_ptr;
 		DataManager::ChangeIndicator change_indicator;
 
 		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
-			GenericCommandDescription::CommandRecord(command_input),
+			GenericCommand::CommandRecord(command_input),
 			data_manager_ptr(&data_manager)
 		{
 		}
@@ -61,13 +61,13 @@ public:
 	}
 
 protected:
-	struct CommandArguments : public GenericCommandDescription::CommandArguments
+	struct CommandArguments : public GenericCommand::CommandArguments
 	{
 		DataManager& data_manager;
 		DataManager::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommandDescription::CommandArguments(command_record),
+			GenericCommand::CommandArguments(command_record),
 			data_manager(*command_record.data_manager_ptr),
 			change_indicator(command_record.change_indicator)
 		{

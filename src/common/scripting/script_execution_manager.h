@@ -157,7 +157,7 @@ protected:
 		return set_map_key_value_safely(commands_for_data_manager_, name, command_ptr);
 	}
 
-	GenericCommandForExtraActions* set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
+	GenericCommand* set_command(const std::string& name, GenericCommand* command_ptr)
 	{
 		return set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
 	}
@@ -193,7 +193,7 @@ protected:
 		return cr.successful;
 	}
 
-	virtual bool on_after_command_for_extra_actions(const GenericCommandForExtraActions::CommandRecord& cr)
+	virtual bool on_after_command_for_extra_actions(const GenericCommand::CommandRecord& cr)
 	{
 		return cr.successful;
 	}
@@ -385,7 +385,7 @@ private:
 	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
 	std::map<std::string, GenericCommandForCongregationOfDataManagers*> commands_for_congregation_of_data_managers_;
 	std::map<std::string, GenericCommandForDataManager*> commands_for_data_manager_;
-	std::map<std::string, GenericCommandForExtraActions*> commands_for_extra_actions_;
+	std::map<std::string, GenericCommand*> commands_for_extra_actions_;
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
 	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;

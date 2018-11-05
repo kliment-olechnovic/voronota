@@ -50,7 +50,7 @@ protected:
 		return cr.successful;
 	}
 
-	bool on_after_command_for_extra_actions(const common::scripting::GenericCommandForExtraActions::CommandRecord& cr)
+	bool on_after_command_for_extra_actions(const common::scripting::GenericCommand::CommandRecord& cr)
 	{
 		print_command_log(cr);
 		return cr.successful;

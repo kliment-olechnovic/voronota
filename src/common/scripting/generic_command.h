@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_DESCRIPTION_H_
-#define COMMON_SCRIPTING_GENERIC_COMMAND_DESCRIPTION_H_
+#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_H_
+#define COMMON_SCRIPTING_GENERIC_COMMAND_H_
 
 #include "command_input.h"
 #include "heterogeneous_storage.h"
@@ -10,7 +10,7 @@ namespace common
 namespace scripting
 {
 
-class GenericCommandDescription
+class GenericCommand
 {
 public:
 	struct CommandRecord
@@ -54,11 +54,42 @@ public:
 		}
 	};
 
+	GenericCommand()
+	{
+	}
+
+	virtual ~GenericCommand()
+	{
+	}
+
+	CommandRecord execute(const CommandInput& command_input)
+	{
+		CommandRecord record(command_input);
+
+		CommandArguments cargs(record);
+
+		try
+		{
+			run(cargs);
+			record.successful=true;
+		}
+		catch(const std::exception& e)
+		{
+			cargs.save_error(e);
+		}
+
+		return record;
+	}
+
+protected:
+	virtual void run(CommandArguments& /*cargs*/)
+	{
+	}
 };
 
 }
 
 }
 
-#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_DESCRIPTION_H_ */
+#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_H_ */
 
