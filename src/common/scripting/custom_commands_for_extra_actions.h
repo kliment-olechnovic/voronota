@@ -89,7 +89,7 @@ public:
 
 			for(std::size_t i=0;i<strings.size();i++)
 			{
-				cargs.output_for_text << strings[i] << "\n";
+				cargs.save_text(strings[i]);
 			}
 		}
 	};

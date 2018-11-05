@@ -50,8 +50,6 @@ public:
 			cargs.save_error(e);
 		}
 
-		cargs.save_text();
-
 		record.change_indicator.ensure_correctness();
 
 		return record;
