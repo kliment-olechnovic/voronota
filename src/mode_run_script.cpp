@@ -83,14 +83,17 @@ private:
 	template<typename CommandRecord>
 	void print_command_log(const CommandRecord& cr)
 	{
-		std::cout << cr.heterostorage.text;
+		for(std::size_t i=0;i<cr.heterostorage.texts.size();i++)
+		{
+			std::cout << cr.heterostorage.texts[i];
+		}
 		if(!cr.heterostorage.variant_object.empty())
 		{
 			common::scripting::JSONWriter::write(cr.heterostorage.variant_object, std::cout);
 		}
-		if(!cr.heterostorage.error.empty())
+		for(std::size_t i=0;i<cr.heterostorage.errors.size();i++)
 		{
-			std::cout << "Error: " << cr.heterostorage.error << "\n";
+			std::cout << "Error: " << cr.heterostorage.errors[i] << "\n";
 		}
 	}
 };

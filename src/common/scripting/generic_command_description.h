@@ -31,7 +31,6 @@ public:
 	public:
 		CommandInput& input;
 		HeterogeneousStorage& heterostorage;
-		std::ostringstream output_for_errors;
 		std::ostringstream output_for_text;
 
 		explicit CommandArguments(CommandRecord& command_record) :
@@ -40,10 +39,14 @@ public:
 		{
 		}
 
-		void save_output_streams_data()
+		void save_error(const std::exception& e)
 		{
-			heterostorage.error+=output_for_errors.str();
-			heterostorage.text+=output_for_text.str();
+			heterostorage.errors.push_back(std::string(e.what()));
+		}
+
+		void save_text()
+		{
+			heterostorage.texts.push_back(output_for_text.str());
 		}
 	};
 
