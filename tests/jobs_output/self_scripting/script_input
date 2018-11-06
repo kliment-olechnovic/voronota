@@ -30,9 +30,8 @@ set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts 
 
 multitag 6.0 8.0 # Arguments to an alias are unnamed
 
-print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
-print-contacts {-no-solvent -min-seq-sep 2} -desc -sort 'area' -limit 3 -expand
-print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
+print-contacts {cs1}
+print-contacts {cs1} --inter-residue
 
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 tag-atoms {A<C,N,O,CA,CB>} --tag pept

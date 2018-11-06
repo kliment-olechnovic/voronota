@@ -126,20 +126,37 @@ public:
 		write(input.value, output);
 	}
 
+	static void write(const ContactValue& input, VariantObject& output)
+	{
+		output.value("area")=input.area;
+		if(input.accumulated)
+		{
+			output.value("summed")=input.accumulated;
+		}
+		if(!input.props.empty())
+		{
+			write(input.props, output);
+		}
+	}
+
+	static void write(const ChainResidueAtomDescriptorsPair& crads, const ContactValue& value, VariantObject& output)
+	{
+		write(crads.a, output.object("descriptor1"));
+		write(crads.b, output.object("descriptor2"));
+		write(value, output);
+	}
+
 	static void write(const std::vector<Atom>& atoms, const Contact& input, VariantObject& output)
 	{
 		if(input.ids[0]<atoms.size() && input.ids[1]<atoms.size())
 		{
-			write(atoms[input.ids[0]].crad, output.object("atom1"));
-			write((input.solvent() ? ChainResidueAtomDescriptor::solvent() : atoms[input.ids[1]].crad), output.object("atom1"));
-			output.value("area")=input.value.area;
-			if(input.value.accumulated)
+			if(input.solvent())
 			{
-				output.value("summed")=input.value.accumulated;
+				write(ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, ChainResidueAtomDescriptor::solvent()), input.value, output);
 			}
-			if(!input.value.props.empty())
+			else
 			{
-				write(input.value.props, output);
+				write(ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, atoms[input.ids[1]].crad), input.value, output);
 			}
 		}
 	}
