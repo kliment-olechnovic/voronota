@@ -18,10 +18,9 @@ public:
 	struct CommandRecord
 	{
 		CommandInput command_input;
-		int recognized;
 		bool successful;
 
-		CommandRecord() : recognized(0), successful(false)
+		CommandRecord() : successful(false)
 		{
 		}
 	};
@@ -335,17 +334,14 @@ private:
 
 		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
-			command_record.recognized=1;
 			command_record.successful=on_after_command_for_script_partitioner(commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_));
 		}
 		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
 		{
-			command_record.recognized=2;
 			command_record.successful=on_after_command_for_congregation_of_data_managers(commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_));
 		}
 		else if(commands_for_data_manager_.count(command_name)==1)
 		{
-			command_record.recognized=3;
 			CongregationOfDataManagers::ObjectQuery query;
 			query.picked=true;
 			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(query);
@@ -371,7 +367,6 @@ private:
 		}
 		else if(commands_for_extra_actions_.count(command_name)==1)
 		{
-			command_record.recognized=4;
 			command_record.successful=on_after_command_for_extra_actions(commands_for_extra_actions_[command_name]->execute(command_record.command_input));
 		}
 		else
