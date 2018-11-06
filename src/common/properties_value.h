@@ -14,6 +14,11 @@ struct PropertiesValue
 	std::set<std::string> tags;
 	std::map<std::string, double> adjuncts;
 
+	bool empty() const
+	{
+		return (tags.empty() && adjuncts.empty());
+	}
+
 	void update_tags(const std::string& str)
 	{
 		if(!str.empty() && str[0]!='.')

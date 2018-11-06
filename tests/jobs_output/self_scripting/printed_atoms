@@ -1,6 +1,0 @@
-atom                        x       y       z       r     tags       adjuncts                      
-c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C       oc=1;tf=8;volume=13.6959      
-c<A>r<64>a<459>R<PHE>A<CB>  22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
-c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
-c<A>r<64>a<455>R<PHE>A<N>   22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
-c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
