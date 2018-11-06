@@ -907,10 +907,6 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericTablePrinting parameters_for_printing;
-			parameters_for_printing.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
-			parameters_for_output_destinations.read(false, cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -920,16 +916,14 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			std::ostringstream output_for_text;
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
-
-			for(std::size_t i=0;i<outputs.size();i++)
+			std::vector<VariantObject>& atoms=cargs.heterostorage.variant_object.objects_array("atoms");
+			atoms.reserve(ids.size());
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				std::ostream& output=(*(outputs[i]));
-				TablePrinting::print_atoms(cargs.data_manager.atoms(), ids, parameters_for_printing.values, output);
+				atoms.push_back(VariantObject());
+				VariantSerialization::write(cargs.data_manager.atoms()[*it], atoms.back());
 			}
 
-			cargs.save_text(output_for_text);
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
 		}
 	};

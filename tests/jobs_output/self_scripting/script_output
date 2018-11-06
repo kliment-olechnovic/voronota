@@ -34,31 +34,36 @@
     {
       "chain_name":"A",
       "continuous_segments":3,
-      "segments":[
-        {
-          "length":63,
-          "range":[2,64],
-          "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF",
-          "secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},
-        {
-          "length":1,
-          "range":[66,66],
-          "residue_sequence":"X",
-          "secondary_structure":"-"},
-        {
-          "length":162,
-          "range":[68,229],
-          "residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI",
-          "secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}
+      "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}
 
 > print-atoms {--tags het --adjuncts tf:0:10}
-atom                         x       y       z       r     tags      adjuncts      
-c<A>r<66>a<467>R<CRO>A<CA1>  25.011  26.478  37.078  1.7   el=C;het  oc=1;tf=7.34  
-c<A>r<66>a<472>R<CRO>A<N2>   26.975  27.732  38.216  1.55  el=N;het  oc=1;tf=9.21  
-c<A>r<66>a<474>R<CRO>A<C2>   26.043  27.875  40.37   1.7   el=C;het  oc=1;tf=5.46  
-c<A>r<66>a<481>R<CRO>A<CG2>  29.437  29.37   39.124  1.7   el=C;het  oc=1;tf=7.67  
-c<A>r<66>a<486>R<CRO>A<CZ>   31.718  30.3    37.721  1.7   el=C;het  oc=1;tf=9.48  
 {
+  "atoms":[
+    {
+      "descriptor":{"chainID":"A","resSeq":66,"serial":467,"resName":"CRO","name":"CA1"},
+      "ball":{"center":[25.011,26.478,37.078],"radius":1.7},
+      "tags":["el=C","het"],
+      "adjuncts":{"oc":1,"tf":7.34}},
+    {
+      "descriptor":{"chainID":"A","resSeq":66,"serial":472,"resName":"CRO","name":"N2"},
+      "ball":{"center":[26.975,27.732,38.216],"radius":1.55},
+      "tags":["el=N","het"],
+      "adjuncts":{"oc":1,"tf":9.21}},
+    {
+      "descriptor":{"chainID":"A","resSeq":66,"serial":474,"resName":"CRO","name":"C2"},
+      "ball":{"center":[26.043,27.875,40.37],"radius":1.7},
+      "tags":["el=C","het"],
+      "adjuncts":{"oc":1,"tf":5.46}},
+    {
+      "descriptor":{"chainID":"A","resSeq":66,"serial":481,"resName":"CRO","name":"CG2"},
+      "ball":{"center":[29.437,29.37,39.124],"radius":1.7},
+      "tags":["el=C","het"],
+      "adjuncts":{"oc":1,"tf":7.67}},
+    {
+      "descriptor":{"chainID":"A","resSeq":66,"serial":486,"resName":"CRO","name":"CZ"},
+      "ball":{"center":[31.718,30.3,37.721],"radius":1.7},
+      "tags":["el=C","het"],
+      "adjuncts":{"oc":1,"tf":9.48}}],
   "summary_of_atoms":{
     "number_total":5,
     "volume":null}}
@@ -82,37 +87,7 @@ c<A>r<66>a<486>R<CRO>A<CZ>   31.718  30.3    37.721  1.7   el=C;het  oc=1;tf=9.4
     {
       "chain_name":"A",
       "continuous_segments":6,
-      "segments":[
-        {
-          "length":63,
-          "range":[2,64],
-          "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF",
-          "secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},
-        {
-          "length":10,
-          "range":[68,77],
-          "residue_sequence":"VQCFSRYPDH",
-          "secondary_structure":"-----S----"},
-        {
-          "length":9,
-          "range":[79,87],
-          "residue_sequence":"KRHDFFKSA",
-          "secondary_structure":"---------"},
-        {
-          "length":64,
-          "range":[89,152],
-          "residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI",
-          "secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},
-        {
-          "length":64,
-          "range":[154,217],
-          "residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH",
-          "secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},
-        {
-          "length":11,
-          "range":[219,229],
-          "residue_sequence":"VLLEFVTAAGI",
-          "secondary_structure":"-SSSSSSSS--"}]}]}
+      "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]}
 
 > construct-contacts
 {
@@ -287,26 +262,66 @@ A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  central;m
     "number_total":420,
     "volume":9160.61}}
 
-> print-atoms {as1} --sort tags --file './jobs_output/self_scripting/printed_atoms'
-atom                        x       y       z       r     tags       adjuncts                      
-c<A>r<64>a<456>R<PHE>A<CA>  21.895  28.371  35.995  1.7   el=C       oc=1;tf=8;volume=13.6959      
-c<A>r<64>a<459>R<PHE>A<CB>  22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
-c<A>r<64>a<457>R<PHE>A<C>   22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
-c<A>r<64>a<455>R<PHE>A<N>   22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
-c<A>r<64>a<458>R<PHE>A<O>   22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
+> print-atoms {as1}
 {
+  "atoms":[
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
+      "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
+      "tags":["el=N","pept"],
+      "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
+      "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
+      "tags":["el=C"],
+      "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
+      "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
+      "tags":["el=C","pept"],
+      "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
+      "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
+      "tags":["el=O","pept"],
+      "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+      "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
+      "tags":["el=C"],
+      "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
   "summary_of_atoms":{
     "number_total":5,
     "volume":108.978}}
 
-> print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
-chn  resi  ic  atmi  al  resn  atmn  x       y       z       r     tags       adjuncts                      
-A    64    .   457   .   PHE   C     22.774  27.253  36.518  1.7   el=C;pept  oc=1;tf=25.26;volume=32.7555  
-A    64    .   456   .   PHE   CA    21.895  28.371  35.995  1.7   el=C       oc=1;tf=8;volume=13.6959      
-A    64    .   459   .   PHE   CB    22.114  28.438  34.513  1.7   el=C       oc=1;tf=6.88;volume=23.2725   
-A    64    .   455   .   PHE   N     22.25   29.62   36.583  1.55  el=N;pept  oc=1;tf=10.19;volume=10.4155  
-A    64    .   458   .   PHE   O     22.313  26.147  36.761  1.52  el=O;pept  oc=1;tf=9.64;volume=28.8387   
+> print-atoms {r<64> & A<C,N,O,CA,CB>}
 {
+  "atoms":[
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
+      "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
+      "tags":["el=N","pept"],
+      "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
+      "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
+      "tags":["el=C"],
+      "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
+      "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
+      "tags":["el=C","pept"],
+      "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
+      "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
+      "tags":["el=O","pept"],
+      "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
+    {
+      "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+      "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
+      "tags":["el=C"],
+      "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
   "summary_of_atoms":{
     "number_total":5,
     "volume":108.978}}
@@ -324,30 +339,20 @@ Error: Invalid contacts selection name 'nosel1'.
   "selections":[
     {
       "name":"_marked",
-      "summary":{
-        "number_total":5,
-        "volume":108.978}},
+      "summary":{"number_total":5,"volume":108.978}},
     {
       "name":"as1",
-      "summary":{
-        "number_total":5,
-        "volume":108.978}}]}
+      "summary":{"number_total":5,"volume":108.978}}]}
 
 > list-selections-of-contacts
 {
   "selections":[
     {
       "name":"_marked",
-      "summary":{
-        "number_total":1,
-        "number_drawable":1,
-        "area":6.57156}},
+      "summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
     {
       "name":"cs1",
-      "summary":{
-        "number_total":5,
-        "number_drawable":1,
-        "area":33.8164}}]}
+      "summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}
 
 > color-atoms 0xFFFF00
 {

@@ -280,38 +280,6 @@ private:
 class VariantObject
 {
 public:
-	struct LessByNamedValue
-	{
-		explicit LessByNamedValue(const std::string& name) :
-			reverse(false),
-			name(name)
-		{
-		}
-
-		LessByNamedValue(const bool reverse, const std::string& name) :
-			reverse(reverse),
-			name(name)
-		{
-		}
-
-		bool operator()(const VariantObject& a, const VariantObject& b) const
-		{
-			std::map<std::string, VariantValue>::const_iterator it_a=a.values().find(name);
-			if(it_a!=a.values().end())
-			{
-				std::map<std::string, VariantValue>::const_iterator it_b=b.values().find(name);
-				if(it_b!=b.values().end())
-				{
-					return (reverse ? ((it_b->second)<(it_a->second)) : ((it_a->second)<(it_b->second)));
-				}
-			}
-			return false;
-		}
-
-		bool reverse;
-		std::string name;
-	};
-
 	VariantObject()
 	{
 	}

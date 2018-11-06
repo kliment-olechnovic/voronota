@@ -44,8 +44,8 @@ print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --exp
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 tag-atoms {A<C,N,O,CA,CB>} --tag pept
 delete-tags-of-atoms {A<CA,CB>} --tags pept
-print-atoms {as1} --sort tags --file '$SUBDIR/printed_atoms'
-print-atoms {r<64> & A<C,N,O,CA,CB>} --sort atmn --expand
+print-atoms {as1}
+print-atoms {r<64> & A<C,N,O,CA,CB>}
 
 rename-selection-of-atoms nosel1 nodel2
 delete-selections-of-contacts nosel1
