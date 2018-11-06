@@ -8,7 +8,7 @@ cat << EOF
 
 # Note the same use of both "-" and "--"
 
-set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
+set-alias printseq "print-sequence -secondary-structure"
 
 load --file $INPUTDIR/single/structure.cif
 load -file "$INPUTDIR/single/structure.pdb"

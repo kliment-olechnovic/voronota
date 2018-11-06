@@ -62,13 +62,7 @@ public:
 		return (*this);
 	}
 
-	VariantValue& operator=(const unsigned long value)
-	{
-		set_value_int(value);
-		return (*this);
-	}
-
-	VariantValue& operator=(const unsigned int value)
+	VariantValue& operator=(const std::size_t value)
 	{
 		set_value_int(value);
 		return (*this);

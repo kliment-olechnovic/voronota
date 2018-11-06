@@ -943,23 +943,17 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
-			parameters_for_output_destinations.read(false, cargs.input);
-			const unsigned int line_width=cargs.input.get_value_or_default<unsigned int>("line-width", 50);
 			const bool secondary_structure=cargs.input.get_flag("secondary-structure");
 
 			cargs.input.assert_nothing_unusable();
-
-			if(line_width<1)
-			{
-				throw std::runtime_error(std::string("Line width is too small."));
-			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
+
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
 
 			std::set<std::size_t> residue_ids;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -1007,70 +1001,62 @@ public:
 				chaining[r.chain_residue_descriptor.chainID].push_back(i);
 			}
 
-			std::ostringstream output;
 			for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=chaining.begin();it!=chaining.end();++it)
 			{
-				output << ">Chain '" << (it->first) << "'";
+				VariantObject chain_info;
+				chain_info.value("chain_name")=(it->first);
 				const std::vector<std::size_t>& group_ids=it->second;
-				if(group_ids.size()>1)
-				{
-					output << " with " << group_ids.size() << " continuous segments";
-				}
-				output << "\n";
-				unsigned int item_counter=0;
+				chain_info.value("continuous_segments")=group_ids.size();
 				for(std::size_t i=0;i<group_ids.size();i++)
 				{
-					if(i!=0)
-					{
-						output << "+";
-						if((++item_counter)%line_width==0)
-						{
-							output << "\n";
-						}
-					}
+					std::ostringstream output_for_residue_sequence;
+					std::ostringstream output_for_secondary_structure_sequence;
+					VariantObject segment_info;
 					const std::vector<std::size_t>& group=grouping[group_ids[i]];
-					for(std::size_t j=0;j<group.size();j++)
+					segment_info.value("length")=group.size();
+					if(!group.empty())
 					{
+						for(std::size_t j=0;j<group.size();j++)
+						{
+							{
+								const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[group[j]];
+								output_for_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
+								if(j==0)
+								{
+									segment_info.values_array("range").push_back(VariantValue(r.chain_residue_descriptor.resSeq));
+								}
+								if((j+1)==group.size())
+								{
+									segment_info.values_array("range").push_back(VariantValue(r.chain_residue_descriptor.resSeq));
+								}
+							}
+							if(secondary_structure)
+							{
+								const ConstructionOfSecondaryStructure::ResidueDescriptor& r=cargs.data_manager.secondary_structure_info().residue_descriptors[group[j]];
+								if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+								{
+									output_for_secondary_structure_sequence << "H";
+								}
+								else if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+								{
+									output_for_secondary_structure_sequence << "S";
+								}
+								else
+								{
+									output_for_secondary_structure_sequence << "-";
+								}
+							}
+						}
+						segment_info.value("residue_sequence")=output_for_residue_sequence.str();
 						if(secondary_structure)
 						{
-							const ConstructionOfSecondaryStructure::ResidueDescriptor& r=cargs.data_manager.secondary_structure_info().residue_descriptors[group[j]];
-							if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
-							{
-								output << "H";
-							}
-							else if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
-							{
-								output << "S";
-							}
-							else
-							{
-								output << "-";
-							}
-						}
-						else
-						{
-							const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[group[j]];
-							output << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
-						}
-						if((++item_counter)%line_width==0)
-						{
-							output << "\n";
+							segment_info.value("secondary_structure")=output_for_secondary_structure_sequence.str();
 						}
 					}
+					chain_info.objects_array("segments").push_back(segment_info);
 				}
-				output << "\n";
+				cargs.heterostorage.variant_object.objects_array("chains").push_back(chain_info);
 			}
-
-			std::ostringstream output_for_text;
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
-
-			for(std::size_t i=0;i<outputs.size();i++)
-			{
-				std::ostream& suboutput=(*(outputs[i]));
-				suboutput << output.str();
-			}
-
-			cargs.save_text(output_for_text);
 		}
 	};
 
