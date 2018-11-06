@@ -207,40 +207,76 @@ Error: No contacts available.
     "number_drawable":1,
     "area":22795.8}}
 
-> print-contacts {cs1} --desc --sort area --file './jobs_output/self_scripting/printed_contacts'
-atom1                       atom2                         area     dist     tags         adjuncts  
-c<A>r<99>a<756>R<PHE>A<C>   c<A>r<100>a<765>R<PHE>A<N>    8.5725   1.33208  central      .         
-c<A>r<46>a<330>R<PHE>A<CZ>  c<A>r<64>a<459>R<PHE>A<CB>    6.67924  3.66367  central;med  .         
-c<A>r<83>a<623>R<PHE>A<C>   c<A>r<84>a<632>R<PHE>A<N>     6.57156  1.35488  central;med  .         
-c<A>r<8>a<53>R<PHE>A<CZ>    c<A>r<114>a<888>R<PHE>A<CE2>  6.42993  3.93888  central;med  .         
-c<A>r<8>a<49>R<PHE>A<CD1>   c<A>r<71>a<518>R<PHE>A<CE1>   5.56317  3.7409   central      .         
+> print-contacts {cs1}
 {
+  "contacts":[
+    {
+      "descriptor1":{"chainID":"A","resSeq":8,"serial":49,"resName":"PHE","name":"CD1"},
+      "descriptor2":{"chainID":"A","resSeq":71,"serial":518,"resName":"PHE","name":"CE1"},
+      "area":5.56317,
+      "tags":["central"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":8,"serial":53,"resName":"PHE","name":"CZ"},
+      "descriptor2":{"chainID":"A","resSeq":114,"serial":888,"resName":"PHE","name":"CE2"},
+      "area":6.42993,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":46,"serial":330,"resName":"PHE","name":"CZ"},
+      "descriptor2":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+      "area":6.67924,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":83,"serial":623,"resName":"PHE","name":"C"},
+      "descriptor2":{"chainID":"A","resSeq":84,"serial":632,"resName":"PHE","name":"N"},
+      "area":6.57156,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":99,"serial":756,"resName":"PHE","name":"C"},
+      "descriptor2":{"chainID":"A","resSeq":100,"serial":765,"resName":"PHE","name":"N"},
+      "area":8.5725,
+      "tags":["central"]}],
   "summary_of_contacts":{
     "number_total":5,
     "number_drawable":1,
     "area":33.8164}}
 
-> print-contacts {-no-solvent -min-seq-sep 2} -desc -sort 'area' -limit 3 -expand
-chn1  resi1  ic1  atmi1  al1  resn1  atmn1  chn2  resi2  ic2  atmi2  al2  resn2  atmn2  area         dist     tags         adjuncts  
-A     19     .    132    .    ASP    OD1    A     28     .    199    .    SER    OG     15.6287      2.64731  central      .         
-A     105    .    810    .    ASN    OD1    A     107    .    830    .    LYS    CD     14.6278      3.21398  central      .         
-A     102    .    787    .    ASP    O      A     131    .    1016   .    LYS    CD     14.1631      3.59545  central      .         
+> print-contacts {cs1} --inter-residue
 {
+  "contacts":[
+    {
+      "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
+      "descriptor2":{"chainID":"A","resSeq":71,"resName":"PHE"},
+      "area":5.56317,
+      "summed":true,
+      "tags":["central"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
+      "descriptor2":{"chainID":"A","resSeq":114,"resName":"PHE"},
+      "area":6.42993,
+      "summed":true,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":46,"resName":"PHE"},
+      "descriptor2":{"chainID":"A","resSeq":64,"resName":"PHE"},
+      "area":6.67924,
+      "summed":true,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":83,"resName":"PHE"},
+      "descriptor2":{"chainID":"A","resSeq":84,"resName":"PHE"},
+      "area":6.57156,
+      "summed":true,
+      "tags":["central","med"]},
+    {
+      "descriptor1":{"chainID":"A","resSeq":99,"resName":"PHE"},
+      "descriptor2":{"chainID":"A","resSeq":100,"resName":"PHE"},
+      "area":8.5725,
+      "summed":true,
+      "tags":["central"]}],
   "summary_of_contacts":{
-    "number_total":4820,
-    "number_drawable":86,
-    "area":10487.8}}
-
-> print-contacts {--no-solvent --min-seq-sep 2} --desc --sort area --limit 3 --expand --inter-residue
-chn1  resi1  ic1  resn1  chn2  resi2  ic2  resn2  area        dist     tags         adjuncts  
-A     163    .    VAL    A     183    .    GLN    44.5551     2.8359   central;med  .         
-A     204    .    GLN    A     223    .    PHE    43.9682     2.92323  central;med  .         
-A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  central;med  .         
-{
-  "summary_of_contacts":{
-    "number_total":4820,
-    "number_drawable":86,
-    "area":10487.8}}
+    "number_total":5,
+    "number_drawable":1,
+    "area":33.8164}}
 
 > select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 {

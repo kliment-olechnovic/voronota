@@ -2257,10 +2257,7 @@ public:
 
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
-			CommandParametersForContactsTablePrinting parameters_for_printing;
-			parameters_for_printing.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(true);
-			parameters_for_output_destinations.read(false, cargs.input);
+			const bool inter_residue=cargs.input.get_flag("inter-residue");
 
 			cargs.input.assert_nothing_unusable();
 
@@ -2270,16 +2267,40 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			std::ostringstream output_for_text;
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(&output_for_text);
+			const std::vector<Atom>& atoms=cargs.data_manager.atoms();
+			std::vector<VariantObject>& contacts=cargs.heterostorage.variant_object.objects_array("contacts");
 
-			for(std::size_t i=0;i<outputs.size();i++)
+			if(inter_residue)
 			{
-				std::ostream& output=(*(outputs[i]));
-				TablePrinting::print_contacts(cargs.data_manager.atoms(), cargs.data_manager.contacts(), ids, parameters_for_printing.values, output);
+				std::map<ChainResidueAtomDescriptorsPair, ContactValue> map_for_output;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const Contact& contact=cargs.data_manager.contacts()[*it];
+					if(contact.solvent())
+					{
+						map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), ChainResidueAtomDescriptor::solvent())].add(contact.value);
+					}
+					else
+					{
+						map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), atoms[contact.ids[1]].crad.without_atom())].add(contact.value);
+					}
+				}
+				contacts.reserve(map_for_output.size());
+				for(std::map<ChainResidueAtomDescriptorsPair, ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
+				{
+					contacts.push_back(VariantObject());
+					VariantSerialization::write(it->first, it->second, contacts.back());
+				}
 			}
-
-			cargs.save_text(output_for_text);
+			else
+			{
+				contacts.reserve(ids.size());
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					contacts.push_back(VariantObject());
+					VariantSerialization::write(atoms, cargs.data_manager.contacts()[*it], contacts.back());
+				}
+			}
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
 		}
