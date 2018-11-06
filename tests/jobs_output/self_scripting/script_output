@@ -2,10 +2,10 @@
 > source './jobs_output/self_scripting/script_input'
 
 
-> set-alias printseq "print-sequence -line-width 80 ; print-sequence -line-width 80 -secondary-structure"
+> set-alias printseq "print-sequence -secondary-structure"
 {
   "alias":"printseq",
-  "script":"print-sequence --line-width 80 ; print-sequence --line-width 80 --secondary-structure"}
+  "script":"print-sequence --secondary-structure"}
 
 > load --file ./input/single/structure.cif
 {
@@ -25,19 +25,31 @@
     "number_total":1771,
     "volume":null}}
 
-> print-sequence --line-width 80 
->Chain 'A' with 3 continuous segments
-SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF+X+VQCFSRYPDHXKRH
-DFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGI
-KVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI
-
-
-> print-sequence --line-width 80 --secondary-structure
->Chain 'A' with 3 continuous segments
---HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----+-+-----S--------
-----------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SS
-SSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--
-
+> print-sequence --secondary-structure
+{
+  "summary_of_atoms":{
+    "number_total":1771,
+    "volume":null},
+  "chains":[
+    {
+      "chain_name":"A",
+      "continuous_segments":3,
+      "segments":[
+        {
+          "length":63,
+          "range":[2,64],
+          "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF",
+          "secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},
+        {
+          "length":1,
+          "range":[66,66],
+          "residue_sequence":"X",
+          "secondary_structure":"-"},
+        {
+          "length":162,
+          "range":[68,229],
+          "residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI",
+          "secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}
 
 > print-atoms {--tags het --adjuncts tf:0:10}
 atom                         x       y       z       r     tags      adjuncts      
@@ -54,59 +66,112 @@ c<A>r<66>a<486>R<CRO>A<CZ>   31.718  30.3    37.721  1.7   el=C;het  oc=1;tf=9.4
 > restrict-atoms {--tags-not het}
 {
   "restricted_atoms":{
-    "old_summary":{"number_total":1771,"volume":null},
-    "summary":{"number_total":1717,"volume":null}}}
+    "old_summary":{
+      "number_total":1771,
+      "volume":null},
+    "summary":{
+      "number_total":1717,
+      "volume":null}}}
 
-> print-sequence --line-width 80 
->Chain 'A' with 6 continuous segments
-SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF+VQCFSRYPDH+KRHDF
-FKSA+PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI+ADKQKNGIKV
-NFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH+VLLEFVTAAGI
-
-
-> print-sequence --line-width 80 --secondary-structure
->Chain 'A' with 6 continuous segments
---HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----+-----S----+-----
-----+---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS+-S----SSSS
-SSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------+-SSSSSSSS--
-
+> print-sequence --secondary-structure
+{
+  "summary_of_atoms":{
+    "number_total":1717,
+    "volume":null},
+  "chains":[
+    {
+      "chain_name":"A",
+      "continuous_segments":6,
+      "segments":[
+        {
+          "length":63,
+          "range":[2,64],
+          "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF",
+          "secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},
+        {
+          "length":10,
+          "range":[68,77],
+          "residue_sequence":"VQCFSRYPDH",
+          "secondary_structure":"-----S----"},
+        {
+          "length":9,
+          "range":[79,87],
+          "residue_sequence":"KRHDFFKSA",
+          "secondary_structure":"---------"},
+        {
+          "length":64,
+          "range":[89,152],
+          "residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI",
+          "secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},
+        {
+          "length":64,
+          "range":[154,217],
+          "residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH",
+          "secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},
+        {
+          "length":11,
+          "range":[219,229],
+          "residue_sequence":"VLLEFVTAAGI",
+          "secondary_structure":"-SSSSSSSS--"}]}]}
 
 > construct-contacts
 {
   "constructed_contacts":{
-    "summary":{"number_total":12469,"number_drawable":0,"area":47017.2},
+    "summary":{
+      "number_total":12469,
+      "number_drawable":0,
+      "area":47017.2},
     "used_cached_triangulation":false}}
 
 > construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'
 {
   "constructed_contacts":{
-    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2},
+    "summary":{
+      "number_total":12469,
+      "number_drawable":120,
+      "area":47017.2},
     "used_cached_triangulation":true}}
 
 > save-atoms --file './jobs_output/self_scripting/plain_atoms'
 {
   "saved_atoms":{
     "file":"./jobs_output/self_scripting/plain_atoms",
-    "summary":{"number_total":1717,"volume":41027.8}}}
+    "summary":{
+      "number_total":1717,
+      "volume":41027.8}}}
 
 > save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume
 {
   "saved_atoms":{
     "file":"./jobs_output/self_scripting/pdb_atoms",
-    "summary":{"number_total":1717,"volume":41027.8}}}
+    "summary":{
+      "number_total":1717,
+      "volume":41027.8}}}
 
 > save-contacts './jobs_output/self_scripting/plain_contacts'
 {
   "saved_contacts":{
     "file":"./jobs_output/self_scripting/plain_contacts",
-    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
+    "summary":{
+      "number_total":12469,
+      "number_drawable":120,
+      "area":47017.2}}}
 
 > list-objects
 {
   "objects":[
-    {"name":"structure.cif","picked":false,"visible":true},
-    {"name":"structure.pdb","picked":false,"visible":true},
-    {"name":"structure.pdb_2","picked":true,"visible":true}]}
+    {
+      "name":"structure.cif",
+      "picked":false,
+      "visible":true},
+    {
+      "name":"structure.pdb",
+      "picked":false,
+      "visible":true},
+    {
+      "name":"structure.pdb_2",
+      "picked":true,
+      "visible":true}]}
 
 > delete-objects
 {
@@ -121,7 +186,10 @@ SSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------+-SSSSSSSS--
 > list-objects
 {
   "objects":[
-    {"name":"plain_atoms","picked":true,"visible":true}]}
+    {
+      "name":"plain_atoms",
+      "picked":true,
+      "visible":true}]}
 
 > select-contacts
 Error: No contacts available.
@@ -131,12 +199,18 @@ Error: No contacts available.
 {
   "read_contacts":{
     "file":"./jobs_output/self_scripting/plain_contacts",
-    "summary":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
+    "summary":{
+      "number_total":12469,
+      "number_drawable":120,
+      "area":47017.2}}}
 
 > select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
 {
   "selected_contacts":{
-    "summary":{"number_total":5,"number_drawable":1,"area":33.8164},
+    "summary":{
+      "number_total":5,
+      "number_drawable":1,
+      "area":33.8164},
     "selection_name":"cs1"}}
 
 > set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"
@@ -196,7 +270,9 @@ A     92     .    TYR    A     112    .    VAL    43.8793     2.86016  central;m
 > select-atoms {r<64> & A<C,N,O,CA,CB>} as1
 {
   "selected_atoms":{
-    "summary":{"number_total":5,"volume":108.978},
+    "summary":{
+      "number_total":5,
+      "volume":108.978},
     "selection_name":"as1"}}
 
 > tag-atoms {A<C,N,O,CA,CB>} --tag pept
@@ -246,14 +322,32 @@ Error: Invalid contacts selection name 'nosel1'.
 > list-selections-of-atoms
 {
   "selections":[
-    {"name":"_marked","summary":{"number_total":5,"volume":108.978}},
-    {"name":"as1","summary":{"number_total":5,"volume":108.978}}]}
+    {
+      "name":"_marked",
+      "summary":{
+        "number_total":5,
+        "volume":108.978}},
+    {
+      "name":"as1",
+      "summary":{
+        "number_total":5,
+        "volume":108.978}}]}
 
 > list-selections-of-contacts
 {
   "selections":[
-    {"name":"_marked","summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
-    {"name":"cs1","summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}
+    {
+      "name":"_marked",
+      "summary":{
+        "number_total":1,
+        "number_drawable":1,
+        "area":6.57156}},
+    {
+      "name":"cs1",
+      "summary":{
+        "number_total":5,
+        "number_drawable":1,
+        "area":33.8164}}]}
 
 > color-atoms 0xFFFF00
 {
@@ -283,13 +377,17 @@ Error: Invalid contacts selection name 'nosel1'.
 {
   "wrote_atoms_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_atoms.py",
-    "summary":{"number_total":167,"volume":3864.44}}}
+    "summary":{
+      "number_total":167,
+      "volume":3864.44}}}
 
 > write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf
 {
   "wrote_atoms_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
-    "summary":{"number_total":167,"volume":3864.44}}}
+    "summary":{
+      "number_total":167,
+      "volume":3864.44}}}
 
 > spectrum-atoms
 {
@@ -302,13 +400,17 @@ Error: Invalid contacts selection name 'nosel1'.
 {
   "wrote_cartoon_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_cartoon.py",
-    "summary":{"number_total":16,"volume":262.219}}}
+    "summary":{
+      "number_total":16,
+      "volume":262.219}}}
 
 > write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf
 {
   "wrote_cartoon_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
-    "summary":{"number_total":16,"volume":262.219}}}
+    "summary":{
+      "number_total":16,
+      "volume":262.219}}}
 
 > color-contacts 0x00FF00
 {
@@ -342,7 +444,10 @@ Error: Invalid contacts selection name 'nosel1'.
 {
   "wrote_contacts_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_contacts.py",
-    "summary":{"number_total":120,"number_drawable":120,"area":211.8}}}
+    "summary":{
+      "number_total":120,
+      "number_drawable":120,
+      "area":211.8}}}
 
 > color-contacts 0xFF00FF
 {
@@ -355,14 +460,22 @@ Error: Invalid contacts selection name 'nosel1'.
 {
   "wrote_contacts_as_pymol_cgo":{
     "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
-    "summary":{"number_total":120,"number_drawable":120,"area":211.8}}}
+    "summary":{
+      "number_total":120,
+      "number_drawable":120,
+      "area":211.8}}}
 
 > save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
 {
   "saved_atoms_and_contacts":{
     "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
-    "summary_of_atoms":{"number_total":1717,"volume":41027.8},
-    "summary_of_contacts":{"number_total":12469,"number_drawable":120,"area":47017.2}}}
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8},
+    "summary_of_contacts":{
+      "number_total":12469,
+      "number_drawable":120,
+      "area":47017.2}}}
 
 > load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain
 {
@@ -383,9 +496,18 @@ Error: Invalid contacts selection name 'nosel1'.
 > list-objects
 {
   "objects":[
-    {"name":"plain_atoms","picked":false,"visible":true},
-    {"name":"plain_atoms_and_contacts","picked":false,"visible":true},
-    {"name":"plain_atoms_2","picked":true,"visible":true}]}
+    {
+      "name":"plain_atoms",
+      "picked":false,
+      "visible":true},
+    {
+      "name":"plain_atoms_and_contacts",
+      "picked":false,
+      "visible":true},
+    {
+      "name":"plain_atoms_2",
+      "picked":true,
+      "visible":true}]}
 
 > delete-objects -names plain_atoms
 {
@@ -394,8 +516,14 @@ Error: Invalid contacts selection name 'nosel1'.
 > list-objects
 {
   "objects":[
-    {"name":"plain_atoms_and_contacts","picked":false,"visible":true},
-    {"name":"plain_atoms_2","picked":true,"visible":true}]}
+    {
+      "name":"plain_atoms_and_contacts",
+      "picked":false,
+      "visible":true},
+    {
+      "name":"plain_atoms_2",
+      "picked":true,
+      "visible":true}]}
 
 > set-alias quit exit
 {

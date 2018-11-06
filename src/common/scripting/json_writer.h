@@ -19,7 +19,7 @@ public:
 		bool indentation_enabled_for_value_arrays;
 
 		Configuration() :
-			indentation_max_level(2),
+			indentation_max_level(10),
 			indentation_length(2),
 			indentation_enabled_for_value_arrays(false)
 		{
