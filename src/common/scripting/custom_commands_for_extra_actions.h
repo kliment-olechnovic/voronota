@@ -89,7 +89,7 @@ public:
 
 			for(std::size_t i=0;i<strings.size();i++)
 			{
-				cargs.save_text(strings[i]);
+				cargs.heterostorage.variant_object.values_array("text").push_back(VariantValue(strings[i]));
 			}
 		}
 	};
