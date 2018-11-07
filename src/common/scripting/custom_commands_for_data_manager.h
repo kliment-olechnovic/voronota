@@ -141,8 +141,8 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(true, cargs.input);
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
 			CommandParametersForGenericSelecting parameters_for_selecting;
 			parameters_for_selecting.read(cargs.input);
 			const bool as_pdb=cargs.input.get_flag("as-pdb");
@@ -157,27 +157,23 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
+			std::ofstream output(file.c_str(), std::ios::out);
+			assert_io_stream(file, output);
 
 			const std::vector<Atom> atoms=slice_vector_by_ids(cargs.data_manager.atoms(), ids);
 
-			for(std::size_t i=0;i<outputs.size();i++)
+			if(as_pdb)
 			{
-				std::ostream& output=(*(outputs[i]));
-				if(as_pdb)
-				{
-					WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
-				}
-				else
-				{
-					auxiliaries::IOUtilities().write_set(atoms, output);
-				}
+				WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
+			}
+			else
+			{
+				auxiliaries::IOUtilities().write_set(atoms, output);
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("saved_atoms");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfAtoms(atoms), info.object("summary"));
 			}
 		}
@@ -1092,8 +1088,8 @@ public:
 			parameters_for_selecting.read(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(false, cargs.input);
+			const std::string file=cargs.input.get_value<std::string>("file");
+			assert_file_name_input(file, false);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -1129,8 +1125,6 @@ public:
 					cargs.data_manager.reset_bonding_links_info_by_creating(ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
 				}
 			}
-
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
 
 			auxiliaries::OpenGLPrinter opengl_printer;
 			{
@@ -1169,16 +1163,15 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<outputs.size();i++)
 			{
-				std::ostream& output=(*(outputs[i]));
+				std::ofstream output(file.c_str(), std::ios::out);
+				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_atoms_as_pymol_cgo");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("summary"));
 			}
 		}
@@ -1198,8 +1191,8 @@ public:
 			parameters_for_selecting.read(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(false, cargs.input);
+			const std::string file=cargs.input.get_value<std::string>("file");
+			assert_file_name_input(file, false);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -1245,8 +1238,6 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to construct cartoon mesh."));
 			}
-
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
 
 			auxiliaries::OpenGLPrinter opengl_printer;
 			{
@@ -1296,16 +1287,15 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<outputs.size();i++)
 			{
-				std::ostream& output=(*(outputs[i]));
+				std::ofstream output(file.c_str(), std::ios::out);
+				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_cartoon_as_pymol_cgo");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("summary"));
 			}
 		}
@@ -1515,25 +1505,22 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(true, cargs.input);
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
 			const bool no_graphics=cargs.input.get_flag("no-graphics");
 
 			cargs.input.assert_nothing_unusable();
 
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
-
-			for(std::size_t i=0;i<outputs.size();i++)
 			{
-				std::ostream& output=(*(outputs[i]));
+				std::ofstream output(file.c_str(), std::ios::out);
+				assert_io_stream(file, output);
 				enabled_output_of_ContactValue_graphics()=!no_graphics;
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("saved_contacts");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary"));
 			}
 		}
@@ -2357,8 +2344,8 @@ public:
 			parameters_for_selecting.read(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(false, cargs.input);
+			const std::string file=cargs.input.get_value<std::string>("file");
+			assert_file_name_input(file, false);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -2386,8 +2373,6 @@ public:
 			{
 				throw std::runtime_error(std::string("No drawable visible contacts selected."));
 			}
-
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
 
 			auxiliaries::OpenGLPrinter opengl_printer;
 			{
@@ -2419,16 +2404,15 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<outputs.size();i++)
 			{
-				std::ostream& output=(*(outputs[i]));
+				std::ofstream output(file.c_str(), std::ios::out);
+				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_contacts_as_pymol_cgo");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("summary"));
 			}
 		}
@@ -2541,17 +2525,15 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericOutputDestinations parameters_for_output_destinations(false);
-			parameters_for_output_destinations.read(true, cargs.input);
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
 			const bool no_graphics=cargs.input.get_flag("no-graphics");
 
 			cargs.input.assert_nothing_unusable();
 
-			std::vector<std::ostream*> outputs=parameters_for_output_destinations.get_output_destinations(0);
-
-			for(std::size_t i=0;i<outputs.size();i++)
 			{
-				std::ostream& output=(*(outputs[i]));
+				std::ofstream output(file.c_str(), std::ios::out);
+				assert_io_stream(file, output);
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.atoms(), output);
 				output << "_end_atoms\n";
 				enabled_output_of_ContactValue_graphics()=!no_graphics;
@@ -2559,10 +2541,9 @@ public:
 				output << "_end_contacts\n";
 			}
 
-			if(!parameters_for_output_destinations.file.empty())
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("saved_atoms_and_contacts");
-				info.value("file")=parameters_for_output_destinations.file;
+				info.value("file")=file;
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("summary_of_atoms"));
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary_of_contacts"));
 			}
@@ -2963,73 +2944,6 @@ private:
 					forced_ids.insert(forced_ids_vector.begin(), forced_ids_vector.end());
 				}
 			}
-		}
-	};
-
-	class CommandParametersForGenericOutputDestinations
-	{
-	public:
-		std::string file;
-		bool use_stdout;
-		std::ofstream foutput;
-
-		explicit CommandParametersForGenericOutputDestinations(const bool use_stdout) : use_stdout(use_stdout)
-		{
-		}
-
-		void read(const bool allow_use_of_unnamed_value, CommandInput& input)
-		{
-			if(input.is_option("file") || (allow_use_of_unnamed_value && input.is_any_unnamed_value_unused()))
-			{
-				const std::string str=(allow_use_of_unnamed_value ? input.get_value_or_first_unused_unnamed_value("file") : input.get_value<std::string>("file"));
-				if(!str.empty() && str.find_first_of("?*$'\";:<>,|")==std::string::npos)
-				{
-					file=str;
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Invalid file name '")+str+"'.");
-				}
-			}
-
-			if(input.is_option("use-stdout"))
-			{
-				use_stdout=input.get_flag("use-stdout");
-			}
-		}
-
-		std::vector<std::ostream*> get_output_destinations(std::ostream* stdout_ptr, const bool allow_empty_list=false)
-		{
-			std::vector<std::ostream*> list;
-
-			if(use_stdout && stdout_ptr!=0)
-			{
-				list.push_back(stdout_ptr);
-			}
-
-			if(!file.empty())
-			{
-				if(!foutput.is_open())
-				{
-					foutput.open(file.c_str(), std::ios::out);
-					if(!foutput.good())
-					{
-						throw std::runtime_error(std::string("Failed to open file '")+file+"' for writing.");
-					}
-				}
-				if(!foutput.good())
-				{
-					throw std::runtime_error(std::string("Failed to use file '")+file+"' for writing.");
-				}
-				list.push_back(&foutput);
-			}
-
-			if(list.empty() && !allow_empty_list)
-			{
-				throw std::runtime_error(std::string("No output destinations specified."));
-			}
-
-			return list;
 		}
 	};
 
