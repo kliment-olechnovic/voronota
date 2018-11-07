@@ -51,13 +51,13 @@ public:
 		target_dm.assert_contacts_availability();
 		model_dm.assert_contacts_availability();
 
-		const std::set<std::size_t> target_contacts_ids=target_dm.selection_manager().select_contacts(params.target_selection_expression, false);
+		const std::set<std::size_t> target_contacts_ids=target_dm.selection_manager().select_contacts(SelectionManager::Query(params.target_selection_expression, false));
 		if(target_contacts_ids.empty())
 		{
 			throw std::runtime_error(std::string("No target contacts selected."));
 		}
 
-		const std::set<std::size_t> model_contact_ids=model_dm.selection_manager().select_contacts(params.model_selection_expression, false);
+		const std::set<std::size_t> model_contact_ids=model_dm.selection_manager().select_contacts(SelectionManager::Query(params.model_selection_expression, false));
 		if(model_contact_ids.empty())
 		{
 			throw std::runtime_error(std::string("No model contacts selected."));

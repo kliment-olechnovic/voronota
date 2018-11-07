@@ -120,7 +120,7 @@ public:
 				" ) "
 				")";
 
-		const std::set<std::size_t> all_contact_ids=data_manager.selection_manager().select_contacts(selection_expression, false);
+		const std::set<std::size_t> all_contact_ids=data_manager.selection_manager().select_contacts(SelectionManager::Query(selection_expression, false));
 
 		if(all_contact_ids.empty())
 		{
