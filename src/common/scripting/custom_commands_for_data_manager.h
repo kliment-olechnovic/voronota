@@ -9,7 +9,6 @@
 #include "../conversion_of_descriptors.h"
 
 #include "generic_command_for_data_manager.h"
-#include "table_printing.h"
 #include "basic_assertions.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 #include "variant_serialization.h"
@@ -3242,43 +3241,6 @@ private:
 					}
 				}
 			}
-		}
-	};
-
-	class CommandParametersForGenericTablePrinting
-	{
-	public:
-		TablePrinting::ParametersForGenericTablePrinting values;
-
-		CommandParametersForGenericTablePrinting()
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			values.reversed_sorting=input.get_flag("desc");
-			values.expanded_descriptors=input.get_flag("expand");
-			values.limit=input.get_value_or_default<std::size_t>("limit", std::numeric_limits<std::size_t>::max());
-			values.sort_column=input.get_value_or_default<std::string>("sort", "");
-		}
-	};
-
-	class CommandParametersForContactsTablePrinting
-	{
-	public:
-		TablePrinting::ParametersForContactsTablePrinting values;
-
-		CommandParametersForContactsTablePrinting()
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			values.reversed_sorting=input.get_flag("desc");
-			values.expanded_descriptors=input.get_flag("expand");
-			values.limit=input.get_value_or_default<std::size_t>("limit", std::numeric_limits<std::size_t>::max());
-			values.sort_column=input.get_value_or_default<std::string>("sort", "");
-			values.inter_residue=input.get_flag("inter-residue");
 		}
 	};
 
