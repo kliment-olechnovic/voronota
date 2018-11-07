@@ -35,12 +35,11 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.size()<4)
 			{
 				throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -77,8 +76,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<double> pre_translation_vector=cargs.input.get_value_vector_or_default<double>("translate-before", std::vector<double>());
 			const std::vector<double> rotation_matrix=cargs.input.get_value_vector_or_default<double>("rotate-by-matrix", std::vector<double>());
 			const std::vector<double> rotation_axis_and_angle=cargs.input.get_value_vector_or_default<double>("rotate-by-axis-and-angle", std::vector<double>());
@@ -86,7 +84,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.size()<4)
 			{
 				throw std::runtime_error(std::string("Less than 4 atoms selected."));
@@ -113,7 +111,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms("{}", false);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(SelectionManager::Query());
 			if(ids.size()!=cargs.data_manager.atoms().size())
 			{
 				throw std::runtime_error(std::string("Not all atoms selected."));
@@ -143,15 +141,14 @@ public:
 
 			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 			assert_file_name_input(file, false);
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool as_pdb=cargs.input.get_flag("as-pdb");
 			const std::string pdb_b_factor_name=cargs.input.get_value_or_default<std::string>("pdb-b-factor", "tf");
 			const bool pdb_ter=cargs.input.get_flag("pdb-ter");
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -192,8 +189,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 					cargs.input.get_value_or_first_unused_unnamed_value("name") :
 					cargs.input.get_value_or_default<std::string>("name", ""));
@@ -203,7 +199,7 @@ public:
 
 			assert_selection_name_input(name, true);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -264,15 +260,14 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_tag_input(tag, false);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -350,8 +345,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool all=cargs.input.get_flag("all");
 			const std::vector<std::string> tags=cargs.input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
 
@@ -367,7 +361,7 @@ public:
 				throw std::runtime_error(std::string("Conflicting specification of tags."));
 			}
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -408,8 +402,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string name=cargs.input.get_value<std::string>("name");
 			const bool value_present=cargs.input.is_option("value");
 			const double value=cargs.input.get_value_or_default<double>("value", 0.0);
@@ -424,7 +417,7 @@ public:
 
 			assert_adjunct_name_input(name, false);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -462,8 +455,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool all=cargs.input.get_flag("all");
 			const std::vector<std::string> adjuncts=cargs.input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 
@@ -479,7 +471,7 @@ public:
 				throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
 			}
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -528,13 +520,12 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -589,8 +580,7 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 
@@ -603,7 +593,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -652,8 +642,7 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			CommandParametersForGenericColoring parameters_for_coloring;
@@ -668,7 +657,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -705,8 +694,7 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
@@ -747,7 +735,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -900,12 +888,11 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -930,13 +917,12 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool secondary_structure=cargs.input.get_flag("secondary-structure");
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -1056,12 +1042,11 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
@@ -1082,10 +1067,9 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
 
-			std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
-			bool wireframe=cargs.input.get_flag("wireframe");
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
+			const bool wireframe=cargs.input.get_flag("wireframe");
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -1110,7 +1094,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -1185,10 +1169,9 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
 
-			std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
-			bool wireframe=cargs.input.get_flag("wireframe");
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
+			const bool wireframe=cargs.input.get_flag("wireframe");
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -1213,7 +1196,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -1428,12 +1411,8 @@ public:
 			parameters_to_enhance_contacts.sih_depth=cargs.input.get_value_or_default<int>("visual-sih-depth", parameters_to_enhance_contacts.sih_depth);
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
-			CommandParametersForGenericSelecting render_parameters_for_selecting("render-", "{--min-seq-sep 1}");
-			render_parameters_for_selecting.read(cargs.input);
-			const bool render=(cargs.input.get_flag("render-default") ||
-					cargs.input.is_option(render_parameters_for_selecting.type_for_expression) ||
-					cargs.input.is_option(render_parameters_for_selecting.type_for_full_residues) ||
-					cargs.input.is_option(render_parameters_for_selecting.type_for_forced_id));
+			const SelectionManager::Query render_parameters_for_selecting=read_generic_selecting_query("render-", "{--min-seq-sep 1}", cargs.input);
+			const bool render=(cargs.input.get_flag("render-default") || render_parameters_for_selecting.altered);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -1480,7 +1459,7 @@ public:
 				std::set<std::size_t> draw_ids;
 				if(render)
 				{
-					draw_ids=cargs.data_manager.selection_manager().select_contacts(render_parameters_for_selecting.forced_ids, render_parameters_for_selecting.expression, render_parameters_for_selecting.full_residues);
+					draw_ids=cargs.data_manager.selection_manager().select_contacts(render_parameters_for_selecting);
 				}
 
 				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, cargs.data_manager.triangulation_info(), draw_ids, cargs.data_manager.contacts_mutable());
@@ -1575,8 +1554,7 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 					cargs.input.get_value_or_first_unused_unnamed_value("name") :
 					cargs.input.get_value_or_default<std::string>("name", ""));
@@ -1586,7 +1564,7 @@ public:
 
 			assert_selection_name_input(name, true);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1647,15 +1625,14 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string tag=cargs.input.get_value_or_first_unused_unnamed_value("tag");
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_tag_input(tag, false);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1686,8 +1663,7 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool all=cargs.input.get_flag("all");
 			const std::vector<std::string> tags=cargs.input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
 
@@ -1703,7 +1679,7 @@ public:
 				throw std::runtime_error(std::string("Conflicting specification of tags."));
 			}
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1744,8 +1720,7 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string name=cargs.input.get_value<std::string>("name");
 			const bool value_present=cargs.input.is_option("value");
 			const double value=cargs.input.get_value_or_default<double>("value", 0.0);
@@ -1760,7 +1735,7 @@ public:
 
 			assert_adjunct_name_input(name, false);
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1798,8 +1773,7 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool all=cargs.input.get_flag("all");
 			const std::vector<std::string> adjuncts=cargs.input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 
@@ -1815,7 +1789,7 @@ public:
 				throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
 			}
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1865,13 +1839,12 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -1926,8 +1899,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 
@@ -1940,7 +1912,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -1989,8 +1961,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			CommandParametersForGenericColoring parameters_for_coloring;
@@ -2005,7 +1976,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -2042,8 +2013,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
@@ -2084,7 +2054,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -2241,13 +2211,12 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const bool inter_residue=cargs.input.get_flag("inter-residue");
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -2299,12 +2268,11 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> contacts_ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues);
+			const std::set<std::size_t> contacts_ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 			if(contacts_ids.empty())
 			{
@@ -2338,10 +2306,9 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
 
-			std::string name=cargs.input.get_value_or_default<std::string>("name", "contacts");
-			bool wireframe=cargs.input.get_flag("wireframe");
-			CommandParametersForGenericSelecting parameters_for_selecting;
-			parameters_for_selecting.read(cargs.input);
+			const std::string name=cargs.input.get_value_or_default<std::string>("name", "contacts");
+			const bool wireframe=cargs.input.get_flag("wireframe");
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
 			parameters_for_representation_selecting.read(cargs.input);
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -2366,7 +2333,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
 					parameters_for_representation_selecting.visual_ids,
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting.forced_ids, parameters_for_selecting.expression, parameters_for_selecting.full_residues),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
 			if(ids.empty())
@@ -2676,11 +2643,11 @@ public:
 			std::set<std::size_t> atom_ids;
 			std::set<std::size_t> contact_ids;
 
-			atom_ids=cargs.data_manager.selection_manager().select_atoms(selection_expresion_for_atoms, false);
+			atom_ids=cargs.data_manager.selection_manager().select_atoms(SelectionManager::Query(selection_expresion_for_atoms, false));
 
 			if(!cargs.data_manager.contacts().empty())
 			{
-				contact_ids=cargs.data_manager.selection_manager().select_contacts(selection_expresion_for_contacts, false);
+				contact_ids=cargs.data_manager.selection_manager().select_contacts(SelectionManager::Query(selection_expresion_for_contacts, false));
 				atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(atom_ids, contact_ids, false);
 				contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms(contact_ids, atom_ids, false);
 			}
@@ -2692,7 +2659,7 @@ public:
 				}
 
 				const std::set<std::size_t> atom_ids_with_adjuncts=cargs.data_manager.selection_manager().select_atoms(
-						atom_ids, (std::string("{")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores+"}"), false);
+						SelectionManager::Query(atom_ids, (std::string("{")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores+"}"), false));
 
 				double sum_of_atom_weights=0.0;
 				double sum_of_atom_weighted_scores=0.0;
@@ -2722,7 +2689,7 @@ public:
 				}
 
 				const std::set<std::size_t> contact_ids_with_adjuncts=cargs.data_manager.selection_manager().select_contacts(
-						contact_ids, (std::string("{")+"--adjuncts "+adjunct_inter_atom_energy_scores_raw+"}"), false);
+						SelectionManager::Query(contact_ids, (std::string("{")+"--adjuncts "+adjunct_inter_atom_energy_scores_raw+"}"), false));
 
 				double sum_of_areas=0.0;
 				double sum_of_energies=0.0;
@@ -2778,7 +2745,7 @@ public:
 			assert_adjunct_name_input(adjunct_atom_frustration_energy_mean, true);
 
 			const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-					std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false);
+					SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false));
 
 			if(solvent_contact_ids.empty())
 			{
@@ -2883,70 +2850,6 @@ public:
 	};
 
 private:
-	class CommandParametersForGenericSelecting
-	{
-	public:
-		std::string type_for_expression;
-		std::string type_for_full_residues;
-		std::string type_for_forced_id;
-		std::string expression;
-		bool full_residues;
-		std::set<std::size_t> forced_ids;
-
-		CommandParametersForGenericSelecting() :
-			type_for_expression("use"),
-			type_for_full_residues("full-residues"),
-			type_for_forced_id("id"),
-			expression("{}"),
-			full_residues(false)
-		{
-		}
-
-		CommandParametersForGenericSelecting(const std::string& types_prefix, const std::string& default_expression) :
-			type_for_expression(types_prefix+"use"),
-			type_for_full_residues(types_prefix+"full-residues"),
-			type_for_forced_id(types_prefix+"id"),
-			expression(default_expression),
-			full_residues(false)
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			if(input.is_option(type_for_expression))
-			{
-				expression=input.get_value<std::string>(type_for_expression);
-			}
-			else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
-			{
-				bool found=false;
-				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
-				{
-					if(!input.is_unnamed_value_used(i))
-					{
-						const std::string& candidate=input.get_list_of_unnamed_values()[i];
-						if(!candidate.empty() && candidate.find_first_of("({")==0)
-						{
-							expression=candidate;
-							input.mark_unnamed_value_as_used(i);
-							found=true;
-						}
-					}
-				}
-			}
-
-			full_residues=input.get_flag(type_for_full_residues);
-
-			{
-				const std::vector<std::size_t> forced_ids_vector=input.get_value_vector_or_default<std::size_t>(type_for_forced_id, std::vector<std::size_t>());
-				if(!forced_ids_vector.empty())
-				{
-					forced_ids.insert(forced_ids_vector.begin(), forced_ids_vector.end());
-				}
-			}
-		}
-	};
-
 	class CommandParametersForGenericViewing
 	{
 	public:
@@ -3157,6 +3060,61 @@ private:
 			}
 		}
 	};
+
+	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
+	{
+		const std::string type_for_expression=prefix+"use";
+		const std::string type_for_full_residues=prefix+"full-residues";
+		const std::string type_for_forced_id=prefix+"id";
+
+		SelectionManager::Query query(default_expression);
+
+		if(input.is_option(type_for_expression))
+		{
+			query.expression_string=input.get_value<std::string>(type_for_expression);
+			query.altered=true;
+		}
+		else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
+		{
+			bool found=false;
+			for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
+			{
+				if(!input.is_unnamed_value_used(i))
+				{
+					const std::string& candidate=input.get_list_of_unnamed_values()[i];
+					if(!candidate.empty() && candidate.find_first_of("({")==0)
+					{
+						query.expression_string=candidate;
+						query.altered=true;
+						input.mark_unnamed_value_as_used(i);
+						found=true;
+					}
+				}
+			}
+		}
+
+		if(input.is_option(type_for_full_residues))
+		{
+			query.full_residues=input.get_flag(type_for_full_residues);
+			query.altered=true;
+		}
+
+		{
+			const std::vector<std::size_t> forced_ids_vector=input.get_value_vector_or_default<std::size_t>(type_for_forced_id, std::vector<std::size_t>());
+			if(!forced_ids_vector.empty())
+			{
+				query.from_ids.insert(forced_ids_vector.begin(), forced_ids_vector.end());
+				query.altered=true;
+			}
+		}
+
+		return query;
+	}
+
+	static SelectionManager::Query read_generic_selecting_query(CommandInput& input)
+	{
+		return read_generic_selecting_query("", "{}", input);
+	}
 
 	template<typename T>
 	static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)

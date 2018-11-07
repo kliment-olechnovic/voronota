@@ -12,6 +12,43 @@ namespace scripting
 class SelectionManager
 {
 public:
+	struct Query
+	{
+		std::set<std::size_t> from_ids;
+		std::string expression_string;
+		bool full_residues;
+		bool altered;
+
+		Query() :
+			expression_string("{}"),
+			full_residues(false),
+			altered(false)
+		{
+		}
+
+		Query(const std::string& expression_string) :
+			expression_string(expression_string),
+			full_residues(false),
+			altered(false)
+		{
+		}
+
+		Query(const std::string& expression_string, const bool full_residues) :
+			expression_string(expression_string),
+			full_residues(full_residues),
+			altered(false)
+		{
+		}
+
+		Query(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) :
+			from_ids(from_ids),
+			expression_string(expression_string),
+			full_residues(full_residues),
+			altered(false)
+		{
+		}
+	};
+
 	SelectionManager() :
 		atoms_ptr_(0),
 		contacts_ptr_(0)
@@ -141,7 +178,7 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_atoms(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) const
+	std::set<std::size_t> select_atoms(const Query& query) const
 	{
 		if(atoms().empty())
 		{
@@ -152,19 +189,14 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_atoms(from_ids.empty(), from_ids, read_expression_from_string<TAC::test_atom>(expression_string), false);
+				result=select_atoms(query.from_ids.empty(), query.from_ids, read_expression_from_string<TAC::test_atom>(query.expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
-				throw std::runtime_error(std::string("Failed to select atoms with expression '")+expression_string+"': "+e.what());
+				throw std::runtime_error(std::string("Failed to select atoms with expression '")+query.expression_string+"': "+e.what());
 			}
-			return (full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
+			return (query.full_residues ? get_ids_for_full_residues(result, atoms_residues_definition_, atoms_residues_reference_) : result);
 		}
-	}
-
-	std::set<std::size_t> select_atoms(const std::string& expression_string, const bool full_residues) const
-	{
-		return select_atoms(std::set<std::size_t>(), expression_string, full_residues);
 	}
 
 	std::set<std::size_t> select_atoms_by_contacts(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& contact_ids, const bool full_residues) const
@@ -218,7 +250,7 @@ public:
 		}
 	}
 
-	std::set<std::size_t> select_contacts(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) const
+	std::set<std::size_t> select_contacts(const Query& query) const
 	{
 		if(contacts().empty())
 		{
@@ -229,19 +261,14 @@ public:
 			std::set<std::size_t> result;
 			try
 			{
-				result=select_contacts(from_ids.empty(), from_ids, read_expression_from_string<TAC::test_contact>(expression_string), false);
+				result=select_contacts(query.from_ids.empty(), query.from_ids, read_expression_from_string<TAC::test_contact>(query.expression_string), false);
 			}
 			catch(const std::exception& e)
 			{
-				throw std::runtime_error(std::string("Failed to select contacts with expression '")+expression_string+"': "+e.what());
+				throw std::runtime_error(std::string("Failed to select contacts with expression '")+query.expression_string+"': "+e.what());
 			}
-			return (full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
+			return (query.full_residues ? get_ids_for_full_residues(result, contacts_residues_definition_, contacts_residues_reference_) : result);
 		}
-	}
-
-	std::set<std::size_t> select_contacts(const std::string& expression_string, const bool full_residues) const
-	{
-		return select_contacts(std::set<std::size_t>(), expression_string, full_residues);
 	}
 
 	std::set<std::size_t> select_contacts_by_atoms(const std::set<std::size_t>& from_ids, const std::set<std::size_t>& atom_ids, const bool full_residues) const
