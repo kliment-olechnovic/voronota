@@ -42,16 +42,6 @@ public:
 		{
 			heterostorage.errors.push_back(std::string(e.what()));
 		}
-
-		void save_text(const std::string& text)
-		{
-			heterostorage.text+=text;
-		}
-
-		void save_text(std::ostringstream& text)
-		{
-			save_text(text.str());
-		}
 	};
 
 	GenericCommand()
