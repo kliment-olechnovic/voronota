@@ -141,8 +141,7 @@ public:
 			params.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
 			params.include_hydrogens=cargs.input.get_flag("include-hydrogens");
 			params.multimodel_chains=cargs.input.get_flag("as-assembly");
-			CommandParametersForTitling parameters_for_titling;
-			parameters_for_titling.read(cargs.input);
+			const std::string title=(cargs.input.is_option("title") ? cargs.input.get_value<std::string>("title") : get_basename_from_path(params.file));
 
 			cargs.input.assert_nothing_unusable();
 
@@ -153,8 +152,6 @@ public:
 			{
 				throw std::runtime_error(std::string("Less than 4 atoms read."));
 			}
-
-			const std::string title=(parameters_for_titling.title_available ? parameters_for_titling.title : get_basename_from_path(params.file));
 
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(DataManager(), title);
 			DataManager& data_manager=*object_new;
@@ -394,26 +391,6 @@ public:
 	};
 
 private:
-	class CommandParametersForTitling
-	{
-	public:
-		bool title_available;
-		std::string title;
-
-		CommandParametersForTitling() : title_available(false)
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			title_available=input.is_option("title");
-			if(title_available)
-			{
-				title=input.get_value<std::string>("title");
-			}
-		}
-	};
-
 	static void assert_new_name_input(const std::string& name)
 	{
 		if(name.empty())
