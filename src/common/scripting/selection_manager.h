@@ -26,7 +26,7 @@ public:
 		{
 		}
 
-		Query(const std::string& expression_string) :
+		explicit Query(const std::string& expression_string) :
 			expression_string(expression_string),
 			full_residues(false),
 			altered(false)
