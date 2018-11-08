@@ -12,8 +12,9 @@ namespace scripting
 class JSONWriter
 {
 public:
-	struct Configuration
+	class Configuration
 	{
+	public:
 		int indentation_max_level;
 		int indentation_length;
 		bool indentation_enabled_for_value_arrays;
@@ -38,13 +39,24 @@ public:
 			indentation_enabled_for_value_arrays(indentation_enabled_for_value_arrays)
 		{
 		}
-	};
 
-	static Configuration& default_configuration()
-	{
-		static Configuration configuration;
-		return configuration;
-	}
+		static const Configuration& get_default_configuration()
+		{
+			return get_default_configuration_mutable();
+		}
+
+		static void setup_default_configuration(const Configuration& configuration)
+		{
+			get_default_configuration_mutable()=configuration;
+		}
+
+	private:
+		static Configuration& get_default_configuration_mutable()
+		{
+			static Configuration configuration;
+			return configuration;
+		}
+	};
 
 	static void write(const Configuration& configuration, const VariantObject& object, std::ostream& output)
 	{
@@ -53,7 +65,7 @@ public:
 
 	static void write(const VariantObject& object, std::ostream& output)
 	{
-		write(default_configuration(), object, output);
+		write(Configuration::get_default_configuration(), object, output);
 	}
 
 private:
