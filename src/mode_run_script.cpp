@@ -9,12 +9,29 @@ namespace
 class ScriptExecutionManager : public common::scripting::ScriptExecutionManager
 {
 public:
-	ScriptExecutionManager()
+	class Observer
+	{
+	public:
+		Observer()
+		{
+		}
+
+		virtual ~Observer()
+		{
+		}
+
+		virtual void observe(common::scripting::VariantObject&)
+		{
+		}
+	};
+
+	ScriptExecutionManager() : observer_(0)
 	{
 	}
 
-	const common::scripting::VariantObject& execute_script_and_return_output(const std::string& script, const bool exit_on_first_failure)
+	const common::scripting::VariantObject& execute_script_and_return_output(const std::string& script, const bool exit_on_first_failure, Observer* observer)
 	{
+		observer_=observer;
 		execute_script(script, exit_on_first_failure);
 		return output_;
 	}
@@ -77,9 +94,15 @@ protected:
 		{
 			write_error_to_current_command_object(cr.heterostorage.errors[i]);
 		}
+
 		if(!cr.heterostorage.variant_object.empty())
 		{
 			current_command_object().object("results")=cr.heterostorage.variant_object;
+		}
+
+		if(observer_!=0)
+		{
+			observer_->observe(current_command_object());
 		}
 	}
 
@@ -88,6 +111,13 @@ protected:
 		if(!script_record.termination_error.empty())
 		{
 			output_.value("termination_error")=script_record.termination_error;
+
+			if(observer_!=0)
+			{
+				common::scripting::VariantObject report;
+				report.value("termination_error")=script_record.termination_error;
+				observer_->observe(report);
+			}
 		}
 	}
 
@@ -112,7 +142,18 @@ private:
 		current_command_object().values_array("errors").push_back(common::scripting::VariantValue(error));
 	}
 
+	Observer* observer_;
 	common::scripting::VariantObject output_;
+};
+
+class PrintingObserver : public ScriptExecutionManager::Observer
+{
+public:
+	void observe(common::scripting::VariantObject& object)
+	{
+		common::scripting::JSONWriter::write(object, std::cout);
+		std::cout << std::endl;
+	}
 };
 
 }
@@ -128,9 +169,10 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(6));
+	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(4));
 
 	ScriptExecutionManager execution_manager;
+	PrintingObserver observer;
 
 	while(!execution_manager.exit_requested() && std::cin.good())
 	{
@@ -138,8 +180,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		std::getline(std::cin, line);
 		if(!line.empty())
 		{
-			common::scripting::JSONWriter::write(execution_manager.execute_script_and_return_output(line, false), std::cout);
-			std::cout << std::endl;
+			execution_manager.execute_script_and_return_output(line, false, &observer);
 		}
 	}
 }

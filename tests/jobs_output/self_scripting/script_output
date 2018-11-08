@@ -1,636 +1,677 @@
 {
-  "commands":[
-    {
-      "command":"source './jobs_output/self_scripting/script_input'"},
-    {
-      "command":"set-alias printseq "print-sequence -secondary-structure"",
-      "results":{
-        "alias":"printseq",
-        "script":"print-sequence --secondary-structure"}},
-    {
-      "command":"load --file ./input/single/structure.cif",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1771,
-          "volume":null},
-        "object_name":"structure.cif"}},
-    {
-      "command":"load -file "./input/single/structure.pdb"",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":null},
-        "object_name":"structure.pdb"}},
-    {
-      "command":"load ./input/single/structure.pdb --include-heteroatoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1771,
-          "volume":null},
-        "object_name":"structure.pdb"}},
-    {
-      "command":"print-sequence --secondary-structure",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1771,
-          "volume":null},
-        "chains":[
-          {
-            "chain_name":"A",
-            "continuous_segments":3,
-            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}},
-    {
-      "command":"print-atoms {--tags het --adjuncts tf:0:10}",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "atoms":[
-          {
-            "descriptor":{"chainID":"A","resSeq":66,"serial":467,"resName":"CRO","name":"CA1"},
-            "ball":{"center":[25.011,26.478,37.078],"radius":1.7},
-            "tags":["el=C","het"],
-            "adjuncts":{"oc":1,"tf":7.34}},
-          {
-            "descriptor":{"chainID":"A","resSeq":66,"serial":472,"resName":"CRO","name":"N2"},
-            "ball":{"center":[26.975,27.732,38.216],"radius":1.55},
-            "tags":["el=N","het"],
-            "adjuncts":{"oc":1,"tf":9.21}},
-          {
-            "descriptor":{"chainID":"A","resSeq":66,"serial":474,"resName":"CRO","name":"C2"},
-            "ball":{"center":[26.043,27.875,40.37],"radius":1.7},
-            "tags":["el=C","het"],
-            "adjuncts":{"oc":1,"tf":5.46}},
-          {
-            "descriptor":{"chainID":"A","resSeq":66,"serial":481,"resName":"CRO","name":"CG2"},
-            "ball":{"center":[29.437,29.37,39.124],"radius":1.7},
-            "tags":["el=C","het"],
-            "adjuncts":{"oc":1,"tf":7.67}},
-          {
-            "descriptor":{"chainID":"A","resSeq":66,"serial":486,"resName":"CRO","name":"CZ"},
-            "ball":{"center":[31.718,30.3,37.721],"radius":1.7},
-            "tags":["el=C","het"],
-            "adjuncts":{"oc":1,"tf":9.48}}],
-        "summary_of_atoms":{
-          "number_total":5,
-          "volume":null}}},
-    {
-      "command":"restrict-atoms {--tags-not het}",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "restricted_atoms":{
-          "old_summary":{
-            "number_total":1771,
-            "volume":null},
-          "summary":{
-            "number_total":1717,
-            "volume":null}}}},
-    {
-      "command":"print-sequence --secondary-structure",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":null},
-        "chains":[
-          {
-            "chain_name":"A",
-            "continuous_segments":6,
-            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]}},
-    {
-      "command":"construct-contacts",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "constructed_contacts":{
-          "summary":{
-            "number_total":12469,
-            "number_drawable":0,
-            "area":47017.2},
-          "used_cached_triangulation":false}}},
-    {
-      "command":"construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "constructed_contacts":{
-          "summary":{
-            "number_total":12469,
-            "number_drawable":120,
-            "area":47017.2},
-          "used_cached_triangulation":true}}},
-    {
-      "command":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "saved_atoms":{
-          "file":"./jobs_output/self_scripting/plain_atoms",
-          "summary":{
-            "number_total":1717,
-            "volume":41027.8}}}},
-    {
-      "command":"save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "saved_atoms":{
-          "file":"./jobs_output/self_scripting/pdb_atoms",
-          "summary":{
-            "number_total":1717,
-            "volume":41027.8}}}},
-    {
-      "command":"save-contacts './jobs_output/self_scripting/plain_contacts'",
-      "on_object":"structure.pdb_2",
-      "results":{
-        "saved_contacts":{
-          "file":"./jobs_output/self_scripting/plain_contacts",
-          "summary":{
-            "number_total":12469,
-            "number_drawable":120,
-            "area":47017.2}}}},
-    {
-      "command":"list-objects",
-      "results":{
-        "objects":[
-          {
-            "name":"structure.cif",
-            "picked":false,
-            "visible":true},
-          {
-            "name":"structure.pdb",
-            "picked":false,
-            "visible":true},
-          {
-            "name":"structure.pdb_2",
-            "picked":true,
-            "visible":true}]}},
-    {
-      "command":"delete-objects",
-      "results":{
-        "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]}},
-    {
-      "command":"load --file './jobs_output/self_scripting/plain_atoms' --format plain",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":41027.8},
-        "object_name":"plain_atoms"}},
-    {
-      "command":"list-objects",
-      "results":{
-        "objects":[
-          {
-            "name":"plain_atoms",
-            "picked":true,
-            "visible":true}]}},
-    {
-      "command":"select-contacts",
-      "on_object":"plain_atoms",
-      "errors":["No contacts available."]},
-    {
-      "command":"load-contacts --file './jobs_output/self_scripting/plain_contacts'",
-      "on_object":"plain_atoms",
-      "results":{
-        "read_contacts":{
-          "file":"./jobs_output/self_scripting/plain_contacts",
-          "summary":{
-            "number_total":12469,
-            "number_drawable":120,
-            "area":47017.2}}}},
-    {
-      "command":"select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1",
-      "on_object":"plain_atoms",
-      "results":{
-        "selected_contacts":{
-          "summary":{
-            "number_total":5,
-            "number_drawable":1,
-            "area":33.8164},
-          "selection_name":"cs1"}}},
-    {
-      "command":"set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"",
-      "results":{
-        "alias":"multitag",
-        "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"}},
-    {
-      "command":"tag-contacts {--min-area 6.0} med",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":2636,
-          "number_drawable":5,
-          "area":29458.6}}},
-    {
-      "command":"delete-tags-of-contacts {--min-area 8.0} --tags med",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":1675,
-          "number_drawable":1,
-          "area":22795.8}}},
-    {
-      "command":"print-contacts {cs1}",
-      "on_object":"plain_atoms",
-      "results":{
-        "contacts":[
-          {
-            "descriptor1":{"chainID":"A","resSeq":8,"serial":49,"resName":"PHE","name":"CD1"},
-            "descriptor2":{"chainID":"A","resSeq":71,"serial":518,"resName":"PHE","name":"CE1"},
-            "area":5.56317,
-            "tags":["central"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":8,"serial":53,"resName":"PHE","name":"CZ"},
-            "descriptor2":{"chainID":"A","resSeq":114,"serial":888,"resName":"PHE","name":"CE2"},
-            "area":6.42993,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":46,"serial":330,"resName":"PHE","name":"CZ"},
-            "descriptor2":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
-            "area":6.67924,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":83,"serial":623,"resName":"PHE","name":"C"},
-            "descriptor2":{"chainID":"A","resSeq":84,"serial":632,"resName":"PHE","name":"N"},
-            "area":6.57156,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":99,"serial":756,"resName":"PHE","name":"C"},
-            "descriptor2":{"chainID":"A","resSeq":100,"serial":765,"resName":"PHE","name":"N"},
-            "area":8.5725,
-            "tags":["central"]}],
-        "summary_of_contacts":{
-          "number_total":5,
-          "number_drawable":1,
-          "area":33.8164}}},
-    {
-      "command":"print-contacts {cs1} --inter-residue",
-      "on_object":"plain_atoms",
-      "results":{
-        "contacts":[
-          {
-            "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
-            "descriptor2":{"chainID":"A","resSeq":71,"resName":"PHE"},
-            "area":5.56317,
-            "summed":true,
-            "tags":["central"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
-            "descriptor2":{"chainID":"A","resSeq":114,"resName":"PHE"},
-            "area":6.42993,
-            "summed":true,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":46,"resName":"PHE"},
-            "descriptor2":{"chainID":"A","resSeq":64,"resName":"PHE"},
-            "area":6.67924,
-            "summed":true,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":83,"resName":"PHE"},
-            "descriptor2":{"chainID":"A","resSeq":84,"resName":"PHE"},
-            "area":6.57156,
-            "summed":true,
-            "tags":["central","med"]},
-          {
-            "descriptor1":{"chainID":"A","resSeq":99,"resName":"PHE"},
-            "descriptor2":{"chainID":"A","resSeq":100,"resName":"PHE"},
-            "area":8.5725,
-            "summed":true,
-            "tags":["central"]}],
-        "summary_of_contacts":{
-          "number_total":5,
-          "number_drawable":1,
-          "area":33.8164}}},
-    {
-      "command":"select-atoms {r<64> & A<C,N,O,CA,CB>} as1",
-      "on_object":"plain_atoms",
-      "results":{
-        "selected_atoms":{
-          "summary":{
-            "number_total":5,
-            "volume":108.978},
-          "selection_name":"as1"}}},
-    {
-      "command":"tag-atoms {A<C,N,O,CA,CB>} --tag pept",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1083,
-          "volume":20982.5}}},
-    {
-      "command":"delete-tags-of-atoms {A<CA,CB>} --tags pept",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":420,
-          "volume":9160.61}}},
-    {
-      "command":"print-atoms {as1}",
-      "on_object":"plain_atoms",
-      "results":{
-        "atoms":[
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
-            "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
-            "tags":["el=N","pept"],
-            "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
-            "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
-            "tags":["el=C"],
-            "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
-            "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
-            "tags":["el=C","pept"],
-            "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
-            "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
-            "tags":["el=O","pept"],
-            "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
-            "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
-            "tags":["el=C"],
-            "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
-        "summary_of_atoms":{
-          "number_total":5,
-          "volume":108.978}}},
-    {
-      "command":"print-atoms {r<64> & A<C,N,O,CA,CB>}",
-      "on_object":"plain_atoms",
-      "results":{
-        "atoms":[
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
-            "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
-            "tags":["el=N","pept"],
-            "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
-            "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
-            "tags":["el=C"],
-            "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
-            "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
-            "tags":["el=C","pept"],
-            "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
-            "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
-            "tags":["el=O","pept"],
-            "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
-          {
-            "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
-            "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
-            "tags":["el=C"],
-            "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
-        "summary_of_atoms":{
-          "number_total":5,
-          "volume":108.978}}},
-    {
-      "command":"rename-selection-of-atoms nosel1 nodel2",
-      "on_object":"plain_atoms",
-      "errors":["No atoms selection with name 'nosel1'."]},
-    {
-      "command":"delete-selections-of-contacts nosel1",
-      "on_object":"plain_atoms",
-      "errors":["Invalid contacts selection name 'nosel1'."]},
-    {
-      "command":"list-selections-of-atoms",
-      "on_object":"plain_atoms",
-      "results":{
-        "selections":[
-          {
-            "name":"_marked",
-            "summary":{"number_total":5,"volume":108.978}},
-          {
-            "name":"as1",
-            "summary":{"number_total":5,"volume":108.978}}]}},
-    {
-      "command":"list-selections-of-contacts",
-      "on_object":"plain_atoms",
-      "results":{
-        "selections":[
-          {
-            "name":"_marked",
-            "summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
-          {
-            "name":"cs1",
-            "summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}},
-    {
-      "command":"color-atoms 0xFFFF00",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":41027.8}}},
-    {
-      "command":"color-atoms {A<C,CA,N,O>} 0xFF0000",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":884,
-          "volume":15442.3}}},
-    {
-      "command":"color-atoms (not {A<C,CA,N,O>}) 0x00FF00",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":833,
-          "volume":25585.5}}},
-    {
-      "command":"show-atoms",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":41027.8}}},
-    {
-      "command":"write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_atoms_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_atoms.py",
-          "summary":{
-            "number_total":167,
-            "volume":3864.44}}}},
-    {
-      "command":"write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_atoms_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
-          "summary":{
-            "number_total":167,
-            "volume":3864.44}}}},
-    {
-      "command":"spectrum-atoms",
-      "on_object":"plain_atoms",
-      "results":{
-        "spectrum_summary":{
-          "count":1717,
-          "min_value":2,
-          "max_value":229}}},
-    {
-      "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_cartoon_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_cartoon.py",
-          "summary":{
-            "number_total":16,
-            "volume":262.219}}}},
-    {
-      "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_cartoon_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
-          "summary":{
-            "number_total":16,
-            "volume":262.219}}}},
-    {
-      "command":"color-contacts 0x00FF00",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":120,
-          "number_drawable":120,
-          "area":211.8}}},
-    {
-      "command":"color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":25,
-          "number_drawable":25,
-          "area":52.3005}}},
-    {
-      "command":"color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":58,
-          "number_drawable":58,
-          "area":99.5972}}},
-    {
-      "command":"show-contacts",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":120,
-          "number_drawable":120,
-          "area":211.8}}},
-    {
-      "command":"write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_contacts_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_contacts.py",
-          "summary":{
-            "number_total":120,
-            "number_drawable":120,
-            "area":211.8}}}},
-    {
-      "command":"color-contacts 0xFF00FF",
-      "on_object":"plain_atoms",
-      "results":{
-        "summary_of_contacts":{
-          "number_total":120,
-          "number_drawable":120,
-          "area":211.8}}},
-    {
-      "command":"write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
-      "on_object":"plain_atoms",
-      "results":{
-        "wrote_contacts_as_pymol_cgo":{
-          "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
-          "summary":{
-            "number_total":120,
-            "number_drawable":120,
-            "area":211.8}}}},
-    {
-      "command":"save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'",
-      "on_object":"plain_atoms",
-      "results":{
-        "saved_atoms_and_contacts":{
-          "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
-          "summary_of_atoms":{
-            "number_total":1717,
-            "volume":41027.8},
-          "summary_of_contacts":{
-            "number_total":12469,
-            "number_drawable":120,
-            "area":47017.2}}}},
-    {
-      "command":"load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":41027.8},
-        "summary_of_contacts":{
-          "number_total":12469,
-          "number_drawable":120,
-          "area":47017.2},
-        "object_name":"plain_atoms_and_contacts"}},
-    {
-      "command":"load './jobs_output/self_scripting/plain_atoms' -format plain",
-      "results":{
-        "summary_of_atoms":{
-          "number_total":1717,
-          "volume":41027.8},
-        "object_name":"plain_atoms"}}]}
+  "command":"source './jobs_output/self_scripting/script_input'"}
 
 {
-  "commands":[
-    {
-      "command":"list-objects",
-      "results":{
-        "objects":[
-          {
-            "name":"plain_atoms",
-            "picked":false,
-            "visible":true},
-          {
-            "name":"plain_atoms_and_contacts",
-            "picked":false,
-            "visible":true},
-          {
-            "name":"plain_atoms_2",
-            "picked":true,
-            "visible":true}]}}]}
+  "command":"set-alias printseq "print-sequence -secondary-structure"",
+  "results":{
+    "alias":"printseq",
+    "script":"print-sequence --secondary-structure"}}
 
 {
-  "commands":[
-    {
-      "command":"delete-objects -names plain_atoms",
-      "results":{
-        "removed_objects":["plain_atoms"]}}]}
+  "command":"load --file ./input/single/structure.cif",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1771,
+      "volume":null},
+    "object_name":"structure.cif"}}
 
 {
-  "commands":[
-    {
-      "command":"list-objects",
-      "results":{
-        "objects":[
-          {
-            "name":"plain_atoms_and_contacts",
-            "picked":false,
-            "visible":true},
-          {
-            "name":"plain_atoms_2",
-            "picked":true,
-            "visible":true}]}}]}
+  "command":"load -file "./input/single/structure.pdb"",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":null},
+    "object_name":"structure.pdb"}}
 
 {
-  "commands":[
-    {
-      "command":"set-alias quit exit",
-      "results":{
-        "alias":"quit",
-        "script":"exit"}}]}
+  "command":"load ./input/single/structure.pdb --include-heteroatoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1771,
+      "volume":null},
+    "object_name":"structure.pdb"}}
 
 {
-  "commands":[
-    {
-      "command":"exit"}]}
+  "command":"print-sequence --secondary-structure",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1771,
+      "volume":null},
+    "chains":[
+      {
+        "chain_name":"A",
+        "continuous_segments":3,
+        "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}}
+
+{
+  "command":"print-atoms {--tags het --adjuncts tf:0:10}",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "atoms":[
+      {
+        "descriptor":{"chainID":"A","resSeq":66,"serial":467,"resName":"CRO","name":"CA1"},
+        "ball":{"center":[25.011,26.478,37.078],"radius":1.7},
+        "tags":["el=C","het"],
+        "adjuncts":{"oc":1,"tf":7.34}},
+      {
+        "descriptor":{"chainID":"A","resSeq":66,"serial":472,"resName":"CRO","name":"N2"},
+        "ball":{"center":[26.975,27.732,38.216],"radius":1.55},
+        "tags":["el=N","het"],
+        "adjuncts":{"oc":1,"tf":9.21}},
+      {
+        "descriptor":{"chainID":"A","resSeq":66,"serial":474,"resName":"CRO","name":"C2"},
+        "ball":{"center":[26.043,27.875,40.37],"radius":1.7},
+        "tags":["el=C","het"],
+        "adjuncts":{"oc":1,"tf":5.46}},
+      {
+        "descriptor":{"chainID":"A","resSeq":66,"serial":481,"resName":"CRO","name":"CG2"},
+        "ball":{"center":[29.437,29.37,39.124],"radius":1.7},
+        "tags":["el=C","het"],
+        "adjuncts":{"oc":1,"tf":7.67}},
+      {
+        "descriptor":{"chainID":"A","resSeq":66,"serial":486,"resName":"CRO","name":"CZ"},
+        "ball":{"center":[31.718,30.3,37.721],"radius":1.7},
+        "tags":["el=C","het"],
+        "adjuncts":{"oc":1,"tf":9.48}}],
+    "summary_of_atoms":{
+      "number_total":5,
+      "volume":null}}}
+
+{
+  "command":"restrict-atoms {--tags-not het}",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "restricted_atoms":{
+      "old_summary":{
+        "number_total":1771,
+        "volume":null},
+      "summary":{
+        "number_total":1717,
+        "volume":null}}}}
+
+{
+  "command":"print-sequence --secondary-structure",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":null},
+    "chains":[
+      {
+        "chain_name":"A",
+        "continuous_segments":6,
+        "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]}}
+
+{
+  "command":"construct-contacts",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "constructed_contacts":{
+      "summary":{
+        "number_total":12469,
+        "number_drawable":0,
+        "area":47017.2},
+      "used_cached_triangulation":false}}}
+
+{
+  "command":"construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "constructed_contacts":{
+      "summary":{
+        "number_total":12469,
+        "number_drawable":120,
+        "area":47017.2},
+      "used_cached_triangulation":true}}}
+
+{
+  "command":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "saved_atoms":{
+      "file":"./jobs_output/self_scripting/plain_atoms",
+      "summary":{
+        "number_total":1717,
+        "volume":41027.8}}}}
+
+{
+  "command":"save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "saved_atoms":{
+      "file":"./jobs_output/self_scripting/pdb_atoms",
+      "summary":{
+        "number_total":1717,
+        "volume":41027.8}}}}
+
+{
+  "command":"save-contacts './jobs_output/self_scripting/plain_contacts'",
+  "on_object":"structure.pdb_2",
+  "results":{
+    "saved_contacts":{
+      "file":"./jobs_output/self_scripting/plain_contacts",
+      "summary":{
+        "number_total":12469,
+        "number_drawable":120,
+        "area":47017.2}}}}
+
+{
+  "command":"list-objects",
+  "results":{
+    "objects":[
+      {
+        "name":"structure.cif",
+        "picked":false,
+        "visible":true},
+      {
+        "name":"structure.pdb",
+        "picked":false,
+        "visible":true},
+      {
+        "name":"structure.pdb_2",
+        "picked":true,
+        "visible":true}]}}
+
+{
+  "command":"delete-objects",
+  "results":{
+    "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]}}
+
+{
+  "command":"load --file './jobs_output/self_scripting/plain_atoms' --format plain",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8},
+    "object_name":"plain_atoms"}}
+
+{
+  "command":"list-objects",
+  "results":{
+    "objects":[
+      {
+        "name":"plain_atoms",
+        "picked":true,
+        "visible":true}]}}
+
+{
+  "command":"select-contacts",
+  "on_object":"plain_atoms",
+  "errors":["No contacts available."]}
+
+{
+  "command":"load-contacts --file './jobs_output/self_scripting/plain_contacts'",
+  "on_object":"plain_atoms",
+  "results":{
+    "read_contacts":{
+      "file":"./jobs_output/self_scripting/plain_contacts",
+      "summary":{
+        "number_total":12469,
+        "number_drawable":120,
+        "area":47017.2}}}}
+
+{
+  "command":"select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1",
+  "on_object":"plain_atoms",
+  "results":{
+    "selected_contacts":{
+      "summary":{
+        "number_total":5,
+        "number_drawable":1,
+        "area":33.8164},
+      "selection_name":"cs1"}}}
+
+{
+  "command":"set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"",
+  "results":{
+    "alias":"multitag",
+    "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"}}
+
+{
+  "command":"tag-contacts {--min-area 6.0} med",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":2636,
+      "number_drawable":5,
+      "area":29458.6}}}
+
+{
+  "command":"delete-tags-of-contacts {--min-area 8.0} --tags med",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":1675,
+      "number_drawable":1,
+      "area":22795.8}}}
+
+{
+  "command":"print-contacts {cs1}",
+  "on_object":"plain_atoms",
+  "results":{
+    "contacts":[
+      {
+        "descriptor1":{"chainID":"A","resSeq":8,"serial":49,"resName":"PHE","name":"CD1"},
+        "descriptor2":{"chainID":"A","resSeq":71,"serial":518,"resName":"PHE","name":"CE1"},
+        "area":5.56317,
+        "tags":["central"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":8,"serial":53,"resName":"PHE","name":"CZ"},
+        "descriptor2":{"chainID":"A","resSeq":114,"serial":888,"resName":"PHE","name":"CE2"},
+        "area":6.42993,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":46,"serial":330,"resName":"PHE","name":"CZ"},
+        "descriptor2":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+        "area":6.67924,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":83,"serial":623,"resName":"PHE","name":"C"},
+        "descriptor2":{"chainID":"A","resSeq":84,"serial":632,"resName":"PHE","name":"N"},
+        "area":6.57156,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":99,"serial":756,"resName":"PHE","name":"C"},
+        "descriptor2":{"chainID":"A","resSeq":100,"serial":765,"resName":"PHE","name":"N"},
+        "area":8.5725,
+        "tags":["central"]}],
+    "summary_of_contacts":{
+      "number_total":5,
+      "number_drawable":1,
+      "area":33.8164}}}
+
+{
+  "command":"print-contacts {cs1} --inter-residue",
+  "on_object":"plain_atoms",
+  "results":{
+    "contacts":[
+      {
+        "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
+        "descriptor2":{"chainID":"A","resSeq":71,"resName":"PHE"},
+        "area":5.56317,
+        "summed":true,
+        "tags":["central"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
+        "descriptor2":{"chainID":"A","resSeq":114,"resName":"PHE"},
+        "area":6.42993,
+        "summed":true,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":46,"resName":"PHE"},
+        "descriptor2":{"chainID":"A","resSeq":64,"resName":"PHE"},
+        "area":6.67924,
+        "summed":true,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":83,"resName":"PHE"},
+        "descriptor2":{"chainID":"A","resSeq":84,"resName":"PHE"},
+        "area":6.57156,
+        "summed":true,
+        "tags":["central","med"]},
+      {
+        "descriptor1":{"chainID":"A","resSeq":99,"resName":"PHE"},
+        "descriptor2":{"chainID":"A","resSeq":100,"resName":"PHE"},
+        "area":8.5725,
+        "summed":true,
+        "tags":["central"]}],
+    "summary_of_contacts":{
+      "number_total":5,
+      "number_drawable":1,
+      "area":33.8164}}}
+
+{
+  "command":"select-atoms {r<64> & A<C,N,O,CA,CB>} as1",
+  "on_object":"plain_atoms",
+  "results":{
+    "selected_atoms":{
+      "summary":{
+        "number_total":5,
+        "volume":108.978},
+      "selection_name":"as1"}}}
+
+{
+  "command":"tag-atoms {A<C,N,O,CA,CB>} --tag pept",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1083,
+      "volume":20982.5}}}
+
+{
+  "command":"delete-tags-of-atoms {A<CA,CB>} --tags pept",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":420,
+      "volume":9160.61}}}
+
+{
+  "command":"print-atoms {as1}",
+  "on_object":"plain_atoms",
+  "results":{
+    "atoms":[
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
+        "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
+        "tags":["el=N","pept"],
+        "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
+        "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
+        "tags":["el=C"],
+        "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
+        "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
+        "tags":["el=C","pept"],
+        "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
+        "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
+        "tags":["el=O","pept"],
+        "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+        "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
+        "tags":["el=C"],
+        "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
+    "summary_of_atoms":{
+      "number_total":5,
+      "volume":108.978}}}
+
+{
+  "command":"print-atoms {r<64> & A<C,N,O,CA,CB>}",
+  "on_object":"plain_atoms",
+  "results":{
+    "atoms":[
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
+        "ball":{"center":[22.25,29.62,36.583],"radius":1.55},
+        "tags":["el=N","pept"],
+        "adjuncts":{"oc":1,"tf":10.19,"volume":10.4155}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":456,"resName":"PHE","name":"CA"},
+        "ball":{"center":[21.895,28.371,35.995],"radius":1.7},
+        "tags":["el=C"],
+        "adjuncts":{"oc":1,"tf":8,"volume":13.6959}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":457,"resName":"PHE","name":"C"},
+        "ball":{"center":[22.774,27.253,36.518],"radius":1.7},
+        "tags":["el=C","pept"],
+        "adjuncts":{"oc":1,"tf":25.26,"volume":32.7555}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":458,"resName":"PHE","name":"O"},
+        "ball":{"center":[22.313,26.147,36.761],"radius":1.52},
+        "tags":["el=O","pept"],
+        "adjuncts":{"oc":1,"tf":9.64,"volume":28.8387}},
+      {
+        "descriptor":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
+        "ball":{"center":[22.114,28.438,34.513],"radius":1.7},
+        "tags":["el=C"],
+        "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
+    "summary_of_atoms":{
+      "number_total":5,
+      "volume":108.978}}}
+
+{
+  "command":"rename-selection-of-atoms nosel1 nodel2",
+  "on_object":"plain_atoms",
+  "errors":["No atoms selection with name 'nosel1'."]}
+
+{
+  "command":"delete-selections-of-contacts nosel1",
+  "on_object":"plain_atoms",
+  "errors":["Invalid contacts selection name 'nosel1'."]}
+
+{
+  "command":"list-selections-of-atoms",
+  "on_object":"plain_atoms",
+  "results":{
+    "selections":[
+      {
+        "name":"_marked",
+        "summary":{"number_total":5,"volume":108.978}},
+      {
+        "name":"as1",
+        "summary":{"number_total":5,"volume":108.978}}]}}
+
+{
+  "command":"list-selections-of-contacts",
+  "on_object":"plain_atoms",
+  "results":{
+    "selections":[
+      {
+        "name":"_marked",
+        "summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
+      {
+        "name":"cs1",
+        "summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}}
+
+{
+  "command":"color-atoms 0xFFFF00",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8}}}
+
+{
+  "command":"color-atoms {A<C,CA,N,O>} 0xFF0000",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":884,
+      "volume":15442.3}}}
+
+{
+  "command":"color-atoms (not {A<C,CA,N,O>}) 0x00FF00",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":833,
+      "volume":25585.5}}}
+
+{
+  "command":"show-atoms",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8}}}
+
+{
+  "command":"write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_atoms_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_atoms.py",
+      "summary":{
+        "number_total":167,
+        "volume":3864.44}}}}
+
+{
+  "command":"write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_atoms_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
+      "summary":{
+        "number_total":167,
+        "volume":3864.44}}}}
+
+{
+  "command":"spectrum-atoms",
+  "on_object":"plain_atoms",
+  "results":{
+    "spectrum_summary":{
+      "count":1717,
+      "min_value":2,
+      "max_value":229}}}
+
+{
+  "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_cartoon_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_cartoon.py",
+      "summary":{
+        "number_total":16,
+        "volume":262.219}}}}
+
+{
+  "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_cartoon_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
+      "summary":{
+        "number_total":16,
+        "volume":262.219}}}}
+
+{
+  "command":"color-contacts 0x00FF00",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":120,
+      "number_drawable":120,
+      "area":211.8}}}
+
+{
+  "command":"color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":25,
+      "number_drawable":25,
+      "area":52.3005}}}
+
+{
+  "command":"color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":58,
+      "number_drawable":58,
+      "area":99.5972}}}
+
+{
+  "command":"show-contacts",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":120,
+      "number_drawable":120,
+      "area":211.8}}}
+
+{
+  "command":"write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_contacts_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_contacts.py",
+      "summary":{
+        "number_total":120,
+        "number_drawable":120,
+        "area":211.8}}}}
+
+{
+  "command":"color-contacts 0xFF00FF",
+  "on_object":"plain_atoms",
+  "results":{
+    "summary_of_contacts":{
+      "number_total":120,
+      "number_drawable":120,
+      "area":211.8}}}
+
+{
+  "command":"write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
+  "on_object":"plain_atoms",
+  "results":{
+    "wrote_contacts_as_pymol_cgo":{
+      "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
+      "summary":{
+        "number_total":120,
+        "number_drawable":120,
+        "area":211.8}}}}
+
+{
+  "command":"save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'",
+  "on_object":"plain_atoms",
+  "results":{
+    "saved_atoms_and_contacts":{
+      "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
+      "summary_of_atoms":{
+        "number_total":1717,
+        "volume":41027.8},
+      "summary_of_contacts":{
+        "number_total":12469,
+        "number_drawable":120,
+        "area":47017.2}}}}
+
+{
+  "command":"load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8},
+    "summary_of_contacts":{
+      "number_total":12469,
+      "number_drawable":120,
+      "area":47017.2},
+    "object_name":"plain_atoms_and_contacts"}}
+
+{
+  "command":"load './jobs_output/self_scripting/plain_atoms' -format plain",
+  "results":{
+    "summary_of_atoms":{
+      "number_total":1717,
+      "volume":41027.8},
+    "object_name":"plain_atoms"}}
+
+{
+  "command":"list-objects",
+  "results":{
+    "objects":[
+      {
+        "name":"plain_atoms",
+        "picked":false,
+        "visible":true},
+      {
+        "name":"plain_atoms_and_contacts",
+        "picked":false,
+        "visible":true},
+      {
+        "name":"plain_atoms_2",
+        "picked":true,
+        "visible":true}]}}
+
+{
+  "command":"delete-objects -names plain_atoms",
+  "results":{
+    "removed_objects":["plain_atoms"]}}
+
+{
+  "command":"list-objects",
+  "results":{
+    "objects":[
+      {
+        "name":"plain_atoms_and_contacts",
+        "picked":false,
+        "visible":true},
+      {
+        "name":"plain_atoms_2",
+        "picked":true,
+        "visible":true}]}}
+
+{
+  "command":"set-alias quit exit",
+  "results":{
+    "alias":"quit",
+    "script":"exit"}}
+
+{
+  "command":"exit"}
 
