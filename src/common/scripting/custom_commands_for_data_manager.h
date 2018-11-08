@@ -603,7 +603,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=representation_ids;
+			parameters_for_viewing.visual_ids=representation_ids;
 			parameters_for_viewing.show=positive_;
 			parameters_for_viewing.hide=!positive_;
 
@@ -667,7 +667,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=representation_ids;
+			parameters_for_viewing.visual_ids=representation_ids;
 			parameters_for_viewing.color=color_value;
 
 			parameters_for_viewing.assert_state();
@@ -860,7 +860,7 @@ public:
 			if(!only_summarize)
 			{
 				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids_=representation_ids;
+				parameters_for_viewing.visual_ids=representation_ids;
 				parameters_for_viewing.assert_state();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -1926,7 +1926,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=representation_ids;
+			parameters_for_viewing.visual_ids=representation_ids;
 			parameters_for_viewing.show=positive_;
 			parameters_for_viewing.hide=!positive_;
 
@@ -1990,7 +1990,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=representation_ids;
+			parameters_for_viewing.visual_ids=representation_ids;
 			parameters_for_viewing.color=color_value;
 
 			parameters_for_viewing.assert_state();
@@ -2188,7 +2188,7 @@ public:
 			if(!only_summarize)
 			{
 				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids_=representation_ids;
+				parameters_for_viewing.visual_ids=representation_ids;
 				parameters_for_viewing.assert_state();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -2865,7 +2865,7 @@ private:
 		bool show;
 		bool hide;
 		unsigned int color;
-		std::set<std::size_t> visual_ids_;
+		std::set<std::size_t> visual_ids;
 
 		CommandParametersForGenericViewing() :
 			mark(false),
@@ -2910,7 +2910,7 @@ private:
 
 					if(show || hide || color_valid())
 					{
-						if(visual_ids_.empty())
+						if(visual_ids.empty())
 						{
 							for(std::size_t i=0;i<ds.visuals.size();i++)
 							{
@@ -2922,7 +2922,7 @@ private:
 						}
 						else
 						{
-							for(std::set<std::size_t>::const_iterator jt=visual_ids_.begin();jt!=visual_ids_.end();++jt)
+							for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end();++jt)
 							{
 								const std::size_t visual_id=(*jt);
 								if(visual_id<ds.visuals.size())
