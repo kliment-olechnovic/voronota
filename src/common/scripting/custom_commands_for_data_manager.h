@@ -12,6 +12,7 @@
 #include "basic_assertions.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 #include "variant_serialization.h"
+#include "updating_of_data_manager_display_states.h"
 
 namespace common
 {
@@ -174,6 +175,19 @@ public:
 				VariantSerialization::write(SummaryOfAtoms(atoms), info.object("summary"));
 			}
 		}
+
+	private:
+		template<typename T>
+		static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)
+		{
+			T sliced_vector;
+			sliced_vector.reserve(ids.size());
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				sliced_vector.push_back(full_vector.at(*it));
+			}
+			return sliced_vector;
+		}
 	};
 
 	class select_atoms : public GenericCommandForDataManager
@@ -226,17 +240,17 @@ public:
 			if(!no_marking)
 			{
 				{
-					CommandParametersForGenericViewing params;
+					UpdatingOfDataManagerDisplayStates::Parameters params;
 					params.unmark=true;
-					if(params.apply_to_display_states(cargs.data_manager.atoms_display_states_mutable()))
+					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, cargs.data_manager.atoms_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_atoms_display_states=true;
 					}
 				}
 				{
-					CommandParametersForGenericViewing params;
+					UpdatingOfDataManagerDisplayStates::Parameters params;
 					params.mark=true;
-					if(params.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_atoms_display_states=true;
 					}
@@ -534,10 +548,10 @@ public:
 			}
 
 			{
-				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.mark=positive_;
-				parameters_for_viewing.unmark=!positive_;
-				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+				UpdatingOfDataManagerDisplayStates::Parameters params;
+				params.mark=positive_;
+				params.unmark=!positive_;
+				if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
 				{
 					cargs.change_indicator.changed_atoms_display_states=true;
 				}
@@ -602,14 +616,14 @@ public:
 				throw std::runtime_error(std::string("No drawable atoms selected."));
 			}
 
-			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids=representation_ids;
-			parameters_for_viewing.show=positive_;
-			parameters_for_viewing.hide=!positive_;
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.show=positive_;
+			params.hide=!positive_;
 
-			parameters_for_viewing.assert_state();
+			params.assert_correctness();
 
-			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
 			{
 				cargs.change_indicator.changed_atoms_display_states=true;
 			}
@@ -666,13 +680,13 @@ public:
 				throw std::runtime_error(std::string("No drawable atoms selected."));
 			}
 
-			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids=representation_ids;
-			parameters_for_viewing.color=color_value;
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.color=color_value;
 
-			parameters_for_viewing.assert_state();
+			params.assert_correctness();
 
-			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.atoms_display_states_mutable()))
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
 			{
 				cargs.change_indicator.changed_atoms_display_states=true;
 			}
@@ -859,14 +873,14 @@ public:
 
 			if(!only_summarize)
 			{
-				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids=representation_ids;
-				parameters_for_viewing.assert_state();
+				UpdatingOfDataManagerDisplayStates::Parameters params;
+				params.visual_ids=representation_ids;
+				params.assert_correctness();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 				{
-					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.atoms_display_states_mutable()))
+					params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_atoms_display_states=true;
 					}
@@ -1595,17 +1609,17 @@ public:
 			if(!no_marking)
 			{
 				{
-					CommandParametersForGenericViewing params;
+					UpdatingOfDataManagerDisplayStates::Parameters params;
 					params.unmark=true;
-					if(params.apply_to_display_states(cargs.data_manager.contacts_display_states_mutable()))
+					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, cargs.data_manager.contacts_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_contacts_display_states=true;
 					}
 				}
 				{
-					CommandParametersForGenericViewing params;
+					UpdatingOfDataManagerDisplayStates::Parameters params;
 					params.mark=true;
-					if(params.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_contacts_display_states=true;
 					}
@@ -1857,10 +1871,10 @@ public:
 			}
 
 			{
-				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.mark=positive_;
-				parameters_for_viewing.unmark=!positive_;
-				if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+				UpdatingOfDataManagerDisplayStates::Parameters params;
+				params.mark=positive_;
+				params.unmark=!positive_;
+				if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
 				{
 					cargs.change_indicator.changed_contacts_display_states=true;
 				}
@@ -1925,14 +1939,14 @@ public:
 				throw std::runtime_error(std::string("No drawable contacts selected."));
 			}
 
-			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids=representation_ids;
-			parameters_for_viewing.show=positive_;
-			parameters_for_viewing.hide=!positive_;
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.show=positive_;
+			params.hide=!positive_;
 
-			parameters_for_viewing.assert_state();
+			params.assert_correctness();
 
-			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
 			{
 				cargs.change_indicator.changed_contacts_display_states=true;
 			}
@@ -1989,13 +2003,13 @@ public:
 				throw std::runtime_error(std::string("No drawable contacts selected."));
 			}
 
-			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids=representation_ids;
-			parameters_for_viewing.color=color_value;
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.color=color_value;
 
-			parameters_for_viewing.assert_state();
+			params.assert_correctness();
 
-			if(parameters_for_viewing.apply_to_display_states(ids, cargs.data_manager.contacts_display_states_mutable()))
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
 			{
 				cargs.change_indicator.changed_contacts_display_states=true;
 			}
@@ -2187,14 +2201,14 @@ public:
 
 			if(!only_summarize)
 			{
-				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids=representation_ids;
-				parameters_for_viewing.assert_state();
+				UpdatingOfDataManagerDisplayStates::Parameters params;
+				params.visual_ids=representation_ids;
+				params.assert_correctness();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 				{
-					parameters_for_viewing.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-					if(parameters_for_viewing.apply_to_display_state(it->first, cargs.data_manager.contacts_display_states_mutable()))
+					params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.contacts_display_states_mutable()))
 					{
 						cargs.change_indicator.changed_contacts_display_states=true;
 					}
@@ -2857,144 +2871,6 @@ public:
 	};
 
 private:
-	class CommandParametersForGenericViewing
-	{
-	public:
-		bool mark;
-		bool unmark;
-		bool show;
-		bool hide;
-		unsigned int color;
-		std::set<std::size_t> visual_ids;
-
-		CommandParametersForGenericViewing() :
-			mark(false),
-			unmark(false),
-			show(false),
-			hide(false),
-			color(auxiliaries::ColorUtilities::null_color())
-		{
-		}
-
-		bool color_valid() const
-		{
-			return auxiliaries::ColorUtilities::color_valid(color);
-		}
-
-		void assert_state() const
-		{
-			if(hide && show)
-			{
-				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
-			}
-
-			if(mark && unmark)
-			{
-				throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
-			}
-		}
-
-		bool apply_to_display_state(const std::size_t id, std::vector<DataManager::DisplayState>& display_states) const
-		{
-			bool updated=false;
-			if((show || hide || mark || unmark || color_valid()) && id<display_states.size())
-			{
-				DataManager::DisplayState& ds=display_states[id];
-				if(ds.implemented())
-				{
-					if(mark || unmark)
-					{
-						updated=(updated || (ds.marked!=mark));
-						ds.marked=mark;
-					}
-
-					if(show || hide || color_valid())
-					{
-						if(visual_ids.empty())
-						{
-							for(std::size_t i=0;i<ds.visuals.size();i++)
-							{
-								if(apply_to_display_state_visual(ds.visuals[i]))
-								{
-									updated=true;
-								}
-							}
-						}
-						else
-						{
-							for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end();++jt)
-							{
-								const std::size_t visual_id=(*jt);
-								if(visual_id<ds.visuals.size())
-								{
-									if(apply_to_display_state_visual(ds.visuals[visual_id]))
-									{
-										updated=true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			return updated;
-		}
-
-		bool apply_to_display_states(const std::set<std::size_t>& ids, std::vector<DataManager::DisplayState>& display_states) const
-		{
-			bool updated=false;
-			if(show || hide || mark || unmark || color_valid())
-			{
-				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-				{
-					if(apply_to_display_state((*it), display_states))
-					{
-						updated=true;
-					}
-				}
-			}
-			return updated;
-		}
-
-		bool apply_to_display_states(std::vector<DataManager::DisplayState>& display_states) const
-		{
-			bool updated=false;
-			if(show || hide || mark || unmark || color_valid())
-			{
-				for(std::size_t i=0;i<display_states.size();i++)
-				{
-					if(apply_to_display_state(i, display_states))
-					{
-						updated=true;
-					}
-				}
-			}
-			return updated;
-		}
-
-		bool apply_to_display_state_visual(DataManager::DisplayState::Visual& visual) const
-		{
-			bool updated=false;
-
-			if(visual.implemented)
-			{
-				if(show || hide)
-				{
-					updated=(updated || (visual.visible!=show));
-					visual.visible=show;
-				}
-
-				if(color_valid())
-				{
-					updated=(updated || (visual.color!=color));
-					visual.color=color;
-				}
-			}
-
-			return updated;
-		}
-	};
-
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{
 		const std::string type_for_expression=prefix+"use";
@@ -3076,18 +2952,6 @@ private:
 			}
 		}
 		return auxiliaries::ColorUtilities::null_color();
-	}
-
-	template<typename T>
-	static T slice_vector_by_ids(const T& full_vector, const std::set<std::size_t>& ids)
-	{
-		T sliced_vector;
-		sliced_vector.reserve(ids.size());
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-		{
-			sliced_vector.push_back(full_vector.at(*it));
-		}
-		return sliced_vector;
 	}
 };
 
