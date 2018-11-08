@@ -645,14 +645,13 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			CommandParametersForGenericColoring parameters_for_coloring;
-			parameters_for_coloring.read(cargs.input);
+			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
-			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
+			if(!auxiliaries::ColorUtilities::color_valid(color_value))
 			{
 				throw std::runtime_error(std::string("Atoms color not specified."));
 			}
@@ -669,7 +668,7 @@ public:
 
 			CommandParametersForGenericViewing parameters_for_viewing;
 			parameters_for_viewing.visual_ids_=representation_ids;
-			parameters_for_viewing.color=parameters_for_coloring.color;
+			parameters_for_viewing.color=color_value;
 
 			parameters_for_viewing.assert_state();
 
@@ -1969,14 +1968,13 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			CommandParametersForGenericColoring parameters_for_coloring;
-			parameters_for_coloring.read(cargs.input);
+			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> representation_ids=cargs.data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
+			if(!auxiliaries::ColorUtilities::color_valid(color_value))
 			{
 				throw std::runtime_error(std::string("Contacts color not specified."));
 			}
@@ -1993,7 +1991,7 @@ public:
 
 			CommandParametersForGenericViewing parameters_for_viewing;
 			parameters_for_viewing.visual_ids_=representation_ids;
-			parameters_for_viewing.color=parameters_for_coloring.color;
+			parameters_for_viewing.color=color_value;
 
 			parameters_for_viewing.assert_state();
 
@@ -2997,45 +2995,6 @@ private:
 		}
 	};
 
-	class CommandParametersForGenericColoring
-	{
-	public:
-		auxiliaries::ColorUtilities::ColorInteger color;
-
-		CommandParametersForGenericColoring() : color(auxiliaries::ColorUtilities::null_color())
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			if(input.is_option("col"))
-			{
-				color=auxiliaries::ColorUtilities::color_from_name(input.get_value<std::string>("col"));
-			}
-			else if(input.is_any_unnamed_value_unused())
-			{
-				bool found=false;
-				for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
-				{
-					if(!input.is_unnamed_value_used(i))
-					{
-						const std::string& candidate_str=input.get_list_of_unnamed_values()[i];
-						if(candidate_str.size()>2 && candidate_str.rfind("0x", 0)==0)
-						{
-							auxiliaries::ColorUtilities::ColorInteger candidate_color=auxiliaries::ColorUtilities::color_from_name(candidate_str);
-							if(candidate_color!=auxiliaries::ColorUtilities::null_color())
-							{
-								color=candidate_color;
-								input.mark_unnamed_value_as_used(i);
-								found=true;
-							}
-						}
-					}
-				}
-			}
-		}
-	};
-
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{
 		const std::string type_for_expression=prefix+"use";
@@ -3089,6 +3048,34 @@ private:
 	static SelectionManager::Query read_generic_selecting_query(CommandInput& input)
 	{
 		return read_generic_selecting_query("", "{}", input);
+	}
+
+	static auxiliaries::ColorUtilities::ColorInteger read_color(CommandInput& input)
+	{
+		if(input.is_option("col"))
+		{
+			return auxiliaries::ColorUtilities::color_from_name(input.get_value<std::string>("col"));
+		}
+		else if(input.is_any_unnamed_value_unused())
+		{
+			for(std::size_t i=0;i<input.get_list_of_unnamed_values().size();i++)
+			{
+				if(!input.is_unnamed_value_used(i))
+				{
+					const std::string& candidate_str=input.get_list_of_unnamed_values()[i];
+					if(candidate_str.size()>2 && candidate_str.rfind("0x", 0)==0)
+					{
+						auxiliaries::ColorUtilities::ColorInteger candidate_color=auxiliaries::ColorUtilities::color_from_name(candidate_str);
+						if(candidate_color!=auxiliaries::ColorUtilities::null_color())
+						{
+							input.mark_unnamed_value_as_used(i);
+							return candidate_color;
+						}
+					}
+				}
+			}
+		}
+		return auxiliaries::ColorUtilities::null_color();
 	}
 
 	template<typename T>
