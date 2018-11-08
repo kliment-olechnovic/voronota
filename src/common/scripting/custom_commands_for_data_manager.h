@@ -581,18 +581,19 @@ public:
 			cargs.data_manager.assert_atoms_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 
 			cargs.input.assert_nothing_unusable();
 
-			if(positive_ && parameters_for_representation_selecting.visual_ids.empty())
+			std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
+			
+			if(positive_ && representation_ids.empty())
 			{
-				parameters_for_representation_selecting.visual_ids.insert(0);
+				representation_ids.insert(0);
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
@@ -602,7 +603,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.visual_ids_=representation_ids;
 			parameters_for_viewing.show=positive_;
 			parameters_for_viewing.hide=!positive_;
 
@@ -643,12 +644,13 @@ public:
 			cargs.data_manager.assert_atoms_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			CommandParametersForGenericColoring parameters_for_coloring;
 			parameters_for_coloring.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
 			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
 			{
@@ -656,7 +658,7 @@ public:
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
@@ -666,7 +668,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.visual_ids_=representation_ids;
 			parameters_for_viewing.color=parameters_for_coloring.color;
 
 			parameters_for_viewing.assert_state();
@@ -695,8 +697,7 @@ public:
 			cargs.data_manager.assert_atoms_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
 			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
@@ -707,6 +708,8 @@ public:
 			const bool only_summarize=cargs.input.get_flag("only-summarize");
 
 			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
 			if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id")
 			{
@@ -734,7 +737,7 @@ public:
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
@@ -858,7 +861,7 @@ public:
 			if(!only_summarize)
 			{
 				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+				parameters_for_viewing.visual_ids_=representation_ids;
 				parameters_for_viewing.assert_state();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -1070,8 +1073,7 @@ public:
 			const std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
 			const bool wireframe=cargs.input.get_flag("wireframe");
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string file=cargs.input.get_value<std::string>("file");
 			assert_file_name_input(file, false);
 
@@ -1082,18 +1084,20 @@ public:
 				throw std::runtime_error(std::string("Missing object name."));
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.empty())
+			std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
+
+			if(representation_ids.empty())
 			{
-				parameters_for_representation_selecting.visual_ids.insert(0);
+				representation_ids.insert(0);
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			if(representation_ids.size()>1)
 			{
 				throw std::runtime_error(std::string("More than one representation requested."));
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
@@ -1116,7 +1120,7 @@ public:
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const std::size_t id=(*it);
-					for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+					for(std::set<std::size_t>::const_iterator jt=representation_ids.begin();jt!=representation_ids.end();++jt)
 					{
 						const std::size_t visual_id=(*jt);
 						if(visual_id<cargs.data_manager.atoms_display_states()[id].visuals.size())
@@ -1172,8 +1176,7 @@ public:
 			const std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
 			const bool wireframe=cargs.input.get_flag("wireframe");
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.atoms_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string file=cargs.input.get_value<std::string>("file");
 			assert_file_name_input(file, false);
 
@@ -1184,18 +1187,20 @@ public:
 				throw std::runtime_error(std::string("Missing object name."));
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.empty())
+			std::set<std::size_t> representation_ids=cargs.data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
+
+			if(representation_ids.empty())
 			{
-				parameters_for_representation_selecting.visual_ids.insert(0);
+				representation_ids.insert(0);
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			if(representation_ids.size()>1)
 			{
 				throw std::runtime_error(std::string("More than one representation requested."));
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
 					false);
 
@@ -1233,7 +1238,7 @@ public:
 					const std::vector<unsigned int>& indices=bundle_of_cartoon_mesh.mapped_indices[id];
 					if(!indices.empty() && indices.size()%3==0)
 					{
-						for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+						for(std::set<std::size_t>::const_iterator jt=representation_ids.begin();jt!=representation_ids.end();++jt)
 						{
 							const std::size_t visual_id=(*jt);
 							if(visual_id<cargs.data_manager.atoms_display_states()[id].visuals.size())
@@ -1900,18 +1905,19 @@ public:
 			cargs.data_manager.assert_contacts_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 
 			cargs.input.assert_nothing_unusable();
 
-			if(positive_ && parameters_for_representation_selecting.visual_ids.empty() && cargs.data_manager.contacts_representation_descriptor().names.size()>1)
+			std::set<std::size_t> representation_ids=cargs.data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
+
+			if(positive_ && representation_ids.empty() && cargs.data_manager.contacts_representation_descriptor().names.size()>1)
 			{
-				parameters_for_representation_selecting.visual_ids.insert(0);
+				representation_ids.insert(0);
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
@@ -1921,7 +1927,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.visual_ids_=representation_ids;
 			parameters_for_viewing.show=positive_;
 			parameters_for_viewing.hide=!positive_;
 
@@ -1962,12 +1968,13 @@ public:
 			cargs.data_manager.assert_contacts_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			CommandParametersForGenericColoring parameters_for_coloring;
 			parameters_for_coloring.read(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
 			if(!auxiliaries::ColorUtilities::color_valid(parameters_for_coloring.color))
 			{
@@ -1975,7 +1982,7 @@ public:
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
@@ -1985,7 +1992,7 @@ public:
 			}
 
 			CommandParametersForGenericViewing parameters_for_viewing;
-			parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+			parameters_for_viewing.visual_ids_=representation_ids;
 			parameters_for_viewing.color=parameters_for_coloring.color;
 
 			parameters_for_viewing.assert_state();
@@ -2014,8 +2021,7 @@ public:
 			cargs.data_manager.assert_contacts_representations_availability();
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value<std::string>("by") : std::string("adjunct");
 			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
@@ -2026,6 +2032,8 @@ public:
 			const bool only_summarize=cargs.input.get_flag("only-summarize");
 
 			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
 			if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep")
 			{
@@ -2053,7 +2061,7 @@ public:
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
@@ -2182,7 +2190,7 @@ public:
 			if(!only_summarize)
 			{
 				CommandParametersForGenericViewing parameters_for_viewing;
-				parameters_for_viewing.visual_ids_=parameters_for_representation_selecting.visual_ids;
+				parameters_for_viewing.visual_ids_=representation_ids;
 				parameters_for_viewing.assert_state();
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -2309,8 +2317,7 @@ public:
 			const std::string name=cargs.input.get_value_or_default<std::string>("name", "contacts");
 			const bool wireframe=cargs.input.get_flag("wireframe");
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
-			CommandParametersForGenericRepresentationSelecting parameters_for_representation_selecting(cargs.data_manager.contacts_representation_descriptor().names);
-			parameters_for_representation_selecting.read(cargs.input);
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string file=cargs.input.get_value<std::string>("file");
 			assert_file_name_input(file, false);
 
@@ -2321,18 +2328,20 @@ public:
 				throw std::runtime_error(std::string("Missing object name."));
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.empty())
+			std::set<std::size_t> representation_ids=cargs.data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
+
+			if(representation_ids.empty())
 			{
-				parameters_for_representation_selecting.visual_ids.insert(0);
+				representation_ids.insert(0);
 			}
 
-			if(parameters_for_representation_selecting.visual_ids.size()>1)
+			if(representation_ids.size()>1)
 			{
 				throw std::runtime_error(std::string("More than one representation requested."));
 			}
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					parameters_for_representation_selecting.visual_ids,
+					representation_ids,
 					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
 					false);
 
@@ -2347,7 +2356,7 @@ public:
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const std::size_t id=(*it);
-					for(std::set<std::size_t>::const_iterator jt=parameters_for_representation_selecting.visual_ids.begin();jt!=parameters_for_representation_selecting.visual_ids.end();++jt)
+					for(std::set<std::size_t>::const_iterator jt=representation_ids.begin();jt!=representation_ids.end();++jt)
 					{
 						const std::size_t visual_id=(*jt);
 						if(visual_id<cargs.data_manager.contacts_display_states()[id].visuals.size())
@@ -2988,40 +2997,6 @@ private:
 		}
 	};
 
-	class CommandParametersForGenericRepresentationSelecting
-	{
-	public:
-		const std::vector<std::string>& available_representations;
-		std::set<std::size_t> visual_ids;
-
-		explicit CommandParametersForGenericRepresentationSelecting(const std::vector<std::string>& available_representations) : available_representations(available_representations)
-		{
-		}
-
-		void read(CommandInput& input)
-		{
-			if(input.is_option("rep"))
-			{
-				const std::vector<std::string> names=input.get_value_vector<std::string>("rep");
-				std::set<std::size_t> ids;
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					const std::string& name=names[i];
-					std::size_t id=find_name_id(available_representations, name);
-					if(id<available_representations.size())
-					{
-						ids.insert(id);
-					}
-					else
-					{
-						throw std::runtime_error(std::string("Representation '")+name+"' does not exist.");
-					}
-				}
-				visual_ids.swap(ids);
-			}
-		}
-	};
-
 	class CommandParametersForGenericColoring
 	{
 	public:
@@ -3126,19 +3101,6 @@ private:
 			sliced_vector.push_back(full_vector.at(*it));
 		}
 		return sliced_vector;
-	}
-
-	static std::size_t find_name_id(const std::vector<std::string>& names, const std::string& name)
-	{
-		std::size_t id=names.size();
-		for(std::size_t i=0;i<names.size() && !(id<names.size());i++)
-		{
-			if(names[i]==name)
-			{
-				id=i;
-			}
-		}
-		return id;
 	}
 };
 

@@ -66,6 +66,36 @@ public:
 	{
 		std::vector<std::string> names;
 		std::set<std::size_t> implemented_always;
+
+		std::size_t id_by_name(const std::string& name) const
+		{
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				if(names[i]==name)
+				{
+					return i;
+				}
+			}
+			return names.size();
+		}
+
+		std::set<std::size_t> ids_by_names(const std::vector<std::string>& input_names) const
+		{
+			std::set<std::size_t> ids;
+			for(std::size_t i=0;i<input_names.size();i++)
+			{
+				const std::size_t id=id_by_name(input_names[i]);
+				if(id<names.size())
+				{
+					ids.insert(id);
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Representation '")+input_names[i]+"' does not exist.");
+				}
+			}
+			return ids;
+		}
 	};
 
 	struct DisplayState
