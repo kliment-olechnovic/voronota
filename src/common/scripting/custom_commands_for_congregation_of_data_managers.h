@@ -180,6 +180,8 @@ public:
 			cargs.congregation_of_data_managers.set_all_objects_picked(false);
 			cargs.congregation_of_data_managers.set_object_picked(object_new, true);
 			cargs.change_indicator.changed_objects_picks=true;
+
+			cargs.heterostorage.variant_object.value("object_name")=title;
 		}
 	};
 
