@@ -11,19 +11,22 @@
 {
   "summary_of_atoms":{
     "number_total":1771,
-    "volume":null}}
+    "volume":null},
+  "object_name":"structure.cif"}
 
 > load -file "./input/single/structure.pdb"
 {
   "summary_of_atoms":{
     "number_total":1717,
-    "volume":null}}
+    "volume":null},
+  "object_name":"structure.pdb"}
 
 > load ./input/single/structure.pdb --include-heteroatoms
 {
   "summary_of_atoms":{
     "number_total":1771,
-    "volume":null}}
+    "volume":null},
+  "object_name":"structure.pdb"}
 
 > print-sequence --secondary-structure
 {
@@ -156,7 +159,8 @@
 {
   "summary_of_atoms":{
     "number_total":1717,
-    "volume":41027.8}}
+    "volume":41027.8},
+  "object_name":"plain_atoms"}
 
 > list-objects
 {
@@ -526,13 +530,15 @@ Error: Invalid contacts selection name 'nosel1'.
   "summary_of_contacts":{
     "number_total":12469,
     "number_drawable":120,
-    "area":47017.2}}
+    "area":47017.2},
+  "object_name":"plain_atoms_and_contacts"}
 
 > load './jobs_output/self_scripting/plain_atoms' -format plain
 {
   "summary_of_atoms":{
     "number_total":1717,
-    "volume":41027.8}}
+    "volume":41027.8},
+  "object_name":"plain_atoms"}
 
 > list-objects
 {
