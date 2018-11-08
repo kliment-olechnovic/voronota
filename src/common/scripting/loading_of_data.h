@@ -104,7 +104,7 @@ public:
 		std::vector<Contact> contacts;
 	};
 
-	static void construct_result(const Parameters& input_params, Result& result)
+	static void construct_result(const Configuration& config, const Parameters& input_params, Result& result)
 	{
 		result=Result();
 
@@ -138,8 +138,6 @@ public:
 
 		if(params.format=="pdb" || params.format=="mmcif")
 		{
-			const Configuration& config=Configuration::get_default_configuration();
-
 			ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
 			parameters_to_collect_atoms.include_heteroatoms=(params.forced_include_heteroatoms ? params.include_heteroatoms : config.include_heteroatoms);
 			parameters_to_collect_atoms.include_hydrogens=(params.forced_include_hydrogens ? params.include_hydrogens : config.include_hydrogens);
@@ -162,6 +160,11 @@ public:
 
 			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, result.contacts);
 		}
+	}
+
+	static void construct_result(const Parameters& input_params, Result& result)
+	{
+		construct_result(Configuration::get_default_configuration(), input_params, result);
 	}
 
 private:

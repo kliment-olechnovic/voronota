@@ -96,13 +96,13 @@ public:
 		}
 	};
 
-	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
+	static void construct_result(const Configuration& configuration, const Parameters& params, DataManager& data_manager, Result& result)
 	{
 		result=Result();
 
-		if(!Configuration::get_default_configuration().valid())
+		if(!configuration.valid())
 		{
-			throw std::runtime_error(std::string("No default configuration."));
+			throw std::runtime_error(std::string("Invalid configuration."));
 		}
 
 		data_manager.assert_contacts_availability();
@@ -168,7 +168,7 @@ public:
 
 		ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters_for_bundle_of_energy;
 		if(!ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(
-				parameters_for_bundle_of_energy, Configuration::get_default_configuration().potential_values, map_of_interactions, result.bundle_of_energy))
+				parameters_for_bundle_of_energy, configuration.potential_values, map_of_interactions, result.bundle_of_energy))
 		{
 			throw std::runtime_error("Failed to calculate energies scores.");
 		}
@@ -182,7 +182,7 @@ public:
 
 		ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAQualityInformation parameters_for_bundle_of_quality;
 		if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_quality_information(
-				parameters_for_bundle_of_quality, Configuration::get_default_configuration().means_and_sds, result.bundle_of_energy.atom_energy_descriptors, result.bundle_of_quality))
+				parameters_for_bundle_of_quality, configuration.means_and_sds, result.bundle_of_energy.atom_energy_descriptors, result.bundle_of_quality))
 		{
 			throw std::runtime_error("Failed to calculate quality scores.");
 		}
@@ -309,6 +309,11 @@ public:
 				}
 			}
 		}
+	}
+
+	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
+	{
+		construct_result(Configuration::get_default_configuration(), params, data_manager, result);
 	}
 };
 
