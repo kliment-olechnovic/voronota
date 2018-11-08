@@ -9,7 +9,7 @@ namespace common
 namespace scripting
 {
 
-class JSONWriter
+class JSONWriter //TODO escape newlines and quotes
 {
 public:
 	class Configuration
@@ -20,7 +20,7 @@ public:
 		bool indentation_enabled_for_value_arrays;
 
 		Configuration() :
-			indentation_max_level(3),
+			indentation_max_level(100),
 			indentation_length(2),
 			indentation_enabled_for_value_arrays(false)
 		{
@@ -61,6 +61,7 @@ public:
 	static void write(const Configuration& configuration, const VariantObject& object, std::ostream& output)
 	{
 		JSONWriter(configuration).print(object, output);
+		output << "\n";
 	}
 
 	static void write(const VariantObject& object, std::ostream& output)
