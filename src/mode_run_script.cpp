@@ -44,24 +44,18 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdin", true, false, "script as plain text");
 	pohw.describe_io("stdout", false, true, "output on script execution");
 
-	const bool not_interactive=poh.contains_option(pohw.describe_option("--not-interactive", "", "flag for noninteractive mode"));
+	const bool interactive=poh.contains_option(pohw.describe_option("--interactive", "", "flag for interactive mode"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(not_interactive ? 6 : 4));
+	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(interactive ? 4 : 6));
 
-	CustomScriptExecutionManager execution_manager(!not_interactive);
+	CustomScriptExecutionManager execution_manager(interactive);
 
-	if(not_interactive)
-	{
-		std::istreambuf_iterator<char> eos;
-		std::string script(std::istreambuf_iterator<char>(std::cin), eos);
-		common::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, false), std::cout);
-	}
-	else
+	if(interactive)
 	{
 		while(!execution_manager.exit_requested() && std::cin.good())
 		{
@@ -72,6 +66,12 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 				execution_manager.execute_script(line, false);
 			}
 		}
+	}
+	else
+	{
+		std::istreambuf_iterator<char> eos;
+		std::string script(std::istreambuf_iterator<char>(std::cin), eos);
+		common::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, false), std::cout);
 	}
 }
 
