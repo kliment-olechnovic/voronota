@@ -75,7 +75,7 @@ inline void assert_file_name_input(const std::string& name, const bool allow_emp
 			throw std::runtime_error(std::string("File name is empty."));
 		}
 	}
-	else if(name.find_first_of("?*$'\";:<>,|")!=std::string::npos)
+	else if(name.find_first_of("?*$'\";<>,|")!=std::string::npos)
 	{
 		throw std::runtime_error(std::string("File name '")+name+"' contains invalid symbols.");
 	}
