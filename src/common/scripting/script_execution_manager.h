@@ -29,6 +29,19 @@ public:
 	{
 		std::vector<CommandRecord> command_records;
 		std::string termination_error;
+
+		std::size_t count_successfull_commmand_records() const
+		{
+			std::size_t n=0;
+			for(std::size_t i=0;i<command_records.size();i++)
+			{
+				if(command_records[i].successful)
+				{
+					n++;
+				}
+			}
+			return n;
+		}
 	};
 
 	ScriptExecutionManager() :
@@ -128,59 +141,7 @@ public:
 
 		ScriptRecord script_record;
 
-		exit_requested_=false;
-
-		try
-		{
-			script_partitioner_.add_pending_sentences_from_string_to_front(script);
-		}
-		catch(const std::exception& e)
-		{
-			script_record.termination_error=e.what();
-			return script_record;
-		}
-
-		while(!script_partitioner_.pending_sentences().empty())
-		{
-			std::string command_string;
-
-			try
-			{
-				command_string=script_partitioner_.extract_pending_sentence();
-			}
-			catch(const std::exception& e)
-			{
-				script_record.termination_error=e.what();
-				return script_record;
-			}
-
-			CommandRecord command_record;
-
-			try
-			{
-				command_record.command_input=CommandInput(command_string);
-			}
-			catch(const std::exception& e)
-			{
-				script_record.termination_error=e.what();
-				return script_record;
-			}
-
-			execute_command(command_record);
-
-			script_record.command_records.push_back(command_record);
-
-			if(!command_record.successful && exit_on_first_failure)
-			{
-				script_record.termination_error="Terminated on the first failure.";
-				return script_record;
-			}
-
-			if(exit_requested())
-			{
-				return script_record;
-			}
-		}
+		execute_script(script, exit_on_first_failure, script_record);
 
 		on_after_script(script_record);
 
@@ -317,6 +278,63 @@ private:
 		{
 			delete it->second;
 			map.erase(it);
+		}
+	}
+
+	void execute_script(const std::string& script, const bool exit_on_first_failure, ScriptRecord& script_record)
+	{
+		exit_requested_=false;
+
+		try
+		{
+			script_partitioner_.add_pending_sentences_from_string_to_front(script);
+		}
+		catch(const std::exception& e)
+		{
+			script_record.termination_error=e.what();
+			return;
+		}
+
+		while(!script_partitioner_.pending_sentences().empty())
+		{
+			std::string command_string;
+
+			try
+			{
+				command_string=script_partitioner_.extract_pending_sentence();
+			}
+			catch(const std::exception& e)
+			{
+				script_record.termination_error=e.what();
+				return;
+			}
+
+			CommandRecord command_record;
+
+			try
+			{
+				command_record.command_input=CommandInput(command_string);
+			}
+			catch(const std::exception& e)
+			{
+				script_record.termination_error=e.what();
+				return;
+			}
+
+			execute_command(command_record);
+
+			script_record.command_records.push_back(command_record);
+
+			if(!command_record.successful && exit_on_first_failure)
+			{
+				script_record.termination_error="Terminated on the first failure.";
+				return;
+			}
+
+			if(exit_requested_)
+			{
+				return;
+			}
 		}
 	}
 
