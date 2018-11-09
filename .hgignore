@@ -21,3 +21,7 @@ syntax: regexp
 ^\.settings$
 syntax: regexp
 ^tests/voronota_package$
+syntax: regexp
+^swig/python/src$
+syntax: regexp
+^swig/python/module$
