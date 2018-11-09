@@ -2,7 +2,7 @@
   "command":"source './jobs_output/self_scripting/script_input'"}
 
 {
-  "command":"set-alias printseq "print-sequence -secondary-structure"",
+  "command":"set-alias printseq \"print-sequence -secondary-structure\"",
   "results":{
     "alias":"printseq",
     "script":"print-sequence --secondary-structure"}}
@@ -16,7 +16,7 @@
     "object_name":"structure.cif"}}
 
 {
-  "command":"load -file "./input/single/structure.pdb"",
+  "command":"load -file \"./input/single/structure.pdb\"",
   "results":{
     "summary_of_atoms":{
       "number_total":1717,
@@ -223,7 +223,7 @@
       "selection_name":"cs1"}}}
 
 {
-  "command":"set-alias multitag "tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"",
+  "command":"set-alias multitag \"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med\"",
   "results":{
     "alias":"multitag",
     "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"}}

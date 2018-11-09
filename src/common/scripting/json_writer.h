@@ -9,7 +9,7 @@ namespace common
 namespace scripting
 {
 
-class JSONWriter //TODO escape newlines and quotes
+class JSONWriter
 {
 public:
 	class Configuration
@@ -76,6 +76,51 @@ private:
 	{
 	}
 
+	static std::string replace_special_characters_with_escape_sequences(const std::string& input)
+	{
+		if(input.find_first_of("\"\n\r\f\t\\")==std::string::npos)
+		{
+			return input;
+		}
+
+		std::string output;
+
+		for(std::size_t i=0;i<input.size();i++)
+		{
+			const char c=input[i];
+			if(c=='\"')
+			{
+				output+="\\\"";
+			}
+			else if(c=='\n')
+			{
+				output+="\\n";
+			}
+			else if(c=='\r')
+			{
+				output+="\\r";
+			}
+			else if(c=='\f')
+			{
+				output+="\\f";
+			}
+			else if(c=='\t')
+			{
+				output+="\\t";
+			}
+			else if(c=='\\')
+			{
+				output+="\\\\";
+			}
+			else
+			{
+				output+=c;
+			}
+		}
+
+		return output;
+	}
+
 	void print(const VariantValue& value, std::ostream& output) const
 	{
 		if(value.null())
@@ -86,7 +131,7 @@ private:
 		{
 			if(value.value_type()==VariantValue::VARIANT_STRING)
 			{
-				output << "\"" << value.value_as_string() << "\"";
+				output << "\"" << replace_special_characters_with_escape_sequences(value.value_as_string()) << "\"";
 			}
 			else
 			{
