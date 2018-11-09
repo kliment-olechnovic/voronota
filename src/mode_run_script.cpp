@@ -45,13 +45,14 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	pohw.describe_io("stdout", false, true, "output on script execution");
 
 	const bool interactive=poh.contains_option(pohw.describe_option("--interactive", "", "flag for interactive mode"));
+	const int max_unfolding=poh.argument<int>(pohw.describe_option("--max-unfolding", "number", "maximum level of output unfolding, default is 6"), 6);
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(interactive ? 4 : 6));
+	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(max_unfolding));
 
 	CustomScriptExecutionManager execution_manager(interactive);
 
