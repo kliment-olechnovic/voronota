@@ -42,7 +42,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "script as plain text");
-	pohw.describe_io("stdout", false, true, "output on script execution");
+	pohw.describe_io("stdout", false, true, "output of script execution");
 
 	const bool interactive=poh.contains_option(pohw.describe_option("--interactive", "", "flag for interactive mode"));
 	const int max_unfolding=poh.argument<int>(pohw.describe_option("--max-unfolding", "number", "maximum level of output unfolding, default is 6"), 6);
