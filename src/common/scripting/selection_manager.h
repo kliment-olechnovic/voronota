@@ -327,6 +327,16 @@ public:
 		return map_of_contacts_selections_;
 	}
 
+	std::vector<std::string> get_names_of_atoms_selections() const
+	{
+		return collect_names_from_map(map_of_atoms_selections_);
+	}
+
+	std::vector<std::string> get_names_of_contacts_selections() const
+	{
+		return collect_names_from_map(map_of_contacts_selections_);
+	}
+
 private:
 	typedef TestingOfAtomsAndContacts TAC;
 
@@ -465,6 +475,18 @@ private:
 			}
 		}
 		return result;
+	}
+
+	template<class T>
+	static std::vector<std::string> collect_names_from_map(const T& map)
+	{
+		std::vector<std::string> names;
+		names.reserve(map.size());
+		for(typename T::const_iterator it=map.begin();it!=map.end();++it)
+		{
+			names.push_back(it->first);
+		}
+		return names;
 	}
 
 	void fix_atom_tester(TAC::test_atom& tester) const
