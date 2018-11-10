@@ -9,7 +9,7 @@ namespace
 class CustomScriptExecutionManager : public common::scripting::ScriptExecutionManagerWithVariantOutput
 {
 public:
-	CustomScriptExecutionManager(const bool print_progress) : print_progress_(print_progress)
+	explicit CustomScriptExecutionManager(const bool print_progress) : print_progress_(print_progress)
 	{
 	}
 

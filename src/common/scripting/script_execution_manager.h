@@ -232,6 +232,10 @@ protected:
 	}
 
 private:
+	ScriptExecutionManager(const ScriptExecutionManager&);
+
+	const ScriptExecutionManager& operator=(const ScriptExecutionManager&);
+
 	template<typename Map>
 	static void delete_map_contents(Map& map)
 	{
