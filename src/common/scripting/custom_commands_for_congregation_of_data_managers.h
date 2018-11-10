@@ -62,7 +62,7 @@ public:
 
 			for(std::size_t i=0;i<objects.size();i++)
 			{
-				cargs.heterostorage.variant_object.values_array("removed_objects").push_back(
+				cargs.heterostorage.variant_object.values_array("deleted_objects").push_back(
 						VariantValue(cargs.congregation_of_data_managers.get_object_attributes(objects[i]).name));
 				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(objects[i]);
 				if(ptr!=0)
@@ -162,7 +162,7 @@ public:
 				SummaryOfAtoms& summary_of_atoms=cargs.heterostorage.summaries_of_atoms["loaded"];
 				summary_of_atoms=SummaryOfAtoms(data_manager.atoms());
 
-				VariantSerialization::write(summary_of_atoms, cargs.heterostorage.variant_object.object("summary_of_atoms"));
+				VariantSerialization::write(summary_of_atoms, cargs.heterostorage.variant_object.object("atoms_summary"));
 			}
 
 			if(!result.contacts.empty())
@@ -172,7 +172,7 @@ public:
 				SummaryOfContacts& summary_of_contacts=cargs.heterostorage.summaries_of_contacts["loaded"];
 				summary_of_contacts=SummaryOfContacts(data_manager.contacts());
 
-				VariantSerialization::write(summary_of_contacts, cargs.heterostorage.variant_object.object("summary_of_contacts"));
+				VariantSerialization::write(summary_of_contacts, cargs.heterostorage.variant_object.object("contacts_summary"));
 			}
 
 			cargs.change_indicator.added_objects.insert(object_new);
@@ -371,12 +371,12 @@ public:
 
 			if(result.bundle.parameters_of_construction.atom_level)
 			{
-				write_cad_descriptor(result.bundle.atom_level_global_descriptor, cargs.heterostorage.variant_object.object("atom_level_global"));
+				write_cad_descriptor(result.bundle.atom_level_global_descriptor, cargs.heterostorage.variant_object.object("atom_level_result"));
 			}
 
 			if(result.bundle.parameters_of_construction.residue_level)
 			{
-				write_cad_descriptor(result.bundle.residue_level_global_descriptor, cargs.heterostorage.variant_object.object("residue_level_global"));
+				write_cad_descriptor(result.bundle.residue_level_global_descriptor, cargs.heterostorage.variant_object.object("residue_level_result"));
 			}
 		}
 
