@@ -1,37 +1,42 @@
 {
   "commands":[
     {
-      "command":"source './jobs_output/self_scripting/script_input'"},
+      "command":"source './jobs_output/self_scripting/script_input'",
+      "success":true},
     {
       "command":"set-alias printseq \"print-sequence -secondary-structure\"",
-      "results":{
+      "output":{
         "alias":"printseq",
-        "script":"print-sequence --secondary-structure"}},
+        "script":"print-sequence --secondary-structure"},
+      "success":true},
     {
       "command":"load --file ./input/single/structure.cif",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1771,
           "volume":null},
-        "object_name":"structure.cif"}},
+        "object_name":"structure.cif"},
+      "success":true},
     {
       "command":"load -file \"./input/single/structure.pdb\"",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
           "volume":null},
-        "object_name":"structure.pdb"}},
+        "object_name":"structure.pdb"},
+      "success":true},
     {
       "command":"load ./input/single/structure.pdb --include-heteroatoms",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1771,
           "volume":null},
-        "object_name":"structure.pdb"}},
+        "object_name":"structure.pdb"},
+      "success":true},
     {
       "command":"print-sequence --secondary-structure",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "summary_of_atoms":{
           "number_total":1771,
           "volume":null},
@@ -39,11 +44,12 @@
           {
             "chain_name":"A",
             "continuous_segments":3,
-            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]}},
+            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]},
+      "success":true},
     {
       "command":"print-atoms {--tags het --adjuncts tf:0:10}",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "atoms":[
           {
             "descriptor":{"chainID":"A","resSeq":66,"serial":467,"resName":"CRO","name":"CA1"},
@@ -72,22 +78,24 @@
             "adjuncts":{"oc":1,"tf":9.48}}],
         "summary_of_atoms":{
           "number_total":5,
-          "volume":null}}},
+          "volume":null}},
+      "success":true},
     {
       "command":"restrict-atoms {--tags-not het}",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "restricted_atoms":{
           "old_summary":{
             "number_total":1771,
             "volume":null},
           "summary":{
             "number_total":1717,
-            "volume":null}}}},
+            "volume":null}}},
+      "success":true},
     {
       "command":"print-sequence --secondary-structure",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
           "volume":null},
@@ -95,58 +103,64 @@
           {
             "chain_name":"A",
             "continuous_segments":6,
-            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]}},
+            "segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]},
+      "success":true},
     {
       "command":"construct-contacts",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "constructed_contacts":{
           "summary":{
             "number_total":12469,
             "number_drawable":0,
             "area":47017.2},
-          "used_cached_triangulation":false}}},
+          "used_cached_triangulation":false}},
+      "success":true},
     {
       "command":"construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "constructed_contacts":{
           "summary":{
             "number_total":12469,
             "number_drawable":120,
             "area":47017.2},
-          "used_cached_triangulation":true}}},
+          "used_cached_triangulation":true}},
+      "success":true},
     {
       "command":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "saved_atoms":{
           "file":"./jobs_output/self_scripting/plain_atoms",
           "summary":{
             "number_total":1717,
-            "volume":41027.8}}}},
+            "volume":41027.8}}},
+      "success":true},
     {
       "command":"save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "saved_atoms":{
           "file":"./jobs_output/self_scripting/pdb_atoms",
           "summary":{
             "number_total":1717,
-            "volume":41027.8}}}},
+            "volume":41027.8}}},
+      "success":true},
     {
       "command":"save-contacts './jobs_output/self_scripting/plain_contacts'",
-      "on_object":"structure.pdb_2",
-      "results":{
+      "data_object":"structure.pdb_2",
+      "output":{
         "saved_contacts":{
           "file":"./jobs_output/self_scripting/plain_contacts",
           "summary":{
             "number_total":12469,
             "number_drawable":120,
-            "area":47017.2}}}},
+            "area":47017.2}}},
+      "success":true},
     {
       "command":"list-objects",
-      "results":{
+      "output":{
         "objects":[
           {
             "name":"structure.cif",
@@ -159,75 +173,85 @@
           {
             "name":"structure.pdb_2",
             "picked":true,
-            "visible":true}]}},
+            "visible":true}]},
+      "success":true},
     {
       "command":"delete-objects",
-      "results":{
-        "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]}},
+      "output":{
+        "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]},
+      "success":true},
     {
       "command":"load --file './jobs_output/self_scripting/plain_atoms' --format plain",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
           "volume":41027.8},
-        "object_name":"plain_atoms"}},
+        "object_name":"plain_atoms"},
+      "success":true},
     {
       "command":"list-objects",
-      "results":{
+      "output":{
         "objects":[
           {
             "name":"plain_atoms",
             "picked":true,
-            "visible":true}]}},
+            "visible":true}]},
+      "success":true},
     {
       "command":"select-contacts",
-      "on_object":"plain_atoms",
-      "errors":["No contacts available."]},
+      "data_object":"plain_atoms",
+      "errors":["No contacts available."],
+      "success":false},
     {
       "command":"load-contacts --file './jobs_output/self_scripting/plain_contacts'",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "read_contacts":{
           "file":"./jobs_output/self_scripting/plain_contacts",
           "summary":{
             "number_total":12469,
             "number_drawable":120,
-            "area":47017.2}}}},
+            "area":47017.2}}},
+      "success":true},
     {
       "command":"select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "selected_contacts":{
           "summary":{
             "number_total":5,
             "number_drawable":1,
             "area":33.8164},
-          "selection_name":"cs1"}}},
+          "selection_name":"cs1"}},
+      "success":true},
     {
       "command":"set-alias multitag \"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med\"",
-      "results":{
+      "output":{
         "alias":"multitag",
-        "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"}},
+        "script":"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med"},
+      "success":true},
     {
       "command":"tag-contacts {--min-area 6.0} med",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":2636,
           "number_drawable":5,
-          "area":29458.6}}},
+          "area":29458.6}},
+      "success":true},
     {
       "command":"delete-tags-of-contacts {--min-area 8.0} --tags med",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":1675,
           "number_drawable":1,
-          "area":22795.8}}},
+          "area":22795.8}},
+      "success":true},
     {
       "command":"print-contacts {cs1}",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "contacts":[
           {
             "descriptor1":{"chainID":"A","resSeq":8,"serial":49,"resName":"PHE","name":"CD1"},
@@ -257,11 +281,12 @@
         "summary_of_contacts":{
           "number_total":5,
           "number_drawable":1,
-          "area":33.8164}}},
+          "area":33.8164}},
+      "success":true},
     {
       "command":"print-contacts {cs1} --inter-residue",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "contacts":[
           {
             "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
@@ -296,34 +321,38 @@
         "summary_of_contacts":{
           "number_total":5,
           "number_drawable":1,
-          "area":33.8164}}},
+          "area":33.8164}},
+      "success":true},
     {
       "command":"select-atoms {r<64> & A<C,N,O,CA,CB>} as1",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "selected_atoms":{
           "summary":{
             "number_total":5,
             "volume":108.978},
-          "selection_name":"as1"}}},
+          "selection_name":"as1"}},
+      "success":true},
     {
       "command":"tag-atoms {A<C,N,O,CA,CB>} --tag pept",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":1083,
-          "volume":20982.5}}},
+          "volume":20982.5}},
+      "success":true},
     {
       "command":"delete-tags-of-atoms {A<CA,CB>} --tags pept",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":420,
-          "volume":9160.61}}},
+          "volume":9160.61}},
+      "success":true},
     {
       "command":"print-atoms {as1}",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "atoms":[
           {
             "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
@@ -352,11 +381,12 @@
             "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
         "summary_of_atoms":{
           "number_total":5,
-          "volume":108.978}}},
+          "volume":108.978}},
+      "success":true},
     {
       "command":"print-atoms {r<64> & A<C,N,O,CA,CB>}",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "atoms":[
           {
             "descriptor":{"chainID":"A","resSeq":64,"serial":455,"resName":"PHE","name":"N"},
@@ -385,173 +415,194 @@
             "adjuncts":{"oc":1,"tf":6.88,"volume":23.2725}}],
         "summary_of_atoms":{
           "number_total":5,
-          "volume":108.978}}},
+          "volume":108.978}},
+      "success":true},
     {
       "command":"rename-selection-of-atoms nosel1 nodel2",
-      "on_object":"plain_atoms",
-      "errors":["No atoms selection with name 'nosel1'."]},
+      "data_object":"plain_atoms",
+      "errors":["No atoms selection with name 'nosel1'."],
+      "success":false},
     {
       "command":"delete-selections-of-contacts nosel1",
-      "on_object":"plain_atoms",
-      "errors":["Invalid contacts selection name 'nosel1'."]},
+      "data_object":"plain_atoms",
+      "errors":["Invalid contacts selection name 'nosel1'."],
+      "success":false},
     {
       "command":"list-selections-of-atoms",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "selections":[
           {
             "name":"_marked",
             "summary":{"number_total":5,"volume":108.978}},
           {
             "name":"as1",
-            "summary":{"number_total":5,"volume":108.978}}]}},
+            "summary":{"number_total":5,"volume":108.978}}]},
+      "success":true},
     {
       "command":"list-selections-of-contacts",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "selections":[
           {
             "name":"_marked",
             "summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
           {
             "name":"cs1",
-            "summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]}},
+            "summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]},
+      "success":true},
     {
       "command":"color-atoms 0xFFFF00",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
-          "volume":41027.8}}},
+          "volume":41027.8}},
+      "success":true},
     {
       "command":"color-atoms {A<C,CA,N,O>} 0xFF0000",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":884,
-          "volume":15442.3}}},
+          "volume":15442.3}},
+      "success":true},
     {
       "command":"color-atoms (not {A<C,CA,N,O>}) 0x00FF00",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":833,
-          "volume":25585.5}}},
+          "volume":25585.5}},
+      "success":true},
     {
       "command":"show-atoms",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
-          "volume":41027.8}}},
+          "volume":41027.8}},
+      "success":true},
     {
       "command":"write-atoms-as-pymol-cgo {r<70:90>} -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_atoms_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_atoms.py",
           "summary":{
             "number_total":167,
-            "volume":3864.44}}}},
+            "volume":3864.44}}},
+      "success":true},
     {
       "command":"write-atoms-as-pymol-cgo {r<70:90>} -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_atoms_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
           "summary":{
             "number_total":167,
-            "volume":3864.44}}}},
+            "volume":3864.44}}},
+      "success":true},
     {
       "command":"spectrum-atoms",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "spectrum_summary":{
           "count":1717,
           "min_value":2,
-          "max_value":229}}},
+          "max_value":229}},
+      "success":true},
     {
       "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_cartoon_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_cartoon.py",
           "summary":{
             "number_total":16,
-            "volume":262.219}}}},
+            "volume":262.219}}},
+      "success":true},
     {
       "command":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_cartoon_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
           "summary":{
             "number_total":16,
-            "volume":262.219}}}},
+            "volume":262.219}}},
+      "success":true},
     {
       "command":"color-contacts 0x00FF00",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":120,
           "number_drawable":120,
-          "area":211.8}}},
+          "area":211.8}},
+      "success":true},
     {
       "command":"color-contacts {--a1 {A<C,CA,N,O>} --a2 {A<C,CA,N,O>}} 0x00FFFF",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":25,
           "number_drawable":25,
-          "area":52.3005}}},
+          "area":52.3005}},
+      "success":true},
     {
       "command":"color-contacts {-a1 {-m! A<C,CA,N,O>} -a2! {A<C,CA,N,O>}} 0xFFFF00",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":58,
           "number_drawable":58,
-          "area":99.5972}}},
+          "area":99.5972}},
+      "success":true},
     {
       "command":"show-contacts",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":120,
           "number_drawable":120,
-          "area":211.8}}},
+          "area":211.8}},
+      "success":true},
     {
       "command":"write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_contacts_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_contacts.py",
           "summary":{
             "number_total":120,
             "number_drawable":120,
-            "area":211.8}}}},
+            "area":211.8}}},
+      "success":true},
     {
       "command":"color-contacts 0xFF00FF",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "summary_of_contacts":{
           "number_total":120,
           "number_drawable":120,
-          "area":211.8}}},
+          "area":211.8}},
+      "success":true},
     {
       "command":"write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "wrote_contacts_as_pymol_cgo":{
           "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
           "summary":{
             "number_total":120,
             "number_drawable":120,
-            "area":211.8}}}},
+            "area":211.8}}},
+      "success":true},
     {
       "command":"save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'",
-      "on_object":"plain_atoms",
-      "results":{
+      "data_object":"plain_atoms",
+      "output":{
         "saved_atoms_and_contacts":{
           "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
           "summary_of_atoms":{
@@ -560,10 +611,11 @@
           "summary_of_contacts":{
             "number_total":12469,
             "number_drawable":120,
-            "area":47017.2}}}},
+            "area":47017.2}}},
+      "success":true},
     {
       "command":"load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
           "volume":41027.8},
@@ -571,17 +623,19 @@
           "number_total":12469,
           "number_drawable":120,
           "area":47017.2},
-        "object_name":"plain_atoms_and_contacts"}},
+        "object_name":"plain_atoms_and_contacts"},
+      "success":true},
     {
       "command":"load './jobs_output/self_scripting/plain_atoms' -format plain",
-      "results":{
+      "output":{
         "summary_of_atoms":{
           "number_total":1717,
           "volume":41027.8},
-        "object_name":"plain_atoms"}},
+        "object_name":"plain_atoms"},
+      "success":true},
     {
       "command":"list-objects",
-      "results":{
+      "output":{
         "objects":[
           {
             "name":"plain_atoms",
@@ -594,14 +648,16 @@
           {
             "name":"plain_atoms_2",
             "picked":true,
-            "visible":true}]}},
+            "visible":true}]},
+      "success":true},
     {
       "command":"delete-objects -names plain_atoms",
-      "results":{
-        "removed_objects":["plain_atoms"]}},
+      "output":{
+        "removed_objects":["plain_atoms"]},
+      "success":true},
     {
       "command":"list-objects",
-      "results":{
+      "output":{
         "objects":[
           {
             "name":"plain_atoms_and_contacts",
@@ -610,14 +666,17 @@
           {
             "name":"plain_atoms_2",
             "picked":true,
-            "visible":true}]}},
+            "visible":true}]},
+      "success":true},
     {
       "command":"set-alias quit exit",
-      "results":{
+      "output":{
         "alias":"quit",
-        "script":"exit"}},
+        "script":"exit"},
+      "success":true},
     {
-      "command":"exit"}],
+      "command":"exit",
+      "success":true}],
   "script_summary":{
-    "executed":59,
-    "executed_successfully":56}}
+    "commands_all":59,
+    "commands_successful":56}}

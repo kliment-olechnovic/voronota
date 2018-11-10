@@ -58,7 +58,7 @@ protected:
 	void on_after_command_for_data_manager(const GenericCommandForDataManager::CommandRecord& cr)
 	{
 		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(cr.data_manager_ptr);
-		current_command_object().value("on_object")=object_attributes.name;
+		current_command_object().value("data_object")=object_attributes.name;
 	}
 
 	void on_after_command_for_extra_actions(const GenericCommand::CommandRecord&)
@@ -89,8 +89,10 @@ protected:
 
 		if(!cr.heterostorage.variant_object.empty())
 		{
-			current_command_object().object("results")=cr.heterostorage.variant_object;
+			current_command_object().object("output")=cr.heterostorage.variant_object;
 		}
+
+		current_command_object().value("success")=cr.successful;
 
 		on_after_any_command_with_output(current_command_object());
 	}
@@ -99,8 +101,8 @@ protected:
 	{
 		VariantObject& summary=output_.object("script_summary");
 
-		summary.value("executed")=script_record.command_records.size();
-		summary.value("executed_successfully")=script_record.count_successfull_commmand_records();
+		summary.value("commands_all")=script_record.command_records.size();
+		summary.value("commands_successful")=script_record.count_successfull_commmand_records();
 
 		if(!script_record.termination_error.empty())
 		{
