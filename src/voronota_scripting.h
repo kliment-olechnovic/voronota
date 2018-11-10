@@ -11,6 +11,10 @@ public:
 	const char* run(const char*);
 
 private:
+	ScriptingController(const ScriptingController&);
+
+	const ScriptingController& operator=(const ScriptingController&);
+
 	void* implementation_;
 };
 
