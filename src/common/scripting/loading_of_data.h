@@ -1,6 +1,8 @@
 #ifndef COMMON_SCRIPTING_LOADING_OF_DATA_H_
 #define COMMON_SCRIPTING_LOADING_OF_DATA_H_
 
+#include "../../apollota/basic_operations_on_spheres.h"
+
 #include "../construction_of_atomic_balls.h"
 
 namespace common
@@ -124,9 +126,9 @@ public:
 			}
 		}
 
-		if(params.format!="pdb" && params.format!="mmcif" && params.format!="plain")
+		if(params.format!="pdb" && params.format!="mmcif" && params.format!="plain" && params.format!="xyzr" && params.format!="xyz")
 		{
-			throw std::runtime_error(std::string("Unrecognized format '")+params.format+"', allowed formats are 'pdb', 'mmcif' or 'plain'.");
+			throw std::runtime_error(std::string("Unrecognized format '")+params.format+"', allowed formats are 'pdb', 'mmcif', 'plain', 'xyzr' or 'xyz'.");
 		}
 
 		std::ifstream finput(params.file.c_str(), std::ios::in);
@@ -146,7 +148,7 @@ public:
 
 			if(!ConstructionOfAtomicBalls::collect_atomic_balls_from_file(config.atom_radius_assigner, parameters_to_collect_atoms, finput, result.atoms))
 			{
-				throw std::runtime_error(std::string("Failed to read atoms from file '")+params.file+"'.");
+				handle_reading_failure(params.file, params.format);
 			}
 		}
 		else if(params.format=="plain")
@@ -155,10 +157,78 @@ public:
 
 			if(result.atoms.empty())
 			{
-				throw std::runtime_error(std::string("Failed to read atoms from file '")+params.file+"'.");
+				handle_reading_failure(params.file, params.format);
 			}
 
 			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, result.contacts);
+		}
+		else if(params.format=="xyzr")
+		{
+			const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(finput);
+
+			result.atoms.reserve(spheres.size());
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				const apollota::SimpleSphere& ball=spheres[i];
+				Atom atom;
+				atom.value.x=ball.x;
+				atom.value.y=ball.y;
+				atom.value.z=ball.z;
+				atom.value.r=ball.r;
+				atom.crad.resSeq=i;
+				result.atoms.push_back(atom);
+			}
+
+			if(result.atoms.empty())
+			{
+				handle_reading_failure(params.file, params.format);
+			}
+		}
+		else if(params.format=="xyzr")
+		{
+			const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(finput);
+
+			result.atoms.reserve(spheres.size());
+
+			for(std::size_t i=0;i<spheres.size();i++)
+			{
+				const apollota::SimpleSphere& ball=spheres[i];
+				Atom atom;
+				atom.value.x=ball.x;
+				atom.value.y=ball.y;
+				atom.value.z=ball.z;
+				atom.value.r=ball.r;
+				atom.crad.resSeq=i;
+				result.atoms.push_back(atom);
+			}
+
+			if(result.atoms.empty())
+			{
+				handle_reading_failure(params.file, params.format);
+			}
+		}
+		else if(params.format=="xyz")
+		{
+			const std::vector<apollota::SimplePoint> points=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimplePoint> >(finput);
+
+			result.atoms.reserve(points.size());
+
+			for(std::size_t i=0;i<points.size();i++)
+			{
+				const apollota::SimplePoint& point=points[i];
+				Atom atom;
+				atom.value.x=point.x;
+				atom.value.y=point.y;
+				atom.value.z=point.z;
+				atom.value.r=1.0;
+				atom.crad.resSeq=i;
+				result.atoms.push_back(atom);
+			}
+
+			if(result.atoms.empty())
+			{
+				handle_reading_failure(params.file, params.format);
+			}
 		}
 	}
 
@@ -183,6 +253,10 @@ private:
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("plain", ".atoms"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("plain", ".pa"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("plain", ".pac"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyzr", ".xyzr"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyzr", ".XYZR"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".xyz"));
+		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".XYZ"));
 		for(std::multimap<std::string, std::string>::const_iterator it=map_of_format_extensions.begin();it!=map_of_format_extensions.end();++it)
 		{
 			const std::string& format=it->first;
@@ -194,6 +268,11 @@ private:
 			}
 		}
 		return std::string();
+	}
+
+	static void handle_reading_failure(const std::string& file, const std::string& format)
+	{
+		throw std::runtime_error(std::string("Failed to read atoms from file '")+file+"' in '"+format+"' format.");
 	}
 };
 
