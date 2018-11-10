@@ -36,7 +36,7 @@ protected:
 
 	void on_before_any_command(const CommandInput& command_input)
 	{
-		current_command_object(true).value("command")=command_input.get_input_command_string();
+		current_command_object(true).value("line")=command_input.get_input_command_string();
 	}
 
 	void on_after_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)
