@@ -12,7 +12,7 @@
     {
       "command":"load --file ./input/single/structure.cif",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1771,
           "volume":null},
         "object_name":"structure.cif"},
@@ -20,7 +20,7 @@
     {
       "command":"load -file \"./input/single/structure.pdb\"",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1717,
           "volume":null},
         "object_name":"structure.pdb"},
@@ -28,7 +28,7 @@
     {
       "command":"load ./input/single/structure.pdb --include-heteroatoms",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1771,
           "volume":null},
         "object_name":"structure.pdb"},
@@ -178,12 +178,12 @@
     {
       "command":"delete-objects",
       "output":{
-        "removed_objects":["structure.cif","structure.pdb","structure.pdb_2"]},
+        "deleted_objects":["structure.cif","structure.pdb","structure.pdb_2"]},
       "success":true},
     {
       "command":"load --file './jobs_output/self_scripting/plain_atoms' --format plain",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
         "object_name":"plain_atoms"},
@@ -616,10 +616,10 @@
     {
       "command":"load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
-        "summary_of_contacts":{
+        "contacts_summary":{
           "number_total":12469,
           "number_drawable":120,
           "area":47017.2},
@@ -628,7 +628,7 @@
     {
       "command":"load './jobs_output/self_scripting/plain_atoms' -format plain",
       "output":{
-        "summary_of_atoms":{
+        "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
         "object_name":"plain_atoms"},
@@ -653,7 +653,7 @@
     {
       "command":"delete-objects -names plain_atoms",
       "output":{
-        "removed_objects":["plain_atoms"]},
+        "deleted_objects":["plain_atoms"]},
       "success":true},
     {
       "command":"list-objects",
