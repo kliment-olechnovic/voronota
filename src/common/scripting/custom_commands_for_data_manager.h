@@ -46,21 +46,21 @@ public:
 				throw std::runtime_error(std::string("Less than 4 atoms selected."));
 			}
 
-			VariantObject& info=cargs.heterostorage.variant_object.object("restricted_atoms");
+			VariantObject& info=cargs.heterostorage.variant_object;
 
 			if(ids.size()<cargs.data_manager.atoms().size())
 			{
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("old_summary"));
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("atoms_summary_old"));
 
 				cargs.data_manager.restrict_atoms(ids);
 				cargs.change_indicator.changed_atoms=true;
 			}
 			else
 			{
-				info.value("old_summary").set_null();
+				info.value("atoms_summary_old").set_null();
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("summary"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("atoms_summary_new"));
 		}
 	};
 
@@ -170,9 +170,9 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("saved_atoms");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfAtoms(atoms), info.object("summary"));
+				VariantSerialization::write(SummaryOfAtoms(atoms), info.object("atoms_summary"));
 			}
 		}
 
@@ -225,8 +225,8 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("selected_atoms");
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("summary"));
+				VariantObject& info=cargs.heterostorage.variant_object;
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
 				if(name.empty())
 				{
 					info.value("selection_name").set_null();
@@ -295,7 +295,7 @@ public:
 				atom.value.props.tags.insert(tag);
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -399,7 +399,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -452,7 +452,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -509,7 +509,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -557,7 +557,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 
 	private:
@@ -628,7 +628,7 @@ public:
 				cargs.change_indicator.changed_atoms_display_states=true;
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 
 	private:
@@ -691,7 +691,7 @@ public:
 				cargs.change_indicator.changed_atoms_display_states=true;
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -887,9 +887,10 @@ public:
 				}
 			}
 
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("spectrum_summary");
-				info.value("count").set_value_int(ids.size());
 				info.value("min_value")=min_val_actual;
 				info.value("max_value")=max_val_actual;
 			}
@@ -922,7 +923,7 @@ public:
 				VariantSerialization::write(cargs.data_manager.atoms()[*it], atoms.back());
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
 	};
 
@@ -944,7 +945,7 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("summary_of_atoms"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 
 			std::set<std::size_t> residue_ids;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -997,7 +998,6 @@ public:
 				VariantObject chain_info;
 				chain_info.value("chain_name")=(it->first);
 				const std::vector<std::size_t>& group_ids=it->second;
-				chain_info.value("continuous_segments")=group_ids.size();
 				for(std::size_t i=0;i<group_ids.size();i++)
 				{
 					std::ostringstream output_for_residue_sequence;
@@ -1044,7 +1044,7 @@ public:
 							segment_info.value("secondary_structure")=output_for_secondary_structure_sequence.str();
 						}
 					}
-					chain_info.objects_array("segments").push_back(segment_info);
+					chain_info.objects_array("continuous_segments").push_back(segment_info);
 				}
 				cargs.heterostorage.variant_object.objects_array("chains").push_back(chain_info);
 			}
@@ -1171,9 +1171,9 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_atoms_as_pymol_cgo");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("summary"));
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
 			}
 		}
 	};
@@ -1295,9 +1295,9 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_cartoon_as_pymol_cgo");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("summary"));
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
 			}
 		}
 	};
@@ -1316,7 +1316,7 @@ public:
 			{
 				VariantObject info;
 				info.value("name")=(it->first);
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), it->second), info.object("summary"));
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), it->second), info.object("atoms_summary"));
 				cargs.heterostorage.variant_object.objects_array("selections").push_back(info);
 			}
 		}
@@ -1337,37 +1337,36 @@ public:
 
 			const bool all=cargs.input.get_flag("all");
 
+			std::vector<std::string> names;
+
 			if(all)
 			{
-				cargs.input.assert_nothing_unusable();
-				cargs.heterostorage.variant_object.value("deleted_all_selections").set_value_int(
-						cargs.data_manager.selection_manager().map_of_atoms_selections().size());
-				cargs.data_manager.selection_manager().delete_atoms_selections();
+				names=cargs.data_manager.selection_manager().get_names_of_atoms_selections();
 			}
 			else
 			{
+				names=cargs.input.get_list_of_unnamed_values();
+			}
 
-				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-				cargs.input.mark_all_unnamed_values_as_used();
+			cargs.input.mark_all_unnamed_values_as_used();
 
-				cargs.input.assert_nothing_unusable();
+			cargs.input.assert_nothing_unusable();
 
-				if(names.empty())
-				{
-					throw std::runtime_error(std::string("No atoms selections names specified."));
-				}
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selections names specified."));
+			}
 
-				cargs.data_manager.assert_atoms_selections_availability(names);
+			cargs.data_manager.assert_atoms_selections_availability(names);
 
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.data_manager.selection_manager().delete_atoms_selection(names[i]);
-				}
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.data_manager.selection_manager().delete_atoms_selection(names[i]);
+			}
 
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.heterostorage.variant_object.values_array("deleted_selections").push_back(VariantValue(names[i]));
-				}
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.heterostorage.variant_object.values_array("deleted_selections").push_back(VariantValue(names[i]));
 			}
 		}
 	};
@@ -1484,8 +1483,8 @@ public:
 
 				cargs.data_manager.reset_contacts_display_states();
 
-				VariantObject& info=cargs.heterostorage.variant_object.object("constructed_contacts");
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary"));
+				VariantObject& info=cargs.heterostorage.variant_object;
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 				info.value("used_cached_triangulation")=using_cached_triangulation;
 			}
 			else
@@ -1516,9 +1515,9 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("saved_contacts");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary"));
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 			}
 		}
 	};
@@ -1548,9 +1547,9 @@ public:
 				cargs.data_manager.reset_contacts_by_swapping(contacts);
 				cargs.change_indicator.changed_contacts=true;
 
-				VariantObject& info=cargs.heterostorage.variant_object.object("read_contacts");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary"));
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 			}
 			else
 			{
@@ -1594,8 +1593,8 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("selected_contacts");
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("summary"));
+				VariantObject& info=cargs.heterostorage.variant_object;
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
 				if(name.empty())
 				{
 					info.value("selection_name").set_null();
@@ -1664,7 +1663,7 @@ public:
 				contact.value.props.tags.insert(tag);
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -1721,7 +1720,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -1774,7 +1773,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -1831,7 +1830,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -1880,7 +1879,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 
 	private:
@@ -1951,7 +1950,7 @@ public:
 				cargs.change_indicator.changed_contacts_display_states=true;
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 
 	private:
@@ -2014,7 +2013,7 @@ public:
 				cargs.change_indicator.changed_contacts_display_states=true;
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -2215,9 +2214,10 @@ public:
 				}
 			}
 
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
+
 			{
 				VariantObject& info=cargs.heterostorage.variant_object.object("spectrum_summary");
-				info.value("count").set_value_int(ids.size());
 				info.value("min_value")=min_val_actual;
 				info.value("max_value")=max_val_actual;
 			}
@@ -2277,7 +2277,7 @@ public:
 				}
 			}
 
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("summary_of_contacts"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -2399,9 +2399,9 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("wrote_contacts_as_pymol_cgo");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("summary"));
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
 			}
 		}
 	};
@@ -2420,7 +2420,7 @@ public:
 			{
 				VariantObject info;
 				info.value("name")=(it->first);
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), it->second), info.object("summary"));
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), it->second), info.object("contacts_summary"));
 				cargs.heterostorage.variant_object.objects_array("selections").push_back(info);
 			}
 		}
@@ -2441,36 +2441,36 @@ public:
 
 			const bool all=cargs.input.get_flag("all");
 
+			std::vector<std::string> names;
+
 			if(all)
 			{
-				cargs.input.assert_nothing_unusable();
-				cargs.heterostorage.variant_object.value("deleted_all_selections").set_value_int(
-						cargs.data_manager.selection_manager().map_of_contacts_selections().size());
-				cargs.data_manager.selection_manager().delete_contacts_selections();
+				names=cargs.data_manager.selection_manager().get_names_of_contacts_selections();
 			}
 			else
 			{
-				const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
-				cargs.input.mark_all_unnamed_values_as_used();
+				names=cargs.input.get_list_of_unnamed_values();
+			}
 
-				cargs.input.assert_nothing_unusable();
+			cargs.input.mark_all_unnamed_values_as_used();
 
-				if(names.empty())
-				{
-					throw std::runtime_error(std::string("No contacts selections names specified."));
-				}
+			cargs.input.assert_nothing_unusable();
 
-				cargs.data_manager.assert_contacts_selections_availability(names);
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selections names specified."));
+			}
 
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.data_manager.selection_manager().delete_contacts_selection(names[i]);
-				}
+			cargs.data_manager.assert_contacts_selections_availability(names);
 
-				for(std::size_t i=0;i<names.size();i++)
-				{
-					cargs.heterostorage.variant_object.values_array("deleted_selections").push_back(VariantValue(names[i]));
-				}
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.data_manager.selection_manager().delete_contacts_selection(names[i]);
+			}
+
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				cargs.heterostorage.variant_object.values_array("deleted_selections").push_back(VariantValue(names[i]));
 			}
 		}
 	};
@@ -2530,10 +2530,10 @@ public:
 			}
 
 			{
-				VariantObject& info=cargs.heterostorage.variant_object.object("saved_atoms_and_contacts");
+				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("summary_of_atoms"));
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("summary_of_contacts"));
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("atoms_summary"));
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 			}
 		}
 	};
@@ -2619,7 +2619,7 @@ public:
 			ScoringOfDataManagerUsingVoroMQA::Result result;
 			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
 
-			VariantObject& info=cargs.heterostorage.variant_object.object("voromqa_result");
+			VariantObject& info=cargs.heterostorage.variant_object;
 			info.value("quality_score")=result.global_quality_score;
 			info.value("atoms_count")=result.bundle_of_quality.atom_quality_scores.size();
 			info.value("residues_count")=result.bundle_of_quality.raw_residue_quality_scores.size();
@@ -2696,7 +2696,7 @@ public:
 
 				const double quality_score=(sum_of_atom_weights>0.0 ? (sum_of_atom_weighted_scores/sum_of_atom_weights) : 0.0);
 
-				VariantObject& info=cargs.heterostorage.variant_object.object("voromqa_for_atoms");
+				VariantObject& info=cargs.heterostorage.variant_object.object("atoms_result");
 				info.value("atoms_selected").set_value_int(atom_ids.size());
 				info.value("atoms_relevant").set_value_int(atom_ids_with_adjuncts.size());
 				info.value("quality_score")=quality_score;
@@ -2724,11 +2724,11 @@ public:
 					sum_of_energies+=energy;
 				}
 
-				VariantObject& info=cargs.heterostorage.variant_object.object("voromqa_for_contacts");
+				VariantObject& info=cargs.heterostorage.variant_object.object("contacts_result");
 				info.value("contacts_selected").set_value_int(contact_ids.size());
 				info.value("contacts_relevant").set_value_int(contact_ids_with_adjuncts.size());
 				info.value("area")=sum_of_areas;
-				info.value("energy")=sum_of_energies;
+				info.value("pseudo_energy")=sum_of_energies;
 			}
 		}
 	};
