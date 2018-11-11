@@ -118,6 +118,10 @@ public:
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
 		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
 		set_command("echo", new CustomsCommandsForExtraActions::echo());
+		set_command("list-virtual-files", new CustomsCommandsForExtraActions::list_virtual_files());
+		set_command("upload-virtual-file", new CustomsCommandsForExtraActions::upload_virtual_file());
+		set_command("print-virtual-file", new CustomsCommandsForExtraActions::print_virtual_file());
+		set_command("delete-virtual-files", new CustomsCommandsForExtraActions::delete_virtual_files());
 		set_command("setup-loading", new CustomsCommandsForExtraActions::setup_loading());
 		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
 	}

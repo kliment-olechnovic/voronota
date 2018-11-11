@@ -146,6 +146,16 @@ public:
 		return (files().find(filename)->second);
 	}
 
+	static std::size_t count_bytes()
+	{
+		std::size_t sum=0;
+		for(std::map<std::string, std::string>::const_iterator it=files().begin();it!=files().end();++it)
+		{
+			sum+=it->second.size();
+		}
+		return sum;
+	}
+
 private:
 	static std::map<std::string, std::string>& files_mutable()
 	{
