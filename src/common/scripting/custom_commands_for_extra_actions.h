@@ -146,6 +146,34 @@ public:
 		}
 	};
 
+	class save_virtual_file : public GenericCommand
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const std::string file=cargs.input.get_value<std::string>("file");
+
+			cargs.input.assert_nothing_unusable();
+
+			VirtualFileStorage::assert_file_exists(name);
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty output file name."));
+			}
+
+			std::ofstream foutput(file.c_str(), std::ios::out);
+
+			if(!foutput.good())
+			{
+				throw std::runtime_error(std::string("Failed to write to file '")+file+"'.");
+			}
+
+			foutput << VirtualFileStorage::get_file(name);
+		}
+	};
+
 	class print_virtual_file : public GenericCommand
 	{
 	protected:
