@@ -85,6 +85,7 @@ public:
 		{
 			const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
 			cargs.input.mark_all_unnamed_values_as_used();
+
 			cargs.input.assert_nothing_unusable();
 
 			for(std::size_t i=0;i<strings.size();i++)
@@ -106,7 +107,7 @@ public:
 				VariantObject info;
 				info.value("name")=it->first;
 				info.value("bytes")=it->second.size();
-				cargs.heterostorage.variant_object.values_array("files");
+				cargs.heterostorage.variant_object.objects_array("files").push_back(info);
 			}
 
 			cargs.heterostorage.variant_object.value("total_count")=VirtualFileStorage::files().size();
@@ -180,6 +181,7 @@ public:
 		void run(CommandArguments& cargs)
 		{
 			const std::vector<std::string>& filenames=cargs.input.get_list_of_unnamed_values();
+			cargs.input.mark_all_unnamed_values_as_used();
 
 			cargs.input.assert_nothing_unusable();
 
