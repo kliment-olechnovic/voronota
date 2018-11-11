@@ -89,7 +89,115 @@ public:
 
 			for(std::size_t i=0;i<strings.size();i++)
 			{
-				cargs.heterostorage.variant_object.values_array("text").push_back(VariantValue(strings[i]));
+				cargs.heterostorage.variant_object.values_array("lines").push_back(VariantValue(strings[i]));
+			}
+		}
+	};
+
+	class list_virtual_files : public GenericCommand
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			for(std::map<std::string, std::string>::const_iterator it=VirtualFileStorage::files().begin();it!=VirtualFileStorage::files().end();++it)
+			{
+				VariantObject info;
+				info.value("name")=it->first;
+				info.value("bytes")=it->second.size();
+				cargs.heterostorage.variant_object.values_array("files");
+			}
+
+			cargs.heterostorage.variant_object.value("total_count")=VirtualFileStorage::files().size();
+			cargs.heterostorage.variant_object.value("total_bytes")=VirtualFileStorage::count_bytes();
+		}
+	};
+
+	class upload_virtual_file : public GenericCommand
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const std::string file=cargs.input.get_value<std::string>("file");
+
+			cargs.input.assert_nothing_unusable();
+
+			VirtualFileStorage::assert_filename_is_valid(name);
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input file name."));
+			}
+
+			std::ifstream finput(file.c_str(), std::ios::in);
+
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
+			std::istreambuf_iterator<char> eos;
+			std::string data(std::istreambuf_iterator<char>(finput), eos);
+
+			VirtualFileStorage::set_file(name, data);
+		}
+	};
+
+	class print_virtual_file : public GenericCommand
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string filename=cargs.input.get_value_or_first_unused_unnamed_value("name");
+			const bool line_by_line=cargs.input.get_flag("line-by-line");
+
+			cargs.input.assert_nothing_unusable();
+
+			cargs.heterostorage.variant_object.value("name")=filename;
+
+			if(line_by_line)
+			{
+				std::istringstream input(VirtualFileStorage::get_file(filename));
+				while(input.good())
+				{
+					std::string line;
+					std::getline(input, line);
+					cargs.heterostorage.variant_object.values_array("lines").push_back(VariantValue(line));
+				}
+			}
+			else
+			{
+				cargs.heterostorage.variant_object.value("data")=VirtualFileStorage::get_file(filename);
+			}
+		}
+	};
+
+	class delete_virtual_files : public GenericCommand
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::vector<std::string>& filenames=cargs.input.get_list_of_unnamed_values();
+
+			cargs.input.assert_nothing_unusable();
+
+			if(filenames.empty())
+			{
+				VirtualFileStorage::clear();
+			}
+			else
+			{
+				for(std::size_t i=0;i<filenames.size();i++)
+				{
+					VirtualFileStorage::assert_file_exists(filenames[i]);
+				}
+
+				for(std::size_t i=0;i<filenames.size();i++)
+				{
+					VirtualFileStorage::delete_file(filenames[i]);
+				}
 			}
 		}
 	};
