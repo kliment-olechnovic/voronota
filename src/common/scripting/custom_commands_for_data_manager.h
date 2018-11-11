@@ -13,6 +13,7 @@
 #include "scoring_of_data_manager_using_voromqa.h"
 #include "variant_serialization.h"
 #include "updating_of_data_manager_display_states.h"
+#include "virtual_file_storage.h"
 
 namespace common
 {
@@ -155,7 +156,8 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			std::ofstream output(file.c_str(), std::ios::out);
+			VirtualFileStorage::OutputSelector output_selector(file);
+			std::ostream& output=output_selector.stream();
 			assert_io_stream(file, output);
 
 			const std::vector<Atom> atoms=slice_vector_by_ids(cargs.data_manager.atoms(), ids);
@@ -1165,7 +1167,8 @@ public:
 			}
 
 			{
-				std::ofstream output(file.c_str(), std::ios::out);
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
@@ -1289,7 +1292,8 @@ public:
 			}
 
 			{
-				std::ofstream output(file.c_str(), std::ios::out);
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
@@ -1508,7 +1512,8 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			{
-				std::ofstream output(file.c_str(), std::ios::out);
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				enabled_output_of_ContactValue_graphics()=!no_graphics;
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
@@ -2393,7 +2398,8 @@ public:
 			}
 
 			{
-				std::ofstream output(file.c_str(), std::ios::out);
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
 			}
@@ -2520,7 +2526,8 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			{
-				std::ofstream output(file.c_str(), std::ios::out);
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.atoms(), output);
 				output << "_end_atoms\n";

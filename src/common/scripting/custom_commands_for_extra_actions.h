@@ -111,7 +111,8 @@ public:
 
 			if(!radii_file.empty())
 			{
-				std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
+				VirtualFileStorage::InputSelector finput_selector(radii_file);
+				std::istream& radii_file_stream=finput_selector.stream();
 				if(!radii_file_stream.good())
 				{
 					throw std::runtime_error(std::string("Failed to read radii file."));
