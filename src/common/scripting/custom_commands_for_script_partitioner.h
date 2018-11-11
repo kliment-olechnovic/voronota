@@ -1,9 +1,8 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_SCRIPT_PARTITIONER_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_SCRIPT_PARTITIONER_H_
 
-#include <fstream>
-
 #include "generic_command_for_script_partitioner.h"
+#include "virtual_file_storage.h"
 
 namespace common
 {
@@ -83,7 +82,9 @@ public:
 
 			const std::string file=files.front();
 
-			std::ifstream finput(file.c_str(), std::ios::in);
+			VirtualFileStorage::InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
+
 			if(!finput.good())
 			{
 				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
