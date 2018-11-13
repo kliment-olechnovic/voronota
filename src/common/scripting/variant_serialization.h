@@ -44,6 +44,14 @@ public:
 		}
 	}
 
+	static void write(const SummaryOfTriangulation& input, VariantObject& output)
+	{
+		output.value("number_input_balls")=input.number_of_input_balls;
+		output.value("number_all_balls")=input.number_of_all_balls;
+		output.value("number_quadruples")=input.number_of_quadruples;
+		output.value("number_voronoi_vertices")=input.number_of_voronoi_vertices;
+	}
+
 	static void write(const SummaryOfContacts& input, VariantObject& output)
 	{
 		output.value("number_total")=input.number_total;

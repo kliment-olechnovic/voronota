@@ -618,6 +618,27 @@
         "object_name":"plain_atoms"},
       "success":true},
     {
+      "line":"construct-triangulation",
+      "data_object":"plain_atoms_2",
+      "output":{
+        "voronoi_vertices_summary":{
+          "number_input_balls":1717,
+          "number_all_balls":1725,
+          "number_quadruples":11469,
+          "number_voronoi_vertices":11470}},
+      "success":true},
+    {
+      "line":"write-triangulation './jobs_output/self_scripting/plain_triangulation' -link",
+      "data_object":"plain_atoms_2",
+      "output":{
+        "file":"./jobs_output/self_scripting/plain_triangulation",
+        "voronoi_vertices_summary":{
+          "number_input_balls":1717,
+          "number_all_balls":1725,
+          "number_quadruples":11469,
+          "number_voronoi_vertices":11470}},
+      "success":true},
+    {
       "line":"list-objects",
       "output":{
         "objects":[
@@ -662,5 +683,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":59,
-    "commands_successful":56}}
+    "commands_all":61,
+    "commands_successful":58}}

@@ -104,6 +104,34 @@ struct SummaryOfAtoms
 	}
 };
 
+struct SummaryOfTriangulation
+{
+	std::size_t number_of_input_balls;
+	std::size_t number_of_all_balls;
+	std::size_t number_of_quadruples;
+	std::size_t number_of_voronoi_vertices;
+
+	SummaryOfTriangulation() :
+		number_of_input_balls(0),
+		number_of_all_balls(0),
+		number_of_quadruples(0),
+		number_of_voronoi_vertices(0)
+	{
+	}
+
+	explicit SummaryOfTriangulation(const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info) :
+		number_of_input_balls(triangulation_info.number_of_input_spheres),
+		number_of_all_balls(triangulation_info.spheres.size()),
+		number_of_quadruples(triangulation_info.quadruples_map.size()),
+		number_of_voronoi_vertices(0)
+	{
+		for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_info.quadruples_map.begin();it!=triangulation_info.quadruples_map.end();++it)
+		{
+			number_of_voronoi_vertices+=it->second.size();
+		}
+	}
+};
+
 struct SummaryOfContacts
 {
 	std::size_t number_total;

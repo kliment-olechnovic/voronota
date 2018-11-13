@@ -88,6 +88,8 @@ public:
 		set_command("list-selections-of-atoms", new CustomCommandsForDataManager::list_selections_of_atoms());
 		set_command("delete-selections-of-atoms", new CustomCommandsForDataManager::delete_selections_of_atoms());
 		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
+		set_command("construct-triangulation", new CustomCommandsForDataManager::construct_triangulation());
+		set_command("write-triangulation", new CustomCommandsForDataManager::write_triangulation());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
 		set_command("save-contacts", new CustomCommandsForDataManager::save_contacts());
 		set_command("load-contacts", new CustomCommandsForDataManager::load_contacts());
