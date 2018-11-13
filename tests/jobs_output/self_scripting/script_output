@@ -628,15 +628,37 @@
           "number_voronoi_vertices":11470}},
       "success":true},
     {
-      "line":"write-triangulation './jobs_output/self_scripting/plain_triangulation' -link",
+      "line":"write-triangulation 'vfs/plain_triangulation' -link",
       "data_object":"plain_atoms_2",
       "output":{
-        "file":"./jobs_output/self_scripting/plain_triangulation",
+        "file":"vfs/plain_triangulation",
         "voronoi_vertices_summary":{
           "number_input_balls":1717,
           "number_all_balls":1725,
           "number_quadruples":11469,
           "number_voronoi_vertices":11470}},
+      "success":true},
+    {
+      "line":"list-virtual-files",
+      "output":{
+        "files":[
+          {
+            "name":"vfs/plain_triangulation",
+            "bytes":1291834}],
+        "total_count":1,
+        "total_bytes":1291834},
+      "success":true},
+    {
+      "line":"save-virtual-file -name 'vfs/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
+      "success":true},
+    {
+      "line":"delete-virtual-files 'vfs/plain_triangulation'",
+      "success":true},
+    {
+      "line":"list-virtual-files",
+      "output":{
+        "total_count":0,
+        "total_bytes":0},
       "success":true},
     {
       "line":"list-objects",
@@ -683,5 +705,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":61,
-    "commands_successful":58}}
+    "commands_all":65,
+    "commands_successful":62}}
