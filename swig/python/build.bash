@@ -11,11 +11,12 @@ cd ./src
 
 rm main.cpp mode_*.cpp
 
-swig -c++ -python voronota_scripting.i 
+swig -c++ -python -py3 voronota_scripting.i 
 
-g++ -O3 -fPIC -shared -static-libgcc -static-libstdc++ \
+g++ -O3 -fPIC -shared \
+  -pedantic -pedantic-errors -Wall -Werror -Wextra \
   voronota_scripting.cpp \
-  voronota_scripting_wrap.cxx -I/usr/include/python2.7/ \
+  voronota_scripting_wrap.cxx -I/usr/include/python3.6m/ \
   -o _voronota_scripting.so
 
 cd ..
