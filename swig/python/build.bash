@@ -24,4 +24,4 @@ cd ..
 mkdir -p module
 
 cp src/*.so src/*.py ./module
-cp test.py ./module
+cp test.py launch_pymol.py ./module
