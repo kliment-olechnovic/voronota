@@ -13,14 +13,14 @@ rm main.cpp mode_*.cpp
 
 swig -c++ -python voronota_scripting.i 
 
-g++ -fpic -c voronota_scripting.cpp -O3
-
-g++ -fpic -c voronota_scripting_wrap.cxx -I/usr/include/python2.7/ -O3
-
-gcc -shared voronota_scripting.o voronota_scripting_wrap.o -o _voronota_scripting.so -lstdc++
+g++ -O3 -fPIC -shared -static-libgcc -static-libstdc++ \
+  voronota_scripting.cpp \
+  voronota_scripting_wrap.cxx -I/usr/include/python2.7/ \
+  -o _voronota_scripting.so
 
 cd ..
 
 mkdir -p module
 
 cp src/*.so src/*.py ./module
+cp test.py ./module
