@@ -270,6 +270,14 @@ public:
 		}
 	}
 
+	void assert_triangulation_info_availability() const
+	{
+		if(triangulation_info_.quadruples_map.empty())
+		{
+			throw std::runtime_error(std::string("No triangulation info available."));
+		}
+	}
+
 	void assert_contacts_representations_availability() const
 	{
 		if(contacts_representations_descriptor_.names.empty())

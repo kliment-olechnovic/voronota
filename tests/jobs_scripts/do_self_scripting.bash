@@ -75,6 +75,9 @@ save-atoms-and-contacts '$SUBDIR/plain_atoms_and_contacts'
 load '$SUBDIR/plain_atoms_and_contacts' -format plain
 load '$SUBDIR/plain_atoms' -format plain
 
+construct-triangulation
+write-triangulation '$SUBDIR/plain_triangulation' -link
+
 EOF
 } \
 > $SUBDIR/script_input

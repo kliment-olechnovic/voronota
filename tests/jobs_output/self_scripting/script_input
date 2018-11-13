@@ -68,3 +68,6 @@ save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
 load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain
 load './jobs_output/self_scripting/plain_atoms' -format plain
 
+construct-triangulation
+write-triangulation './jobs_output/self_scripting/plain_triangulation' -link
+

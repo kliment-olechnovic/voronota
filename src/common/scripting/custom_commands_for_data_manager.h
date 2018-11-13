@@ -1405,6 +1405,83 @@ public:
 		}
 	};
 
+	class construct_triangulation : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+			parameters_to_construct_triangulation.artificial_boundary_shift=cargs.input.get_value_or_default<double>("boundary-shift", 5.0);
+			parameters_to_construct_triangulation.init_radius_for_BSH=cargs.input.get_value_or_default<double>("init-radius-for-BSH", parameters_to_construct_triangulation.init_radius_for_BSH);
+			parameters_to_construct_triangulation.exclude_hidden_balls=cargs.input.get_flag("exclude-hidden-balls");
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
+
+			ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+			if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
+			{
+				cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
+				cargs.change_indicator.changed_contacts=true;
+			}
+			else
+			{
+				throw std::runtime_error(std::string("Failed to construct triangulation."));
+			}
+
+			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("voronoi_vertices_summary"));
+		}
+	};
+
+	class write_triangulation : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
+			const bool link=cargs.input.get_flag("link");
+
+			cargs.input.assert_nothing_unusable();
+
+			{
+				VirtualFileStorage::OutputSelector output_selector(file);
+				std::ostream& output=output_selector.stream();
+				assert_io_stream(file, output);
+
+				if(link)
+				{
+					apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(
+							apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map),
+							apollota::Triangulation::construct_vertices_graph(cargs.data_manager.triangulation_info().spheres, cargs.data_manager.triangulation_info().quadruples_map),
+							output);
+				}
+				else
+				{
+					apollota::TriangulationOutput::print_vertices_vector(
+							apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map), output);
+				}
+			}
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				info.value("file")=file;
+				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), info.object("voronoi_vertices_summary"));
+			}
+		}
+	};
+
 	class construct_contacts : public GenericCommandForDataManager
 	{
 	public:

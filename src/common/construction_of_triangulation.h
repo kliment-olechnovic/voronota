@@ -2,6 +2,7 @@
 #define COMMON_CONSTRUCTION_OF_TRIANGULATION_H_
 
 #include "../apollota/triangulation.h"
+#include "../apollota/triangulation_output.h"
 #include "../apollota/spheres_boundary_construction.h"
 
 namespace common
