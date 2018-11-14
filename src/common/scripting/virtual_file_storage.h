@@ -19,7 +19,13 @@ public:
 	class InputSelector
 	{
 	public:
-		InputSelector(const std::string& filename) : on_disk_(false)
+		enum LocationType
+		{
+			IN_VIRTUAL_FILE_STORAGE,
+			ON_DISK
+		};
+
+		InputSelector(const std::string& filename) : location_type_(IN_VIRTUAL_FILE_STORAGE)
 		{
 			if(VirtualFileStorage::file_exists(filename))
 			{
@@ -27,19 +33,19 @@ public:
 			}
 			else
 			{
-				on_disk_=true;
+				location_type_=ON_DISK;
 				disk_stream_.open(filename.c_str(), std::ios::in);
 			}
 		}
 
-		bool on_disk() const
+		LocationType location_type() const
 		{
-			return on_disk_;
+			return location_type_;
 		}
 
 		std::istream& stream()
 		{
-			if(on_disk_)
+			if(location_type_==ON_DISK)
 			{
 				return disk_stream_;
 			}
@@ -47,7 +53,7 @@ public:
 		}
 
 	private:
-		bool on_disk_;
+		LocationType location_type_;
 		std::istringstream memory_stream_;
 		std::ifstream disk_stream_;
 	};
@@ -55,31 +61,37 @@ public:
 	class OutputSelector
 	{
 	public:
-		OutputSelector(const std::string& filename) : on_disk_(false), filename_(filename)
+		enum LocationType
+		{
+			IN_VIRTUAL_FILE_STORAGE,
+			ON_DISK
+		};
+
+		OutputSelector(const std::string& filename) : location_type_(IN_VIRTUAL_FILE_STORAGE), filename_(filename)
 		{
 			if(!VirtualFileStorage::filename_is_valid(filename))
 			{
-				on_disk_=true;
+				location_type_=ON_DISK;
 				disk_stream_.open(filename.c_str(), std::ios::out);
 			}
 		}
 
 		~OutputSelector()
 		{
-			if(!on_disk_)
+			if(location_type_==IN_VIRTUAL_FILE_STORAGE)
 			{
 				VirtualFileStorage::set_file(filename_, memory_stream_.str());
 			}
 		}
 
-		bool on_disk() const
+		LocationType location_type() const
 		{
-			return on_disk_;
+			return location_type_;
 		}
 
 		std::ostream& stream()
 		{
-			if(on_disk_)
+			if(location_type_==ON_DISK)
 			{
 				return disk_stream_;
 			}
@@ -87,7 +99,7 @@ public:
 		}
 
 	private:
-		bool on_disk_;
+		LocationType location_type_;
 		std::string filename_;
 		std::ostringstream memory_stream_;
 		std::ofstream disk_stream_;
@@ -95,7 +107,7 @@ public:
 
 	static bool filename_is_valid(const std::string& filename)
 	{
-		return (filename.rfind("vfs/", 0)==0);
+		return (filename.rfind("_vfs/", 0)==0);
 	}
 
 	static void assert_filename_is_valid(const std::string& filename)

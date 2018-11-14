@@ -658,10 +658,10 @@
           "number_voronoi_vertices":11470}},
       "success":true},
     {
-      "line":"write-triangulation 'vfs/plain_triangulation' -link",
+      "line":"write-triangulation '_vfs/plain_triangulation' -link",
       "data_object":"plain_atoms_2",
       "output":{
-        "file":"vfs/plain_triangulation",
+        "file":"_vfs/plain_triangulation",
         "triangulation_summary":{
           "number_input_balls":1717,
           "number_all_balls":1725,
@@ -673,16 +673,16 @@
       "output":{
         "files":[
           {
-            "name":"vfs/plain_triangulation",
+            "name":"_vfs/plain_triangulation",
             "bytes":1291834}],
         "total_count":1,
         "total_bytes":1291834},
       "success":true},
     {
-      "line":"save-virtual-file -name 'vfs/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
+      "line":"save-virtual-file -name '_vfs/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
       "success":true},
     {
-      "line":"delete-virtual-files 'vfs/plain_triangulation'",
+      "line":"delete-virtual-files '_vfs/plain_triangulation'",
       "success":true},
     {
       "line":"list-virtual-files",
