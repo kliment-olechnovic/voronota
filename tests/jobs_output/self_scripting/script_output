@@ -621,7 +621,7 @@
       "line":"construct-triangulation",
       "data_object":"plain_atoms_2",
       "output":{
-        "voronoi_vertices_summary":{
+        "triangulation_summary":{
           "number_input_balls":1717,
           "number_all_balls":1725,
           "number_quadruples":11469,
@@ -632,7 +632,7 @@
       "data_object":"plain_atoms_2",
       "output":{
         "file":"vfs/plain_triangulation",
-        "voronoi_vertices_summary":{
+        "triangulation_summary":{
           "number_input_balls":1717,
           "number_all_balls":1725,
           "number_quadruples":11469,

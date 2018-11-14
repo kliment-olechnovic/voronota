@@ -90,6 +90,7 @@ public:
 		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
 		set_command("construct-triangulation", new CustomCommandsForDataManager::construct_triangulation());
 		set_command("write-triangulation", new CustomCommandsForDataManager::write_triangulation());
+		set_command("print-triangulation", new CustomCommandsForDataManager::print_triangulation());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
 		set_command("save-contacts", new CustomCommandsForDataManager::save_contacts());
 		set_command("load-contacts", new CustomCommandsForDataManager::load_contacts());
