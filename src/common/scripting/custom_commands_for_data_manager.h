@@ -174,6 +174,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfAtoms(atoms), info.object("atoms_summary"));
 			}
 		}
@@ -1167,8 +1171,9 @@ public:
 				}
 			}
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
@@ -1177,6 +1182,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
 			}
 		}
@@ -1292,8 +1301,9 @@ public:
 				}
 			}
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
@@ -1302,6 +1312,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
 			}
 		}
@@ -1456,8 +1470,9 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 
@@ -1478,6 +1493,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), info.object("triangulation_summary"));
 			}
 		}
@@ -1662,8 +1681,9 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				enabled_output_of_ContactValue_graphics()=!no_graphics;
@@ -1673,6 +1693,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 			}
 		}
@@ -2549,8 +2573,9 @@ public:
 				}
 			}
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				opengl_printer.print_pymol_script(name, true, output);
@@ -2559,6 +2584,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
 			}
 		}
@@ -2677,8 +2706,9 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
+			VirtualFileStorage::OutputSelector output_selector(file);
+
 			{
-				VirtualFileStorage::OutputSelector output_selector(file);
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.atoms(), output);
@@ -2691,6 +2721,10 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
+				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("atoms_summary"));
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 			}
