@@ -115,6 +115,24 @@ public:
 		std::ofstream disk_stream_;
 	};
 
+	static bool writable()
+	{
+		return writable_mutable();
+	}
+
+	static void set_writable(const bool status)
+	{
+		writable_mutable()=status;
+	}
+
+	static void assert_writable()
+	{
+		if(!writable())
+		{
+			throw std::runtime_error(std::string("Virtual file storage is set to read-only."));
+		}
+	}
+
 	static bool filename_is_valid(const std::string& filename)
 	{
 		return (filename.rfind("_vfs/", 0)==0);
@@ -148,16 +166,19 @@ public:
 
 	static void clear()
 	{
+		assert_writable();
 		files_mutable().clear();
 	}
 
 	static void delete_file(const std::string& filename)
 	{
+		assert_writable();
 		files_mutable().erase(filename);
 	}
 
 	static void set_file(const std::string& filename, const std::string& data)
 	{
+		assert_writable();
 		assert_filename_is_valid(filename);
 		files_mutable()[filename]=data;
 	}
@@ -179,6 +200,12 @@ public:
 	}
 
 private:
+	static bool& writable_mutable()
+	{
+		static bool status=true;
+		return status;
+	}
+
 	static std::map<std::string, std::string>& files_mutable()
 	{
 		static std::map<std::string, std::string> map;
