@@ -21,11 +21,11 @@ public:
 	public:
 		enum LocationType
 		{
-			IN_VIRTUAL_FILE_STORAGE,
-			ON_DISK
+			VIRTUAL_FILE_STORAGE,
+			DISK
 		};
 
-		InputSelector(const std::string& filename) : location_type_(IN_VIRTUAL_FILE_STORAGE)
+		InputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE)
 		{
 			if(VirtualFileStorage::file_exists(filename))
 			{
@@ -33,7 +33,7 @@ public:
 			}
 			else
 			{
-				location_type_=ON_DISK;
+				location_type_=DISK;
 				disk_stream_.open(filename.c_str(), std::ios::in);
 			}
 		}
@@ -45,7 +45,7 @@ public:
 
 		std::istream& stream()
 		{
-			if(location_type_==ON_DISK)
+			if(location_type_==DISK)
 			{
 				return disk_stream_;
 			}
@@ -63,22 +63,27 @@ public:
 	public:
 		enum LocationType
 		{
-			IN_VIRTUAL_FILE_STORAGE,
-			ON_DISK
+			VIRTUAL_FILE_STORAGE,
+			DISK,
+			TEMPORARY_MEMORY
 		};
 
-		OutputSelector(const std::string& filename) : location_type_(IN_VIRTUAL_FILE_STORAGE), filename_(filename)
+		OutputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE), filename_(filename)
 		{
-			if(!VirtualFileStorage::filename_is_valid(filename))
+			if(filename=="_dump")
 			{
-				location_type_=ON_DISK;
+				location_type_=TEMPORARY_MEMORY;
+			}
+			else if(!VirtualFileStorage::filename_is_valid(filename))
+			{
+				location_type_=DISK;
 				disk_stream_.open(filename.c_str(), std::ios::out);
 			}
 		}
 
 		~OutputSelector()
 		{
-			if(location_type_==IN_VIRTUAL_FILE_STORAGE)
+			if(location_type_==VIRTUAL_FILE_STORAGE)
 			{
 				VirtualFileStorage::set_file(filename_, memory_stream_.str());
 			}
@@ -89,9 +94,14 @@ public:
 			return location_type_;
 		}
 
+		std::string str() const
+		{
+			return memory_stream_.str();
+		}
+
 		std::ostream& stream()
 		{
-			if(location_type_==ON_DISK)
+			if(location_type_==DISK)
 			{
 				return disk_stream_;
 			}
