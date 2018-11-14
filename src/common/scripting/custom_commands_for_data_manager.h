@@ -1438,7 +1438,7 @@ public:
 				throw std::runtime_error(std::string("Failed to construct triangulation."));
 			}
 
-			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("voronoi_vertices_summary"));
+			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("triangulation_summary"));
 		}
 	};
 
@@ -1477,8 +1477,81 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), info.object("voronoi_vertices_summary"));
+				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), info.object("triangulation_summary"));
 			}
+		}
+	};
+
+	class print_triangulation : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+
+			const bool link=cargs.input.get_flag("link");
+
+			cargs.input.assert_nothing_unusable();
+
+			{
+				std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("vertices");
+
+				const apollota::Triangulation::VerticesVector vertices_vector=
+						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
+
+				const apollota::Triangulation::VerticesGraph vertices_graph=(!link ? apollota::Triangulation::VerticesGraph() :
+						apollota::Triangulation::construct_vertices_graph(cargs.data_manager.triangulation_info().spheres, cargs.data_manager.triangulation_info().quadruples_map));
+
+				if(link && vertices_vector.size()!=vertices_graph.size())
+				{
+					throw std::runtime_error(std::string("Invalid graph of vertices."));
+				}
+
+				for(std::size_t i=0;i<vertices_vector.size();i++)
+				{
+					VariantObject info;
+
+					const apollota::Quadruple& quadruple=vertices_vector[i].first;
+					const apollota::SimpleSphere& tangent_sphere=vertices_vector[i].second;
+
+					{
+						std::vector<VariantValue>& suboutput=info.values_array("quadruple");
+						for(std::size_t j=0;j<4;j++)
+						{
+							suboutput.push_back(VariantValue(quadruple.get(j)));
+						}
+					}
+
+					{
+						std::vector<VariantValue>& suboutput=info.values_array("tangent_sphere");
+						suboutput.push_back(VariantValue(tangent_sphere.x));
+						suboutput.push_back(VariantValue(tangent_sphere.y));
+						suboutput.push_back(VariantValue(tangent_sphere.z));
+						suboutput.push_back(VariantValue(tangent_sphere.r));
+					}
+
+					if(link)
+					{
+						const std::vector<std::size_t>& links=vertices_graph[i];
+						std::vector<VariantValue>& suboutput=info.values_array("links");
+						for(std::size_t j=0;j<links.size();j++)
+						{
+							if(links[j]==apollota::npos)
+							{
+								suboutput.push_back(VariantValue(-1));
+							}
+							else
+							{
+								suboutput.push_back(VariantValue(links[j]));
+							}
+						}
+					}
+
+					output_array.push_back(info);
+				}
+			}
+
+			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("triangulation_summary"));
 		}
 	};
 

@@ -51,7 +51,7 @@ public:
 			{
 				const Quadruple& quadruple=vertices_vector[i].first;
 				const SimpleSphere& tangent_sphere=vertices_vector[i].second;
-				const std::vector<std::size_t> links=vertices_graph[i];
+				const std::vector<std::size_t>& links=vertices_graph[i];
 				output << quadruple.get(0) << " " << quadruple.get(1) << " " << quadruple.get(2) << " " << quadruple.get(3) << " ";
 				output << tangent_sphere.x << " " << tangent_sphere.y << " " << tangent_sphere.z << " " << tangent_sphere.r << " ";
 				for(std::size_t j=0;j<links.size();j++)
