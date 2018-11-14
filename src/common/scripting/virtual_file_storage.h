@@ -25,7 +25,7 @@ public:
 			DISK
 		};
 
-		InputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE)
+		explicit InputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE)
 		{
 			if(VirtualFileStorage::file_exists(filename))
 			{
@@ -68,7 +68,7 @@ public:
 			TEMPORARY_MEMORY
 		};
 
-		OutputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE), filename_(filename)
+		explicit OutputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE), filename_(filename)
 		{
 			if(filename=="_dump")
 			{
@@ -79,13 +79,20 @@ public:
 				location_type_=DISK;
 				disk_stream_.open(filename.c_str(), std::ios::out);
 			}
+			else
+			{
+				VirtualFileStorage::assert_writable();
+			}
 		}
 
 		~OutputSelector()
 		{
 			if(location_type_==VIRTUAL_FILE_STORAGE)
 			{
-				VirtualFileStorage::set_file(filename_, memory_stream_.str());
+				if(VirtualFileStorage::writable())
+				{
+					VirtualFileStorage::set_file(filename_, memory_stream_.str());
+				}
 			}
 		}
 
@@ -104,6 +111,10 @@ public:
 			if(location_type_==DISK)
 			{
 				return disk_stream_;
+			}
+			if(location_type_==VIRTUAL_FILE_STORAGE)
+			{
+				VirtualFileStorage::assert_writable();
 			}
 			return memory_stream_;
 		}
