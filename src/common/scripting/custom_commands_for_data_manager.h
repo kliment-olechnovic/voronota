@@ -923,6 +923,7 @@ public:
 			{
 				atoms.push_back(VariantObject());
 				VariantSerialization::write(cargs.data_manager.atoms()[*it], atoms.back());
+				atoms.back().value("id")=(*it);
 			}
 
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
@@ -2429,6 +2430,7 @@ public:
 				{
 					contacts.push_back(VariantObject());
 					VariantSerialization::write(atoms, cargs.data_manager.contacts()[*it], contacts.back());
+					contacts.back().value("id")=(*it);
 				}
 			}
 

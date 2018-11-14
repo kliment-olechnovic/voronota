@@ -137,6 +137,7 @@ public:
 	static void write(const ContactValue& input, VariantObject& output)
 	{
 		output.value("area")=input.area;
+		output.value("distance")=input.dist;
 		if(input.accumulated)
 		{
 			output.value("summed")=input.accumulated;
