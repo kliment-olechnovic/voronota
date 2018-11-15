@@ -55,6 +55,13 @@ public:
 		return record;
 	}
 
+	CommandDocumentation document() const
+	{
+		CommandDocumentation doc;
+		document(doc);
+		return doc;
+	}
+
 	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
 	{
 		return false;
@@ -74,7 +81,11 @@ protected:
 		}
 	};
 
-	virtual void run(CommandArguments& /*cargs*/)
+	virtual void run(CommandArguments&)
+	{
+	}
+
+	virtual void document(CommandDocumentation&) const
 	{
 	}
 };

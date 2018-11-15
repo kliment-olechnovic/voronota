@@ -3,6 +3,7 @@
 
 #include "command_input.h"
 #include "heterogeneous_storage.h"
+#include "command_documentation.h"
 
 namespace common
 {
@@ -71,8 +72,19 @@ public:
 		return record;
 	}
 
+	CommandDocumentation document() const
+	{
+		CommandDocumentation doc;
+		document(doc);
+		return doc;
+	}
+
 protected:
-	virtual void run(CommandArguments& /*cargs*/)
+	virtual void run(CommandArguments&)
+	{
+	}
+
+	virtual void document(CommandDocumentation&) const
 	{
 	}
 };
