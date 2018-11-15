@@ -54,6 +54,13 @@ public:
 		return record;
 	}
 
+	CommandDocumentation document() const
+	{
+		CommandDocumentation doc;
+		document(doc);
+		return doc;
+	}
+
 protected:
 	struct CommandArguments : public GenericCommand::CommandArguments
 	{
@@ -68,7 +75,11 @@ protected:
 		}
 	};
 
-	virtual void run(CommandArguments& /*cargs*/)
+	virtual void run(CommandArguments&)
+	{
+	}
+
+	virtual void document(CommandDocumentation&) const
 	{
 	}
 };
