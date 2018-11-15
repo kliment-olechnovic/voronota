@@ -167,24 +167,24 @@ protected:
 		return congregation_of_data_managers_;
 	}
 
-	GenericCommandForScriptPartitioner* set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
+	void set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
 	{
-		return set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
+		set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
 	}
 
-	GenericCommandForCongregationOfDataManagers* set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
+	void set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
 	{
-		return set_map_key_value_safely(commands_for_congregation_of_data_managers_, name, command_ptr);
+		set_map_key_value_safely(commands_for_congregation_of_data_managers_, name, command_ptr);
 	}
 
-	GenericCommandForDataManager* set_command(const std::string& name, GenericCommandForDataManager* command_ptr)
+	void set_command(const std::string& name, GenericCommandForDataManager* command_ptr)
 	{
-		return set_map_key_value_safely(commands_for_data_manager_, name, command_ptr);
+		set_map_key_value_safely(commands_for_data_manager_, name, command_ptr);
 	}
 
-	GenericCommand* set_command(const std::string& name, GenericCommand* command_ptr)
+	void set_command(const std::string& name, GenericCommand* command_ptr)
 	{
-		return set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
+		set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
 	}
 
 	void unset_command(const std::string& name)
@@ -257,7 +257,7 @@ private:
 	}
 
 	template<typename Map, typename Value>
-	static Value set_map_key_value_safely(Map& map, const std::string& key, Value value)
+	static void set_map_key_value_safely(Map& map, const std::string& key, Value value)
 	{
 		typename Map::iterator it=map.find(key);
 		if(it==map.end())
@@ -279,7 +279,6 @@ private:
 				it->second=value;
 			}
 		}
-		return value;
 	}
 
 	template<typename Map>
