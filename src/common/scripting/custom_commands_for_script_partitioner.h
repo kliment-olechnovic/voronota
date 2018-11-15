@@ -2,7 +2,7 @@
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_SCRIPT_PARTITIONER_H_
 
 #include "generic_command_for_script_partitioner.h"
-#include "virtual_file_storage.h"
+#include "io_selectors.h"
 
 namespace common
 {
@@ -82,7 +82,7 @@ public:
 
 			const std::string file=files.front();
 
-			VirtualFileStorage::InputSelector finput_selector(file);
+			InputSelector finput_selector(file);
 			std::istream& finput=finput_selector.stream();
 
 			if(!finput.good())
