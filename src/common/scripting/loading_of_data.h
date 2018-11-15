@@ -5,7 +5,7 @@
 
 #include "../construction_of_atomic_balls.h"
 
-#include "virtual_file_storage.h"
+#include "io_selectors.h"
 
 namespace common
 {
@@ -133,7 +133,7 @@ public:
 			throw std::runtime_error(std::string("Unrecognized format '")+params.format+"', allowed formats are 'pdb', 'mmcif', 'plain', 'xyzr' or 'xyz'.");
 		}
 
-		VirtualFileStorage::InputSelector finput_selector(params.file);
+		InputSelector finput_selector(params.file);
 		std::istream& finput=finput_selector.stream();
 
 		if(!finput.good())

@@ -249,7 +249,7 @@ public:
 
 			if(!radii_file.empty())
 			{
-				VirtualFileStorage::InputSelector finput_selector(radii_file);
+				InputSelector finput_selector(radii_file);
 				std::istream& radii_file_stream=finput_selector.stream();
 				if(!radii_file_stream.good())
 				{

@@ -13,7 +13,7 @@
 #include "scoring_of_data_manager_using_voromqa.h"
 #include "variant_serialization.h"
 #include "updating_of_data_manager_display_states.h"
-#include "virtual_file_storage.h"
+#include "io_selectors.h"
 
 namespace common
 {
@@ -156,7 +156,7 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(file, output);
 
@@ -174,7 +174,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -1171,7 +1171,7 @@ public:
 				}
 			}
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -1182,7 +1182,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -1301,7 +1301,7 @@ public:
 				}
 			}
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -1312,7 +1312,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -1470,7 +1470,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -1493,7 +1493,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -1681,7 +1681,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -1693,7 +1693,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -2573,7 +2573,7 @@ public:
 				}
 			}
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -2584,7 +2584,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
@@ -2706,7 +2706,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			VirtualFileStorage::OutputSelector output_selector(file);
+			OutputSelector output_selector(file);
 
 			{
 				std::ostream& output=output_selector.stream();
@@ -2721,7 +2721,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
-				if(output_selector.location_type()==VirtualFileStorage::OutputSelector::TEMPORARY_MEMORY)
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
 				{
 					info.value("dump")=output_selector.str();
 				}
