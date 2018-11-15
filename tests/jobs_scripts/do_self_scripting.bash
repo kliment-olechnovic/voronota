@@ -76,10 +76,10 @@ load '$SUBDIR/plain_atoms_and_contacts' -format plain
 load '$SUBDIR/plain_atoms' -format plain
 
 construct-triangulation
-write-triangulation '_vfs/plain_triangulation' -link
+write-triangulation '_virtual/plain_triangulation' -link
 list-virtual-files
-save-virtual-file -name '_vfs/plain_triangulation' -file '$SUBDIR/plain_triangulation'
-delete-virtual-files '_vfs/plain_triangulation'
+save-virtual-file -name '_virtual/plain_triangulation' -file '$SUBDIR/plain_triangulation'
+delete-virtual-files '_virtual/plain_triangulation'
 list-virtual-files
 
 EOF
