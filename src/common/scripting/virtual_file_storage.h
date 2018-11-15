@@ -36,7 +36,7 @@ public:
 
 	static bool filename_is_valid(const std::string& filename)
 	{
-		return (filename.rfind("_vfs/", 0)==0);
+		return (filename.rfind("_virtual", 0)==0);
 	}
 
 	static void assert_filename_is_valid(const std::string& filename)
