@@ -128,8 +128,8 @@ public:
 		set_command("delete-virtual-files", new CustomsCommandsForExtraActions::delete_virtual_files());
 		set_command("setup-loading", new CustomsCommandsForExtraActions::setup_loading());
 		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
-		set_command("man", new CustomsCommandsForExtraActions::man(collection_of_command_documentations_));
-		set_command("man-overview", new CustomsCommandsForExtraActions::man_overview(collection_of_command_documentations_));
+		set_command("explain-command", new CustomsCommandsForExtraActions::explain_command(collection_of_command_documentations_));
+		set_command("list-commands", new CustomsCommandsForExtraActions::list_commands(collection_of_command_documentations_));
 	}
 
 	virtual ~ScriptExecutionManager()
