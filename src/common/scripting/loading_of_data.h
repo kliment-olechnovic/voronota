@@ -187,29 +187,6 @@ public:
 				handle_reading_failure(params.file, params.format);
 			}
 		}
-		else if(params.format=="xyzr")
-		{
-			const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(finput);
-
-			result.atoms.reserve(spheres.size());
-
-			for(std::size_t i=0;i<spheres.size();i++)
-			{
-				const apollota::SimpleSphere& ball=spheres[i];
-				Atom atom;
-				atom.value.x=ball.x;
-				atom.value.y=ball.y;
-				atom.value.z=ball.z;
-				atom.value.r=ball.r;
-				atom.crad.resSeq=i;
-				result.atoms.push_back(atom);
-			}
-
-			if(result.atoms.empty())
-			{
-				handle_reading_failure(params.file, params.format);
-			}
-		}
 		else if(params.format=="xyz")
 		{
 			const std::vector<apollota::SimplePoint> points=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimplePoint> >(finput);
