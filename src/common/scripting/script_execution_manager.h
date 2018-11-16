@@ -128,14 +128,16 @@ public:
 		set_command("delete-virtual-files", new CustomsCommandsForExtraActions::delete_virtual_files());
 		set_command("setup-loading", new CustomsCommandsForExtraActions::setup_loading());
 		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
+		set_command("man", new CustomsCommandsForExtraActions::man(collection_of_command_documentations_));
+		set_command("man-overview", new CustomsCommandsForExtraActions::man_overview(collection_of_command_documentations_));
 	}
 
 	virtual ~ScriptExecutionManager()
 	{
-		delete_map_contents(commands_for_script_partitioner_);
-		delete_map_contents(commands_for_congregation_of_data_managers_);
-		delete_map_contents(commands_for_data_manager_);
-		delete_map_contents(commands_for_extra_actions_);
+		SafeUtilitiesForMapOfPointers::clear(commands_for_script_partitioner_);
+		SafeUtilitiesForMapOfPointers::clear(commands_for_congregation_of_data_managers_);
+		SafeUtilitiesForMapOfPointers::clear(commands_for_data_manager_);
+		SafeUtilitiesForMapOfPointers::clear(commands_for_extra_actions_);
 	}
 
 	bool exit_requested() const
@@ -167,32 +169,53 @@ protected:
 		return congregation_of_data_managers_;
 	}
 
+	void unset_command(const std::string& name)
+	{
+		SafeUtilitiesForMapOfPointers::erase(commands_for_script_partitioner_, name);
+		SafeUtilitiesForMapOfPointers::erase(commands_for_congregation_of_data_managers_, name);
+		SafeUtilitiesForMapOfPointers::erase(commands_for_data_manager_, name);
+		SafeUtilitiesForMapOfPointers::erase(commands_for_extra_actions_, name);
+		collection_of_command_documentations_.delete_documentation(name);
+	}
+
 	void set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
 	{
-		set_map_key_value_safely(commands_for_script_partitioner_, name, command_ptr);
+		unset_command(name);
+		if(command_ptr!=0)
+		{
+			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_script_partitioner_, name, command_ptr);
+			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
+		}
 	}
 
 	void set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
 	{
-		set_map_key_value_safely(commands_for_congregation_of_data_managers_, name, command_ptr);
+		unset_command(name);
+		if(command_ptr!=0)
+		{
+			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_congregation_of_data_managers_, name, command_ptr);
+			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
+		}
 	}
 
 	void set_command(const std::string& name, GenericCommandForDataManager* command_ptr)
 	{
-		set_map_key_value_safely(commands_for_data_manager_, name, command_ptr);
+		unset_command(name);
+		if(command_ptr!=0)
+		{
+			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_data_manager_, name, command_ptr);
+			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
+		}
 	}
 
 	void set_command(const std::string& name, GenericCommand* command_ptr)
 	{
-		set_map_key_value_safely(commands_for_extra_actions_, name, command_ptr);
-	}
-
-	void unset_command(const std::string& name)
-	{
-		unset_map_key_safely(commands_for_script_partitioner_, name);
-		unset_map_key_safely(commands_for_congregation_of_data_managers_, name);
-		unset_map_key_safely(commands_for_data_manager_, name);
-		unset_map_key_safely(commands_for_extra_actions_, name);
+		unset_command(name);
+		if(command_ptr!=0)
+		{
+			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_extra_actions_, name, command_ptr);
+			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
+		}
 	}
 
 	virtual void on_before_script(const std::string&)
@@ -244,53 +267,58 @@ private:
 
 	const ScriptExecutionManager& operator=(const ScriptExecutionManager&);
 
-	template<typename Map>
-	static void delete_map_contents(Map& map)
+	class SafeUtilitiesForMapOfPointers
 	{
-		for(typename Map::iterator it=map.begin();it!=map.end();++it)
+	public:
+		template<typename Map>
+		static void clear(Map& map)
 		{
-			if(it->second!=0)
+			for(typename Map::iterator it=map.begin();it!=map.end();++it)
 			{
-				delete it->second;
+				if(it->second!=0)
+				{
+					delete it->second;
+				}
 			}
+			map.clear();
 		}
-	}
 
-	template<typename Map, typename Value>
-	static void set_map_key_value_safely(Map& map, const std::string& key, Value value)
-	{
-		typename Map::iterator it=map.find(key);
-		if(it==map.end())
+		template<typename Map, typename PointerValue>
+		static void set_key_value(Map& map, const std::string& key, PointerValue pointer_value)
 		{
-			if(value!=0)
+			typename Map::iterator it=map.find(key);
+			if(it==map.end())
 			{
-				map[key]=value;
-			}
-		}
-		else
-		{
-			delete it->second;
-			if(value==0)
-			{
-				map.erase(it);
+				if(pointer_value!=0)
+				{
+					map[key]=pointer_value;
+				}
 			}
 			else
 			{
-				it->second=value;
+				delete it->second;
+				if(pointer_value==0)
+				{
+					map.erase(it);
+				}
+				else
+				{
+					it->second=pointer_value;
+				}
 			}
 		}
-	}
 
-	template<typename Map>
-	static void unset_map_key_safely(Map& map, const std::string& key)
-	{
-		typename Map::iterator it=map.find(key);
-		if(it!=map.end())
+		template<typename Map>
+		static void erase(Map& map, const std::string& key)
 		{
-			delete it->second;
-			map.erase(it);
+			typename Map::iterator it=map.find(key);
+			if(it!=map.end())
+			{
+				delete it->second;
+				map.erase(it);
+			}
 		}
-	}
+	};
 
 	void execute_script(const std::string& script, const bool exit_on_first_failure, ScriptRecord& script_record)
 	{
@@ -417,6 +445,7 @@ private:
 	std::map<std::string, GenericCommand*> commands_for_extra_actions_;
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
+	CollectionOfCommandDocumentations collection_of_command_documentations_;
 	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
 	bool exit_requested_;
 };

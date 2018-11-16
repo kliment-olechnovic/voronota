@@ -55,8 +55,7 @@ public:
 		}
 	};
 
-	CommandDocumentation() :
-		short_description_(default_short_description())
+	CommandDocumentation()
 	{
 	}
 
@@ -65,12 +64,17 @@ public:
 	{
 	}
 
+	bool empty() const
+	{
+		return (short_description_.empty() && full_description_.empty() && option_descriptions_.empty());
+	}
+
 	const std::string& get_short_description() const
 	{
 		return short_description_;
 	}
 
-	const std::string& get_full_description_() const
+	const std::string& get_full_description() const
 	{
 		if(full_description_.empty())
 		{
@@ -86,14 +90,7 @@ public:
 
 	void set_short_description(const std::string& description)
 	{
-		if(description.empty())
-		{
-			short_description_=default_short_description();
-		}
-		else
-		{
-			short_description_=description;
-		}
+		short_description_=description;
 	}
 
 	void set_full_description(const std::string& description)
@@ -124,11 +121,6 @@ public:
 	}
 
 private:
-	static std::string default_short_description()
-	{
-		return std::string("Undocumented.");
-	}
-
 	std::string short_description_;
 	std::string full_description_;
 	std::vector<OptionDescription> option_descriptions_;

@@ -2,8 +2,9 @@
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
 
 #include "../../auxiliaries/time_utilities.h"
-#include "generic_command.h"
 
+#include "generic_command.h"
+#include "collection_of_command_documentations.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 
@@ -281,6 +282,97 @@ public:
 				throw std::runtime_error(std::string("Failed to setup VoroMQA."));
 			}
 		}
+	};
+
+	class man : public GenericCommand
+	{
+	public:
+		explicit man(CollectionOfCommandDocumentations& collection_of_docs) :
+			collection_of_command_documentations_(collection_of_docs)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string name=cargs.input.get_value_or_first_unused_unnamed_value("name");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(collection_of_command_documentations_.map_of_documentations().count(name)==0)
+			{
+				throw std::runtime_error(std::string("Invalid command name '")+name+"'.");
+			}
+
+			const CommandDocumentation doc=collection_of_command_documentations_.get_documentation(name);
+
+			VariantObject& info=cargs.heterostorage.variant_object;
+
+			info.value("command")=name;
+
+			info.value("short_description")=doc.get_short_description();
+
+			if(!doc.get_full_description().empty())
+			{
+				info.value("full_description")=doc.get_full_description();
+			}
+
+			if(!doc.get_option_descriptions().empty())
+			{
+				std::vector<VariantObject>& output_array=info.objects_array("options");
+				output_array.reserve(doc.get_option_descriptions().size());
+				for(std::size_t i=0;i<doc.get_option_descriptions().size();i++)
+				{
+					const CommandDocumentation::OptionDescription& od=doc.get_option_descriptions()[i];
+					VariantObject obj;
+					obj.value("name")=od.name;
+					obj.value("required")=od.required;
+					obj.value("value_type")=od.value_type;
+					obj.value("description")=od.description;
+					output_array.push_back(obj);
+				}
+			}
+		}
+
+	private:
+		const CollectionOfCommandDocumentations& collection_of_command_documentations_;
+	};
+
+	class man_overview : public GenericCommand
+	{
+	public:
+		explicit man_overview(CollectionOfCommandDocumentations& collection_of_docs) :
+			collection_of_command_documentations_(collection_of_docs)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			const std::vector<std::string> names=collection_of_command_documentations_.get_all_names();
+
+			if(names.empty())
+			{
+				throw std::runtime_error(std::string("No commands documented."));
+			}
+
+			std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("summaries");
+
+			for(std::size_t i=0;i<names.size();i++)
+			{
+				const CommandDocumentation doc=collection_of_command_documentations_.get_documentation(names[i]);
+				VariantObject obj;
+				obj.value("command")=names[i];
+				obj.value("short_description")=doc.get_short_description();
+				obj.value("described_options")=doc.get_option_descriptions().size();
+				output_array.push_back(obj);
+			}
+		}
+
+	private:
+		const CollectionOfCommandDocumentations& collection_of_command_documentations_;
 	};
 };
 

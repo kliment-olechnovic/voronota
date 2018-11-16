@@ -82,6 +82,9 @@ save-virtual-file -name '_virtual/plain_triangulation' -file '$SUBDIR/plain_tria
 delete-virtual-files '_virtual/plain_triangulation'
 list-virtual-files
 
+man color-contacts
+man-overview
+
 EOF
 } \
 > $SUBDIR/script_input
