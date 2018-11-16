@@ -284,10 +284,10 @@ public:
 		}
 	};
 
-	class man : public GenericCommand
+	class explain_command : public GenericCommand
 	{
 	public:
-		explicit man(CollectionOfCommandDocumentations& collection_of_docs) :
+		explicit explain_command(CollectionOfCommandDocumentations& collection_of_docs) :
 			collection_of_command_documentations_(collection_of_docs)
 		{
 		}
@@ -338,10 +338,10 @@ public:
 		const CollectionOfCommandDocumentations& collection_of_command_documentations_;
 	};
 
-	class man_overview : public GenericCommand
+	class list_commands : public GenericCommand
 	{
 	public:
-		explicit man_overview(CollectionOfCommandDocumentations& collection_of_docs) :
+		explicit list_commands(CollectionOfCommandDocumentations& collection_of_docs) :
 			collection_of_command_documentations_(collection_of_docs)
 		{
 		}
@@ -358,15 +358,14 @@ public:
 				throw std::runtime_error(std::string("No commands documented."));
 			}
 
-			std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("summaries");
+			std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("outlines");
 
 			for(std::size_t i=0;i<names.size();i++)
 			{
 				const CommandDocumentation doc=collection_of_command_documentations_.get_documentation(names[i]);
 				VariantObject obj;
-				obj.value("command")=names[i];
+				obj.value("name")=names[i];
 				obj.value("short_description")=doc.get_short_description();
-				obj.value("described_options")=doc.get_option_descriptions().size();
 				output_array.push_back(obj);
 			}
 		}
