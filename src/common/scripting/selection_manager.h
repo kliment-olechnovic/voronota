@@ -17,34 +17,29 @@ public:
 		std::set<std::size_t> from_ids;
 		std::string expression_string;
 		bool full_residues;
-		bool altered;
 
 		Query() :
 			expression_string("{}"),
-			full_residues(false),
-			altered(false)
+			full_residues(false)
 		{
 		}
 
 		explicit Query(const std::string& expression_string) :
 			expression_string(expression_string),
-			full_residues(false),
-			altered(false)
+			full_residues(false)
 		{
 		}
 
 		Query(const std::string& expression_string, const bool full_residues) :
 			expression_string(expression_string),
-			full_residues(full_residues),
-			altered(false)
+			full_residues(full_residues)
 		{
 		}
 
 		Query(const std::set<std::size_t>& from_ids, const std::string& expression_string, const bool full_residues) :
 			from_ids(from_ids),
 			expression_string(expression_string),
-			full_residues(full_residues),
-			altered(false)
+			full_residues(full_residues)
 		{
 		}
 	};
