@@ -453,7 +453,7 @@ public:
 
 	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, contacts_display_states_);
+		return set_representation_implemented(contacts_representations_descriptor_.names, representation_id, statuses, contacts_display_states_);
 	}
 
 	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
@@ -698,6 +698,21 @@ public:
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
 		{
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
+		}
+		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
+		set_contacts_representations_implemented_if_required_always();
+	}
+
+	void reset_contacts_display_states(const std::set<std::size_t>& ids)
+	{
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts_.size())
+			{
+				contacts_display_states_[id]=DisplayState();
+				contacts_display_states_[id].drawable=(!contacts_[id].value.graphics.empty());
+			}
 		}
 		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
 		set_contacts_representations_implemented_if_required_always();
