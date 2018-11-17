@@ -1687,7 +1687,7 @@ public:
 
 			ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, cargs.data_manager.triangulation_info(), ids, cargs.data_manager.contacts_mutable());
 
-			cargs.data_manager.reset_contacts_display_states();
+			cargs.data_manager.reset_contacts_display_states(ids);
 
 			cargs.change_indicator.changed_contacts=true;
 
@@ -1726,8 +1726,9 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				cargs.data_manager.contacts_mutable()[*it].value.graphics.clear();
-				cargs.data_manager.contacts_display_states_mutable()[*it]=DataManager::DisplayState();
 			}
+
+			cargs.data_manager.reset_contacts_display_states(ids);
 
 			cargs.change_indicator.changed_contacts=true;
 
