@@ -137,6 +137,24 @@
           "area":211.8}},
       "success":true},
     {
+      "line":"draw-contacts '{--atom1 {r<83>}}'",
+      "data_object":"structure.pdb_2",
+      "output":{
+        "contacts_summary":{
+          "number_total":155,
+          "number_drawable":155,
+          "area":344.904}},
+      "success":true},
+    {
+      "line":"delete-drawings-of-contacts '{-max-seq-sep 0}'",
+      "data_object":"structure.pdb_2",
+      "output":{
+        "contacts_summary":{
+          "number_total":35,
+          "number_drawable":0,
+          "area":133.104}},
+      "success":true},
+    {
       "line":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
       "data_object":"structure.pdb_2",
       "output":{
@@ -746,6 +764,9 @@
             "name":"delete-adjuncts-of-contacts",
             "short_description":""},
           {
+            "name":"delete-drawings-of-contacts",
+            "short_description":""},
+          {
             "name":"delete-objects",
             "short_description":""},
           {
@@ -998,5 +1019,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":68,
-    "commands_successful":65}}
+    "commands_all":70,
+    "commands_successful":67}}
