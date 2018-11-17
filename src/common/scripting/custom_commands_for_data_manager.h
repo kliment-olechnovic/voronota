@@ -3142,7 +3142,6 @@ private:
 		if(input.is_option(type_for_expression))
 		{
 			query.expression_string=input.get_value<std::string>(type_for_expression);
-			query.altered=true;
 		}
 		else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
 		{
@@ -3155,7 +3154,6 @@ private:
 					if(!candidate.empty() && candidate.find_first_of("({")==0)
 					{
 						query.expression_string=candidate;
-						query.altered=true;
 						input.mark_unnamed_value_as_used(i);
 						found=true;
 					}
@@ -3166,7 +3164,6 @@ private:
 		if(input.is_option(type_for_full_residues))
 		{
 			query.full_residues=input.get_flag(type_for_full_residues);
-			query.altered=true;
 		}
 
 		{
@@ -3174,7 +3171,6 @@ private:
 			if(!forced_ids_vector.empty())
 			{
 				query.from_ids.insert(forced_ids_vector.begin(), forced_ids_vector.end());
-				query.altered=true;
 			}
 		}
 
