@@ -208,31 +208,21 @@ public:
 
 	struct ParametersToEnhanceContacts
 	{
-		double probe;
-		double step;
-		int projections;
-		bool simplify;
-		int sih_depth;
 		bool tag_centrality;
 		bool tag_peripherial;
+		double probe;
 
 		ParametersToEnhanceContacts() :
-			probe(1.4),
-			step(0.2),
-			projections(5),
-			simplify(false),
-			sih_depth(3),
 			tag_centrality(true),
-			tag_peripherial(false)
+			tag_peripherial(false),
+			probe(1.4)
 		{
 		}
 	};
 
-	template<typename ContainerOfIds>
 	static bool enhance_contacts(
 			const ParametersToEnhanceContacts& parameters,
 			const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
-			const ContainerOfIds& draw_ids,
 			std::vector<Contact>& contacts)
 	{
 		if(contacts.empty())
@@ -240,7 +230,7 @@ public:
 			return false;
 		}
 
-		if(!parameters.tag_centrality && !parameters.tag_peripherial && draw_ids.empty())
+		if(!parameters.tag_centrality && !parameters.tag_peripherial)
 		{
 			return false;
 		}
@@ -252,6 +242,80 @@ public:
 			{
 				tag_nonsolvent=!contacts[i].solvent();
 			}
+		}
+
+		if(!tag_nonsolvent)
+		{
+			return false;
+		}
+
+		apollota::Triangulation::VerticesVector vertices_vector;
+		apollota::TriangulationQueries::PairsMap pairs_vertices;
+
+		if(tag_nonsolvent && parameters.tag_peripherial)
+		{
+			if(vertices_vector.empty())
+			{
+				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			}
+			if(pairs_vertices.empty())
+			{
+				pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+			}
+			for(std::size_t i=0;i<contacts.size();i++)
+			{
+				Contact& contact=contacts[i];
+				if(!contact.solvent() && apollota::check_inter_atom_contact_peripherial(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe))
+				{
+					contact.value.props.tags.insert("peripherial");
+				}
+			}
+		}
+
+		if(tag_nonsolvent && parameters.tag_centrality)
+		{
+			const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			for(std::size_t i=0;i<contacts.size();i++)
+			{
+				Contact& contact=contacts[i];
+				if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle_of_triangulation_information.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
+				{
+					contact.value.props.tags.insert("central");
+				}
+			}
+		}
+
+		return true;
+	}
+
+	struct ParametersToDrawContacts
+	{
+		double probe;
+		double step;
+		int projections;
+		bool simplify;
+		int sih_depth;
+
+		ParametersToDrawContacts() :
+			probe(1.4),
+			step(0.2),
+			projections(5),
+			simplify(false),
+			sih_depth(3)
+		{
+		}
+	};
+
+	template<typename ContainerOfIds>
+	static bool draw_contacts(
+			const ParametersToDrawContacts& parameters,
+			const ConstructionOfTriangulation::BundleOfTriangulationInformation& bundle_of_triangulation_information,
+			const ContainerOfIds& draw_ids,
+			std::vector<Contact>& contacts)
+	{
+		if(contacts.empty() || draw_ids.empty())
+		{
+			return false;
 		}
 
 		std::vector<std::size_t> draw_solvent_ids;
@@ -272,7 +336,7 @@ public:
 			}
 		}
 
-		if(!tag_nonsolvent && draw_solvent_ids.empty() && draw_nonsolvent_ids.empty())
+		if(draw_solvent_ids.empty() && draw_nonsolvent_ids.empty())
 		{
 			return false;
 		}
@@ -309,39 +373,6 @@ public:
 			{
 				Contact& contact=contacts[*it];
 				contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections, parameters.simplify);
-			}
-		}
-
-		if(tag_nonsolvent && parameters.tag_peripherial)
-		{
-			if(vertices_vector.empty())
-			{
-				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-			}
-			if(pairs_vertices.empty())
-			{
-				pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-			}
-			for(std::size_t i=0;i<contacts.size();i++)
-			{
-				Contact& contact=contacts[i];
-				if(!contact.solvent() && apollota::check_inter_atom_contact_peripherial(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe))
-				{
-					contact.value.props.tags.insert("peripherial");
-				}
-			}
-		}
-
-		if(tag_nonsolvent && parameters.tag_centrality)
-		{
-			const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
-			for(std::size_t i=0;i<contacts.size();i++)
-			{
-				Contact& contact=contacts[i];
-				if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle_of_triangulation_information.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
-				{
-					contact.value.props.tags.insert("central");
-				}
 			}
 		}
 
