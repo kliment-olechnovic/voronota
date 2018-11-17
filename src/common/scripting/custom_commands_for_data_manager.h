@@ -1631,6 +1631,7 @@ public:
 			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, cargs.data_manager.triangulation_info(), bundle_of_contact_information))
 			{
 				cargs.data_manager.reset_contacts_by_swapping(bundle_of_contact_information.contacts);
+
 				cargs.change_indicator.changed_contacts=true;
 
 				if(parameters_to_construct_contacts.calculate_volumes)
@@ -1678,7 +1679,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
@@ -1688,8 +1689,49 @@ public:
 
 			cargs.data_manager.reset_contacts_display_states();
 
+			cargs.change_indicator.changed_contacts_display_states=true;
+
 			VariantObject& info=cargs.heterostorage.variant_object;
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
+		}
+	};
+
+	class delete_drawings_of_contacts : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
+					std::set<std::size_t>(),
+					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable contacts selected."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				cargs.data_manager.contacts_mutable()[*it].value.graphics.clear();
+				cargs.data_manager.contacts_display_states_mutable()[*it]=DataManager::DisplayState();
+			}
+
+			cargs.change_indicator.changed_contacts_display_states=true;
+
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 

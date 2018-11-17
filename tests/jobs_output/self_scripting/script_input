@@ -13,6 +13,8 @@ printseq
 construct-contacts
 construct-contacts --calculate-volumes
 draw-contacts '{--atom1 {r<83>} -min-seq-sep 1}'
+draw-contacts '{--atom1 {r<83>}}'
+delete-drawings-of-contacts '{-max-seq-sep 0}'
 save-atoms --file './jobs_output/self_scripting/plain_atoms'
 save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume
 save-contacts './jobs_output/self_scripting/plain_contacts'
