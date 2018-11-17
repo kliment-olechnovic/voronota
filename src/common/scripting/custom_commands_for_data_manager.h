@@ -1689,7 +1689,7 @@ public:
 
 			cargs.data_manager.reset_contacts_display_states();
 
-			cargs.change_indicator.changed_contacts_display_states=true;
+			cargs.change_indicator.changed_contacts=true;
 
 			VariantObject& info=cargs.heterostorage.variant_object;
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
@@ -1729,7 +1729,7 @@ public:
 				cargs.data_manager.contacts_display_states_mutable()[*it]=DataManager::DisplayState();
 			}
 
-			cargs.change_indicator.changed_contacts_display_states=true;
+			cargs.change_indicator.changed_contacts=true;
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
