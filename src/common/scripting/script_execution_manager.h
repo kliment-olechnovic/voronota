@@ -92,6 +92,7 @@ public:
 		set_command("write-triangulation", new CustomCommandsForDataManager::write_triangulation());
 		set_command("print-triangulation", new CustomCommandsForDataManager::print_triangulation());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
+		set_command("draw-contacts", new CustomCommandsForDataManager::draw_contacts());
 		set_command("save-contacts", new CustomCommandsForDataManager::save_contacts());
 		set_command("load-contacts", new CustomCommandsForDataManager::load_contacts());
 		set_command("select-contacts", new CustomCommandsForDataManager::select_contacts());

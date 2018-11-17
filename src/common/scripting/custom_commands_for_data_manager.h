@@ -1596,14 +1596,8 @@ public:
 			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
 			ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
-			parameters_to_enhance_contacts.step=cargs.input.get_value_or_default<double>("visual-step", parameters_to_enhance_contacts.step);
-			parameters_to_enhance_contacts.projections=cargs.input.get_value_or_default<int>("visual-projections", parameters_to_enhance_contacts.projections);
-			parameters_to_enhance_contacts.simplify=cargs.input.get_flag("visual-simplify");
-			parameters_to_enhance_contacts.sih_depth=cargs.input.get_value_or_default<int>("visual-sih-depth", parameters_to_enhance_contacts.sih_depth);
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
-			const SelectionManager::Query render_parameters_for_selecting=read_generic_selecting_query("render-", "{--min-seq-sep 1}", cargs.input);
-			const bool render=(cargs.input.get_flag("render-default") || render_parameters_for_selecting.altered);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -1647,15 +1641,7 @@ public:
 					}
 				}
 
-				std::set<std::size_t> draw_ids;
-				if(render)
-				{
-					draw_ids=cargs.data_manager.selection_manager().select_contacts(render_parameters_for_selecting);
-				}
-
-				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, cargs.data_manager.triangulation_info(), draw_ids, cargs.data_manager.contacts_mutable());
-
-				cargs.data_manager.reset_contacts_display_states();
+				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, cargs.data_manager.triangulation_info(), cargs.data_manager.contacts_mutable());
 
 				VariantObject& info=cargs.heterostorage.variant_object;
 				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
@@ -1665,6 +1651,45 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to construct contacts."));
 			}
+		}
+	};
+
+	class draw_contacts : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+			cargs.data_manager.assert_contacts_availability();
+
+			ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
+			parameters_to_draw_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
+			parameters_to_draw_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
+			parameters_to_draw_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_draw_contacts.projections);
+			parameters_to_draw_contacts.simplify=cargs.input.get_flag("simplify");
+			parameters_to_draw_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_draw_contacts.sih_depth);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query("", "{--min-seq-sep 1}", cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, cargs.data_manager.triangulation_info(), ids, cargs.data_manager.contacts_mutable());
+
+			cargs.data_manager.reset_contacts_display_states();
+
+			VariantObject& info=cargs.heterostorage.variant_object;
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
 		}
 	};
 

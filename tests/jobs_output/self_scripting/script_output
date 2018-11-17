@@ -118,14 +118,23 @@
         "used_cached_triangulation":false},
       "success":true},
     {
-      "line":"construct-contacts --calculate-volumes --render-use '{--atom1 {r<83>} -min-seq-sep 1}'",
+      "line":"construct-contacts --calculate-volumes",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
           "number_total":12469,
-          "number_drawable":120,
+          "number_drawable":0,
           "area":47017.2},
         "used_cached_triangulation":true},
+      "success":true},
+    {
+      "line":"draw-contacts '{--atom1 {r<83>} -min-seq-sep 1}'",
+      "data_object":"structure.pdb_2",
+      "output":{
+        "contacts_summary":{
+          "number_total":120,
+          "number_drawable":120,
+          "area":211.8}},
       "success":true},
     {
       "line":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
@@ -755,6 +764,9 @@
             "name":"delete-virtual-files",
             "short_description":""},
           {
+            "name":"draw-contacts",
+            "short_description":""},
+          {
             "name":"echo",
             "short_description":""},
           {
@@ -986,5 +998,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":67,
-    "commands_successful":64}}
+    "commands_all":68,
+    "commands_successful":65}}
