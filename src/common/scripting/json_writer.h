@@ -61,7 +61,6 @@ public:
 	static void write(const Configuration& configuration, const VariantObject& object, std::ostream& output)
 	{
 		JSONWriter(configuration).print(object, output);
-		output << "\n";
 	}
 
 	static void write(const VariantObject& object, std::ostream& output)
