@@ -73,6 +73,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		std::istreambuf_iterator<char> eos;
 		std::string script(std::istreambuf_iterator<char>(std::cin), eos);
 		common::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, false), std::cout);
+		std::cout << std::endl;
 	}
 }
 
