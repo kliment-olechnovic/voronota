@@ -68,13 +68,6 @@ public:
 		write(Configuration::get_default_configuration(), object, output);
 	}
 
-private:
-	explicit JSONWriter(const Configuration& configuration) :
-		level_(0),
-		config_(configuration)
-	{
-	}
-
 	static std::string replace_special_characters_with_escape_sequences(const std::string& input)
 	{
 		if(input.find_first_of("\"\n\r\f\t\\")==std::string::npos)
@@ -118,6 +111,13 @@ private:
 		}
 
 		return output;
+	}
+
+private:
+	explicit JSONWriter(const Configuration& configuration) :
+		level_(0),
+		config_(configuration)
+	{
 	}
 
 	void print(const VariantValue& value, std::ostream& output) const
