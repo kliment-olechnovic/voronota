@@ -76,7 +76,7 @@ fi
 
 cat "$TMPLDIR/scores" | while read FILENAME SCORE LENGTH
 do
-	echo "$(basename ${FILENAME}),${SCORE},${LENGTH}"
+	echo "$(basename ${FILENAME}),$(printf '%.3f' ${SCORE}),${LENGTH}"
 done \
 > "$TMPLDIR/scores.csv"
 
@@ -258,21 +258,21 @@ svg.append("text")
 	
 svg.append("rect")
 	.attr("x", (width-100))
-	.attr("y", 16+16)
+	.attr("y", 15+16)
 	.attr("width", 25)
-	.attr("height", 2)
+	.attr("height", 3)
 	.style("fill", "blue")
 svg.append("rect")
 	.attr("x", (width-100))
-	.attr("y", 16+16*2)
+	.attr("y", 15+16*2)
 	.attr("width", 25)
-	.attr("height", 2)
+	.attr("height", 3)
 	.style("fill", "gray")
 svg.append("rect")
 	.attr("x", (width-100))
-	.attr("y", 16+16*3)
+	.attr("y", 15+16*3)
 	.attr("width", 25)
-	.attr("height", 2)
+	.attr("height", 3)
 	.style("fill", "red")
 
 
