@@ -9,7 +9,7 @@ cat >&2 << EOF
 Basic options:
     --input | -i                   string   *  input file with one or more VoroMQA output lines
     --output | -o                  string   *  output HTML file
-    --D3-js-url | -l               string   *  URL of D3.js library, default is 'http://d3js.org/d3.v3.min.js'
+    --D3-js-url | -l               string      URL of D3.js library, default is 'http://d3js.org/d3.v3.min.js'
     --help | -h                                flag to display help message and exit
 
 EOF
