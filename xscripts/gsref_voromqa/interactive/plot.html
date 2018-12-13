@@ -1,31 +1,39 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style> /* set the CSS */
 
-body { font: 12px Arial;}
+<head>
+	<style>
+		body
+		{
+			font: 14px Arial;
+		}
+		
+		path
+		{ 
+			stroke: black;
+			stroke-width: 2;
+			fill: none;
+		}
+		
+		.axis path,
+		.axis line
+		{
+			fill: none;
+			stroke: grey;
+			stroke-width: 1;
+			shape-rendering: crispEdges;
+		}
+		
+		.tooltip
+		{
+			position: absolute;
+			pointer-events: none;
+			background-color: yellow;
+			padding: 2px;
+		}
+	</style>
+</head>
 
-path { 
-    stroke: black;
-    stroke-width: 2;
-    fill: none;
-}
-
-.axis path,
-.axis line {
-    fill: none;
-    stroke: grey;
-    stroke-width: 1;
-    shape-rendering: crispEdges;
-}
-
-.tooltip {
-  position: absolute;
-  pointer-events: none;
-  background-color: yellow;
-  padding: 2px;
-}
-
-</style>
 <body>
 
 <pre id="csvdata1" style="display:none;">
@@ -54,214 +62,183 @@ length,quantile05,quantile50,quantile95
 
 <pre id="csvdata2" style="display:none;">
 name,score,length
-model1,0.14,250
-model2,0.55,151
-model3,0.86,349
+__model1,0.5,100
+__model2,0.51,100
+__model3,0.52,100
 </pre>
 
-<!-- load the d3.js library -->    
-<script type=
-    "text/javascript" src="d3.v3.min.js">
+<script type="text/javascript" src="d3.v3.min.js">
 </script>
 
 <script>
+var margin={top: 50, right: 20, bottom: 50, left: 60};
+var width=(700-margin.left-margin.right);
+var height=(500-margin.top-margin.bottom);
 
-// Set the dimensions of the canvas / graph
-var margin = {top: 50, right: 20, bottom: 50, left: 60},
-    width = 600 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var x=d3.scale.linear().range([0, width]);
+var y=d3.scale.linear().range([height, 0]);
 
-// Set the rangestrann
-var x = d3.scale.linear().range([0, width]);
-var y = d3.scale.linear().range([height, 0]);
+var xAxis=d3.svg.axis().scale(x).orient("bottom").ticks(5);
+var yAxis=d3.svg.axis().scale(y).orient("left").ticks(5);
 
-// Define the axes
-var xAxis = d3.svg.axis().scale(x)
-    .orient("bottom").ticks(5);
+var tooltip=d3.select("body")
+	.append("div")
+	.attr("class", "tooltip")
+	.style("opacity", 0);
 
-var yAxis = d3.svg.axis().scale(y)
-    .orient("left").ticks(5);
+var svg=d3.select("body")
+	.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// Define the line
-var valueline05 = d3.svg.line()
-    .x(function(d) { return x(d.length); })
-    .y(function(d) { return y(d.quantile05); });
-    
-// Define the line
-var valueline50 = d3.svg.line()
-    .x(function(d) { return x(d.length); })
-    .y(function(d) { return y(d.quantile50); });
-    
-// Define the line
-var valueline95 = d3.svg.line()
-    .x(function(d) { return x(d.length); })
-    .y(function(d) { return y(d.quantile95); });
+var valueline05=d3.svg.line()
+	.x(function(d){return x(d.length);})
+	.y(function(d){return y(d.quantile05);});
+var valueline50=d3.svg.line()
+	.x(function(d){return x(d.length);})
+	.y(function(d){return y(d.quantile50);});
+var valueline95=d3.svg.line()
+	.x(function(d){return x(d.length);})
+	.y(function(d){return y(d.quantile95);});
 
-// Define 'div' for tooltips
-var tooltip = d3.select("body")
-    .append("div")  // declare the tooltip div 
-    .attr("class", "tooltip")
-    .style("opacity", 0);
-
-// Adds the svg canvas
-var svg = d3.select("body")
-    .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform", 
-              "translate(" + margin.left + "," + margin.top + ")");
-
-// Get the data
 data1=d3.csv.parse(d3.select("#csvdata1").text());
 data2=d3.csv.parse(d3.select("#csvdata2").text());
 
-    // Scale the range of the data
-    x.domain([0, 1000]);
-    y.domain([0, 1]);
-    
-	// Add the X Axis
-    svg.append("g")    
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+x.domain([0, 1000]);
+y.domain([0, 1]);
 
-    // Add the Y Axis
-    svg.append("g")    
-        .attr("class", "y axis")
-        .call(yAxis);
-      
-	svg.append("text")
-        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
-        .style("text-anchor", "middle")
-        .text("Number of residues");
-        
-	svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 0 - margin.left)
-        .attr("x",0 - (height / 2))
-        .attr("dy", "1em")
-        .style("text-anchor", "middle")
-        .text("VoroMQA global score");
-        
-	svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "none")  
-        .text("VoroMQA global scores in the context of high-quality X-ray structure scores");
-        
-	svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", 0+50)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "12px") 
-        .style("fill", "blue")  
-        .text("Best 5%");
+svg.append("g")
+	.attr("class", "x axis")
+	.attr("transform", "translate(0,"+height+")")
+	.call(xAxis);
 
-	svg.append("text")
-        .attr("x", (width / 2))             
-        .attr("y", height-50)
-        .attr("text-anchor", "middle")  
-        .style("font-size", "12px") 
-        .style("fill", "red")  
-        .text("Worst 5%");
-        
-	svg.append("text")
-        .attr("x", (width-120))             
-        .attr("y", 20)
-        .attr("text-anchor", "left")  
-        .style("font-size", "12px") 
-        .text("Quantiles of scores:");
-	svg.append("text")
-        .attr("x", (width-70))             
-        .attr("y", 20+15)
-        .attr("text-anchor", "left")  
-        .style("font-size", "12px") 
-        .text("best 5%");
-	svg.append("text")
-        .attr("x", (width-70))             
-        .attr("y", 20+15*2)
-        .attr("text-anchor", "left")  
-        .style("font-size", "12px") 
-        .text("median");
-	svg.append("text")
-        .attr("x", (width-70))             
-        .attr("y", 20+15*3)
-        .attr("text-anchor", "left")  
-        .style("font-size", "12px") 
-        .text("worst 5%");
-        
-	svg.append("rect")
-	  .attr("x", (width-100))
-      .attr("y", 16+15)
-	  .attr("width", 25)
-	  .attr("height", 2)
-	  .style("fill", "blue")
-	svg.append("rect")
-	  .attr("x", (width-100))
-      .attr("y", 16+15*2)
-	  .attr("width", 25)
-	  .attr("height", 2)
-	  .style("fill", "gray")
-	svg.append("rect")
-	  .attr("x", (width-100))
-      .attr("y", 16+15*3)
-	  .attr("width", 25)
-	  .attr("height", 2)
-	  .style("fill", "red")
+svg.append("g")
+	.attr("class", "y axis")
+	.call(yAxis);
 
-    // Add the valueline path.
-    svg.append("path")        
-        .attr("class", "line")
-        .style("stroke", "red")
-        .attr("d", valueline05(data1));
-    // Add the valueline path.
-    svg.append("path")        
-        .attr("class", "line")
-        .style("stroke", "gray")
-        .attr("d", valueline50(data1));
-    // Add the valueline path.
-    svg.append("path")        
-        .attr("class", "line")
-        .style("stroke", "blue")
-        .attr("d", valueline95(data1));
+svg.append("text")
+	.attr("transform", "translate("+(width/2)+" ,"+(height+margin.bottom)+")")
+	.style("text-anchor", "middle")
+	.text("Number of residues");
+	
+svg.append("text")
+	.attr("transform", "rotate(-90)")
+	.attr("y", 0-margin.left)
+	.attr("x", 0-(height/2))
+	.attr("dy", "1em")
+	.style("text-anchor", "middle")
+	.text("VoroMQA global score");
+	
+svg.append("text")
+	.attr("x", (width/2))
+	.attr("y", 0-(margin.top/2))
+	.attr("text-anchor", "middle")
+	.style("font-size", "14px")
+	.style("font-weight", "bold")
+	.text("VoroMQA global scores in the context of high-quality X-ray structure scores");
+	
+svg.append("text")
+	.attr("x", (width/2))
+	.attr("y", 50)
+	.attr("text-anchor", "middle")
+	.style("fill", "blue")
+	.text("Best 5%");
 
-    // draw the scatterplot
-    svg.selectAll("dot")                                    
-        .data(data2)                                            
-    .enter().append("circle")                                
-        .attr("r", 3.5)    
-        .attr("cx", function(d) { return x(d.length); })         
-        .attr("cy", function(d) { return y(d.score); })
-        .style("stroke", "black")
-        .style("fill", "black")
-        .style("fill-opacity", 0)
-    // Tooltip stuff after this
-        .on("mouseover", function(d) {
-			d3.select(this).transition()
-				.duration(200)    
-                .style("fill-opacity", .9);
-            tooltip.transition()
-                .duration(500)    
-                .style("opacity", 0);
-            tooltip.transition()
-                .duration(200)    
-                .style("opacity", .9);    
-            tooltip.html("name="+d.name+";score="+d.score)     
-                .style("left", (d3.event.pageX+10) + "px")             
-                .style("top", (d3.event.pageY-10) + "px");
-            })
-		.on("mouseout", function(d) {
-			d3.select(this).transition()
-				.duration(200)    
-                .style("fill-opacity", 0);
-			tooltip.transition()
-				.duration(500)
-				.style("opacity", 0);
+svg.append("text")
+	.attr("x", (width/2))
+	.attr("y", height-50)
+	.attr("text-anchor", "middle")
+	.style("fill", "red")
+	.text("Worst 5%");
+	
+svg.append("text")
+	.attr("x", (width-120))
+	.attr("y", 20)
+	.attr("text-anchor", "left")
+	.text("Quantiles of scores:");
+svg.append("text")
+	.attr("x", (width-70))
+	.attr("y", 20+16)
+	.attr("text-anchor", "left")
+	.text("best 5%");
+svg.append("text")
+	.attr("x", (width-70))
+	.attr("y", 20+16*2)
+	.attr("text-anchor", "left")
+	.text("median");
+svg.append("text")
+	.attr("x", (width-70))
+	.attr("y", 20+16*3)
+	.attr("text-anchor", "left")
+	.text("worst 5%");
+	
+svg.append("rect")
+	.attr("x", (width-100))
+	.attr("y", 16+16)
+	.attr("width", 25)
+	.attr("height", 2)
+	.style("fill", "blue")
+svg.append("rect")
+	.attr("x", (width-100))
+	.attr("y", 16+16*2)
+	.attr("width", 25)
+	.attr("height", 2)
+	.style("fill", "gray")
+svg.append("rect")
+	.attr("x", (width-100))
+	.attr("y", 16+16*3)
+	.attr("width", 25)
+	.attr("height", 2)
+	.style("fill", "red")
+
+
+svg.append("path")
+	.attr("class", "line")
+	.style("stroke", "red")
+	.attr("d", valueline05(data1));
+svg.append("path")
+	.attr("class", "line")
+	.style("stroke", "gray")
+	.attr("d", valueline50(data1));
+svg.append("path")
+	.attr("class", "line")
+	.style("stroke", "blue")
+	.attr("d", valueline95(data1));
+
+svg.selectAll("dot")
+	.data(data2)
+	.enter().append("circle")
+		.attr("r", 4.0)
+		.attr("cx", function(d){return x(d.length);})
+		.attr("cy", function(d){return y(d.score);})
+		.style("stroke", "black")
+		.style("fill", "black")
+		.style("fill-opacity", 0)
+		.on("mouseover", function(d)
+			{
+				d3.select(this).transition()
+					.duration(200)
+					.style("fill-opacity", 0.9);
+				tooltip.transition()
+					.duration(500)
+					.style("opacity", 0);
+				tooltip.transition()
+					.duration(200)
+					.style("opacity", 0.9);
+				tooltip.html(""+d.name+" (score="+d.score+", size="+d.length+")")
+					.style("left", (d3.event.pageX+10)+"px")
+					.style("top", (d3.event.pageY-10)+"px");
+			})
+		.on("mouseout", function(d)
+			{
+				d3.select(this).transition()
+					.duration(200)
+					.style("fill-opacity", 0);
+				tooltip.transition()
+					.duration(500)
+					.style("opacity", 0);
 			});
-			
-
 </script>
 </body>
