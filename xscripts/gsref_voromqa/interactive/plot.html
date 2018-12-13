@@ -20,9 +20,9 @@ path {
 
 .tooltip {
   position: absolute;
-  width: 200px;
-  height: 28px;
   pointer-events: none;
+  background-color: yellow;
+  padding: 2px;
 }
 
 </style>
@@ -67,7 +67,7 @@ model3,0.86,349
 <script>
 
 // Set the dimensions of the canvas / graph
-var margin = {top: 30, right: 20, bottom: 50, left: 60},
+var margin = {top: 50, right: 20, bottom: 50, left: 60},
     width = 600 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -134,7 +134,7 @@ data2=d3.csv.parse(d3.select("#csvdata2").text());
 	svg.append("text")
         .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
         .style("text-anchor", "middle")
-        .text("X_AXIS_LABEL");
+        .text("Number of residues");
         
 	svg.append("text")
         .attr("transform", "rotate(-90)")
@@ -142,7 +142,7 @@ data2=d3.csv.parse(d3.select("#csvdata2").text());
         .attr("x",0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Y_AXIS_LABEL");
+        .text("VoroMQA global score");
         
 	svg.append("text")
         .attr("x", (width / 2))             
@@ -150,7 +150,7 @@ data2=d3.csv.parse(d3.select("#csvdata2").text());
         .attr("text-anchor", "middle")  
         .style("font-size", "16px") 
         .style("text-decoration", "none")  
-        .text("PLOT_TITLE");
+        .text("VoroMQA global scores in the context of high-quality X-ray structure scores");
         
 	svg.append("text")
         .attr("x", (width / 2))             
@@ -162,11 +162,55 @@ data2=d3.csv.parse(d3.select("#csvdata2").text());
 
 	svg.append("text")
         .attr("x", (width / 2))             
-        .attr("y", width-150)
+        .attr("y", height-50)
         .attr("text-anchor", "middle")  
         .style("font-size", "12px") 
         .style("fill", "red")  
         .text("Worst 5%");
+        
+	svg.append("text")
+        .attr("x", (width-120))             
+        .attr("y", 20)
+        .attr("text-anchor", "left")  
+        .style("font-size", "12px") 
+        .text("Quantiles of scores:");
+	svg.append("text")
+        .attr("x", (width-70))             
+        .attr("y", 20+15)
+        .attr("text-anchor", "left")  
+        .style("font-size", "12px") 
+        .text("best 5%");
+	svg.append("text")
+        .attr("x", (width-70))             
+        .attr("y", 20+15*2)
+        .attr("text-anchor", "left")  
+        .style("font-size", "12px") 
+        .text("median");
+	svg.append("text")
+        .attr("x", (width-70))             
+        .attr("y", 20+15*3)
+        .attr("text-anchor", "left")  
+        .style("font-size", "12px") 
+        .text("worst 5%");
+        
+	svg.append("rect")
+	  .attr("x", (width-100))
+      .attr("y", 16+15)
+	  .attr("width", 25)
+	  .attr("height", 2)
+	  .style("fill", "blue")
+	svg.append("rect")
+	  .attr("x", (width-100))
+      .attr("y", 16+15*2)
+	  .attr("width", 25)
+	  .attr("height", 2)
+	  .style("fill", "gray")
+	svg.append("rect")
+	  .attr("x", (width-100))
+      .attr("y", 16+15*3)
+	  .attr("width", 25)
+	  .attr("height", 2)
+	  .style("fill", "red")
 
     // Add the valueline path.
     svg.append("path")        
@@ -217,6 +261,7 @@ data2=d3.csv.parse(d3.select("#csvdata2").text());
 				.duration(500)
 				.style("opacity", 0);
 			});
+			
 
 </script>
 </body>
