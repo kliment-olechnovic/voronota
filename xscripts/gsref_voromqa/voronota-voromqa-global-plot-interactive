@@ -1,3 +1,87 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-voromqa-global-plot-interactive' script outputs an interactive plot of VoroMQA global scores in the context of statistics derived from the scores of X-ray structures.
+
+Basic options:
+    --input | -i                   string   *  input file with one or more VoroMQA output lines
+    --output | -o                  string   *  output HTML file
+    --D3-js-url | -l               string   *  URL of D3.js library, default is 'http://d3js.org/d3.v3.min.js'
+    --help | -h                                flag to display help message and exit
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+INFILE=""
+OUTFILE=""
+D3_LIB_URL="http://d3js.org/d3.v3.min.js"
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	-o|--output)
+		OUTFILE="$OPTARG"
+		shift
+		;;
+	-l|--D3-js-url)
+		D3_LIB_URL="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ -z "$OUTFILE" ] ||$HELP_MODE
+then
+	print_help_and_exit
+fi
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist or is empty"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+cat "$INFILE" \
+| awk '{if(length($1)>0 && length($2)>0 && length($3)>0){print $1 " " $2 " " $3}}' \
+> "$TMPLDIR/scores"
+
+if [ ! -s "$TMPLDIR/scores" ]
+then
+	echo >&2 "Error: input file has missing values"
+	exit 1
+fi
+
+cat "$TMPLDIR/scores" | while read FILENAME SCORE LENGTH
+do
+	echo "$(basename ${FILENAME}),${SCORE},${LENGTH}"
+done \
+> "$TMPLDIR/scores.csv"
+
+{
+cat << 'EOF'
 <!DOCTYPE html>
 <meta charset="utf-8">
 
@@ -62,12 +146,10 @@ length,quantile05,quantile50,quantile95
 
 <pre id="csvdata2" style="display:none;">
 name,score,length
-__model1,0.5,100
-__model2,0.51,100
-__model3,0.52,100
+__SCORES_CSV
 </pre>
 
-<script type="text/javascript" src="d3.v3.min.js">
+<script type="text/javascript" src="__D3_LIB">
 </script>
 
 <script>
@@ -242,3 +324,9 @@ svg.selectAll("dot")
 			});
 </script>
 </body>
+EOF
+} \
+| sed "s|__D3_LIB|$D3_LIB_URL|g" \
+| sed -e "/__SCORES_CSV/{r $TMPLDIR/scores.csv" -e "d}" \
+> "$OUTFILE"
+
