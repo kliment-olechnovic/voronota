@@ -81,6 +81,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --output-scores-for-CASP                   string      output file with scores generated in CASP mode
     --output-screenshot                        string      output file with screenshot
     --output-selected-scores                   string      output text file with selected atom scores
+    --output-selected-scores-by-residue        string      output text file with selected scores summed by residue
     --output-sequence-alignment                string      output text file with sequence alignment
     --output-summary-for-potential             string      output file with statistics of contact
     --print-clash-score-of-contacts-selection              flag to print clash score of contacts selection
@@ -157,6 +158,7 @@ SMOOTHING_WINDOW="5"
 ATOMS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_PARAMETERS=""
 OUTFILE_SELECTED_ATOM_SCORES=""
+OUTFILE_SELECTED_RESIDUE_SCORES=""
 CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 UNTEACHING_DIRECTORY=""
@@ -311,6 +313,10 @@ do
 		;;
 	--output-selected-scores)
 		OUTFILE_SELECTED_ATOM_SCORES="$OPTARG"
+		shift
+		;;
+	--output-selected-scores-by-residue)
+		OUTFILE_SELECTED_RESIDUE_SCORES="$OPTARG"
 		shift
 		;;
 	--cache-dir)
@@ -873,6 +879,7 @@ OUTFILE_SCORES_FOR_CASP_LOG="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MOD
 OUTFILE_CUTTING_SUGGESTIONS="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$OUTFILE_CUTTING_SUGGESTIONS")"
 OUTFILE_SUMMARY_FOR_POTENTIAL="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$OUTFILE_SUMMARY_FOR_POTENTIAL")"
 OUTFILE_SELECTED_ATOM_SCORES="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$OUTFILE_SELECTED_ATOM_SCORES")"
+OUTFILE_SELECTED_RESIDUE_SCORES="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$OUTFILE_SELECTED_RESIDUE_SCORES")"
 SURFACE_CRAVING_ATOMS_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_ATOMS_OUTPUT")"
 SURFACE_CRAVING_ATOMS_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB")"
 SURFACE_CRAVING_RESIDUES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_RESIDUES_OUTPUT")"
@@ -1289,6 +1296,21 @@ then
 	| awk '{print $1 " " $3}' \
 	| sort -V \
 	> "$OUTFILE_SELECTED_ATOM_SCORES"
+fi
+
+if [ -n "$OUTFILE_SELECTED_RESIDUE_SCORES" ] && [ -f "$TMPLDIR/scoring_table" ]
+then
+	mkdir -p $(dirname "$OUTFILE_SELECTED_RESIDUE_SCORES")
+	cat $TMPLDIR/scoring_table \
+	| awk '{print $1 " " $3}' \
+	|voronota expand-descriptors \
+	| awk '{print $1 "__and__" $2 "__and__" $3 "__and__" $6 " " $8}' \
+	| awk '{sums[$1]+=$2; counts[$1]++}; END {for(id in sums){print id " " counts[id] " " sums[id]}}' \
+	| sed 's/__and__/ /g' \
+	| awk '{print "c<" $1 ">r<" $2 ">i<" $3 ">R<" $4 "> " $5 " " $6}' \
+	| sed 's/.<\.>//g' \
+	| sort -V \
+	> "$OUTFILE_SELECTED_RESIDUE_SCORES"
 fi
 
 if [ -n "$OUTFILE_ATOM_SCORES_PDB" ]
