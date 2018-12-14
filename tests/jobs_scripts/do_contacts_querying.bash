@@ -166,6 +166,13 @@ cat $SUBDIR/contacts \
 
 cat $SUBDIR/contacts \
 | $VORONOTA query-contacts \
+  --inter-residue \
+  --match-min-seq-sep 1 \
+| $VORONOTA x-query-contacts-interchain-exposure-values \
+> $SUBDIR/contacts_interchain_exposure_values
+
+cat $SUBDIR/contacts \
+| $VORONOTA query-contacts \
   --set-external-means <(cat $SUBDIR/balls | awk '{print $1 " " NR}') \
   --set-external-means-name 'emm' \
 | $VORONOTA query-contacts \
