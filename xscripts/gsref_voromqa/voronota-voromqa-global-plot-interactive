@@ -142,6 +142,7 @@ length,quantile05,quantile50,quantile95
 900,0.495,0.552,0.600
 950,0.494,0.551,0.599
 1000,0.493,0.550,0.598
+10000,0.493,0.550,0.598
 </pre>
 
 <pre id="csvdata2" style="display:none;">
@@ -188,7 +189,21 @@ var valueline95=d3.svg.line()
 data1=d3.csv.parse(d3.select("#csvdata1").text());
 data2=d3.csv.parse(d3.select("#csvdata2").text());
 
-x.domain([0, 1000]);
+data1.forEach(function(d)
+{
+	d.length=+d.length;
+	d.quantile05=+d.quantile05;
+	d.quantile50=+d.quantile50;
+	d.quantile95=+d.quantile95;
+});
+
+data2.forEach(function(d)
+{
+	d.score=+d.score;
+	d.length=+d.length;
+});
+
+x.domain([0, Math.max(1000, 10+d3.max(data2, function(d){return d.length}))]);
 y.domain([0, 1]);
 
 svg.append("g")
