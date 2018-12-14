@@ -48,6 +48,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --energy-input-statistics                  string      path to custom energy statistics file
     --energy-mode                              string      energy mode name
     --help                                                 flag to display help message and exit
+    --highlight-selection-in-plot                          flag to highlight selection in plot
     --input-filter-query                       string      input atoms filtering query parameters
     --input-is-list                                        flag to treat input as a list of files
     --input-is-structure                                   flag to treat input as a PDB file
@@ -193,6 +194,7 @@ STRIP_ROTAMERS=false
 NEGLECT_SAS=false
 REINTERPRET_SAS=false
 MORE_LOGGING=false
+HIGHLIGHT_SELECTION_IN_PLOT=false
 PRINT_ENERGY_OF_CONTACTS_SELECTION=false
 PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
@@ -456,6 +458,9 @@ do
 		;;
 	--more-logging)
 		MORE_LOGGING=true
+		;;
+	--highlight-selection-in-plot)
+		HIGHLIGHT_SELECTION_IN_PLOT=true
 		;;
 	--print-energy-of-contacts-selection)
 		PRINT_ENERGY_OF_CONTACTS_SELECTION=true
@@ -1412,7 +1417,7 @@ cat $TMPLDIR/residue_quality_scores_for_plot \
 > $TMPLDIR/table_for_plot
 
 BACK_FILE="none"
-if [ -s "$TMPLDIR/selection_by_queries" ]
+if $HIGHLIGHT_SELECTION_IN_PLOT && [ -s "$TMPLDIR/selection_by_queries" ]
 then
 	cat $TMPLDIR/selection_by_queries \
 	| voronota expand-descriptors \
