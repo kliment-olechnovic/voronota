@@ -1601,14 +1601,20 @@ fi
 
 if $PRINT_ENERGY_OF_CONTACTS_SELECTION
 then
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| awk '{print $1 " " $2 " " $5 " " $3}' \
-	| tr ';' '_' \
-	| voronota score-contacts-energy \
-	  --potential-file $TMPLDIR/resources/energy_potential \
-	| awk '{print $5 " " $2 " " $3 " " $4 " " ($4/($2+$3))}' \
-	> $TMPLDIR/energy_descriptor_of_contacts_selection
+	{
+		if [ -s "$TMPLDIR/selection_by_contacts_query" ]
+		then
+			cat $TMPLDIR/foundation/all_contacts \
+			| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+			| awk '{print $1 " " $2 " " $5 " " $3}' \
+			| tr ';' '_' \
+			| voronota score-contacts-energy \
+			--potential-file $TMPLDIR/resources/energy_potential \
+			| awk '{print $5 " " $2 " " $3 " " $4 " " ($4/($2+$3))}'
+		else
+			echo "0 0 0 0 0"
+		fi
+	} > $TMPLDIR/energy_descriptor_of_contacts_selection
 fi
 
 if $PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION
@@ -1618,34 +1624,40 @@ then
 	CLASH_DIST_HYDROGEN_HYDROGEN="1.5"
 	HYDROGEN_NAMES="A<H,HA,HA2,HB,HB1,HB2,HD1,HD11,HD2,HD21,HE,HE1,HE2,HE21,HE3,HG,HG1,HG11,HG12,HG2,HG21,HH,HH11,HH2,HZ,HZ1,HZ2,HZ3>"
 	
-	cat $TMPLDIR/foundation/all_contacts \
-	| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
-	| voronota query-contacts --match-min-seq-sep 2 \
-	> $TMPLDIR/clash_interest_contacts
+	{
+		if [ -s "$TMPLDIR/selection_by_contacts_query" ]
+		then
+			cat $TMPLDIR/foundation/all_contacts \
+			| voronota query-contacts $CONTACTS_QUERY_PARAMETERS \
+			| voronota query-contacts --match-min-seq-sep 2 \
+			> $TMPLDIR/clash_interest_contacts
 
-	echo \
-	"$(cat $TMPLDIR/clash_interest_contacts \
-	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/clash_interest_contacts \
-	  | voronota query-contacts \
-	    --match-first-not "$HYDROGEN_NAMES" \
-	    --match-second-not "$HYDROGEN_NAMES" \
-	    --match-max-dist "$CLASH_DIST_HEAVY_HEAVY" \
-	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/clash_interest_contacts \
-	  | voronota query-contacts \
-	    --match-first-not "$HYDROGEN_NAMES" \
-	    --match-second "$HYDROGEN_NAMES" \
-	    --match-max-dist "$CLASH_DIST_HEAVY_HYDROGEN" \
-	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	"$(cat $TMPLDIR/clash_interest_contacts \
-	  | voronota query-contacts \
-	    --match-first "$HYDROGEN_NAMES" \
-	    --match-second "$HYDROGEN_NAMES" \
-	    --match-max-dist "$CLASH_DIST_HYDROGEN_HYDROGEN" \
-	  | awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
-	| awk '{ if($1>0) {print (($2+$3+$4)/$1)} else {print "0"} }' \
-	> $TMPLDIR/clash_score_of_contacts_selection
+			echo \
+			"$(cat $TMPLDIR/clash_interest_contacts \
+			| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+			"$(cat $TMPLDIR/clash_interest_contacts \
+			| voronota query-contacts \
+				--match-first-not "$HYDROGEN_NAMES" \
+				--match-second-not "$HYDROGEN_NAMES" \
+				--match-max-dist "$CLASH_DIST_HEAVY_HEAVY" \
+			| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+			"$(cat $TMPLDIR/clash_interest_contacts \
+			| voronota query-contacts \
+				--match-first-not "$HYDROGEN_NAMES" \
+				--match-second "$HYDROGEN_NAMES" \
+				--match-max-dist "$CLASH_DIST_HEAVY_HYDROGEN" \
+			| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+			"$(cat $TMPLDIR/clash_interest_contacts \
+			| voronota query-contacts \
+				--match-first "$HYDROGEN_NAMES" \
+				--match-second "$HYDROGEN_NAMES" \
+				--match-max-dist "$CLASH_DIST_HYDROGEN_HYDROGEN" \
+			| awk '{print $1 " " $2}' | tr ' ' '\n' | sort | uniq | wc -l)" \
+			| awk '{ if($1>0) {print (($2+$3+$4)/$1)} else {print "0"} }'
+		else
+			echo "0"
+		fi
+	} > $TMPLDIR/clash_score_of_contacts_selection
 fi
 
 {
