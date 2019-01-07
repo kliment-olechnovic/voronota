@@ -103,7 +103,8 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --smoothing-window                         number      residue scores smoothing window size, default is 5
     --split-into-models                        string      path to directory for storing extracted models
     --strip-rotamers                                       flag to remove sidechains
-    --surface-craving-atoms-energies-output    string      output file with surface frustration results
+    --surface-craving-atoms-energies-output    string      output text file with surface frustration results
+    --surface-craving-atoms-energies-pdb       string      output PDB file with surface frustration results
     --surface-craving-atoms-output-pdb         string      output PDB file with atom scores as B-factors
     --surface-craving-atoms-output             string      output text file with atom scores
     --surface-craving-depth-value              number      depth for surface frustration calculation, default is 3
@@ -174,6 +175,7 @@ SURFACE_CRAVING_ATOMS_OUTPUT_PDB=""
 SURFACE_CRAVING_RESIDUES_OUTPUT=""
 SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT=""
+SURFACE_CRAVING_ATOMS_ENERGIES_PDB=""
 SURFACE_CRAVING_DEPTH_VALUE="3"
 WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT=""
 WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB=""
@@ -367,6 +369,10 @@ do
 		;;
 	--surface-craving-atoms-energies-output)
 		SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT="$OPTARG"
+		shift
+		;;
+	--surface-craving-atoms-energies-pdb)
+		SURFACE_CRAVING_ATOMS_ENERGIES_PDB="$OPTARG"
 		shift
 		;;
 	--surface-craving-depth-value)
@@ -890,6 +896,7 @@ SURFACE_CRAVING_ATOMS_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERG
 SURFACE_CRAVING_RESIDUES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_RESIDUES_OUTPUT")"
 SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")"
 SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT")"
+SURFACE_CRAVING_ATOMS_ENERGIES_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$SURFACE_CRAVING_ATOMS_ENERGIES_PDB")"
 WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT")"
 WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INFILE" "$ENERGY_MODE" "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB")"
 
@@ -1739,7 +1746,7 @@ fi
 }
 
 
-if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
+if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT" ] || [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_PDB" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT" ] || [ -n "$WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB" ]
 then
 	{
 		echo "c<solvent>"
@@ -1793,6 +1800,22 @@ then
 	then
 		mkdir -p $(dirname "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT")
 		cp $TMPLDIR/surface_atom_energies "$SURFACE_CRAVING_ATOMS_ENERGIES_OUTPUT"
+	fi
+	
+	if [ -n "$SURFACE_CRAVING_ATOMS_ENERGIES_PDB" ]
+	then
+		mkdir -p $(dirname "$SURFACE_CRAVING_ATOMS_ENERGIES_PDB")
+		
+		cat $TMPLDIR/balls \
+		| voronota query-balls \
+		  --drop-altloc-indicators \
+		  --set-adjuncts 'oc=1' \
+		  --set-external-adjuncts <(cat $TMPLDIR/surface_atom_energies | awk '{print $1 " " ($4/100.0)}') \
+		  --set-external-adjuncts-name score \
+		| voronota write-balls-to-atoms-file \
+		  --pdb-output "$SURFACE_CRAVING_ATOMS_ENERGIES_PDB" \
+		  --pdb-output-b-factor score \
+		> /dev/null
 	fi
 	
 	if [ -n "$SURFACE_CRAVING_ATOMS_OUTPUT_PDB" ]
