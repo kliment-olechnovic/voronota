@@ -271,6 +271,18 @@
           "area":22795.8}},
       "success":true},
     {
+      "line":"set-alias pc-cs1 \"print-contacts {cs1}\"",
+      "output":{
+        "alias":"pc-cs1",
+        "script":"print-contacts {cs1}"},
+      "success":true},
+    {
+      "line":"set-alias alt-pc-cs1 \"pc-cs1\"",
+      "output":{
+        "alias":"alt-pc-cs1",
+        "script":"pc-cs1"},
+      "success":true},
+    {
       "line":"print-contacts {cs1}",
       "data_object":"plain_atoms",
       "output":{
@@ -1019,5 +1031,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":70,
-    "commands_successful":67}}
+    "commands_all":72,
+    "commands_successful":69}}
