@@ -219,9 +219,12 @@ private:
 			throw std::runtime_error(std::string("Command string is empty."));
 		}
 
-		std::istringstream input(sentence_body);
 		std::vector< std::pair<int, std::string> > tokens;
-		CommandInput::read_all_strings_considering_quotes_and_brackets(input, tokens);
+
+		{
+			std::istringstream input(sentence_body);
+			CommandInput::read_all_strings_considering_quotes_and_brackets(input, tokens);
+		}
 
 		if(tokens.empty())
 		{
@@ -239,7 +242,9 @@ private:
 
 		std::string result=script_template;
 
-		for(std::size_t i=1;i<tokens.size();i++)
+		std::size_t first_failed_i=tokens.size();
+
+		for(std::size_t i=1;i<tokens.size() && i<first_failed_i;i++)
 		{
 			std::ostringstream id_output;
 			id_output << "${" << i << "}";
@@ -258,13 +263,35 @@ private:
 			}
 			if(!found_id)
 			{
-				throw std::runtime_error(std::string()+"Failed to find variable "+id+" in alias '"+alias_name+"' template '"+script_template+"'.");
+				first_failed_i=i;
 			}
 		}
 
 		if(result.find("${")!=std::string::npos)
 		{
 			throw std::runtime_error(std::string()+"Some substrings starting with '${' were left unsubstituted in alias '"+alias_name+"' translation '"+result+"'.");
+		}
+
+		if(first_failed_i<tokens.size())
+		{
+			std::istringstream input(sentence_body);
+
+			for(std::size_t i=0;i<first_failed_i;i++)
+			{
+				std::string token;
+				CommandInput::read_string_considering_quotes_and_brackets(input, token);
+			}
+
+			if(input.good())
+			{
+				std::istreambuf_iterator<char> eos;
+				std::string tail(std::istreambuf_iterator<char>(input), eos);
+				if(!tail.empty() && tail[0]!=' ')
+				{
+					result+=" ";
+				}
+				result+=tail;
+			}
 		}
 
 		return result;
