@@ -142,6 +142,11 @@ public:
 		SafeUtilitiesForMapOfPointers::clear(commands_for_extra_actions_);
 	}
 
+	CongregationOfDataManagers& congregation_of_data_managers()
+	{
+		return congregation_of_data_managers_;
+	}
+
 	bool exit_requested() const
 	{
 		return exit_requested_;
@@ -164,11 +169,6 @@ protected:
 	ScriptPartitioner& script_partitioner()
 	{
 		return script_partitioner_;
-	}
-
-	CongregationOfDataManagers& congregation_of_data_managers()
-	{
-		return congregation_of_data_managers_;
 	}
 
 	void unset_command(const std::string& name)
