@@ -1440,18 +1440,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
-
-			ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
-			if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
-			{
-				cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
-				cargs.change_indicator.changed_contacts=true;
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Failed to construct triangulation."));
-			}
+			cargs.data_manager.reset_triangulation_info_by_creating(parameters_to_construct_triangulation, cargs.change_indicator.changed_contacts);
 
 			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("triangulation_summary"));
 		}
@@ -1601,57 +1590,10 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
-			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
+			cargs.data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts, cargs.change_indicator.changed_contacts);
 
-			const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
-
-			bool using_cached_triangulation=false;
-
-			if(!cargs.data_manager.triangulation_info().equivalent(parameters_to_construct_triangulation, atomic_balls))
-			{
-				ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
-				if(ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters_to_construct_triangulation, atomic_balls, bundle_of_triangulation_information))
-				{
-					cargs.data_manager.reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
-					cargs.change_indicator.changed_contacts=true;
-				}
-				else
-				{
-					throw std::runtime_error(std::string("Failed to construct triangulation."));
-				}
-			}
-			else
-			{
-				using_cached_triangulation=true;
-			}
-
-			ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
-
-			if(ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, cargs.data_manager.triangulation_info(), bundle_of_contact_information))
-			{
-				cargs.data_manager.reset_contacts_by_swapping(bundle_of_contact_information.contacts);
-
-				cargs.change_indicator.changed_contacts=true;
-
-				if(parameters_to_construct_contacts.calculate_volumes)
-				{
-					for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<cargs.data_manager.atoms().size();i++)
-					{
-						cargs.data_manager.atoms_mutable()[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
-					}
-				}
-
-				ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, cargs.data_manager.triangulation_info(), cargs.data_manager.contacts_mutable());
-
-				VariantObject& info=cargs.heterostorage.variant_object;
-				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
-				info.value("used_cached_triangulation")=using_cached_triangulation;
-			}
-			else
-			{
-				throw std::runtime_error(std::string("Failed to construct contacts."));
-			}
+			VariantObject& info=cargs.heterostorage.variant_object;
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
 		}
 	};
 

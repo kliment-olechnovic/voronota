@@ -611,6 +611,11 @@ public:
 		reset_data_dependent_on_atoms();
 	}
 
+	void reset_bonding_links_info()
+	{
+		bonding_links_info_=ConstructionOfBondingLinks::BundleOfBondingLinks();
+	}
+
 	void reset_bonding_links_info_by_swapping(ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
 	{
 		if(!bonding_links_info.valid(atoms_, primary_structure_info_))
@@ -644,6 +649,12 @@ public:
 		}
 	}
 
+	void reset_triangulation_info()
+	{
+		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
+		reset_data_dependent_on_triangulation_info();
+	}
+
 	void reset_triangulation_info_by_swapping(ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
 	{
 		if(triangulation_info.quadruples_map.empty())
@@ -658,15 +669,43 @@ public:
 
 		triangulation_info_.swap(triangulation_info);
 
-		contacts_.clear();
-		contacts_display_states_.clear();
-		selection_manager_.set_contacts(0);
+		reset_data_dependent_on_triangulation_info();
 	}
 
 	void reset_triangulation_info_by_copying(const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
 	{
 		ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_copy=triangulation_info;
 		reset_triangulation_info_by_swapping(triangulation_info_copy);
+	}
+
+	void reset_triangulation_info_by_creating(
+			const ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters,
+			bool& happened)
+	{
+		const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms());
+
+		if(triangulation_info().equivalent(parameters, atomic_balls))
+		{
+			return;
+		}
+
+		ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+
+		if(!ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters, atomic_balls, bundle_of_triangulation_information))
+		{
+			throw std::runtime_error(std::string("Failed to construct triangulation."));
+		}
+
+		reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
+
+		happened=true;
+	}
+
+	void reset_contacts()
+	{
+		contacts_.clear();
+		contacts_display_states_.clear();
+		selection_manager_.set_contacts(0);
 	}
 
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
@@ -689,6 +728,39 @@ public:
 	{
 		std::vector<Contact> contacts_copy=contacts;
 		reset_contacts_by_swapping(contacts_copy);
+	}
+
+	void reset_contacts_by_creating(
+			const ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& parameters_to_construct_contacts,
+			const ConstructionOfContacts::ParametersToEnhanceContacts& parameters_to_enhance_contacts,
+			bool& happened)
+	{
+		{
+			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
+			reset_triangulation_info_by_creating(parameters_to_construct_triangulation, happened);
+		}
+
+		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
+
+		if(!ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, triangulation_info(), bundle_of_contact_information))
+		{
+			throw std::runtime_error(std::string("Failed to construct contacts."));
+		}
+
+		reset_contacts_by_swapping(bundle_of_contact_information.contacts);
+
+		happened=true;
+
+		if(parameters_to_construct_contacts.calculate_volumes)
+		{
+			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms().size();i++)
+			{
+				atoms_mutable()[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
+			}
+		}
+
+		ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_mutable());
 	}
 
 	void reset_contacts_display_states()
@@ -966,13 +1038,18 @@ private:
 			}
 		}
 
-		contacts_.clear();
-		contacts_display_states_.clear();
 		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
-		bonding_links_info_=ConstructionOfBondingLinks::BundleOfBondingLinks();
-		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
 		selection_manager_=SelectionManager(&atoms_, 0);
+
+		reset_bonding_links_info();
+		reset_triangulation_info();
+		reset_contacts();
+	}
+
+	void reset_data_dependent_on_triangulation_info()
+	{
+		reset_contacts();
 	}
 
 	RepresentationsDescriptor atoms_representations_descriptor_;

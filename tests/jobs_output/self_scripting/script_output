@@ -114,8 +114,7 @@
         "contacts_summary":{
           "number_total":12469,
           "number_drawable":0,
-          "area":47017.2},
-        "used_cached_triangulation":false},
+          "area":47017.2}},
       "success":true},
     {
       "line":"construct-contacts --calculate-volumes",
@@ -124,8 +123,7 @@
         "contacts_summary":{
           "number_total":12469,
           "number_drawable":0,
-          "area":47017.2},
-        "used_cached_triangulation":true},
+          "area":47017.2}},
       "success":true},
     {
       "line":"draw-contacts '{--atom1 {r<83>} -min-seq-sep 1}'",
