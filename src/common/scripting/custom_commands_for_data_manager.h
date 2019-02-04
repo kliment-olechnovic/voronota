@@ -1629,8 +1629,7 @@ public:
 
 			cargs.data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, cargs.change_indicator.changed_contacts);
 
-			VariantObject& info=cargs.heterostorage.variant_object;
-			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -1651,14 +1650,11 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					std::set<std::size_t>(),
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
-					false);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 			if(ids.empty())
 			{
-				throw std::runtime_error(std::string("No drawable contacts selected."));
+				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
 			cargs.data_manager.reset_contacts_graphics(ids, cargs.change_indicator.changed_contacts);
