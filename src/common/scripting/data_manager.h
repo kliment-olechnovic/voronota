@@ -908,16 +908,25 @@ public:
 		{
 			std::set<std::size_t> ids_visible;
 			std::set<std::size_t> ids_marked;
+			std::set<std::size_t> ids_drawable;
+
 			for(std::size_t i=0;i<contacts_display_states_.size();i++)
 			{
 				const DisplayState& ds=contacts_display_states_[i];
+
 				if(ds.visible())
 				{
 					ids_visible.insert(i);
 				}
+
 				if(ds.marked)
 				{
 					ids_marked.insert(i);
+				}
+
+				if(ds.drawable)
+				{
+					ids_drawable.insert(i);
 				}
 			}
 
@@ -938,12 +947,21 @@ public:
 			{
 				selection_manager_.set_contacts_selection("_marked", ids_marked);
 			}
+
+			if(ids_drawable.empty())
+			{
+				selection_manager_.delete_contacts_selection("_drawable");
+			}
+			else
+			{
+				selection_manager_.set_contacts_selection("_drawable", ids_drawable);
+			}
 		}
 	}
 
 	void sync_selections_with_display_states_if_requested_in_string(const std::string& request)
 	{
-		if(request.find("_marked")!=std::string::npos || request.find("_visible")!=std::string::npos)
+		if(request.find("_marked")!=std::string::npos || request.find("_visible")!=std::string::npos || request.find("_drawable")!=std::string::npos)
 		{
 			sync_atoms_selections_with_display_states();
 			sync_contacts_selections_with_display_states();
