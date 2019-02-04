@@ -501,6 +501,9 @@
       "output":{
         "selections":[
           {
+            "name":"_drawable",
+            "contacts_summary":{"number_total":120,"number_drawable":120,"area":211.8}},
+          {
             "name":"_marked",
             "contacts_summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
           {
