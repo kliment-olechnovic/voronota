@@ -705,6 +705,7 @@ public:
 	{
 		contacts_.clear();
 		contacts_display_states_.clear();
+		contacts_drawing_history_.clear();
 		selection_manager_.set_contacts(0);
 	}
 
@@ -721,6 +722,7 @@ public:
 		}
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
+		contacts_drawing_history_.clear();
 		selection_manager_.set_contacts(&contacts_);
 	}
 
@@ -788,6 +790,72 @@ public:
 		}
 		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
 		set_contacts_representations_implemented_if_required_always();
+	}
+
+	void reset_contacts_graphics(const std::set<std::size_t>& ids, bool& happened)
+	{
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts_.size())
+			{
+				if(!contacts_[id].value.graphics.empty())
+				{
+					happened=true;
+					contacts_[id].value.graphics.clear();
+					contacts_drawing_history_.erase(id);
+				}
+			}
+		}
+		reset_contacts_display_states(ids);
+	}
+
+	void reset_contacts_graphics_by_creating(
+			const ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
+			const std::set<std::size_t>& ids,
+			bool& happened)
+	{
+		assert_contacts_availability();
+
+		std::set<std::size_t> ids_for_updating;
+
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts_.size())
+			{
+				if(contacts_[id].value.graphics.empty())
+				{
+					ids_for_updating.insert(id);
+				}
+				else
+				{
+					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=contacts_drawing_history_.find(id);
+					if(jt!=contacts_drawing_history_.end() && !parameters_to_draw_contacts.equals(jt->second))
+					{
+						ids_for_updating.insert(id);
+					}
+				}
+			}
+		}
+
+		if(ids_for_updating.empty())
+		{
+			return;
+		}
+
+		assert_triangulation_info_availability();
+
+		happened=true;
+
+		ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
+
+		reset_contacts_display_states(ids_for_updating);
+
+		for(std::set<std::size_t>::const_iterator it=ids_for_updating.begin();it!=ids_for_updating.end();++it)
+		{
+			contacts_drawing_history_[*it]=parameters_to_draw_contacts;
+		}
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -1058,6 +1126,7 @@ private:
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
+	std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> contacts_drawing_history_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
