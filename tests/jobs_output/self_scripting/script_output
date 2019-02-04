@@ -148,9 +148,9 @@
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
-          "number_total":35,
+          "number_total":4141,
           "number_drawable":0,
-          "area":133.104}},
+          "area":20568.7}},
       "success":true},
     {
       "line":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
