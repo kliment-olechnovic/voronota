@@ -1597,7 +1597,7 @@ public:
 		}
 	};
 
-	class draw_contacts : public GenericCommandForDataManager
+	class make_drawable_contacts : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -1633,7 +1633,7 @@ public:
 		}
 	};
 
-	class delete_drawings_of_contacts : public GenericCommandForDataManager
+	class make_undrawable_contacts : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
