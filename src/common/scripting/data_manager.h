@@ -846,6 +846,11 @@ public:
 
 		assert_triangulation_info_availability();
 
+		if(triangulation_info().parameters_of_construction.artificial_boundary_shift<(parameters_to_draw_contacts.probe*2))
+		{
+			throw std::runtime_error(std::string("The triangulation artificial boundary is not compatible with the probe radius."));
+		}
+
 		happened=true;
 
 		ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
