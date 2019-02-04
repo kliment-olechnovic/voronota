@@ -126,7 +126,7 @@
           "area":47017.2}},
       "success":true},
     {
-      "line":"draw-contacts '{--atom1 {r<83>} -min-seq-sep 1}'",
+      "line":"make-drawable-contacts '{--atom1 {r<83>} -min-seq-sep 1}'",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
@@ -135,7 +135,7 @@
           "area":211.8}},
       "success":true},
     {
-      "line":"draw-contacts '{--atom1 {r<83>}}'",
+      "line":"make-drawable-contacts '{--atom1 {r<83>}}'",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
@@ -144,7 +144,7 @@
           "area":344.904}},
       "success":true},
     {
-      "line":"delete-drawings-of-contacts '{-max-seq-sep 0}'",
+      "line":"make-undrawable-contacts '{-max-seq-sep 0}'",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
@@ -774,9 +774,6 @@
             "name":"delete-adjuncts-of-contacts",
             "short_description":""},
           {
-            "name":"delete-drawings-of-contacts",
-            "short_description":""},
-          {
             "name":"delete-objects",
             "short_description":""},
           {
@@ -793,9 +790,6 @@
             "short_description":""},
           {
             "name":"delete-virtual-files",
-            "short_description":""},
-          {
-            "name":"draw-contacts",
             "short_description":""},
           {
             "name":"echo",
@@ -835,6 +829,12 @@
             "short_description":""},
           {
             "name":"load-contacts",
+            "short_description":""},
+          {
+            "name":"make-drawable-contacts",
+            "short_description":""},
+          {
+            "name":"make-undrawable-contacts",
             "short_description":""},
           {
             "name":"mark-atoms",
