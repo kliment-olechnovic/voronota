@@ -304,6 +304,15 @@ public:
 			sih_depth(3)
 		{
 		}
+
+		bool equals(const ParametersToDrawContacts& b) const
+		{
+			return (probe==b.probe
+					&& step==b.step
+					&& projections==b.projections
+					&& simplify==b.simplify
+					&& sih_depth==b.sih_depth);
+		}
 	};
 
 	template<typename ContainerOfIds>

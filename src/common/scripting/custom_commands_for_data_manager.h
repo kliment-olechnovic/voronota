@@ -1608,7 +1608,6 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			cargs.data_manager.assert_triangulation_info_availability();
 			cargs.data_manager.assert_contacts_availability();
 
 			ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
@@ -1622,16 +1621,13 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+
 			if(ids.empty())
 			{
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, cargs.data_manager.triangulation_info(), ids, cargs.data_manager.contacts_mutable());
-
-			cargs.data_manager.reset_contacts_display_states(ids);
-
-			cargs.change_indicator.changed_contacts=true;
+			cargs.data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, cargs.change_indicator.changed_contacts);
 
 			VariantObject& info=cargs.heterostorage.variant_object;
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
@@ -1665,14 +1661,7 @@ public:
 				throw std::runtime_error(std::string("No drawable contacts selected."));
 			}
 
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-			{
-				cargs.data_manager.contacts_mutable()[*it].value.graphics.clear();
-			}
-
-			cargs.data_manager.reset_contacts_display_states(ids);
-
-			cargs.change_indicator.changed_contacts=true;
+			cargs.data_manager.reset_contacts_graphics(ids, cargs.change_indicator.changed_contacts);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
