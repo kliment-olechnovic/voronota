@@ -1437,8 +1437,15 @@ public:
 			parameters_to_construct_triangulation.artificial_boundary_shift=cargs.input.get_value_or_default<double>("boundary-shift", 5.0);
 			parameters_to_construct_triangulation.init_radius_for_BSH=cargs.input.get_value_or_default<double>("init-radius-for-BSH", parameters_to_construct_triangulation.init_radius_for_BSH);
 			parameters_to_construct_triangulation.exclude_hidden_balls=cargs.input.get_flag("exclude-hidden-balls");
+			const bool force=cargs.input.get_flag("force");
 
 			cargs.input.assert_nothing_unusable();
+
+			if(force)
+			{
+				cargs.data_manager.remove_triangulation_info();
+				cargs.change_indicator.changed_contacts=true;
+			}
 
 			cargs.data_manager.reset_triangulation_info_by_creating(parameters_to_construct_triangulation, cargs.change_indicator.changed_contacts);
 
@@ -1587,8 +1594,15 @@ public:
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
+			const bool force=cargs.input.get_flag("force");
 
 			cargs.input.assert_nothing_unusable();
+
+			if(force)
+			{
+				cargs.data_manager.remove_contacts();
+				cargs.change_indicator.changed_contacts=true;
+			}
 
 			cargs.data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts, cargs.change_indicator.changed_contacts);
 

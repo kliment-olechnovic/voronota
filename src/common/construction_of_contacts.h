@@ -69,6 +69,15 @@ public:
 					&& sih_depth==b.sih_depth
 					&& calculate_volumes==b.calculate_volumes);
 		}
+
+		bool supersedes(const ParametersToConstructBundleOfContactInformation& b) const
+		{
+			return (probe!=b.probe
+					|| step!=b.step
+					|| projections!=b.projections
+					|| sih_depth!=b.sih_depth
+					|| (calculate_volumes && !b.calculate_volumes));
+		}
 	};
 
 	struct BundleOfContactInformation
@@ -233,6 +242,13 @@ public:
 			return (tag_centrality==b.tag_centrality
 					&& tag_peripherial==b.tag_peripherial
 					&& probe==b.probe);
+		}
+
+		bool supersedes(const ParametersToEnhanceContacts& b) const
+		{
+			return ((tag_centrality && !b.tag_centrality)
+					|| (tag_peripherial && !b.tag_peripherial)
+					|| (tag_peripherial && probe!=b.probe));
 		}
 	};
 

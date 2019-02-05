@@ -489,11 +489,12 @@ public:
 	{
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No ids provided to restric atoms."));
+			throw std::runtime_error(std::string("No ids provided to restrict atoms."));
 		}
+
 		if(*ids.rbegin()>=atoms_.size())
 		{
-			throw std::runtime_error(std::string("Invalid ids provided to restric atoms."));
+			throw std::runtime_error(std::string("Invalid ids provided to restrict atoms."));
 		}
 
 		std::vector<Atom> restricted_atoms;
@@ -745,9 +746,9 @@ public:
 
 		if(!contacts_.empty()
 				&& !history_of_actions_on_contacts_.constructing.empty()
-				&& parameters_to_construct_contacts.equals(history_of_actions_on_contacts_.constructing.back())
+				&& !parameters_to_construct_contacts.supersedes(history_of_actions_on_contacts_.constructing.back())
 				&& !history_of_actions_on_contacts_.enhancing.empty()
-				&& parameters_to_enhance_contacts.equals(history_of_actions_on_contacts_.enhancing.back())
+				&& !parameters_to_enhance_contacts.supersedes(history_of_actions_on_contacts_.enhancing.back())
 				&& SelectionManager::check_contacts_compatibility_with_atoms(atoms_, contacts_))
 		{
 			return;
