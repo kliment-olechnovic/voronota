@@ -1657,7 +1657,7 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.data_manager.reset_contacts_graphics(ids, cargs.change_indicator.changed_contacts);
+			cargs.data_manager.remove_contacts_graphics(ids, cargs.change_indicator.changed_contacts);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
