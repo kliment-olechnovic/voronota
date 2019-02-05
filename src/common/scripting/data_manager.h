@@ -182,6 +182,7 @@ public:
 		bonding_links_info_=dm.bonding_links_info_;
 		triangulation_info_=dm.triangulation_info_;
 		selection_manager_=dm.selection_manager_.make_adjusted_copy(atoms_, contacts_);
+		history_of_actions_on_contacts_=dm.history_of_actions_on_contacts_;
 		return (*this);
 	}
 
