@@ -706,7 +706,7 @@ public:
 		contacts_.clear();
 		contacts_display_states_.clear();
 		selection_manager_.set_contacts(0);
-		history_of_reset_contacts_graphics_by_creating_.clear();
+		history_of_actions_on_contacts_.clear();
 	}
 
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
@@ -723,7 +723,7 @@ public:
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
 		selection_manager_.set_contacts(&contacts_);
-		history_of_reset_contacts_graphics_by_creating_.clear();
+		history_of_actions_on_contacts_.clear();
 	}
 
 	void reset_contacts_by_copying(const std::vector<Contact>& contacts)
@@ -741,6 +741,16 @@ public:
 			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
 			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
 			reset_triangulation_info_by_creating(parameters_to_construct_triangulation, happened);
+		}
+
+		if(!contacts_.empty()
+				&& !history_of_actions_on_contacts_.constructing.empty()
+				&& parameters_to_construct_contacts.equals(history_of_actions_on_contacts_.constructing.back())
+				&& !history_of_actions_on_contacts_.enhancing.empty()
+				&& parameters_to_enhance_contacts.equals(history_of_actions_on_contacts_.enhancing.back())
+				&& SelectionManager::check_contacts_compatibility_with_atoms(atoms_, contacts_))
+		{
+			return;
 		}
 
 		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
@@ -762,7 +772,13 @@ public:
 			}
 		}
 
+		history_of_actions_on_contacts_.constructing.clear();
+		history_of_actions_on_contacts_.constructing.push_back(parameters_to_construct_contacts);
+
 		ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_mutable());
+
+		history_of_actions_on_contacts_.enhancing.clear();
+		history_of_actions_on_contacts_.enhancing.push_back(parameters_to_enhance_contacts);
 	}
 
 	void reset_contacts_display_states()
@@ -803,7 +819,7 @@ public:
 				{
 					happened=true;
 					contacts_[id].value.graphics.clear();
-					history_of_reset_contacts_graphics_by_creating_.erase(id);
+					history_of_actions_on_contacts_.graphics_creating.erase(id);
 				}
 			}
 		}
@@ -830,8 +846,8 @@ public:
 				}
 				else
 				{
-					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_reset_contacts_graphics_by_creating_.find(id);
-					if(jt!=history_of_reset_contacts_graphics_by_creating_.end() && !parameters_to_draw_contacts.equals(jt->second))
+					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_actions_on_contacts_.graphics_creating.find(id);
+					if(jt!=history_of_actions_on_contacts_.graphics_creating.end() && !parameters_to_draw_contacts.equals(jt->second))
 					{
 						ids_for_updating.insert(id);
 					}
@@ -859,7 +875,7 @@ public:
 
 		for(std::set<std::size_t>::const_iterator it=ids_for_updating.begin();it!=ids_for_updating.end();++it)
 		{
-			history_of_reset_contacts_graphics_by_creating_[*it]=parameters_to_draw_contacts;
+			history_of_actions_on_contacts_.graphics_creating[*it]=parameters_to_draw_contacts;
 		}
 	}
 
@@ -969,6 +985,20 @@ public:
 	}
 
 private:
+	struct HistoryOfActionsOnContacts
+	{
+		std::vector<ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> constructing;
+		std::vector<ConstructionOfContacts::ParametersToEnhanceContacts> enhancing;
+		std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> graphics_creating;
+
+		void clear()
+		{
+			constructing.clear();
+			enhancing.clear();
+			graphics_creating.clear();
+		}
+	};
+
 	static bool add_names_to_representations(const std::vector<std::string>& names, std::vector<std::string>& representations)
 	{
 		if(names.empty())
@@ -1154,7 +1184,7 @@ private:
 	ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
 	ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
-	std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> history_of_reset_contacts_graphics_by_creating_;
+	HistoryOfActionsOnContacts history_of_actions_on_contacts_;
 };
 
 }
@@ -1162,3 +1192,4 @@ private:
 }
 
 #endif /* COMMON_SCRIPTING_DATA_MANAGER_H_ */
+
