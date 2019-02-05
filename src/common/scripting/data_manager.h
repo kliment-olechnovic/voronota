@@ -611,7 +611,7 @@ public:
 		reset_data_dependent_on_atoms();
 	}
 
-	void reset_bonding_links_info()
+	void remove_bonding_links_info()
 	{
 		bonding_links_info_=ConstructionOfBondingLinks::BundleOfBondingLinks();
 	}
@@ -649,7 +649,7 @@ public:
 		}
 	}
 
-	void reset_triangulation_info()
+	void remove_triangulation_info()
 	{
 		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
 		reset_data_dependent_on_triangulation_info();
@@ -701,12 +701,12 @@ public:
 		happened=true;
 	}
 
-	void reset_contacts()
+	void remove_contacts()
 	{
 		contacts_.clear();
 		contacts_display_states_.clear();
-		contacts_drawing_history_.clear();
 		selection_manager_.set_contacts(0);
+		history_of_reset_contacts_graphics_by_creating_.clear();
 	}
 
 	void reset_contacts_by_swapping(std::vector<Contact>& contacts)
@@ -722,8 +722,8 @@ public:
 		}
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
-		contacts_drawing_history_.clear();
 		selection_manager_.set_contacts(&contacts_);
+		history_of_reset_contacts_graphics_by_creating_.clear();
 	}
 
 	void reset_contacts_by_copying(const std::vector<Contact>& contacts)
@@ -792,7 +792,7 @@ public:
 		set_contacts_representations_implemented_if_required_always();
 	}
 
-	void reset_contacts_graphics(const std::set<std::size_t>& ids, bool& happened)
+	void remove_contacts_graphics(const std::set<std::size_t>& ids, bool& happened)
 	{
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
@@ -803,7 +803,7 @@ public:
 				{
 					happened=true;
 					contacts_[id].value.graphics.clear();
-					contacts_drawing_history_.erase(id);
+					history_of_reset_contacts_graphics_by_creating_.erase(id);
 				}
 			}
 		}
@@ -830,8 +830,8 @@ public:
 				}
 				else
 				{
-					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=contacts_drawing_history_.find(id);
-					if(jt!=contacts_drawing_history_.end() && !parameters_to_draw_contacts.equals(jt->second))
+					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_reset_contacts_graphics_by_creating_.find(id);
+					if(jt!=history_of_reset_contacts_graphics_by_creating_.end() && !parameters_to_draw_contacts.equals(jt->second))
 					{
 						ids_for_updating.insert(id);
 					}
@@ -859,7 +859,7 @@ public:
 
 		for(std::set<std::size_t>::const_iterator it=ids_for_updating.begin();it!=ids_for_updating.end();++it)
 		{
-			contacts_drawing_history_[*it]=parameters_to_draw_contacts;
+			history_of_reset_contacts_graphics_by_creating_[*it]=parameters_to_draw_contacts;
 		}
 	}
 
@@ -1133,14 +1133,14 @@ private:
 		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
 		selection_manager_=SelectionManager(&atoms_, 0);
 
-		reset_bonding_links_info();
-		reset_triangulation_info();
-		reset_contacts();
+		remove_bonding_links_info();
+		remove_triangulation_info();
+		remove_contacts();
 	}
 
 	void reset_data_dependent_on_triangulation_info()
 	{
-		reset_contacts();
+		remove_contacts();
 	}
 
 	RepresentationsDescriptor atoms_representations_descriptor_;
@@ -1149,12 +1149,12 @@ private:
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
-	std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> contacts_drawing_history_;
 	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
 	ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
+	std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> history_of_reset_contacts_graphics_by_creating_;
 };
 
 }
