@@ -60,6 +60,15 @@ public:
 			calculate_volumes(false)
 		{
 		}
+
+		bool equals(const ParametersToConstructBundleOfContactInformation& b) const
+		{
+			return (probe==b.probe
+					&& step==b.step
+					&& projections==b.projections
+					&& sih_depth==b.sih_depth
+					&& calculate_volumes==b.calculate_volumes);
+		}
 	};
 
 	struct BundleOfContactInformation
@@ -217,6 +226,13 @@ public:
 			tag_peripherial(false),
 			probe(1.4)
 		{
+		}
+
+		bool equals(const ParametersToEnhanceContacts& b) const
+		{
+			return (tag_centrality==b.tag_centrality
+					&& tag_peripherial==b.tag_peripherial
+					&& probe==b.probe);
 		}
 	};
 
