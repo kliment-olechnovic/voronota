@@ -795,21 +795,6 @@ public:
 		set_contacts_representations_implemented_if_required_always();
 	}
 
-	void reset_contacts_display_states(const std::set<std::size_t>& ids)
-	{
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-		{
-			const std::size_t id=(*it);
-			if(id<contacts_.size())
-			{
-				contacts_display_states_[id]=DisplayState();
-				contacts_display_states_[id].drawable=(!contacts_[id].value.graphics.empty());
-			}
-		}
-		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
-		set_contacts_representations_implemented_if_required_always();
-	}
-
 	void remove_contacts_graphics(const std::set<std::size_t>& ids, bool& happened)
 	{
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
@@ -825,7 +810,7 @@ public:
 				}
 			}
 		}
-		reset_contacts_display_states(ids);
+		update_contacts_display_states_drawable(ids);
 	}
 
 	void reset_contacts_graphics_by_creating(
@@ -873,7 +858,7 @@ public:
 
 		ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
 
-		reset_contacts_display_states(ids_for_updating);
+		update_contacts_display_states_drawable(ids_for_updating);
 
 		for(std::set<std::size_t>::const_iterator it=ids_for_updating.begin();it!=ids_for_updating.end();++it)
 		{
@@ -1092,6 +1077,10 @@ private:
 			{
 				display_states[i].visuals.resize(size);
 			}
+			else if(!display_states[i].drawable)
+			{
+				display_states[i].visuals.clear();
+			}
 		}
 	}
 
@@ -1173,6 +1162,29 @@ private:
 	void reset_data_dependent_on_triangulation_info()
 	{
 		remove_contacts();
+	}
+
+	void update_contacts_display_states_drawable(const std::set<std::size_t>& ids)
+	{
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t id=(*it);
+			if(id<contacts_.size())
+			{
+				DisplayState& ds=contacts_display_states_[id];
+				ds.drawable=(!contacts_[id].value.graphics.empty());
+				if(!ds.drawable)
+				{
+					ds.visuals.clear();
+				}
+				for(std::size_t j=0;j<ds.visuals.size();j++)
+				{
+					ds.visuals[j].implemented=false;
+				}
+			}
+		}
+		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
+		set_contacts_representations_implemented_if_required_always();
 	}
 
 	RepresentationsDescriptor atoms_representations_descriptor_;
