@@ -57,14 +57,15 @@ public:
 		if((params.show || params.hide || params.mark || params.unmark || params.color_valid()) && id<display_states.size())
 		{
 			DataManager::DisplayState& ds=display_states[id];
+
+			if(params.mark || params.unmark)
+			{
+				updated=(updated || (ds.marked!=params.mark));
+				ds.marked=params.mark;
+			}
+
 			if(ds.implemented())
 			{
-				if(params.mark || params.unmark)
-				{
-					updated=(updated || (ds.marked!=params.mark));
-					ds.marked=params.mark;
-				}
-
 				if(params.show || params.hide || params.color_valid())
 				{
 					if(params.visual_ids.empty())
