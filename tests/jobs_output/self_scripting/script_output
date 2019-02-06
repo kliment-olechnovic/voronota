@@ -489,9 +489,6 @@
       "output":{
         "selections":[
           {
-            "name":"_marked",
-            "atoms_summary":{"number_total":5,"volume":108.978}},
-          {
             "name":"as1",
             "atoms_summary":{"number_total":5,"volume":108.978}}]},
       "success":true},
@@ -503,9 +500,6 @@
           {
             "name":"_drawable",
             "contacts_summary":{"number_total":120,"number_drawable":120,"area":211.8}},
-          {
-            "name":"_marked",
-            "contacts_summary":{"number_total":1,"number_drawable":1,"area":6.57156}},
           {
             "name":"cs1",
             "contacts_summary":{"number_total":5,"number_drawable":1,"area":33.8164}}]},

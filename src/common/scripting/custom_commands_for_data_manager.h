@@ -213,7 +213,7 @@ public:
 			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 					cargs.input.get_value_or_first_unused_unnamed_value("name") :
 					cargs.input.get_value_or_default<std::string>("name", ""));
-			const bool no_marking=cargs.input.get_flag("no-marking");
+			const bool mark=cargs.input.get_flag("mark");
 
 			cargs.input.assert_nothing_unusable();
 
@@ -243,7 +243,7 @@ public:
 				}
 			}
 
-			if(!no_marking)
+			if(mark)
 			{
 				{
 					UpdatingOfDataManagerDisplayStates::Parameters params;
@@ -544,13 +544,11 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.filter_atoms_drawable_implemented_ids(
-					cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting),
-					false);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 
 			if(ids.empty())
 			{
-				throw std::runtime_error(std::string("No drawable atoms selected."));
+				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
 			{
@@ -1764,7 +1762,7 @@ public:
 			const std::string name=(cargs.input.is_any_unnamed_value_unused() ?
 					cargs.input.get_value_or_first_unused_unnamed_value("name") :
 					cargs.input.get_value_or_default<std::string>("name", ""));
-			const bool no_marking=cargs.input.get_flag("no-marking");
+			const bool mark=cargs.input.get_flag("mark");
 
 			cargs.input.assert_nothing_unusable();
 
@@ -1794,7 +1792,7 @@ public:
 				}
 			}
 
-			if(!no_marking)
+			if(mark)
 			{
 				{
 					UpdatingOfDataManagerDisplayStates::Parameters params;
@@ -2049,13 +2047,11 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=cargs.data_manager.filter_contacts_drawable_implemented_ids(
-					cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting),
-					false);
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 			if(ids.empty())
 			{
-				throw std::runtime_error(std::string("No drawable contacts selected."));
+				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
 			{
