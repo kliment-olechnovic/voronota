@@ -101,6 +101,7 @@ public:
 									chainID_output << record.chainID << model_num;
 									record.chainID=chainID_output.str();
 								}
+								record.altLoc.clear();
 								data.atom_records.push_back(record);
 								if(store_lines)
 								{
@@ -287,11 +288,12 @@ public:
 								{
 									if(get_value_from_table_row(header_map, (values.begin()+i), "_atom_site.pdbx_PDB_model_num")==first_model_id)
 									{
-										const AtomRecord record=read_atom_record_from_table_row(header_map, (values.begin()+i));
+										AtomRecord record=read_atom_record_from_table_row(header_map, (values.begin()+i));
 										if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 										{
 											if(check_atom_record_validity(record))
 											{
+												record.altLoc.clear();
 												data.atom_records.push_back(record);
 											}
 											else
