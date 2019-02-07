@@ -284,6 +284,7 @@ public:
 		if(no_resSeq)
 		{
 			v.resSeq=null_num();
+			v.iCode.clear();
 		}
 		if(no_resName)
 		{

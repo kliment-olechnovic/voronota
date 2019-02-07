@@ -54,7 +54,7 @@ c<A>r<79>R<TRP> 52
 c<A>r<80>R<HIS> 53
 c<A>r<81>R<LEU> 54
 c<A>r<82>R<HIS> 55
-c<A>r<83>l<A>R<CYS> 56
+c<A>r<83>R<CYS> 56
 c<A>r<84>R<LYS> 57
 c<A>r<85>R<LEU> 58
 c<A>r<86>R<GLU> 59
@@ -126,7 +126,7 @@ c<A>r<151>R<VAL> 124
 c<A>r<152>R<ASP> 125
 c<A>r<153>R<ALA> 126
 c<A>r<154>R<ARG> 127
-c<A>r<155>l<A>R<ASN> 128
+c<A>r<155>R<ASN> 128
 c<A>r<156>R<ARG> 129
 c<A>r<157>R<GLN> 130
 c<A>r<158>R<LEU> 131
@@ -224,7 +224,7 @@ c<B>r<121>R<ALA> 227
 c<B>r<122>R<TRP> 228
 c<B>r<123>R<LEU> 229
 c<B>r<124>R<PRO> 230
-c<B>r<125>l<A>R<ARG> 231
+c<B>r<125>R<ARG> 231
 c<B>r<126>R<LEU> 232
 c<B>r<127>R<MET> 233
 c<B>r<128>R<PRO> 234
