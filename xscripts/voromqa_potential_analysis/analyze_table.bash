@@ -13,7 +13,7 @@ ut=data.frame(atom=ut$atom1, value_solvent=ut$value_solvent1, area_solvent=ut$ar
 sel_atom2_carbon=grep("A<C", t$atom2);
 sel_atom2_sidechain=grep("A<C>|A<CA>|A<N>|A<O>", t$atom2, invert=TRUE);
 sel_atom2_carbon_sidechain=intersect(sel_atom2_carbon, sel_atom2_sidechain);
-sel_atom2_hydrophobic=intersect(sel_atom2_carbon_sidechain, grep("R<ILE>|R<LEU>", t$atom2));
+sel_atom2_hydrophobic=intersect(sel_atom2_carbon_sidechain, grep("R<ILE>|R<LEU>|R<ALA>|R<VAL>|R<PHE>|R<TRP>", t$atom2));
 
 for(i in 1:nrow(ut))
 {
