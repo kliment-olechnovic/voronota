@@ -48,72 +48,77 @@ for(i in 1:nrow(ut))
 sel=grep("A<C>|A<CA>|A<N>|A<O>", ut$atom);
 sel_gly=intersect(sel, grep("R<GLY>", ut$atom));
 
-plot(ut$value_solvent, ut$value_nonsolvent, main="solvent vs nonsolvent");
+plot(ut$value_solvent, ut$value_nonsolvent, main="solvent vs nonsolvent", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent[sel_gly], col="green", pch=4);
 lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_solvent, ut$value_nonsolvent_carbon, main="solvent vs nonsolvent_carbon");
+plot(ut$value_solvent, ut$value_nonsolvent_carbon, main="solvent vs nonsolvent_carbon", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent_carbon[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent_carbon[sel_gly], col="green", pch=4);
 lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_solvent, ut$value_nonsolvent_sidechain, main="solvent vs nonsolvent_sidechain");
+plot(ut$value_solvent, ut$value_nonsolvent_sidechain, main="solvent vs nonsolvent_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent_sidechain[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent_sidechain[sel_gly], col="green", pch=4);
 lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_solvent, ut$value_nonsolvent_carbon_sidechain, main="solvent vs nonsolvent_carbon_sidechain");
+plot(ut$value_solvent, ut$value_nonsolvent_carbon_sidechain, main="solvent vs nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent_carbon_sidechain[sel_gly], col="green", pch=4);
 lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_solvent, ut$value_nonsolvent_hydrophobic, main="solvent vs nonsolvent_hydrophobic");
+plot(ut$value_solvent, ut$value_nonsolvent_hydrophobic, main="solvent vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent_hydrophobic[sel_gly], col="green", pch=4);
 lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
 
 ####################
 
 sel=grep("A<C>|A<CA>|A<N>|A<O>", ut$atom);
 
-plot(ut$value_nonsolvent, ut$value_nonsolvent_carbon, main="nonsolvent vs nonsolvent_carbon");
+plot(ut$value_nonsolvent, ut$value_nonsolvent_carbon, main="nonsolvent vs nonsolvent_carbon", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent[sel], ut$value_nonsolvent_carbon[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent, ut$value_nonsolvent_sidechain, main="nonsolvent vs nonsolvent_sidechain");
+plot(ut$value_nonsolvent, ut$value_nonsolvent_sidechain, main="nonsolvent vs nonsolvent_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent[sel], ut$value_nonsolvent_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent vs nonsolvent_carbon_sidechain");
+plot(ut$value_nonsolvent, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent vs nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent[sel], ut$value_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent, ut$value_nonsolvent_hydrophobic, main="nonsolvent vs nonsolvent_hydrophobic");
+plot(ut$value_nonsolvent, ut$value_nonsolvent_hydrophobic, main="nonsolvent vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_sidechain, main="nonsolvent_carbon vs nonsolvent_sidechain");
+plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_sidechain, main="nonsolvent_carbon vs nonsolvent_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon[sel], ut$value_nonsolvent_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent_carbon vs nonsolvent_carbon_sidechain");
+plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent_carbon vs nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon[sel], ut$value_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_hydrophobic, main="nonsolvent_carbon vs nonsolvent_hydrophobic");
+plot(ut$value_nonsolvent_carbon, ut$value_nonsolvent_hydrophobic, main="nonsolvent_carbon vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_sidechain, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent_sidechain vs nonsolvent_carbon_sidechain");
+plot(ut$value_nonsolvent_sidechain, ut$value_nonsolvent_carbon_sidechain, main="nonsolvent_sidechain vs nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_sidechain[sel], ut$value_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_sidechain, ut$value_nonsolvent_hydrophobic, main="nonsolvent_sidechain vs nonsolvent_hydrophobic");
+plot(ut$value_nonsolvent_sidechain, ut$value_nonsolvent_hydrophobic, main="nonsolvent_sidechain vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_sidechain[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
-plot(ut$value_nonsolvent_carbon_sidechain, ut$value_nonsolvent_hydrophobic, main="nonsolvent_carbon_sidechain vs nonsolvent_hydrophobic");
+plot(ut$value_nonsolvent_carbon_sidechain, ut$value_nonsolvent_hydrophobic, main="nonsolvent_carbon_sidechain vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon_sidechain[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
