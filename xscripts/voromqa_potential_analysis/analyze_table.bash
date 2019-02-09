@@ -40,8 +40,8 @@ for(i in 1:nrow(ut))
 	ut$value_nonsolvent_hydrophobic[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
 }
 
-ut=ut[order(0-abs(ut$value_solvent-ut$value_nonsolvent_carbon_sidechain)),];
-write.table(ut[,grep("area_", colnames(ut), invert=TRUE)], "solvent_vs_nonsolvent", quote=FALSE, col.names=TRUE, row.names=FALSE);
+out_ut=ut[order(ut$value_nonsolvent_carbon_sidechain), grep("area_", colnames(ut), invert=TRUE)];
+write.table(out_ut, "solvent_vs_nonsolvent", quote=FALSE, col.names=TRUE, row.names=FALSE);
 
 ####################
 
