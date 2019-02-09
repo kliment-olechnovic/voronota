@@ -6,6 +6,8 @@ t=read.table("table", header=TRUE, stringsAsFactors=FALSE);
 
 t$value_c_nc=(t$value_central*t$area_central+t$value_noncentral*t$area_noncentral)/(t$area_central+t$area_noncentral);
 t$area_c_nc=(t$area_central+t$area_noncentral);
+t$prob_obs_c_nc=(t$prob_obs_central+t$prob_obs_noncentral);
+t$prob_exp_c_nc=(t$prob_exp_central+t$prob_exp_noncentral);
 
 ut=t[!duplicated(t[,"atom1"]),];
 ut=data.frame(atom=ut$atom1, value_solvent=ut$value_solvent1, area_solvent=ut$area_solvent1);
@@ -22,22 +24,27 @@ for(i in 1:nrow(ut))
 	sel=sel_atom1_relevant;
 	ut$area_nonsolvent[i]=sum(t$area_c_nc[sel]);
 	ut$value_nonsolvent[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
+	ut$value_alt_nonsolvent[i]=0-log(sum(t$prob_obs_c_nc[sel])/sum(t$prob_exp_c_nc[sel]));
 	
 	sel=intersect(sel_atom1_relevant, sel_atom2_carbon);
 	ut$area_nonsolvent_carbon[i]=sum(t$area_c_nc[sel]);
 	ut$value_nonsolvent_carbon[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
+	ut$value_alt_nonsolvent_carbon[i]=0-log(sum(t$prob_obs_c_nc[sel])/sum(t$prob_exp_c_nc[sel]));
 	
 	sel=intersect(sel_atom1_relevant, sel_atom2_sidechain);
 	ut$area_nonsolvent_sidechain[i]=sum(t$area_c_nc[sel]);
 	ut$value_nonsolvent_sidechain[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
+	ut$value_alt_nonsolvent_sidechain[i]=0-log(sum(t$prob_obs_c_nc[sel])/sum(t$prob_exp_c_nc[sel]));
 	
 	sel=intersect(sel_atom1_relevant, sel_atom2_carbon_sidechain);
 	ut$area_nonsolvent_carbon_sidechain[i]=sum(t$area_c_nc[sel]);
 	ut$value_nonsolvent_carbon_sidechain[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
+	ut$value_alt_nonsolvent_carbon_sidechain[i]=0-log(sum(t$prob_obs_c_nc[sel])/sum(t$prob_exp_c_nc[sel]));
 	
 	sel=intersect(sel_atom1_relevant, sel_atom2_hydrophobic);
 	ut$area_nonsolvent_hydrophobic[i]=sum(t$area_c_nc[sel]);
 	ut$value_nonsolvent_hydrophobic[i]=sum(t$value_c_nc[sel]*t$area_c_nc[sel])/sum(t$area_c_nc[sel]);
+	ut$value_alt_nonsolvent_hydrophobic[i]=0-log(sum(t$prob_obs_c_nc[sel])/sum(t$prob_exp_c_nc[sel]));
 }
 
 out_ut=ut[order(ut$value_nonsolvent_carbon_sidechain), grep("area_", colnames(ut), invert=TRUE)];
@@ -120,6 +127,16 @@ lines(c(-100, 100), c(-100, 100));
 
 plot(ut$value_nonsolvent_carbon_sidechain, ut$value_nonsolvent_hydrophobic, main="nonsolvent_carbon_sidechain vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon_sidechain[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
+lines(c(-100, 100), c(-100, 100));
+
+####################
+
+plot(ut$value_nonsolvent, ut$value_alt_nonsolvent, main="nonsolvent vs alt_nonsolvent", xlim=c(-3, 3), ylim=c(-3, 3));
+points(ut$value_nonsolvent[sel], ut$value_alt_nonsolvent[sel], col="red", pch=3);
+lines(c(-100, 100), c(-100, 100));
+
+plot(ut$value_nonsolvent_carbon_sidechain, ut$value_alt_nonsolvent_carbon_sidechain, main="nonsolvent_carbon_sidechain vs alt_nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
+points(ut$value_nonsolvent_carbon_sidechain[sel], ut$value_alt_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
 
 ####################
