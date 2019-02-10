@@ -3,30 +3,38 @@
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
+cp ../../resources/voromqa_v1_energy_potential ./potential
+
+cat ../../resources/voromqa_v1_energy_potential_source/contact_areas \
+| ../../voronota score-contacts-potential \
+  --probabilities-file ./probabilities \
+  --potential-file ./potential_raw \
+> /dev/null
+
 {
 	echo "atom1 atom2 value_central"
 	{
-		cat ../../resources/voromqa_v1_energy_potential | awk '{if($3=="central_sep2"){print $1 " " $2 " " $4}}'
-		cat ../../resources/voromqa_v1_energy_potential | awk '{if($3=="central_sep2"){print $2 " " $1 " " $4}}'
+		cat ./potential_raw | awk '{if($3=="central_sep2"){print $1 " " $2 " " $4}}'
+		cat ./potential_raw | awk '{if($3=="central_sep2"){print $2 " " $1 " " $4}}'
 	} | sort | uniq
 } > "$TMPLDIR/table_central"
 
 {
 	echo "atom1 atom2 value_noncentral"
 	{
-		cat ../../resources/voromqa_v1_energy_potential | awk '{if($3=="sep2"){print $1 " " $2 " " $4}}'
-		cat ../../resources/voromqa_v1_energy_potential | awk '{if($3=="sep2"){print $2 " " $1 " " $4}}'
+		cat ./potential_raw | awk '{if($3=="sep2"){print $1 " " $2 " " $4}}'
+		cat ./potential_raw | awk '{if($3=="sep2"){print $2 " " $1 " " $4}}'
 	} | sort | uniq
 } > "$TMPLDIR/table_noncentral"
 
 {
 	echo "atom1 value_solvent1"
-	cat ../../resources/voromqa_v1_energy_potential | grep 'solvent' | awk '{print $1 " " $4}'
+	cat ./potential | grep 'solvent' | awk '{print $1 " " $4}'
 } > "$TMPLDIR/table_solvent1"
 
 {
 	echo "atom2 value_solvent2"
-	cat ../../resources/voromqa_v1_energy_potential | grep 'solvent' | awk '{print $1 " " $4}'
+	cat ./potential | grep 'solvent' | awk '{print $1 " " $4}'
 } > "$TMPLDIR/table_solvent2"
 
 {
@@ -54,12 +62,6 @@ trap "rm -r $TMPLDIR" EXIT
 	echo "atom2 area_solvent2"
 	cat ../../resources/voromqa_v1_energy_potential_source/contact_areas | grep 'solvent' | awk '{print $1 " " $4}'
 } > "$TMPLDIR/table_area_solvent2"
-
-cat ../../resources/voromqa_v1_energy_potential_source/contact_areas \
-| ../../voronota score-contacts-potential \
-  --input-contributions ../../resources/voromqa_v1_energy_potential_source/contact_categories \
-  --probabilities-file ./probabilities \
-> /dev/null
 
 {
 	echo "atom1 atom2 prob_obs_central prob_exp_central"
