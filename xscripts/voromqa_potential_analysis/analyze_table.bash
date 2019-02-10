@@ -79,6 +79,12 @@ points(ut$value_solvent[sel_gly], ut$value_nonsolvent_carbon_sidechain[sel_gly],
 lines(c(-100, 100), c(100, -100));
 lines(c(-100, 100), c(-100, 100));
 
+plot(ut$value_solvent, ut$value_alt_nonsolvent_carbon_sidechain, main="solvent vs alt_nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
+points(ut$value_solvent[sel], ut$value_alt_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
+points(ut$value_solvent[sel_gly], ut$value_alt_nonsolvent_carbon_sidechain[sel_gly], col="green", pch=4);
+lines(c(-100, 100), c(100, -100));
+lines(c(-100, 100), c(-100, 100));
+
 plot(ut$value_solvent, ut$value_nonsolvent_hydrophobic, main="solvent vs nonsolvent_hydrophobic", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_solvent[sel], ut$value_nonsolvent_hydrophobic[sel], col="red", pch=3);
 points(ut$value_solvent[sel_gly], ut$value_nonsolvent_hydrophobic[sel_gly], col="green", pch=4);
@@ -138,6 +144,19 @@ lines(c(-100, 100), c(-100, 100));
 plot(ut$value_nonsolvent_carbon_sidechain, ut$value_alt_nonsolvent_carbon_sidechain, main="nonsolvent_carbon_sidechain vs alt_nonsolvent_carbon_sidechain", xlim=c(-3, 3), ylim=c(-3, 3));
 points(ut$value_nonsolvent_carbon_sidechain[sel], ut$value_alt_nonsolvent_carbon_sidechain[sel], col="red", pch=3);
 lines(c(-100, 100), c(-100, 100));
+
+####################
+
+sum(ut$value_solvent*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+
+sum(ut$value_nonsolvent*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+sum(ut$value_alt_nonsolvent*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+
+sum(ut$value_nonsolvent_carbon_sidechain*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+sum(ut$value_alt_nonsolvent_carbon_sidechain*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+
+sum(ut$value_nonsolvent_hydrophobic*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
+sum(ut$value_alt_nonsolvent_hydrophobic*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
 
 ####################
 
