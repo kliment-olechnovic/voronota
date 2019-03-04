@@ -1090,6 +1090,7 @@ public:
 
 			const std::string name=cargs.input.get_value_or_default<std::string>("name", "atoms");
 			const bool wireframe=cargs.input.get_flag("wireframe");
+			const double radius_subtraction=cargs.input.get_value_or_default<double>("radius-subtraction", 0.0);
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -1162,7 +1163,16 @@ public:
 							}
 							else
 							{
-								opengl_printer.add_sphere(cargs.data_manager.atoms()[id].value);
+								if(radius_subtraction>0.0)
+								{
+									apollota::SimpleSphere reduced_ball(cargs.data_manager.atoms()[id].value);
+									reduced_ball.r=std::max(0.0, reduced_ball.r-radius_subtraction);
+									opengl_printer.add_sphere(reduced_ball);
+								}
+								else
+								{
+									opengl_printer.add_sphere(cargs.data_manager.atoms()[id].value);
+								}
 							}
 						}
 					}
