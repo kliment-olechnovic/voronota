@@ -145,6 +145,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string points_output=poh.argument<std::string>(pohw.describe_option("--points-output", "string", "file path to output points"), "");
 	const std::string patterns_output=poh.argument<std::string>(pohw.describe_option("--patterns-output", "string", "file path to output 7x7 patterns encoded as numbers"), "");
 	const bool binarize_patterns=poh.contains_option(pohw.describe_option("--binarize-patterns", "", "flag to output patterns in binary format"));
+	const std::string raw_matrix_output=poh.argument<std::string>(pohw.describe_option("--raw-matrix-output", "string", "file path to output raw matrix"), "");
 
 	if(!pohw.assert_or_print_help(false))
 	{
@@ -271,6 +272,30 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					}
 					output << "\n";
 				}
+			}
+		}
+	}
+
+	if(!raw_matrix_output.empty())
+	{
+		std::ofstream output(raw_matrix_output.c_str(), std::ios::out);
+		if(output.good())
+		{
+			output << axis.size() << "\n";
+			for(std::map<CRAD, std::size_t>::const_iterator row_it=axis.begin();row_it!=axis.end();++row_it)
+			{
+				output << row_it->first;
+				for(std::map<CRAD, std::size_t>::const_iterator col_it=axis.begin();col_it!=axis.end();++col_it)
+				{
+					double value=0;
+					std::map<CRADsPair, common::ContactValue>::const_iterator contact_it=map_of_contacts.find(CRADsPair(row_it->first, col_it->first));
+					if(contact_it!=map_of_contacts.end())
+					{
+						value=contact_it->second.area;
+					}
+					output << " " << value;
+				}
+				output << "\n";
 			}
 		}
 	}
