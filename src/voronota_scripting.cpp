@@ -1,5 +1,5 @@
-#include "common/scripting/script_execution_manager_with_variant_output.h"
-#include "common/scripting/json_writer.h"
+#include "scripting/script_execution_manager_with_variant_output.h"
+#include "scripting/json_writer.h"
 
 #include "voronota_scripting.h"
 

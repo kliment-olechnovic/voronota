@@ -1,8 +1,8 @@
 #ifndef COMMON_SCRIPTING_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_DATA_MANAGER_H_
 
-#include "../construction_of_secondary_structure.h"
-#include "../construction_of_bonding_links.h"
+#include "../common/construction_of_secondary_structure.h"
+#include "../common/construction_of_bonding_links.h"
 
 #include "selection_manager.h"
 

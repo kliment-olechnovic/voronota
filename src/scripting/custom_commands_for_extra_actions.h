@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
 
-#include "../../auxiliaries/time_utilities.h"
+#include "../auxiliaries/time_utilities.h"
 
 #include "generic_command.h"
 #include "collection_of_command_documentations.h"

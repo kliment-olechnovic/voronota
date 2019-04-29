@@ -1,8 +1,8 @@
 #ifndef COMMON_SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
 #define COMMON_SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
 
-#include "../construction_of_voromqa_score.h"
-#include "../conversion_of_descriptors.h"
+#include "../common/construction_of_voromqa_score.h"
+#include "../common/conversion_of_descriptors.h"
 
 #include "data_manager.h"
 
