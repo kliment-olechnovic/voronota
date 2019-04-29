@@ -1,9 +1,9 @@
 #ifndef COMMON_SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
 #define COMMON_SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
 
-#include "../construction_of_atomic_balls.h"
-#include "../construction_of_contacts.h"
-#include "../matching_utilities.h"
+#include "../common/construction_of_atomic_balls.h"
+#include "../common/construction_of_contacts.h"
+#include "../common/matching_utilities.h"
 
 #include "basic_types.h"
 

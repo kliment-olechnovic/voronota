@@ -1,12 +1,12 @@
 #ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 #define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
-#include "../../auxiliaries/color_utilities.h"
-#include "../../auxiliaries/residue_letters_coding.h"
+#include "../auxiliaries/color_utilities.h"
+#include "../auxiliaries/residue_letters_coding.h"
 
-#include "../writing_atomic_balls_in_pdb_format.h"
-#include "../construction_of_structural_cartoon.h"
-#include "../conversion_of_descriptors.h"
+#include "../common/writing_atomic_balls_in_pdb_format.h"
+#include "../common/construction_of_structural_cartoon.h"
+#include "../common/conversion_of_descriptors.h"
 
 #include "generic_command_for_data_manager.h"
 #include "basic_assertions.h"

@@ -1,8 +1,8 @@
 #ifndef COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
 #define COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
 
-#include "../construction_of_cad_score.h"
-#include "../conversion_of_descriptors.h"
+#include "../common/construction_of_cad_score.h"
+#include "../common/conversion_of_descriptors.h"
 
 #include "data_manager.h"
 

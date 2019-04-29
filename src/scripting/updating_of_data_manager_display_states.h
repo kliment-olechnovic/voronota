@@ -1,7 +1,7 @@
 #ifndef COMMON_SCRIPTING_UPDATING_OF_DATA_MANAGER_DISPLAY_STATES_H_
 #define COMMON_SCRIPTING_UPDATING_OF_DATA_MANAGER_DISPLAY_STATES_H_
 
-#include "../../auxiliaries/color_utilities.h"
+#include "../auxiliaries/color_utilities.h"
 
 #include "data_manager.h"
 

@@ -1,9 +1,9 @@
 #ifndef COMMON_SCRIPTING_LOADING_OF_DATA_H_
 #define COMMON_SCRIPTING_LOADING_OF_DATA_H_
 
-#include "../../apollota/basic_operations_on_spheres.h"
+#include "../apollota/basic_operations_on_spheres.h"
 
-#include "../construction_of_atomic_balls.h"
+#include "../common/construction_of_atomic_balls.h"
 
 #include "io_selectors.h"
 
