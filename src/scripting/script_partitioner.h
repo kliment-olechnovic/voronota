@@ -1,12 +1,9 @@
-#ifndef COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
-#define COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_
+#ifndef SCRIPTING_SCRIPT_PARTITIONER_H_
+#define SCRIPTING_SCRIPT_PARTITIONER_H_
 
 #include <list>
 
 #include "command_input.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -364,6 +361,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_SCRIPT_PARTITIONER_H_ */
+#endif /* SCRIPTING_SCRIPT_PARTITIONER_H_ */

@@ -1,13 +1,10 @@
-#ifndef COMMON_SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
-#define COMMON_SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
+#ifndef SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
+#define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
 #include "custom_commands_for_script_partitioner.h"
 #include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_data_manager.h"
 #include "custom_commands_for_extra_actions.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -461,6 +458,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_ */
+#endif /* SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_ */

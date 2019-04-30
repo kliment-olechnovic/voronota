@@ -1,13 +1,10 @@
-#ifndef COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
-#define COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
+#ifndef SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
+#define SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_
 
 #include "../common/construction_of_cad_score.h"
 #include "../common/conversion_of_descriptors.h"
 
 #include "data_manager.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -39,7 +36,7 @@ public:
 
 	struct Result
 	{
-		ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
+		common::ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
 		DataManager::ChangeIndicator target_dm_ci;
 		DataManager::ChangeIndicator model_dm_ci;
 	};
@@ -63,7 +60,7 @@ public:
 			throw std::runtime_error(std::string("No model contacts selected."));
 		}
 
-		ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
+		common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
 		parameters_for_cad_score.atom_level=!(
 				params.target_adjunct_atom_scores.empty()
@@ -71,7 +68,7 @@ public:
 				&& params.target_adjunct_inter_atom_scores.empty()
 				&& params.model_adjunct_inter_atom_scores.empty());
 
-		if(!ConstructionOfCADScore::construct_bundle_of_cadscore_information(
+		if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 				parameters_for_cad_score,
 				collect_map_of_contacts(target_dm.atoms(), target_dm.contacts(), target_contacts_ids),
 				collect_map_of_contacts(model_dm.atoms(), model_dm.contacts(), model_contact_ids),
@@ -91,19 +88,19 @@ public:
 	}
 
 private:
-	static std::map<ChainResidueAtomDescriptorsPair, double> collect_map_of_contacts(
+	static std::map<common::ChainResidueAtomDescriptorsPair, double> collect_map_of_contacts(
 			const std::vector<Atom>& atoms,
 			const std::vector<Contact>& contacts,
 			const std::set<std::size_t>& contact_ids)
 	{
-		std::map<ChainResidueAtomDescriptorsPair, double> map_of_contacts;
+		std::map<common::ChainResidueAtomDescriptorsPair, double> map_of_contacts;
 		for(std::set<std::size_t>::const_iterator it_contact_ids=contact_ids.begin();it_contact_ids!=contact_ids.end();++it_contact_ids)
 		{
 			const std::size_t contact_id=(*it_contact_ids);
 			if(contact_id<contacts.size())
 			{
 				const Contact& contact=contacts[contact_id];
-				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
 				if(crads.valid())
 				{
 					map_of_contacts[crads]=contact.value.area;
@@ -114,7 +111,7 @@ private:
 	}
 
 	static void write_adjuncts(
-			const ConstructionOfCADScore::BundleOfCADScoreInformation& bundle,
+			const common::ConstructionOfCADScore::BundleOfCADScoreInformation& bundle,
 			const unsigned int smoothing_window,
 			const std::set<std::size_t>& contact_ids,
 			const std::string& adjunct_atom_scores,
@@ -131,7 +128,7 @@ private:
 				Atom& atom=dm.atoms_mutable()[i];
 				if(!adjunct_atom_scores.empty())
 				{
-					std::map<ConstructionOfCADScore::CRAD, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+					std::map<common::ConstructionOfCADScore::CRAD, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 							bundle.map_of_atom_cad_descriptors.find(atom.crad);
 					if(jt!=bundle.map_of_atom_cad_descriptors.end())
 					{
@@ -148,13 +145,13 @@ private:
 
 		if(!adjunct_residue_scores.empty())
 		{
-			const std::map<ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
+			const std::map<common::ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
 			for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
 			{
 				Atom& atom=dm.atoms_mutable()[i];
 				if(!adjunct_residue_scores.empty())
 				{
-					std::map<ConstructionOfCADScore::CRAD, double>::const_iterator jt=
+					std::map<common::ConstructionOfCADScore::CRAD, double>::const_iterator jt=
 							smoothed_residue_scores.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 					if(jt!=smoothed_residue_scores.end())
 					{
@@ -186,12 +183,12 @@ private:
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				Contact& contact=dm.contacts_mutable()[*it];
-				const ConstructionOfCADScore::CRADsPair crads=ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
+				const common::ConstructionOfCADScore::CRADsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
 				if(crads.valid())
 				{
 					if(!adjunct_inter_atom_scores.empty())
 					{
-						std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+						std::map<common::ConstructionOfCADScore::CRADsPair, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_atom_cad_descriptors.find(crads);
 						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
@@ -201,10 +198,10 @@ private:
 					}
 					if(!adjunct_inter_residue_scores.empty())
 					{
-						const ConstructionOfCADScore::CRADsPair ir_crads(
+						const common::ConstructionOfCADScore::CRADsPair ir_crads(
 								crads.a.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names),
 								crads.b.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
-						std::map<ConstructionOfCADScore::CRADsPair, ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
+						std::map<common::ConstructionOfCADScore::CRADsPair, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
 						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
@@ -220,7 +217,5 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_ */
+#endif /* SCRIPTING_SCORING_OF_DATA_MANAGERS_USING_CAD_SCORE_H_ */
 

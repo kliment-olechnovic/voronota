@@ -1,10 +1,7 @@
-#ifndef COMMON_SCRIPTING_IO_SELECTORS_H_
-#define COMMON_SCRIPTING_IO_SELECTORS_H_
+#ifndef SCRIPTING_IO_SELECTORS_H_
+#define SCRIPTING_IO_SELECTORS_H_
 
 #include "virtual_file_storage.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -121,6 +118,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_IO_SELECTORS_H_ */
+#endif /* SCRIPTING_IO_SELECTORS_H_ */

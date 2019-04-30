@@ -1,13 +1,10 @@
-#ifndef COMMON_SCRIPTING_DATA_MANAGER_H_
-#define COMMON_SCRIPTING_DATA_MANAGER_H_
+#ifndef SCRIPTING_DATA_MANAGER_H_
+#define SCRIPTING_DATA_MANAGER_H_
 
 #include "../common/construction_of_secondary_structure.h"
 #include "../common/construction_of_bonding_links.h"
 
 #include "selection_manager.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -206,22 +203,22 @@ public:
 		return contacts_display_states_;
 	}
 
-	const ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure_info() const
+	const common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure_info() const
 	{
 		return primary_structure_info_;
 	}
 
-	const ConstructionOfSecondaryStructure::BundleOfSecondaryStructure& secondary_structure_info() const
+	const common::ConstructionOfSecondaryStructure::BundleOfSecondaryStructure& secondary_structure_info() const
 	{
 		return secondary_structure_info_;
 	}
 
-	const ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info() const
+	const common::ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info() const
 	{
 		return bonding_links_info_;
 	}
 
-	const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info() const
+	const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info() const
 	{
 		return triangulation_info_;
 	}
@@ -563,7 +560,7 @@ public:
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				BallValue& ball=atoms_[*it].value;
+				common::BallValue& ball=atoms_[*it].value;
 				ball.x+=pre_translation_vector[0];
 				ball.y+=pre_translation_vector[1];
 				ball.z+=pre_translation_vector[2];
@@ -575,7 +572,7 @@ public:
 			const std::vector<double>& m=rotation_matrix;
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				BallValue& ball=atoms_[*it].value;
+				common::BallValue& ball=atoms_[*it].value;
 				const apollota::SimplePoint p(ball);
 				ball.x=p.x*m[0]+p.y*m[1]+p.z*m[2];
 				ball.y=p.x*m[3]+p.y*m[4]+p.z*m[5];
@@ -591,7 +588,7 @@ public:
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				BallValue& ball=atoms_[*it].value;
+				common::BallValue& ball=atoms_[*it].value;
 				const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
 				ball.x=p.x;
 				ball.y=p.y;
@@ -603,7 +600,7 @@ public:
 		{
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				BallValue& ball=atoms_[*it].value;
+				common::BallValue& ball=atoms_[*it].value;
 				ball.x+=post_translation_vector[0];
 				ball.y+=post_translation_vector[1];
 				ball.z+=post_translation_vector[2];
@@ -615,10 +612,10 @@ public:
 
 	void remove_bonding_links_info()
 	{
-		bonding_links_info_=ConstructionOfBondingLinks::BundleOfBondingLinks();
+		bonding_links_info_=common::ConstructionOfBondingLinks::BundleOfBondingLinks();
 	}
 
-	void reset_bonding_links_info_by_swapping(ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
+	void reset_bonding_links_info_by_swapping(common::ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
 	{
 		if(!bonding_links_info.valid(atoms_, primary_structure_info_))
 		{
@@ -628,16 +625,16 @@ public:
 		bonding_links_info_.swap(bonding_links_info);
 	}
 
-	void reset_bonding_links_info_by_copying(const ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
+	void reset_bonding_links_info_by_copying(const common::ConstructionOfBondingLinks::BundleOfBondingLinks& bonding_links_info)
 	{
-		ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_copy=bonding_links_info;
+		common::ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_copy=bonding_links_info;
 		reset_bonding_links_info_by_swapping(bonding_links_info_copy);
 	}
 
-	void reset_bonding_links_info_by_creating(const ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks& parameters)
+	void reset_bonding_links_info_by_creating(const common::ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks& parameters)
 	{
-		ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
-		if(ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
+		common::ConstructionOfBondingLinks::BundleOfBondingLinks bundle_of_bonding_links;
+		if(common::ConstructionOfBondingLinks::construct_bundle_of_bonding_links(
 				parameters,
 				atoms(),
 				primary_structure_info(),
@@ -653,18 +650,18 @@ public:
 
 	void remove_triangulation_info()
 	{
-		triangulation_info_=ConstructionOfTriangulation::BundleOfTriangulationInformation();
+		triangulation_info_=common::ConstructionOfTriangulation::BundleOfTriangulationInformation();
 		reset_data_dependent_on_triangulation_info();
 	}
 
-	void reset_triangulation_info_by_swapping(ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
+	void reset_triangulation_info_by_swapping(common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
 	{
 		if(triangulation_info.quadruples_map.empty())
 		{
 			throw std::runtime_error(std::string("No triangulation info to set."));
 		}
 
-		if(!triangulation_info.matching(ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_)))
+		if(!triangulation_info.matching(common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms_)))
 		{
 			throw std::runtime_error(std::string("Triangulation info does not match atoms."));
 		}
@@ -674,26 +671,26 @@ public:
 		reset_data_dependent_on_triangulation_info();
 	}
 
-	void reset_triangulation_info_by_copying(const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
+	void reset_triangulation_info_by_copying(const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info)
 	{
-		ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_copy=triangulation_info;
+		common::ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_copy=triangulation_info;
 		reset_triangulation_info_by_swapping(triangulation_info_copy);
 	}
 
 	void reset_triangulation_info_by_creating(
-			const ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters,
+			const common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters,
 			bool& happened)
 	{
-		const std::vector<apollota::SimpleSphere> atomic_balls=ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms());
+		const std::vector<apollota::SimpleSphere> atomic_balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms());
 
 		if(triangulation_info().equivalent(parameters, atomic_balls))
 		{
 			return;
 		}
 
-		ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
+		common::ConstructionOfTriangulation::BundleOfTriangulationInformation bundle_of_triangulation_information;
 
-		if(!ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters, atomic_balls, bundle_of_triangulation_information))
+		if(!common::ConstructionOfTriangulation::construct_bundle_of_triangulation_information(parameters, atomic_balls, bundle_of_triangulation_information))
 		{
 			throw std::runtime_error(std::string("Failed to construct triangulation."));
 		}
@@ -735,12 +732,12 @@ public:
 	}
 
 	void reset_contacts_by_creating(
-			const ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& parameters_to_construct_contacts,
-			const ConstructionOfContacts::ParametersToEnhanceContacts& parameters_to_enhance_contacts,
+			const common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& parameters_to_construct_contacts,
+			const common::ConstructionOfContacts::ParametersToEnhanceContacts& parameters_to_enhance_contacts,
 			bool& happened)
 	{
 		{
-			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+			common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
 			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
 			reset_triangulation_info_by_creating(parameters_to_construct_triangulation, happened);
 		}
@@ -755,9 +752,9 @@ public:
 			return;
 		}
 
-		ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
+		common::ConstructionOfContacts::BundleOfContactInformation bundle_of_contact_information;
 
-		if(!ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, triangulation_info(), bundle_of_contact_information))
+		if(!common::ConstructionOfContacts::construct_bundle_of_contact_information(parameters_to_construct_contacts, triangulation_info(), bundle_of_contact_information))
 		{
 			throw std::runtime_error(std::string("Failed to construct contacts."));
 		}
@@ -777,7 +774,7 @@ public:
 		history_of_actions_on_contacts_.constructing.clear();
 		history_of_actions_on_contacts_.constructing.push_back(parameters_to_construct_contacts);
 
-		ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_mutable());
+		common::ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_mutable());
 
 		history_of_actions_on_contacts_.enhancing.clear();
 		history_of_actions_on_contacts_.enhancing.push_back(parameters_to_enhance_contacts);
@@ -814,7 +811,7 @@ public:
 	}
 
 	void reset_contacts_graphics_by_creating(
-			const ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
+			const common::ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
 			const std::set<std::size_t>& ids,
 			bool& happened)
 	{
@@ -833,7 +830,7 @@ public:
 				}
 				else
 				{
-					std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_actions_on_contacts_.graphics_creating.find(id);
+					std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_actions_on_contacts_.graphics_creating.find(id);
 					if(jt!=history_of_actions_on_contacts_.graphics_creating.end() && !parameters_to_draw_contacts.equals(jt->second))
 					{
 						ids_for_updating.insert(id);
@@ -856,7 +853,7 @@ public:
 
 		happened=true;
 
-		ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
+		common::ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
 
 		update_contacts_display_states_drawable(ids_for_updating);
 
@@ -974,9 +971,9 @@ public:
 private:
 	struct HistoryOfActionsOnContacts
 	{
-		std::vector<ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> constructing;
-		std::vector<ConstructionOfContacts::ParametersToEnhanceContacts> enhancing;
-		std::map<std::size_t, ConstructionOfContacts::ParametersToDrawContacts> graphics_creating;
+		std::vector<common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation> constructing;
+		std::vector<common::ConstructionOfContacts::ParametersToEnhanceContacts> enhancing;
+		std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts> graphics_creating;
 
 		void clear()
 		{
@@ -1150,8 +1147,8 @@ private:
 			}
 		}
 
-		primary_structure_info_=ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
-		secondary_structure_info_=ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
+		primary_structure_info_=common::ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
+		secondary_structure_info_=common::ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
 		selection_manager_=SelectionManager(&atoms_, 0);
 
 		remove_bonding_links_info();
@@ -1193,17 +1190,15 @@ private:
 	std::vector<Contact> contacts_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
-	ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
-	ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
-	ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
-	ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
+	common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
+	common::ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
+	common::ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;
+	common::ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
 	HistoryOfActionsOnContacts history_of_actions_on_contacts_;
 };
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_DATA_MANAGER_H_ */
+#endif /* SCRIPTING_DATA_MANAGER_H_ */
 

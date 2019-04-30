@@ -1,14 +1,11 @@
-#ifndef COMMON_SCRIPTING_LOADING_OF_DATA_H_
-#define COMMON_SCRIPTING_LOADING_OF_DATA_H_
+#ifndef SCRIPTING_LOADING_OF_DATA_H_
+#define SCRIPTING_LOADING_OF_DATA_H_
 
 #include "../apollota/basic_operations_on_spheres.h"
 
 #include "../common/construction_of_atomic_balls.h"
 
 #include "io_selectors.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -143,13 +140,13 @@ public:
 
 		if(params.format=="pdb" || params.format=="mmcif")
 		{
-			ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
+			common::ConstructionOfAtomicBalls::ParametersToCollectAtomicBallsFromFile parameters_to_collect_atoms;
 			parameters_to_collect_atoms.include_heteroatoms=(params.forced_include_heteroatoms ? params.include_heteroatoms : config.include_heteroatoms);
 			parameters_to_collect_atoms.include_hydrogens=(params.forced_include_hydrogens ? params.include_hydrogens : config.include_hydrogens);
 			parameters_to_collect_atoms.multimodel_chains=(params.forced_multimodel_chains ? params.multimodel_chains : config.multimodel_chains);
 			parameters_to_collect_atoms.mmcif=(params.format=="mmcif");
 
-			if(!ConstructionOfAtomicBalls::collect_atomic_balls_from_file(config.atom_radius_assigner, parameters_to_collect_atoms, finput, result.atoms))
+			if(!common::ConstructionOfAtomicBalls::collect_atomic_balls_from_file(config.atom_radius_assigner, parameters_to_collect_atoms, finput, result.atoms))
 			{
 				handle_reading_failure(params.file, params.format);
 			}
@@ -258,6 +255,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_LOADING_OF_DATA_H_ */
+#endif /* SCRIPTING_LOADING_OF_DATA_H_ */

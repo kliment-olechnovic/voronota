@@ -1,14 +1,11 @@
-#ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
-#define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
+#ifndef SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
+#define SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_
 
 #include "generic_command_for_congregation_of_data_managers.h"
 #include "basic_assertions.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_managers_using_cad_score.h"
 #include "variant_serialization.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -381,7 +378,7 @@ public:
 		}
 
 	private:
-		static void write_cad_descriptor(const ConstructionOfCADScore::CADDescriptor& cadd, VariantObject& output)
+		static void write_cad_descriptor(const common::ConstructionOfCADScore::CADDescriptor& cadd, VariantObject& output)
 		{
 			output.value("score")=cadd.score();
 			output.value("target_area_sum")=cadd.target_area_sum;
@@ -453,6 +450,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_ */
+#endif /* SCRIPTING_CUSTOM_COMMANDS_FOR_CONGREGATION_OF_DATA_MANAGERS_H_ */

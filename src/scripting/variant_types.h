@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_VARIANT_TYPES_H_
-#define COMMON_SCRIPTING_VARIANT_TYPES_H_
+#ifndef SCRIPTING_VARIANT_TYPES_H_
+#define SCRIPTING_VARIANT_TYPES_H_
 
 #include <string>
 #include <sstream>
@@ -7,9 +7,6 @@
 #include <map>
 #include <set>
 #include <algorithm>
-
-namespace common
-{
 
 namespace scripting
 {
@@ -393,6 +390,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_VARIANT_TYPES_H_ */
+#endif /* SCRIPTING_VARIANT_TYPES_H_ */

@@ -1,14 +1,11 @@
-#ifndef COMMON_SCRIPTING_VIRTUAL_FILE_STORAGE_H_
-#define COMMON_SCRIPTING_VIRTUAL_FILE_STORAGE_H_
+#ifndef SCRIPTING_VIRTUAL_FILE_STORAGE_H_
+#define SCRIPTING_VIRTUAL_FILE_STORAGE_H_
 
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <map>
 #include <stdexcept>
-
-namespace common
-{
 
 namespace scripting
 {
@@ -116,6 +113,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_VIRTUAL_FILE_STORAGE_H_ */
+#endif /* SCRIPTING_VIRTUAL_FILE_STORAGE_H_ */

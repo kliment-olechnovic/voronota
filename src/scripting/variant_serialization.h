@@ -1,11 +1,8 @@
-#ifndef COMMON_SCRIPTING_VARIANT_SERIALIZATION_H_
-#define COMMON_SCRIPTING_VARIANT_SERIALIZATION_H_
+#ifndef SCRIPTING_VARIANT_SERIALIZATION_H_
+#define SCRIPTING_VARIANT_SERIALIZATION_H_
 
 #include "variant_types.h"
 #include "basic_types.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -59,14 +56,14 @@ public:
 		output.value("area")=input.area;
 	}
 
-	static void write(const ChainResidueAtomDescriptor& input, VariantObject& output)
+	static void write(const common::ChainResidueAtomDescriptor& input, VariantObject& output)
 	{
 		if(!input.chainID.empty())
 		{
 			output.value("chainID")=input.chainID;
 		}
 
-		if(input.resSeq!=ChainResidueAtomDescriptor::null_num())
+		if(input.resSeq!=common::ChainResidueAtomDescriptor::null_num())
 		{
 			output.value("resSeq")=input.resSeq;
 		}
@@ -76,7 +73,7 @@ public:
 			output.value("iCode")=input.iCode;
 		}
 
-		if(input.serial!=ChainResidueAtomDescriptor::null_num())
+		if(input.serial!=common::ChainResidueAtomDescriptor::null_num())
 		{
 			output.value("serial")=input.serial;
 		}
@@ -97,7 +94,7 @@ public:
 		}
 	}
 
-	static void write(const PropertiesValue& input, VariantObject& output)
+	static void write(const common::PropertiesValue& input, VariantObject& output)
 	{
 		for(std::set<std::string>::const_iterator it=input.tags.begin();it!=input.tags.end();++it)
 		{
@@ -110,7 +107,7 @@ public:
 		}
 	}
 
-	static void write(const BallValue& input, VariantObject& output)
+	static void write(const common::BallValue& input, VariantObject& output)
 	{
 		{
 			VariantObject& ball=output.object("ball");
@@ -134,7 +131,7 @@ public:
 		write(input.value, output);
 	}
 
-	static void write(const ContactValue& input, VariantObject& output)
+	static void write(const common::ContactValue& input, VariantObject& output)
 	{
 		output.value("area")=input.area;
 		output.value("distance")=input.dist;
@@ -148,7 +145,7 @@ public:
 		}
 	}
 
-	static void write(const ChainResidueAtomDescriptorsPair& crads, const ContactValue& value, VariantObject& output)
+	static void write(const common::ChainResidueAtomDescriptorsPair& crads, const common::ContactValue& value, VariantObject& output)
 	{
 		write(crads.a, output.object("descriptor1"));
 		write(crads.b, output.object("descriptor2"));
@@ -161,11 +158,11 @@ public:
 		{
 			if(input.solvent())
 			{
-				write(ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, ChainResidueAtomDescriptor::solvent()), input.value, output);
+				write(common::ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, common::ChainResidueAtomDescriptor::solvent()), input.value, output);
 			}
 			else
 			{
-				write(ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, atoms[input.ids[1]].crad), input.value, output);
+				write(common::ChainResidueAtomDescriptorsPair(atoms[input.ids[0]].crad, atoms[input.ids[1]].crad), input.value, output);
 			}
 		}
 	}
@@ -173,9 +170,4 @@ public:
 
 }
 
-}
-
-
-
-
-#endif /* COMMON_SCRIPTING_VARIANT_SERIALIZATION_H_ */
+#endif /* SCRIPTING_VARIANT_SERIALIZATION_H_ */

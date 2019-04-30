@@ -1,10 +1,7 @@
-#ifndef COMMON_SCRIPTING_BASIC_ASSERTIONS_H_
-#define COMMON_SCRIPTING_BASIC_ASSERTIONS_H_
+#ifndef SCRIPTING_BASIC_ASSERTIONS_H_
+#define SCRIPTING_BASIC_ASSERTIONS_H_
 
 #include "basic_types.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -99,6 +96,4 @@ inline void assert_io_stream(const std::string& name, const std::istream& input)
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_BASIC_ASSERTIONS_H_ */
+#endif /* SCRIPTING_BASIC_ASSERTIONS_H_ */

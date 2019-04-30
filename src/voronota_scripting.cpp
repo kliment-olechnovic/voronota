@@ -18,8 +18,8 @@ public:
 	{
 		output_.clear();
 		std::ostringstream output;
-		common::scripting::JSONWriter::write(
-				common::scripting::JSONWriter::Configuration(0),
+		scripting::JSONWriter::write(
+				scripting::JSONWriter::Configuration(0),
 				manager_.execute_script_and_return_last_output(script, false),
 				output);
 		output_=output.str();
@@ -27,7 +27,7 @@ public:
 	}
 
 private:
-	common::scripting::ScriptExecutionManagerWithVariantOutput manager_;
+	scripting::ScriptExecutionManagerWithVariantOutput manager_;
 	std::string output_;
 };
 

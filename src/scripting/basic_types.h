@@ -1,17 +1,14 @@
-#ifndef COMMON_SCRIPTING_BASIC_TYPES_H_
-#define COMMON_SCRIPTING_BASIC_TYPES_H_
+#ifndef SCRIPTING_BASIC_TYPES_H_
+#define SCRIPTING_BASIC_TYPES_H_
 
 #include "../common/construction_of_atomic_balls.h"
 #include "../common/construction_of_contacts.h"
 
-namespace common
-{
-
 namespace scripting
 {
 
-typedef ConstructionOfAtomicBalls::AtomicBall Atom;
-typedef ConstructionOfContacts::Contact Contact;
+typedef common::ConstructionOfAtomicBalls::AtomicBall Atom;
+typedef common::ConstructionOfContacts::Contact Contact;
 
 struct BoundingBox
 {
@@ -119,7 +116,7 @@ struct SummaryOfTriangulation
 	{
 	}
 
-	explicit SummaryOfTriangulation(const ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info) :
+	explicit SummaryOfTriangulation(const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info) :
 		number_of_input_balls(triangulation_info.number_of_input_spheres),
 		number_of_all_balls(triangulation_info.spheres.size()),
 		number_of_quadruples(triangulation_info.quadruples_map.size()),
@@ -185,6 +182,4 @@ struct SummaryOfContacts
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_BASIC_TYPES_H_ */
+#endif /* SCRIPTING_BASIC_TYPES_H_ */

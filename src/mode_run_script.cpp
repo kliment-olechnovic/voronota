@@ -6,7 +6,7 @@
 namespace
 {
 
-class CustomScriptExecutionManager : public common::scripting::ScriptExecutionManagerWithVariantOutput
+class CustomScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
 {
 public:
 	explicit CustomScriptExecutionManager(const bool print_progress) : print_progress_(print_progress)
@@ -14,20 +14,20 @@ public:
 	}
 
 protected:
-	void on_after_any_command_with_output(const common::scripting::VariantObject& variant_object)
+	void on_after_any_command_with_output(const scripting::VariantObject& variant_object)
 	{
 		if(print_progress_)
 		{
-			common::scripting::JSONWriter::write(variant_object, std::cout);
+			scripting::JSONWriter::write(variant_object, std::cout);
 			std::cout << std::endl;
 		}
 	}
 
-	void on_after_script_with_output(const common::scripting::VariantObject& variant_object)
+	void on_after_script_with_output(const scripting::VariantObject& variant_object)
 	{
 		if(print_progress_ && variant_object.names().count("termination_error")>0)
 		{
-			common::scripting::JSONWriter::write(variant_object, std::cout);
+			scripting::JSONWriter::write(variant_object, std::cout);
 			std::cout << std::endl;
 		}
 	}
@@ -52,7 +52,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	common::scripting::JSONWriter::Configuration::setup_default_configuration(common::scripting::JSONWriter::Configuration(max_unfolding));
+	scripting::JSONWriter::Configuration::setup_default_configuration(scripting::JSONWriter::Configuration(max_unfolding));
 
 	CustomScriptExecutionManager execution_manager(interactive);
 
@@ -72,7 +72,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::istreambuf_iterator<char> eos;
 		std::string script(std::istreambuf_iterator<char>(std::cin), eos);
-		common::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, false), std::cout);
+		scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, false), std::cout);
 		std::cout << std::endl;
 	}
 }
