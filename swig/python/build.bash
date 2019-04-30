@@ -9,7 +9,8 @@ cp ../voronota_scripting.i ./src
 
 cd ./src
 
-rm main.cpp mode_*.cpp
+rm ./voronota.cpp
+rm -r ./modes
 
 swig -c++ -python -py3 voronota_scripting.i 
 
