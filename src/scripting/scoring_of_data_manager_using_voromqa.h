@@ -1,13 +1,10 @@
-#ifndef COMMON_SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
-#define COMMON_SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
+#ifndef SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
+#define SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_
 
 #include "../common/construction_of_voromqa_score.h"
 #include "../common/conversion_of_descriptors.h"
 
 #include "data_manager.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -18,8 +15,8 @@ public:
 	class Configuration
 	{
 	public:
-		std::map<InteractionName, double> potential_values;
-		std::map<ChainResidueAtomDescriptor, NormalDistributionParameters> means_and_sds;
+		std::map<common::InteractionName, double> potential_values;
+		std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds;
 
 		bool valid() const
 		{
@@ -38,15 +35,15 @@ public:
 				return false;
 			}
 
-			std::map<InteractionName, double> potential_values=
-					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+			std::map<common::InteractionName, double> potential_values=
+					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<common::InteractionName, double> >(potential_file);
 			if(potential_values.empty())
 			{
 				return false;
 			}
 
-			std::map<ChainResidueAtomDescriptor, NormalDistributionParameters> means_and_sds=
-					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<ChainResidueAtomDescriptor, NormalDistributionParameters> >(mean_and_sds_file);
+			std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds=
+					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> >(mean_and_sds_file);
 			if(means_and_sds.empty())
 			{
 				return false;
@@ -85,9 +82,9 @@ public:
 	struct Result
 	{
 		double global_quality_score;
-		ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
-		std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth;
-		ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
+		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
+		std::map<common::ChainResidueAtomDescriptor, int> map_crad_to_depth;
+		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
 		DataManager::ChangeIndicator data_manager_change_index;
 
 		Result() :
@@ -128,13 +125,13 @@ public:
 		}
 
 		std::set<std::size_t> all_atom_ids;
-		std::set<ChainResidueAtomDescriptorsPair> set_of_crads;
-		std::map<InteractionName, double> map_of_interactions;
+		std::set<common::ChainResidueAtomDescriptorsPair> set_of_crads;
+		std::map<common::InteractionName, double> map_of_interactions;
 
 		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
 		{
 			const Contact& contact=data_manager.contacts()[*it];
-			const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
+			const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
 
 			all_atom_ids.insert(contact.ids[0]);
 			all_atom_ids.insert(contact.ids[1]);
@@ -153,7 +150,7 @@ public:
 					category="central_";
 				}
 
-				if(ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 1, 1, true))
+				if(common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, 1, 1, true))
 				{
 					category+="sep1";
 				}
@@ -163,24 +160,24 @@ public:
 				}
 			}
 
-			map_of_interactions[InteractionName(crads, category)]=contact.value.area;
+			map_of_interactions[common::InteractionName(crads, category)]=contact.value.area;
 		}
 
-		ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters_for_bundle_of_energy;
-		if(!ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(
+		common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters_for_bundle_of_energy;
+		if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(
 				parameters_for_bundle_of_energy, configuration.potential_values, map_of_interactions, result.bundle_of_energy))
 		{
 			throw std::runtime_error("Failed to calculate energies scores.");
 		}
 
 		result.map_crad_to_depth=
-				ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_crads);
+				common::ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_crads);
 		if(result.map_crad_to_depth.empty())
 		{
 			throw std::runtime_error(std::string("Failed to calculate burial depths."));
 		}
 
-		ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAQualityInformation parameters_for_bundle_of_quality;
+		common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAQualityInformation parameters_for_bundle_of_quality;
 		if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_quality_information(
 				parameters_for_bundle_of_quality, configuration.means_and_sds, result.bundle_of_energy.atom_energy_descriptors, result.bundle_of_quality))
 		{
@@ -209,14 +206,14 @@ public:
 			for(std::set<std::size_t>::const_iterator jt=all_contact_ids.begin();jt!=all_contact_ids.end();++jt)
 			{
 				Contact& contact=data_manager.contacts_mutable()[*jt];
-				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
-				std::map<ChainResidueAtomDescriptorsPair, EnergyDescriptor>::const_iterator it=result.bundle_of_energy.inter_atom_energy_descriptors.find(crads);
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
+				std::map<common::ChainResidueAtomDescriptorsPair, common::EnergyDescriptor>::const_iterator it=result.bundle_of_energy.inter_atom_energy_descriptors.find(crads);
 
 				if(!params.adjunct_inter_atom_energy_scores_raw.empty())
 				{
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
-						const EnergyDescriptor& ed=it->second;
+						const common::EnergyDescriptor& ed=it->second;
 						if(ed.total_area>0.0 && ed.strange_area==0.0)
 						{
 							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_raw]=ed.energy;
@@ -228,7 +225,7 @@ public:
 				{
 					if(it!=result.bundle_of_energy.inter_atom_energy_descriptors.end())
 					{
-						const EnergyDescriptor& ed=it->second;
+						const common::EnergyDescriptor& ed=it->second;
 						if(ed.total_area>0.0 && ed.strange_area==0.0)
 						{
 							contact.value.props.adjuncts[params.adjunct_inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
@@ -266,7 +263,7 @@ public:
 				}
 			}
 
-			std::map<ChainResidueAtomDescriptor, double> smoothed_scores;
+			std::map<common::ChainResidueAtomDescriptor, double> smoothed_scores;
 			if(!params.adjunct_residue_quality_scores_smoothed.empty())
 			{
 				smoothed_scores=result.bundle_of_quality.residue_quality_scores(params.smoothing_window);
@@ -277,7 +274,7 @@ public:
 				Atom& atom=data_manager.atoms_mutable()[*jt];
 				if(!params.adjunct_atom_depth_weights.empty())
 				{
-					std::map<ChainResidueAtomDescriptor, int>::const_iterator it=result.map_crad_to_depth.find(atom.crad);
+					std::map<common::ChainResidueAtomDescriptor, int>::const_iterator it=result.map_crad_to_depth.find(atom.crad);
 					if(it!=result.map_crad_to_depth.end())
 					{
 						atom.value.props.adjuncts[params.adjunct_atom_depth_weights]=it->second;
@@ -285,7 +282,7 @@ public:
 				}
 				if(!params.adjunct_atom_quality_scores.empty())
 				{
-					std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
+					std::map<common::ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.atom_quality_scores.find(atom.crad);
 					if(it!=result.bundle_of_quality.atom_quality_scores.end())
 					{
 						atom.value.props.adjuncts[params.adjunct_atom_quality_scores]=it->second;
@@ -293,7 +290,7 @@ public:
 				}
 				if(!params.adjunct_residue_quality_scores_raw.empty())
 				{
-					std::map<ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad.without_atom());
+					std::map<common::ChainResidueAtomDescriptor, double>::const_iterator it=result.bundle_of_quality.raw_residue_quality_scores.find(atom.crad.without_atom());
 					if(it!=result.bundle_of_quality.raw_residue_quality_scores.end())
 					{
 						atom.value.props.adjuncts[params.adjunct_residue_quality_scores_raw]=it->second;
@@ -301,7 +298,7 @@ public:
 				}
 				if(!params.adjunct_residue_quality_scores_smoothed.empty())
 				{
-					std::map<ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad.without_atom());
+					std::map<common::ChainResidueAtomDescriptor, double>::const_iterator it=smoothed_scores.find(atom.crad.without_atom());
 					if(it!=smoothed_scores.end())
 					{
 						atom.value.props.adjuncts[params.adjunct_residue_quality_scores_smoothed]=it->second;
@@ -319,7 +316,5 @@ public:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_ */
+#endif /* SCRIPTING_SCORING_OF_DATA_MANAGER_USING_VOROMQA_H_ */
 

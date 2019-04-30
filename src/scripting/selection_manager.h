@@ -1,10 +1,7 @@
-#ifndef COMMON_SELECTION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
-#define COMMON_SELECTION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_
+#ifndef SCRIPTING_SELECTION_MANAGER_H_
+#define SCRIPTING_SELECTION_MANAGER_H_
 
 #include "testing_of_atoms_and_contacts.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -704,7 +701,7 @@ private:
 		atoms_residues_reference_.clear();
 		if(!atoms().empty())
 		{
-			std::map<ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residues;
+			std::map<common::ChainResidueAtomDescriptor, std::vector<std::size_t> > map_of_residues;
 			for(std::size_t i=0;i<atoms().size();i++)
 			{
 				map_of_residues[atoms()[i].crad.without_atom()].push_back(i);
@@ -714,7 +711,7 @@ private:
 			atoms_residues_reference_.resize(atoms().size(), 0);
 
 			std::size_t residue_id=0;
-			for(std::map<ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
+			for(std::map<common::ChainResidueAtomDescriptor, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
 			{
 				const std::vector<std::size_t>& atoms_ids=it->second;
 				atoms_residues_definition_[residue_id]=atoms_ids;
@@ -733,10 +730,10 @@ private:
 		contacts_residues_reference_.clear();
 		if(!contacts().empty())
 		{
-			std::map<ChainResidueAtomDescriptorsPair, std::vector<std::size_t> > map_of_residues;
+			std::map<common::ChainResidueAtomDescriptorsPair, std::vector<std::size_t> > map_of_residues;
 			for(std::size_t i=0;i<contacts().size();i++)
 			{
-				map_of_residues[ChainResidueAtomDescriptorsPair(
+				map_of_residues[common::ChainResidueAtomDescriptorsPair(
 										atoms()[contacts()[i].ids[0]].crad.without_atom(),
 										atoms()[contacts()[i].ids[1]].crad.without_atom())
 								].push_back(i);
@@ -746,7 +743,7 @@ private:
 			contacts_residues_reference_.resize(contacts().size(), 0);
 
 			std::size_t residue_id=0;
-			for(std::map<ChainResidueAtomDescriptorsPair, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
+			for(std::map<common::ChainResidueAtomDescriptorsPair, std::vector<std::size_t> >::const_iterator it=map_of_residues.begin();it!=map_of_residues.end();++it)
 			{
 				const std::vector<std::size_t>& contacts_ids=it->second;
 				contacts_residues_definition_[residue_id]=contacts_ids;
@@ -771,6 +768,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SELECTION_MANAGER_FOR_ATOMS_AND_CONTACTS_H_ */
+#endif /* SCRIPTING_SELECTION_MANAGER_H_ */

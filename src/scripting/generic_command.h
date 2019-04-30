@@ -1,12 +1,9 @@
-#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_H_
-#define COMMON_SCRIPTING_GENERIC_COMMAND_H_
+#ifndef SCRIPTING_GENERIC_COMMAND_H_
+#define SCRIPTING_GENERIC_COMMAND_H_
 
 #include "command_input.h"
 #include "heterogeneous_storage.h"
 #include "command_documentation.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -91,7 +88,5 @@ protected:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_H_ */
+#endif /* SCRIPTING_GENERIC_COMMAND_H_ */
 

@@ -1,12 +1,9 @@
-#ifndef COMMON_SCRIPTING_COMMAND_DOCUMENTATION_H_
-#define COMMON_SCRIPTING_COMMAND_DOCUMENTATION_H_
+#ifndef SCRIPTING_COMMAND_DOCUMENTATION_H_
+#define SCRIPTING_COMMAND_DOCUMENTATION_H_
 
 #include <string>
 #include <vector>
 #include <algorithm>
-
-namespace common
-{
 
 namespace scripting
 {
@@ -128,7 +125,5 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_COMMAND_DOCUMENTATION_H_ */
+#endif /* SCRIPTING_COMMAND_DOCUMENTATION_H_ */
 

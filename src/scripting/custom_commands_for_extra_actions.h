@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
-#define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
+#ifndef SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
+#define SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_
 
 #include "../auxiliaries/time_utilities.h"
 
@@ -7,9 +7,6 @@
 #include "collection_of_command_documentations.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_manager_using_voromqa.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -377,7 +374,5 @@ public:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_ */
+#endif /* SCRIPTING_CUSTOM_COMMANDS_FOR_EXTRA_ACTIONS_H_ */
 

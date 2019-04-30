@@ -1,11 +1,8 @@
-#ifndef COMMON_SCRIPTING_HETEROGENEOUS_STORAGE_H_
-#define COMMON_SCRIPTING_HETEROGENEOUS_STORAGE_H_
+#ifndef SCRIPTING_HETEROGENEOUS_STORAGE_H_
+#define SCRIPTING_HETEROGENEOUS_STORAGE_H_
 
 #include "basic_types.h"
 #include "variant_types.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -21,6 +18,4 @@ struct HeterogeneousStorage
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_HETEROGENEOUS_STORAGE_H_ */
+#endif /* SCRIPTING_HETEROGENEOUS_STORAGE_H_ */

@@ -1,5 +1,5 @@
-#ifndef COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
-#define COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
+#ifndef SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
+#define SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_
 
 #include "../auxiliaries/color_utilities.h"
 #include "../auxiliaries/residue_letters_coding.h"
@@ -14,9 +14,6 @@
 #include "variant_serialization.h"
 #include "updating_of_data_manager_display_states.h"
 #include "io_selectors.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -164,7 +161,7 @@ public:
 
 			if(as_pdb)
 			{
-				WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
+				common::WritingAtomicBallsInPDBFormat::write_atomic_balls(atoms, pdb_b_factor_name, pdb_ter, output);
 			}
 			else
 			{
@@ -334,16 +331,16 @@ public:
 
 			for(std::size_t residue_id=0;residue_id<cargs.data_manager.secondary_structure_info().residue_descriptors.size();residue_id++)
 			{
-				const ConstructionOfSecondaryStructure::ResidueDescriptor& residue_descriptor=cargs.data_manager.secondary_structure_info().residue_descriptors[residue_id];
+				const common::ConstructionOfSecondaryStructure::ResidueDescriptor& residue_descriptor=cargs.data_manager.secondary_structure_info().residue_descriptors[residue_id];
 				const std::vector<std::size_t>& atom_ids=cargs.data_manager.primary_structure_info().residues[residue_id].atom_ids;
 				for(std::size_t i=0;i<atom_ids.size();i++)
 				{
 					Atom& atom=cargs.data_manager.atoms_mutable()[atom_ids[i]];
-					if(residue_descriptor.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+					if(residue_descriptor.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 					{
 						atom.value.props.tags.insert(tag_for_alpha);
 					}
-					else if(residue_descriptor.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+					else if(residue_descriptor.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
 					{
 						atom.value.props.tags.insert(tag_for_beta);
 					}
@@ -807,7 +804,7 @@ public:
 			}
 			else if(by=="residue-id")
 			{
-				std::map<ChainResidueAtomDescriptor, double> residue_ids_to_values;
+				std::map<common::ChainResidueAtomDescriptor, double> residue_ids_to_values;
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					residue_ids_to_values[cargs.data_manager.atoms()[*it].crad.without_atom()]=0.5;
@@ -815,7 +812,7 @@ public:
 				if(residue_ids_to_values.size()>1)
 				{
 					int i=0;
-					for(std::map<ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
+					for(std::map<common::ChainResidueAtomDescriptor, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
 					{
 						it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
 						i++;
@@ -960,14 +957,14 @@ public:
 
 			std::vector< std::vector<std::size_t> > grouping;
 			{
-				std::map<ChainResidueAtomDescriptor, std::size_t> ordering;
+				std::map<common::ChainResidueAtomDescriptor, std::size_t> ordering;
 				for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
 				{
-					const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[*it];
+					const common::ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[*it];
 					ordering[r.chain_residue_descriptor]=(*it);
 				}
 
-				std::map<ChainResidueAtomDescriptor, std::size_t>::const_iterator it=ordering.begin();
+				std::map<common::ChainResidueAtomDescriptor, std::size_t>::const_iterator it=ordering.begin();
 				while(it!=ordering.end())
 				{
 					if(it==ordering.begin())
@@ -976,7 +973,7 @@ public:
 					}
 					else
 					{
-						std::map<ChainResidueAtomDescriptor, std::size_t>::const_iterator it_prev=it;
+						std::map<common::ChainResidueAtomDescriptor, std::size_t>::const_iterator it_prev=it;
 						--it_prev;
 						if(it->first.chainID==it_prev->first.chainID && (it->first.resSeq-it_prev->first.resSeq)<=1)
 						{
@@ -994,7 +991,7 @@ public:
 			std::map< std::string, std::vector<std::size_t> > chaining;
 			for(std::size_t i=0;i<grouping.size();i++)
 			{
-				const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[grouping[i].front()];
+				const common::ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[grouping[i].front()];
 				chaining[r.chain_residue_descriptor.chainID].push_back(i);
 			}
 
@@ -1015,7 +1012,7 @@ public:
 						for(std::size_t j=0;j<group.size();j++)
 						{
 							{
-								const ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[group[j]];
+								const common::ConstructionOfPrimaryStructure::Residue& r=cargs.data_manager.primary_structure_info().residues[group[j]];
 								output_for_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
 								if(j==0)
 								{
@@ -1028,12 +1025,12 @@ public:
 							}
 							if(secondary_structure)
 							{
-								const ConstructionOfSecondaryStructure::ResidueDescriptor& r=cargs.data_manager.secondary_structure_info().residue_descriptors[group[j]];
-								if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+								const common::ConstructionOfSecondaryStructure::ResidueDescriptor& r=cargs.data_manager.secondary_structure_info().residue_descriptors[group[j]];
+								if(r.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 								{
 									output_for_secondary_structure_sequence << "H";
 								}
-								else if(r.secondary_structure_type==ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+								else if(r.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
 								{
 									output_for_secondary_structure_sequence << "S";
 								}
@@ -1129,7 +1126,7 @@ public:
 			{
 				if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 				{
-					cargs.data_manager.reset_bonding_links_info_by_creating(ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
+					cargs.data_manager.reset_bonding_links_info_by_creating(common::ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
 				}
 			}
 
@@ -1155,7 +1152,7 @@ public:
 								const std::vector<std::size_t>& link_ids=cargs.data_manager.bonding_links_info().map_of_atoms_to_bonds_links[id];
 								for(std::size_t i=0;i<link_ids.size();i++)
 								{
-									const ConstructionOfBondingLinks::DirectedLink& dl=cargs.data_manager.bonding_links_info().bonds_links[link_ids[i]];
+									const common::ConstructionOfBondingLinks::DirectedLink& dl=cargs.data_manager.bonding_links_info().bonds_links[link_ids[i]];
 									const apollota::SimplePoint pa(cargs.data_manager.atoms()[dl.a].value);
 									const apollota::SimplePoint pb(cargs.data_manager.atoms()[dl.b].value);
 									opengl_printer.add_line_strip(pa, (pa+pb)*0.5);
@@ -1245,12 +1242,12 @@ public:
 
 			if(!cargs.data_manager.bonding_links_info().valid(cargs.data_manager.atoms(), cargs.data_manager.primary_structure_info()))
 			{
-				cargs.data_manager.reset_bonding_links_info_by_creating(ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
+				cargs.data_manager.reset_bonding_links_info_by_creating(common::ConstructionOfBondingLinks::ParametersToConstructBundleOfBondingLinks());
 			}
 
-			ConstructionOfStructuralCartoon::Parameters parameters_for_cartoon;
-			ConstructionOfStructuralCartoon::BundleOfMeshInformation bundle_of_cartoon_mesh;
-			if(!ConstructionOfStructuralCartoon::construct_bundle_of_mesh_information(
+			common::ConstructionOfStructuralCartoon::Parameters parameters_for_cartoon;
+			common::ConstructionOfStructuralCartoon::BundleOfMeshInformation bundle_of_cartoon_mesh;
+			if(!common::ConstructionOfStructuralCartoon::construct_bundle_of_mesh_information(
 					parameters_for_cartoon,
 					cargs.data_manager.atoms(),
 					cargs.data_manager.primary_structure_info(),
@@ -1441,7 +1438,7 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
+			common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
 			parameters_to_construct_triangulation.artificial_boundary_shift=cargs.input.get_value_or_default<double>("boundary-shift", 5.0);
 			parameters_to_construct_triangulation.init_radius_for_BSH=cargs.input.get_value_or_default<double>("init-radius-for-BSH", parameters_to_construct_triangulation.init_radius_for_BSH);
 			parameters_to_construct_triangulation.exclude_hidden_balls=cargs.input.get_flag("exclude-hidden-balls");
@@ -1592,13 +1589,13 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
+			common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
 			parameters_to_construct_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
 			parameters_to_construct_contacts.calculate_volumes=cargs.input.get_flag("calculate-volumes");
 			parameters_to_construct_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
 			parameters_to_construct_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
 			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
-			ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
+			common::ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
@@ -1632,7 +1629,7 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
+			common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
 			parameters_to_draw_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
 			parameters_to_draw_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
 			parameters_to_draw_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_draw_contacts.projections);
@@ -1703,7 +1700,7 @@ public:
 			{
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
-				enabled_output_of_ContactValue_graphics()=!no_graphics;
+				common::enabled_output_of_ContactValue_graphics()=!no_graphics;
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
 			}
 
@@ -2442,21 +2439,21 @@ public:
 
 			if(inter_residue)
 			{
-				std::map<ChainResidueAtomDescriptorsPair, ContactValue> map_for_output;
+				std::map<common::ChainResidueAtomDescriptorsPair, common::ContactValue> map_for_output;
 				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 				{
 					const Contact& contact=cargs.data_manager.contacts()[*it];
 					if(contact.solvent())
 					{
-						map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), ChainResidueAtomDescriptor::solvent())].add(contact.value);
+						map_for_output[common::ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), common::ChainResidueAtomDescriptor::solvent())].add(contact.value);
 					}
 					else
 					{
-						map_for_output[ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), atoms[contact.ids[1]].crad.without_atom())].add(contact.value);
+						map_for_output[common::ChainResidueAtomDescriptorsPair(atoms[contact.ids[0]].crad.without_atom(), atoms[contact.ids[1]].crad.without_atom())].add(contact.value);
 					}
 				}
 				contacts.reserve(map_for_output.size());
-				for(std::map<ChainResidueAtomDescriptorsPair, ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
+				for(std::map<common::ChainResidueAtomDescriptorsPair, common::ContactValue>::const_iterator it=map_for_output.begin();it!=map_for_output.end();++it)
 				{
 					contacts.push_back(VariantObject());
 					VariantSerialization::write(it->first, it->second, contacts.back());
@@ -2728,7 +2725,7 @@ public:
 				assert_io_stream(file, output);
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.atoms(), output);
 				output << "_end_atoms\n";
-				enabled_output_of_ContactValue_graphics()=!no_graphics;
+				common::enabled_output_of_ContactValue_graphics()=!no_graphics;
 				auxiliaries::IOUtilities().write_set(cargs.data_manager.contacts(), output);
 				output << "_end_contacts\n";
 			}
@@ -2766,17 +2763,17 @@ public:
 
 			assert_adjunct_name_input(name, false);
 
-			std::set<ChainResidueAtomDescriptorsPair> set_of_contacts;
+			std::set<common::ChainResidueAtomDescriptorsPair> set_of_contacts;
 			for(std::size_t i=0;i<cargs.data_manager.contacts().size();i++)
 			{
-				const ChainResidueAtomDescriptorsPair crads=ConversionOfDescriptors::get_contact_descriptor(cargs.data_manager.atoms(), cargs.data_manager.contacts()[i]);
-				if(ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, min_seq_sep, ChainResidueAtomDescriptor::null_num(), true))
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(cargs.data_manager.atoms(), cargs.data_manager.contacts()[i]);
+				if(common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, min_seq_sep, common::ChainResidueAtomDescriptor::null_num(), true))
 				{
 					set_of_contacts.insert(crads);
 				}
 			}
 
-			const std::map<ChainResidueAtomDescriptor, int> map_crad_to_depth=ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
+			const std::map<common::ChainResidueAtomDescriptor, int> map_crad_to_depth=common::ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
 
 			cargs.change_indicator.changed_atoms_adjuncts=true;
 
@@ -2784,7 +2781,7 @@ public:
 			{
 				Atom& atom=cargs.data_manager.atoms_mutable()[i];
 				atom.value.props.adjuncts.erase(name);
-				std::map<ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
+				std::map<common::ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
 				if(it!=map_crad_to_depth.end())
 				{
 					atom.value.props.adjuncts[name]=it->second;
@@ -3161,6 +3158,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_ */
+#endif /* SCRIPTING_CUSTOM_COMMANDS_FOR_DATA_MANAGER_H_ */

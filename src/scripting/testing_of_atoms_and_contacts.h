@@ -1,14 +1,11 @@
-#ifndef COMMON_SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
-#define COMMON_SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
+#ifndef SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
+#define SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
 
 #include "../common/construction_of_atomic_balls.h"
 #include "../common/construction_of_contacts.h"
 #include "../common/matching_utilities.h"
 
 #include "basic_types.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -87,9 +84,9 @@ public:
 		bool operator()(const Atom& atom) const
 		{
 			if(
-					MatchingUtilities::match_crad(atom.crad, match_crad, match_crad_not) &&
-					MatchingUtilities::match_set_of_tags(atom.value.props.tags, match_tags, match_tags_not) &&
-					MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
+					common::MatchingUtilities::match_crad(atom.crad, match_crad, match_crad_not) &&
+					common::MatchingUtilities::match_set_of_tags(atom.value.props.tags, match_tags, match_tags_not) &&
+					common::MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
 			{
 				return true;
@@ -97,13 +94,13 @@ public:
 			return false;
 		}
 
-		bool operator()(const ChainResidueAtomDescriptor& crad) const
+		bool operator()(const common::ChainResidueAtomDescriptor& crad) const
 		{
-			const PropertiesValue props;
+			const common::PropertiesValue props;
 			if(
-					MatchingUtilities::match_crad(crad, match_crad, match_crad_not) &&
-					MatchingUtilities::match_set_of_tags(props.tags, match_tags, match_tags_not) &&
-					MatchingUtilities::match_map_of_adjuncts(props.adjuncts, match_adjuncts, match_adjuncts_not)
+					common::MatchingUtilities::match_crad(crad, match_crad, match_crad_not) &&
+					common::MatchingUtilities::match_set_of_tags(props.tags, match_tags, match_tags_not) &&
+					common::MatchingUtilities::match_map_of_adjuncts(props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
 			{
 				return true;
@@ -143,8 +140,8 @@ public:
 			match_max_area(std::numeric_limits<double>::max()),
 			match_min_dist(std::numeric_limits<double>::min()),
 			match_max_dist(std::numeric_limits<double>::max()),
-			match_min_sequence_separation(ChainResidueAtomDescriptor::null_num()),
-			match_max_sequence_separation(ChainResidueAtomDescriptor::null_num()),
+			match_min_sequence_separation(common::ChainResidueAtomDescriptor::null_num()),
+			match_max_sequence_separation(common::ChainResidueAtomDescriptor::null_num()),
 			no_solvent(false),
 			solvent(false),
 			no_same_chain(false)
@@ -201,13 +198,13 @@ public:
 			{
 				const Atom& atom_a=atoms[contact.ids[0]];
 				const Atom& atom_b=atoms[contact.ids[1]];
-				const ChainResidueAtomDescriptor& crad_a=atom_a.crad;
-				const ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? ChainResidueAtomDescriptor::solvent() : atom_b.crad);
+				const common::ChainResidueAtomDescriptor& crad_a=atom_a.crad;
+				const common::ChainResidueAtomDescriptor& crad_b=(contact.solvent() ? common::ChainResidueAtomDescriptor::solvent() : atom_b.crad);
 				if(
 						(!no_same_chain || crad_a.chainID!=crad_b.chainID) &&
-						ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crad_a, crad_b, match_min_sequence_separation, match_max_sequence_separation, true) &&
-						MatchingUtilities::match_set_of_tags(contact.value.props.tags, match_tags, match_tags_not) &&
-						MatchingUtilities::match_map_of_adjuncts(contact.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
+						common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crad_a, crad_b, match_min_sequence_separation, match_max_sequence_separation, true) &&
+						common::MatchingUtilities::match_set_of_tags(contact.value.props.tags, match_tags, match_tags_not) &&
+						common::MatchingUtilities::match_map_of_adjuncts(contact.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 				)
 				{
 					if(contact.solvent())
@@ -775,6 +772,4 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_ */
+#endif /* SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_ */

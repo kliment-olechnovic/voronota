@@ -1,10 +1,7 @@
-#ifndef COMMON_SCRIPTING_JSON_WRITER_H_
-#define COMMON_SCRIPTING_JSON_WRITER_H_
+#ifndef SCRIPTING_JSON_WRITER_H_
+#define SCRIPTING_JSON_WRITER_H_
 
 #include "variant_types.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -263,6 +260,4 @@ private:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_JSON_WRITER_H_ */
+#endif /* SCRIPTING_JSON_WRITER_H_ */

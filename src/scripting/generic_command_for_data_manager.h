@@ -1,11 +1,8 @@
-#ifndef COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
-#define COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
+#ifndef SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
+#define SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_
 
 #include "generic_command.h"
 #include "data_manager.h"
-
-namespace common
-{
 
 namespace scripting
 {
@@ -92,6 +89,4 @@ protected:
 
 }
 
-}
-
-#endif /* COMMON_SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_ */
+#endif /* SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_ */
