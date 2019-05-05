@@ -8,37 +8,60 @@
 namespace scripting
 {
 
-class GenericCommand
+class CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord
+	CommonGenericCommandInterface()
 	{
-		bool successful;
-		CommandInput command_input;
-		HeterogeneousStorage heterostorage;
+	}
 
+	virtual ~CommonGenericCommandInterface()
+	{
+	}
+
+	CommandDocumentation document() const
+	{
+		CommandDocumentation doc;
+		document(doc);
+		return doc;
+	}
+
+protected:
+	virtual void document(CommandDocumentation&) const
+	{
+	}
+};
+
+struct CommonGenericCommandRecord
+{
+	bool successful;
+	CommandInput command_input;
+	HeterogeneousStorage heterostorage;
+
+	explicit CommonGenericCommandRecord(const CommandInput& command_input) :
+		successful(false),
+		command_input(command_input)
+	{
+	}
+
+	virtual ~CommonGenericCommandRecord()
+	{
+	}
+
+	void save_error(const std::exception& e)
+	{
+		heterostorage.errors.push_back(std::string(e.what()));
+	}
+};
+
+class GenericCommand : public CommonGenericCommandInterface
+{
+public:
+	struct CommandRecord : public CommonGenericCommandRecord
+	{
 		explicit CommandRecord(const CommandInput& command_input) :
-			successful(false),
-			command_input(command_input)
+			CommonGenericCommandRecord(command_input)
 		{
-		}
-	};
-
-	struct CommandArguments
-	{
-	public:
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-
-		explicit CommandArguments(CommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage)
-		{
-		}
-
-		void save_error(const std::exception& e)
-		{
-			heterostorage.errors.push_back(std::string(e.what()));
 		}
 	};
 
@@ -63,25 +86,27 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			cargs.save_error(e);
+			record.save_error(e);
 		}
 
 		return record;
 	}
 
-	CommandDocumentation document() const
-	{
-		CommandDocumentation doc;
-		document(doc);
-		return doc;
-	}
-
 protected:
-	virtual void run(CommandArguments&)
+	struct CommandArguments
 	{
-	}
+	public:
+		CommandInput& input;
+		HeterogeneousStorage& heterostorage;
 
-	virtual void document(CommandDocumentation&) const
+		explicit CommandArguments(CommandRecord& command_record) :
+			input(command_record.command_input),
+			heterostorage(command_record.heterostorage)
+		{
+		}
+	};
+
+	virtual void run(CommandArguments&)
 	{
 	}
 };

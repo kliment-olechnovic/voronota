@@ -7,16 +7,16 @@
 namespace scripting
 {
 
-class GenericCommandForDataManager
+class GenericCommandForDataManager : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public GenericCommand::CommandRecord
+	struct CommandRecord : public CommonGenericCommandRecord
 	{
 		DataManager* data_manager_ptr;
 		DataManager::ChangeIndicator change_indicator;
 
 		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
-			GenericCommand::CommandRecord(command_input),
+			CommonGenericCommandRecord(command_input),
 			data_manager_ptr(&data_manager)
 		{
 		}
@@ -44,19 +44,12 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			cargs.save_error(e);
+			record.save_error(e);
 		}
 
 		record.change_indicator.ensure_correctness();
 
 		return record;
-	}
-
-	CommandDocumentation document() const
-	{
-		CommandDocumentation doc;
-		document(doc);
-		return doc;
 	}
 
 	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -65,13 +58,16 @@ public:
 	}
 
 protected:
-	struct CommandArguments : public GenericCommand::CommandArguments
+	struct CommandArguments
 	{
+		CommandInput& input;
+		HeterogeneousStorage& heterostorage;
 		DataManager& data_manager;
 		DataManager::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommand::CommandArguments(command_record),
+			input(command_record.command_input),
+			heterostorage(command_record.heterostorage),
 			data_manager(*command_record.data_manager_ptr),
 			change_indicator(command_record.change_indicator)
 		{
@@ -79,10 +75,6 @@ protected:
 	};
 
 	virtual void run(CommandArguments&)
-	{
-	}
-
-	virtual void document(CommandDocumentation&) const
 	{
 	}
 };
