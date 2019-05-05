@@ -77,7 +77,7 @@ protected:
 		write_error_to_current_command_object("Command unrecognized.");
 	}
 
-	void on_after_any_command(const GenericCommand::CommandRecord& cr)
+	void on_after_any_command(const CommonGenericCommandRecord& cr)
 	{
 		for(std::size_t i=0;i<cr.heterostorage.errors.size();i++)
 		{

@@ -253,7 +253,7 @@ protected:
 	{
 	}
 
-	virtual void on_after_any_command(const GenericCommand::CommandRecord&)
+	virtual void on_after_any_command(const CommonGenericCommandRecord&)
 	{
 	}
 

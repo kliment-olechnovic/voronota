@@ -7,16 +7,16 @@
 namespace scripting
 {
 
-class GenericCommandForCongregationOfDataManagers
+class GenericCommandForCongregationOfDataManagers : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public GenericCommand::CommandRecord
+	struct CommandRecord : public CommonGenericCommandRecord
 	{
 		CongregationOfDataManagers* congregation_of_data_managers_ptr;
 		CongregationOfDataManagers::ChangeIndicator change_indicator;
 
 		CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
-			GenericCommand::CommandRecord(command_input),
+			CommonGenericCommandRecord(command_input),
 			congregation_of_data_managers_ptr(&congregation_of_data_managers)
 		{
 		}
@@ -43,7 +43,7 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			cargs.save_error(e);
+			record.save_error(e);
 		}
 
 		record.change_indicator.ensure_correctness();
@@ -51,21 +51,17 @@ public:
 		return record;
 	}
 
-	CommandDocumentation document() const
-	{
-		CommandDocumentation doc;
-		document(doc);
-		return doc;
-	}
-
 protected:
-	struct CommandArguments : public GenericCommand::CommandArguments
+	struct CommandArguments
 	{
+		CommandInput& input;
+		HeterogeneousStorage& heterostorage;
 		CongregationOfDataManagers& congregation_of_data_managers;
 		CongregationOfDataManagers::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommand::CommandArguments(command_record),
+			input(command_record.command_input),
+			heterostorage(command_record.heterostorage),
 			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr),
 			change_indicator(command_record.change_indicator)
 		{
@@ -73,10 +69,6 @@ protected:
 	};
 
 	virtual void run(CommandArguments&)
-	{
-	}
-
-	virtual void document(CommandDocumentation&) const
 	{
 	}
 };

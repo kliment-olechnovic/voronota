@@ -7,15 +7,15 @@
 namespace scripting
 {
 
-class GenericCommandForScriptPartitioner
+class GenericCommandForScriptPartitioner : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public GenericCommand::CommandRecord
+	struct CommandRecord : public CommonGenericCommandRecord
 	{
 		ScriptPartitioner* script_partitioner_ptr;
 
 		CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
-			GenericCommand::CommandRecord(command_input),
+			CommonGenericCommandRecord(command_input),
 			script_partitioner_ptr(&script_partitioner)
 		{
 		}
@@ -42,36 +42,28 @@ public:
 		}
 		catch(const std::exception& e)
 		{
-			cargs.save_error(e);
+			record.save_error(e);
 		}
 
 		return record;
 	}
 
-	CommandDocumentation document() const
-	{
-		CommandDocumentation doc;
-		document(doc);
-		return doc;
-	}
-
 protected:
-	struct CommandArguments : public GenericCommand::CommandArguments
+	struct CommandArguments
 	{
+		CommandInput& input;
+		HeterogeneousStorage& heterostorage;
 		ScriptPartitioner& script_partitioner;
 
 		explicit CommandArguments(CommandRecord& command_record) :
-			GenericCommand::CommandArguments(command_record),
+			input(command_record.command_input),
+			heterostorage(command_record.heterostorage),
 			script_partitioner(*command_record.script_partitioner_ptr)
 		{
 		}
 	};
 
 	virtual void run(CommandArguments&)
-	{
-	}
-
-	virtual void document(CommandDocumentation&) const
 	{
 	}
 };
