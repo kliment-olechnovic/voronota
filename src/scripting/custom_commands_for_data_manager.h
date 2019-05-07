@@ -3075,6 +3075,197 @@ public:
 		}
 	};
 
+	class voromqa_orientation : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
+			const std::string adjunct_atom_orientation_area=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-area", "");
+			const std::string adjunct_atom_orientation_energy=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy", "orientation_energy");
+			const std::string adjunct_atom_orientation_energy_mean=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy-mean", "");
+			const double window_width=cargs.input.get_value_or_default<double>("window-width", 10.0);
+			const double window_end_height=cargs.input.get_value_or_default<double>("window-end-height", 0.0);
+			const std::vector<double> custom_direction=cargs.input.get_value_vector_or_default<double>("custom-direction", std::vector<double>());
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(adjunct_contact_energy, false);
+			assert_adjunct_name_input(adjunct_atom_orientation_area, true);
+			assert_adjunct_name_input(adjunct_atom_orientation_energy, true);
+			assert_adjunct_name_input(adjunct_atom_orientation_energy_mean, true);
+
+			if(window_width<0.0)
+			{
+				throw std::runtime_error(std::string("Invalid window width."));
+			}
+
+			if(window_end_height<0.0 || window_end_height>1.0)
+			{
+				throw std::runtime_error(std::string("Invalid window end height."));
+			}
+
+			if(custom_direction.size()!=3)
+			{
+				throw std::runtime_error(std::string("Invalid custom direction."));
+			}
+
+			std::vector<AtomDescriptor> atom_descriptors;
+
+			{
+				const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
+						SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false));
+
+				if(solvent_contact_ids.empty())
+				{
+					throw std::runtime_error(std::string("No solvent contacts with energy values."));
+				}
+
+				const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
+
+				if(exterior_atom_ids.empty())
+				{
+					throw std::runtime_error(std::string("No relevant atoms."));
+				}
+
+				atom_descriptors=std::vector<AtomDescriptor>(exterior_atom_ids.size());
+
+				{
+					std::size_t i=0;
+					for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+					{
+						atom_descriptors[i++].atom_id=(*it);
+					}
+				}
+
+				{
+					std::vector<std::size_t> atom_solvent_contact_ids(cargs.data_manager.atoms().size(), 0);
+
+					for(std::set<std::size_t>::const_iterator it=solvent_contact_ids.begin();it!=solvent_contact_ids.end();++it)
+					{
+						atom_solvent_contact_ids[cargs.data_manager.contacts()[*it].ids[0]]=(*it);
+					}
+
+					for(std::size_t i=0;i<atom_descriptors.size();i++)
+					{
+						atom_descriptors[i].solvent_contact_id=atom_solvent_contact_ids[atom_descriptors[i].atom_id];
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				const Contact& contact=cargs.data_manager.contacts()[atom_descriptors[i].solvent_contact_id];
+				atom_descriptors[i].area=contact.value.area;
+				atom_descriptors[i].energy=contact.value.props.adjuncts.find(adjunct_contact_energy)->second;
+				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
+			}
+
+			{
+				const apollota::SimplePoint direction=apollota::SimplePoint(custom_direction[0], custom_direction[1], custom_direction[2]).unit();
+
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					atom_descriptors[i].projection=atom_descriptors[i].point*direction;
+				}
+
+				std::sort(atom_descriptors.begin(), atom_descriptors.end());
+
+				for(int i=0;i<static_cast<int>(atom_descriptors.size());i++)
+				{
+					AtomDescriptor& ad_i=atom_descriptors[i];
+					ad_i.sum_of_energies=0.0;
+					ad_i.sum_of_areas=0.0;
+					{
+						int j=(i-1);
+						int j_step=(-1);
+						bool finished=false;
+						while(!finished && j>=0 && j<static_cast<int>(atom_descriptors.size()))
+						{
+							const AtomDescriptor& ad_j=atom_descriptors[j];
+							const double dist=fabs(ad_i.projection-ad_j.projection);
+							if(dist>window_width)
+							{
+								if(j_step<0)
+								{
+									j=(i+1);
+									j_step=1;
+								}
+								else
+								{
+									finished=true;
+								}
+							}
+							else
+							{
+								const double closeness=((window_width-dist)/window_width);
+								const double weight=(1.0*closeness)+(window_end_height*(1.0-closeness));
+								ad_i.sum_of_energies+=weight*ad_j.energy;
+								ad_i.sum_of_areas+=weight*ad_j.area;
+							}
+							j+=j_step;
+						}
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				const AtomDescriptor& ad=atom_descriptors[i];
+				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
+				if(!adjunct_atom_orientation_area.empty())
+				{
+					atom.value.props.adjuncts[adjunct_atom_orientation_area]=ad.sum_of_areas;
+				}
+				if(!adjunct_atom_orientation_energy.empty())
+				{
+					atom.value.props.adjuncts[adjunct_atom_orientation_energy]=ad.sum_of_energies;
+				}
+				if(!adjunct_atom_orientation_energy_mean.empty() && ad.sum_of_areas>0.0)
+				{
+					atom.value.props.adjuncts[adjunct_atom_orientation_energy_mean]=(ad.sum_of_energies/ad.sum_of_areas);
+				}
+			}
+		}
+
+	private:
+		struct AtomDescriptor
+		{
+			std::size_t atom_id;
+			std::size_t solvent_contact_id;
+			double area;
+			double energy;
+			double projection;
+			double sum_of_energies;
+			double sum_of_areas;
+			apollota::SimplePoint point;
+
+			AtomDescriptor() :
+				atom_id(0),
+				solvent_contact_id(0),
+				area(0),
+				energy(0),
+				projection(0),
+				sum_of_energies(0),
+				sum_of_areas(0)
+			{
+			}
+
+			bool operator<(const AtomDescriptor& v) const
+			{
+				return (projection<v.projection);
+			}
+		};
+	};
+
 private:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{
