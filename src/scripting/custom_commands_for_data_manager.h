@@ -3089,9 +3089,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
-			const std::string adjunct_atom_orientation_area=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-area", "");
 			const std::string adjunct_atom_orientation_energy=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy", "orientation_energy");
-			const std::string adjunct_atom_orientation_energy_mean=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy-mean", "");
 			const double window_width=cargs.input.get_value_or_default<double>("window-width", 10.0);
 			const double window_end_height=cargs.input.get_value_or_default<double>("window-end-height", 0.0);
 			const std::vector<double> custom_direction=cargs.input.get_value_vector_or_default<double>("custom-direction", std::vector<double>());
@@ -3099,9 +3097,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_contact_energy, false);
-			assert_adjunct_name_input(adjunct_atom_orientation_area, true);
 			assert_adjunct_name_input(adjunct_atom_orientation_energy, true);
-			assert_adjunct_name_input(adjunct_atom_orientation_energy_mean, true);
 
 			if(window_width<0.0)
 			{
@@ -3221,17 +3217,9 @@ public:
 			{
 				const AtomDescriptor& ad=atom_descriptors[i];
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
-				if(!adjunct_atom_orientation_area.empty())
-				{
-					atom.value.props.adjuncts[adjunct_atom_orientation_area]=ad.sum_of_areas;
-				}
 				if(!adjunct_atom_orientation_energy.empty())
 				{
 					atom.value.props.adjuncts[adjunct_atom_orientation_energy]=ad.sum_of_energies;
-				}
-				if(!adjunct_atom_orientation_energy_mean.empty() && ad.sum_of_areas>0.0)
-				{
-					atom.value.props.adjuncts[adjunct_atom_orientation_energy_mean]=(ad.sum_of_energies/ad.sum_of_areas);
 				}
 			}
 		}
