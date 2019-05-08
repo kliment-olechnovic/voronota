@@ -3092,7 +3092,6 @@ public:
 			const std::string adjunct_atom_orientation_energy=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy", "orientation_energy");
 			const double window_width=cargs.input.get_value_or_default<double>("window-width", 10.0);
 			const double window_end_height=cargs.input.get_value_or_default<double>("window-end-height", 0.0);
-			const std::vector<double> custom_direction=cargs.input.get_value_vector_or_default<double>("custom-direction", std::vector<double>());
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3107,11 +3106,6 @@ public:
 			if(window_end_height<0.0 || window_end_height>1.0)
 			{
 				throw std::runtime_error(std::string("Invalid window end height."));
-			}
-
-			if(custom_direction.size()!=3)
-			{
-				throw std::runtime_error(std::string("Invalid custom direction."));
 			}
 
 			std::vector<AtomDescriptor> atom_descriptors;
@@ -3165,53 +3159,44 @@ public:
 				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
 			}
 
+			OrientationScore best_score;
+			apollota::SimplePoint best_direction;
+			int number_of_checks=0;
+
 			{
-				const apollota::SimplePoint direction=apollota::SimplePoint(custom_direction[0], custom_direction[1], custom_direction[2]).unit();
+				apollota::SubdividedIcosahedron sih(2);
+				sih.fit_into_sphere(apollota::SimplePoint(0, 0, 0), 1);
 
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				std::size_t best_id=0;
+				OrientationScore best_score;
+				OrientationScore prev_best_score;
+
+				while(number_of_checks<1000 && (number_of_checks==0 || (best_score.value()>(prev_best_score.value()*1.01))))
 				{
-					atom_descriptors[i].projection=atom_descriptors[i].point*direction;
-				}
-
-				std::sort(atom_descriptors.begin(), atom_descriptors.end());
-
-				for(int i=0;i<static_cast<int>(atom_descriptors.size());i++)
-				{
-					AtomDescriptor& ad_i=atom_descriptors[i];
-					ad_i.sum_of_energies=0.0;
-					ad_i.sum_of_areas=0.0;
+					std::size_t start_id=0;
+					if(number_of_checks>0)
 					{
-						int j=(i-1);
-						int j_step=(-1);
-						bool finished=false;
-						while(!finished && j>=0 && j<static_cast<int>(atom_descriptors.size()))
+						start_id=sih.vertices().size();
+						sih.grow(best_id, true);
+					}
+					for(std::size_t i=start_id;i<sih.vertices().size();i++)
+					{
+						modify_atom_descriptors_by_direction(window_width, window_end_height, atom_descriptors, sih.vertices()[i]);
+						OrientationScore score=score_orientation_from_atom_descriptors(atom_descriptors);
+						if(number_of_checks==0 || score.value()>best_score.value())
 						{
-							const AtomDescriptor& ad_j=atom_descriptors[j];
-							const double dist=fabs(ad_i.projection-ad_j.projection);
-							if(dist>window_width)
-							{
-								if(j_step<0)
-								{
-									j=(i+1);
-									j_step=1;
-								}
-								else
-								{
-									finished=true;
-								}
-							}
-							else
-							{
-								const double closeness=((window_width-dist)/window_width);
-								const double weight=(1.0*closeness)+(window_end_height*(1.0-closeness));
-								ad_i.sum_of_energies+=weight*ad_j.energy;
-								ad_i.sum_of_areas+=weight*ad_j.area;
-							}
-							j+=j_step;
+							best_id=i;
+							prev_best_score=best_score;
+							best_score=score;
 						}
+						number_of_checks++;
 					}
 				}
+
+				best_direction=sih.vertices()[best_id];
 			}
+
+			modify_atom_descriptors_by_direction(window_width, window_end_height, atom_descriptors, best_direction);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3221,6 +3206,16 @@ public:
 				{
 					atom.value.props.adjuncts[adjunct_atom_orientation_energy]=ad.sum_of_energies;
 				}
+			}
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				info.value("checks")=number_of_checks;
+				std::vector<VariantValue>& direction=info.values_array("direction");
+				direction.resize(3);
+				direction[0]=best_direction.x;
+				direction[1]=best_direction.y;
+				direction[2]=best_direction.z;
 			}
 		}
 
@@ -3252,6 +3247,96 @@ public:
 				return (projection<v.projection);
 			}
 		};
+
+		struct OrientationScore
+		{
+			double min_val;
+			double max_val;
+
+			OrientationScore() :
+				min_val(0),
+				max_val(0)
+			{
+			}
+
+			double value() const
+			{
+				return (max_val-min_val);
+			}
+		};
+
+		static void modify_atom_descriptors_by_direction(
+				const double window_width,
+				const double window_end_height,
+				std::vector<AtomDescriptor>& atom_descriptors,
+				const apollota::SimplePoint& direction)
+		{
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				atom_descriptors[i].projection=atom_descriptors[i].point*direction;
+			}
+
+			std::sort(atom_descriptors.begin(), atom_descriptors.end());
+
+			for(int i=0;i<static_cast<int>(atom_descriptors.size());i++)
+			{
+				AtomDescriptor& ad_i=atom_descriptors[i];
+				ad_i.sum_of_energies=0.0;
+				ad_i.sum_of_areas=0.0;
+				{
+					int j=(i-1);
+					int j_step=(-1);
+					bool finished=false;
+					while(!finished && j>=0 && j<static_cast<int>(atom_descriptors.size()))
+					{
+						const AtomDescriptor& ad_j=atom_descriptors[j];
+						const double dist=fabs(ad_i.projection-ad_j.projection);
+						if(dist>window_width)
+						{
+							if(j_step<0)
+							{
+								j=(i+1);
+								j_step=1;
+							}
+							else
+							{
+								finished=true;
+							}
+						}
+						else
+						{
+							const double closeness=((window_width-dist)/window_width);
+							const double weight=(1.0*closeness)+(window_end_height*(1.0-closeness));
+							ad_i.sum_of_energies+=weight*ad_j.energy;
+							ad_i.sum_of_areas+=weight*ad_j.area;
+						}
+						j+=j_step;
+					}
+				}
+			}
+		}
+
+		static OrientationScore score_orientation_from_atom_descriptors(const std::vector<AtomDescriptor>& atom_descriptors)
+		{
+			OrientationScore score;
+
+			if(atom_descriptors.empty())
+			{
+				return score;
+			}
+
+			score.min_val=atom_descriptors[0].sum_of_energies;
+			score.max_val=score.min_val;
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				const double val=atom_descriptors[i].sum_of_energies;
+				score.min_val=std::min(score.min_val, val);
+				score.max_val=std::max(score.max_val, val);
+			}
+
+			return score;
+		}
 	};
 
 private:
