@@ -2958,7 +2958,7 @@ public:
 			const std::string adjunct_atom_frustration_area=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-area", "");
 			const std::string adjunct_atom_frustration_energy=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy", "");
 			const std::string adjunct_atom_frustration_energy_mean=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy-mean", "frustration_energy_mean");
-			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 2);
+			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 3);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3088,13 +3088,15 @@ public:
 		{
 			cargs.data_manager.assert_contacts_availability();
 
-			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
+			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
 			const std::string adjunct_atom_orientation_value=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-value", "orientation_value");
+			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
 			const double window_width=cargs.input.get_value_or_default<double>("window-width", 15.0);
+			const double projection_step=cargs.input.get_value_or_default<double>("projection-step", 0.5);
 
 			cargs.input.assert_nothing_unusable();
 
-			assert_adjunct_name_input(adjunct_contact_energy, false);
+			assert_adjunct_name_input(adjunct_contact_frustration_value, false);
 			assert_adjunct_name_input(adjunct_atom_orientation_value, true);
 
 			if(window_width<0.0)
@@ -3106,7 +3108,7 @@ public:
 
 			{
 				const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-						SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false));
+						SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_frustration_value+"}", false));
 
 				if(solvent_contact_ids.empty())
 				{
@@ -3149,12 +3151,11 @@ public:
 			{
 				const Contact& contact=cargs.data_manager.contacts()[atom_descriptors[i].solvent_contact_id];
 				atom_descriptors[i].area=contact.value.area;
-				atom_descriptors[i].energy=contact.value.props.adjuncts.find(adjunct_contact_energy)->second;
+				atom_descriptors[i].frustration=contact.value.props.adjuncts.find(adjunct_contact_frustration_value)->second;
 				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
 			}
 
 			OrientationScore best_score;
-			apollota::SimplePoint best_direction;
 			int number_of_checks=0;
 
 			{
@@ -3174,8 +3175,7 @@ public:
 					}
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
-						modify_atom_descriptors_by_direction(window_width, atom_descriptors, sih.vertices()[i]);
-						OrientationScore score=score_orientation_from_atom_descriptors(atom_descriptors);
+						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, window_width, projection_step);
 						if(number_of_checks==0 || score.value()>best_score.value())
 						{
 							best_id=i;
@@ -3185,11 +3185,9 @@ public:
 						number_of_checks++;
 					}
 				}
-
-				best_direction=sih.vertices()[best_id].unit();
 			}
 
-			modify_atom_descriptors_by_direction(window_width, atom_descriptors, best_direction);
+			score_orientation(atom_descriptors, best_score.direction, frustration_threshold, window_width, projection_step);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3197,23 +3195,18 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_orientation_value.empty())
 				{
-					const double projection_dist=fabs(atom_descriptors[best_score.id_for_best_value].projection-ad.projection);
-					atom.value.props.adjuncts[adjunct_atom_orientation_value]=(projection_dist<window_width ? 1.0 : 0.0);
+					atom.value.props.adjuncts[adjunct_atom_orientation_value]=(fabs(best_score.projection_center-ad.projection)<window_width ? 1.0 : 0.0);
 				}
 			}
 
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("number_of_checks")=number_of_checks;
-				info.value("inside_energy")=best_score.inside_energy;
-				info.value("outside_energy")=best_score.outside_energy;
-				info.value("inside_area")=best_score.inside_area;
-				info.value("outside_area")=best_score.outside_area;
 				std::vector<VariantValue>& direction=info.values_array("direction");
 				direction.resize(3);
-				direction[0]=best_direction.x;
-				direction[1]=best_direction.y;
-				direction[2]=best_direction.z;
+				direction[0]=best_score.direction.x;
+				direction[1]=best_score.direction.y;
+				direction[2]=best_score.direction.z;
 			}
 		}
 
@@ -3223,20 +3216,16 @@ public:
 			std::size_t atom_id;
 			std::size_t solvent_contact_id;
 			double area;
-			double energy;
+			double frustration;
 			double projection;
-			double sum_of_energies;
-			double sum_of_areas;
 			apollota::SimplePoint point;
 
 			AtomDescriptor() :
 				atom_id(0),
 				solvent_contact_id(0),
 				area(0),
-				energy(0),
-				projection(0),
-				sum_of_energies(0),
-				sum_of_areas(0)
+				frustration(0),
+				projection(0)
 			{
 			}
 
@@ -3248,124 +3237,114 @@ public:
 
 		struct OrientationScore
 		{
-			std::size_t id_for_best_value;
-			double inside_energy;
-			double inside_area;
-			double outside_energy;
-			double outside_area;
+			long TP;
+			long FP;
+			long TN;
+			long FN;
+			double projection_center;
+			apollota::SimplePoint direction;
 
 			OrientationScore() :
-				id_for_best_value(0),
-				inside_energy(0),
-				inside_area(0),
-				outside_energy(0),
-				outside_area(0)
+				TP(0),
+				FP(0),
+				TN(0),
+				FN(0),
+				projection_center(0)
 			{
+			}
+
+			double MCC() const
+			{
+				long c=((TP*TN)-(FP*FN));
+				long d1=(TP+FP);
+				long d2=(TP+FN);
+				long d3=(TN+FP);
+				long d4=(TN+FN);
+				if(d1>0 && d2>0 && d3>0 && d4>0)
+				{
+					const double ratio=(c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
+					return (fabs(ratio)<=1.0 ? ratio : 0.0);
+				}
+				else
+				{
+					return 0.0;
+				}
 			}
 
 			double value() const
 			{
-				if(inside_area<=0.0 || outside_area<=0.0)
-				{
-					return 0.0;
-				}
-				return ((inside_energy)-(outside_energy));
+				return MCC();
 			}
 		};
 
-		static void modify_atom_descriptors_by_direction(
-				const double window_width,
+		static OrientationScore score_orientation(
 				std::vector<AtomDescriptor>& atom_descriptors,
-				const apollota::SimplePoint& direction)
+				const apollota::SimplePoint& direction_raw,
+				const double frustration_threshold,
+				const double window_width,
+				const double projection_step)
 		{
-			const apollota::SimplePoint direction_unit=direction.unit();
+			OrientationScore best_score;
+
+			if(atom_descriptors.empty())
+			{
+				return best_score;
+			}
+
+			const apollota::SimplePoint direction_unit=direction_raw.unit();
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				AtomDescriptor& ad_i=atom_descriptors[i];
 				ad_i.projection=ad_i.point*direction_unit;
-				ad_i.sum_of_energies=0.0;
-				ad_i.sum_of_areas=0.0;
 			}
 
 			std::sort(atom_descriptors.begin(), atom_descriptors.end());
 
-			for(int i=0;i<static_cast<int>(atom_descriptors.size());i++)
+			double x_start=atom_descriptors.front().projection-window_width;
+			double x_end=atom_descriptors.back().projection+window_width;
+
+			for(double x=x_start;x<=x_end;x+=projection_step)
 			{
-				AtomDescriptor& ad_i=atom_descriptors[i];
+				OrientationScore score;
+				score.projection_center=x;
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
 				{
-					int j=(i-1);
-					int j_step=(-1);
-					bool finished=false;
-					while(!finished && j>=0 && j<static_cast<int>(atom_descriptors.size()))
+					const AtomDescriptor& ad=atom_descriptors[i];
+					const bool inside=fabs(score.projection_center-ad.projection)<window_width;
+					const bool frustrated=(ad.frustration>frustration_threshold);
+					if(inside)
 					{
-						const AtomDescriptor& ad_j=atom_descriptors[j];
-						const double dist=fabs(ad_i.projection-ad_j.projection);
-						if(dist>window_width)
+						if(frustrated)
 						{
-							if(j_step<0)
-							{
-								j=(i+1);
-								j_step=1;
-							}
-							else
-							{
-								finished=true;
-							}
+							score.TP++;
 						}
 						else
 						{
-							ad_i.sum_of_energies+=ad_j.energy;
-							ad_i.sum_of_areas+=ad_j.area;
+							score.FN++;
 						}
-						j+=j_step;
 					}
-				}
-			}
-		}
-
-		static OrientationScore score_orientation_from_atom_descriptors(const std::vector<AtomDescriptor>& atom_descriptors)
-		{
-			OrientationScore score;
-
-			if(atom_descriptors.empty())
-			{
-				return score;
-			}
-
-			double total_energy=0.0;
-			double total_area=0.0;
-
-			for(std::size_t i=0;i<atom_descriptors.size();i++)
-			{
-				total_energy+=atom_descriptors[i].energy;
-				total_area+=atom_descriptors[i].area;
-			}
-
-			if(total_area<=0.0)
-			{
-				return score;
-			}
-
-			for(std::size_t i=0;i<atom_descriptors.size();i++)
-			{
-				const AtomDescriptor& ad=atom_descriptors[i];
-				if(ad.sum_of_areas>0.0)
-				{
-					OrientationScore score_candidate;
-					score_candidate.inside_energy=ad.sum_of_energies;
-					score_candidate.inside_area=ad.sum_of_areas;
-					score_candidate.outside_energy=(total_energy-ad.sum_of_energies);
-					score_candidate.outside_area=(total_area-ad.sum_of_areas);
-					if(i==0 || score_candidate.value()>score.value())
+					else
 					{
-						score=score_candidate;
-						score.id_for_best_value=i;
+						if(frustrated)
+						{
+							score.FP++;
+						}
+						else
+						{
+							score.TN++;
+						}
 					}
+				}
+				if(score.value()>best_score.value())
+				{
+					best_score=score;
 				}
 			}
 
-			return score;
+			best_score.direction=direction_unit;
+
+			return best_score;
 		}
 	};
 
