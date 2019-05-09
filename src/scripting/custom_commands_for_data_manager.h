@@ -3237,10 +3237,10 @@ public:
 
 		struct OrientationScore
 		{
-			long TP;
-			long FP;
-			long TN;
-			long FN;
+			double TP;
+			double FP;
+			double TN;
+			double FN;
 			double projection_center;
 			apollota::SimplePoint direction;
 
@@ -3255,11 +3255,11 @@ public:
 
 			double MCC() const
 			{
-				long c=((TP*TN)-(FP*FN));
-				long d1=(TP+FP);
-				long d2=(TP+FN);
-				long d3=(TN+FP);
-				long d4=(TN+FN);
+				double c=((TP*TN)-(FP*FN));
+				double d1=(TP+FP);
+				double d2=(TP+FN);
+				double d3=(TN+FP);
+				double d4=(TN+FN);
 				if(d1>0 && d2>0 && d3>0 && d4>0)
 				{
 					const double ratio=(c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
@@ -3317,22 +3317,22 @@ public:
 					{
 						if(frustrated)
 						{
-							score.TP++;
+							score.TP+=ad.area;
 						}
 						else
 						{
-							score.FN++;
+							score.FN+=ad.area;
 						}
 					}
 					else
 					{
 						if(frustrated)
 						{
-							score.FP++;
+							score.FP+=ad.area;
 						}
 						else
 						{
-							score.TN++;
+							score.TN+=ad.area;
 						}
 					}
 				}
