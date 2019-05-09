@@ -3089,23 +3089,17 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
-			const std::string adjunct_atom_orientation_energy=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-energy", "orientation_energy");
-			const double window_width=cargs.input.get_value_or_default<double>("window-width", 10.0);
-			const double window_end_height=cargs.input.get_value_or_default<double>("window-end-height", 0.0);
+			const std::string adjunct_atom_orientation_value=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-value", "orientation_value");
+			const double window_width=cargs.input.get_value_or_default<double>("window-width", 15.0);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_contact_energy, false);
-			assert_adjunct_name_input(adjunct_atom_orientation_energy, true);
+			assert_adjunct_name_input(adjunct_atom_orientation_value, true);
 
 			if(window_width<0.0)
 			{
 				throw std::runtime_error(std::string("Invalid window width."));
-			}
-
-			if(window_end_height<0.0 || window_end_height>1.0)
-			{
-				throw std::runtime_error(std::string("Invalid window end height."));
 			}
 
 			std::vector<AtomDescriptor> atom_descriptors;
@@ -3168,7 +3162,6 @@ public:
 				sih.fit_into_sphere(apollota::SimplePoint(0, 0, 0), 1);
 
 				std::size_t best_id=0;
-				OrientationScore best_score;
 				OrientationScore prev_best_score;
 
 				while(number_of_checks<1000 && (number_of_checks==0 || (best_score.value()>(prev_best_score.value()*1.01))))
@@ -3181,7 +3174,7 @@ public:
 					}
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
-						modify_atom_descriptors_by_direction(window_width, window_end_height, atom_descriptors, sih.vertices()[i]);
+						modify_atom_descriptors_by_direction(window_width, atom_descriptors, sih.vertices()[i]);
 						OrientationScore score=score_orientation_from_atom_descriptors(atom_descriptors);
 						if(number_of_checks==0 || score.value()>best_score.value())
 						{
@@ -3193,24 +3186,29 @@ public:
 					}
 				}
 
-				best_direction=sih.vertices()[best_id];
+				best_direction=sih.vertices()[best_id].unit();
 			}
 
-			modify_atom_descriptors_by_direction(window_width, window_end_height, atom_descriptors, best_direction);
+			modify_atom_descriptors_by_direction(window_width, atom_descriptors, best_direction);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				const AtomDescriptor& ad=atom_descriptors[i];
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
-				if(!adjunct_atom_orientation_energy.empty())
+				if(!adjunct_atom_orientation_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_orientation_energy]=ad.sum_of_energies;
+					const double projection_dist=fabs(atom_descriptors[best_score.id_for_best_value].projection-ad.projection);
+					atom.value.props.adjuncts[adjunct_atom_orientation_value]=(projection_dist<window_width ? 1.0 : 0.0);
 				}
 			}
 
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
-				info.value("checks")=number_of_checks;
+				info.value("number_of_checks")=number_of_checks;
+				info.value("inside_energy")=best_score.inside_energy;
+				info.value("outside_energy")=best_score.outside_energy;
+				info.value("inside_area")=best_score.inside_area;
+				info.value("outside_area")=best_score.outside_area;
 				std::vector<VariantValue>& direction=info.values_array("direction");
 				direction.resize(3);
 				direction[0]=best_direction.x;
@@ -3250,30 +3248,44 @@ public:
 
 		struct OrientationScore
 		{
-			double min_val;
-			double max_val;
+			std::size_t id_for_best_value;
+			double inside_energy;
+			double inside_area;
+			double outside_energy;
+			double outside_area;
 
 			OrientationScore() :
-				min_val(0),
-				max_val(0)
+				id_for_best_value(0),
+				inside_energy(0),
+				inside_area(0),
+				outside_energy(0),
+				outside_area(0)
 			{
 			}
 
 			double value() const
 			{
-				return (max_val-min_val);
+				if(inside_area<=0.0 || outside_area<=0.0)
+				{
+					return 0.0;
+				}
+				return ((inside_energy)-(outside_energy));
 			}
 		};
 
 		static void modify_atom_descriptors_by_direction(
 				const double window_width,
-				const double window_end_height,
 				std::vector<AtomDescriptor>& atom_descriptors,
 				const apollota::SimplePoint& direction)
 		{
+			const apollota::SimplePoint direction_unit=direction.unit();
+
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
-				atom_descriptors[i].projection=atom_descriptors[i].point*direction;
+				AtomDescriptor& ad_i=atom_descriptors[i];
+				ad_i.projection=ad_i.point*direction_unit;
+				ad_i.sum_of_energies=0.0;
+				ad_i.sum_of_areas=0.0;
 			}
 
 			std::sort(atom_descriptors.begin(), atom_descriptors.end());
@@ -3281,8 +3293,6 @@ public:
 			for(int i=0;i<static_cast<int>(atom_descriptors.size());i++)
 			{
 				AtomDescriptor& ad_i=atom_descriptors[i];
-				ad_i.sum_of_energies=0.0;
-				ad_i.sum_of_areas=0.0;
 				{
 					int j=(i-1);
 					int j_step=(-1);
@@ -3305,10 +3315,8 @@ public:
 						}
 						else
 						{
-							const double closeness=((window_width-dist)/window_width);
-							const double weight=(1.0*closeness)+(window_end_height*(1.0-closeness));
-							ad_i.sum_of_energies+=weight*ad_j.energy;
-							ad_i.sum_of_areas+=weight*ad_j.area;
+							ad_i.sum_of_energies+=ad_j.energy;
+							ad_i.sum_of_areas+=ad_j.area;
 						}
 						j+=j_step;
 					}
@@ -3325,14 +3333,36 @@ public:
 				return score;
 			}
 
-			score.min_val=atom_descriptors[0].sum_of_energies;
-			score.max_val=score.min_val;
+			double total_energy=0.0;
+			double total_area=0.0;
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
-				const double val=atom_descriptors[i].sum_of_energies;
-				score.min_val=std::min(score.min_val, val);
-				score.max_val=std::max(score.max_val, val);
+				total_energy+=atom_descriptors[i].energy;
+				total_area+=atom_descriptors[i].area;
+			}
+
+			if(total_area<=0.0)
+			{
+				return score;
+			}
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				const AtomDescriptor& ad=atom_descriptors[i];
+				if(ad.sum_of_areas>0.0)
+				{
+					OrientationScore score_candidate;
+					score_candidate.inside_energy=ad.sum_of_energies;
+					score_candidate.inside_area=ad.sum_of_areas;
+					score_candidate.outside_energy=(total_energy-ad.sum_of_energies);
+					score_candidate.outside_area=(total_area-ad.sum_of_areas);
+					if(i==0 || score_candidate.value()>score.value())
+					{
+						score=score_candidate;
+						score.id_for_best_value=i;
+					}
+				}
 			}
 
 			return score;
