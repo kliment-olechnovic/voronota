@@ -3236,24 +3236,45 @@ public:
 			}
 		};
 
-		struct OrientationScore
+		struct ConfusionMatrix
 		{
-			bool assigned;
 			double TP;
 			double FP;
 			double TN;
 			double FN;
-			double projection_center;
-			apollota::SimplePoint direction;
 
-			OrientationScore() :
-				assigned(false),
+			ConfusionMatrix() :
 				TP(0),
 				FP(0),
 				TN(0),
-				FN(0),
-				projection_center(0)
+				FN(0)
 			{
+			}
+
+			void add(const bool actual, const bool predicted, const double quantity)
+			{
+				if(actual)
+				{
+					if(predicted)
+					{
+						TP+=quantity;
+					}
+					else
+					{
+						FN+=quantity;
+					}
+				}
+				else
+				{
+					if(predicted)
+					{
+						FP+=quantity;
+					}
+					else
+					{
+						TN+=quantity;
+					}
+				}
 			}
 
 			double MCC() const
@@ -3273,10 +3294,24 @@ public:
 					return 0.0;
 				}
 			}
+		};
+
+		struct OrientationScore
+		{
+			bool assigned;
+			double projection_center;
+			ConfusionMatrix confusion_matrix;
+			apollota::SimplePoint direction;
+
+			OrientationScore() :
+				assigned(false),
+				projection_center(0)
+			{
+			}
 
 			double value() const
 			{
-				return MCC();
+				return confusion_matrix.MCC();
 			}
 		};
 
@@ -3315,28 +3350,7 @@ public:
 					const AtomDescriptor& ad=atom_descriptors[i];
 					const bool inside=fabs(x-ad.projection)<window_width;
 					const bool frustrated=(ad.frustration>frustration_threshold);
-					if(inside)
-					{
-						if(frustrated)
-						{
-							score.TP+=ad.area;
-						}
-						else
-						{
-							score.FN+=ad.area;
-						}
-					}
-					else
-					{
-						if(frustrated)
-						{
-							score.FP+=ad.area;
-						}
-						else
-						{
-							score.TN+=ad.area;
-						}
-					}
+					score.confusion_matrix.add(inside, frustrated, ad.area);
 				}
 				if(!best_score.assigned || score.value()>best_score.value())
 				{
