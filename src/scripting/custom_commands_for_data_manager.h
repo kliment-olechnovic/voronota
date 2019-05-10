@@ -3165,7 +3165,7 @@ public:
 				std::size_t best_id=0;
 				OrientationScore prev_best_score;
 
-				while(number_of_checks<1000 && (number_of_checks==0 || (best_score.value()>(prev_best_score.value()*1.01))))
+				while(number_of_checks<1000 && (!best_score.assigned || ((best_score.value()-prev_best_score.value())>fabs(prev_best_score.value()*0.01))))
 				{
 					std::size_t start_id=0;
 					if(number_of_checks>0)
@@ -3176,7 +3176,7 @@ public:
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
 						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, window_width, projection_step);
-						if(number_of_checks==0 || score.value()>best_score.value())
+						if(!best_score.assigned || score.value()>best_score.value())
 						{
 							best_id=i;
 							prev_best_score=best_score;
@@ -3202,6 +3202,7 @@ public:
 			{
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("number_of_checks")=number_of_checks;
+				info.value("best_score")=best_score.value();
 				std::vector<VariantValue>& direction=info.values_array("direction");
 				direction.resize(3);
 				direction[0]=best_score.direction.x;
@@ -3237,6 +3238,7 @@ public:
 
 		struct OrientationScore
 		{
+			bool assigned;
 			double TP;
 			double FP;
 			double TN;
@@ -3245,6 +3247,7 @@ public:
 			apollota::SimplePoint direction;
 
 			OrientationScore() :
+				assigned(false),
 				TP(0),
 				FP(0),
 				TN(0),
@@ -3307,11 +3310,10 @@ public:
 			for(double x=x_start;x<=x_end;x+=projection_step)
 			{
 				OrientationScore score;
-				score.projection_center=x;
 				for(std::size_t i=0;i<atom_descriptors.size();i++)
 				{
 					const AtomDescriptor& ad=atom_descriptors[i];
-					const bool inside=fabs(score.projection_center-ad.projection)<window_width;
+					const bool inside=fabs(x-ad.projection)<window_width;
 					const bool frustrated=(ad.frustration>frustration_threshold);
 					if(inside)
 					{
@@ -3336,13 +3338,14 @@ public:
 						}
 					}
 				}
-				if(score.value()>best_score.value())
+				if(!best_score.assigned || score.value()>best_score.value())
 				{
 					best_score=score;
+					best_score.assigned=true;
+					best_score.projection_center=x;
+					best_score.direction=direction_unit;
 				}
 			}
-
-			best_score.direction=direction_unit;
 
 			return best_score;
 		}
