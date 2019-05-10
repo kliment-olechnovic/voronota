@@ -3090,7 +3090,6 @@ public:
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
 			const std::string adjunct_atom_orientation_value=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-value", "orientation_value");
-			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
 			const double window_width=cargs.input.get_value_or_default<double>("window-width", 15.0);
 			const double projection_step=cargs.input.get_value_or_default<double>("projection-step", 0.5);
 
@@ -3175,7 +3174,7 @@ public:
 					}
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
-						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, window_width, projection_step);
+						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], window_width, projection_step);
 						if(!best_score.assigned || score.value()>best_score.value())
 						{
 							best_id=i;
@@ -3187,7 +3186,7 @@ public:
 				}
 			}
 
-			score_orientation(atom_descriptors, best_score.direction, frustration_threshold, window_width, projection_step);
+			score_orientation(atom_descriptors, best_score.direction, window_width, projection_step);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3277,48 +3276,70 @@ public:
 				}
 			}
 
-			double MCC() const
+			double TPR() const
 			{
-				double c=((TP*TN)-(FP*FN));
-				double d1=(TP+FP);
-				double d2=(TP+FN);
-				double d3=(TN+FP);
-				double d4=(TN+FN);
-				if(d1>0 && d2>0 && d3>0 && d4>0)
+				return ((TP+FN)>0 ? (TP)/(TP+FN) : 0.0);
+			}
+
+			double FPR() const
+			{
+				return ((FP+TN)>0 ? (FP)/(FP+TN) : 0.0);
+			}
+
+			typedef std::set< std::pair<double, double> > Curve;
+
+			static void augment_ROC(Curve& curve, const ConfusionMatrix& cm)
+			{
+				curve.insert(curve.end(), std::make_pair(cm.FPR(), cm.TPR()));
+				if(curve.begin()->first>0.0 && curve.begin()->second>0.0)
 				{
-					const double ratio=(c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
-					return (fabs(ratio)<=1.0 ? ratio : 0.0);
+					curve.insert(std::make_pair(0.0, 0.0));
 				}
-				else
+				if(curve.rbegin()->first<1.0 && curve.rbegin()->second<1.0)
 				{
-					return 0.0;
+					curve.insert(curve.end(), std::make_pair(1.0, 1.0));
 				}
+			}
+
+			static double calc_AUC(const Curve& curve)
+			{
+				double result=0.0;
+				std::set< std::pair<double, double> >::const_iterator it=curve.begin();
+				std::set< std::pair<double, double> >::const_iterator next_it=it;
+				++next_it;
+				while(next_it!=curve.end())
+				{
+					result+=((next_it->first)-(it->first))*((next_it->second)+(it->second))*0.5;
+					++it;
+					++next_it;
+				}
+				return result;
 			}
 		};
 
 		struct OrientationScore
 		{
 			bool assigned;
+			double ROC_AUC;
 			double projection_center;
-			ConfusionMatrix confusion_matrix;
 			apollota::SimplePoint direction;
 
 			OrientationScore() :
 				assigned(false),
+				ROC_AUC(0),
 				projection_center(0)
 			{
 			}
 
 			double value() const
 			{
-				return confusion_matrix.MCC();
+				return ROC_AUC;
 			}
 		};
 
 		static OrientationScore score_orientation(
 				std::vector<AtomDescriptor>& atom_descriptors,
 				const apollota::SimplePoint& direction_raw,
-				const double frustration_threshold,
 				const double window_width,
 				const double projection_step)
 		{
@@ -3339,19 +3360,26 @@ public:
 
 			std::sort(atom_descriptors.begin(), atom_descriptors.end());
 
-			double x_start=atom_descriptors.front().projection-window_width;
-			double x_end=atom_descriptors.back().projection+window_width;
+			const double x_start=atom_descriptors.front().projection-window_width;
+			const double x_end=atom_descriptors.back().projection+window_width;
 
 			for(double x=x_start;x<=x_end;x+=projection_step)
 			{
-				OrientationScore score;
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				ConfusionMatrix::Curve ROC_curve;
+				for(double frustration_threshold=0.0;frustration_threshold<=0.5;frustration_threshold+=0.1)
 				{
-					const AtomDescriptor& ad=atom_descriptors[i];
-					const bool inside=fabs(x-ad.projection)<window_width;
-					const bool frustrated=(ad.frustration>frustration_threshold);
-					score.confusion_matrix.add(inside, frustrated, ad.area);
+					ConfusionMatrix confusion_matrix;
+					for(std::size_t i=0;i<atom_descriptors.size();i++)
+					{
+						const AtomDescriptor& ad=atom_descriptors[i];
+						const bool inside=fabs(x-ad.projection)<window_width;
+						const bool frustrated=(ad.frustration>frustration_threshold);
+						confusion_matrix.add(inside, frustrated, ad.area);
+					}
+					ConfusionMatrix::augment_ROC(ROC_curve, confusion_matrix);
 				}
+				OrientationScore score;
+				score.ROC_AUC=ConfusionMatrix::calc_AUC(ROC_curve);
 				if(!best_score.assigned || score.value()>best_score.value())
 				{
 					best_score=score;
