@@ -3075,7 +3075,7 @@ public:
 		}
 	};
 
-	class voromqa_orientation : public GenericCommandForDataManager
+	class voromqa_membrane_place : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -3089,17 +3089,17 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
-			const std::string adjunct_atom_orientation_value=cargs.input.get_value_or_default<std::string>("adj-atom-orientation-value", "orientation_value");
+			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
-			const double window_width=cargs.input.get_value_or_default<double>("window-width", 15.0);
+			const double membrane_width=cargs.input.get_value_or_default<double>("membrane-width", 30.0);
 			const double projection_step=cargs.input.get_value_or_default<double>("projection-step", 0.5);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_contact_frustration_value, false);
-			assert_adjunct_name_input(adjunct_atom_orientation_value, true);
+			assert_adjunct_name_input(adjunct_atom_membrane_place_value, true);
 
-			if(window_width<0.0)
+			if(membrane_width<6.0)
 			{
 				throw std::runtime_error(std::string("Invalid window width."));
 			}
@@ -3155,6 +3155,8 @@ public:
 				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
 			}
 
+			const double window_width=membrane_width*0.5;
+
 			OrientationScore best_score;
 			int number_of_checks=0;
 
@@ -3193,9 +3195,9 @@ public:
 			{
 				const AtomDescriptor& ad=atom_descriptors[i];
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
-				if(!adjunct_atom_orientation_value.empty())
+				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_orientation_value]=(fabs(best_score.projection_center-ad.projection)<window_width ? 1.0 : 0.0);
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=(fabs(best_score.projection_center-ad.projection)<window_width ? 1.0 : 0.0);
 				}
 			}
 
