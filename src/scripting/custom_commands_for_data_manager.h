@@ -3091,7 +3091,8 @@ public:
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
 			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
-			const double membrane_width=cargs.input.get_value_or_default<double>("membrane-width", 30.0);
+			const double membrane_width=cargs.input.get_value<double>("membrane-width");
+			const double membrane_width_extended=cargs.input.get_value_or_default<double>("membrane-width-extended", membrane_width);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3100,7 +3101,12 @@ public:
 
 			if(membrane_width<6.0)
 			{
-				throw std::runtime_error(std::string("Invalid window width."));
+				throw std::runtime_error(std::string("Invalid membrane width."));
+			}
+
+			if(membrane_width_extended<membrane_width)
+			{
+				throw std::runtime_error(std::string("Invalid extended membrane width."));
 			}
 
 			std::vector<AtomDescriptor> atom_descriptors;
@@ -3194,7 +3200,7 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=calc_window_value(best_score.projection_center, membrane_width, ad.projection);
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=calc_window_value(best_score.projection_center, membrane_width, membrane_width_extended, ad.projection);
 				}
 			}
 
@@ -3320,9 +3326,29 @@ public:
 			}
 		};
 
-		static bool calc_window_value(const double window_center, const double window_width, const double x)
+		static double calc_window_value(const double window_center, const double window_width, const double window_width_extended, const double x)
 		{
-			return ((fabs(window_center-x)<(window_width*0.5)) ? 1.0 : 0.0);
+			if(window_width==window_width_extended)
+			{
+				return ((fabs(window_center-x)<(window_width*0.5)) ? 1.0 : 0.0);
+			}
+			const double pi=3.14159265358979323846;
+			const double N=window_width_extended;
+			const double alpha=(window_width_extended-window_width)/window_width_extended;
+			const double n=x-(window_center-(window_width_extended*0.5));
+			if(n>0.0 && n<(alpha*N*0.5))
+			{
+				return (0.5*(1.0+cos(pi*((2*n)/(alpha*N)-1.0))));
+			}
+			else if(n>=(alpha*N*0.5) && n<=(N*(1.0-(alpha*0.5))))
+			{
+				return 1.0;
+			}
+			else if(n>(N*(1.0-(alpha*0.5))) && n<N)
+			{
+				return (0.5*(1.0+cos(pi*((2*n)/(alpha*N)-2.0/alpha+1.0))));
+			}
+			return 0.0;
 		}
 
 		static OrientationScore score_orientation(
