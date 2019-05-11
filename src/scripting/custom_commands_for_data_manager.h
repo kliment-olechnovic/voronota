@@ -3092,7 +3092,6 @@ public:
 			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
 			const double membrane_width=cargs.input.get_value_or_default<double>("membrane-width", 30.0);
-			const double projection_step=cargs.input.get_value_or_default<double>("projection-step", 0.5);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3155,8 +3154,6 @@ public:
 				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
 			}
 
-			const double window_width=membrane_width*0.5;
-
 			OrientationScore best_score;
 			int number_of_checks=0;
 
@@ -3177,7 +3174,7 @@ public:
 					}
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
-						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, window_width, projection_step);
+						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, membrane_width);
 						if(!best_score.assigned || score.value()>best_score.value())
 						{
 							best_id=i;
@@ -3189,7 +3186,7 @@ public:
 				}
 			}
 
-			score_orientation(atom_descriptors, best_score.direction, frustration_threshold, window_width, projection_step);
+			score_orientation(atom_descriptors, best_score.direction, frustration_threshold, membrane_width);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3197,7 +3194,7 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=(fabs(best_score.projection_center-ad.projection)<window_width ? 1.0 : 0.0);
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=(fabs(best_score.projection_center-ad.projection)<(membrane_width*0.5) ? 1.0 : 0.0);
 				}
 			}
 
@@ -3321,8 +3318,7 @@ public:
 				std::vector<AtomDescriptor>& atom_descriptors,
 				const apollota::SimplePoint& direction_raw,
 				const double frustration_threshold,
-				const double window_width,
-				const double projection_step)
+				const double window_width)
 		{
 			OrientationScore best_score;
 
@@ -3341,27 +3337,65 @@ public:
 
 			std::sort(atom_descriptors.begin(), atom_descriptors.end());
 
-			double x_start=atom_descriptors.front().projection-window_width;
-			double x_end=atom_descriptors.back().projection+window_width;
+			OrientationScore score;
 
-			for(double x=x_start;x<=x_end;x+=projection_step)
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
-				OrientationScore score;
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				const AtomDescriptor& ad=atom_descriptors[i];
+				const bool inside=false;
+				const bool frustrated=(ad.frustration>frustration_threshold);
+				score.confusion_matrix.add(inside, frustrated, ad.area);
+			}
+
+			{
+				std::size_t i_right=0;
+				std::size_t i_left=0;
+
+				while(i_right<atom_descriptors.size())
 				{
-					const AtomDescriptor& ad=atom_descriptors[i];
-					const bool inside=fabs(x-ad.projection)<window_width;
-					const bool frustrated=(ad.frustration>frustration_threshold);
-					score.confusion_matrix.add(inside, frustrated, ad.area);
+					{
+						const AtomDescriptor& ad=atom_descriptors[i_right];
+						const bool inside=true;
+						const bool frustrated=(ad.frustration>frustration_threshold);
+						score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
+						score.confusion_matrix.add(inside, frustrated, ad.area);
+					}
+					while(i_left<atom_descriptors.size() && atom_descriptors[i_left].projection<(atom_descriptors[i_right].projection-window_width))
+					{
+						const AtomDescriptor& ad=atom_descriptors[i_left];
+						const bool inside=false;
+						const bool frustrated=(ad.frustration>frustration_threshold);
+						score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
+						score.confusion_matrix.add(inside, frustrated, ad.area);
+						i_left++;
+					}
+					if(!best_score.assigned || score.value()>best_score.value())
+					{
+						best_score=score;
+						best_score.assigned=true;
+						best_score.projection_center=atom_descriptors[i_right].projection-(window_width*0.5);
+					}
+					i_right++;
 				}
-				if(!best_score.assigned || score.value()>best_score.value())
+
+				while(i_left<atom_descriptors.size())
 				{
-					best_score=score;
-					best_score.assigned=true;
-					best_score.projection_center=x;
-					best_score.direction=direction_unit;
+					const AtomDescriptor& ad=atom_descriptors[i_left];
+					const bool inside=false;
+					const bool frustrated=(ad.frustration>frustration_threshold);
+					score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
+					score.confusion_matrix.add(inside, frustrated, ad.area);
+					if(!best_score.assigned || score.value()>best_score.value())
+					{
+						best_score=score;
+						best_score.assigned=true;
+						best_score.projection_center=atom_descriptors[i_left].projection+(window_width*0.5);
+					}
+					i_left++;
 				}
 			}
+
+			best_score.direction=direction_unit;
 
 			return best_score;
 		}
