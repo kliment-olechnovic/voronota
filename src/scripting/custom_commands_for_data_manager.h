@@ -3366,6 +3366,12 @@ public:
 						const AtomDescriptor& ad=atom_descriptors[i_right];
 						score.confusion_matrix.readd(true, (ad.frustration>frustration_threshold), ad.area);
 					}
+					while((i_right+1)<atom_descriptors.size() && atom_descriptors[i_right+1].projection==atom_descriptors[i_right].projection)
+					{
+						i_right++;
+						const AtomDescriptor& ad=atom_descriptors[i_right];
+						score.confusion_matrix.readd(true, (ad.frustration>frustration_threshold), ad.area);
+					}
 					while(i_left<atom_descriptors.size() && atom_descriptors[i_left].projection<(atom_descriptors[i_right].projection-window_width))
 					{
 						const AtomDescriptor& ad=atom_descriptors[i_left];
@@ -3383,8 +3389,16 @@ public:
 
 				while(i_left<atom_descriptors.size())
 				{
-					const AtomDescriptor& ad=atom_descriptors[i_left];
-					score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
+					{
+						const AtomDescriptor& ad=atom_descriptors[i_left];
+						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
+					}
+					while((i_left+1)<atom_descriptors.size() && atom_descriptors[i_left+1].projection==atom_descriptors[i_left].projection)
+					{
+						i_left++;
+						const AtomDescriptor& ad=atom_descriptors[i_left];
+						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
+					}
 					if(!best_score.assigned || score.value()>best_score.value())
 					{
 						best_score=score;
