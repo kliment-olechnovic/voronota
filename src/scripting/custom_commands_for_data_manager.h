@@ -3194,7 +3194,7 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=(fabs(best_score.projection_center-ad.projection)<(membrane_width*0.5) ? 1.0 : 0.0);
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=calc_window_value(best_score.projection_center, membrane_width, ad.projection);
 				}
 			}
 
@@ -3276,6 +3276,12 @@ public:
 				}
 			}
 
+			void readd(const bool actual, const bool predicted, const double quantity)
+			{
+				add(!actual, predicted, 0.0-quantity);
+				add(actual, predicted, quantity);
+			}
+
 			double MCC() const
 			{
 				double c=((TP*TN)-(FP*FN));
@@ -3314,6 +3320,11 @@ public:
 			}
 		};
 
+		static bool calc_window_value(const double window_center, const double window_width, const double x)
+		{
+			return ((fabs(window_center-x)<(window_width*0.5)) ? 1.0 : 0.0);
+		}
+
 		static OrientationScore score_orientation(
 				std::vector<AtomDescriptor>& atom_descriptors,
 				const apollota::SimplePoint& direction_raw,
@@ -3342,9 +3353,7 @@ public:
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				const AtomDescriptor& ad=atom_descriptors[i];
-				const bool inside=false;
-				const bool frustrated=(ad.frustration>frustration_threshold);
-				score.confusion_matrix.add(inside, frustrated, ad.area);
+				score.confusion_matrix.add(false, (ad.frustration>frustration_threshold), ad.area);
 			}
 
 			{
@@ -3355,18 +3364,12 @@ public:
 				{
 					{
 						const AtomDescriptor& ad=atom_descriptors[i_right];
-						const bool inside=true;
-						const bool frustrated=(ad.frustration>frustration_threshold);
-						score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
-						score.confusion_matrix.add(inside, frustrated, ad.area);
+						score.confusion_matrix.readd(true, (ad.frustration>frustration_threshold), ad.area);
 					}
 					while(i_left<atom_descriptors.size() && atom_descriptors[i_left].projection<(atom_descriptors[i_right].projection-window_width))
 					{
 						const AtomDescriptor& ad=atom_descriptors[i_left];
-						const bool inside=false;
-						const bool frustrated=(ad.frustration>frustration_threshold);
-						score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
-						score.confusion_matrix.add(inside, frustrated, ad.area);
+						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
 						i_left++;
 					}
 					if(!best_score.assigned || score.value()>best_score.value())
@@ -3381,10 +3384,7 @@ public:
 				while(i_left<atom_descriptors.size())
 				{
 					const AtomDescriptor& ad=atom_descriptors[i_left];
-					const bool inside=false;
-					const bool frustrated=(ad.frustration>frustration_threshold);
-					score.confusion_matrix.add(!inside, frustrated, 0.0-ad.area);
-					score.confusion_matrix.add(inside, frustrated, ad.area);
+					score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
 					if(!best_score.assigned || score.value()>best_score.value())
 					{
 						best_score=score;
