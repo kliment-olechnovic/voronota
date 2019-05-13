@@ -3213,6 +3213,7 @@ public:
 				direction[0]=best_score.direction.x;
 				direction[1]=best_score.direction.y;
 				direction[2]=best_score.direction.z;
+				info.value("projection_center")=best_score.projection_center;
 			}
 		}
 
