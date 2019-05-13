@@ -10,8 +10,16 @@ cat ../../resources/voromqa_v1_energy_potential_source/contact_areas \
 | ../../voronota score-contacts-potential \
 > ./contact_areas
 
+cat ../../resources/voromqa_v1_energy_potential_source/contact_categories \
+| sed 's/c<any>/R<ALA>A<C>/g' \
+| sed 's/central_//g' \
+| ../../voronota score-contacts-potential \
+| sed 's/R<ALA>A<C>/c<any>/g' \
+> ./contact_categories
+
 cat ./contact_areas \
 | ../../voronota score-contacts-potential \
+  --input-contributions ./contact_categories \
   --probabilities-file ./probabilities \
   --potential-file ./potential_raw \
 > /dev/null
