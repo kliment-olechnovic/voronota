@@ -3090,7 +3090,6 @@ public:
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
 			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
-			const double frustration_threshold=cargs.input.get_value_or_default<double>("frustration-threshold", 0.3);
 			const double membrane_width=cargs.input.get_value<double>("membrane-width");
 			const double membrane_width_extended=cargs.input.get_value_or_default<double>("membrane-width-extended", membrane_width);
 
@@ -3180,7 +3179,7 @@ public:
 					}
 					for(std::size_t i=start_id;i<sih.vertices().size();i++)
 					{
-						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], frustration_threshold, membrane_width);
+						OrientationScore score=score_orientation(atom_descriptors, sih.vertices()[i], membrane_width, membrane_width_extended);
 						if(!best_score.assigned || score.value()>best_score.value())
 						{
 							best_id=i;
@@ -3192,7 +3191,7 @@ public:
 				}
 			}
 
-			score_orientation(atom_descriptors, best_score.direction, frustration_threshold, membrane_width);
+			score_orientation(atom_descriptors, best_score.direction, membrane_width, membrane_width_extended);
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3200,7 +3199,7 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=calc_window_value(best_score.projection_center, membrane_width, membrane_width_extended, ad.projection);
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=ad.membrane_status;
 				}
 			}
 
@@ -3225,6 +3224,7 @@ public:
 			double area;
 			double frustration;
 			double projection;
+			double membrane_status;
 			apollota::SimplePoint point;
 
 			AtomDescriptor() :
@@ -3232,7 +3232,8 @@ public:
 				solvent_contact_id(0),
 				area(0),
 				frustration(0),
-				projection(0)
+				projection(0),
+				membrane_status(0)
 			{
 			}
 
@@ -3242,88 +3243,23 @@ public:
 			}
 		};
 
-		struct ConfusionMatrix
-		{
-			double TP;
-			double FP;
-			double TN;
-			double FN;
-
-			ConfusionMatrix() :
-				TP(0),
-				FP(0),
-				TN(0),
-				FN(0)
-			{
-			}
-
-			void add(const bool actual, const bool predicted, const double quantity)
-			{
-				if(actual)
-				{
-					if(predicted)
-					{
-						TP+=quantity;
-					}
-					else
-					{
-						FN+=quantity;
-					}
-				}
-				else
-				{
-					if(predicted)
-					{
-						FP+=quantity;
-					}
-					else
-					{
-						TN+=quantity;
-					}
-				}
-			}
-
-			void readd(const bool actual, const bool predicted, const double quantity)
-			{
-				add(!actual, predicted, 0.0-quantity);
-				add(actual, predicted, quantity);
-			}
-
-			double MCC() const
-			{
-				double c=((TP*TN)-(FP*FN));
-				double d1=(TP+FP);
-				double d2=(TP+FN);
-				double d3=(TN+FP);
-				double d4=(TN+FN);
-				if(d1>0 && d2>0 && d3>0 && d4>0)
-				{
-					const double ratio=(c*(1.0/sqrt(d1))*(1.0/sqrt(d2))*(1.0/sqrt(d3))*(1.0/sqrt(d4)));
-					return (fabs(ratio)<=1.0 ? ratio : 0.0);
-				}
-				else
-				{
-					return 0.0;
-				}
-			}
-		};
-
 		struct OrientationScore
 		{
 			bool assigned;
+			double correlation;
 			double projection_center;
-			ConfusionMatrix confusion_matrix;
 			apollota::SimplePoint direction;
 
 			OrientationScore() :
 				assigned(false),
+				correlation(0.0),
 				projection_center(0)
 			{
 			}
 
 			double value() const
 			{
-				return confusion_matrix.MCC();
+				return correlation;
 			}
 		};
 
@@ -3352,11 +3288,37 @@ public:
 			return 0.0;
 		}
 
+		static double calc_mean(const std::vector<double>& x, const std::vector<double>& w)
+		{
+			double a=0.0;
+			double b=0.0;
+			for(std::size_t i=0;(i<x.size() && i<w.size());i++)
+			{
+				a+=x[i]*w[i];
+				b+=w[i];
+			}
+			return (a/b);
+		}
+
+		static double calc_covariance(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& w)
+		{
+			const double mean_x=calc_mean(x, w);
+			const double mean_y=calc_mean(y, w);
+			double a=0.0;
+			double b=0.0;
+			for(std::size_t i=0;(i<x.size() && i<y.size() && i<w.size());i++)
+			{
+				a+=w[i]*(x[i]-mean_x)*(y[i]-mean_y);
+				b+=w[i];
+			}
+			return (a/b);
+		}
+
 		static OrientationScore score_orientation(
 				std::vector<AtomDescriptor>& atom_descriptors,
 				const apollota::SimplePoint& direction_raw,
-				const double frustration_threshold,
-				const double window_width)
+				const double window_width,
+				const double window_width_extended)
 		{
 			OrientationScore best_score;
 
@@ -3375,68 +3337,58 @@ public:
 
 			std::sort(atom_descriptors.begin(), atom_descriptors.end());
 
-			OrientationScore score;
-
-			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
-				const AtomDescriptor& ad=atom_descriptors[i];
-				score.confusion_matrix.add(false, (ad.frustration>frustration_threshold), ad.area);
-			}
+				std::vector<double> x(atom_descriptors.size(), 0.0);
+				std::vector<double> y(atom_descriptors.size(), 0.0);
+				std::vector<double> w(atom_descriptors.size(), 0.0);
 
-			{
-				std::size_t i_right=0;
-				std::size_t i_left=0;
-
-				while(i_right<atom_descriptors.size())
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
 				{
-					{
-						const AtomDescriptor& ad=atom_descriptors[i_right];
-						score.confusion_matrix.readd(true, (ad.frustration>frustration_threshold), ad.area);
-					}
-					while((i_right+1)<atom_descriptors.size() && atom_descriptors[i_right+1].projection==atom_descriptors[i_right].projection)
-					{
-						i_right++;
-						const AtomDescriptor& ad=atom_descriptors[i_right];
-						score.confusion_matrix.readd(true, (ad.frustration>frustration_threshold), ad.area);
-					}
-					while(i_left<atom_descriptors.size() && atom_descriptors[i_left].projection<(atom_descriptors[i_right].projection-window_width))
-					{
-						const AtomDescriptor& ad=atom_descriptors[i_left];
-						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
-						i_left++;
-					}
-					if(!best_score.assigned || score.value()>best_score.value())
-					{
-						best_score=score;
-						best_score.assigned=true;
-						best_score.projection_center=atom_descriptors[i_right].projection-(window_width*0.5);
-					}
-					i_right++;
+					AtomDescriptor& ad_i=atom_descriptors[i];
+					x[i]=ad_i.frustration;
+					w[i]=ad_i.area;
 				}
 
-				while(i_left<atom_descriptors.size())
+				const double var_x=calc_covariance(x, x, w);
+
+				if(var_x>0.0)
 				{
+					for(double window_center=(atom_descriptors.begin()->projection-window_width);window_center<=(atom_descriptors.rbegin()->projection+window_width);window_center+=0.5)
 					{
-						const AtomDescriptor& ad=atom_descriptors[i_left];
-						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
+						for(std::size_t i=0;i<atom_descriptors.size();i++)
+						{
+							AtomDescriptor& ad_i=atom_descriptors[i];
+							y[i]=calc_window_value(window_center, window_width, window_width_extended, ad_i.projection);
+						}
+
+						const double var_y=calc_covariance(y, y, w);
+
+						if(var_y>0.0)
+						{
+							OrientationScore score;
+							score.correlation=calc_covariance(x, y, w)/sqrt(var_x)/sqrt(var_y);
+
+							if(!best_score.assigned || score.value()>best_score.value())
+							{
+								best_score=score;
+								best_score.assigned=true;
+								best_score.projection_center=window_center;
+							}
+						}
 					}
-					while((i_left+1)<atom_descriptors.size() && atom_descriptors[i_left+1].projection==atom_descriptors[i_left].projection)
-					{
-						i_left++;
-						const AtomDescriptor& ad=atom_descriptors[i_left];
-						score.confusion_matrix.readd(false, (ad.frustration>frustration_threshold), ad.area);
-					}
-					if(!best_score.assigned || score.value()>best_score.value())
-					{
-						best_score=score;
-						best_score.assigned=true;
-						best_score.projection_center=atom_descriptors[i_left].projection+(window_width*0.5);
-					}
-					i_left++;
 				}
 			}
 
-			best_score.direction=direction_unit;
+			if(best_score.assigned)
+			{
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					AtomDescriptor& ad_i=atom_descriptors[i];
+					ad_i.membrane_status=calc_window_value(best_score.projection_center, window_width, window_width_extended, ad_i.projection);
+				}
+
+				best_score.direction=direction_unit;
+			}
 
 			return best_score;
 		}
