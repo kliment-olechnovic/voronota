@@ -3089,7 +3089,8 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
-			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
+			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane-place-value");
+			const std::string adjunct_atom_membrane_effect_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-effect-value", "membrane-effect-value");
 			const double membrane_width=cargs.input.get_value<double>("membrane-width");
 			const double membrane_width_extended=cargs.input.get_value_or_default<double>("membrane-width-extended", membrane_width);
 
@@ -3097,6 +3098,7 @@ public:
 
 			assert_adjunct_name_input(adjunct_contact_frustration_value, false);
 			assert_adjunct_name_input(adjunct_atom_membrane_place_value, true);
+			assert_adjunct_name_input(adjunct_atom_membrane_effect_value, true);
 
 			if(membrane_width<6.0)
 			{
@@ -3199,7 +3201,11 @@ public:
 				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 				if(!adjunct_atom_membrane_place_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=ad.membrane_status;
+					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=ad.membrane_place_value;
+				}
+				if(!adjunct_atom_membrane_effect_value.empty())
+				{
+					atom.value.props.adjuncts[adjunct_atom_membrane_effect_value]=ad.membrane_place_value*calc_frustration_index(ad.frustration);
 				}
 			}
 
@@ -3224,7 +3230,7 @@ public:
 			double area;
 			double frustration;
 			double projection;
-			double membrane_status;
+			double membrane_place_value;
 			apollota::SimplePoint point;
 
 			AtomDescriptor() :
@@ -3233,7 +3239,7 @@ public:
 				area(0),
 				frustration(0),
 				projection(0),
-				membrane_status(0)
+				membrane_place_value(0)
 			{
 			}
 
@@ -3262,6 +3268,21 @@ public:
 				return correlation;
 			}
 		};
+
+		static double calc_frustration_index(const double frustration)
+		{
+			const double min_val=0.0;
+			const double max_val=0.3;
+			if(frustration<min_val)
+			{
+				return 0.0;
+			}
+			else if(frustration>max_val)
+			{
+				return 1.0;
+			}
+			return ((frustration-min_val)/(max_val-min_val));
+		}
 
 		static double calc_window_value(const double window_center, const double window_width, const double window_width_extended, const double x)
 		{
@@ -3403,7 +3424,7 @@ public:
 				for(std::size_t i=0;i<atom_descriptors.size();i++)
 				{
 					AtomDescriptor& ad_i=atom_descriptors[i];
-					ad_i.membrane_status=calc_window_value(best_score.projection_center, window_width, window_width_extended, ad_i.projection);
+					ad_i.membrane_place_value=calc_window_value(best_score.projection_center, window_width, window_width_extended, ad_i.projection);
 				}
 
 				best_score.direction=direction_unit;
