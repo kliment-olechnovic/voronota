@@ -3353,29 +3353,48 @@ public:
 
 				if(var_x>0.0)
 				{
-					for(double window_center=(atom_descriptors.begin()->projection-window_width);window_center<=(atom_descriptors.rbegin()->projection+window_width);window_center+=0.5)
+					double projection_start=(atom_descriptors.begin()->projection-window_width);
+					double projection_end=(atom_descriptors.rbegin()->projection+window_width);
+					double projection_step=window_width*0.25;
+
 					{
-						for(std::size_t i=0;i<atom_descriptors.size();i++)
+						const double length=(projection_end-projection_start);
+						projection_step=length/ceil(length/projection_step);
+					}
+
+					const double projection_step_deviation=0.1;
+
+					do
+					{
+						for(double window_center=projection_start;window_center<=(projection_end+projection_step_deviation);window_center+=projection_step)
 						{
-							AtomDescriptor& ad_i=atom_descriptors[i];
-							y[i]=calc_window_value(window_center, window_width, window_width_extended, ad_i.projection);
-						}
-
-						const double var_y=calc_covariance(y, y, w);
-
-						if(var_y>0.0)
-						{
-							OrientationScore score;
-							score.correlation=calc_covariance(x, y, w)/sqrt(var_x)/sqrt(var_y);
-
-							if(!best_score.assigned || score.value()>best_score.value())
+							for(std::size_t i=0;i<atom_descriptors.size();i++)
 							{
-								best_score=score;
-								best_score.assigned=true;
-								best_score.projection_center=window_center;
+								AtomDescriptor& ad_i=atom_descriptors[i];
+								y[i]=calc_window_value(window_center, window_width, window_width_extended, ad_i.projection);
+							}
+
+							const double var_y=calc_covariance(y, y, w);
+
+							if(var_y>0.0)
+							{
+								OrientationScore score;
+								score.correlation=calc_covariance(x, y, w)/sqrt(var_x)/sqrt(var_y);
+
+								if(!best_score.assigned || score.value()>best_score.value())
+								{
+									best_score=score;
+									best_score.assigned=true;
+									best_score.projection_center=window_center;
+								}
 							}
 						}
+
+						projection_start=(best_score.projection_center-projection_step);
+						projection_end=(best_score.projection_center+projection_step);
+						projection_step*=0.5;
 					}
+					while(best_score.assigned && projection_step>projection_step_deviation);
 				}
 			}
 
