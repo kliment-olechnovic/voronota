@@ -3195,6 +3195,29 @@ public:
 
 			score_orientation(atom_descriptors, best_score.direction, membrane_width, membrane_width_extended);
 
+			double frustration_in_mean=0.0;
+			double frustration_in_sd=0.0;
+			double frustration_out_mean=0.0;
+			double frustration_out_sd=0.0;
+			{
+				std::vector<double> frustrations_in(atom_descriptors.size(), 0.0);
+				std::vector<double> areas_in(atom_descriptors.size(), 0.0);
+				std::vector<double> frustrations_out(atom_descriptors.size(), 0.0);
+				std::vector<double> areas_out(atom_descriptors.size(), 0.0);
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					const AtomDescriptor& ad_i=atom_descriptors[i];
+					frustrations_in[i]=(ad_i.membrane_place_value*ad_i.frustration);
+					areas_in[i]=(ad_i.membrane_place_value*ad_i.area);
+					frustrations_out[i]=((1.0-ad_i.membrane_place_value)*ad_i.frustration);
+					areas_out[i]=((1.0-ad_i.membrane_place_value)*ad_i.area);
+				}
+				frustration_in_mean=calc_mean(frustrations_in, areas_in);
+				frustration_in_sd=sqrt(calc_covariance(frustrations_in, frustrations_in, areas_in));
+				frustration_out_mean=calc_mean(frustrations_out, areas_out);
+				frustration_out_sd=sqrt(calc_covariance(frustrations_out, frustrations_out, areas_out));
+			}
+
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				const AtomDescriptor& ad=atom_descriptors[i];
@@ -3205,7 +3228,8 @@ public:
 				}
 				if(!adjunct_atom_membrane_effect_value.empty())
 				{
-					atom.value.props.adjuncts[adjunct_atom_membrane_effect_value]=ad.membrane_place_value*calc_frustration_index(ad.frustration);
+					atom.value.props.adjuncts[adjunct_atom_membrane_effect_value]=
+							ad.membrane_place_value*calc_frustration_index(frustration_out_mean, frustration_out_sd, ad.frustration);
 				}
 			}
 
@@ -3213,6 +3237,10 @@ public:
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("number_of_checks")=number_of_checks;
 				info.value("best_score")=best_score.value();
+				info.value("frustration_in_mean")=frustration_in_mean;
+				info.value("frustration_in_sd")=frustration_in_sd;
+				info.value("frustration_out_mean")=frustration_out_mean;
+				info.value("frustration_out_sd")=frustration_out_sd;
 				std::vector<VariantValue>& direction=info.values_array("direction");
 				direction.resize(3);
 				direction[0]=best_score.direction.x;
@@ -3269,19 +3297,9 @@ public:
 			}
 		};
 
-		static double calc_frustration_index(const double frustration)
+		static double calc_frustration_index(const double frustration_out_mean, const double frustration_out_sd, const double frustration)
 		{
-			const double min_val=0.0;
-			const double max_val=0.3;
-			if(frustration<min_val)
-			{
-				return 0.0;
-			}
-			else if(frustration>max_val)
-			{
-				return 1.0;
-			}
-			return ((frustration-min_val)/(max_val-min_val));
+			return std::max(0.0, erf((frustration-frustration_out_mean)/(frustration_out_sd*sqrt(2.0))));
 		}
 
 		static double calc_window_value(const double window_center, const double window_width, const double window_width_extended, const double x)
