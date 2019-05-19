@@ -3089,7 +3089,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
-			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane-place-value");
+			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 			const double membrane_width=cargs.input.get_value<double>("membrane-width");
 			const double membrane_width_extended=cargs.input.get_value_or_default<double>("membrane-width-extended", membrane_width);
 
