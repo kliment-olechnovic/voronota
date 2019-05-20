@@ -3413,6 +3413,230 @@ public:
 		}
 	};
 
+	class partition_exposure : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+
+			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
+			const double probe_big=cargs.input.get_value_or_default<double>("probe-big", 30.0);
+			const double probe_medium=cargs.input.get_value_or_default<double>("probe-medium", 3.0);
+			const double probe_small=cargs.input.get_value_or_default<double>("probe-small", 1.4);
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
+
+			std::vector<AtomDescriptor> atom_descriptors(cargs.data_manager.atoms().size());
+
+			const apollota::Triangulation::VerticesVector vertices_vector=
+					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
+
+			{
+				const std::size_t N=cargs.data_manager.atoms().size();
+
+				for(std::size_t i=0;i<vertices_vector.size();i++)
+				{
+					const apollota::Quadruple& q=vertices_vector[i].first;
+					const apollota::SimpleSphere& s=vertices_vector[i].second;
+					if(q.get_min_max().second>=N)
+					{
+						for(unsigned int j=0;j<q.size();j++)
+						{
+							const std::size_t id=q.get(j);
+							if(id<N)
+							{
+								atom_descriptors[id].level=0;
+							}
+						}
+					}
+					else if(s.r>probe_big)
+					{
+						for(unsigned int j=0;j<q.size();j++)
+						{
+							const std::size_t id=q.get(j);
+							atom_descriptors[id].level=0;
+						}
+					}
+				}
+			}
+
+			const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
+			const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+
+			std::vector< std::set<std::size_t> > graph1(atom_descriptors.size());
+			std::vector< std::set<std::size_t> > graph2(atom_descriptors.size());
+
+			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.begin();pairs_vertices_it!=pairs_vertices.end();++pairs_vertices_it)
+			{
+				const std::size_t a_id=pairs_vertices_it->first.get(0);
+				const std::size_t b_id=pairs_vertices_it->first.get(1);
+
+				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[a_id], balls[b_id]);
+
+				if(distance_ab<(probe_medium*2))
+				{
+					const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
+					bool peripherial=false;
+					for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();vertices_ids_it!=vertices_ids.end() && !peripherial;++vertices_ids_it)
+					{
+						const std::size_t vertex_id=(*vertices_ids_it);
+						if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe_medium)
+						{
+							peripherial=true;
+						}
+					}
+					if(peripherial)
+					{
+						graph1[a_id].insert(b_id);
+						graph1[b_id].insert(a_id);
+					}
+				}
+
+				if(distance_ab<(probe_small*2))
+				{
+					const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
+					bool peripherial=false;
+					for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();vertices_ids_it!=vertices_ids.end() && !peripherial;++vertices_ids_it)
+					{
+						const std::size_t vertex_id=(*vertices_ids_it);
+						if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe_small)
+						{
+							peripherial=true;
+						}
+					}
+					if(peripherial)
+					{
+						graph2[a_id].insert(b_id);
+						graph2[b_id].insert(a_id);
+					}
+				}
+			}
+
+			{
+				int changes=1;
+				while(changes>0)
+				{
+					changes=0;
+					std::vector<AtomDescriptor> updated_atom_descriptors=atom_descriptors;
+					for(std::size_t i=0;i<atom_descriptors.size();i++)
+					{
+						if(!graph1[i].empty() && atom_descriptors[i].level>=0 && !atom_descriptors[i].propagated1)
+						{
+							for(std::set<std::size_t>::const_iterator et=graph1[i].begin();et!=graph1[i].end();++et)
+							{
+								const std::size_t j=(*et);
+								if(atom_descriptors[j].level<0)
+								{
+									updated_atom_descriptors[j].level=atom_descriptors[i].level+1;
+									changes++;
+								}
+							}
+							updated_atom_descriptors[i].propagated1=true;
+						}
+					}
+					if(changes>0)
+					{
+						atom_descriptors=updated_atom_descriptors;
+					}
+				}
+			}
+
+			{
+				int max_level=2;
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					max_level=std::max(max_level, atom_descriptors[i].level);
+				}
+
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					if(!graph1[i].empty() && atom_descriptors[i].level<0)
+					{
+						atom_descriptors[i].level=max_level+2;
+					}
+				}
+			}
+
+			{
+				int changes=1;
+				while(changes>0)
+				{
+					changes=0;
+					std::vector<AtomDescriptor> updated_atom_descriptors=atom_descriptors;
+					for(std::size_t i=0;i<atom_descriptors.size();i++)
+					{
+						if(!graph2[i].empty() && atom_descriptors[i].level>=0 && !atom_descriptors[i].propagated2)
+						{
+							for(std::set<std::size_t>::const_iterator et=graph2[i].begin();et!=graph2[i].end();++et)
+							{
+								const std::size_t j=(*et);
+								if(atom_descriptors[j].level<0)
+								{
+									updated_atom_descriptors[j].level=atom_descriptors[i].level;
+									changes++;
+								}
+							}
+							updated_atom_descriptors[i].propagated2=true;
+						}
+					}
+					if(changes>0)
+					{
+						atom_descriptors=updated_atom_descriptors;
+					}
+				}
+			}
+
+			{
+				int max_level=2;
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					max_level=std::max(max_level, atom_descriptors[i].level);
+				}
+
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					if(!graph2[i].empty() && atom_descriptors[i].level<0)
+					{
+						atom_descriptors[i].level=max_level+2;
+					}
+				}
+			}
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[i];
+				if(!adjunct_atom_exposure_value.empty() && atom_descriptors[i].level>=0)
+				{
+					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atom_descriptors[i].level;
+				}
+			}
+		}
+
+	private:
+		struct AtomDescriptor
+		{
+			int level;
+			bool propagated1;
+			bool propagated2;
+
+			AtomDescriptor() :
+				level(-1),
+				propagated1(false),
+				propagated2(false)
+			{
+			}
+		};
+	};
+
 private:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{
