@@ -2980,11 +2980,12 @@ public:
 
 			const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
 
-			const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts_by_atoms_and_atoms(exterior_atom_ids, exterior_atom_ids, false);
+			const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts(
+					SelectionManager::Query("{--tags peripherial}", false));
 
 			if(exterior_contact_ids.empty())
 			{
-				throw std::runtime_error(std::string("No contacts between exterior atoms."));
+				throw std::runtime_error(std::string("No peripherial contacts."));
 			}
 
 			std::vector<std::size_t> atom_solvent_contact_ids(cargs.data_manager.atoms().size(), 0);
