@@ -3429,213 +3429,318 @@ public:
 
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 			const double probe_big=cargs.input.get_value_or_default<double>("probe-big", 30.0);
-			const double probe_medium=cargs.input.get_value_or_default<double>("probe-medium", 3.0);
 			const double probe_small=cargs.input.get_value_or_default<double>("probe-small", 1.4);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
 
-			std::vector<AtomDescriptor> atom_descriptors(cargs.data_manager.atoms().size());
+			const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
 
-			const apollota::Triangulation::VerticesVector vertices_vector=
+			const apollota::Triangulation::VerticesVector triangulation_vertices=
 					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
 
-			{
-				const std::size_t N=cargs.data_manager.atoms().size();
+			const apollota::TriangulationQueries::PairsMap pairs_of_triangulation_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(triangulation_vertices);
 
-				for(std::size_t i=0;i<vertices_vector.size();i++)
+			Graph graph;
+
+			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_it=pairs_of_triangulation_vertices.begin();pairs_it!=pairs_of_triangulation_vertices.end();++pairs_it)
+			{
+				const std::size_t ball_a_id=pairs_it->first.get(0);
+				const std::size_t ball_b_id=pairs_it->first.get(1);
+
+				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[ball_a_id], balls[ball_b_id]);
+
+				if(distance_ab<(probe_big*2.0))
 				{
-					const apollota::Quadruple& q=vertices_vector[i].first;
-					const apollota::SimpleSphere& s=vertices_vector[i].second;
-					if(q.get_min_max().second>=N)
+					const std::set<std::size_t>& triangulation_vertices_ids=pairs_it->second;
+					double max_r=0.0;
+					for(std::set<std::size_t>::const_iterator ids_it=triangulation_vertices_ids.begin();ids_it!=triangulation_vertices_ids.end();++ids_it)
 					{
-						for(unsigned int j=0;j<q.size();j++)
+						const std::size_t id=(*ids_it);
+						if(id<triangulation_vertices.size())
 						{
-							const std::size_t id=q.get(j);
-							if(id<N)
+							const apollota::Quadruple& q=triangulation_vertices[id].first;
+							const apollota::SimpleSphere& s=triangulation_vertices[id].second;
+							if(q.get_min_max().second>=balls.size())
 							{
-								atom_descriptors[id].level=0;
+								max_r=std::max(max_r, probe_big);
 							}
+							max_r=std::max(max_r, s.r);
 						}
 					}
-					else if(s.r>probe_big)
+					if(max_r>=probe_small)
 					{
-						for(unsigned int j=0;j<q.size();j++)
-						{
-							const std::size_t id=q.get(j);
-							atom_descriptors[id].level=0;
-						}
+						graph.vertices[ball_a_id].edges.insert(Edge(max_r, ball_b_id));
+						graph.vertices[ball_b_id].edges.insert(Edge(max_r, ball_a_id));
 					}
 				}
 			}
 
-			const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
-			const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-
-			std::vector< std::set<std::size_t> > graph1(atom_descriptors.size());
-			std::vector< std::set<std::size_t> > graph2(atom_descriptors.size());
-
-			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.begin();pairs_vertices_it!=pairs_vertices.end();++pairs_vertices_it)
+			for(double min_max_r=probe_small;min_max_r<=probe_big;min_max_r+=0.2)
 			{
-				const std::size_t a_id=pairs_vertices_it->first.get(0);
-				const std::size_t b_id=pairs_vertices_it->first.get(1);
-
-				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[a_id], balls[b_id]);
-
-				if(distance_ab<(probe_medium*2))
-				{
-					const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
-					bool peripherial=false;
-					for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();vertices_ids_it!=vertices_ids.end() && !peripherial;++vertices_ids_it)
-					{
-						const std::size_t vertex_id=(*vertices_ids_it);
-						if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe_medium)
-						{
-							peripherial=true;
-						}
-					}
-					if(peripherial)
-					{
-						graph1[a_id].insert(b_id);
-						graph1[b_id].insert(a_id);
-					}
-				}
-
-				if(distance_ab<(probe_small*2))
-				{
-					const std::set<std::size_t>& vertices_ids=pairs_vertices_it->second;
-					bool peripherial=false;
-					for(std::set<std::size_t>::const_iterator vertices_ids_it=vertices_ids.begin();vertices_ids_it!=vertices_ids.end() && !peripherial;++vertices_ids_it)
-					{
-						const std::size_t vertex_id=(*vertices_ids_it);
-						if(vertex_id<vertices_vector.size() && vertices_vector[vertex_id].second.r>probe_small)
-						{
-							peripherial=true;
-						}
-					}
-					if(peripherial)
-					{
-						graph2[a_id].insert(b_id);
-						graph2[b_id].insert(a_id);
-					}
-				}
+				update_hidden_and_exposed_r_values_in_graph(min_max_r, graph);
 			}
 
+//			{
+//				bool changed=true;
+//				while(changed)
+//				{
+//					changed=false;
+//					for(std::map<std::size_t, Vertex>::iterator vertex_a_it=graph.vertices.begin();vertex_a_it!=graph.vertices.end();++vertex_a_it)
+//					{
+//						Vertex& vertex_a=vertex_a_it->second;
+//						if(vertex_a.hidden_r>0.0)
+//						{
+//							for(std::set<Edge>::iterator edge_it=vertex_a.edges.begin();edge_it!=vertex_a.edges.end();++edge_it)
+//							{
+//								std::map<std::size_t, Vertex>::iterator vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
+//								if(vertex_b_it!=graph.vertices.end())
+//								{
+//									Vertex& vertex_b=vertex_b_it->second;
+//									if(vertex_b.hidden_r<=0.0 && vertex_a.hidden_r>vertex_b.exposed_r)
+//									{
+//										vertex_b.hidden_r=vertex_a.hidden_r;
+//										changed=true;
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+
+			for(std::map<std::size_t, Vertex>::const_iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
 			{
-				int changes=1;
-				while(changes>0)
+				Atom& atom=cargs.data_manager.atoms_mutable()[vertex_it->first];
+				const Vertex& vertex=vertex_it->second;
+				if(!adjunct_atom_exposure_value.empty())
 				{
-					changes=0;
-					std::vector<AtomDescriptor> updated_atom_descriptors=atom_descriptors;
-					for(std::size_t i=0;i<atom_descriptors.size();i++)
+					if(vertex.hidden_r>0.0)
 					{
-						if(!graph1[i].empty() && atom_descriptors[i].level>=0 && !atom_descriptors[i].propagated1)
-						{
-							for(std::set<std::size_t>::const_iterator et=graph1[i].begin();et!=graph1[i].end();++et)
-							{
-								const std::size_t j=(*et);
-								if(atom_descriptors[j].level<0)
-								{
-									updated_atom_descriptors[j].level=atom_descriptors[i].level+1;
-									changes++;
-								}
-							}
-							updated_atom_descriptors[i].propagated1=true;
-						}
+						atom.value.props.adjuncts[adjunct_atom_exposure_value]=(0.0-vertex.hidden_r);
 					}
-					if(changes>0)
+					else if(vertex.exposed_r>0.0)
 					{
-						atom_descriptors=updated_atom_descriptors;
+						atom.value.props.adjuncts[adjunct_atom_exposure_value]=vertex.exposed_r;
 					}
-				}
-			}
-
-			{
-				int max_level=2;
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
-				{
-					max_level=std::max(max_level, atom_descriptors[i].level);
-				}
-
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
-				{
-					if(!graph1[i].empty() && atom_descriptors[i].level<0)
-					{
-						atom_descriptors[i].level=max_level+2;
-					}
-				}
-			}
-
-			{
-				int changes=1;
-				while(changes>0)
-				{
-					changes=0;
-					std::vector<AtomDescriptor> updated_atom_descriptors=atom_descriptors;
-					for(std::size_t i=0;i<atom_descriptors.size();i++)
-					{
-						if(!graph2[i].empty() && atom_descriptors[i].level>=0 && !atom_descriptors[i].propagated2)
-						{
-							for(std::set<std::size_t>::const_iterator et=graph2[i].begin();et!=graph2[i].end();++et)
-							{
-								const std::size_t j=(*et);
-								if(atom_descriptors[j].level<0)
-								{
-									updated_atom_descriptors[j].level=atom_descriptors[i].level;
-									changes++;
-								}
-							}
-							updated_atom_descriptors[i].propagated2=true;
-						}
-					}
-					if(changes>0)
-					{
-						atom_descriptors=updated_atom_descriptors;
-					}
-				}
-			}
-
-			{
-				int max_level=2;
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
-				{
-					max_level=std::max(max_level, atom_descriptors[i].level);
-				}
-
-				for(std::size_t i=0;i<atom_descriptors.size();i++)
-				{
-					if(!graph2[i].empty() && atom_descriptors[i].level<0)
-					{
-						atom_descriptors[i].level=max_level+2;
-					}
-				}
-			}
-
-			for(std::size_t i=0;i<atom_descriptors.size();i++)
-			{
-				Atom& atom=cargs.data_manager.atoms_mutable()[i];
-				if(!adjunct_atom_exposure_value.empty() && atom_descriptors[i].level>=0)
-				{
-					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atom_descriptors[i].level;
 				}
 			}
 		}
 
 	private:
-		struct AtomDescriptor
+		static std::size_t null_id()
 		{
-			int level;
-			bool propagated1;
-			bool propagated2;
+			return static_cast<std::size_t>(-1);
+		}
 
-			AtomDescriptor() :
-				level(-1),
-				propagated1(false),
-				propagated2(false)
+		struct Edge
+		{
+			double max_r;
+			std::size_t target_vertex_id;
+
+			Edge() :
+				max_r(0.0),
+				target_vertex_id(0)
 			{
 			}
+
+			Edge(const double max_r, const std::size_t target_vertex_id) :
+				max_r(max_r),
+				target_vertex_id(target_vertex_id)
+			{
+			}
+
+			bool operator<(const Edge& v) const
+			{
+				return (max_r>v.max_r || (max_r==v.max_r && target_vertex_id<v.target_vertex_id));
+			}
 		};
+
+		struct Vertex
+		{
+			std::size_t color;
+			double hidden_r;
+			double exposed_r;
+			std::set<Edge> edges;
+
+			Vertex() :
+				color(null_id()),
+				hidden_r(0.0),
+				exposed_r(0.0)
+			{
+			}
+
+			double max_r() const
+			{
+				if(!edges.empty())
+				{
+					return (edges.begin()->max_r);
+				}
+				return 0.0;
+			}
+
+			std::set<Edge>::iterator first_edge_iterator(const double min_max_r)
+			{
+				std::set<Edge>::iterator edge_it=edges.begin();
+				while(edge_it!=edges.end() && edge_it->max_r<min_max_r)
+				{
+					++edge_it;
+				}
+				return edge_it;
+			}
+
+			std::set<Edge>::iterator next_edge_iterator(const double min_max_r, const std::set<Edge>::iterator& prev_edge_it)
+			{
+				std::set<Edge>::iterator edge_it=prev_edge_it;
+				if(edge_it!=edges.end())
+				{
+					++edge_it;
+					while(edge_it!=edges.end() && edge_it->max_r<min_max_r)
+					{
+						++edge_it;
+					}
+				}
+				return edge_it;
+			}
+		};
+
+		struct Graph
+		{
+			std::map<std::size_t, Vertex> vertices;
+
+			Graph()
+			{
+			}
+
+			std::map<std::size_t, Vertex>::iterator first_vertex_iterator(const double min_max_r)
+			{
+				std::map<std::size_t, Vertex>::iterator vertex_it=vertices.begin();
+				while(vertex_it!=vertices.end() && vertex_it->second.max_r()<min_max_r)
+				{
+					++vertex_it;
+				}
+				return vertex_it;
+			}
+
+			std::map<std::size_t, Vertex>::iterator next_vertex_iterator(const double min_max_r, const std::map<std::size_t, Vertex>::iterator& prev_vertex_it)
+			{
+				std::map<std::size_t, Vertex>::iterator vertex_it=prev_vertex_it;
+				if(vertex_it!=vertices.end())
+				{
+					++vertex_it;
+					while(vertex_it!=vertices.end() && vertex_it->second.max_r()<min_max_r)
+					{
+						++vertex_it;
+					}
+				}
+				return vertex_it;
+			}
+		};
+
+		void color_graph(const double min_max_r, Graph& graph)
+		{
+			for(std::map<std::size_t, Vertex>::iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
+			{
+				vertex_it->second.color=null_id();
+			}
+
+			{
+				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
+				while(vertex_it!=graph.vertices.end())
+				{
+					vertex_it->second.color=vertex_it->first;
+					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
+				}
+			}
+
+			{
+				bool changed=true;
+				while(changed)
+				{
+					changed=false;
+					std::map<std::size_t, Vertex>::iterator vertex_a_it=graph.first_vertex_iterator(min_max_r);
+					while(vertex_a_it!=graph.vertices.end())
+					{
+						Vertex& vertex_a=vertex_a_it->second;
+						std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
+						while(edge_it!=vertex_a.edges.end())
+						{
+							const Edge& edge=(*edge_it);
+							std::map<std::size_t, Vertex>::iterator vertex_b_it=graph.vertices.find(edge.target_vertex_id);
+							if(vertex_b_it!=graph.vertices.end())
+							{
+								Vertex& vertex_b=vertex_b_it->second;
+								if(vertex_a.color!=vertex_b.color)
+								{
+									vertex_a.color=std::min(vertex_a.color, vertex_b.color);
+									vertex_b.color=vertex_a.color;
+									changed=true;
+								}
+							}
+							edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
+						}
+						vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
+					}
+				}
+			}
+		}
+
+		void update_hidden_and_exposed_r_values_in_graph(const double min_max_r, Graph& graph)
+		{
+			color_graph(min_max_r, graph);
+
+			std::map<std::size_t, double> color_weights;
+
+			{
+				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
+				while(vertex_it!=graph.vertices.end())
+				{
+					if(vertex_it->second.color!=null_id())
+					{
+						color_weights[vertex_it->second.color]+=vertex_it->second.max_r();
+					}
+					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
+				}
+			}
+
+			if(color_weights.empty())
+			{
+				return;
+			}
+
+			std::map<std::size_t, double>::const_iterator max_color_weight_it=color_weights.begin();
+
+			for(std::map<std::size_t, double>::const_iterator it=color_weights.begin();it!=color_weights.end();++it)
+			{
+				if((it->second)>(max_color_weight_it->second))
+				{
+					max_color_weight_it=it;
+				}
+			}
+
+			const std::size_t exterior_color=max_color_weight_it->first;
+
+			{
+				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
+				while(vertex_it!=graph.vertices.end())
+				{
+					Vertex& vertex=vertex_it->second;
+					if(vertex.color!=null_id())
+					{
+						if(vertex.color==exterior_color && vertex.exposed_r<min_max_r)
+						{
+							vertex.exposed_r=min_max_r;
+						}
+						else if(vertex.color!=exterior_color && vertex.hidden_r<min_max_r)
+						{
+							vertex.hidden_r=min_max_r;
+						}
+					}
+					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
+				}
+			}
+		}
 	};
 
 private:
