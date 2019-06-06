@@ -3,7 +3,7 @@
 
 #include "../common/contacts_scoring_utilities.h"
 
-#include "../modescommon/sequence_utilities.h"
+#include "modescommon/sequence_utilities.h"
 
 namespace
 {

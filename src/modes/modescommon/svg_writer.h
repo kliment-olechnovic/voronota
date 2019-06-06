@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_SVG_WRITER_H_
 #define MODESCOMMON_SVG_WRITER_H_
 
-#include "../auxiliaries/xml_writer.h"
+#include "../../auxiliaries/xml_writer.h"
 
 namespace modescommon
 {

@@ -8,7 +8,7 @@
 #include "../common/ball_value.h"
 #include "../common/matching_utilities.h"
 
-#include "../modescommon/sequence_utilities.h"
+#include "modescommon/sequence_utilities.h"
 
 namespace
 {

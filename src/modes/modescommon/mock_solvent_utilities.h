@@ -1,7 +1,7 @@
 #ifndef MODESCOMMON_MOCK_SOLVENT_UTILITIES_H_
 #define MODESCOMMON_MOCK_SOLVENT_UTILITIES_H_
 
-#include "../common/chain_residue_atom_descriptor.h"
+#include "../../common/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {

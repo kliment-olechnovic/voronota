@@ -4,11 +4,11 @@
 #include <fstream>
 #include <sstream>
 
-#include "../auxiliaries/residue_letters_coding.h"
-#include "../auxiliaries/pairwise_sequence_alignment.h"
-#include "../auxiliaries/residue_atoms_reference.h"
+#include "../../auxiliaries/residue_letters_coding.h"
+#include "../../auxiliaries/pairwise_sequence_alignment.h"
+#include "../../auxiliaries/residue_atoms_reference.h"
 
-#include "../common/chain_residue_atom_descriptor.h"
+#include "../../common/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {

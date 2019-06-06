@@ -2,7 +2,7 @@
 
 #include "../common/contact_value.h"
 
-#include "../modescommon/drawing_utilities.h"
+#include "modescommon/drawing_utilities.h"
 
 namespace
 {

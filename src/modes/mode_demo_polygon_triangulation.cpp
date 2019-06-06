@@ -3,7 +3,7 @@
 #include "../auxiliaries/program_options_handler.h"
 #include "../auxiliaries/io_utilities.h"
 
-#include "../modescommon/svg_writer.h"
+#include "modescommon/svg_writer.h"
 
 namespace
 {
