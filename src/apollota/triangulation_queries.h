@@ -1,8 +1,6 @@
 #ifndef APOLLOTA_TRIANGULATION_QUERIES_H_
 #define APOLLOTA_TRIANGULATION_QUERIES_H_
 
-#include "../compatability_macros.h"
-
 #include "triangulation.h"
 
 namespace apollota

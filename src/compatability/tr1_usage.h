@@ -1,5 +1,5 @@
-#ifndef COMPATABILITY_MACROS_H_
-#define COMPATABILITY_MACROS_H_
+#ifndef COMPATABILITY_TR1_USAGE_H_
+#define COMPATABILITY_TR1_USAGE_H_
 
 #ifndef USE_TR1
 #if __cplusplus >= 201103L
@@ -13,4 +13,4 @@
 #endif
 #endif
 
-#endif /* COMPATABILITY_MACROS_H_ */
+#endif /* COMPATABILITY_TR1_USAGE_H_ */

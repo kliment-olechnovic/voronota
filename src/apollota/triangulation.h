@@ -6,7 +6,7 @@
 #include <map>
 #include <set>
 
-#include "../compatability_macros.h"
+#include "../compatability/tr1_usage.h"
 
 #if USE_TR1 > 0
 #include <tr1/unordered_map>
