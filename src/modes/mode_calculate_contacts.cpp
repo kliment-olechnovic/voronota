@@ -13,7 +13,7 @@
 #include "../common/ball_value.h"
 #include "../common/contact_value.h"
 
-#include "../modescommon/mock_solvent_utilities.h"
+#include "modescommon/mock_solvent_utilities.h"
 
 void calculate_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 {

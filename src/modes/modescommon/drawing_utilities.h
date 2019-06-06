@@ -1,9 +1,9 @@
 #ifndef MODESCOMMON_DRAWING_UTILITIES_H_
 #define MODESCOMMON_DRAWING_UTILITIES_H_
 
-#include "../auxiliaries/opengl_printer.h"
+#include "../../auxiliaries/opengl_printer.h"
 
-#include "../common/chain_residue_atom_descriptor.h"
+#include "../../common/chain_residue_atom_descriptor.h"
 
 namespace modescommon
 {

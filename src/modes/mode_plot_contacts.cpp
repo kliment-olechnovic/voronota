@@ -8,7 +8,7 @@
 #include "../common/chain_residue_atom_descriptor.h"
 #include "../common/contact_value.h"
 
-#include "../modescommon/svg_writer.h"
+#include "modescommon/svg_writer.h"
 
 namespace
 {

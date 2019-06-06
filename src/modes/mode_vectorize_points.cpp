@@ -3,7 +3,7 @@
 #include "../auxiliaries/program_options_handler.h"
 #include "../auxiliaries/io_utilities.h"
 
-#include "../modescommon/vectorization_utilities.h"
+#include "modescommon/vectorization_utilities.h"
 
 namespace
 {

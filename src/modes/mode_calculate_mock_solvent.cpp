@@ -10,7 +10,7 @@
 #include "../common/chain_residue_atom_descriptor.h"
 #include "../common/ball_value.h"
 
-#include "../modescommon/mock_solvent_utilities.h"
+#include "modescommon/mock_solvent_utilities.h"
 
 void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 {

@@ -3,7 +3,7 @@
 
 #include "../common/chain_residue_atom_descriptor.h"
 
-#include "../modescommon/vectorization_utilities.h"
+#include "modescommon/vectorization_utilities.h"
 
 namespace
 {
