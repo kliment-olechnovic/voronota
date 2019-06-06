@@ -843,6 +843,9 @@
             "name":"move-atoms",
             "short_description":""},
           {
+            "name":"partition-exposure",
+            "short_description":""},
+          {
             "name":"pick-more-objects",
             "short_description":""},
           {
@@ -958,6 +961,9 @@
             "short_description":""},
           {
             "name":"voromqa-local",
+            "short_description":""},
+          {
+            "name":"voromqa-membrane-place",
             "short_description":""},
           {
             "name":"write-atoms-as-pymol-cgo",

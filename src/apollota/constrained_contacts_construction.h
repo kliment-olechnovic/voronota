@@ -3,7 +3,7 @@
 
 #include <deque>
 
-#include "../compatability_macros.h"
+#include "../compatability/tr1_usage.h"
 
 #include "constrained_contact_contour.h"
 #include "constrained_contact_remainder.h"
