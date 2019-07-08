@@ -3414,7 +3414,7 @@ public:
 		}
 	};
 
-	class partition_exposure : public GenericCommandForDataManager
+	class describe_exposure : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -3427,88 +3427,28 @@ public:
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
-			const double probe_big=cargs.input.get_value_or_default<double>("probe-big", 30.0);
+			const double probe_big=cargs.input.get_value_or_default<double>("probe-big", 2.8);
 			const double probe_small=cargs.input.get_value_or_default<double>("probe-small", 1.4);
+			const double cover_distance=cargs.input.get_value_or_default<double>("cover-distance", probe_big);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
 
-			const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
+			const std::set<std::size_t> allowed_atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
 
-			const apollota::Triangulation::VerticesVector triangulation_vertices=
-					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
-
-			const apollota::TriangulationQueries::PairsMap pairs_of_triangulation_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(triangulation_vertices);
-
-			Graph graph;
-
-			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_it=pairs_of_triangulation_vertices.begin();pairs_it!=pairs_of_triangulation_vertices.end();++pairs_it)
+			if(allowed_atom_ids.empty())
 			{
-				const std::size_t ball_a_id=pairs_it->first.get(0);
-				const std::size_t ball_b_id=pairs_it->first.get(1);
-
-				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[ball_a_id], balls[ball_b_id]);
-
-				if(distance_ab<(probe_big*2.0))
-				{
-					const std::set<std::size_t>& triangulation_vertices_ids=pairs_it->second;
-					double max_r=0.0;
-					for(std::set<std::size_t>::const_iterator ids_it=triangulation_vertices_ids.begin();ids_it!=triangulation_vertices_ids.end();++ids_it)
-					{
-						const std::size_t id=(*ids_it);
-						if(id<triangulation_vertices.size())
-						{
-							const apollota::Quadruple& q=triangulation_vertices[id].first;
-							const apollota::SimpleSphere& s=triangulation_vertices[id].second;
-							if(q.get_min_max().second>=balls.size())
-							{
-								max_r=std::max(max_r, probe_big);
-							}
-							max_r=std::max(max_r, s.r);
-						}
-					}
-					if(max_r>=probe_small)
-					{
-						graph.vertices[ball_a_id].edges.insert(Edge(max_r, ball_b_id));
-						graph.vertices[ball_b_id].edges.insert(Edge(max_r, ball_a_id));
-					}
-				}
+				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			for(double min_max_r=probe_small;min_max_r<=probe_big;min_max_r+=0.2)
-			{
-				update_hidden_and_exposed_r_values_in_graph(min_max_r, graph);
-			}
+			Graph graph=init_graph(cargs.data_manager.triangulation_info(), allowed_atom_ids, probe_big, probe_small);
 
-//			{
-//				bool changed=true;
-//				while(changed)
-//				{
-//					changed=false;
-//					for(std::map<std::size_t, Vertex>::iterator vertex_a_it=graph.vertices.begin();vertex_a_it!=graph.vertices.end();++vertex_a_it)
-//					{
-//						Vertex& vertex_a=vertex_a_it->second;
-//						if(vertex_a.hidden_r>0.0)
-//						{
-//							for(std::set<Edge>::iterator edge_it=vertex_a.edges.begin();edge_it!=vertex_a.edges.end();++edge_it)
-//							{
-//								std::map<std::size_t, Vertex>::iterator vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
-//								if(vertex_b_it!=graph.vertices.end())
-//								{
-//									Vertex& vertex_b=vertex_b_it->second;
-//									if(vertex_b.hidden_r<=0.0 && vertex_a.hidden_r>vertex_b.exposed_r)
-//									{
-//										vertex_b.hidden_r=vertex_a.hidden_r;
-//										changed=true;
-//									}
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
+			color_graph(probe_big, graph);
+
+			spread_first_color(cargs.data_manager.triangulation_info().spheres, cover_distance, probe_small, graph);
 
 			for(std::map<std::size_t, Vertex>::const_iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
 			{
@@ -3516,13 +3456,9 @@ public:
 				const Vertex& vertex=vertex_it->second;
 				if(!adjunct_atom_exposure_value.empty())
 				{
-					if(vertex.hidden_r>0.0)
+					if(vertex.color==0)
 					{
-						atom.value.props.adjuncts[adjunct_atom_exposure_value]=(0.0-vertex.hidden_r);
-					}
-					else if(vertex.exposed_r>0.0)
-					{
-						atom.value.props.adjuncts[adjunct_atom_exposure_value]=vertex.exposed_r;
+						atom.value.props.adjuncts[adjunct_atom_exposure_value]=1.0;
 					}
 				}
 			}
@@ -3560,14 +3496,10 @@ public:
 		struct Vertex
 		{
 			std::size_t color;
-			double hidden_r;
-			double exposed_r;
 			std::set<Edge> edges;
 
 			Vertex() :
-				color(null_id()),
-				hidden_r(0.0),
-				exposed_r(0.0)
+				color(null_id())
 			{
 			}
 
@@ -3638,106 +3570,206 @@ public:
 			}
 		};
 
-		void color_graph(const double min_max_r, Graph& graph)
+		static Graph init_graph(
+				const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info,
+				const std::set<std::size_t>& allowed_atom_ids,
+				const double probe_big,
+				const double probe_small)
+		{
+			Graph graph;
+
+			const std::vector<apollota::SimpleSphere>& balls=triangulation_info.spheres;
+
+			const apollota::Triangulation::VerticesVector triangulation_vertices=
+					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_info.quadruples_map);
+
+			const apollota::TriangulationQueries::PairsMap pairs_of_triangulation_vertices=
+					apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(triangulation_vertices);
+
+			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_it=pairs_of_triangulation_vertices.begin();pairs_it!=pairs_of_triangulation_vertices.end();++pairs_it)
+			{
+				const std::size_t ball_a_id=pairs_it->first.get(0);
+				const std::size_t ball_b_id=pairs_it->first.get(1);
+
+				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[ball_a_id], balls[ball_b_id]);
+
+				if(distance_ab<(probe_big*2.0) && allowed_atom_ids.count(ball_a_id)>0 && allowed_atom_ids.count(ball_b_id)>0)
+				{
+					const std::set<std::size_t>& triangulation_vertices_ids=pairs_it->second;
+					double max_r=0.0;
+					for(std::set<std::size_t>::const_iterator ids_it=triangulation_vertices_ids.begin();ids_it!=triangulation_vertices_ids.end();++ids_it)
+					{
+						const std::size_t id=(*ids_it);
+						if(id<triangulation_vertices.size())
+						{
+							const apollota::Quadruple& q=triangulation_vertices[id].first;
+							const apollota::SimpleSphere& s=triangulation_vertices[id].second;
+							if(q.get_min_max().second>=balls.size())
+							{
+								max_r=std::max(max_r, probe_big);
+							}
+							max_r=std::max(max_r, s.r);
+						}
+					}
+					if(max_r>=probe_small)
+					{
+						graph.vertices[ball_a_id].edges.insert(Edge(max_r, ball_b_id));
+						graph.vertices[ball_b_id].edges.insert(Edge(max_r, ball_a_id));
+					}
+				}
+			}
+
+			return graph;
+		}
+
+		static void color_graph(const double min_max_r, Graph& graph)
 		{
 			for(std::map<std::size_t, Vertex>::iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
 			{
 				vertex_it->second.color=null_id();
 			}
 
+			typedef std::map<std::size_t, Vertex>::iterator Vit;
+
+			std::vector<Vit> stack;
+			std::size_t current_color=0;
+
 			{
-				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
-				while(vertex_it!=graph.vertices.end())
+				Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
+				if(vertex_a_it!=graph.vertices.end())
 				{
-					vertex_it->second.color=vertex_it->first;
-					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
+					vertex_a_it->second.color=current_color;
+					stack.push_back(vertex_a_it);
+				}
+				else
+				{
+					return;
+				}
+			}
+
+			while(!stack.empty())
+			{
+				while(!stack.empty())
+				{
+					Vit vertex_a_it=stack.back();
+					stack.pop_back();
+					Vertex& vertex_a=vertex_a_it->second;
+					std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
+					while(edge_it!=vertex_a.edges.end())
+					{
+						Vit vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
+						if(vertex_b_it!=graph.vertices.end())
+						{
+							Vertex& vertex_b=vertex_b_it->second;
+							if(vertex_b.color==null_id())
+							{
+								vertex_b.color=current_color;
+								stack.push_back(vertex_b_it);
+							}
+						}
+						edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
+					}
+				}
+				current_color++;
+				{
+					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
+					while(vertex_a_it!=graph.vertices.end())
+					{
+						Vertex& vertex_a=vertex_a_it->second;
+						if(vertex_a.color==null_id())
+						{
+							vertex_a.color=current_color;
+							stack.push_back(vertex_a_it);
+							vertex_a_it=graph.vertices.end();
+						}
+						else
+						{
+							vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
+						}
+					}
 				}
 			}
 
 			{
-				bool changed=true;
-				while(changed)
+				std::map<std::size_t, long> color_counts;
 				{
-					changed=false;
-					std::map<std::size_t, Vertex>::iterator vertex_a_it=graph.first_vertex_iterator(min_max_r);
+					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
 					while(vertex_a_it!=graph.vertices.end())
 					{
-						Vertex& vertex_a=vertex_a_it->second;
-						std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
-						while(edge_it!=vertex_a.edges.end())
-						{
-							const Edge& edge=(*edge_it);
-							std::map<std::size_t, Vertex>::iterator vertex_b_it=graph.vertices.find(edge.target_vertex_id);
-							if(vertex_b_it!=graph.vertices.end())
-							{
-								Vertex& vertex_b=vertex_b_it->second;
-								if(vertex_a.color!=vertex_b.color)
-								{
-									vertex_a.color=std::min(vertex_a.color, vertex_b.color);
-									vertex_b.color=vertex_a.color;
-									changed=true;
-								}
-							}
-							edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
-						}
+						color_counts[vertex_a_it->second.color]++;
+						vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
+					}
+				}
+				std::vector< std::pair<long, std::size_t> > paired_values;
+				for(std::map<std::size_t, long>::const_iterator it=color_counts.begin();it!=color_counts.end();++it)
+				{
+					paired_values.push_back(std::pair<long, std::size_t>(0-it->second, it->first));
+				}
+				std::sort(paired_values.begin(), paired_values.end());
+				std::map<std::size_t, std::size_t> color_ranks;
+				for(std::size_t i=0;i<paired_values.size();i++)
+				{
+					color_ranks[paired_values[i].second]=i;
+				}
+				{
+					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
+					while(vertex_a_it!=graph.vertices.end())
+					{
+						vertex_a_it->second.color=color_ranks[vertex_a_it->second.color];
 						vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
 					}
 				}
 			}
 		}
 
-		void update_hidden_and_exposed_r_values_in_graph(const double min_max_r, Graph& graph)
+		static void spread_first_color(
+				const std::vector<apollota::SimpleSphere>& balls,
+				const double cover_distance,
+				const double min_max_r,
+				Graph& graph)
 		{
-			color_graph(min_max_r, graph);
+			typedef std::map<std::size_t, Vertex>::iterator Vit;
 
-			std::map<std::size_t, double> color_weights;
-
+			std::vector<Vit> starters;
 			{
-				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
-				while(vertex_it!=graph.vertices.end())
+				Vit start_vertex_it=graph.first_vertex_iterator(min_max_r);
+				while(start_vertex_it!=graph.vertices.end())
 				{
-					if(vertex_it->second.color!=null_id())
+					if(start_vertex_it->second.color==0 && start_vertex_it->first<balls.size())
 					{
-						color_weights[vertex_it->second.color]+=vertex_it->second.max_r();
+						starters.push_back(start_vertex_it);
 					}
-					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
+					start_vertex_it=graph.next_vertex_iterator(min_max_r, start_vertex_it);
 				}
 			}
 
-			if(color_weights.empty())
+			for(std::size_t i=0;i<starters.size();i++)
 			{
-				return;
-			}
-
-			std::map<std::size_t, double>::const_iterator max_color_weight_it=color_weights.begin();
-
-			for(std::map<std::size_t, double>::const_iterator it=color_weights.begin();it!=color_weights.end();++it)
-			{
-				if((it->second)>(max_color_weight_it->second))
+				Vit start_vertex_it=starters[i];
+				std::vector<Vit> stack;
+				stack.push_back(start_vertex_it);
+				while(!stack.empty())
 				{
-					max_color_weight_it=it;
-				}
-			}
-
-			const std::size_t exterior_color=max_color_weight_it->first;
-
-			{
-				std::map<std::size_t, Vertex>::iterator vertex_it=graph.first_vertex_iterator(min_max_r);
-				while(vertex_it!=graph.vertices.end())
-				{
-					Vertex& vertex=vertex_it->second;
-					if(vertex.color!=null_id())
+					Vit vertex_a_it=stack.back();
+					stack.pop_back();
+					Vertex& vertex_a=vertex_a_it->second;
+					std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
+					while(edge_it!=vertex_a.edges.end())
 					{
-						if(vertex.color==exterior_color && vertex.exposed_r<min_max_r)
+						Vit vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
+						if(vertex_b_it!=graph.vertices.end())
 						{
-							vertex.exposed_r=min_max_r;
+							Vertex& vertex_b=vertex_b_it->second;
+							if(vertex_b.color==null_id()
+									&& vertex_b_it->first<balls.size()
+									&& apollota::minimal_distance_from_sphere_to_sphere(balls[start_vertex_it->first], balls[vertex_b_it->first])<cover_distance)
+							{
+								vertex_b.color=0;
+								stack.push_back(vertex_b_it);
+							}
 						}
-						else if(vertex.color!=exterior_color && vertex.hidden_r<min_max_r)
-						{
-							vertex.hidden_r=min_max_r;
-						}
+						edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
 					}
-					vertex_it=graph.next_vertex_iterator(min_max_r, vertex_it);
 				}
 			}
 		}
