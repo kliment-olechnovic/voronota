@@ -3427,349 +3427,78 @@ public:
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
-			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
-			const double probe_big=cargs.input.get_value_or_default<double>("probe-big", 2.8);
-			const double probe_small=cargs.input.get_value_or_default<double>("probe-small", 1.4);
-			const double cover_distance=cargs.input.get_value_or_default<double>("cover-distance", probe_big);
+			const double probe_min=cargs.input.get_value_or_default<double>("probe-min", 1.4);
+			const double probe_max=cargs.input.get_value_or_default<double>("probe-max", 30.0);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
 
-			const std::set<std::size_t> allowed_atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
+			const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& tinfo=cargs.data_manager.triangulation_info();
 
-			if(allowed_atom_ids.empty())
-			{
-				throw std::runtime_error(std::string("No atoms selected."));
-			}
-
-			Graph graph=init_graph(cargs.data_manager.triangulation_info(), allowed_atom_ids, probe_big, probe_small);
-
-			color_graph(probe_big, graph);
-
-			spread_first_color(cargs.data_manager.triangulation_info().spheres, cover_distance, probe_small, graph);
-
-			for(std::map<std::size_t, Vertex>::const_iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
-			{
-				Atom& atom=cargs.data_manager.atoms_mutable()[vertex_it->first];
-				const Vertex& vertex=vertex_it->second;
-				if(!adjunct_atom_exposure_value.empty())
-				{
-					if(vertex.color==0)
-					{
-						atom.value.props.adjuncts[adjunct_atom_exposure_value]=1.0;
-					}
-				}
-			}
-		}
-
-	private:
-		static std::size_t null_id()
-		{
-			return static_cast<std::size_t>(-1);
-		}
-
-		struct Edge
-		{
-			double max_r;
-			std::size_t target_vertex_id;
-
-			Edge() :
-				max_r(0.0),
-				target_vertex_id(0)
-			{
-			}
-
-			Edge(const double max_r, const std::size_t target_vertex_id) :
-				max_r(max_r),
-				target_vertex_id(target_vertex_id)
-			{
-			}
-
-			bool operator<(const Edge& v) const
-			{
-				return (max_r>v.max_r || (max_r==v.max_r && target_vertex_id<v.target_vertex_id));
-			}
-		};
-
-		struct Vertex
-		{
-			std::size_t color;
-			std::set<Edge> edges;
-
-			Vertex() :
-				color(null_id())
-			{
-			}
-
-			double max_r() const
-			{
-				if(!edges.empty())
-				{
-					return (edges.begin()->max_r);
-				}
-				return 0.0;
-			}
-
-			std::set<Edge>::iterator first_edge_iterator(const double min_max_r)
-			{
-				std::set<Edge>::iterator edge_it=edges.begin();
-				while(edge_it!=edges.end() && edge_it->max_r<min_max_r)
-				{
-					++edge_it;
-				}
-				return edge_it;
-			}
-
-			std::set<Edge>::iterator next_edge_iterator(const double min_max_r, const std::set<Edge>::iterator& prev_edge_it)
-			{
-				std::set<Edge>::iterator edge_it=prev_edge_it;
-				if(edge_it!=edges.end())
-				{
-					++edge_it;
-					while(edge_it!=edges.end() && edge_it->max_r<min_max_r)
-					{
-						++edge_it;
-					}
-				}
-				return edge_it;
-			}
-		};
-
-		struct Graph
-		{
-			std::map<std::size_t, Vertex> vertices;
-
-			Graph()
-			{
-			}
-
-			std::map<std::size_t, Vertex>::iterator first_vertex_iterator(const double min_max_r)
-			{
-				std::map<std::size_t, Vertex>::iterator vertex_it=vertices.begin();
-				while(vertex_it!=vertices.end() && vertex_it->second.max_r()<min_max_r)
-				{
-					++vertex_it;
-				}
-				return vertex_it;
-			}
-
-			std::map<std::size_t, Vertex>::iterator next_vertex_iterator(const double min_max_r, const std::map<std::size_t, Vertex>::iterator& prev_vertex_it)
-			{
-				std::map<std::size_t, Vertex>::iterator vertex_it=prev_vertex_it;
-				if(vertex_it!=vertices.end())
-				{
-					++vertex_it;
-					while(vertex_it!=vertices.end() && vertex_it->second.max_r()<min_max_r)
-					{
-						++vertex_it;
-					}
-				}
-				return vertex_it;
-			}
-		};
-
-		static Graph init_graph(
-				const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& triangulation_info,
-				const std::set<std::size_t>& allowed_atom_ids,
-				const double probe_big,
-				const double probe_small)
-		{
-			Graph graph;
-
-			const std::vector<apollota::SimpleSphere>& balls=triangulation_info.spheres;
+			const std::vector<apollota::SimpleSphere>& balls=tinfo.spheres;
 
 			const apollota::Triangulation::VerticesVector triangulation_vertices=
-					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_info.quadruples_map);
+					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(tinfo.quadruples_map);
 
-			const apollota::TriangulationQueries::PairsMap pairs_of_triangulation_vertices=
-					apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(triangulation_vertices);
+			std::vector<double> triangulation_vertices_values(triangulation_vertices.size(), 0.0);
 
-			for(apollota::TriangulationQueries::PairsMap::const_iterator pairs_it=pairs_of_triangulation_vertices.begin();pairs_it!=pairs_of_triangulation_vertices.end();++pairs_it)
+			for(std::size_t i=0;i<triangulation_vertices.size();i++)
 			{
-				const std::size_t ball_a_id=pairs_it->first.get(0);
-				const std::size_t ball_b_id=pairs_it->first.get(1);
-
-				const double distance_ab=apollota::minimal_distance_from_sphere_to_sphere(balls[ball_a_id], balls[ball_b_id]);
-
-				if(distance_ab<(probe_big*2.0) && allowed_atom_ids.count(ball_a_id)>0 && allowed_atom_ids.count(ball_b_id)>0)
+				const apollota::Quadruple& q=triangulation_vertices[i].first;
+				const apollota::SimpleSphere& s=triangulation_vertices[i].second;
+				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<tinfo.number_of_input_spheres)
 				{
-					const std::set<std::size_t>& triangulation_vertices_ids=pairs_it->second;
-					double max_r=0.0;
-					for(std::set<std::size_t>::const_iterator ids_it=triangulation_vertices_ids.begin();ids_it!=triangulation_vertices_ids.end();++ids_it)
+					apollota::SimplePoint touches[4];
+					for(int j=0;j<4;j++)
 					{
-						const std::size_t id=(*ids_it);
-						if(id<triangulation_vertices.size())
+						const apollota::SimpleSphere& a=balls[q.get(j)];
+						touches[j]=apollota::SimplePoint(a)+((apollota::SimplePoint(s)-apollota::SimplePoint(a)).unit()*a.r);
+					}
+					{
+						double min_max_projection=(s.r*2);
+						for(int j=0;j<4;j++)
 						{
-							const apollota::Quadruple& q=triangulation_vertices[id].first;
-							const apollota::SimpleSphere& s=triangulation_vertices[id].second;
-							if(q.get_min_max().second>=balls.size())
+							const apollota::SimplePoint v=(apollota::SimplePoint(s)-touches[j]).unit();
+							double max_projection=0.0;
+							for(int k=0;k<4;k++)
 							{
-								max_r=std::max(max_r, probe_big);
+								if(k!=j)
+								{
+									max_projection=std::max(max_projection, v*(touches[k]-touches[j]));
+								}
 							}
-							max_r=std::max(max_r, s.r);
+							min_max_projection=std::min(min_max_projection, max_projection);
 						}
-					}
-					if(max_r>=probe_small)
-					{
-						graph.vertices[ball_a_id].edges.insert(Edge(max_r, ball_b_id));
-						graph.vertices[ball_b_id].edges.insert(Edge(max_r, ball_a_id));
+						triangulation_vertices_values[i]=min_max_projection/(s.r*2);
 					}
 				}
 			}
 
-			return graph;
-		}
-
-		static void color_graph(const double min_max_r, Graph& graph)
-		{
-			for(std::map<std::size_t, Vertex>::iterator vertex_it=graph.vertices.begin();vertex_it!=graph.vertices.end();++vertex_it)
+			std::vector<double> atoms_values1(cargs.data_manager.atoms().size(), 0.0);
+			std::vector<double> atoms_values2(cargs.data_manager.atoms().size(), 0.0);
+			for(std::size_t i=0;i<triangulation_vertices.size();i++)
 			{
-				vertex_it->second.color=null_id();
-			}
-
-			typedef std::map<std::size_t, Vertex>::iterator Vit;
-
-			std::vector<Vit> stack;
-			std::size_t current_color=0;
-
-			{
-				Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
-				if(vertex_a_it!=graph.vertices.end())
+				const apollota::Quadruple& q=triangulation_vertices[i].first;
+				const apollota::SimpleSphere& s=triangulation_vertices[i].second;
+				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<atoms_values1.size())
 				{
-					vertex_a_it->second.color=current_color;
-					stack.push_back(vertex_a_it);
-				}
-				else
-				{
-					return;
-				}
-			}
-
-			while(!stack.empty())
-			{
-				while(!stack.empty())
-				{
-					Vit vertex_a_it=stack.back();
-					stack.pop_back();
-					Vertex& vertex_a=vertex_a_it->second;
-					std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
-					while(edge_it!=vertex_a.edges.end())
+					for(int j=0;j<4;j++)
 					{
-						Vit vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
-						if(vertex_b_it!=graph.vertices.end())
-						{
-							Vertex& vertex_b=vertex_b_it->second;
-							if(vertex_b.color==null_id())
-							{
-								vertex_b.color=current_color;
-								stack.push_back(vertex_b_it);
-							}
-						}
-						edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
-					}
-				}
-				current_color++;
-				{
-					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
-					while(vertex_a_it!=graph.vertices.end())
-					{
-						Vertex& vertex_a=vertex_a_it->second;
-						if(vertex_a.color==null_id())
-						{
-							vertex_a.color=current_color;
-							stack.push_back(vertex_a_it);
-							vertex_a_it=graph.vertices.end();
-						}
-						else
-						{
-							vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
-						}
+						const std::size_t id=q.get(j);
+						atoms_values1[id]+=triangulation_vertices_values[i]*s.r;
+						atoms_values2[id]+=s.r;
 					}
 				}
 			}
 
+			for(std::size_t i=0;i<atoms_values1.size();i++)
 			{
-				std::map<std::size_t, long> color_counts;
+				if(atoms_values2[i]>0.0)
 				{
-					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
-					while(vertex_a_it!=graph.vertices.end())
-					{
-						color_counts[vertex_a_it->second.color]++;
-						vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
-					}
-				}
-				std::vector< std::pair<long, std::size_t> > paired_values;
-				for(std::map<std::size_t, long>::const_iterator it=color_counts.begin();it!=color_counts.end();++it)
-				{
-					paired_values.push_back(std::pair<long, std::size_t>(0-it->second, it->first));
-				}
-				std::sort(paired_values.begin(), paired_values.end());
-				std::map<std::size_t, std::size_t> color_ranks;
-				for(std::size_t i=0;i<paired_values.size();i++)
-				{
-					color_ranks[paired_values[i].second]=i;
-				}
-				{
-					Vit vertex_a_it=graph.first_vertex_iterator(min_max_r);
-					while(vertex_a_it!=graph.vertices.end())
-					{
-						vertex_a_it->second.color=color_ranks[vertex_a_it->second.color];
-						vertex_a_it=graph.next_vertex_iterator(min_max_r, vertex_a_it);
-					}
-				}
-			}
-		}
-
-		static void spread_first_color(
-				const std::vector<apollota::SimpleSphere>& balls,
-				const double cover_distance,
-				const double min_max_r,
-				Graph& graph)
-		{
-			typedef std::map<std::size_t, Vertex>::iterator Vit;
-
-			std::vector<Vit> starters;
-			{
-				Vit start_vertex_it=graph.first_vertex_iterator(min_max_r);
-				while(start_vertex_it!=graph.vertices.end())
-				{
-					if(start_vertex_it->second.color==0 && start_vertex_it->first<balls.size())
-					{
-						starters.push_back(start_vertex_it);
-					}
-					start_vertex_it=graph.next_vertex_iterator(min_max_r, start_vertex_it);
-				}
-			}
-
-			for(std::size_t i=0;i<starters.size();i++)
-			{
-				Vit start_vertex_it=starters[i];
-				std::vector<Vit> stack;
-				stack.push_back(start_vertex_it);
-				while(!stack.empty())
-				{
-					Vit vertex_a_it=stack.back();
-					stack.pop_back();
-					Vertex& vertex_a=vertex_a_it->second;
-					std::set<Edge>::iterator edge_it=vertex_a.first_edge_iterator(min_max_r);
-					while(edge_it!=vertex_a.edges.end())
-					{
-						Vit vertex_b_it=graph.vertices.find(edge_it->target_vertex_id);
-						if(vertex_b_it!=graph.vertices.end())
-						{
-							Vertex& vertex_b=vertex_b_it->second;
-							if(vertex_b.color==null_id()
-									&& vertex_b_it->first<balls.size()
-									&& apollota::minimal_distance_from_sphere_to_sphere(balls[start_vertex_it->first], balls[vertex_b_it->first])<cover_distance)
-							{
-								vertex_b.color=0;
-								stack.push_back(vertex_b_it);
-							}
-						}
-						edge_it=vertex_a.next_edge_iterator(min_max_r, edge_it);
-					}
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values1[i]/atoms_values2[i];
 				}
 			}
 		}
