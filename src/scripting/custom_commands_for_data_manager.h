@@ -3428,27 +3428,33 @@ public:
 			cargs.data_manager.assert_triangulation_info_availability();
 
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
-			const double probe_min=cargs.input.get_value_or_default<double>("probe-min", 1.4);
+			const double probe_min=cargs.input.get_value_or_default<double>("probe-min", 0);
 			const double probe_max=cargs.input.get_value_or_default<double>("probe-max", 30.0);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
 
-			const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& tinfo=cargs.data_manager.triangulation_info();
+			const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& t_info=cargs.data_manager.triangulation_info();
 
-			const std::vector<apollota::SimpleSphere>& balls=tinfo.spheres;
+			const std::vector<apollota::SimpleSphere>& balls=t_info.spheres;
 
-			const apollota::Triangulation::VerticesVector triangulation_vertices=
-					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(tinfo.quadruples_map);
+			const apollota::Triangulation::VerticesVector t_vertices=
+					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(t_info.quadruples_map);
 
-			std::vector<double> triangulation_vertices_values(triangulation_vertices.size(), 0.0);
+			std::vector<double> t_vertices_values(t_vertices.size(), 0.0);
+			std::vector<double> t_vertices_weights(t_vertices.size(), 0.0);
 
-			for(std::size_t i=0;i<triangulation_vertices.size();i++)
+			for(std::size_t i=0;i<t_vertices.size();i++)
 			{
-				const apollota::Quadruple& q=triangulation_vertices[i].first;
-				const apollota::SimpleSphere& s=triangulation_vertices[i].second;
-				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<tinfo.number_of_input_spheres)
+				const apollota::Quadruple& q=t_vertices[i].first;
+				const apollota::SimpleSphere& s=t_vertices[i].second;
+				if(s.r>probe_max || q.get_min_max().second>=t_info.number_of_input_spheres)
+				{
+					t_vertices_values[i]=0.0;
+					t_vertices_weights[i]=probe_max*probe_max*probe_max;
+				}
+				else if(s.r>probe_min)
 				{
 					apollota::SimplePoint touches[4];
 					for(int j=0;j<4;j++)
@@ -3471,34 +3477,36 @@ public:
 							}
 							min_max_projection=std::min(min_max_projection, max_projection);
 						}
-						triangulation_vertices_values[i]=min_max_projection/(s.r*2);
+						t_vertices_values[i]=min_max_projection/(s.r*2);
+						t_vertices_weights[i]=s.r*s.r*s.r;
 					}
 				}
 			}
 
-			std::vector<double> atoms_values1(cargs.data_manager.atoms().size(), 0.0);
-			std::vector<double> atoms_values2(cargs.data_manager.atoms().size(), 0.0);
-			for(std::size_t i=0;i<triangulation_vertices.size();i++)
+			std::vector<double> atoms_values(cargs.data_manager.atoms().size(), 0.0);
+			std::vector<double> atoms_weights(cargs.data_manager.atoms().size(), 0.0);
+
+			for(std::size_t i=0;i<t_vertices.size();i++)
 			{
-				const apollota::Quadruple& q=triangulation_vertices[i].first;
-				const apollota::SimpleSphere& s=triangulation_vertices[i].second;
-				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<atoms_values1.size())
+				const apollota::Quadruple& q=t_vertices[i].first;
+				const apollota::SimpleSphere& s=t_vertices[i].second;
+				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<atoms_values.size())
 				{
 					for(int j=0;j<4;j++)
 					{
 						const std::size_t id=q.get(j);
-						atoms_values1[id]+=triangulation_vertices_values[i]*s.r;
-						atoms_values2[id]+=s.r;
+						atoms_values[id]+=t_vertices_values[i]*t_vertices_weights[i];
+						atoms_weights[id]+=t_vertices_weights[i];
 					}
 				}
 			}
 
-			for(std::size_t i=0;i<atoms_values1.size();i++)
+			for(std::size_t i=0;i<atoms_values.size();i++)
 			{
-				if(atoms_values2[i]>0.0)
+				if(atoms_weights[i]>0.0)
 				{
 					Atom& atom=cargs.data_manager.atoms_mutable()[i];
-					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values1[i]/atoms_values2[i];
+					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values[i]/atoms_weights[i];
 				}
 			}
 		}
