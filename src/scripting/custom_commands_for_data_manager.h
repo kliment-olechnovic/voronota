@@ -3426,10 +3426,12 @@ public:
 		void run(CommandArguments& cargs)
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
+			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 			const double probe_min=cargs.input.get_value_or_default<double>("probe-min", 0);
 			const double probe_max=cargs.input.get_value_or_default<double>("probe-max", 30.0);
+			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 2);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3501,12 +3503,73 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<atoms_values.size();i++)
 			{
-				if(atoms_weights[i]>0.0)
+				const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
+						SelectionManager::Query(std::string("{--solvent}"), false));
+
+				if(solvent_contact_ids.empty())
 				{
-					Atom& atom=cargs.data_manager.atoms_mutable()[i];
-					atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values[i]/atoms_weights[i];
+					throw std::runtime_error(std::string("No solvent contacts."));
+				}
+
+				const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
+
+				const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts(
+						SelectionManager::Query("{--tags peripherial}", false));
+
+				if(exterior_contact_ids.empty())
+				{
+					throw std::runtime_error(std::string("No peripherial contacts."));
+				}
+
+				std::vector< std::set<std::size_t> > graph(cargs.data_manager.atoms().size());
+				for(std::set<std::size_t>::const_iterator it=exterior_contact_ids.begin();it!=exterior_contact_ids.end();++it)
+				{
+					const Contact& contact=cargs.data_manager.contacts()[*it];
+					graph[contact.ids[0]].insert(contact.ids[1]);
+					graph[contact.ids[1]].insert(contact.ids[0]);
+				}
+
+				for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+				{
+					const std::size_t central_id=(*it);
+
+					std::map<std::size_t, bool> neighbors;
+					neighbors[central_id]=false;
+
+					for(unsigned int level=0;level<depth;level++)
+					{
+						std::map<std::size_t, bool> more_neighbors;
+						for(std::map<std::size_t, bool>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+						{
+							const std::size_t id=jt->first;
+							if(!jt->second)
+							{
+								for(std::set<std::size_t>::const_iterator et=graph[id].begin();et!=graph[id].end();++et)
+								{
+									more_neighbors[*et]=(neighbors.count(*et)>0 && neighbors.find(*et)->second);
+								}
+							}
+							more_neighbors[id]=true;
+						}
+						neighbors.swap(more_neighbors);
+					}
+
+					double sum_of_weights=0.0;
+					double sum_of_values=0.0;
+
+					for(std::map<std::size_t, bool>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+					{
+						sum_of_weights+=atoms_weights[jt->first];
+						sum_of_values+=atoms_values[jt->first];
+					}
+
+					if(sum_of_weights>0.0)
+					{
+						const double value_mean=(sum_of_values/sum_of_weights);
+						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+						atom.value.props.adjuncts[adjunct_atom_exposure_value]=value_mean;
+					}
 				}
 			}
 		}
