@@ -3458,11 +3458,10 @@ public:
 				}
 				else if(s.r>probe_min)
 				{
-					apollota::SimplePoint touches[4];
+					std::vector<apollota::SimplePoint> touches(4);
 					for(int j=0;j<4;j++)
 					{
-						const apollota::SimpleSphere& a=balls[q.get(j)];
-						touches[j]=apollota::SimplePoint(a)+((apollota::SimplePoint(s)-apollota::SimplePoint(a)).unit()*a.r);
+						touches[j]=apollota::SimplePoint(s)+((apollota::SimplePoint(balls[q.get(j)])-apollota::SimplePoint(s)).unit()*s.r);
 					}
 					{
 						double d_sum=0.0;
