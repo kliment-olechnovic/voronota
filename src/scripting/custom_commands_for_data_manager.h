@@ -3465,21 +3465,15 @@ public:
 						touches[j]=apollota::SimplePoint(a)+((apollota::SimplePoint(s)-apollota::SimplePoint(a)).unit()*a.r);
 					}
 					{
-						double min_max_projection=(s.r*2);
-						for(int j=0;j<4;j++)
+						double d_sum=0.0;
+						for(int j=0;j<3;j++)
 						{
-							const apollota::SimplePoint v=(apollota::SimplePoint(s)-touches[j]).unit();
-							double max_projection=0.0;
-							for(int k=0;k<4;k++)
+							for(int k=j+1;k<4;k++)
 							{
-								if(k!=j)
-								{
-									max_projection=std::max(max_projection, v*(touches[k]-touches[j]));
-								}
+								d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
 							}
-							min_max_projection=std::min(min_max_projection, max_projection);
 						}
-						t_vertices_values[i]=min_max_projection/(s.r*2);
+						t_vertices_values[i]=std::min(d_sum/(4*s.r*(1+sqrt(2))), 1.0);
 						t_vertices_weights[i]=s.r*s.r*s.r;
 					}
 				}
