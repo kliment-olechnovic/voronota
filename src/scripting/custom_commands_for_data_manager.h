@@ -3471,7 +3471,7 @@ public:
 							std::vector<apollota::SimplePoint> touches(N);
 							for(std::size_t j=0;j<N;j++)
 							{
-								touches[j]=(apollota::SimplePoint(s)+((apollota::SimplePoint(balls[near_ids[j]])-apollota::SimplePoint(s)).unit()*s.r));
+								touches[j]=(apollota::SimplePoint(balls[near_ids[j]])-apollota::SimplePoint(s)).unit();
 							}
 
 							double d_sum=0.0;
@@ -3484,7 +3484,7 @@ public:
 							}
 
 							const double pi=3.14159265358979323846;
-							const double max_d_sum=s.r*N*(1.0/tan(pi/(2.0*N)));
+							const double max_d_sum=N*(1.0/tan(pi/(2.0*N)));
 							t_vertex_value=std::min(d_sum/max_d_sum, 1.0);
 						}
 						t_vertex_weight=s.r*s.r*s.r;
