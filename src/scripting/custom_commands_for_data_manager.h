@@ -3431,56 +3431,19 @@ public:
 			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 			const double probe_min=cargs.input.get_value_or_default<double>("probe-min", 0);
 			const double probe_max=cargs.input.get_value_or_default<double>("probe-max", 30.0);
+			const double expansion=cargs.input.get_value_or_default<double>("expansion", 1.0);
 			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 2);
 
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_atom_exposure_value, false);
 
-			const common::ConstructionOfTriangulation::BundleOfTriangulationInformation& t_info=cargs.data_manager.triangulation_info();
+			const std::vector<apollota::SimpleSphere>& balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(cargs.data_manager.atoms());
 
-			const std::vector<apollota::SimpleSphere>& balls=t_info.spheres;
+			const apollota::BoundingSpheresHierarchy bsh(balls, 3.5, 1);
 
 			const apollota::Triangulation::VerticesVector t_vertices=
-					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(t_info.quadruples_map);
-
-			std::vector<double> t_vertices_values(t_vertices.size(), 0.0);
-			std::vector<double> t_vertices_weights(t_vertices.size(), 0.0);
-
-			for(std::size_t i=0;i<t_vertices.size();i++)
-			{
-				const apollota::Quadruple& q=t_vertices[i].first;
-				const apollota::SimpleSphere& s=t_vertices[i].second;
-				if(s.r>probe_max || q.get_min_max().second>=t_info.number_of_input_spheres)
-				{
-					t_vertices_values[i]=0.0;
-					t_vertices_weights[i]=probe_max*probe_max*probe_max;
-				}
-				else if(s.r>probe_min)
-				{
-					std::vector<apollota::SimplePoint> touches;
-					for(int j=0;j<4;j++)
-					{
-						touches.push_back(apollota::SimplePoint(s)+((apollota::SimplePoint(balls[q.get(j)])-apollota::SimplePoint(s)).unit()*s.r));
-					}
-
-					const double N=touches.size();
-					const double pi=3.14159265358979323846;
-					const double max_d_sum=s.r*N*(1.0/tan(pi/(2.0*N)));
-
-					double d_sum=0.0;
-					for(int j=0;j<3;j++)
-					{
-						for(int k=j+1;k<4;k++)
-						{
-							d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
-						}
-					}
-
-					t_vertices_values[i]=std::min(d_sum/max_d_sum, 1.0);
-					t_vertices_weights[i]=s.r*s.r*s.r;
-				}
-			}
+					apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
 
 			std::vector<double> atoms_values(cargs.data_manager.atoms().size(), 0.0);
 			std::vector<double> atoms_weights(cargs.data_manager.atoms().size(), 0.0);
@@ -3489,13 +3452,49 @@ public:
 			{
 				const apollota::Quadruple& q=t_vertices[i].first;
 				const apollota::SimpleSphere& s=t_vertices[i].second;
-				if(s.r>probe_min && s.r<probe_max && q.get_min_max().second<atoms_values.size())
+				if(s.r>probe_min)
 				{
-					for(int j=0;j<4;j++)
+					double t_vertex_value=0.0;
+					double t_vertex_weight=0.0;
+
+					const std::vector<std::size_t> near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(s, s.r+expansion));
+					const std::size_t N=near_ids.size();
+
+					if(s.r>probe_max || q.get_min_max().second>=balls.size())
 					{
-						const std::size_t id=q.get(j);
-						atoms_values[id]+=t_vertices_values[i]*t_vertices_weights[i];
-						atoms_weights[id]+=t_vertices_weights[i];
+						t_vertex_weight=probe_max*probe_max*probe_max;
+					}
+					else
+					{
+						if(N>=4)
+						{
+							std::vector<apollota::SimplePoint> touches(N);
+							for(std::size_t j=0;j<N;j++)
+							{
+								touches[j]=(apollota::SimplePoint(s)+((apollota::SimplePoint(balls[near_ids[j]])-apollota::SimplePoint(s)).unit()*s.r));
+							}
+
+							double d_sum=0.0;
+							for(std::size_t j=0;(j+1)<N;j++)
+							{
+								for(std::size_t k=j+1;k<N;k++)
+								{
+									d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
+								}
+							}
+
+							const double pi=3.14159265358979323846;
+							const double max_d_sum=s.r*N*(1.0/tan(pi/(2.0*N)));
+							t_vertex_value=std::min(d_sum/max_d_sum, 1.0);
+						}
+						t_vertex_weight=s.r*s.r*s.r;
+					}
+
+					for(std::size_t j=0;j<N;j++)
+					{
+						const std::size_t id=near_ids[j];
+						atoms_values[id]+=t_vertex_value*t_vertex_weight;
+						atoms_weights[id]+=t_vertex_weight;
 					}
 				}
 			}
