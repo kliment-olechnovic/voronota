@@ -3458,23 +3458,27 @@ public:
 				}
 				else if(s.r>probe_min)
 				{
-					std::vector<apollota::SimplePoint> touches(4);
+					std::vector<apollota::SimplePoint> touches;
 					for(int j=0;j<4;j++)
 					{
-						touches[j]=apollota::SimplePoint(s)+((apollota::SimplePoint(balls[q.get(j)])-apollota::SimplePoint(s)).unit()*s.r);
+						touches.push_back(apollota::SimplePoint(s)+((apollota::SimplePoint(balls[q.get(j)])-apollota::SimplePoint(s)).unit()*s.r));
 					}
+
+					const double N=touches.size();
+					const double pi=3.14159265358979323846;
+					const double max_d_sum=s.r*N*(1.0/tan(pi/(2.0*N)));
+
+					double d_sum=0.0;
+					for(int j=0;j<3;j++)
 					{
-						double d_sum=0.0;
-						for(int j=0;j<3;j++)
+						for(int k=j+1;k<4;k++)
 						{
-							for(int k=j+1;k<4;k++)
-							{
-								d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
-							}
+							d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
 						}
-						t_vertices_values[i]=std::min(d_sum/(4*s.r*(1+sqrt(2))), 1.0);
-						t_vertices_weights[i]=s.r*s.r*s.r;
 					}
+
+					t_vertices_values[i]=std::min(d_sum/max_d_sum, 1.0);
+					t_vertices_weights[i]=s.r*s.r*s.r;
 				}
 			}
 
