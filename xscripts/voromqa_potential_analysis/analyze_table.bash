@@ -46,11 +46,18 @@ global_mean_nonsolvent_sidechain=sum(ut$value_nonsolvent_sidechain*(ut$area_solv
 global_mean_nonsolvent_carbon_sidechain=sum(ut$value_nonsolvent_carbon_sidechain*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
 global_mean_nonsolvent_hydrophobic=sum(ut$value_nonsolvent_hydrophobic*(ut$area_solvent*0.0001))/sum(ut$area_solvent*0.0001);
 
-ut$value_nonsolvent=ut$value_nonsolvent-(global_mean_nonsolvent-global_mean_solvent);
-ut$value_nonsolvent_carbon=ut$value_nonsolvent_carbon-(global_mean_nonsolvent_carbon-global_mean_solvent);
-ut$value_nonsolvent_sidechain=ut$value_nonsolvent_sidechain-(global_mean_nonsolvent_sidechain-global_mean_solvent);
-ut$value_nonsolvent_carbon_sidechain=ut$value_nonsolvent_carbon_sidechain-(global_mean_nonsolvent_carbon_sidechain-global_mean_solvent);
-ut$value_nonsolvent_hydrophobic=ut$value_nonsolvent_hydrophobic-(global_mean_nonsolvent_hydrophobic-global_mean_solvent);
+global_mean_solvent
+global_mean_nonsolvent
+global_mean_nonsolvent_carbon
+global_mean_nonsolvent_sidechain
+global_mean_nonsolvent_carbon_sidechain
+global_mean_nonsolvent_hydrophobic
+
+#ut$value_nonsolvent=ut$value_nonsolvent-(global_mean_nonsolvent-global_mean_solvent);
+#ut$value_nonsolvent_carbon=ut$value_nonsolvent_carbon-(global_mean_nonsolvent_carbon-global_mean_solvent);
+#ut$value_nonsolvent_sidechain=ut$value_nonsolvent_sidechain-(global_mean_nonsolvent_sidechain-global_mean_solvent);
+#ut$value_nonsolvent_carbon_sidechain=ut$value_nonsolvent_carbon_sidechain-(global_mean_nonsolvent_carbon_sidechain-global_mean_solvent);
+#ut$value_nonsolvent_hydrophobic=ut$value_nonsolvent_hydrophobic-(global_mean_nonsolvent_hydrophobic-global_mean_solvent);
 
 ####################
 

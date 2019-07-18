@@ -7,19 +7,13 @@ cp ../../resources/voromqa_v1_energy_potential ./potential
 
 cat ../../resources/voromqa_v1_energy_potential_source/contact_areas \
 | sed 's/central_//g' \
+| sed 's/sep1/interatom/g' \
+| sed 's/sep2/interatom/g' \
 | ../../voronota score-contacts-potential \
 > ./contact_areas
 
-cat ../../resources/voromqa_v1_energy_potential_source/contact_categories \
-| sed 's/c<any>/R<ALA>A<C>/g' \
-| sed 's/central_//g' \
-| ../../voronota score-contacts-potential \
-| sed 's/R<ALA>A<C>/c<any>/g' \
-> ./contact_categories
-
 cat ./contact_areas \
 | ../../voronota score-contacts-potential \
-  --input-contributions ./contact_categories \
   --probabilities-file ./probabilities \
   --potential-file ./potential_raw \
 > /dev/null
@@ -37,8 +31,8 @@ cat ./contact_areas \
 {
 	echo "atom1 atom2 area"
 	{
-		cat ./contact_areas | awk '{if($3=="sep2"){print $1 " " $2 " " $4}}'
-		cat ./contact_areas | awk '{if($3=="sep2"){print $2 " " $1 " " $4}}'
+		cat ./contact_areas | awk '{if($3=="interatom"){print $1 " " $2 " " $4}}'
+		cat ./contact_areas | awk '{if($3=="interatom"){print $2 " " $1 " " $4}}'
 	} | sort | uniq
 } > "$TMPLDIR/table_area"
 
@@ -55,8 +49,8 @@ cat ./contact_areas \
 {
 	echo "atom1 atom2 prob_obs prob_exp"
 	{
-		cat ./probabilities | awk '{if($3=="sep2"){print $1 " " $2 " " $4 " " $5}}'
-		cat ./probabilities | awk '{if($3=="sep2"){print $2 " " $1 " " $4 " " $5}}'
+		cat ./probabilities | awk '{if($3=="interatom"){print $1 " " $2 " " $4 " " $5}}'
+		cat ./probabilities | awk '{if($3=="interatom"){print $2 " " $1 " " $4 " " $5}}'
 	} | sort | uniq
 } > "$TMPLDIR/table_prob"
 
