@@ -21,7 +21,7 @@ Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 # Getting the latest version
 
 Download the latest archive from the official downloads page:
-[https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
+[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
 
 The archive contains ready-to-use statically compiled 'voronota' program for
 64 bit Linux systems. This executable can be rebuilt from the provided
