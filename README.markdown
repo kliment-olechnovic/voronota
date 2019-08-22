@@ -46,7 +46,8 @@ the sources in "src" directory using GNU C++ compiler:
 
 ## Using make
 
-You can generate and use a makefile:
+Inside the unpacked downloaded Voronota archive,
+you can generate and use a makefile:
 
     ./configure
     make
