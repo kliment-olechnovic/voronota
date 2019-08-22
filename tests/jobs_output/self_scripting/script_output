@@ -789,6 +789,9 @@
             "name":"delete-virtual-files",
             "short_description":""},
           {
+            "name":"describe-exposure",
+            "short_description":""},
+          {
             "name":"echo",
             "short_description":""},
           {
@@ -841,9 +844,6 @@
             "short_description":""},
           {
             "name":"move-atoms",
-            "short_description":""},
-          {
-            "name":"partition-exposure",
             "short_description":""},
           {
             "name":"pick-more-objects",
