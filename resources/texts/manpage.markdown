@@ -57,5 +57,5 @@ There are several Voronota wrapper scripts, their interfaces can displayed simil
 The *README* file distributed with Voronota contains more detailed documentation.
 
 The Voronota source code and all the supporting files may be downloaded from
-<https://bitbucket.org/kliment/voronota/downloads>.
+<https://github.com/kliment-olechnovic/voronota/releases>.
 
