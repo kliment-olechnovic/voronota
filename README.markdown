@@ -21,7 +21,7 @@ Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
 # Getting the latest version
 
 Download the latest archive from the official downloads page:
-[https://bitbucket.org/kliment/voronota/downloads](https://bitbucket.org/kliment/voronota/downloads).
+[https://github.com/kliment-olechnovic/voronota/releases](https://github.com/kliment-olechnovic/voronota/releases).
 
 The archive contains ready-to-use statically compiled 'voronota' program for
 64 bit Linux systems. This executable can be rebuilt from the provided
@@ -256,11 +256,11 @@ For example, below is the command that selects contacts that probably correspond
 
     cat annotated_contacts.txt | voronota query-contacts --match-first 'R<ASP,GLU>&A<OD1,OD2,OE1,OE2,OXT>' --match-second 'R<ARG,HIS,LYS>&A<NH1,NH2,ND1,NE2,NZ>' --match-max-dist 4.0
 
-The "support/generate-arguments-for-query-contacts.html" file in the Voronota package
+The [support/generate-arguments-for-query-contacts.html](support/generate-arguments-for-query-contacts.html) file in the Voronota package
 provides a graphical interface for generating sets of arguments for
 the "voronota query-contacts" command: it serves as an interactive documentation.
 A similar interface for the "voronota query-balls" command is provided by
-the "support/generate-arguments-for-query-balls.html" file.
+the [support/generate-arguments-for-query-balls.html](support/generate-arguments-for-query-balls.html) file.
 
 ## Getting help in command line
 

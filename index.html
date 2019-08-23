@@ -119,7 +119,7 @@
 <p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
 <p>Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
-<p>Download the latest archive from the official downloads page: <a href="https://bitbucket.org/kliment/voronota/downloads" class="uri">https://bitbucket.org/kliment/voronota/downloads</a>.</p>
+<p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, Mac OS X or Windows operating systems.</p>
 <p>On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command:</p>
 <pre><code>sudo apt install voronota</code></pre>
@@ -244,7 +244,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <h2 id="querying-annotated-inter-atom-contacts">Querying annotated inter-atom contacts</h2>
 <p>The &quot;voronota query-contacts&quot; command can be used to query and manipulate computed annotated contacts. For example, below is the command that selects contacts that probably correspond to salt bridges:</p>
 <pre><code>cat annotated_contacts.txt | voronota query-contacts --match-first &#39;R&lt;ASP,GLU&gt;&amp;A&lt;OD1,OD2,OE1,OE2,OXT&gt;&#39; --match-second &#39;R&lt;ARG,HIS,LYS&gt;&amp;A&lt;NH1,NH2,ND1,NE2,NZ&gt;&#39; --match-max-dist 4.0</code></pre>
-<p>The &quot;support/generate-arguments-for-query-contacts.html&quot; file in the Voronota package provides a graphical interface for generating sets of arguments for the &quot;voronota query-contacts&quot; command: it serves as an interactive documentation. A similar interface for the &quot;voronota query-balls&quot; command is provided by the &quot;support/generate-arguments-for-query-balls.html&quot; file.</p>
+<p>The <a href="support/generate-arguments-for-query-contacts.html" class="uri">support/generate-arguments-for-query-contacts.html</a> file in the Voronota package provides a graphical interface for generating sets of arguments for the &quot;voronota query-contacts&quot; command: it serves as an interactive documentation. A similar interface for the &quot;voronota query-balls&quot; command is provided by the <a href="support/generate-arguments-for-query-balls.html" class="uri">support/generate-arguments-for-query-balls.html</a> file.</p>
 <h2 id="getting-help-in-command-line">Getting help in command line</h2>
 <p>The list of all available Voronota commands is displayed when executing Voronota without any parameters.</p>
 <p>Command help is shown when &quot;--help&quot; command line option is present, for example:</p>
