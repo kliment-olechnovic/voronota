@@ -4,7 +4,7 @@ import json
 import voronota_scripting
 
 sc=voronota_scripting.ScriptingController()
-result=sc.run("load /home/kliment/workspace/voronota/tests/input/single/structure.pdb")
+result=sc.run("load structure.pdb")
 print(result)
 
 decoded_result=json.loads(result)

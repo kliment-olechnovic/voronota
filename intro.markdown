@@ -42,7 +42,7 @@ a standard-compliant C++ compiler is needed to build it.
 For example, "voronota" executable can be built from
 the sources in "src" directory using GNU C++ compiler:
 
-    g++ -O3 -o voronota src/*.cpp
+    g++ -O3 -o voronota $(find ./src/ -name '*.cpp')
 
 ## Using make
 
@@ -71,7 +71,7 @@ run the sequence of commands:
 To enable the usage of OpenMP for parallel processing when
 building using C++ compiler directly, add "-fopenmp" option:
 
-    g++ -O3 -fopenmp -o voronota src/*.cpp
+    g++ -O3 -fopenmp -o voronota $(find ./src/ -name '*.cpp')
 
 When generating a makefile with a "configure" script,
 OpenMP usage can be enabled by setting CXXFLAGS variable:
@@ -87,7 +87,7 @@ To enable the usage of MPI for parallel processing, you
 can use mpic++ compiler wrapper. You also need to define
 "ENABLE_MPI" macro when buiding:
 
-    mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp
+    mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name '*.cpp')
 
 ## TR1 usage switch
 
@@ -100,11 +100,11 @@ To troubleshoot this, try setting the value of the "USE_TR1" macro
 to 0 (to not use TR1 and to rely on C++11 standard)
 or 1 (to use TR1) when compiling, for example:
 
-    g++ -O3 -DUSE_TR1=1 -o voronota src/*.cpp
+    g++ -O3 -DUSE_TR1=1 -o voronota $(find ./src/ -name '*.cpp')
 
 or
 
-    g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota src/*.cpp
+    g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota $(find ./src/ -name '*.cpp')
 
 
 # Basic usage example

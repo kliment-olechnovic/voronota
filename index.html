@@ -127,7 +127,7 @@
 <h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
 <p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
 <p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
-<pre><code>g++ -O3 -o voronota src/*.cpp</code></pre>
+<pre><code>g++ -O3 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="using-make">Using make</h2>
 <p>Inside the unpacked downloaded Voronota archive, you can generate and use a makefile:</p>
 <pre><code>./configure
@@ -141,19 +141,19 @@ make uninstall</code></pre>
 make</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
 <p>To enable the usage of OpenMP for parallel processing when building using C++ compiler directly, add &quot;-fopenmp&quot; option:</p>
-<pre><code>g++ -O3 -fopenmp -o voronota src/*.cpp</code></pre>
+<pre><code>g++ -O3 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <p>When generating a makefile with a &quot;configure&quot; script, OpenMP usage can be enabled by setting CXXFLAGS variable:</p>
 <pre><code>./configure CXXFLAGS=&quot;-O3 -fopenmp&quot;
 make</code></pre>
 <p>When using CMake, OpenMP usage is enabled automatically if it is possible.</p>
 <h2 id="enabling-mpi">Enabling MPI</h2>
 <p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
-<pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./src/*.cpp</code></pre>
+<pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="tr1-usage-switch">TR1 usage switch</h2>
 <p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>
-<pre><code>g++ -O3 -DUSE_TR1=1 -o voronota src/*.cpp</code></pre>
+<pre><code>g++ -O3 -DUSE_TR1=1 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <p>or</p>
-<pre><code>g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota src/*.cpp</code></pre>
+<pre><code>g++ -O3 -std=c++11 -DUSE_TR1=0 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h1 id="basic-usage-example">Basic usage example</h1>
 <h2 id="computing-voronoi-vertices">Computing Voronoi vertices</h2>
 <p>Here is a basic example of computing Voronoi vertices for a structure in a PDB file:</p>

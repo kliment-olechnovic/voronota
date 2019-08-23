@@ -26,3 +26,4 @@ mkdir -p module
 
 cp src/*.so src/*.py ./module
 cp test.py launch_pymol.py ./module
+cp ../../tests/input/single/structure.pdb ./module
