@@ -7,7 +7,7 @@ trap "rm -r $TMPDIR" EXIT
 
 {
 
-cat ./intro.markdown
+cat ./resources/texts/intro.markdown
 
 echo -e "# Command reference"
 
@@ -68,6 +68,5 @@ echo "<h1>$(./voronota | head -1)</h1>" > $TMPDIR/include_before_body.html
 
 pandoc $TMPDIR/documentation.markdown -f markdown -t html --toc -H $TMPDIR/include_in_header.html -B $TMPDIR/include_before_body.html -s -o ./index.html
 
-cp $TMPDIR/documentation.markdown ./README.markdown
+mv $TMPDIR/documentation.markdown ./README.markdown
 
-pandoc -s -t man ./manpage.markdown -o manpage.troff

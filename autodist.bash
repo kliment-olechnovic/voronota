@@ -12,7 +12,9 @@ trap "rm -r $TMPLDIR" EXIT
 
 cp -r ./src "$TMPLDIR/"
 cp ./voronota-resources ./voronota-voromqa ./voronota-contacts ./voronota-cadscore ./voronota-volumes "$TMPLDIR/"
-cp ./manpage.troff "$TMPLDIR/voronota.man"
+
+pandoc -s -t man ./resources/texts/manpage.markdown -o "$TMPLDIR/manpage.troff"
+mv "$TMPLDIR/manpage.troff" "$TMPLDIR/voronota.man"
 
 cd $TMPLDIR
 
