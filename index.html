@@ -140,16 +140,17 @@ make uninstall</code></pre>
 <pre><code>cmake ./
 make</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
-<p>To enable the usage of OpenMP for parallel processing when building using C++ compiler directly, add &quot;-fopenmp&quot; option:</p>
+<p>To allow the usage of OpenMP when calling the &quot;calculate-vertices-in-parallel&quot; command, the &quot;-fopenmp&quot; flag needs to be set when building.</p>
+<p>When building using C++ compiler directly, just add &quot;-fopenmp&quot;:</p>
 <pre><code>g++ -O3 -fopenmp -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
-<p>When generating a makefile with a &quot;configure&quot; script, OpenMP usage can be enabled by setting CXXFLAGS variable:</p>
+<p>When generating a makefile with the &quot;configure&quot; script, set the CXXFLAGS variable:</p>
 <pre><code>./configure CXXFLAGS=&quot;-O3 -fopenmp&quot;
 make</code></pre>
-<p>When using CMake, OpenMP usage can be enabled by setting CMAKE_CXX_FLAGS variable:</p>
+<p>When using CMake, set the CMAKE_CXX_FLAGS variable:</p>
 <pre><code>cmake -DCMAKE_CXX_FLAGS=&quot;-fopenmp&quot; ./
 make</code></pre>
 <h2 id="enabling-mpi">Enabling MPI</h2>
-<p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
+<p>To allow the usage of MPI when calling the &quot;calculate-vertices-in-parallel&quot; command, you can use mpic++ compiler wrapper and define &quot;ENABLE_MPI&quot; macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="tr1-usage-switch">TR1 usage switch</h2>
 <p>Voronota can be built with either modern C++ compilers or pre-C++11 compilers that support C++ Technical Report 1 (TR1) features. The voronota code has preprocessor-based checks to find out if C++ TR1 namespace is available and needs to be used. If compilation fails, it may mean that these checks failed. To troubleshoot this, try setting the value of the &quot;USE_TR1&quot; macro to 0 (to not use TR1 and to rely on C++11 standard) or 1 (to use TR1) when compiling, for example:</p>

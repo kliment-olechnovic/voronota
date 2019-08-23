@@ -68,27 +68,28 @@ run the sequence of commands:
 
 ## Enabling OpenMP
 
-To enable the usage of OpenMP for parallel processing when
-building using C++ compiler directly, add "-fopenmp" option:
+To allow the usage of OpenMP when calling the "calculate-vertices-in-parallel" command,
+the "-fopenmp" flag needs to be set when building.
+
+When building using C++ compiler directly, just add "-fopenmp":
 
     g++ -O3 -fopenmp -o voronota $(find ./src/ -name '*.cpp')
 
-When generating a makefile with a "configure" script,
-OpenMP usage can be enabled by setting CXXFLAGS variable:
+When generating a makefile with the "configure" script,
+set the CXXFLAGS variable:
 
     ./configure CXXFLAGS="-O3 -fopenmp"
     make
 
-When using CMake, OpenMP usage can be enabled by setting CMAKE_CXX_FLAGS variable:
+When using CMake, set the CMAKE_CXX_FLAGS variable:
 
     cmake -DCMAKE_CXX_FLAGS="-fopenmp" ./
     make
 
 ## Enabling MPI
 
-To enable the usage of MPI for parallel processing, you
-can use mpic++ compiler wrapper. You also need to define
-"ENABLE_MPI" macro when buiding:
+To allow the usage of MPI when calling the "calculate-vertices-in-parallel" command,
+you can use mpic++ compiler wrapper and define "ENABLE_MPI" macro when buiding:
 
     mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name '*.cpp')
 
