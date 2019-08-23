@@ -79,7 +79,10 @@ OpenMP usage can be enabled by setting CXXFLAGS variable:
     ./configure CXXFLAGS="-O3 -fopenmp"
     make
 
-When using CMake, OpenMP usage is enabled automatically if it is possible.
+When using CMake, OpenMP usage can be enabled by setting CMAKE_CXX_FLAGS variable:
+
+    cmake -DCMAKE_CXX_FLAGS="-fopenmp" ./
+    make
 
 ## Enabling MPI
 

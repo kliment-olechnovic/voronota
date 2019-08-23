@@ -9,7 +9,7 @@ mkdir -p $SUBDIR
 cp -r $VORONOTADIR $TMPDIR/package
 mkdir $TMPDIR/package/build
 cd $TMPDIR/package/build
-cmake ../ &> /dev/null
+cmake -DCMAKE_CXX_FLAGS="-fopenmp" ../ &> /dev/null
 make &> /dev/null
 cd - &> /dev/null
 

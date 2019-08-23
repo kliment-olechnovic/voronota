@@ -145,7 +145,9 @@ make</code></pre>
 <p>When generating a makefile with a &quot;configure&quot; script, OpenMP usage can be enabled by setting CXXFLAGS variable:</p>
 <pre><code>./configure CXXFLAGS=&quot;-O3 -fopenmp&quot;
 make</code></pre>
-<p>When using CMake, OpenMP usage is enabled automatically if it is possible.</p>
+<p>When using CMake, OpenMP usage can be enabled by setting CMAKE_CXX_FLAGS variable:</p>
+<pre><code>cmake -DCMAKE_CXX_FLAGS=&quot;-fopenmp&quot; ./
+make</code></pre>
 <h2 id="enabling-mpi">Enabling MPI</h2>
 <p>To enable the usage of MPI for parallel processing, you can use mpic++ compiler wrapper. You also need to define &quot;ENABLE_MPI&quot; macro when buiding:</p>
 <pre><code>mpic++ -O3 -DENABLE_MPI -o voronota ./$(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
