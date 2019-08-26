@@ -1,4 +1,5 @@
 voronota-resources linguist-generated=true
+index.html linguist-generated=true
 resources/* linguist-generated=true
 tests/jobs_output/* linguist-generated=true
 xscripts/* linguist-generated=true
