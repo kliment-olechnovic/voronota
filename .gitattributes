@@ -1,4 +1,4 @@
-voronota-resources linguist-detectable=false
-resources/* linguist-detectable=false
-tests/jobs_output/* linguist-detectable=false
-xscripts/* linguist-detectable=false
+voronota-resources linguist-generated=true
+resources/* linguist-generated=true
+tests/jobs_output/* linguist-generated=true
+xscripts/* linguist-generated=true
