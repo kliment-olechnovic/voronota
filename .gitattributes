@@ -1,2 +1,2 @@
-tests/* linguist-documentation=true
-xscripts/* linguist-documentation=true
+tests/* linguist-generated=true
+xscripts/* linguist-generated=true
