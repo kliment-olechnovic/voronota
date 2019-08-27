@@ -7,9 +7,8 @@
 /install_manifest.txt
 /Makefile
 /tests/voronota_package
-/swig/python/src
-/swig/python/module
 /.settings
 /.project
 /.cproject
 /Release/
+/ReleaseViewer/
