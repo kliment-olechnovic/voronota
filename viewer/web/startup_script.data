@@ -1,0 +1,2 @@
+setup-loading --radii-file radii
+setup-voromqa --potential voromqa_v1_energy_potential --means-and-sds voromqa_v1_energy_means_and_sds

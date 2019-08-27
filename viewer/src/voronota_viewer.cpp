@@ -57,11 +57,11 @@ int main(const int argc, const char** argv)
 			else if(argv_i=="--window-size" && (i+2)<argc)
 			{
 				{
-					std::istringstream local_input(std::string(argv[++i]));
+					std::istringstream local_input((std::string(argv[++i])));
 					local_input >> app_parameters.suggested_window_width;
 				}
 				{
-					std::istringstream local_input(std::string(argv[++i]));
+					std::istringstream local_input((std::string(argv[++i])));
 					local_input >> app_parameters.suggested_window_height;
 				}
 			}

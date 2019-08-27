@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>voronota-viewer</title>
+		
+		<style>
+			body
+			{
+				font-family: arial;
+				margin: 0;
+				padding: none;
+			}
+	
+			canvas.emscripten
+			{
+				border: 0px none;
+				background-color: black;
+			}
+			
+			.layout-row
+			{
+				display: flex;
+			}
+			
+			.layout-column-left
+			{
+			}
+			
+			.layout-column-right
+			{
+			}
+
+			#output_area
+			{
+				margin: 0 auto;
+				margin-left: 10px;
+				border-left: 0px;
+				border-right: 0px;
+				padding-left: 0px;
+				padding-right: 0px;
+				display: block;
+				background-color: white;
+				color: black;
+				font-family: 'Lucida Console', Monaco, monospace;
+				font-size: 11px;
+				outline: none;
+			}
+			
+			#input_area
+			{
+				background-color: white;
+				color: black;
+				font-family: 'Lucida Console', Monaco, monospace;
+				font-size: 11px;
+			}
+		</style>
+	</head>
+	
+	<body>
+
+		<div class="layout-row">
+			<div class="layout-column-left">
+				<div class="emscripten_border">
+					<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+				</div>
+				<div>
+					<p>
+						<input type="file" id="file_input" style="display: none;"/>
+						<button onclick="document.getElementById('file_input').click();">Load structure</button>
+						<button onclick="load_input_file_from_PDB()">Load structure from PDB</button>
+						<button onclick="getElementById('input_area').value=''">Clear script</button>
+						<button onclick="application_add_command(getElementById('input_area').value)">Run script</button>
+					</p>
+					<p>
+						<textarea id="input_area" rows="7" cols="100"></textarea>
+					</p>
+					<p>
+						Select example script:
+						<select id="examples_menu" onchange="fill_input_area_with_example(document.getElementById('examples_menu').options[document.getElementById('examples_menu').selectedIndex].value)">
+							<option value="nothing">Nothing</option>
+							<option value="loadpreloaded">Load pre-loaded dimeric structure</option>
+							<option value="iface">Draw and show inter-chain interface contacts</option>
+							<option value="background">Change background</option>
+							<option value="listall">List objects and selections</option>
+							<option value="voromqaglobal">Calculate VoroMQA scores</option>
+							<option value="voromqafrustration">Calculate VoroMQA surface frustration</option>
+							<option value="ligandcontacts">Calculate HETATM ligand contacts</option>
+						</select>
+					</p>
+				</div>
+			</div>
+			<div class="layout-column-right">
+				<textarea id="output_area" rows="50" cols="80"></textarea>
+			</div>
+		</div>
+		
+		<script type='text/javascript'>
+			document.getElementById('output_area').value='';
+			document.getElementById('output_area').readOnly=true;
+		</script>
+		
+		<script type='text/javascript'>
+			var Module = {
+				preRun: [],
+				postRun: [],
+				arguments: ['--window-size', '900', '700', '--script-file', 'startup_script.vvs'],
+				print: (function()
+				{
+					return function(text)
+					{
+						console.log(text);
+					};
+				})(),
+				canvas: (function()
+				{
+					var canvas = document.getElementById('canvas');
+					canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+					return canvas;
+				})()
+			};
+		</script>
+		
+		<script type='text/javascript'>
+			function application_add_command(command)
+			{
+				Module.ccall('application_add_command', null, ['string'], [command]);
+			}
+			
+			function application_upload_file(name, data)
+			{
+				Module.ccall('application_upload_file', null, ['string','string'], [name,data]);
+			}
+			
+			function from_application_display_output(text)
+			{
+				if(text.startsWith("{"))
+				{
+				    var element=document.getElementById('output_area');
+				    element.value=text;
+					element.scrollTop=element.scrollHeight;
+				}
+				else
+				{
+					element.value='';
+				}
+			}
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "shader_vertex_simple.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "shader_vertex_with_instancing.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "shader_fragment_simple.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "startup_script.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "radii.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "voromqa_v1_energy_means_and_sds.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "voromqa_v1_energy_potential.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "2zsk.js";
+			document.body.appendChild(script);
+		</script>
+
+		<script type='text/javascript'>
+			var script = document.createElement('script');
+			script.src = "voronota_viewer.js";
+			document.body.appendChild(script);
+		</script>
+		
+		<script type='text/javascript'>
+			var file_input=document.getElementById('file_input');
+			file_input.addEventListener('change', function(e)
+			{
+				var file=file_input.files[0];
+				var file_reader=new FileReader();
+				file_reader.onloadend=function(e){application_upload_file(file.name, file_reader.result);}
+				file_reader.readAsText(file);	
+			});
+		</script>
+		
+		<script type='text/javascript'>
+			function load_input_file_from_PDB()
+			{
+				var pdb_id=prompt('Enter PDB ID', '1T3Y');
+				var pdb_url='https://files.rcsb.org/download/'+pdb_id+'.pdb';
+				var file_reader=new FileReader();
+				file_reader.onloadend=function(e){application_upload_file(pdb_id+'.pdb', file_reader.result);}
+				var xhr=new XMLHttpRequest();
+				xhr.open('GET', pdb_url);
+				xhr.responseType='blob';
+				xhr.onload=function()
+				{
+					file_reader.readAsText(xhr.response);
+				}
+				xhr.send();
+			}
+		</script>
+		
+		<script type='text/javascript'>
+			function fill_input_area_with_example(name)
+			{
+				var example_input_script='';
+				if(name==='nothing')
+				{
+example_input_script=
+`#Enter script here or select and example from the menu below`;
+				}
+				else if(name==='loadpreloaded')
+				{
+example_input_script=
+`#Example script: load pre-loaded dimeric structure
+load 2zsk.pdb`;
+				}
+				else if(name==='iface')
+				{
+example_input_script=
+`#Example script: draw and show interface contacts
+spectrum-atoms -by chain
+construct-contacts -calculate-volumes -tag-peripherial
+select-contacts {-inter-chain} -name iface
+make-drawable-contacts {iface}
+show-contacts
+color-contacts -col yellow
+select-atoms ({-sel-of-contacts iface} and {c<A>}) -full-residues -name iface_atoms_A
+select-atoms ({-sel-of-contacts iface} and {c<B>}) -full-residues -name iface_atoms_B
+unmark-atoms
+show-atoms {iface_atoms_A} -rep sticks
+show-atoms {iface_atoms_B} -rep sticks
+color-atoms {iface_atoms_A} 0xFF7700 -rep sticks
+color-atoms {iface_atoms_B} 0x0077FF -rep sticks
+list-selections-of-contacts
+list-selections-of-atoms
+select-contacts {-a1 {iface_atoms_A} -solvent} -name iface_atoms_A_sas
+make-drawable-contacts {iface_atoms_A_sas}
+show-contacts {iface_atoms_A_sas}
+color-contacts {iface_atoms_A_sas} -col 0x77FFFF`;
+				}
+				else if(name==='background')
+				{
+example_input_script=
+`#Example script: change background color
+background black
+#background white
+#background 0xCCCCCC`;
+				}
+				else if(name==='listall')
+				{
+example_input_script=
+`#Example script: list objects and selections
+list-objects
+list-selections-of-atoms
+list-selections-of-contacts`;
+				}
+				else if(name==='voromqaglobal')
+				{
+example_input_script=
+`#Example script: calculate VoroMQA global and local scores
+restrict-atoms {-t! het}
+construct-contacts -calculate-volumes -tag-peripherial
+voromqa-global
+spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75`;
+				}
+				else if(name==='voromqafrustration')
+				{
+example_input_script=
+`#Example script: calculate VoroMQA surface frustration scores
+#restrict-atoms {c<A>}
+restrict-atoms {-t! het}
+construct-contacts -calculate-volumes -tag-peripherial
+voromqa-global
+voromqa-frustration -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x555555
+spectrum-atoms -adjunct afem -scheme bwr`;
+				}
+				else if(name==='ligandcontacts')
+				{
+example_input_script=
+`hide-atoms
+show-atoms -rep sticks
+color-atoms 0xAAAAAA
+select-atoms {-t het} -name ligand
+color-atoms {ligand} 0x0011BB
+construct-contacts -calculate-volumes -tag-peripherial
+select-contacts {-a1{ligand}} -name iface
+make-drawable-contacts {iface}
+show-contacts
+color-contacts {iface} -col yellow
+color-contacts ({iface} and {-solvent}) -col cyan
+select-atoms ({-sel-of-contacts iface} and (not {ligand})) -name prot_to_lig
+color-atoms {prot_to_lig} -full-residues -col 0x00AA00
+color-atoms {prot_to_lig} -col 0xFF2200
+hide-atoms -rep sticks
+show-atoms ({prot_to_lig} or {ligand}) -full-residues -rep sticks
+show-atoms -rep cartoon`;
+				}
+				document.getElementById('input_area').value=example_input_script;
+			}
+		</script>
+		
+		<script type='text/javascript'>
+			document.getElementById('examples_menu').selectedIndex=0;
+			fill_input_area_with_example('nothing');
+		</script>
+
+	</body>
+</html>
