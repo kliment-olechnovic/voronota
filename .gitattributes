@@ -4,3 +4,4 @@ resources/* linguist-generated=true
 tests/jobs_output/* linguist-generated=true
 viewer/web/*.data linguist-generated=true
 viewer/web/*.js linguist-generated=true
+viewer/src/imgui/* linguist-vendored=true
