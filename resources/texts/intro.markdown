@@ -66,6 +66,12 @@ run the sequence of commands:
     cmake ./
     make
 
+Alternatively, to keep files more organized, CMake can be run in a separate "build" directory:
+
+    mkdir build
+    cd build
+    cmake ../
+
 ## Enabling OpenMP
 
 To allow the usage of OpenMP when calling the "calculate-vertices-in-parallel" command,
