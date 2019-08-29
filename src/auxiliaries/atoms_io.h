@@ -252,7 +252,8 @@ public:
 				const std::string& atom_site_prefix,
 				std::istream& file_stream,
 				const bool include_heteroatoms,
-				const bool include_hydrogens)
+				const bool include_hydrogens,
+				const bool handle_multiple_models)
 		{
 			Data data;
 			while(file_stream.good())
@@ -289,14 +290,19 @@ public:
 								const std::string first_model_id=get_value_from_table_row(header_map, values.begin(), atom_site_prefix+"pdbx_PDB_model_num");
 								for(std::size_t i=0;i<values.size();i+=header.size())
 								{
-									if(get_value_from_table_row(header_map, (values.begin()+i), atom_site_prefix+"pdbx_PDB_model_num")==first_model_id)
+									const std::string current_model_id=get_value_from_table_row(header_map, (values.begin()+i), atom_site_prefix+"pdbx_PDB_model_num");
+									if(handle_multiple_models || current_model_id==first_model_id)
 									{
-										AtomRecord record=read_atom_record_from_table_row(header_map, (values.begin()+i));
+										AtomRecord record=read_atom_record_from_table_row(atom_site_prefix, header_map, (values.begin()+i));
 										if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
 										{
 											if(check_atom_record_validity(record))
 											{
 												record.altLoc.clear();
+												if(handle_multiple_models && current_model_id!="1")
+												{
+													record.chainID+=current_model_id;
+												}
 												data.atom_records.push_back(record);
 											}
 											else
@@ -328,9 +334,9 @@ public:
 			return data;
 		}
 
-		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
+		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens, const bool handle_multiple_models)
 		{
-			return read_data_from_file_stream("_atom_site.", file_stream, include_heteroatoms, include_hydrogens);
+			return read_data_from_file_stream("_atom_site.", file_stream, include_heteroatoms, include_hydrogens, handle_multiple_models);
 		}
 
 	private:
@@ -390,12 +396,14 @@ public:
 				const std::string& name_primary,
 				const std::string& name_alternative)
 		{
-			std::string result=get_value_from_table_row(header_map, values_iter, name_primary);
-			if(result.empty())
+			if(header_map.count(name_primary)>0)
 			{
-				result=get_value_from_table_row(header_map, values_iter, name_alternative);
+				return get_value_from_table_row(header_map, values_iter, name_primary);
 			}
-			return result;
+			else
+			{
+				return get_value_from_table_row(header_map, values_iter, name_alternative);
+			}
 		}
 
 		static AtomRecord read_atom_record_from_table_row(const std::string& atom_site_prefix, const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
@@ -417,11 +425,6 @@ public:
 			record.element=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"type_symbol"));
 			normalize_numbered_atom_name(record.name);
 			return record;
-		}
-
-		static AtomRecord read_atom_record_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
-		{
-			return read_atom_record_from_table_row("_atom_site.", header_map, values_iter);
 		}
 	};
 
