@@ -248,9 +248,12 @@ public:
 			std::vector<AtomRecord> atom_records;
 		};
 
-		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
+		static Data read_data_from_file_stream(
+				const std::string& atom_site_prefix,
+				std::istream& file_stream,
+				const bool include_heteroatoms,
+				const bool include_hydrogens)
 		{
-			const std::string atom_site_prefix="_atom_site.";
 			Data data;
 			while(file_stream.good())
 			{
@@ -275,7 +278,7 @@ public:
 						if(header_map.size()==header.size())
 						{
 							std::vector<std::string> values;
-							while(token_status && token.find("_")==std::string::npos)
+							while(token_status && !(token=="loop_" || token.rfind("_", 0)==0 || token.rfind("data_", 0)==0))
 							{
 								values.push_back(token);
 								token_status=read_uncommented_token_from_mmcif_file_stream(file_stream, token);
@@ -283,10 +286,10 @@ public:
 							if(!values.empty() && ((values.size()%header.size())==0))
 							{
 								data.atom_records.reserve(values.size()/header.size());
-								const std::string first_model_id=get_value_from_table_row(header_map, values.begin(), "_atom_site.pdbx_PDB_model_num");
+								const std::string first_model_id=get_value_from_table_row(header_map, values.begin(), atom_site_prefix+"pdbx_PDB_model_num");
 								for(std::size_t i=0;i<values.size();i+=header.size())
 								{
-									if(get_value_from_table_row(header_map, (values.begin()+i), "_atom_site.pdbx_PDB_model_num")==first_model_id)
+									if(get_value_from_table_row(header_map, (values.begin()+i), atom_site_prefix+"pdbx_PDB_model_num")==first_model_id)
 									{
 										AtomRecord record=read_atom_record_from_table_row(header_map, (values.begin()+i));
 										if(check_atom_record_acceptability(record, include_heteroatoms, include_hydrogens))
@@ -325,26 +328,46 @@ public:
 			return data;
 		}
 
-	private:
-		static bool read_uncommented_token_from_mmcif_file_stream(std::istream& file_stream, std::string& token)
+		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens)
 		{
-			do
+			return read_data_from_file_stream("_atom_site.", file_stream, include_heteroatoms, include_hydrogens);
+		}
+
+	private:
+		static bool read_uncommented_token_from_mmcif_file_stream(std::istream& input, std::string& output)
+		{
+			output.clear();
+			while(input.good())
 			{
-				file_stream >> token;
-				if(file_stream.fail())
+				input >> std::ws;
+				const char opener=std::char_traits<char>::to_char_type(input.peek());
+				if(opener=='#')
 				{
-					return false;
+					std::string comment;
+					std::getline(input, comment);
 				}
-				else if(token.find("#")==std::string::npos)
+				else
 				{
-					return true;
-				}
-				else if(file_stream.good())
-				{
-					std::getline(file_stream, token);
+					if(opener=='"' || opener=='\'')
+					{
+						input.get();
+						std::getline(input, output, opener);
+					}
+					else
+					{
+						input >> output;
+					}
+
+					if(input.fail())
+					{
+						return false;
+					}
+					else
+					{
+						return true;
+					}
 				}
 			}
-			while(file_stream.good());
 			return false;
 		}
 
@@ -361,25 +384,30 @@ public:
 			}
 		}
 
-		static AtomRecord read_atom_record_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
+		static AtomRecord read_atom_record_from_table_row(const std::string& atom_site_prefix, const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
 		{
 			AtomRecord record=AtomRecord();
-			record.record_name=get_value_from_table_row(header_map, values_iter, "_atom_site.group_PDB");
-			record.serial=convert_string<int>(get_value_from_table_row(header_map, values_iter, "_atom_site.id"), record.serial_valid);
-			record.name=get_value_from_table_row(header_map, values_iter, "_atom_site.auth_atom_id");
-			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.label_alt_id"));
-			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_comp_id"));
-			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_asym_id"));
-			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, "_atom_site.auth_seq_id"), record.resSeq_valid);
-			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.pdbx_PDB_ins_code"));
-			record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_x"), record.x_valid);
-			record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_y"), record.y_valid);
-			record.z=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.Cartn_z"), record.z_valid);
-			record.occupancy=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.occupancy"), record.occupancy_valid);
-			record.tempFactor=convert_string<double>(get_value_from_table_row(header_map, values_iter, "_atom_site.B_iso_or_equiv"), record.tempFactor_valid);
-			record.element=fix_undefined_string(get_value_from_table_row(header_map, values_iter, "_atom_site.type_symbol"));
+			record.record_name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"group_PDB");
+			record.serial=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"id"), record.serial_valid);
+			record.name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_atom_id");
+			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"label_alt_id"));
+			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_comp_id"));
+			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_asym_id"));
+			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id"), record.resSeq_valid);
+			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"pdbx_PDB_ins_code"));
+			record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_x"), record.x_valid);
+			record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_y"), record.y_valid);
+			record.z=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_z"), record.z_valid);
+			record.occupancy=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"occupancy"), record.occupancy_valid);
+			record.tempFactor=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"B_iso_or_equiv"), record.tempFactor_valid);
+			record.element=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"type_symbol"));
 			normalize_numbered_atom_name(record.name);
 			return record;
+		}
+
+		static AtomRecord read_atom_record_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
+		{
+			return read_atom_record_from_table_row("_atom_site.", header_map, values_iter);
 		}
 	};
 
