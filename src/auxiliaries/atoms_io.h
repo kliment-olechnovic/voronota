@@ -371,17 +371,31 @@ public:
 			return false;
 		}
 
-		static std::string get_value_from_table_row(const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter, const std::string& name)
+		static std::string get_value_from_table_row(
+				const std::map<std::string, std::size_t>& header_map,
+				const std::vector<std::string>::const_iterator& values_iter,
+				const std::string& name)
 		{
 			std::map<std::string, std::size_t>::const_iterator it=header_map.find(name);
 			if(it!=header_map.end() && it->second<header_map.size())
 			{
 				return (*(values_iter+it->second));
 			}
-			else
+			return std::string();
+		}
+
+		static std::string get_value_from_table_row(
+				const std::map<std::string, std::size_t>& header_map,
+				const std::vector<std::string>::const_iterator& values_iter,
+				const std::string& name_primary,
+				const std::string& name_alternative)
+		{
+			std::string result=get_value_from_table_row(header_map, values_iter, name_primary);
+			if(result.empty())
 			{
-				return std::string();
+				result=get_value_from_table_row(header_map, values_iter, name_alternative);
 			}
+			return result;
 		}
 
 		static AtomRecord read_atom_record_from_table_row(const std::string& atom_site_prefix, const std::map<std::string, std::size_t>& header_map, const std::vector<std::string>::const_iterator& values_iter)
@@ -389,11 +403,11 @@ public:
 			AtomRecord record=AtomRecord();
 			record.record_name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"group_PDB");
 			record.serial=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"id"), record.serial_valid);
-			record.name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_atom_id");
+			record.name=get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_atom_id", atom_site_prefix+"label_atom_id");
 			record.altLoc=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"label_alt_id"));
-			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_comp_id"));
-			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_asym_id"));
-			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id"), record.resSeq_valid);
+			record.resName=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_comp_id", atom_site_prefix+"label_comp_id"));
+			record.chainID=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_asym_id", atom_site_prefix+"label_asym_id"));
+			record.resSeq=convert_string<int>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"auth_seq_id", atom_site_prefix+"label_seq_id"), record.resSeq_valid);
 			record.iCode=fix_undefined_string(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"pdbx_PDB_ins_code"));
 			record.x=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_x"), record.x_valid);
 			record.y=convert_string<double>(get_value_from_table_row(header_map, values_iter, atom_site_prefix+"Cartn_y"), record.y_valid);
