@@ -7,7 +7,7 @@ cat >&2 << EOF
 'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
 
 Basic options:
-    --input | -i                   string      input structure file in PDB format
+    --input | -i                   string      input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors

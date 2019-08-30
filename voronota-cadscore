@@ -7,7 +7,7 @@ cat >&2 << EOF
 'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
 
 Basic options:
-    --input-target | -t             string   *  input target structure file in PDB format
+    --input-target | -t             string   *  input target structure file in PDB or mmCIF format
     --input-model | -m              string   *  input model structure file in PDB format
     --input-filter-query            string      input atoms filtering query parameters
     --output-residue-scores         string      output text file with residue scores

@@ -703,7 +703,7 @@ Using "--help" option without specific command results in printing help for all 
 The script interface is presented below:
     
     Basic options:
-        --input | -i                   string      input structure file in PDB format
+        --input | -i                   string      input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --output-atom-scores           string      output text file with atom scores
         --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -733,7 +733,7 @@ The script interface is presented below:
 The script interface is presented below:
     
     Basic options:
-        --input-target | -t             string   *  input target structure file in PDB format
+        --input-target | -t             string   *  input target structure file in PDB or mmCIF format
         --input-model | -m              string   *  input model structure file in PDB format
         --input-filter-query            string      input atoms filtering query parameters
         --output-residue-scores         string      output text file with residue scores
@@ -767,7 +767,7 @@ The script interface is presented below:
 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).
     
     Basic options:
-        --input | -i                   string   *  input structure file in PDB format
+        --input | -i                   string   *  input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --contacts-query               string      contacts query parameters
         --contacts-query-additional    string      additional contacts query parameters
@@ -790,7 +790,7 @@ The script interface is presented below:
 'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).
     
     Basic options:
-        --input | -i                   string   *  input structure file in PDB format
+        --input | -i                   string   *  input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --cache-dir                    string      path to cache directory
         --sum-at-end                               flag to print sum of areas as the last line in output
