@@ -312,7 +312,7 @@ Using "--help" option without specific command results in printing help for all 
     --include-heteroatoms                       flag to include heteroatoms
     --include-hydrogens                         flag to include hydrogen atoms
     --multimodel-chains                         flag to read multiple models in PDB format and rename chains accordingly
-    --mmcif                                     flag to input in mmCIF format
+    --input-format                  string      input format, variants are: 'pdb' (default), 'mmcif', 'detect'
     --radii-file                    string      path to radii configuration file
     --default-radius                number      default atomic radius
     --only-default-radius                       flag to make all radii equal to the default radius

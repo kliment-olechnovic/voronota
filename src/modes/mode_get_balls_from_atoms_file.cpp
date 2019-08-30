@@ -32,7 +32,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool include_heteroatoms=poh.contains_option(pohw.describe_option("--include-heteroatoms", "", "flag to include heteroatoms"));
 	const bool include_hydrogens=poh.contains_option(pohw.describe_option("--include-hydrogens", "", "flag to include hydrogen atoms"));
 	const bool multimodel_chains=poh.contains_option(pohw.describe_option("--multimodel-chains", "", "flag to read multiple models in PDB format and rename chains accordingly"));
-	const bool mmcif=poh.contains_option(pohw.describe_option("--mmcif", "", "flag to input in mmCIF format"));
+	const std::string input_format=poh.argument<std::string>(pohw.describe_option("--input-format", "string", "input format, variants are: 'pdb' (default), 'mmcif', 'detect'"), "pdb");
 	const std::string radii_file=poh.argument<std::string>(pohw.describe_option("--radii-file", "string", "path to radii configuration file"), "");
 	const double default_radius=poh.argument<double>(pohw.describe_option("--default-radius", "number", "default atomic radius"), 1.70);
 	const bool only_default_radius=poh.contains_option(pohw.describe_option("--only-default-radius", "", "flag to make all radii equal to the default radius"));
@@ -43,9 +43,37 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(mmcif ?
-			auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
-			auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+	if(!(input_format=="pdb" || input_format=="mmcif" || input_format=="detect"))
+	{
+		throw std::runtime_error("Invalid input format specifier.");
+	}
+
+	std::vector<auxiliaries::AtomsIO::AtomRecord> atoms;
+
+	if(input_format=="detect")
+	{
+		std::istreambuf_iterator<char> stdin_eos;
+		std::string stdin_data(std::istreambuf_iterator<char>(std::cin), stdin_eos);
+
+		if(!stdin_data.empty())
+		{
+			const std::size_t prefix_pos=stdin_data.find(auxiliaries::AtomsIO::MMCIFReader::default_atom_site_prefix(), stdin_data.find("loop_"));
+			const bool mmcif_detected=(prefix_pos!=std::string::npos && prefix_pos>0 && stdin_data[prefix_pos-1]<=' ');
+
+			std::istringstream stdin_data_stream(stdin_data);
+
+			atoms=(mmcif_detected ?
+					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
+					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+		}
+	}
+	else
+	{
+		atoms=(input_format=="mmcif" ?
+				auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
+				auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+	}
+
 	if(atoms.empty())
 	{
 		throw std::runtime_error("No atoms provided to stdin.");

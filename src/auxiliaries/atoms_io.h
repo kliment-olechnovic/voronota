@@ -110,7 +110,7 @@ public:
 							}
 							else
 							{
-								std::cerr << "Invalid atom record in line: " << line << "\n";
+								std::cerr << "Invalid PDB atom record in line: " << line << "\n";
 							}
 						}
 					}
@@ -248,6 +248,12 @@ public:
 			std::vector<AtomRecord> atom_records;
 		};
 
+		static const std::string default_atom_site_prefix()
+		{
+			static const std::string atom_site_prefix="_atom_site.";
+			return atom_site_prefix;
+		}
+
 		static Data read_data_from_file_stream(
 				const std::string& atom_site_prefix,
 				std::istream& file_stream,
@@ -336,7 +342,7 @@ public:
 
 		static Data read_data_from_file_stream(std::istream& file_stream, const bool include_heteroatoms, const bool include_hydrogens, const bool handle_multiple_models)
 		{
-			return read_data_from_file_stream("_atom_site.", file_stream, include_heteroatoms, include_hydrogens, handle_multiple_models);
+			return read_data_from_file_stream(default_atom_site_prefix(), file_stream, include_heteroatoms, include_hydrogens, handle_multiple_models);
 		}
 
 	private:
