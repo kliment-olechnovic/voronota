@@ -254,6 +254,19 @@ public:
 			return atom_site_prefix;
 		}
 
+		static bool detect_string_format(const std::string& data)
+		{
+			if(!data.empty())
+			{
+				const std::size_t prefix_pos=data.find(default_atom_site_prefix(), data.find("loop_"));
+				if(prefix_pos!=std::string::npos && prefix_pos>0 && data[prefix_pos-1]<=' ')
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 		static Data read_data_from_file_stream(
 				const std::string& atom_site_prefix,
 				std::istream& file_stream,

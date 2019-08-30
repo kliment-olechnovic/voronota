@@ -57,8 +57,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 		if(!stdin_data.empty())
 		{
-			const std::size_t prefix_pos=stdin_data.find(auxiliaries::AtomsIO::MMCIFReader::default_atom_site_prefix(), stdin_data.find("loop_"));
-			const bool mmcif_detected=(prefix_pos!=std::string::npos && prefix_pos>0 && stdin_data[prefix_pos-1]<=' ');
+			const bool mmcif_detected=auxiliaries::AtomsIO::MMCIFReader::detect_string_format(stdin_data);
 
 			std::istringstream stdin_data_stream(stdin_data);
 
