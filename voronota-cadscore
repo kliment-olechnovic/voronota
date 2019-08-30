@@ -238,6 +238,7 @@ for WORKFILE in $TMPLDIR/target $TMPLDIR/model
 do
 	cat $WORKFILE \
 	| voronota get-balls-from-atoms-file \
+	  --input-format detect \
 	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
 	  --radii-file <(voronota-resources radii) \
 	  --include-heteroatoms \

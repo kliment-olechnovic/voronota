@@ -902,6 +902,7 @@ WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INF
 
 cat $INFILE_CONTENTS_EXTRACTED \
 | voronota get-balls-from-atoms-file \
+  --input-format detect \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --radii-file <(voronota-resources radii) \
   --include-heteroatoms \
