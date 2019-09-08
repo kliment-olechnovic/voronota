@@ -343,6 +343,7 @@ show-atoms -rep cartoon`;
 				{
 example_input_script=
 `#Example script: calculate exposure
+restrict-atoms {-t! het}
 construct-contacts -tag-peripherial
 delete-adjuncts-of-atoms -adjuncts ev
 describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -depth 2
