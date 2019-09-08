@@ -48,7 +48,7 @@ mkdir -p $SUBDIR
 
 cat $INPUTDIR/single/structure.cif \
 | $VORONOTA get-balls-from-atoms-file \
-  --mmcif \
+  --input-format mmcif \
   --radii-file $VORONOTADIR/resources/radii \
   --include-heteroatoms \
   --hull-offset 3.0 \

@@ -284,7 +284,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 --include-heteroatoms                       flag to include heteroatoms
 --include-hydrogens                         flag to include hydrogen atoms
 --multimodel-chains                         flag to read multiple models in PDB format and rename chains accordingly
---mmcif                                     flag to input in mmCIF format
+--input-format                  string      input format, variants are: &#39;pdb&#39; (default), &#39;mmcif&#39;, &#39;detect&#39;
 --radii-file                    string      path to radii configuration file
 --default-radius                number      default atomic radius
 --only-default-radius                       flag to make all radii equal to the default radius
@@ -575,7 +575,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <h2 id="voromqa-method-script">VoroMQA method script</h2>
 <p>'voronota-voromqa' script is an implementation of VoroMQA (Voronoi diagram-based Model Quality Assessment) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
-    --input | -i                   string      input structure file in PDB format
+    --input | -i                   string      input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -600,9 +600,10 @@ Standard output (one line):
 <h2 id="cad-score-method-script">CAD-score method script</h2>
 <p>'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
-    --input-target | -t             string   *  input target structure file in PDB format
+    --input-target | -t             string   *  input target structure file in PDB or mmCIF format
     --input-model | -m              string   *  input model structure file in PDB format
     --input-filter-query            string      input atoms filtering query parameters
+    --filter-model-by-target                    flag to filter model residues by the set of target residue IDs
     --output-residue-scores         string      output text file with residue scores
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
@@ -630,7 +631,7 @@ Standard output (one line):
 <h2 id="contacts-calculation-convenience-script">Contacts calculation convenience script</h2>
 <p>'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
 <pre><code>Basic options:
-    --input | -i                   string   *  input structure file in PDB format
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --contacts-query               string      contacts query parameters
     --contacts-query-additional    string      additional contacts query parameters
@@ -649,7 +650,7 @@ Standard output (multiple lines):
 <h2 id="volumes-calculation-convenience-script">Volumes calculation convenience script</h2>
 <p>'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).</p>
 <pre><code>Basic options:
-    --input | -i                   string   *  input structure file in PDB format
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --cache-dir                    string      path to cache directory
     --sum-at-end                               flag to print sum of areas as the last line in output

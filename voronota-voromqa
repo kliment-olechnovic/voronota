@@ -7,7 +7,7 @@ cat >&2 << EOF
 'voronota-voromqa' script is an implementation of VoroMQA method using Voronota.
 
 Basic options:
-    --input | -i                   string      input structure file in PDB format
+    --input | -i                   string      input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --output-atom-scores           string      output text file with atom scores
     --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -902,6 +902,7 @@ WEIGHTED_SURFACE_CRAVING_RESIDUES_OUTPUT_PDB="$(substitute_ids_in_filename "$INF
 
 cat $INFILE_CONTENTS_EXTRACTED \
 | voronota get-balls-from-atoms-file \
+  --input-format detect \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --radii-file <(voronota-resources radii) \
   --include-heteroatoms \

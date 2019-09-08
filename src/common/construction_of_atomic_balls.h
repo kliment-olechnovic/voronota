@@ -51,7 +51,7 @@ public:
 		atomic_balls.clear();
 
 		const std::vector<auxiliaries::AtomsIO::AtomRecord> atoms=(parameters.mmcif ?
-				auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input_stream, parameters.include_heteroatoms, parameters.include_hydrogens).atom_records :
+				auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(input_stream, parameters.include_heteroatoms, parameters.include_hydrogens, parameters.multimodel_chains).atom_records :
 				auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(input_stream, parameters.include_heteroatoms, parameters.include_hydrogens, parameters.multimodel_chains, false).atom_records);
 
 		if(atoms.empty())

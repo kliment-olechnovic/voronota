@@ -7,9 +7,10 @@ cat >&2 << EOF
 'voronota-cadscore' script is an implementation of CAD-score method using Voronota.
 
 Basic options:
-    --input-target | -t             string   *  input target structure file in PDB format
+    --input-target | -t             string   *  input target structure file in PDB or mmCIF format
     --input-model | -m              string   *  input model structure file in PDB format
     --input-filter-query            string      input atoms filtering query parameters
+    --filter-model-by-target                    flag to filter model residues by the set of target residue IDs
     --output-residue-scores         string      output text file with residue scores
     --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
     --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
@@ -43,6 +44,7 @@ readonly ZEROARG=$0
 INFILE_TARGET_PDB=""
 INFILE_MODEL_PDB=""
 INPUT_FILTER_QUERY_PARAMETERS=""
+FILTER_MODEL_BY_TARGET=false
 CONTACTS_QUERY_PARAMETERS=""
 CONTACTS_QUERY_BY_CODE=""
 CONTACTS_QUERY_INTER_CHAIN=false
@@ -80,6 +82,9 @@ do
 	--input-filter-query)
 		INPUT_FILTER_QUERY_PARAMETERS="$OPTARG"
 		shift
+		;;
+	--filter-model-by-target)
+		FILTER_MODEL_BY_TARGET=true
 		;;
 	--contacts-query)
 		CONTACTS_QUERY_PARAMETERS="$OPTARG"
@@ -234,10 +239,13 @@ trap "rm -r $TMPLDIR" EXIT
 	fi
 } > $TMPLDIR/model
 
-for WORKFILE in $TMPLDIR/target $TMPLDIR/model
+for WORKFILE_BASE in target model
 do
-	cat $WORKFILE \
+	WORKFILE="${TMPLDIR}/${WORKFILE_BASE}"
+	
+	cat "$WORKFILE" \
 	| voronota get-balls-from-atoms-file \
+	  --input-format detect \
 	  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
 	  --radii-file <(voronota-resources radii) \
 	  --include-heteroatoms \
@@ -245,13 +253,43 @@ do
 	  --drop-altloc-indicators \
 	  --drop-atom-serials \
 	| voronota query-balls $INPUT_FILTER_QUERY_PARAMETERS \
-	> $WORKFILE.balls
+	> "${WORKFILE}.balls"
 	
-	if [ ! -s "$WORKFILE.balls" ]
+	if [ ! -s "${WORKFILE}.balls" ]
 	then
-		echo >&2 "Error: no atoms for $(basename $WORKFILE)"
+		echo >&2 "Error: no atoms for $WORKFILE_BASE"
 		exit 1
 	fi
+done
+	
+if $FILTER_MODEL_BY_TARGET
+then
+	cat "${TMPLDIR}/target.balls" \
+	| awk '{print $1}' \
+	| voronota expand-descriptors \
+	| awk '{printf "c<%s>r<%s>i<%s>\n", $1, $2, $3}' \
+	| sed 's/.<\.>//g' \
+	| sort \
+	| uniq \
+	> "${TMPLDIR}/target_residue_ids"
+	
+	cat "${TMPLDIR}/model.balls" \
+	| voronota query-balls \
+	  --match-external-annotations "${TMPLDIR}/target_residue_ids" \
+	> "${TMPLDIR}/model.balls_filtered"
+	
+	if [ ! -s "${TMPLDIR}/model.balls_filtered" ]
+	then
+		echo >&2 "Error: input model file has no residue with IDs as in target"
+		exit 1
+	fi
+	
+	mv "${TMPLDIR}/model.balls_filtered" "${TMPLDIR}/model.balls"
+fi
+
+for WORKFILE_BASE in target model
+do
+	WORKFILE="${TMPLDIR}/${WORKFILE_BASE}"
 	
 	BALLS_MD5=""
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ]

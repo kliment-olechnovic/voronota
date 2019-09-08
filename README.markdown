@@ -312,7 +312,7 @@ Using "--help" option without specific command results in printing help for all 
     --include-heteroatoms                       flag to include heteroatoms
     --include-hydrogens                         flag to include hydrogen atoms
     --multimodel-chains                         flag to read multiple models in PDB format and rename chains accordingly
-    --mmcif                                     flag to input in mmCIF format
+    --input-format                  string      input format, variants are: 'pdb' (default), 'mmcif', 'detect'
     --radii-file                    string      path to radii configuration file
     --default-radius                number      default atomic radius
     --only-default-radius                       flag to make all radii equal to the default radius
@@ -703,7 +703,7 @@ Using "--help" option without specific command results in printing help for all 
 The script interface is presented below:
     
     Basic options:
-        --input | -i                   string      input structure file in PDB format
+        --input | -i                   string      input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --output-atom-scores           string      output text file with atom scores
         --output-atom-scores-pdb       string      output PDB file with atom scores as B-factors
@@ -733,9 +733,10 @@ The script interface is presented below:
 The script interface is presented below:
     
     Basic options:
-        --input-target | -t             string   *  input target structure file in PDB format
+        --input-target | -t             string   *  input target structure file in PDB or mmCIF format
         --input-model | -m              string   *  input model structure file in PDB format
         --input-filter-query            string      input atoms filtering query parameters
+        --filter-model-by-target                    flag to filter model residues by the set of target residue IDs
         --output-residue-scores         string      output text file with residue scores
         --output-residue-scores-pdb-t   string      output target PDB file with residue scores as B-factors
         --output-residue-scores-pdb-m   string      output model PDB file with residue scores as B-factors
@@ -767,7 +768,7 @@ The script interface is presented below:
 'voronota-contacts' script provides a way for calculating and querying interatomic contacts with just one command (without the need to construct a pipeline from 'voronota' calls).
     
     Basic options:
-        --input | -i                   string   *  input structure file in PDB format
+        --input | -i                   string   *  input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --contacts-query               string      contacts query parameters
         --contacts-query-additional    string      additional contacts query parameters
@@ -790,7 +791,7 @@ The script interface is presented below:
 'voronota-volumes' script provides a way for calculating and querying atomic volumes with just one command (without the need to construct a pipeline from 'voronota' calls).
     
     Basic options:
-        --input | -i                   string   *  input structure file in PDB format
+        --input | -i                   string   *  input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --cache-dir                    string      path to cache directory
         --sum-at-end                               flag to print sum of areas as the last line in output

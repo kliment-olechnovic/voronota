@@ -8,7 +8,7 @@ cat >&2 << EOF
 with just one command (without the need to construct a pipeline from 'voronota' calls).
 
 Basic options:
-    --input | -i                   string   *  input structure file in PDB format
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --cache-dir                    string      path to cache directory
     --sum-at-end                               flag to print sum of areas as the last line in output
@@ -119,6 +119,7 @@ trap "rm -r $TMPLDIR" EXIT
 	fi
 } \
 | voronota get-balls-from-atoms-file \
+  --input-format detect \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
   --radii-file <(voronota-resources radii) \
   --include-heteroatoms \
