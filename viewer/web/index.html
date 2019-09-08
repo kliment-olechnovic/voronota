@@ -83,10 +83,12 @@
 							<option value="loadpreloaded">Load pre-loaded dimeric structure</option>
 							<option value="iface">Draw and show inter-chain interface contacts</option>
 							<option value="background">Change background</option>
+							<option value="resizedisplay">Resize display</option>
 							<option value="listall">List objects and selections</option>
 							<option value="voromqaglobal">Calculate VoroMQA scores</option>
 							<option value="voromqafrustration">Calculate VoroMQA surface frustration</option>
-							<option value="ligandcontacts">Calculate HETATM ligand contacts</option>
+							<option value="ligandcontacts">Draw and show HETATM ligand contacts</option>
+							<option value="exposure">Calculate exposure</option>
 						</select>
 					</p>
 				</div>
@@ -278,6 +280,12 @@ background black
 #background white
 #background 0xCCCCCC`;
 				}
+				else if(name==='resizedisplay')
+				{
+example_input_script=
+`#Example script: resize display
+resize-window -width 700 -height 400`;
+				}
 				else if(name==='listall')
 				{
 example_input_script=
@@ -312,7 +320,8 @@ spectrum-atoms -adjunct afem -scheme bwr`;
 				else if(name==='ligandcontacts')
 				{
 example_input_script=
-`hide-atoms
+`#Example script: draw and show protein-ligand interface contacts
+hide-atoms
 show-atoms -rep sticks
 color-atoms 0xAAAAAA
 select-atoms {-t het} -name ligand
@@ -329,6 +338,18 @@ color-atoms {prot_to_lig} -col 0xFF2200
 hide-atoms -rep sticks
 show-atoms ({prot_to_lig} or {ligand}) -full-residues -rep sticks
 show-atoms -rep cartoon`;
+				}
+				else if(name==='exposure')
+				{
+example_input_script=
+`#Example script: calculate exposure
+construct-contacts -tag-peripherial
+delete-adjuncts-of-atoms -adjuncts ev
+describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -depth 2
+hide-atoms
+show-atoms
+color-atoms 0x555555
+spectrum-atoms -adjunct ev -scheme bwr # -min-val 0.1 -max-val 0.5`;
 				}
 				document.getElementById('input_area').value=example_input_script;
 			}
