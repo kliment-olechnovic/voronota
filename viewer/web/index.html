@@ -87,6 +87,7 @@
 							<option value="listall">List objects and selections</option>
 							<option value="voromqaglobal">Calculate VoroMQA scores</option>
 							<option value="voromqafrustration">Calculate VoroMQA surface frustration</option>
+							<option value="voromqahydrophobicbelt">Calculate VoroMQA hydrophobic belt</option>
 							<option value="ligandcontacts">Draw and show HETATM ligand contacts</option>
 							<option value="exposure">Calculate exposure</option>
 						</select>
@@ -316,6 +317,19 @@ hide-atoms
 show-atoms -rep balls
 color-atoms 0x555555
 spectrum-atoms -adjunct afem -scheme bwr`;
+				}
+				else if(name==='voromqahydrophobicbelt')
+				{
+example_input_script=
+`#Example script: calculate VoroMQA hydrophobic belt
+construct-contacts -tag-peripherial
+voromqa-global
+voromqa-frustration -adj-contact-energy voromqa_energy -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem -depth 3
+voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value aopv -membrane-width 30 -membrane-width-extended 30
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x555555
+spectrum-atoms -adjunct aopv -scheme bwr`;
 				}
 				else if(name==='ligandcontacts')
 				{
