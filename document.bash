@@ -35,6 +35,12 @@ The script interface is presented below:
 EOF
 ./voronota-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
+echo -e "\n### Full list of options for the VoroMQA method script\n"
+cat << EOF
+All options of 'voronota-voromqa' script, in alphabetical order:
+EOF
+./voronota-voromqa --list-all-options 2>&1 | tail -n +3 | sed 's/^/    /'
+
 echo -e "\n## CAD-score method script\n"
 cat << EOF
 'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota.

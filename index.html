@@ -107,7 +107,9 @@
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
-<li><a href="#voromqa-method-script">VoroMQA method script</a></li>
+<li><a href="#voromqa-method-script">VoroMQA method script</a><ul>
+<li><a href="#full-list-of-options-for-the-voromqa-method-script">Full list of options for the VoroMQA method script</a></li>
+</ul></li>
 <li><a href="#cad-score-method-script">CAD-score method script</a></li>
 <li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
 <li><a href="#volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
@@ -597,6 +599,83 @@ Advanced options:
 
 Standard output (one line):
     {input file path} {global score} {number of residues} {number of atoms} [ {selection score} {number of selected atoms} ]</code></pre>
+<h3 id="full-list-of-options-for-the-voromqa-method-script">Full list of options for the VoroMQA method script</h3>
+<p>All options of 'voronota-voromqa' script, in alphabetical order:</p>
+<pre><code>    --add-hydrogens                            string      command to add hydrogens
+    --atoms-query                              string      atoms query parameters to define selection
+    --cache-dir                                string      path to cache directory
+    --contacts-query                           string      contacts query parameters to define selection
+    --energy-input-potential                   string      path to custom potential file
+    --energy-input-statistics                  string      path to custom energy statistics file
+    --energy-mode                              string      energy mode name
+    --help                                                 flag to display help message and exit
+    --highlight-selection-in-plot                          flag to highlight selection in plot
+    --input-filter-query                       string      input atoms filtering query parameters
+    --input-is-list                                        flag to treat input as a list of files
+    --input-is-structure                                   flag to treat input as a PDB file
+    --input                                    string      input structure file in PDB format
+    --more-logging                                         flag to enable more logging
+    --multiple-energy-modes                    string      list of energy modes
+    --multiple-models                                      flag to handle multiple models in PDB file
+    --mutation-goal                            string      three-letter residue code
+    --mutation-query                           string      atoms query parameters to define residues to mutate
+    --neglect-SAS                                          flag to discard solvent-accessible surface
+    --no-multiple-energy-modes                             flag to not use multiple energy modes
+    --no-split-into-models                                 flag to not split input into separate models
+    --no-use-slurm                                         flag to not use Slurm
+    --options-for-calculating-contacts         string      custom options for calculating contacts
+    --output-atom-depth-values                 string      output file with atom depth values
+    --output-atom-energies                     string      output file with atom energy values
+    --output-atom-scores-pdb                   string      output PDB file with atom scores as B-factors
+    --output-atom-scores                       string      output text file with atom scores
+    --output-balls                             string      output file with balls
+    --output-contacts-map-svg                  string      output file with contact map image
+    --output-contacts                          string      output file with contacts
+    --output-cutting-suggestions               string      output file with chain cutting suggestions
+    --output-directory-for-global-scores       string      output directory for global scores
+    --output-residue-scores-for-CAMEO          string      output file with output for CAMEO
+    --output-residue-scores-like-for-CASP      string      output file with output like for CASP
+    --output-residue-scores-pdb                string      output PDB file with residue scores as B-factors
+    --output-residue-scores-plot               string      output PNG image file with residue scores plot, requires R
+    --output-residue-scores                    string      output text file with residue scores
+    --output-scores-for-CASP-log               string      output file with logs generated in CASP mode
+    --output-scores-for-CASP-pdb               string      output file with structure generated in CASP mode
+    --output-scores-for-CASP                   string      output file with scores generated in CASP mode
+    --output-screenshot                        string      output file with screenshot
+    --output-selected-scores                   string      output text file with selected atom scores
+    --output-selected-scores-by-residue        string      output text file with selected scores summed by residue
+    --output-sequence-alignment                string      output text file with sequence alignment
+    --output-summary-for-potential             string      output file with statistics of contact
+    --print-clash-score-of-contacts-selection              flag to print clash score of contacts selection
+    --print-energy-of-contacts-selection                   flag to print energy of contacts selection
+    --print-header                                         flag to print output header               
+    --print-horizontally                                   flag to print output horizontally
+    --print-vertically                                     flag to print output vertically
+    --probe-radius                             number      probe radius for defining contacts
+    --processors                               number      maximum number of processors to use
+    --rebuild-sidechains                       string      command to rebuild side-chains
+    --reference-sequence                       string      sequence file or string for residue renumbering
+    --reinterpret-SAS                                      flag to interpret solvent as hydrophobic atoms
+    --sbatch-parameters                        string      parameters for sbatch when using slurm
+    --screenshot-background                    string      screenshot background color
+    --screenshot-height                        number      screenshot image height
+    --screenshot-width                         number      screenshot image width
+    --small-plot                                           flag to generate smaller residue scores plot
+    --smoothing-window                         number      residue scores smoothing window size, default is 5
+    --split-into-models                        string      path to directory for storing extracted models
+    --strip-rotamers                                       flag to remove sidechains
+    --surface-craving-atoms-energies-output    string      output text file with surface frustration results
+    --surface-craving-atoms-energies-pdb       string      output PDB file with surface frustration results
+    --surface-craving-atoms-output-pdb         string      output PDB file with atom scores as B-factors
+    --surface-craving-atoms-output             string      output text file with atom scores
+    --surface-craving-depth-value              number      depth for surface frustration calculation, default is 3
+    --surface-craving-residues-output-pdb      string      output PDB file with residue scores as B-factors
+    --surface-craving-residues-output          string      output text file with residue scores
+    --w-surface-craving-residues-output-pdb    string      output PDB file with residue scores as B-factors
+    --w-surface-craving-residues-output        string      output text file with residue scores
+    --tag-peripheral-contacts                              flag to tag peripheral contacts
+    --unteaching-dir                           string      path to directory with potential-defining files
+    --use-slurm                                string      path to directory to use for Slurm logs</code></pre>
 <h2 id="cad-score-method-script">CAD-score method script</h2>
 <p>'voronota-cadscore' script is an implementation of CAD-score (Contact Area Difference score) method using Voronota. The script interface is presented below:</p>
 <pre><code>Basic options:
