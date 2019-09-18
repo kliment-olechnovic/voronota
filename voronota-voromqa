@@ -24,7 +24,9 @@ Advanced options:
     --output-selected-scores       string      output text file with selected atom scores
     --reference-sequence           string      sequence file or string for residue renumbering
     --output-sequence-alignment    string      output text file with sequence alignment
+    --print-header                             flag to print output header
     --multiple-models                          flag to handle multiple models in PDB file
+    --score-inter-chain                        flag to output inter-chain interface scores
     --list-all-options                         flag to display list of all command line options and exit
 
 Standard output (one line):
@@ -87,7 +89,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --output-summary-for-potential             string      output file with statistics of contact
     --print-clash-score-of-contacts-selection              flag to print clash score of contacts selection
     --print-energy-of-contacts-selection                   flag to print energy of contacts selection
-    --print-header                                         flag to print output header               
+    --print-header                                         flag to print output header
     --print-horizontally                                   flag to print output horizontally
     --print-vertically                                     flag to print output vertically
     --probe-radius                             number      probe radius for defining contacts
@@ -96,6 +98,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
     --reference-sequence                       string      sequence file or string for residue renumbering
     --reinterpret-SAS                                      flag to interpret solvent as hydrophobic atoms
     --sbatch-parameters                        string      parameters for sbatch when using slurm
+    --score-inter-chain                                    flag to output inter-chain interface scores
     --screenshot-background                    string      screenshot background color
     --screenshot-height                        number      screenshot image height
     --screenshot-width                         number      screenshot image width
@@ -202,6 +205,7 @@ PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=false
 PRINT_GLOBAL_SCORES_HEADER=false
 PRINT_GLOBAL_SCORES_VERTICALLY=false
 TREAT_INPUT_AS_LIST_OF_FILES=false
+SCORE_INTER_CHAIN=false
 LIST_ALL_OPTIONS=false
 HELP_MODE=false
 
@@ -489,6 +493,9 @@ do
 	--input-is-structure)
 		TREAT_INPUT_AS_LIST_OF_FILES=false
 		;;
+	--score-inter-chain)
+		SCORE_INTER_CHAIN=true
+		;;
 	--list-all-options)
 		LIST_ALL_OPTIONS=true
 		;;
@@ -522,8 +529,6 @@ then
 	echo >&2 "Error: no input"
 	exit 1
 fi
-
-# if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2a" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ] && [ "$ENERGY_MODE" != "voromqa_v3a" ] && [ "$ENERGY_MODE" != "voromqa_v3b" ] && [ "$ENERGY_MODE" != "voromqa_v4" ] && [ "$ENERGY_MODE" != "voromqa_v5" ]
 
 if [ "$ENERGY_MODE" != "voromqa_v1" ] && [ "$ENERGY_MODE" != "voromqa_v2b" ]
 then
@@ -633,6 +638,14 @@ if [ -n "$MUTATION_GOAL" ] && [ -z "$MUTATION_QUERY" ]
 then
 	echo >&2 "Error: '--mutation-goal' cannot be used without '--mutation-query'"
 	exit 1
+fi
+
+if $SCORE_INTER_CHAIN
+then
+	CONTACTS_QUERY_PARAMETERS="$CONTACTS_QUERY_PARAMETERS --no-same-chain --no-solvent"
+	PRINT_ENERGY_OF_CONTACTS_SELECTION=true
+	PRINT_CLASH_SCORE_OF_CONTACTS_SELECTION=true
+	PRINT_GLOBAL_SCORES_HEADER=true
 fi
 
 if [[ "$ZEROARG" == *"/"* ]]

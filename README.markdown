@@ -720,7 +720,9 @@ The script interface is presented below:
         --output-selected-scores       string      output text file with selected atom scores
         --reference-sequence           string      sequence file or string for residue renumbering
         --output-sequence-alignment    string      output text file with sequence alignment
+        --print-header                             flag to print output header
         --multiple-models                          flag to handle multiple models in PDB file
+        --score-inter-chain                        flag to output inter-chain interface scores
         --list-all-options                         flag to display list of all command line options and exit
     
     Standard output (one line):
@@ -778,7 +780,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
         --output-summary-for-potential             string      output file with statistics of contact
         --print-clash-score-of-contacts-selection              flag to print clash score of contacts selection
         --print-energy-of-contacts-selection                   flag to print energy of contacts selection
-        --print-header                                         flag to print output header               
+        --print-header                                         flag to print output header
         --print-horizontally                                   flag to print output horizontally
         --print-vertically                                     flag to print output vertically
         --probe-radius                             number      probe radius for defining contacts
@@ -787,6 +789,7 @@ All options of 'voronota-voromqa' script, in alphabetical order:
         --reference-sequence                       string      sequence file or string for residue renumbering
         --reinterpret-SAS                                      flag to interpret solvent as hydrophobic atoms
         --sbatch-parameters                        string      parameters for sbatch when using slurm
+        --score-inter-chain                                    flag to output inter-chain interface scores
         --screenshot-background                    string      screenshot background color
         --screenshot-height                        number      screenshot image height
         --screenshot-width                         number      screenshot image width
