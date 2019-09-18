@@ -1597,8 +1597,10 @@ public:
 			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
 			common::ConstructionOfContacts::ParametersToEnhanceContacts parameters_to_enhance_contacts;
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
+			parameters_to_enhance_contacts.sih_depth=parameters_to_construct_contacts.sih_depth;
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
 			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
+			parameters_to_enhance_contacts.adjunct_solvent_direction=cargs.input.get_flag("adjunct-solvent-direction");
 			const bool force=cargs.input.get_flag("force");
 
 			cargs.input.assert_nothing_unusable();

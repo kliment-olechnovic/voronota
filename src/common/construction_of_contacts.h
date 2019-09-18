@@ -228,12 +228,16 @@ public:
 	{
 		bool tag_centrality;
 		bool tag_peripherial;
+		bool adjunct_solvent_direction;
 		double probe;
+		int sih_depth;
 
 		ParametersToEnhanceContacts() :
 			tag_centrality(true),
 			tag_peripherial(false),
-			probe(1.4)
+			adjunct_solvent_direction(false),
+			probe(1.4),
+			sih_depth(3)
 		{
 		}
 
@@ -241,14 +245,19 @@ public:
 		{
 			return (tag_centrality==b.tag_centrality
 					&& tag_peripherial==b.tag_peripherial
-					&& probe==b.probe);
+					&& adjunct_solvent_direction==b.adjunct_solvent_direction
+					&& probe==b.probe
+					&& sih_depth==b.sih_depth);
 		}
 
 		bool supersedes(const ParametersToEnhanceContacts& b) const
 		{
 			return ((tag_centrality && !b.tag_centrality)
 					|| (tag_peripherial && !b.tag_peripherial)
-					|| (tag_peripherial && probe!=b.probe));
+					|| (tag_peripherial && probe!=b.probe)
+					|| (adjunct_solvent_direction && !b.adjunct_solvent_direction)
+					|| (adjunct_solvent_direction && probe!=b.probe)
+					|| (adjunct_solvent_direction && sih_depth!=b.sih_depth));
 		}
 	};
 
@@ -262,21 +271,30 @@ public:
 			return false;
 		}
 
-		if(!parameters.tag_centrality && !parameters.tag_peripherial)
+		if(!parameters.tag_centrality && !parameters.tag_peripherial && !parameters.adjunct_solvent_direction)
 		{
 			return false;
 		}
 
-		bool tag_nonsolvent=false;
+		bool modify_nonsolvent=false;
 		if(parameters.tag_centrality || parameters.tag_peripherial)
 		{
-			for(std::size_t i=0;i<contacts.size() && !tag_nonsolvent;i++)
+			for(std::size_t i=0;i<contacts.size() && !modify_nonsolvent;i++)
 			{
-				tag_nonsolvent=!contacts[i].solvent();
+				modify_nonsolvent=!contacts[i].solvent();
 			}
 		}
 
-		if(!tag_nonsolvent)
+		bool modify_solvent=false;
+		if(parameters.adjunct_solvent_direction)
+		{
+			for(std::size_t i=0;i<contacts.size() && !modify_solvent;i++)
+			{
+				modify_solvent=contacts[i].solvent();
+			}
+		}
+
+		if(!modify_nonsolvent && !modify_solvent)
 		{
 			return false;
 		}
@@ -284,7 +302,7 @@ public:
 		apollota::Triangulation::VerticesVector vertices_vector;
 		apollota::TriangulationQueries::PairsMap pairs_vertices;
 
-		if(tag_nonsolvent && parameters.tag_peripherial)
+		if(modify_nonsolvent && parameters.tag_peripherial)
 		{
 			if(vertices_vector.empty())
 			{
@@ -304,7 +322,7 @@ public:
 			}
 		}
 
-		if(tag_nonsolvent && parameters.tag_centrality)
+		if(modify_nonsolvent && parameters.tag_centrality)
 		{
 			const apollota::TriangulationQueries::PairsMap pairs_neighbors=apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 			for(std::size_t i=0;i<contacts.size();i++)
@@ -313,6 +331,30 @@ public:
 				if(!contact.solvent() && apollota::check_inter_atom_contact_centrality(bundle_of_triangulation_information.spheres, pairs_neighbors, contact.ids[0], contact.ids[1]))
 				{
 					contact.value.props.tags.insert("central");
+				}
+			}
+		}
+
+		if(modify_solvent && parameters.adjunct_solvent_direction)
+		{
+			if(vertices_vector.empty())
+			{
+				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+			}
+			const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+			const apollota::SubdividedIcosahedron sih(parameters.sih_depth);
+			for(std::size_t i=0;i<contacts.size();i++)
+			{
+				Contact& contact=contacts[i];
+				if(contact.solvent())
+				{
+					const apollota::SimplePoint direction=apollota::calculate_direction_of_solvent_contact(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], parameters.probe, sih);
+					if(!(direction==apollota::SimplePoint()))
+					{
+						contact.value.props.adjuncts["solvdir_x"]=direction.x;
+						contact.value.props.adjuncts["solvdir_y"]=direction.y;
+						contact.value.props.adjuncts["solvdir_z"]=direction.z;
+					}
 				}
 			}
 		}

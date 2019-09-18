@@ -86,6 +86,43 @@ std::string draw_solvent_contact(
 	return opengl_printer.str();
 }
 
+inline SimplePoint calculate_direction_of_solvent_contact(
+		const std::vector<SimpleSphere>& spheres,
+		const Triangulation::VerticesVector& vertices_vector,
+		const TriangulationQueries::IDsMap& ids_vertices,
+		const std::size_t a_id,
+		const double probe,
+		const SubdividedIcosahedron& sih)
+{
+	if(a_id<spheres.size())
+	{
+		TriangulationQueries::IDsMap::const_iterator ids_vertices_it=ids_vertices.find(a_id);
+		if(ids_vertices_it!=ids_vertices.end())
+		{
+			const SimplePoint ball_center(spheres[a_id]);
+			SimplePoint sum_of_weighted_directions(0.0, 0.0, 0.0);
+			double sum_of_weights=0.0;
+
+			const ConstrainedContactRemainder::Remainder remainder=ConstrainedContactRemainder::construct_contact_remainder(
+					spheres, vertices_vector, ids_vertices_it->second, a_id, probe, sih);
+
+			for(ConstrainedContactRemainder::Remainder::const_iterator remainder_it=remainder.begin();remainder_it!=remainder.end();++remainder_it)
+			{
+				const ConstrainedContactRemainder::TriangleRecord& tr=(*remainder_it);
+				const double weight=triangle_area(tr.p[0], tr.p[1], tr.p[2]);
+				for(int i=0;i<3;i++)
+				{
+					sum_of_weighted_directions=sum_of_weighted_directions+((tr.p[i]-ball_center)*(weight/3.0));
+				}
+				sum_of_weights+=weight;
+			}
+
+			return ((sum_of_weighted_directions*(1.0/sum_of_weights)).unit());
+		}
+	}
+	return SimplePoint();
+}
+
 inline bool check_inter_atom_contact_centrality(
 		const std::vector<SimpleSphere>& spheres,
 		const TriangulationQueries::PairsMap& pairs_neighbors,
