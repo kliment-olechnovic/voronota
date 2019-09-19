@@ -1510,12 +1510,24 @@ public:
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
+			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
+			const bool strict=cargs.input.get_flag("strict");
 			const bool link=cargs.input.get_flag("link");
+			const bool only_summary=cargs.input.get_flag("only-summary");
 
 			cargs.input.assert_nothing_unusable();
 
+			const std::set<std::size_t> atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+			if(atom_ids.empty())
 			{
-				std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("vertices");
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			std::size_t number_of_relevant_voronoi_vertices=0;
+			double total_relevant_tetrahedron_volume=0.0;
+
+			{
+				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
 
 				const apollota::Triangulation::VerticesVector vertices_vector=
 						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
@@ -1528,51 +1540,95 @@ public:
 					throw std::runtime_error(std::string("Invalid graph of vertices."));
 				}
 
+				std::vector<VariantObject> output_array;
+
 				for(std::size_t i=0;i<vertices_vector.size();i++)
 				{
-					VariantObject info;
-
 					const apollota::Quadruple& quadruple=vertices_vector[i].first;
 					const apollota::SimpleSphere& tangent_sphere=vertices_vector[i].second;
 
+					bool allowed=false;
+					if(strict)
 					{
-						std::vector<VariantValue>& suboutput=info.values_array("quadruple");
-						for(std::size_t j=0;j<4;j++)
+						allowed=(atom_ids.count(quadruple.get(0))>0
+								&& atom_ids.count(quadruple.get(1))>0
+								&& atom_ids.count(quadruple.get(2))>0
+								&& atom_ids.count(quadruple.get(3))>0);
+					}
+					else
+					{
+						allowed=(atom_ids.count(quadruple.get(0))>0
+								|| atom_ids.count(quadruple.get(1))>0
+								|| atom_ids.count(quadruple.get(2))>0
+								|| atom_ids.count(quadruple.get(3))>0);
+					}
+
+					if(allowed)
+					{
+						number_of_relevant_voronoi_vertices++;
+
+						const double volume=fabs(apollota::signed_volume_of_tetrahedron(
+								balls[quadruple.get(0)], balls[quadruple.get(1)], balls[quadruple.get(2)], balls[quadruple.get(3)]));
+						total_relevant_tetrahedron_volume+=volume;
+
+						if(!only_summary)
 						{
-							suboutput.push_back(VariantValue(quadruple.get(j)));
+							VariantObject info;
+							info.value("id")=i;
+
+							{
+								std::vector<VariantValue>& suboutput=info.values_array("quadruple");
+								for(std::size_t j=0;j<4;j++)
+								{
+									suboutput.push_back(VariantValue(quadruple.get(j)));
+								}
+							}
+
+							{
+								std::vector<VariantValue>& suboutput=info.values_array("tangent_sphere");
+								suboutput.push_back(VariantValue(tangent_sphere.x));
+								suboutput.push_back(VariantValue(tangent_sphere.y));
+								suboutput.push_back(VariantValue(tangent_sphere.z));
+								suboutput.push_back(VariantValue(tangent_sphere.r));
+							}
+
+							info.value("tetrahedron_volume")=volume;
+
+							if(link)
+							{
+								const std::vector<std::size_t>& links=vertices_graph[i];
+								std::vector<VariantValue>& suboutput=info.values_array("links");
+								for(std::size_t j=0;j<links.size();j++)
+								{
+									if(links[j]==apollota::npos)
+									{
+										suboutput.push_back(VariantValue(-1));
+									}
+									else
+									{
+										suboutput.push_back(VariantValue(links[j]));
+									}
+								}
+							}
+
+							output_array.push_back(info);
 						}
 					}
+				}
 
-					{
-						std::vector<VariantValue>& suboutput=info.values_array("tangent_sphere");
-						suboutput.push_back(VariantValue(tangent_sphere.x));
-						suboutput.push_back(VariantValue(tangent_sphere.y));
-						suboutput.push_back(VariantValue(tangent_sphere.z));
-						suboutput.push_back(VariantValue(tangent_sphere.r));
-					}
-
-					if(link)
-					{
-						const std::vector<std::size_t>& links=vertices_graph[i];
-						std::vector<VariantValue>& suboutput=info.values_array("links");
-						for(std::size_t j=0;j<links.size();j++)
-						{
-							if(links[j]==apollota::npos)
-							{
-								suboutput.push_back(VariantValue(-1));
-							}
-							else
-							{
-								suboutput.push_back(VariantValue(links[j]));
-							}
-						}
-					}
-
-					output_array.push_back(info);
+				if(!only_summary)
+				{
+					cargs.heterostorage.variant_object.objects_array("vertices")=output_array;
 				}
 			}
 
-			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("triangulation_summary"));
+			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("full_triangulation_summary"));
+
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+
+			cargs.heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=number_of_relevant_voronoi_vertices;
+
+			cargs.heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=total_relevant_tetrahedron_volume;
 		}
 	};
 
