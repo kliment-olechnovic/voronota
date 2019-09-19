@@ -1734,9 +1734,17 @@ public:
 				throw std::runtime_error(std::string("Empty input contacts file name."));
 			}
 
+			InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
+
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
 			std::vector<Contact> contacts;
 
-			auxiliaries::IOUtilities().read_file_lines_to_set(file, contacts);
+			auxiliaries::IOUtilities().read_lines_to_set(finput, contacts);
 
 			if(!contacts.empty())
 			{
