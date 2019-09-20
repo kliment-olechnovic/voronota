@@ -13,7 +13,7 @@ namespace scripting
 class TestingOfAtomsAndContacts
 {
 public:
-	class test_id
+	class TesterOfID
 	{
 	public:
 		std::set<std::size_t> allowed_ids;
@@ -28,7 +28,7 @@ public:
 		}
 	};
 
-	class test_atom : public test_id
+	class TesterOfAtom : public TesterOfID
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
@@ -41,7 +41,7 @@ public:
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
 
-		explicit test_atom(const std::vector<Atom>* atoms_ptr=0) :
+		explicit TesterOfAtom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
 		{
 		}
@@ -67,7 +67,7 @@ public:
 			}
 			else if(id<atoms_ptr->size())
 			{
-				return (test_id::operator()(id) && (this->operator()((*atoms_ptr)[id])));
+				return (TesterOfID::operator()(id) && (this->operator()((*atoms_ptr)[id])));
 			}
 			return false;
 		}
@@ -76,7 +76,7 @@ public:
 		{
 			if(id<atoms.size())
 			{
-				return (test_id::operator()(id) && (this->operator()(atoms[id])));
+				return (TesterOfID::operator()(id) && (this->operator()(atoms[id])));
 			}
 			return false;
 		}
@@ -109,7 +109,7 @@ public:
 		}
 	};
 
-	class test_contact : public test_id
+	class TesterOfContact : public TesterOfID
 	{
 	public:
 		const std::vector<Atom>* atoms_ptr;
@@ -128,12 +128,12 @@ public:
 		std::string match_tags_not;
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
-		test_atom test_atom_a;
-		test_atom test_atom_a_not;
-		test_atom test_atom_b;
-		test_atom test_atom_b_not;
+		TesterOfAtom test_atom_a;
+		TesterOfAtom test_atom_a_not;
+		TesterOfAtom test_atom_b;
+		TesterOfAtom test_atom_b_not;
 
-		test_contact(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
+		TesterOfContact(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
 			atoms_ptr(atoms_ptr),
 			contacts_ptr(contacts_ptr),
 			match_min_area(std::numeric_limits<double>::min()),
@@ -156,7 +156,7 @@ public:
 			}
 			else if(id<contacts_ptr->size())
 			{
-				return (test_id::operator()(id) && (this->operator()((*contacts_ptr)[id])));
+				return (TesterOfID::operator()(id) && (this->operator()((*contacts_ptr)[id])));
 			}
 			return false;
 		}
@@ -165,7 +165,7 @@ public:
 		{
 			if(id<contacts.size())
 			{
-				return (test_id::operator()(id) && (this->operator()(contacts[id])));
+				return (TesterOfID::operator()(id) && (this->operator()(contacts[id])));
 			}
 			return false;
 		}
@@ -475,7 +475,7 @@ inline bool read_tester_flag_value(std::istream& input)
 	return false;
 }
 
-inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::test_atom& tester)
+inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::TesterOfAtom& tester)
 {
 	std::string token;
 	input >> token;
@@ -571,7 +571,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	return input;
 }
 
-inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::test_contact& tester)
+inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::TesterOfContact& tester)
 {
 	std::string token;
 	input >> token;
