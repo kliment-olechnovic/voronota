@@ -36,6 +36,10 @@ load-contacts --file '$SUBDIR/plain_contacts'
 
 select-contacts {--atom1 {R<PHE>} -atom2 {R<PHE>} -min-area 5.0 --min-seq-sep 1} --name cs1
 
+write-selection-of-contacts {cs1} -file '$SUBDIR/saved_selection_cs1'
+read-selection-of-contacts -file '$SUBDIR/saved_selection_cs1' -name cs1_copy
+delete-selections-of-contacts cs1_copy
+
 set-alias multitag "tag-contacts {--min-area \${1}} med; delete-tags-of-contacts {--min-area \${2}} --tags med"
 
 multitag 6.0 8.0 # Arguments to an alias are unnamed
@@ -46,6 +50,11 @@ alt-pc-cs1
 alt-pc-cs1 --inter-residue
 
 select-atoms {r<64> & A<C,N,O,CA,CB>} as1
+
+write-selection-of-atoms {as1} -file '$SUBDIR/saved_selection_as1'
+read-selection-of-atoms -file '$SUBDIR/saved_selection_as1' -name as1_copy
+delete-selections-of-atoms as1_copy
+
 tag-atoms {A<C,N,O,CA,CB>} --tag pept
 delete-tags-of-atoms {A<CA,CB>} --tags pept
 print-atoms {as1}

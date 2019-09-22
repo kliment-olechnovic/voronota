@@ -66,6 +66,8 @@ public:
 		set_command("center-atoms", new CustomCommandsForDataManager::center_atoms());
 		set_command("save-atoms", new CustomCommandsForDataManager::save_atoms());
 		set_command("select-atoms", new CustomCommandsForDataManager::select_atoms());
+		set_command("write-selection-of-atoms", new CustomCommandsForDataManager::write_selection_of_atoms());
+		set_command("read-selection-of-atoms", new CustomCommandsForDataManager::read_selection_of_atoms());
 		set_command("tag-atoms", new CustomCommandsForDataManager::tag_atoms());
 		set_command("tag-atoms-by-secondary-structure", new CustomCommandsForDataManager::tag_atoms_by_secondary_structure());
 		set_command("delete-tags-of-atoms", new CustomCommandsForDataManager::delete_tags_of_atoms());
@@ -94,6 +96,8 @@ public:
 		set_command("save-contacts", new CustomCommandsForDataManager::save_contacts());
 		set_command("load-contacts", new CustomCommandsForDataManager::load_contacts());
 		set_command("select-contacts", new CustomCommandsForDataManager::select_contacts());
+		set_command("write-selection-of-contacts", new CustomCommandsForDataManager::write_selection_of_contacts());
+		set_command("read-selection-of-contacts", new CustomCommandsForDataManager::read_selection_of_contacts());
 		set_command("tag-contacts", new CustomCommandsForDataManager::tag_contacts());
 		set_command("delete-tags-of-contacts", new CustomCommandsForDataManager::delete_tags_of_contacts());
 		set_command("adjunct-contacts", new CustomCommandsForDataManager::adjunct_contacts());

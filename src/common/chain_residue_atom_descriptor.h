@@ -506,6 +506,11 @@ public:
 	{
 		return (a.valid() && b.valid());
 	}
+
+	ChainResidueAtomDescriptorsPair without_some_info(const bool no_serial, const bool no_name, const bool no_resSeq, const bool no_resName) const
+	{
+		return ChainResidueAtomDescriptorsPair(a.without_some_info(no_serial, no_name, no_resSeq, no_resName), b.without_some_info(no_serial, no_name, no_resSeq, no_resName));
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const ChainResidueAtomDescriptorsPair& descriptors_pair)

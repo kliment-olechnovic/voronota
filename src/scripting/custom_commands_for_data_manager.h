@@ -264,6 +264,137 @@ public:
 		}
 	};
 
+	class write_selection_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			OutputSelector output_selector(file);
+			std::ostream& output=output_selector.stream();
+			assert_io_stream(file, output);
+
+			std::set<common::ChainResidueAtomDescriptor> set_of_crads;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				set_of_crads.insert(cargs.data_manager.atoms()[*it].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName));
+			}
+
+			auxiliaries::IOUtilities().write_set(set_of_crads, output);
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				info.value("file")=file;
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
+				info.value("number_of_descriptors_written")=set_of_crads.size();
+			}
+		}
+	};
+
+	class read_selection_of_atoms : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input selection file name."));
+			}
+
+			assert_selection_name_input(name, false);
+
+			InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
+
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
+			std::set<common::ChainResidueAtomDescriptor> set_of_crads;
+
+			auxiliaries::IOUtilities().read_lines_to_set(finput, set_of_crads);
+
+			if(set_of_crads.empty())
+			{
+				throw std::runtime_error(std::string("No descriptors in file '")+file+"'.");
+			}
+
+			if(no_serial || no_name || no_resSeq || no_resName)
+			{
+				std::set<common::ChainResidueAtomDescriptor> refined_set_of_crads;
+				for(std::set<common::ChainResidueAtomDescriptor>::const_iterator it=set_of_crads.begin();it!=set_of_crads.end();++it)
+				{
+					refined_set_of_crads.insert(it->without_some_info(no_serial, no_name, no_resSeq, no_resName));
+				}
+				set_of_crads.swap(refined_set_of_crads);
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms_by_set_of_crads(set_of_crads);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			if(!name.empty())
+			{
+				cargs.data_manager.selection_manager().set_atoms_selection(name, ids);
+			}
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), info.object("atoms_summary"));
+				if(name.empty())
+				{
+					info.value("selection_name").set_null();
+				}
+				else
+				{
+					info.value("selection_name")=name;
+				}
+			}
+		}
+	};
+
 	class tag_atoms : public GenericCommandForDataManager
 	{
 	public:
@@ -1886,6 +2017,140 @@ public:
 			}
 
 			cargs.heterostorage.vectors_of_ids["selection_of_contacts"]=std::vector<std::size_t>(ids.begin(), ids.end());
+		}
+	};
+
+	class write_selection_of_contacts : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			OutputSelector output_selector(file);
+			std::ostream& output=output_selector.stream();
+			assert_io_stream(file, output);
+
+			std::set<common::ChainResidueAtomDescriptorsPair> set_of_crads_pairs;
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				set_of_crads_pairs.insert(
+						common::ConversionOfDescriptors::get_contact_descriptor(
+								cargs.data_manager.atoms(), cargs.data_manager.contacts()[*it]).without_some_info(
+										no_serial, no_name, no_resSeq, no_resName));
+			}
+
+			auxiliaries::IOUtilities().write_set(set_of_crads_pairs, output);
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				info.value("file")=file;
+				if(output_selector.location_type()==OutputSelector::TEMPORARY_MEMORY)
+				{
+					info.value("dump")=output_selector.str();
+				}
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
+				info.value("number_of_descriptors_written")=set_of_crads_pairs.size();
+			}
+		}
+	};
+
+	class read_selection_of_contacts : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input selection file name."));
+			}
+
+			assert_selection_name_input(name, false);
+
+			InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
+
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
+			std::set<common::ChainResidueAtomDescriptorsPair> set_of_crads_pairs;
+
+			auxiliaries::IOUtilities().read_lines_to_set(finput, set_of_crads_pairs);
+
+			if(set_of_crads_pairs.empty())
+			{
+				throw std::runtime_error(std::string("No descriptors in file '")+file+"'.");
+			}
+
+			if(no_serial || no_name || no_resSeq || no_resName)
+			{
+				std::set<common::ChainResidueAtomDescriptorsPair> refined_set_of_crads_pairs;
+				for(std::set<common::ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_crads_pairs.begin();it!=set_of_crads_pairs.end();++it)
+				{
+					refined_set_of_crads_pairs.insert(it->without_some_info(no_serial, no_name, no_resSeq, no_resName));
+				}
+				set_of_crads_pairs.swap(refined_set_of_crads_pairs);
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts_by_set_of_crads_pairs(set_of_crads_pairs);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			if(!name.empty())
+			{
+				cargs.data_manager.selection_manager().set_contacts_selection(name, ids);
+			}
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), info.object("contacts_summary"));
+				if(name.empty())
+				{
+					info.value("selection_name").set_null();
+				}
+				else
+				{
+					info.value("selection_name")=name;
+				}
+			}
 		}
 	};
 

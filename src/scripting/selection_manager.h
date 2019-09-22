@@ -1,6 +1,8 @@
 #ifndef SCRIPTING_SELECTION_MANAGER_H_
 #define SCRIPTING_SELECTION_MANAGER_H_
 
+#include "../common/conversion_of_descriptors.h"
+
 #include "testing_of_atoms_and_contacts.h"
 
 namespace scripting
@@ -202,6 +204,19 @@ public:
 		return select_atoms_by_contacts(std::set<std::size_t>(), contact_ids, full_residues);
 	}
 
+	std::set<std::size_t> select_atoms_by_set_of_crads(const std::set<common::ChainResidueAtomDescriptor>& set_of_crads) const
+	{
+		std::set<std::size_t> result;
+		for(std::size_t i=0;i<atoms().size();i++)
+		{
+			if(common::MatchingUtilities::match_crad_with_set_of_crads(atoms()[i].crad, set_of_crads))
+			{
+				result.insert(i);
+			}
+		}
+		return result;
+	}
+
 	void set_atoms_selection(const std::string& name, const std::set<std::size_t>& ids)
 	{
 		if(atoms().empty())
@@ -285,6 +300,20 @@ public:
 			const std::set<std::size_t>& atom_ids1, const std::set<std::size_t>& atom_ids2, const bool full_residues) const
 	{
 		return select_contacts_by_atoms_and_atoms(std::set<std::size_t>(), atom_ids1, atom_ids2, full_residues);
+	}
+
+	std::set<std::size_t> select_contacts_by_set_of_crads_pairs(const std::set<common::ChainResidueAtomDescriptorsPair>& set_of_crads_pairs) const
+	{
+		std::set<std::size_t> result;
+		for(std::size_t i=0;i<contacts().size();i++)
+		{
+			if(common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(
+					common::ConversionOfDescriptors::get_contact_descriptor(atoms(), contacts()[i]), set_of_crads_pairs))
+			{
+				result.insert(i);
+			}
+		}
+		return result;
 	}
 
 	void set_contacts_selection(const std::string& name, const std::set<std::size_t>& ids)

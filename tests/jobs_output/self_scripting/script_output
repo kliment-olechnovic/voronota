@@ -245,6 +245,33 @@
         "selection_name":"cs1"},
       "success":true},
     {
+      "line":"write-selection-of-contacts {cs1} -file './jobs_output/self_scripting/saved_selection_cs1'",
+      "data_object":"plain_atoms",
+      "output":{
+        "file":"./jobs_output/self_scripting/saved_selection_cs1",
+        "contacts_summary":{
+          "number_total":5,
+          "number_drawable":1,
+          "area":33.8164},
+        "number_of_descriptors_written":5},
+      "success":true},
+    {
+      "line":"read-selection-of-contacts -file './jobs_output/self_scripting/saved_selection_cs1' -name cs1_copy",
+      "data_object":"plain_atoms",
+      "output":{
+        "contacts_summary":{
+          "number_total":5,
+          "number_drawable":1,
+          "area":33.8164},
+        "selection_name":"cs1_copy"},
+      "success":true},
+    {
+      "line":"delete-selections-of-contacts cs1_copy",
+      "data_object":"plain_atoms",
+      "output":{
+        "deleted_selections":["cs1_copy"]},
+      "success":true},
+    {
       "line":"set-alias multitag \"tag-contacts {--min-area ${1}} med; delete-tags-of-contacts {--min-area ${2}} --tags med\"",
       "output":{
         "alias":"multitag",
@@ -378,6 +405,31 @@
           "number_total":5,
           "volume":108.978},
         "selection_name":"as1"},
+      "success":true},
+    {
+      "line":"write-selection-of-atoms {as1} -file './jobs_output/self_scripting/saved_selection_as1'",
+      "data_object":"plain_atoms",
+      "output":{
+        "file":"./jobs_output/self_scripting/saved_selection_as1",
+        "atoms_summary":{
+          "number_total":5,
+          "volume":108.978},
+        "number_of_descriptors_written":5},
+      "success":true},
+    {
+      "line":"read-selection-of-atoms -file './jobs_output/self_scripting/saved_selection_as1' -name as1_copy",
+      "data_object":"plain_atoms",
+      "output":{
+        "atoms_summary":{
+          "number_total":5,
+          "volume":108.978},
+        "selection_name":"as1_copy"},
+      "success":true},
+    {
+      "line":"delete-selections-of-atoms as1_copy",
+      "data_object":"plain_atoms",
+      "output":{
+        "deleted_selections":["as1_copy"]},
       "success":true},
     {
       "line":"tag-atoms {A<C,N,O,CA,CB>} --tag pept",
@@ -870,6 +922,12 @@
             "name":"print-virtual-file",
             "short_description":""},
           {
+            "name":"read-selection-of-atoms",
+            "short_description":""},
+          {
+            "name":"read-selection-of-contacts",
+            "short_description":""},
+          {
             "name":"rename-object",
             "short_description":""},
           {
@@ -975,6 +1033,12 @@
             "name":"write-contacts-as-pymol-cgo",
             "short_description":""},
           {
+            "name":"write-selection-of-atoms",
+            "short_description":""},
+          {
+            "name":"write-selection-of-contacts",
+            "short_description":""},
+          {
             "name":"write-triangulation",
             "short_description":""},
           {
@@ -1032,5 +1096,5 @@
       "line":"exit",
       "success":true}],
   "script_summary":{
-    "commands_all":72,
-    "commands_successful":69}}
+    "commands_all":78,
+    "commands_successful":75}}
