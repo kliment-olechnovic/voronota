@@ -326,7 +326,7 @@ public:
 			const std::string model_name=cargs.input.get_value<std::string>("model");
 			ScoringOfDataManagersUsingCADScore::Parameters params;
 			params.target_selection_expression=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
-			params.model_selection_expression=cargs.input.get_value_or_default<std::string>("m-sel", "{--no-solvent --min-seq-sep 1}");
+			params.model_selection_expression=cargs.input.get_value_or_default<std::string>("m-sel", params.target_selection_expression);
 			params.target_adjunct_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-atom", "");
 			params.target_adjunct_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-inter-atom", "");
 			params.target_adjunct_residue_scores=cargs.input.get_value_or_default<std::string>("t-adj-residue", "");
@@ -337,6 +337,7 @@ public:
 			params.model_adjunct_inter_residue_scores=cargs.input.get_value_or_default<std::string>("m-adj-inter-residue", "");
 			params.smoothing_window=cargs.input.get_value_or_default<unsigned int>("smoothing-window", 0);
 			params.ignore_residue_names=cargs.input.get_flag("ignore-residue-names");
+			params.binarize=cargs.input.get_flag("binarize");
 
 			cargs.input.assert_nothing_unusable();
 

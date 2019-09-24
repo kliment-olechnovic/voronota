@@ -27,4 +27,8 @@ then
 	export LD_LIBRARY_PATH=${ADDITION_TO_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}
 fi
 
+date
+
 time -p ./tests/run_all_tests.bash
+
+date

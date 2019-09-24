@@ -61,6 +61,7 @@ public:
 		bool remap_chains_logging;
 		bool atom_level;
 		bool residue_level;
+		bool binarize;
 		int depth;
 		std::map<std::string, std::string> map_of_renamings;
 
@@ -70,6 +71,7 @@ public:
 			remap_chains_logging(false),
 			atom_level(false),
 			residue_level(true),
+			binarize(false),
 			depth(0)
 		{
 		}
@@ -140,13 +142,13 @@ public:
 
 		if(parameters.remap_chains)
 		{
-			remap_chains_optimally(bundle.map_of_target_contacts, parameters.ignore_residue_names, parameters.remap_chains_logging, bundle.map_of_renamings_from_remapping, bundle.map_of_contacts);
+			remap_chains_optimally(bundle.map_of_target_contacts, parameters.ignore_residue_names, parameters.binarize, parameters.remap_chains_logging, bundle.map_of_renamings_from_remapping, bundle.map_of_contacts);
 		}
 
 		if(parameters.atom_level)
 		{
 			bundle.map_of_inter_atom_cad_descriptors=construct_map_of_cad_descriptors(
-					combine_two_pair_mappings_of_values(bundle.map_of_target_contacts, bundle.map_of_contacts));
+					combine_two_pair_mappings_of_values(bundle.map_of_target_contacts, bundle.map_of_contacts, parameters.binarize));
 
 			bundle.map_of_atom_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
 					common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(bundle.map_of_inter_atom_cad_descriptors, parameters.depth));
@@ -159,7 +161,10 @@ public:
 		if(parameters.residue_level)
 		{
 			bundle.map_of_inter_residue_cad_descriptors=construct_map_of_cad_descriptors(
-					combine_two_pair_mappings_of_values(summarize_pair_mapping_of_values(bundle.map_of_target_contacts, parameters.ignore_residue_names), summarize_pair_mapping_of_values(bundle.map_of_contacts, parameters.ignore_residue_names)));
+					combine_two_pair_mappings_of_values(
+							summarize_pair_mapping_of_values(bundle.map_of_target_contacts, parameters.ignore_residue_names),
+							summarize_pair_mapping_of_values(bundle.map_of_contacts, parameters.ignore_residue_names),
+							parameters.binarize));
 
 			bundle.map_of_residue_cad_descriptors=filter_map_of_cad_descriptors_by_target_presence(
 					common::ChainResidueAtomDescriptorsGraphOperations::accumulate_mapped_values_by_graph_neighbors(bundle.map_of_inter_residue_cad_descriptors, parameters.depth));
@@ -179,21 +184,24 @@ private:
 		for(std::map< CRADsPair, double >::const_iterator it=map.begin();it!=map.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			result[CRADsPair(crads.a.without_some_info(true, true, false, ignore_residue_names), crads.b.without_some_info(true, true, false, ignore_residue_names))]+=it->second;
+			result[crads.without_some_info(true, true, false, ignore_residue_names)]+=it->second;
 		}
 		return result;
 	}
 
-	static std::map< CRADsPair, std::pair<double, double> > combine_two_pair_mappings_of_values(const std::map<CRADsPair, double>& map1, const std::map<CRADsPair, double>& map2)
+	static std::map< CRADsPair, std::pair<double, double> > combine_two_pair_mappings_of_values(
+			const std::map<CRADsPair, double>& map1,
+			const std::map<CRADsPair, double>& map2,
+			const bool binarize)
 	{
 		std::map< CRADsPair, std::pair<double, double> > result;
 		for(std::map< CRADsPair, double >::const_iterator it=map1.begin();it!=map1.end();++it)
 		{
-			result[it->first].first=it->second;
+			result[it->first].first=(binarize ? (it->second>0.0 ? 1.0 : 0.0) : it->second);
 		}
 		for(std::map< CRADsPair, double >::const_iterator it=map2.begin();it!=map2.end();++it)
 		{
-			result[it->first].second=it->second;
+			result[it->first].second=(binarize ? (it->second>0.0 ? 1.0 : 0.0) : it->second);
 		}
 		return result;
 	}
@@ -218,13 +226,14 @@ private:
 		return result;
 	}
 
-	static CADDescriptor construct_global_cad_descriptor(const std::map<CRADsPair, double>& map_of_target_contacts, const std::map<CRADsPair, double>& map_of_contacts, const bool ignore_residue_names)
+	static CADDescriptor construct_global_cad_descriptor(const std::map<CRADsPair, double>& map_of_target_contacts, const std::map<CRADsPair, double>& map_of_contacts, const bool ignore_residue_names, const bool binarize)
 	{
 		return construct_global_cad_descriptor(
 				construct_map_of_cad_descriptors(
 						combine_two_pair_mappings_of_values(
 								summarize_pair_mapping_of_values(map_of_target_contacts, ignore_residue_names),
-								summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names))));
+								summarize_pair_mapping_of_values(map_of_contacts, ignore_residue_names),
+								binarize)));
 	}
 
 	static std::map<CRAD, CADDescriptor> filter_map_of_cad_descriptors_by_target_presence(const std::map<CRAD, CADDescriptor>& input_map)
@@ -337,6 +346,7 @@ private:
 	static void remap_chains_optimally(
 			const std::map<CRADsPair, double>& map_of_target_contacts,
 			const bool ignore_residue_names,
+			const bool binarize,
 			const bool write_log_to_stderr,
 			std::map<std::string, std::string>& final_map_of_renamings,
 			std::map<CRADsPair, double>& map_of_contacts)
@@ -353,7 +363,11 @@ private:
 			do
 			{
 				const std::map<std::string, std::string> map_of_renamings=generate_map_of_renamings_from_two_lists(chain_names, permutated_chain_names);
-				const double score=construct_global_cad_descriptor(map_of_target_contacts, rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings), ignore_residue_names).score();
+				const double score=construct_global_cad_descriptor(
+						map_of_target_contacts,
+						rename_chains_in_map_of_contacts(map_of_contacts, map_of_renamings),
+						ignore_residue_names,
+						binarize).score();
 				if(score>best_renaming.second)
 				{
 					best_renaming.first=map_of_renamings;
@@ -403,7 +417,8 @@ private:
 						const CADDescriptor cad_descriptor=construct_global_cad_descriptor(
 								select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_target_contacts, new_map_of_renamings_in_target)),
 								select_contacts_with_defined_chain_names(rename_chains_in_map_of_contacts(map_of_contacts, new_map_of_renamings)),
-								ignore_residue_names);
+								ignore_residue_names,
+								binarize);
 						const double score=cad_descriptor.score()*cad_descriptor.target_area_sum;
 						if(score>best_score)
 						{
