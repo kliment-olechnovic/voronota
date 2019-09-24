@@ -1778,7 +1778,7 @@ public:
 
 			common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts;
 			parameters_to_construct_contacts.probe=cargs.input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
-			parameters_to_construct_contacts.calculate_volumes=cargs.input.get_flag("calculate-volumes");
+			parameters_to_construct_contacts.calculate_volumes=!cargs.input.get_flag("no-calculate-volumes");
 			parameters_to_construct_contacts.step=cargs.input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
 			parameters_to_construct_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
 			parameters_to_construct_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
@@ -1786,7 +1786,7 @@ public:
 			parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 			parameters_to_enhance_contacts.sih_depth=parameters_to_construct_contacts.sih_depth;
 			parameters_to_enhance_contacts.tag_centrality=!cargs.input.get_flag("no-tag-centrality");
-			parameters_to_enhance_contacts.tag_peripherial=cargs.input.get_flag("tag-peripherial");
+			parameters_to_enhance_contacts.tag_peripherial=!cargs.input.get_flag("no-tag-peripherial");
 			parameters_to_enhance_contacts.adjunct_solvent_direction=cargs.input.get_flag("adjunct-solvent-direction");
 			const bool force=cargs.input.get_flag("force");
 

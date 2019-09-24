@@ -17,8 +17,8 @@ printseq
 print-atoms {--tags het --adjuncts tf:0:10}
 restrict-atoms {--tags-not het}
 printseq
+construct-contacts --no-calculate-volumes
 construct-contacts
-construct-contacts --calculate-volumes
 make-drawable-contacts '{--atom1 {r<83>} -min-seq-sep 1}'
 make-drawable-contacts '{--atom1 {r<83>}}'
 make-undrawable-contacts '{-max-seq-sep 0}'

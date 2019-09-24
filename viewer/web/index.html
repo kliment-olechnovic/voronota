@@ -254,7 +254,7 @@ load 2zsk.pdb`;
 example_input_script=
 `#Example script: draw and show interface contacts
 spectrum-atoms -by chain
-construct-contacts -calculate-volumes -tag-peripherial
+construct-contacts
 select-contacts {-inter-chain} -name iface
 make-drawable-contacts {iface}
 show-contacts
@@ -300,7 +300,7 @@ list-selections-of-contacts`;
 example_input_script=
 `#Example script: calculate VoroMQA global and local scores
 restrict-atoms {-t! het}
-construct-contacts -calculate-volumes -tag-peripherial
+construct-contacts
 voromqa-global
 spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75`;
 				}
@@ -310,7 +310,7 @@ example_input_script=
 `#Example script: calculate VoroMQA surface frustration scores
 #restrict-atoms {c<A>}
 restrict-atoms {-t! het}
-construct-contacts -calculate-volumes -tag-peripherial
+construct-contacts
 voromqa-global
 voromqa-frustration -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem
 hide-atoms
@@ -322,7 +322,7 @@ spectrum-atoms -adjunct afem -scheme bwr`;
 				{
 example_input_script=
 `#Example script: calculate VoroMQA hydrophobic belt
-construct-contacts -tag-peripherial
+construct-contacts
 voromqa-global
 voromqa-frustration -adj-contact-energy voromqa_energy -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem -depth 3
 voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value aopv -membrane-width 30 -membrane-width-extended 30
@@ -340,7 +340,7 @@ show-atoms -rep sticks
 color-atoms 0xAAAAAA
 select-atoms {-t het} -name ligand
 color-atoms {ligand} 0x0011BB
-construct-contacts -calculate-volumes -tag-peripherial
+construct-contacts
 select-contacts {-a1{ligand}} -name iface
 make-drawable-contacts {iface}
 show-contacts
@@ -358,7 +358,7 @@ show-atoms -rep cartoon`;
 example_input_script=
 `#Example script: calculate exposure
 restrict-atoms {-t! het}
-construct-contacts -tag-peripherial
+construct-contacts
 delete-adjuncts-of-atoms -adjuncts ev
 describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -depth 2
 hide-atoms

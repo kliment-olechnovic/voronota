@@ -108,7 +108,7 @@
             "continuous_segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]},
       "success":true},
     {
-      "line":"construct-contacts",
+      "line":"construct-contacts --no-calculate-volumes",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
@@ -117,7 +117,7 @@
           "area":47017.2}},
       "success":true},
     {
-      "line":"construct-contacts --calculate-volumes",
+      "line":"construct-contacts",
       "data_object":"structure.pdb_2",
       "output":{
         "contacts_summary":{
@@ -317,21 +317,21 @@
             "descriptor2":{"chainID":"A","resSeq":71,"serial":518,"resName":"PHE","name":"CE1"},
             "area":5.56317,
             "distance":3.7409,
-            "tags":["central"],
+            "tags":["central","peripherial"],
             "id":436},
           {
             "descriptor1":{"chainID":"A","resSeq":8,"serial":53,"resName":"PHE","name":"CZ"},
             "descriptor2":{"chainID":"A","resSeq":114,"serial":888,"resName":"PHE","name":"CE2"},
             "area":6.42993,
             "distance":3.93888,
-            "tags":["central","med"],
+            "tags":["central","med","peripherial"],
             "id":481},
           {
             "descriptor1":{"chainID":"A","resSeq":46,"serial":330,"resName":"PHE","name":"CZ"},
             "descriptor2":{"chainID":"A","resSeq":64,"serial":459,"resName":"PHE","name":"CB"},
             "area":6.67924,
             "distance":3.66367,
-            "tags":["central","med"],
+            "tags":["central","med","peripherial"],
             "id":2740},
           {
             "descriptor1":{"chainID":"A","resSeq":83,"serial":623,"resName":"PHE","name":"C"},
@@ -363,21 +363,21 @@
             "area":5.56317,
             "distance":3.7409,
             "summed":true,
-            "tags":["central"]},
+            "tags":["central","peripherial"]},
           {
             "descriptor1":{"chainID":"A","resSeq":8,"resName":"PHE"},
             "descriptor2":{"chainID":"A","resSeq":114,"resName":"PHE"},
             "area":6.42993,
             "distance":3.93888,
             "summed":true,
-            "tags":["central","med"]},
+            "tags":["central","med","peripherial"]},
           {
             "descriptor1":{"chainID":"A","resSeq":46,"resName":"PHE"},
             "descriptor2":{"chainID":"A","resSeq":64,"resName":"PHE"},
             "area":6.67924,
             "distance":3.66367,
             "summed":true,
-            "tags":["central","med"]},
+            "tags":["central","med","peripherial"]},
           {
             "descriptor1":{"chainID":"A","resSeq":83,"resName":"PHE"},
             "descriptor2":{"chainID":"A","resSeq":84,"resName":"PHE"},
