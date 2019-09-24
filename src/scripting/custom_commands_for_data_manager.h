@@ -2789,6 +2789,7 @@ public:
 					contacts.push_back(VariantObject());
 					VariantSerialization::write(it->first, it->second, contacts.back());
 				}
+				cargs.heterostorage.variant_object.value("number_of_inter_residue_contacts")=map_for_output.size();
 			}
 			else
 			{

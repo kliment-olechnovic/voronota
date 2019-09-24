@@ -392,6 +392,7 @@
             "distance":1.33208,
             "summed":true,
             "tags":["central"]}],
+        "number_of_inter_residue_contacts":5,
         "contacts_summary":{
           "number_total":5,
           "number_drawable":1,

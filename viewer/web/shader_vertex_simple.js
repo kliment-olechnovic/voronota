@@ -173,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 923, "filename": "/shader_vertex_simple.glsl"}], "remote_package_size": 923, "package_uuid": "726090c7-0661-4f47-9836-890c91aaf764"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 923, "filename": "/shader_vertex_simple.glsl"}], "remote_package_size": 923, "package_uuid": "39e4db2d-170c-4e18-96bc-82c766532224"});
 
 })();
