@@ -3765,6 +3765,7 @@ public:
 			const double probe_max=cargs.input.get_value_or_default<double>("probe-max", 30.0);
 			const double expansion=cargs.input.get_value_or_default<double>("expansion", 1.0);
 			const unsigned int depth=cargs.input.get_value_or_default<unsigned int>("depth", 2);
+			const int weight_power=cargs.input.get_value_or_default<int>("weight-power", 3);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3794,7 +3795,7 @@ public:
 
 					if(s.r>probe_max || q.get_min_max().second>=balls.size())
 					{
-						t_vertex_weight=probe_max*probe_max*probe_max;
+						t_vertex_weight=std::pow(probe_max, weight_power);
 					}
 					else
 					{
@@ -3819,7 +3820,7 @@ public:
 							const double max_d_sum=N*(1.0/tan(pi/(2.0*N)));
 							t_vertex_value=std::min(d_sum/max_d_sum, 1.0);
 						}
-						t_vertex_weight=s.r*s.r*s.r;
+						t_vertex_weight=std::pow(s.r, weight_power);
 					}
 
 					for(std::size_t j=0;j<N;j++)
