@@ -40,6 +40,7 @@ public:
 		std::string match_tags_not;
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
+		std::map<std::string, std::string> special_match_crad_map;
 
 		explicit TesterOfAtom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
@@ -85,6 +86,7 @@ public:
 		{
 			if(
 					common::MatchingUtilities::match_crad(atom.crad, match_crad, match_crad_not) &&
+					check_crad_with_special_match_crad_map(atom.crad) &&
 					common::MatchingUtilities::match_set_of_tags(atom.value.props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
@@ -99,6 +101,7 @@ public:
 			const common::PropertiesValue props;
 			if(
 					common::MatchingUtilities::match_crad(crad, match_crad, match_crad_not) &&
+					check_crad_with_special_match_crad_map(crad) &&
 					common::MatchingUtilities::match_set_of_tags(props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
@@ -106,6 +109,22 @@ public:
 				return true;
 			}
 			return false;
+		}
+
+	private:
+		bool check_crad_with_special_match_crad_map(const common::ChainResidueAtomDescriptor& crad) const
+		{
+			if(!special_match_crad_map.empty())
+			{
+				for(std::map<std::string, std::string>::const_iterator it=special_match_crad_map.begin();it!=special_match_crad_map.end();++it)
+				{
+					if(!common::MatchingUtilities::match_crad(crad, it->second, ""))
+					{
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 	};
 
@@ -527,6 +546,36 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			else if(token=="--adjuncts-not" || token=="--v!")
 			{
 				input >> tester.match_adjuncts_not;
+			}
+			else if(token=="--chain" || token=="--c")
+			{
+				std::string raw_value;
+				input >> raw_value;
+				tester.special_match_crad_map["chain"]=std::string("c<")+raw_value+">";
+			}
+			else if(token=="--residue-number" || token=="--rnum")
+			{
+				std::string raw_value;
+				input >> raw_value;
+				tester.special_match_crad_map["residue-number"]=std::string("r<")+raw_value+">";
+			}
+			else if(token=="--residue-name" || token=="--rname")
+			{
+				std::string raw_value;
+				input >> raw_value;
+				tester.special_match_crad_map["residue-name"]=std::string("R<")+raw_value+">";
+			}
+			else if(token=="--atom-number" || token=="--anum")
+			{
+				std::string raw_value;
+				input >> raw_value;
+				tester.special_match_crad_map["atom-number"]=std::string("a<")+raw_value+">";
+			}
+			else if(token=="--atom-name" || token=="--aname")
+			{
+				std::string raw_value;
+				input >> raw_value;
+				tester.special_match_crad_map["atom-name"]=std::string("A<")+raw_value+">";
 			}
 			else if(token_index==0
 					&& token.rfind("-", 0)!=0
