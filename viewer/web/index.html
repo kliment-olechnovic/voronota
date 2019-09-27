@@ -312,7 +312,7 @@ example_input_script=
 restrict-atoms {-t! het}
 construct-contacts
 voromqa-global
-voromqa-frustration -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem
+voromqa-frustration -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy-mean cfem -smoothing-iterations 1 -smoothing-depth 3
 hide-atoms
 show-atoms -rep balls
 color-atoms 0x555555
@@ -324,7 +324,7 @@ example_input_script=
 `#Example script: calculate VoroMQA hydrophobic belt
 construct-contacts
 voromqa-global
-voromqa-frustration -adj-contact-energy voromqa_energy -adj-atom-frustration-energy afe -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy cfe -adj-contact-frustration-energy-mean cfem -depth 3
+voromqa-frustration -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy-mean cfem -smoothing-iterations 1 -smoothing-depth 3
 voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value aopv -membrane-width 30 -membrane-width-extended 30
 hide-atoms
 show-atoms -rep balls
@@ -360,7 +360,7 @@ example_input_script=
 restrict-atoms {-t! het}
 construct-contacts
 delete-adjuncts-of-atoms -adjuncts ev
-describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 2
+describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 2 -smoothing-depth 1
 hide-atoms
 show-atoms
 color-atoms 0x555555

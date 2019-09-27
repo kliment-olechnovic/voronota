@@ -3284,11 +3284,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_energy=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
-			const std::string adjunct_contact_frustration_area=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-area", "");
-			const std::string adjunct_contact_frustration_energy=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-energy", "");
 			const std::string adjunct_contact_frustration_energy_mean=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-energy-mean", "frustration_energy_mean");
-			const std::string adjunct_atom_frustration_area=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-area", "");
-			const std::string adjunct_atom_frustration_energy=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy", "");
 			const std::string adjunct_atom_frustration_energy_mean=cargs.input.get_value_or_default<std::string>("adj-atom-frustration-energy-mean", "frustration_energy_mean");
 			const unsigned int smoothing_iterations=cargs.input.get_value_or_default<unsigned int>("smoothing-iterations", 1);
 			const unsigned int smoothing_depth=cargs.input.get_value_or_default<unsigned int>("smoothing-depth", 3);
@@ -3296,11 +3292,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_contact_energy, false);
-			assert_adjunct_name_input(adjunct_contact_frustration_area, true);
-			assert_adjunct_name_input(adjunct_contact_frustration_energy, true);
 			assert_adjunct_name_input(adjunct_contact_frustration_energy_mean, true);
-			assert_adjunct_name_input(adjunct_atom_frustration_area, true);
-			assert_adjunct_name_input(adjunct_atom_frustration_energy, true);
 			assert_adjunct_name_input(adjunct_atom_frustration_energy_mean, true);
 
 			const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
@@ -3382,46 +3374,27 @@ public:
 						sum_of_energies+=atom_solvent_contact_energy_means[jt->first]*atom_solvent_contact_areas[jt->first];
 					}
 
-					const double energy_mean=(sum_of_areas>0.0 ? (sum_of_energies/sum_of_areas) : 0.0);
-
-					updated_atom_solvent_contact_energy_means[central_id]=energy_mean;
-
-					if(!adjunct_contact_frustration_area.empty() || !adjunct_contact_frustration_energy.empty() || !adjunct_contact_frustration_energy_mean.empty())
-					{
-						Contact& contact=cargs.data_manager.contacts_mutable()[atom_solvent_contact_ids[central_id]];
-						if(!adjunct_contact_frustration_area.empty())
-						{
-							contact.value.props.adjuncts[adjunct_contact_frustration_area]=sum_of_areas;
-						}
-						if(!adjunct_contact_frustration_energy.empty())
-						{
-							contact.value.props.adjuncts[adjunct_contact_frustration_energy]=sum_of_energies;
-						}
-						if(!adjunct_contact_frustration_energy_mean.empty())
-						{
-							contact.value.props.adjuncts[adjunct_contact_frustration_energy_mean]=energy_mean;
-						}
-					}
-
-					if(!adjunct_atom_frustration_area.empty() || !adjunct_atom_frustration_energy.empty() || !adjunct_atom_frustration_energy_mean.empty())
-					{
-						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
-						if(!adjunct_atom_frustration_area.empty())
-						{
-							atom.value.props.adjuncts[adjunct_atom_frustration_area]=sum_of_areas;
-						}
-						if(!adjunct_atom_frustration_energy.empty())
-						{
-							atom.value.props.adjuncts[adjunct_atom_frustration_energy]=sum_of_energies;
-						}
-						if(!adjunct_atom_frustration_energy_mean.empty())
-						{
-							atom.value.props.adjuncts[adjunct_atom_frustration_energy_mean]=energy_mean;
-						}
-					}
+					updated_atom_solvent_contact_energy_means[central_id]=(sum_of_areas>0.0 ? (sum_of_energies/sum_of_areas) : 0.0);
 				}
 
 				atom_solvent_contact_energy_means.swap(updated_atom_solvent_contact_energy_means);
+			}
+
+			for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+			{
+				const std::size_t central_id=(*it);
+
+				if(!adjunct_contact_frustration_energy_mean.empty())
+				{
+					Contact& contact=cargs.data_manager.contacts_mutable()[atom_solvent_contact_ids[central_id]];
+					contact.value.props.adjuncts[adjunct_contact_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+				}
+
+				if(!adjunct_atom_frustration_energy_mean.empty())
+				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+					atom.value.props.adjuncts[adjunct_atom_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+				}
 			}
 		}
 	};
