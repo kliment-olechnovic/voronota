@@ -360,7 +360,7 @@ example_input_script=
 restrict-atoms {-t! het}
 construct-contacts
 delete-adjuncts-of-atoms -adjuncts ev
-describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -depth 2
+describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 2
 hide-atoms
 show-atoms
 color-atoms 0x555555
