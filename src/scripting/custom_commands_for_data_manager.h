@@ -30,6 +30,12 @@ public:
 		}
 
 	protected:
+		void document(CommandDocumentation& doc) const
+		{
+			doc.set_short_description("Restrict atoms by keeping only the selected ones.");
+			document_generic_selecting_query(doc);
+		}
+
 		void run(CommandArguments& cargs)
 		{
 			cargs.data_manager.assert_atoms_availability();
@@ -71,6 +77,16 @@ public:
 		}
 
 	protected:
+		void document(CommandDocumentation& doc) const
+		{
+			doc.set_short_description("Transform coordinates of atoms.");
+			document_generic_selecting_query(doc);
+			doc.set_option_decription("translate-before", "3 numeric values", "translation vector to apply before rotation");
+			doc.set_option_decription("rotate-by-matrix", "9 numeric values", "3x3 rotation matrix");
+			doc.set_option_decription("rotate-by-axis-and-angle", "4 numeric values", "axis and angle for rotation");
+			doc.set_option_decription("translate", "3 numeric values", "translation vector to apply after rotation");
+		}
+
 		void run(CommandArguments& cargs)
 		{
 			cargs.data_manager.assert_atoms_availability();
@@ -84,9 +100,9 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
-			if(ids.size()<4)
+			if(ids.empty())
 			{
-				throw std::runtime_error(std::string("Less than 4 atoms selected."));
+				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
 			cargs.data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, rotation_matrix, rotation_axis_and_angle, post_translation_vector);
@@ -3976,6 +3992,18 @@ private:
 	static SelectionManager::Query read_generic_selecting_query(CommandInput& input)
 	{
 		return read_generic_selecting_query("", "{}", input);
+	}
+
+	static void document_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandDocumentation& doc)
+	{
+		doc.set_option_decription(prefix+"use", "string", "selection expression, default is "+default_expression);
+		doc.set_option_decription(prefix+"full-residues", "boolean flag", "flag to select full residues");
+		doc.set_option_decription(prefix+"id", "vector of numbers", "one or more indices");
+	}
+
+	static void document_generic_selecting_query(CommandDocumentation& doc)
+	{
+		document_generic_selecting_query("", "{}", doc);
 	}
 
 	static auxiliaries::ColorUtilities::ColorInteger read_color(CommandInput& input)

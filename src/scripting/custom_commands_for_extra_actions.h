@@ -307,12 +307,7 @@ public:
 
 			info.value("command")=name;
 
-			info.value("short_description")=doc.get_short_description();
-
-			if(!doc.get_full_description().empty())
-			{
-				info.value("full_description")=doc.get_full_description();
-			}
+			info.value("description")=doc.get_full_description();
 
 			if(!doc.get_option_descriptions().empty())
 			{
@@ -324,7 +319,7 @@ public:
 					VariantObject obj;
 					obj.value("name")=od.name;
 					obj.value("required")=od.required;
-					obj.value("value_type")=od.value_type;
+					obj.value("type")=od.value_type;
 					obj.value("description")=od.description;
 					output_array.push_back(obj);
 				}

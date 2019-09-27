@@ -108,6 +108,16 @@ public:
 		}
 	}
 
+	void set_option_decription(const std::string& name, const std::string& value_type, const std::string& description)
+	{
+		set_option_decription(OptionDescription(name, value_type, description));
+	}
+
+	void set_option_decription(const std::string& name, const std::string& value_type, const std::string& description, const bool required)
+	{
+		set_option_decription(OptionDescription(name, value_type, description, required));
+	}
+
 	void delete_option_decription(const std::string& name)
 	{
 		std::vector<OptionDescription>::iterator it=std::find(option_descriptions_.begin(), option_descriptions_.end(), name);
