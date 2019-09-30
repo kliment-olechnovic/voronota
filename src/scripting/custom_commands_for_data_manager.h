@@ -862,10 +862,11 @@ public:
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
 			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+			const bool as_z_scores=cargs.input.get_flag("as-z-scores");
 			const bool min_val_present=cargs.input.is_option("min-val");
-			const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+			const double min_val=cargs.input.get_value_or_default<double>("min-val", (as_z_scores ? -2.0 : 0.0));
 			const bool max_val_present=cargs.input.is_option("max-val");
-			const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+			const double max_val=cargs.input.get_value_or_default<double>("max-val", (as_z_scores ? 2.0 : 1.0));
 			const bool only_summarize=cargs.input.get_flag("only-summarize");
 
 			cargs.input.assert_nothing_unusable();
@@ -978,46 +979,22 @@ public:
 
 			double min_val_actual=0.0;
 			double max_val_actual=0.0;
+			int num_of_vals=0;
+			double mean_of_values=0.0;
+			double sd_of_values=0.0;
 
-			{
-				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
-				{
-					const double val=it->second;
-					if(it==map_of_ids_values.begin() || min_val_actual>val)
-					{
-						min_val_actual=val;
-					}
-					if(it==map_of_ids_values.begin() || max_val_actual<val)
-					{
-						max_val_actual=val;
-					}
-				}
-
-				const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
-				const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
-
-				if(max_val_to_use<=min_val_to_use)
-				{
-					throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
-				}
-
-				for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
-				{
-					double& val=it->second;
-					if(val<=min_val_to_use)
-					{
-						val=0.0;
-					}
-					else if(val>=max_val_to_use)
-					{
-						val=1.0;
-					}
-					else
-					{
-						val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
-					}
-				}
-			}
+			calculate_spectrum_info(
+					as_z_scores,
+					min_val_present,
+					min_val,
+					max_val_present,
+					max_val,
+					min_val_actual,
+					max_val_actual,
+					num_of_vals,
+					mean_of_values,
+					sd_of_values,
+					map_of_ids_values);
 
 			if(!only_summarize)
 			{
@@ -1041,6 +1018,9 @@ public:
 				VariantObject& info=cargs.heterostorage.variant_object.object("spectrum_summary");
 				info.value("min_value")=min_val_actual;
 				info.value("max_value")=max_val_actual;
+				info.value("number_of_values")=num_of_vals;
+				info.value("mean_of_values")=mean_of_values;
+				info.value("sd_of_values")=sd_of_values;
 			}
 		}
 	};
@@ -2575,10 +2555,11 @@ public:
 			const std::string adjunct=cargs.input.get_value_or_default<std::string>("adjunct", "");
 			const std::string by=adjunct.empty() ? cargs.input.get_value<std::string>("by") : std::string("adjunct");
 			const std::string scheme=cargs.input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
+			const bool as_z_scores=cargs.input.get_flag("as-z-scores");
 			const bool min_val_present=cargs.input.is_option("min-val");
-			const double min_val=cargs.input.get_value_or_default<double>("min-val", 0.0);
+			const double min_val=cargs.input.get_value_or_default<double>("min-val", (as_z_scores ? -2.0 : 0.0));
 			const bool max_val_present=cargs.input.is_option("max-val");
-			const double max_val=cargs.input.get_value_or_default<double>("max-val", 1.0);
+			const double max_val=cargs.input.get_value_or_default<double>("max-val", (as_z_scores ? 2.0 : 1.0));
 			const bool only_summarize=cargs.input.get_flag("only-summarize");
 
 			cargs.input.assert_nothing_unusable();
@@ -2696,46 +2677,22 @@ public:
 
 			double min_val_actual=0.0;
 			double max_val_actual=0.0;
+			int num_of_vals=0;
+			double mean_of_values=0.0;
+			double sd_of_values=0.0;
 
-			{
-				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
-				{
-					const double val=it->second;
-					if(it==map_of_ids_values.begin() || min_val_actual>val)
-					{
-						min_val_actual=val;
-					}
-					if(it==map_of_ids_values.begin() || max_val_actual<val)
-					{
-						max_val_actual=val;
-					}
-				}
-
-				const double min_val_to_use=(min_val_present ? min_val : min_val_actual);
-				const double max_val_to_use=(max_val_present ? max_val : max_val_actual);
-
-				if(max_val_to_use<=min_val_to_use)
-				{
-					throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
-				}
-
-				for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
-				{
-					double& val=it->second;
-					if(val<=min_val_to_use)
-					{
-						val=0.0;
-					}
-					else if(val>=max_val_to_use)
-					{
-						val=1.0;
-					}
-					else
-					{
-						val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
-					}
-				}
-			}
+			calculate_spectrum_info(
+					as_z_scores,
+					min_val_present,
+					min_val,
+					max_val_present,
+					max_val,
+					min_val_actual,
+					max_val_actual,
+					num_of_vals,
+					mean_of_values,
+					sd_of_values,
+					map_of_ids_values);
 
 			if(!only_summarize)
 			{
@@ -2759,6 +2716,9 @@ public:
 				VariantObject& info=cargs.heterostorage.variant_object.object("spectrum_summary");
 				info.value("min_value")=min_val_actual;
 				info.value("max_value")=max_val_actual;
+				info.value("number_of_values")=num_of_vals;
+				info.value("mean_of_values")=mean_of_values;
+				info.value("sd_of_values")=sd_of_values;
 			}
 		}
 	};
@@ -4032,6 +3992,78 @@ private:
 			}
 		}
 		return auxiliaries::ColorUtilities::null_color();
+	}
+
+	static double calculate_zscore_reverse(const double zscore, const double mean_of_values, const double sd_of_values)
+	{
+		return ((zscore*sd_of_values)+mean_of_values);
+	}
+
+	static void calculate_spectrum_info(
+			const bool as_z_scores,
+			const bool min_val_present,
+			const double min_val,
+			const bool max_val_present,
+			const double max_val,
+			double& min_val_actual,
+			double& max_val_actual,
+			int& num_of_vals,
+			double& mean_of_values,
+			double& sd_of_values,
+			std::map<std::size_t, double>& map_of_ids_values)
+	{
+		{
+			double sum_of_vals=0.0;
+			double sum_of_squared_vals=0.0;
+
+			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			{
+				const double val=it->second;
+				if(it==map_of_ids_values.begin() || min_val_actual>val)
+				{
+					min_val_actual=val;
+				}
+				if(it==map_of_ids_values.begin() || max_val_actual<val)
+				{
+					max_val_actual=val;
+				}
+				num_of_vals++;
+				sum_of_vals+=val;
+				sum_of_squared_vals+=val*val;
+			}
+
+			mean_of_values=(sum_of_vals/static_cast<double>(num_of_vals));
+			sd_of_values=sqrt((sum_of_squared_vals/static_cast<double>(num_of_vals))-(mean_of_values*mean_of_values));
+		}
+
+		const double min_val_to_use=(min_val_present ?
+				(as_z_scores ? calculate_zscore_reverse(min_val, mean_of_values, sd_of_values) : min_val) :
+				min_val_actual);
+		const double max_val_to_use=(max_val_present ?
+				(as_z_scores ? calculate_zscore_reverse(max_val, mean_of_values, sd_of_values) : max_val) :
+				max_val_actual);
+
+		if(max_val_to_use<=min_val_to_use)
+		{
+			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
+		}
+
+		for(std::map<std::size_t, double>::iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+		{
+			double& val=it->second;
+			if(val<=min_val_to_use)
+			{
+				val=0.0;
+			}
+			else if(val>=max_val_to_use)
+			{
+				val=1.0;
+			}
+			else
+			{
+				val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
+			}
+		}
 	}
 };
 

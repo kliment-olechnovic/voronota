@@ -616,7 +616,10 @@
           "volume":41027.8},
         "spectrum_summary":{
           "min_value":2,
-          "max_value":229}},
+          "max_value":229,
+          "number_of_values":1717,
+          "mean_of_values":116.207,
+          "sd_of_values":65.0001}},
       "success":true},
     {
       "line":"write-cartoon-as-pymol-cgo {r<45:60>&A<CA>} -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",

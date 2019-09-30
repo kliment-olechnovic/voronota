@@ -173,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 135, "filename": "/startup_script.vvs"}], "remote_package_size": 135, "package_uuid": "dace5e99-4574-48c5-9a51-c9f43fcb4ac7"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 135, "filename": "/startup_script.vvs"}], "remote_package_size": 135, "package_uuid": "9b264208-1f4e-44c4-8174-9b3677d60783"});
 
 })();
