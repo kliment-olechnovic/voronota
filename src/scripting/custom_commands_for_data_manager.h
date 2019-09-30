@@ -30,11 +30,11 @@ public:
 		}
 
 	protected:
-		void document(CommandDocumentation& doc) const
-		{
-			doc.set_short_description("Restrict atoms by keeping only the selected ones.");
-			document_generic_selecting_query(doc);
-		}
+//		void document(CommandDocumentation& doc) const
+//		{
+//			doc.set_short_description("Restrict atoms by keeping only the selected ones.");
+//			document_generic_selecting_query(doc);
+//		}
 
 		void run(CommandArguments& cargs)
 		{
@@ -77,15 +77,15 @@ public:
 		}
 
 	protected:
-		void document(CommandDocumentation& doc) const
-		{
-			doc.set_short_description("Transform coordinates of atoms.");
-			document_generic_selecting_query(doc);
-			doc.set_option_decription("translate-before", "3 numeric values", "translation vector to apply before rotation");
-			doc.set_option_decription("rotate-by-matrix", "9 numeric values", "3x3 rotation matrix");
-			doc.set_option_decription("rotate-by-axis-and-angle", "4 numeric values", "axis and angle for rotation");
-			doc.set_option_decription("translate", "3 numeric values", "translation vector to apply after rotation");
-		}
+//		void document(CommandDocumentation& doc) const
+//		{
+//			doc.set_short_description("Transform coordinates of atoms.");
+//			document_generic_selecting_query(doc);
+//			doc.set_option_decription("translate-before", "3 numeric values", "translation vector to apply before rotation");
+//			doc.set_option_decription("rotate-by-matrix", "9 numeric values", "3x3 rotation matrix");
+//			doc.set_option_decription("rotate-by-axis-and-angle", "4 numeric values", "axis and angle for rotation");
+//			doc.set_option_decription("translate", "3 numeric values", "translation vector to apply after rotation");
+//		}
 
 		void run(CommandArguments& cargs)
 		{
