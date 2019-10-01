@@ -3733,7 +3733,7 @@ public:
 			const double expansion=cargs.input.get_value_or_default<double>("expansion", 1.0);
 			const unsigned int smoothing_iterations=cargs.input.get_value_or_default<unsigned int>("smoothing-iterations", 2);
 			const unsigned int smoothing_depth=cargs.input.get_value_or_default<unsigned int>("smoothing-depth", 1);
-			const int weight_power=cargs.input.get_value_or_default<int>("weight-power", 3);
+			const double weight_power=cargs.input.get_value_or_default<double>("weight-power", 3.0);
 			const bool use_sas_areas=cargs.input.get_flag("use-sas-areas");
 
 			cargs.input.assert_nothing_unusable();

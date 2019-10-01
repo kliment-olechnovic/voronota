@@ -163,6 +163,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 2146743, "filename": "/voromqa_v1_energy_potential"}], "remote_package_size": 800407, "package_uuid": "07f8e79e-c6ec-46b5-8489-84193faab0a4"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 2146743, "filename": "/voromqa_v1_energy_potential"}], "remote_package_size": 800407, "package_uuid": "6c804106-38e8-4bcd-9a86-1f8d2e083c0e"});
 
 })();

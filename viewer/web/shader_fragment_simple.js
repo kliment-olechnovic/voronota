@@ -173,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1440, "filename": "/shader_fragment_simple.glsl"}], "remote_package_size": 1440, "package_uuid": "aa072e22-4d16-4011-abfe-839a4d0af2a1"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1440, "filename": "/shader_fragment_simple.glsl"}], "remote_package_size": 1440, "package_uuid": "10b77ee9-ad94-4167-9efa-67ee07d75967"});
 
 })();
