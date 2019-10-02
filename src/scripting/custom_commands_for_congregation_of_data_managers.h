@@ -325,7 +325,7 @@ public:
 			const std::string target_name=cargs.input.get_value<std::string>("target");
 			const std::string model_name=cargs.input.get_value<std::string>("model");
 			ScoringOfDataManagersUsingCADScore::Parameters params;
-			params.target_selection_expression=cargs.input.get_value_or_default<std::string>("t-sel", "{--no-solvent --min-seq-sep 1}");
+			params.target_selection_expression=cargs.input.get_value_or_default<std::string>("t-sel", "[--no-solvent --min-seq-sep 1]");
 			params.model_selection_expression=cargs.input.get_value_or_default<std::string>("m-sel", params.target_selection_expression);
 			params.target_adjunct_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-atom", "");
 			params.target_adjunct_inter_atom_scores=cargs.input.get_value_or_default<std::string>("t-adj-inter-atom", "");

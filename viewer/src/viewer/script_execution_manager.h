@@ -257,8 +257,8 @@ private:
 
 		script_partitioner().set_alias("modify-just-loaded-object", "tag-atoms-by-secondary-structure");
 		script_partitioner().set_alias("zoom-just-loaded-object", "zoom-by-atoms");
-		script_partitioner().set_alias("show-just-loaded-object", "hide-atoms ; hide-contacts ; show-atoms {-t! het} -rep cartoon ; show-atoms {-t het} -rep sticks");
-		script_partitioner().set_alias("color-just-loaded-object", "spectrum-atoms {-t! het} ; color-atoms {-t het} -col 0x007777");
+		script_partitioner().set_alias("show-just-loaded-object", "hide-atoms ; hide-contacts ; show-atoms [-t! het] -rep cartoon ; show-atoms [-t het] -rep sticks");
+		script_partitioner().set_alias("color-just-loaded-object", "spectrum-atoms [-t! het] ; color-atoms [-t het] -col 0x007777");
 		script_partitioner().set_alias("process-just-loaded-object", "modify-just-loaded-object ; zoom-just-loaded-object ; show-just-loaded-object ; color-just-loaded-object");
 	}
 

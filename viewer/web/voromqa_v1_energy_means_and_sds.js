@@ -173,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 4902, "filename": "/voromqa_v1_energy_means_and_sds"}], "remote_package_size": 4902, "package_uuid": "f82f59b9-3084-4622-81a1-44d383ad83ba"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 4902, "filename": "/voromqa_v1_energy_means_and_sds"}], "remote_package_size": 4902, "package_uuid": "8bc68bf4-70d3-4958-927c-f005692bdc89"});
 
 })();

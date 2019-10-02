@@ -149,7 +149,7 @@ public:
 		{
 			if(input_str[i]=='-' && (i+1)<input_str.size())
 			{
-				if(i==0 || input_str[i-1]<=' ' || input_str[i-1]=='{' || input_str[i-1]=='(')
+				if(i==0 || input_str[i-1]<=' ' || input_str[i-1]=='[' || input_str[i-1]=='(')
 				{
 					if((input_str[i+1]>='a' && input_str[i+1]<='z') || (input_str[i+1]>='A' && input_str[i+1]<='Z'))
 					{

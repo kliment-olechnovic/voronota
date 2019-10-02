@@ -18,7 +18,7 @@ public:
 		bool full_residues;
 
 		Query() :
-			expression_string("{}"),
+			expression_string("[]"),
 			full_residues(false)
 		{
 		}
@@ -446,7 +446,7 @@ private:
 				else if(c>0)
 				{
 					last_nws=c;
-					if(c=='{' || c=='}' || c=='(' || c==')')
+					if(c=='[' || c==']' || c=='(' || c==')')
 					{
 						if(!prepared_string.empty() && prepared_string[prepared_string.size()-1]>32)
 						{

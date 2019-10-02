@@ -106,14 +106,14 @@ public:
 
 		std::string selection_expression=""
 				"( "
-				" { "
+				" [ "
 				"  --min-seq-sep 1 "
-				"  --atom1 { --match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE> } "
-				"  --atom2 { --match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>|c<solvent> } "
-				" } "
+				"  --atom1 [ --match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE> ] "
+				"  --atom2 [ --match R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>|c<solvent> ] "
+				" ] "
 				" and "
 				" ( "
-				"  not { --atom1 { --match A<C> } --atom2 { --match A<N> } --max-dist 1.6 --max-seq-sep 1 } "
+				"  not [ --atom1 [ --match A<C> ] --atom2 [ --match A<N> ] --max-dist 1.6 --max-seq-sep 1 ] "
 				" ) "
 				")";
 

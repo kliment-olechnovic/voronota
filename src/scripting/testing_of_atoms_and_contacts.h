@@ -469,7 +469,7 @@ inline bool read_tester_flag_value(std::istream& input)
 	}
 
 	const char opener=std::char_traits<char>::to_char_type(input.peek());
-	if(opener=='-' || opener=='}')
+	if(opener=='-' || opener==']')
 	{
 		return true;
 	}
@@ -499,7 +499,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	std::string token;
 	input >> token;
 
-	if(token!="{")
+	if(token!="[")
 	{
 		throw std::runtime_error(std::string("Invalid atom tester string start."));
 	}
@@ -511,7 +511,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		{
 			input >> token;
 
-			if(token=="}")
+			if(token=="]")
 			{
 				end=true;
 			}
@@ -625,7 +625,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	std::string token;
 	input >> token;
 
-	if(token!="{")
+	if(token!="[")
 	{
 		throw std::runtime_error(std::string("Invalid contact tester string start."));
 	}
@@ -637,7 +637,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 		{
 			input >> token;
 
-			if(token=="}")
+			if(token=="]")
 			{
 				end=true;
 			}
@@ -766,7 +766,7 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	{
 		throw std::runtime_error(std::string("Nothing to read for expression token."));
 	}
-	else if(c==std::char_traits<char>::to_int_type('{'))
+	else if(c==std::char_traits<char>::to_int_type('['))
 	{
 		input >> token.tester;
 		token.type=Token::TYPE_TESTER;

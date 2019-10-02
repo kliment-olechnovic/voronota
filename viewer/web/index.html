@@ -255,23 +255,23 @@ example_input_script=
 `#Example script: draw and show interface contacts
 spectrum-atoms -by chain
 construct-contacts
-select-contacts {-inter-chain} -name iface
-make-drawable-contacts {iface}
+select-contacts [-inter-chain] -name iface
+make-drawable-contacts [iface]
 show-contacts
 color-contacts -col yellow
-select-atoms ({-sel-of-contacts iface} and {c<A>}) -full-residues -name iface_atoms_A
-select-atoms ({-sel-of-contacts iface} and {c<B>}) -full-residues -name iface_atoms_B
+select-atoms ([-sel-of-contacts iface] and [c<A>]) -full-residues -name iface_atoms_A
+select-atoms ([-sel-of-contacts iface] and [c<B>]) -full-residues -name iface_atoms_B
 unmark-atoms
-show-atoms {iface_atoms_A} -rep sticks
-show-atoms {iface_atoms_B} -rep sticks
-color-atoms {iface_atoms_A} 0xFF7700 -rep sticks
-color-atoms {iface_atoms_B} 0x0077FF -rep sticks
+show-atoms [iface_atoms_A] -rep sticks
+show-atoms [iface_atoms_B] -rep sticks
+color-atoms [iface_atoms_A] 0xFF7700 -rep sticks
+color-atoms [iface_atoms_B] 0x0077FF -rep sticks
 list-selections-of-contacts
 list-selections-of-atoms
-select-contacts {-a1 {iface_atoms_A} -solvent} -name iface_atoms_A_sas
-make-drawable-contacts {iface_atoms_A_sas}
-show-contacts {iface_atoms_A_sas}
-color-contacts {iface_atoms_A_sas} -col 0x77FFFF`;
+select-contacts [-a1 [iface_atoms_A] -solvent] -name iface_atoms_A_sas
+make-drawable-contacts [iface_atoms_A_sas]
+show-contacts [iface_atoms_A_sas]
+color-contacts [iface_atoms_A_sas] -col 0x77FFFF`;
 				}
 				else if(name==='background')
 				{
@@ -299,7 +299,7 @@ list-selections-of-contacts`;
 				{
 example_input_script=
 `#Example script: calculate VoroMQA global and local scores
-restrict-atoms {-t! het}
+restrict-atoms [-t! het]
 construct-contacts
 voromqa-global
 spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75`;
@@ -308,8 +308,8 @@ spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75`
 				{
 example_input_script=
 `#Example script: calculate VoroMQA surface frustration scores
-#restrict-atoms {c<A>}
-restrict-atoms {-t! het}
+#restrict-atoms [c<A>]
+restrict-atoms [-t! het]
 construct-contacts
 voromqa-global
 voromqa-frustration -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy-mean cfem -smoothing-iterations 1 -smoothing-depth 3
@@ -338,26 +338,26 @@ example_input_script=
 hide-atoms
 show-atoms -rep sticks
 color-atoms 0xAAAAAA
-select-atoms {-t het} -name ligand
-color-atoms {ligand} 0x0011BB
+select-atoms [-t het] -name ligand
+color-atoms [ligand] 0x0011BB
 construct-contacts
-select-contacts {-a1{ligand}} -name iface
-make-drawable-contacts {iface}
+select-contacts [-a1[ligand]] -name iface
+make-drawable-contacts [iface]
 show-contacts
-color-contacts {iface} -col yellow
-color-contacts ({iface} and {-solvent}) -col cyan
-select-atoms ({-sel-of-contacts iface} and (not {ligand})) -name prot_to_lig
-color-atoms {prot_to_lig} -full-residues -col 0x00AA00
-color-atoms {prot_to_lig} -col 0xFF2200
+color-contacts [iface] -col yellow
+color-contacts ([iface] and [-solvent]) -col cyan
+select-atoms ([-sel-of-contacts iface] and (not [ligand])) -name prot_to_lig
+color-atoms [prot_to_lig] -full-residues -col 0x00AA00
+color-atoms [prot_to_lig] -col 0xFF2200
 hide-atoms -rep sticks
-show-atoms ({prot_to_lig} or {ligand}) -full-residues -rep sticks
+show-atoms ([prot_to_lig] or [ligand]) -full-residues -rep sticks
 show-atoms -rep cartoon`;
 				}
 				else if(name==='exposure')
 				{
 example_input_script=
 `#Example script: calculate exposure
-restrict-atoms {-t! het}
+restrict-atoms [-t! het]
 construct-contacts
 delete-adjuncts-of-atoms -adjuncts ev
 describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 2 -smoothing-depth 1

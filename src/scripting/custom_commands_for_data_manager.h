@@ -1820,7 +1820,7 @@ public:
 			parameters_to_draw_contacts.projections=cargs.input.get_value_or_default<int>("projections", parameters_to_draw_contacts.projections);
 			parameters_to_draw_contacts.simplify=cargs.input.get_flag("simplify");
 			parameters_to_draw_contacts.sih_depth=cargs.input.get_value_or_default<int>("sih-depth", parameters_to_draw_contacts.sih_depth);
-			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query("", "{--min-seq-sep 1}", cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query("", "[--min-seq-sep 1]", cargs.input);
 
 			cargs.input.assert_nothing_unusable();
 
@@ -3156,9 +3156,9 @@ public:
 		{
 			cargs.data_manager.assert_atoms_availability();
 
-			const std::string selection_expresion_for_atoms=cargs.input.get_value_or_default<std::string>("atoms", "{}");
+			const std::string selection_expresion_for_atoms=cargs.input.get_value_or_default<std::string>("atoms", "[]");
 			const bool provided_selection_expresion_for_contacts=cargs.input.is_option("contacts");
-			const std::string selection_expresion_for_contacts=cargs.input.get_value_or_default<std::string>("contacts", "{}");
+			const std::string selection_expresion_for_contacts=cargs.input.get_value_or_default<std::string>("contacts", "[]");
 			const std::string adjunct_inter_atom_energy_scores_raw=cargs.input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 			const std::string adjunct_atom_depth_weights=cargs.input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 			const std::string adjunct_atom_quality_scores=cargs.input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
@@ -3193,7 +3193,7 @@ public:
 				}
 
 				const std::set<std::size_t> atom_ids_with_adjuncts=cargs.data_manager.selection_manager().select_atoms(
-						SelectionManager::Query(atom_ids, (std::string("{")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores+"}"), false));
+						SelectionManager::Query(atom_ids, (std::string("[")+"--adjuncts "+adjunct_atom_depth_weights+"&"+adjunct_atom_quality_scores+"]"), false));
 
 				double sum_of_atom_weights=0.0;
 				double sum_of_atom_weighted_scores=0.0;
@@ -3223,7 +3223,7 @@ public:
 				}
 
 				const std::set<std::size_t> contact_ids_with_adjuncts=cargs.data_manager.selection_manager().select_contacts(
-						SelectionManager::Query(contact_ids, (std::string("{")+"--adjuncts "+adjunct_inter_atom_energy_scores_raw+"}"), false));
+						SelectionManager::Query(contact_ids, (std::string("[")+"--adjuncts "+adjunct_inter_atom_energy_scores_raw+"]"), false));
 
 				double sum_of_areas=0.0;
 				double sum_of_energies=0.0;
@@ -3272,7 +3272,7 @@ public:
 			assert_adjunct_name_input(adjunct_atom_frustration_energy_mean, true);
 
 			const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-					SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_energy+"}", false));
+					SelectionManager::Query(std::string("[--solvent --adjuncts ")+adjunct_contact_energy+"]", false));
 
 			if(solvent_contact_ids.empty())
 			{
@@ -3282,7 +3282,7 @@ public:
 			const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
 
 			const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-					SelectionManager::Query("{--tags peripherial}", false));
+					SelectionManager::Query("[--tags peripherial]", false));
 
 			if(exterior_contact_ids.empty())
 			{
@@ -3412,7 +3412,7 @@ public:
 
 			{
 				const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-						SelectionManager::Query(std::string("{--solvent --adjuncts ")+adjunct_contact_frustration_value+"}", false));
+						SelectionManager::Query(std::string("[--solvent --adjuncts ")+adjunct_contact_frustration_value+"]", false));
 
 				if(solvent_contact_ids.empty())
 				{
@@ -3811,7 +3811,7 @@ public:
 
 			{
 				const std::set<std::size_t> solvent_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-						SelectionManager::Query(std::string("{--solvent}"), false));
+						SelectionManager::Query(std::string("[--solvent]"), false));
 
 				if(solvent_contact_ids.empty())
 				{
@@ -3830,7 +3830,7 @@ public:
 				const std::set<std::size_t> exterior_atom_ids=cargs.data_manager.selection_manager().select_atoms_by_contacts(solvent_contact_ids, false);
 
 				const std::set<std::size_t> exterior_contact_ids=cargs.data_manager.selection_manager().select_contacts(
-						SelectionManager::Query("{--tags peripherial}", false));
+						SelectionManager::Query("[--tags peripherial]", false));
 
 				if(exterior_contact_ids.empty())
 				{
@@ -3923,7 +3923,7 @@ private:
 				if(!input.is_unnamed_value_used(i))
 				{
 					const std::string& candidate=input.get_list_of_unnamed_values()[i];
-					if(!candidate.empty() && candidate.find_first_of("({")==0)
+					if(!candidate.empty() && candidate.find_first_of("([")==0)
 					{
 						query.expression_string=candidate;
 						input.mark_unnamed_value_as_used(i);
@@ -3951,7 +3951,7 @@ private:
 
 	static SelectionManager::Query read_generic_selecting_query(CommandInput& input)
 	{
-		return read_generic_selecting_query("", "{}", input);
+		return read_generic_selecting_query("", "[]", input);
 	}
 
 	static void document_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandDocumentation& doc)
@@ -3963,7 +3963,7 @@ private:
 
 	static void document_generic_selecting_query(CommandDocumentation& doc)
 	{
-		document_generic_selecting_query("", "{}", doc);
+		document_generic_selecting_query("", "[]", doc);
 	}
 
 	static auxiliaries::ColorUtilities::ColorInteger read_color(CommandInput& input)
