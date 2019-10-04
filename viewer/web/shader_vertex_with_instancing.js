@@ -173,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1419, "filename": "/shader_vertex_with_instancing.glsl"}], "remote_package_size": 1419, "package_uuid": "62b4cd92-fbbb-49ac-81de-0b5f0f76fa54"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1419, "filename": "/shader_vertex_with_instancing.glsl"}], "remote_package_size": 1419, "package_uuid": "f31b6199-3a3f-420d-8afa-01cf3352ae6d"});
 
 })();

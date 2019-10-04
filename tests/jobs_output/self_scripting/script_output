@@ -857,6 +857,9 @@
             "name":"explain-command",
             "short_description":""},
           {
+            "name":"find-connected-components",
+            "short_description":""},
+          {
             "name":"hide-atoms",
             "short_description":""},
           {
