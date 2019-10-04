@@ -341,6 +341,8 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
+			const bool compact=cargs.input.get_flag("compact");
+
 			cargs.input.assert_nothing_unusable();
 
 			const std::vector<std::string> names=collection_of_command_documentations_.get_all_names();
@@ -350,15 +352,27 @@ public:
 				throw std::runtime_error(std::string("No commands documented."));
 			}
 
-			std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("outlines");
-
-			for(std::size_t i=0;i<names.size();i++)
+			if(compact)
 			{
-				const CommandDocumentation doc=collection_of_command_documentations_.get_documentation(names[i]);
-				VariantObject obj;
-				obj.value("name")=names[i];
-				obj.value("short_description")=doc.get_short_description();
-				output_array.push_back(obj);
+				std::vector<VariantValue>& values_array=cargs.heterostorage.variant_object.values_array("names");
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					values_array.push_back(VariantValue(names[i]));
+				}
+			}
+			else
+			{
+				std::vector<VariantObject>& output_array=cargs.heterostorage.variant_object.objects_array("outlines");
+
+				for(std::size_t i=0;i<names.size();i++)
+				{
+					const CommandDocumentation doc=collection_of_command_documentations_.get_documentation(names[i]);
+					VariantObject obj;
+					obj.value("name")=names[i];
+					obj.value("short_description")=doc.get_short_description();
+					output_array.push_back(obj);
+				}
 			}
 		}
 
