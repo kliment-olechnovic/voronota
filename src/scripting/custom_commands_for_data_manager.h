@@ -3129,6 +3129,9 @@ public:
 			assert_adjunct_name_input(params.adjunct_residue_quality_scores_raw, true);
 			assert_adjunct_name_input(params.adjunct_residue_quality_scores_smoothed, true);
 
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+			cargs.change_indicator.changed_contacts_adjuncts=true;
+
 			ScoringOfDataManagerUsingVoroMQA::Result result;
 			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
 
@@ -3356,6 +3359,9 @@ public:
 				atom_solvent_contact_energy_means.swap(updated_atom_solvent_contact_energy_means);
 			}
 
+			cargs.change_indicator.changed_contacts_adjuncts=(!adjunct_contact_frustration_energy_mean.empty());
+			cargs.change_indicator.changed_atoms_adjuncts=(!adjunct_atom_frustration_energy_mean.empty());
+
 			for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
 			{
 				const std::size_t central_id=(*it);
@@ -3492,6 +3498,8 @@ public:
 			}
 
 			score_orientation(atom_descriptors, best_score.direction, membrane_width, membrane_width_extended);
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
 
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
@@ -3889,6 +3897,8 @@ public:
 					atoms_values.swap(updated_atoms_values);
 				}
 
+				cargs.change_indicator.changed_atoms_adjuncts=true;
+
 				for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
 				{
 					const std::size_t central_id=(*it);
@@ -3924,7 +3934,7 @@ public:
 
 			assert_adjunct_name_input(adjunct_component_number, false);
 
-			std::set<std::size_t> core_atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms_core);
+			const std::set<std::size_t> core_atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms_core);
 			if(core_atom_ids.empty())
 			{
 				throw std::runtime_error(std::string("No core atoms selected."));
