@@ -5,6 +5,7 @@
 #include "../common/construction_of_bonding_links.h"
 
 #include "selection_manager.h"
+#include "figure.h"
 
 namespace scripting
 {
@@ -16,22 +17,26 @@ public:
 	{
 		bool changed_atoms;
 		bool changed_contacts;
+		bool changed_figures;
 		bool changed_atoms_tags;
 		bool changed_contacts_tags;
 		bool changed_atoms_adjuncts;
 		bool changed_contacts_adjuncts;
 		bool changed_atoms_display_states;
 		bool changed_contacts_display_states;
+		bool changed_figures_display_states;
 
 		ChangeIndicator() :
 			changed_atoms(false),
 			changed_contacts(false),
+			changed_figures(false),
 			changed_atoms_tags(false),
 			changed_contacts_tags(false),
 			changed_atoms_adjuncts(false),
 			changed_contacts_adjuncts(false),
 			changed_atoms_display_states(false),
-			changed_contacts_display_states(false)
+			changed_contacts_display_states(false),
+			changed_figures_display_states(false)
 		{
 		}
 
@@ -44,18 +49,21 @@ public:
 			changed_contacts_adjuncts=(changed_contacts_adjuncts || changed_contacts);
 			changed_atoms_display_states=(changed_atoms_display_states || changed_atoms);
 			changed_contacts_display_states=(changed_contacts_display_states || changed_contacts);
+			changed_figures_display_states=(changed_figures_display_states || changed_figures);
 		}
 
 		bool changed() const
 		{
 			return (changed_atoms
 					|| changed_contacts
+					|| changed_figures
 					|| changed_atoms_tags
 					|| changed_contacts_tags
 					|| changed_atoms_adjuncts
 					|| changed_contacts_adjuncts
 					|| changed_atoms_display_states
-					|| changed_contacts_display_states);
+					|| changed_contacts_display_states
+					|| changed_figures_display_states);
 		}
 	};
 
@@ -170,10 +178,13 @@ public:
 	{
 		atoms_representations_descriptor_=dm.atoms_representations_descriptor_;
 		contacts_representations_descriptor_=dm.contacts_representations_descriptor_;
+		figures_representations_descriptor_=dm.figures_representations_descriptor_;
 		atoms_=dm.atoms_;
 		contacts_=dm.contacts_;
+		figures_=dm.figures_;
 		atoms_display_states_=dm.atoms_display_states_;
 		contacts_display_states_=dm.contacts_display_states_;
+		figures_display_states_=dm.figures_display_states_;
 		primary_structure_info_=dm.primary_structure_info_;
 		secondary_structure_info_=dm.secondary_structure_info_;
 		bonding_links_info_=dm.bonding_links_info_;
@@ -193,6 +204,11 @@ public:
 		return contacts_;
 	}
 
+	const std::vector<Figure>& figures() const
+	{
+		return figures_;
+	}
+
 	const std::vector<DisplayState>& atoms_display_states() const
 	{
 		return atoms_display_states_;
@@ -201,6 +217,11 @@ public:
 	const std::vector<DisplayState>& contacts_display_states() const
 	{
 		return contacts_display_states_;
+	}
+
+	const std::vector<DisplayState>& figures_display_states() const
+	{
+		return figures_display_states_;
 	}
 
 	const common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure& primary_structure_info() const
@@ -231,6 +252,11 @@ public:
 	const RepresentationsDescriptor& contacts_representation_descriptor() const
 	{
 		return contacts_representations_descriptor_;
+	}
+
+	const RepresentationsDescriptor& figures_representation_descriptor() const
+	{
+		return figures_representations_descriptor_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -311,6 +337,22 @@ public:
 		}
 	}
 
+	void assert_figures_representations_availability() const
+	{
+		if(figures_representations_descriptor_.names.empty())
+		{
+			throw std::runtime_error(std::string("No figures representations available."));
+		}
+	}
+
+	void assert_figures_availability() const
+	{
+		if(figures_.empty())
+		{
+			throw std::runtime_error(std::string("No figures available."));
+		}
+	}
+
 	bool is_any_atom_visible() const
 	{
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)
@@ -359,6 +401,30 @@ public:
 		return false;
 	}
 
+	bool is_any_figure_visible() const
+	{
+		for(std::size_t i=0;i<figures_display_states_.size();i++)
+		{
+			if(figures_display_states_[i].visible())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_figure_marked() const
+	{
+		for(std::size_t i=0;i<figures_display_states_.size();i++)
+		{
+			if(figures_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
 	{
 		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
@@ -379,6 +445,16 @@ public:
 		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
 	}
 
+	std::set<std::size_t> filter_figures_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(figures_display_states_, visual_ids, ids, only_visible);
+	}
+
+	std::set<std::size_t> filter_figures_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
+	{
+		return filter_drawable_implemented_ids(figures_display_states_, std::set<std::size_t>(), ids, only_visible);
+	}
+
 	SelectionManager& selection_manager()
 	{
 		return selection_manager_;
@@ -394,6 +470,11 @@ public:
 		return contacts_;
 	}
 
+	std::vector<Figure>& figures_mutable()
+	{
+		return figures_;
+	}
+
 	std::vector<DisplayState>& atoms_display_states_mutable()
 	{
 		return atoms_display_states_;
@@ -403,6 +484,12 @@ public:
 	{
 		return contacts_display_states_;
 	}
+
+	std::vector<DisplayState>& figures_display_states_mutable()
+	{
+		return figures_display_states_;
+	}
+
 
 	bool add_atoms_representations(const std::vector<std::string>& names)
 	{
@@ -419,6 +506,16 @@ public:
 		if(add_names_to_representations(names, contacts_representations_descriptor_.names))
 		{
 			resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
+			return true;
+		}
+		return false;
+	}
+
+	bool add_figures_representations(const std::vector<std::string>& names)
+	{
+		if(add_names_to_representations(names, figures_representations_descriptor_.names))
+		{
+			resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_);
 			return true;
 		}
 		return false;
@@ -444,6 +541,16 @@ public:
 		return false;
 	}
 
+	bool set_figures_representation_implemented_always(const std::size_t representation_id, const bool status)
+	{
+		if(set_representation_implemented_always(figures_representations_descriptor_.names, representation_id, status, figures_representations_descriptor_.implemented_always))
+		{
+			set_figures_representations_implemented_if_required_always();
+			return true;
+		}
+		return false;
+	}
+
 	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
 		return set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, atoms_display_states_);
@@ -452,6 +559,11 @@ public:
 	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
 		return set_representation_implemented(contacts_representations_descriptor_.names, representation_id, statuses, contacts_display_states_);
+	}
+
+	bool set_figures_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
+	{
+		return set_representation_implemented(figures_representations_descriptor_.names, representation_id, statuses, figures_display_states_);
 	}
 
 	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
@@ -863,6 +975,42 @@ public:
 		}
 	}
 
+	void remove_figures()
+	{
+		figures_.clear();
+		figures_display_states_.clear();
+	}
+
+	void add_figures(const std::vector<Figure>& new_figures)
+	{
+		std::vector<DisplayState> new_figures_display_states(new_figures.size());
+		for(std::size_t i=0;i<new_figures_display_states.size();i++)
+		{
+			new_figures_display_states[i].drawable=true;
+		}
+		resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), new_figures_display_states);
+		figures_.insert(figures_.end(), new_figures.begin(), new_figures.end());
+		figures_display_states_.insert(figures_display_states_.end(), new_figures_display_states.begin(), new_figures_display_states.end());
+		set_figures_representations_implemented_if_required_always();
+	}
+
+	void add_figure(const Figure& figure)
+	{
+		add_figures(std::vector<Figure>(1, figure));
+	}
+
+	void reset_figures_display_states()
+	{
+		figures_display_states_.clear();
+		figures_display_states_.resize(contacts_.size());
+		for(std::size_t i=0;i<figures_display_states_.size();i++)
+		{
+			figures_display_states_[i].drawable=true;
+		}
+		resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_);
+		set_figures_representations_implemented_if_required_always();
+	}
+
 	void sync_atoms_selections_with_display_states()
 	{
 		if(!atoms_display_states_.empty())
@@ -1137,6 +1285,17 @@ private:
 		}
 	}
 
+	void set_figures_representations_implemented_if_required_always()
+	{
+		if(!figures_representations_descriptor_.implemented_always.empty() && !figures_.empty())
+		{
+			for(std::set<std::size_t>::const_iterator it=figures_representations_descriptor_.implemented_always.begin();it!=figures_representations_descriptor_.implemented_always.end();++it)
+			{
+				set_figures_representation_implemented(*it, std::vector<bool>(figures_.size(), true));
+			}
+		}
+	}
+
 	void reset_data_dependent_on_atoms()
 	{
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)
@@ -1186,10 +1345,13 @@ private:
 
 	RepresentationsDescriptor atoms_representations_descriptor_;
 	RepresentationsDescriptor contacts_representations_descriptor_;
+	RepresentationsDescriptor figures_representations_descriptor_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
+	std::vector<Figure> figures_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
+	std::vector<DisplayState> figures_display_states_;
 	common::ConstructionOfPrimaryStructure::BundleOfPrimaryStructure primary_structure_info_;
 	common::ConstructionOfSecondaryStructure::BundleOfSecondaryStructure secondary_structure_info_;
 	common::ConstructionOfBondingLinks::BundleOfBondingLinks bonding_links_info_;

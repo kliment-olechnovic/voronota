@@ -52,6 +52,7 @@ public:
 		bool contacts_faces;
 		bool contacts_sasmesh;
 		bool contacts_edges;
+		bool figures_solid;
 
 		explicit DrawingRequest(const bool status) :
 			atoms_balls(status),
@@ -60,7 +61,8 @@ public:
 			atoms_cartoon(status),
 			contacts_faces(status),
 			contacts_sasmesh(status),
-			contacts_edges(status)
+			contacts_edges(status),
+			figures_solid(status)
 		{
 		}
 
@@ -71,7 +73,20 @@ public:
 			atoms_cartoon(atoms_status),
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
-			contacts_edges(contacts_status)
+			contacts_edges(contacts_status),
+			figures_solid(atoms_status)
+		{
+		}
+
+		DrawingRequest(const bool atoms_status, const bool contacts_status, const bool figures_status) :
+			atoms_balls(atoms_status),
+			atoms_sticks(atoms_status),
+			atoms_trace(atoms_status),
+			atoms_cartoon(atoms_status),
+			contacts_faces(contacts_status),
+			contacts_sasmesh(contacts_status),
+			contacts_edges(contacts_status),
+			figures_solid(figures_status)
 		{
 		}
 	};
@@ -113,7 +128,8 @@ public:
 		dc_atoms_cartoon_(3),
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
-		dc_contacts_edges_(2)
+		dc_contacts_edges_(2),
+		dc_figures_solid_(0)
 	{
 		{
 			std::vector<std::string> names;
@@ -130,6 +146,12 @@ public:
 			names.push_back("sas-mesh");
 			names.push_back("edges");
 			data_manager_.add_contacts_representations(names);
+		}
+
+		{
+			std::vector<std::string> names;
+			names.push_back("solid");
+			data_manager_.add_figures_representations(names);
 		}
 	}
 
@@ -185,6 +207,10 @@ public:
 			{
 				dc_contacts_edges_.draw();
 			}
+			if(drawing_request.figures_solid)
+			{
+				dc_figures_solid_.draw();
+			}
 		}
 	}
 
@@ -192,8 +218,10 @@ public:
 	{
 		reset_drawing_atoms();
 		reset_drawing_contacts();
+		reset_drawing_figures();
 		update_drawing_atoms();
 		update_drawing_contacts();
+		update_drawing_figures();
 
 		return true;
 	}
@@ -214,6 +242,12 @@ public:
 			updated=true;
 		}
 
+		if(ci.changed_figures)
+		{
+			reset_drawing_figures();
+			updated=true;
+		}
+
 		if(ci.changed_atoms_display_states)
 		{
 			update_drawing_atoms();
@@ -223,6 +257,12 @@ public:
 		if(ci.changed_contacts_display_states)
 		{
 			update_drawing_contacts();
+			updated=true;
+		}
+
+		if(ci.changed_figures_display_states)
+		{
+			update_drawing_figures();
 			updated=true;
 		}
 
@@ -564,6 +604,73 @@ private:
 		}
 	}
 
+	void reset_drawing_figures()
+	{
+		dc_figures_solid_.unset();
+		if(!data_manager_.figures().empty())
+		{
+			const std::size_t number_of_figures=data_manager_.figures().size();
+
+			std::vector<float> global_buffer_of_vertices;
+			std::vector<float> global_buffer_of_normals;
+			std::vector<unsigned int> global_buffer_of_indices;
+			std::vector< std::vector<unsigned int> > mapped_indices(number_of_figures);
+
+			{
+				std::size_t total_number_of_vertices=0;
+				std::size_t total_number_of_indices=0;
+				for(std::size_t i=0;i<number_of_figures;i++)
+				{
+					if(data_manager_.figures()[i].valid())
+					{
+						total_number_of_vertices+=data_manager_.figures()[i].vertices.size();
+						total_number_of_indices+=data_manager_.figures()[i].indices.size();
+					}
+				}
+				global_buffer_of_vertices.reserve(total_number_of_vertices);
+				global_buffer_of_normals.reserve(total_number_of_vertices);
+				global_buffer_of_indices.reserve(total_number_of_indices);
+			}
+
+			for(std::size_t i=0;i<number_of_figures;i++)
+			{
+				if(data_manager_.figures()[i].valid())
+				{
+					const std::size_t offset=global_buffer_of_vertices.size()/3;
+					global_buffer_of_vertices.insert(global_buffer_of_vertices.end(), data_manager_.figures()[i].vertices.begin(), data_manager_.figures()[i].vertices.end());
+					global_buffer_of_normals.insert(global_buffer_of_normals.end(), data_manager_.figures()[i].normals.begin(), data_manager_.figures()[i].normals.end());
+					mapped_indices[i].reserve(data_manager_.figures()[i].indices.size());
+					for(std::size_t j=0;j<data_manager_.figures()[i].indices.size();j++)
+					{
+						const std::size_t id=(data_manager_.figures()[i].indices[j]+offset);
+						global_buffer_of_indices.push_back(id);
+						mapped_indices[i].push_back(id);
+					}
+				}
+			}
+
+			{
+				dc_figures_solid_.reset(number_of_figures);
+				if(dc_figures_solid_.controller_ptr->init(global_buffer_of_vertices, global_buffer_of_normals, global_buffer_of_indices))
+				{
+					std::vector<bool> drawing_statuses(number_of_figures, false);
+					for(std::size_t i=0;i<number_of_figures;i++)
+					{
+						if(!mapped_indices[i].empty())
+						{
+							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+							dc_figures_solid_.drawing_ids[i]=drawing_id;
+							dc_figures_solid_.map_of_drawing_ids[drawing_id]=i;
+							dc_figures_solid_.controller_ptr->object_register(drawing_id, mapped_indices[i]);
+							drawing_statuses[i]=true;
+						}
+					}
+					data_manager_.set_figures_representation_implemented(dc_figures_solid_.representation_id, drawing_statuses);
+				}
+			}
+		}
+	}
+
 	void update_drawing_atom(const std::size_t i)
 	{
 		if(i<data_manager_.atoms_display_states().size())
@@ -726,6 +833,36 @@ private:
 		}
 	}
 
+	void update_drawing_figure(const std::size_t i)
+	{
+		if(i<data_manager_.figures_display_states().size())
+		{
+			const scripting::DataManager::DisplayState& ds=data_manager_.figures_display_states()[i];
+			if(ds.implemented())
+			{
+				if(dc_figures_solid_.valid() && ds.visuals[dc_figures_solid_.representation_id].implemented)
+				{
+					const uv::DrawingID drawing_id=dc_figures_solid_.drawing_ids[i];
+					if(drawing_id>0)
+					{
+						const std::size_t rep_id=dc_figures_solid_.representation_id;
+						dc_figures_solid_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_figures_solid_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_figures_solid_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+					}
+				}
+			}
+		}
+	}
+
+	void update_drawing_figures()
+	{
+		for(std::size_t i=0;i<data_manager_.figures_display_states().size();i++)
+		{
+			update_drawing_figure(i);
+		}
+	}
+
 	std::size_t find_atom_id_by_drawing_id(const uv::DrawingID drawing_id) const
 	{
 		typedef std::map<uv::DrawingID, std::size_t> Map;
@@ -840,6 +977,7 @@ private:
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;
+	WrappedDrawingController dc_figures_solid_;
 };
 
 }

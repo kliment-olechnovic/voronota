@@ -122,6 +122,8 @@ public:
 		set_command("voromqa-membrane-place", new CustomCommandsForDataManager::voromqa_membrane_place);
 		set_command("describe-exposure", new CustomCommandsForDataManager::describe_exposure);
 		set_command("find-connected-components", new CustomCommandsForDataManager::find_connected_components);
+		set_command("add-figure", new CustomCommandsForDataManager::add_figure);
+		set_command("delete-figures", new CustomCommandsForDataManager::delete_figures);
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));

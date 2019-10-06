@@ -4066,6 +4066,87 @@ public:
 		}
 	};
 
+	class add_figure : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string name=cargs.input.get_value<std::string>("name");
+			const std::vector<float> vertices=cargs.input.get_value_vector<float>("vertices");
+			const std::vector<float> normals=cargs.input.get_value_vector<float>("normals");
+			const std::vector<unsigned int> indices=cargs.input.get_value_vector<unsigned int>("indices");
+			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			if(name.empty())
+			{
+				throw std::runtime_error(std::string("Figure name not specified."));
+			}
+
+			if(!auxiliaries::ColorUtilities::color_valid(color_value))
+			{
+				throw std::runtime_error(std::string("Figure color not specified."));
+			}
+
+			Figure figure;
+			figure.name=name;
+			figure.vertices=vertices;
+			figure.normals=normals;
+			figure.indices=indices;
+
+			if(!figure.valid())
+			{
+				throw std::runtime_error(std::string("Incorrect figure."));
+			}
+
+//			UpdatingOfDataManagerDisplayStates::Parameters params;
+//			params.show=true;
+//			params.color=color_value;
+//
+//			params.assert_correctness();
+//
+//			std::set<std::size_t> ids;
+//			ids.insert(cargs.data_manager.figures().size());
+
+			cargs.change_indicator.changed_figures=true;
+
+			cargs.data_manager.add_figure(figure);
+
+//			UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable());
+
+			cargs.data_manager.figures_display_states_mutable().back().visuals[0].visible=true;
+			cargs.data_manager.figures_display_states_mutable().back().visuals[0].color=color_value;
+
+			cargs.heterostorage.variant_object.value("figure_name")=name;
+		}
+	};
+
+	class delete_figures : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			cargs.change_indicator.changed_figures=true;
+
+			cargs.data_manager.remove_figures();
+		}
+	};
+
 private:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{
