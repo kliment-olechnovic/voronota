@@ -53,7 +53,7 @@ public:
 		bool contacts_sasmesh;
 		bool contacts_edges;
 
-		DrawingRequest(const bool status) :
+		explicit DrawingRequest(const bool status) :
 			atoms_balls(status),
 			atoms_sticks(status),
 			atoms_trace(status),
@@ -102,7 +102,7 @@ public:
 		}
 	};
 
-	DrawerForDataManager(scripting::DataManager& data_manager) :
+	explicit DrawerForDataManager(scripting::DataManager& data_manager) :
 		data_manager_(data_manager),
 		rendering_parameters_(RenderingParameters::default_rendering_parameters()),
 		dc_atoms_balls_spheres_(0),
@@ -263,7 +263,7 @@ private:
 		std::vector<uv::DrawingID> drawing_ids;
 		std::map<uv::DrawingID, std::size_t> map_of_drawing_ids;
 
-		WrapperForGenericDrawingController(const std::size_t representation_id) :
+		explicit WrapperForGenericDrawingController(const std::size_t representation_id) :
 			representation_id(representation_id),
 			controller_ptr(0)
 		{

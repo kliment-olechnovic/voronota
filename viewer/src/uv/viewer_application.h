@@ -958,7 +958,6 @@ private:
 	bool mouse_button_right_down_;
 	bool mouse_button_left_click_possible_;
 	bool mouse_button_right_click_possible_;
-	int mouse_button_clicked_last_;
 	double mouse_cursor_x_;
 	double mouse_cursor_y_;
 	double mouse_cursor_prev_x_;

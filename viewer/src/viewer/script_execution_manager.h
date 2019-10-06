@@ -18,7 +18,7 @@ namespace viewer
 class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
 {
 public:
-	ScriptExecutionManager(uv::ViewerApplication& viewer_application) :
+	explicit ScriptExecutionManager(uv::ViewerApplication& viewer_application) :
 		viewer_application_(viewer_application),
 		grid_variant_(0)
 	{

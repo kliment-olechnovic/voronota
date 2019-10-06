@@ -65,19 +65,14 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::vector<std::string>& files=cargs.input.get_list_of_unnamed_values();
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 
-			if(files.empty())
+			if(file.empty())
 			{
-				throw std::runtime_error(std::string("No files provided."));
+				throw std::runtime_error(std::string("File not provided."));
 			}
 
-			if(files.size()!=1)
-			{
-				throw std::runtime_error(std::string("Not exactly one file provided."));
-			}
-
-			const std::string file=files.front();
+			cargs.input.assert_nothing_unusable();
 
 			InputSelector finput_selector(file);
 			std::istream& finput=finput_selector.stream();
