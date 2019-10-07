@@ -1006,13 +1006,17 @@ public:
 		}
 		for(std::size_t i=0;i<new_figures.size();i++)
 		{
-			if(!new_figures[i].valid())
+			if(Figure::match_name(new_figures, new_figures[i].name).size()>1)
 			{
-				throw std::runtime_error(std::string("Figure is not valid."));
+				throw std::runtime_error(std::string("Repeating figure name."));
 			}
 			if(!Figure::match_name(figures(), new_figures[i].name).empty())
 			{
 				throw std::runtime_error(std::string("Redundant figure name."));
+			}
+			if(!new_figures[i].valid())
+			{
+				throw std::runtime_error(std::string("Figure is not valid."));
 			}
 		}
 		std::vector<DisplayState> new_figures_display_states(new_figures.size());

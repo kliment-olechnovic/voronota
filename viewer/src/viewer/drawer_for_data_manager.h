@@ -53,6 +53,7 @@ public:
 		bool contacts_sasmesh;
 		bool contacts_edges;
 		bool figures_solid;
+		bool figures_mesh;
 
 		explicit DrawingRequest(const bool status) :
 			atoms_balls(status),
@@ -62,7 +63,8 @@ public:
 			contacts_faces(status),
 			contacts_sasmesh(status),
 			contacts_edges(status),
-			figures_solid(status)
+			figures_solid(status),
+			figures_mesh(status)
 		{
 		}
 
@@ -74,7 +76,8 @@ public:
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
-			figures_solid(atoms_status)
+			figures_solid(atoms_status),
+			figures_mesh(atoms_status)
 		{
 		}
 
@@ -86,7 +89,8 @@ public:
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
-			figures_solid(figures_status)
+			figures_solid(figures_status),
+			figures_mesh(figures_status)
 		{
 		}
 	};
@@ -129,7 +133,8 @@ public:
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
-		dc_figures_solid_(0)
+		dc_figures_solid_(0),
+		dc_figures_mesh_(1)
 	{
 		{
 			std::vector<std::string> names;
@@ -151,6 +156,7 @@ public:
 		{
 			std::vector<std::string> names;
 			names.push_back("solid");
+			names.push_back("mesh");
 			data_manager_.add_figures_representations(names);
 		}
 	}
@@ -210,6 +216,10 @@ public:
 			if(drawing_request.figures_solid)
 			{
 				dc_figures_solid_.draw();
+			}
+			if(drawing_request.figures_mesh)
+			{
+				dc_figures_mesh_.draw();
 			}
 		}
 	}
@@ -607,6 +617,7 @@ private:
 	void reset_drawing_figures()
 	{
 		dc_figures_solid_.unset();
+		dc_figures_mesh_.unset();
 		if(!data_manager_.figures().empty())
 		{
 			const std::size_t number_of_figures=data_manager_.figures().size();
@@ -651,6 +662,7 @@ private:
 
 			{
 				dc_figures_solid_.reset(number_of_figures);
+				dc_figures_mesh_.reset(number_of_figures);
 				if(dc_figures_solid_.controller_ptr->init(global_buffer_of_vertices, global_buffer_of_normals, global_buffer_of_indices))
 				{
 					std::vector<bool> drawing_statuses(number_of_figures, false);
@@ -666,6 +678,23 @@ private:
 						}
 					}
 					data_manager_.set_figures_representation_implemented(dc_figures_solid_.representation_id, drawing_statuses);
+				}
+				if(dc_figures_mesh_.controller_ptr->init(global_buffer_of_vertices, global_buffer_of_normals, global_buffer_of_indices))
+				{
+					std::vector<bool> drawing_statuses(number_of_figures, false);
+					for(std::size_t i=0;i<number_of_figures;i++)
+					{
+						if(!mapped_indices[i].empty())
+						{
+							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+							dc_figures_mesh_.drawing_ids[i]=drawing_id;
+							dc_figures_mesh_.map_of_drawing_ids[drawing_id]=i;
+							dc_figures_mesh_.controller_ptr->object_register(drawing_id, mapped_indices[i]);
+							drawing_statuses[i]=true;
+						}
+					}
+					data_manager_.set_figures_representation_implemented(dc_figures_mesh_.representation_id, drawing_statuses);
+					dc_figures_mesh_.controller_ptr->set_wire_mode(true);
 				}
 			}
 		}
@@ -851,6 +880,17 @@ private:
 						dc_figures_solid_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
+				if(dc_figures_mesh_.valid() && ds.visuals[dc_figures_mesh_.representation_id].implemented)
+				{
+					const uv::DrawingID drawing_id=dc_figures_mesh_.drawing_ids[i];
+					if(drawing_id>0)
+					{
+						const std::size_t rep_id=dc_figures_mesh_.representation_id;
+						dc_figures_mesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_figures_mesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_figures_mesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+					}
+				}
 			}
 		}
 	}
@@ -978,6 +1018,7 @@ private:
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;
 	WrappedDrawingController dc_figures_solid_;
+	WrappedDrawingController dc_figures_mesh_;
 };
 
 }

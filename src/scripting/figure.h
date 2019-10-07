@@ -8,8 +8,22 @@
 namespace scripting
 {
 
-struct Figure
+class Figure
 {
+public:
+	static std::set<std::size_t> match_name(const std::vector<Figure>& figures, const std::vector<std::string>& refname)
+	{
+		std::set<std::size_t> ids;
+		for(std::size_t i=0;i<figures.size();i++)
+		{
+			if(figures[i].match_name(refname))
+			{
+				ids.insert(ids.end(), i);
+			}
+		}
+		return ids;
+	}
+
 	std::vector<std::string> name;
 	std::vector<float> vertices;
 	std::vector<float> normals;
@@ -17,12 +31,25 @@ struct Figure
 
 	bool valid() const
 	{
-		return (!name.empty()
-				&& !name[0].empty()
-				&& vertices.size()>=3
-				&& vertices.size()==normals.size()
-				&& indices.size()>=3
-				&& indices.size()%3==0);
+		if(name.empty() || vertices.size()<3 || vertices.size()!=normals.size() || indices.size()<3 || indices.size()%3!=0)
+		{
+			return false;
+		}
+		for(std::size_t i=0;i<name.size();i++)
+		{
+			if(name[i].empty())
+			{
+				return false;
+			}
+		}
+		for(std::size_t i=0;i<indices.size();i++)
+		{
+			if(indices[i]>=vertices.size())
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 	bool match_name(const std::vector<std::string>& refname) const
@@ -39,19 +66,6 @@ struct Figure
 			}
 		}
 		return true;
-	}
-
-	static std::set<std::size_t> match_name(const std::vector<Figure>& figures, const std::vector<std::string>& refname)
-	{
-		std::set<std::size_t> ids;
-		for(std::size_t i=0;i<figures.size();i++)
-		{
-			if(figures[i].match_name(refname))
-			{
-				ids.insert(ids.end(), i);
-			}
-		}
-		return ids;
 	}
 };
 
