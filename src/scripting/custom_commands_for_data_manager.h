@@ -4071,29 +4071,18 @@ public:
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
 		{
-			return true;
+			return false;
 		}
 
 	protected:
 		void run(CommandArguments& cargs)
 		{
-			const std::string name=cargs.input.get_value<std::string>("name");
+			const std::vector<std::string> name=cargs.input.get_value_vector<std::string>("name");
 			const std::vector<float> vertices=cargs.input.get_value_vector<float>("vertices");
 			const std::vector<float> normals=cargs.input.get_value_vector<float>("normals");
 			const std::vector<unsigned int> indices=cargs.input.get_value_vector<unsigned int>("indices");
-			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
 
 			cargs.input.assert_nothing_unusable();
-
-			if(name.empty())
-			{
-				throw std::runtime_error(std::string("Figure name not specified."));
-			}
-
-			if(!auxiliaries::ColorUtilities::color_valid(color_value))
-			{
-				throw std::runtime_error(std::string("Figure color not specified."));
-			}
 
 			Figure figure;
 			figure.name=name;
@@ -4101,30 +4090,169 @@ public:
 			figure.normals=normals;
 			figure.indices=indices;
 
-			if(!figure.valid())
-			{
-				throw std::runtime_error(std::string("Incorrect figure."));
-			}
-
-//			UpdatingOfDataManagerDisplayStates::Parameters params;
-//			params.show=true;
-//			params.color=color_value;
-//
-//			params.assert_correctness();
-//
-//			std::set<std::size_t> ids;
-//			ids.insert(cargs.data_manager.figures().size());
+			cargs.data_manager.add_figure(figure);
 
 			cargs.change_indicator.changed_figures=true;
 
-			cargs.data_manager.add_figure(figure);
+			{
+				const Figure& figure=cargs.data_manager.figures().back();
+				VariantObject& info=cargs.heterostorage.variant_object.object("added_figure");
+				for(std::size_t i=0;i<figure.name.size();i++)
+				{
+					info.values_array("name").push_back(VariantValue(figure.name[i]));
+				}
+			}
+		}
+	};
 
-//			UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable());
+	class show_figures : public GenericCommandForDataManager
+	{
+	public:
+		show_figures() : positive_(true)
+		{
+		}
 
-			cargs.data_manager.figures_display_states_mutable().back().visuals[0].visible=true;
-			cargs.data_manager.figures_display_states_mutable().back().visuals[0].color=color_value;
+		explicit show_figures(const bool positive) : positive_(positive)
+		{
+		}
 
-			cargs.heterostorage.variant_object.value("figure_name")=name;
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_figures_availability();
+			cargs.data_manager.assert_figures_representations_availability();
+
+			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.figures_representation_descriptor().ids_by_names(representation_names);
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_figures_drawable_implemented_ids(
+					representation_ids,
+					Figure::match_name(cargs.data_manager.figures(), name),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable figures selected."));
+			}
+
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.show=positive_;
+			params.hide=!positive_;
+
+			params.assert_correctness();
+
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable()))
+			{
+				cargs.change_indicator.changed_figures_display_states=true;
+			}
+		}
+
+	private:
+		bool positive_;
+	};
+
+	class hide_figures : public show_figures
+	{
+	public:
+		hide_figures() : show_figures(false)
+		{
+		}
+	};
+
+	class color_figures : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_figures_availability();
+			cargs.data_manager.assert_figures_representations_availability();
+
+			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
+			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
+			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> representation_ids=cargs.data_manager.figures_representation_descriptor().ids_by_names(representation_names);
+
+			if(!auxiliaries::ColorUtilities::color_valid(color_value))
+			{
+				throw std::runtime_error(std::string("Figure color not specified."));
+			}
+
+			const std::set<std::size_t> ids=cargs.data_manager.filter_figures_drawable_implemented_ids(
+					representation_ids,
+					Figure::match_name(cargs.data_manager.figures(), name),
+					false);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No drawable figures selected."));
+			}
+
+			UpdatingOfDataManagerDisplayStates::Parameters params;
+			params.visual_ids=representation_ids;
+			params.color=color_value;
+
+			params.assert_correctness();
+
+			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable()))
+			{
+				cargs.change_indicator.changed_figures_display_states=true;
+			}
+		}
+	};
+
+	class list_figures : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_figures_availability();
+
+			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=Figure::match_name(cargs.data_manager.figures(), name);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No figures selected."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Figure& figure=cargs.data_manager.figures().at(*it);
+				VariantObject info;
+				for(std::size_t i=0;i<figure.name.size();i++)
+				{
+					info.values_array("name").push_back(VariantValue(figure.name[i]));
+				}
+				cargs.heterostorage.variant_object.objects_array("figures").push_back(info);
+			}
 		}
 	};
 
@@ -4139,11 +4267,33 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
+			cargs.data_manager.assert_figures_availability();
+
+			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
+
 			cargs.input.assert_nothing_unusable();
 
-			cargs.change_indicator.changed_figures=true;
+			const std::set<std::size_t> ids=Figure::match_name(cargs.data_manager.figures(), name);
 
-			cargs.data_manager.remove_figures();
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No figures selected."));
+			}
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Figure& figure=cargs.data_manager.figures().at(*it);
+				VariantObject info;
+				for(std::size_t i=0;i<figure.name.size();i++)
+				{
+					info.values_array("name").push_back(VariantValue(figure.name[i]));
+				}
+				cargs.heterostorage.variant_object.objects_array("deleted_figures").push_back(info);
+			}
+
+			cargs.data_manager.remove_figures(ids);
+
+			cargs.change_indicator.changed_figures=true;
 		}
 	};
 

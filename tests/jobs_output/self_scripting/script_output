@@ -815,6 +815,9 @@
             "name":"color-contacts",
             "short_description":""},
           {
+            "name":"color-figures",
+            "short_description":""},
+          {
             "name":"construct-contacts",
             "short_description":""},
           {
@@ -872,10 +875,16 @@
             "name":"hide-contacts",
             "short_description":""},
           {
+            "name":"hide-figures",
+            "short_description":""},
+          {
             "name":"hide-objects",
             "short_description":""},
           {
             "name":"list-commands",
+            "short_description":""},
+          {
+            "name":"list-figures",
             "short_description":""},
           {
             "name":"list-objects",
@@ -987,6 +996,9 @@
             "short_description":""},
           {
             "name":"show-contacts",
+            "short_description":""},
+          {
+            "name":"show-figures",
             "short_description":""},
           {
             "name":"show-objects",

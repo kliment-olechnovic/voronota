@@ -981,8 +981,40 @@ public:
 		figures_display_states_.clear();
 	}
 
+	void remove_figures(const std::set<std::size_t>& ids)
+	{
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No ids provided to remove figures."));
+		}
+		if(*ids.rbegin()>=atoms_.size())
+		{
+			throw std::runtime_error(std::string("Invalid ids provided to remove atoms."));
+		}
+		for(std::set<std::size_t>::const_reverse_iterator it=ids.rbegin();it!=ids.rend();++it)
+		{
+			figures_.erase(figures_.begin()+(*it));
+			figures_display_states_.erase(figures_display_states_.begin()+(*it));
+		}
+	}
+
 	void add_figures(const std::vector<Figure>& new_figures)
 	{
+		if(new_figures.empty())
+		{
+			throw std::runtime_error(std::string("No figures to add."));
+		}
+		for(std::size_t i=0;i<new_figures.size();i++)
+		{
+			if(!new_figures[i].valid())
+			{
+				throw std::runtime_error(std::string("Figure is not valid."));
+			}
+			if(!Figure::match_name(figures(), new_figures[i].name).empty())
+			{
+				throw std::runtime_error(std::string("Redundant figure name."));
+			}
+		}
 		std::vector<DisplayState> new_figures_display_states(new_figures.size());
 		for(std::size_t i=0;i<new_figures_display_states.size();i++)
 		{
