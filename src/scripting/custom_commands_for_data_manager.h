@@ -4297,6 +4297,83 @@ public:
 		}
 	};
 
+	class add_figure_of_triangulation : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+
+			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
+			const bool strict=cargs.input.get_flag("strict");
+			const std::vector<std::string> figure_name=cargs.input.get_value_vector<std::string>("figure-name");
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+			if(atom_ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			Figure figure;
+			figure.name=figure_name;
+
+			{
+				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
+
+				const apollota::Triangulation::VerticesVector vertices_vector=
+						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
+
+				for(std::size_t i=0;i<vertices_vector.size();i++)
+				{
+					const apollota::Quadruple& quadruple=vertices_vector[i].first;
+
+					bool allowed=false;
+					if(strict)
+					{
+						allowed=(atom_ids.count(quadruple.get(0))>0
+								&& atom_ids.count(quadruple.get(1))>0
+								&& atom_ids.count(quadruple.get(2))>0
+								&& atom_ids.count(quadruple.get(3))>0);
+					}
+					else
+					{
+						allowed=(atom_ids.count(quadruple.get(0))>0
+								|| atom_ids.count(quadruple.get(1))>0
+								|| atom_ids.count(quadruple.get(2))>0
+								|| atom_ids.count(quadruple.get(3))>0);
+					}
+
+					if(allowed)
+					{
+						for(unsigned int j=0;j<4;j++)
+						{
+							apollota::Triple triple=quadruple.exclude(j);
+							const apollota::SimplePoint normal=apollota::plane_normal_from_three_points<apollota::SimplePoint>(balls[triple.get(0)], balls[triple.get(1)], balls[triple.get(2)]);
+							figure.indices.push_back(figure.vertices.size()/3);
+							figure.indices.push_back(figure.vertices.size()/3+1);
+							figure.indices.push_back(figure.vertices.size()/3+2);
+							for(unsigned int e=0;e<3;e++)
+							{
+								figure.vertices.push_back(balls[triple.get(e)].x);
+								figure.vertices.push_back(balls[triple.get(e)].y);
+								figure.vertices.push_back(balls[triple.get(e)].z);
+								figure.normals.push_back(normal.x);
+								figure.normals.push_back(normal.y);
+								figure.normals.push_back(normal.z);
+							}
+						}
+					}
+				}
+			}
+
+			cargs.data_manager.add_figure(figure);
+
+			cargs.change_indicator.changed_figures=true;
+		}
+	};
+
 private:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{

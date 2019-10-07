@@ -120,11 +120,11 @@ public:
 		{
 			if(grid_id==0)
 			{
-				drawing_request=DrawerForDataManager::DrawingRequest(true, false);
+				drawing_request=DrawerForDataManager::DrawingRequest(true, false, false);
 			}
 			else if(grid_id==1)
 			{
-				drawing_request=DrawerForDataManager::DrawingRequest(false, true);
+				drawing_request=DrawerForDataManager::DrawingRequest(false, true, false);
 			}
 
 			for(std::size_t i=0;i<dms.size();i++)

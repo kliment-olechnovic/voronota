@@ -68,19 +68,6 @@ public:
 		{
 		}
 
-		DrawingRequest(const bool atoms_status, const bool contacts_status) :
-			atoms_balls(atoms_status),
-			atoms_sticks(atoms_status),
-			atoms_trace(atoms_status),
-			atoms_cartoon(atoms_status),
-			contacts_faces(contacts_status),
-			contacts_sasmesh(contacts_status),
-			contacts_edges(contacts_status),
-			figures_solid(atoms_status),
-			figures_mesh(atoms_status)
-		{
-		}
-
 		DrawingRequest(const bool atoms_status, const bool contacts_status, const bool figures_status) :
 			atoms_balls(atoms_status),
 			atoms_sticks(atoms_status),
