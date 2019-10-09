@@ -794,6 +794,9 @@
             "name":"add-figure",
             "short_description":""},
           {
+            "name":"add-figure-of-triangulation",
+            "short_description":""},
+          {
             "name":"adjunct-atoms",
             "short_description":""},
           {
