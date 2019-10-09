@@ -1,0 +1,64 @@
+#!/bin/bash
+
+#
+# Non-interactive execution example:
+#    voronota-runscript arg1 arg2 arg3 < ./script.bash
+#
+# Interactive execution example:
+#    bash --init-file ./voronota-runscript
+#
+
+NONINTERACTIVE=true
+
+if [ -t 0 ]
+then
+	NONINTERACTIVE=false
+fi
+
+if $NONINTERACTIVE
+then
+	ZEROARG=$0
+	ALLARGS=("$@")
+	if [[ "$ZEROARG" == *"/"* ]]
+	then
+		cd $(dirname $ZEROARG)
+		export PATH=$(pwd):$PATH
+		cd - &> /dev/null
+	fi
+	TMPLDIR="$(mktemp -d)"
+fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+
+coproc VORONOTAPROC { voronota x-run-script --interactive --max-unfolding 0; }
+exec 5<&${VORONOTAPROC[0]} 6>&${VORONOTAPROC[1]}
+
+function exit_environment
+{
+	exec 5<&- 6>&-
+	if $NONINTERACTIVE
+	then
+		rm -r "$TMPLDIR"
+	fi
+}
+
+trap exit_environment EXIT
+
+function vc
+{
+	echo "$*" >&6
+	read VORONOTAOUT <&5
+	echo "$VORONOTAOUT"
+	unset VORONOTAOUT
+}
+
+export -f vc
+
+if $NONINTERACTIVE
+then
+	SCRIPTFILE="$TMPLDIR/script.bash"
+	cat | egrep -v '^#' > "$SCRIPTFILE"
+	chmod +x "$SCRIPTFILE"
+	$SCRIPTFILE "${ALLARGS[@]}"
+fi
+

@@ -3,41 +3,6 @@
 #include "../scripting/script_execution_manager_with_variant_output.h"
 #include "../scripting/json_writer.h"
 
-namespace
-{
-
-class CustomScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
-{
-public:
-	explicit CustomScriptExecutionManager(const bool print_progress) : print_progress_(print_progress)
-	{
-	}
-
-protected:
-	void on_after_any_command_with_output(const scripting::VariantObject& variant_object)
-	{
-		if(print_progress_)
-		{
-			scripting::JSONWriter::write(variant_object, std::cout);
-			std::cout << std::endl;
-		}
-	}
-
-	void on_after_script_with_output(const scripting::VariantObject& variant_object)
-	{
-		if(print_progress_ && variant_object.names().count("termination_error")>0)
-		{
-			scripting::JSONWriter::write(variant_object, std::cout);
-			std::cout << std::endl;
-		}
-	}
-
-private:
-	bool print_progress_;
-};
-
-}
-
 void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 {
 	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
@@ -54,7 +19,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 
 	scripting::JSONWriter::Configuration::setup_default_configuration(scripting::JSONWriter::Configuration(max_unfolding));
 
-	CustomScriptExecutionManager execution_manager(interactive);
+	scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
 
 	if(interactive)
 	{
@@ -64,7 +29,8 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 			std::getline(std::cin, line);
 			if(!line.empty())
 			{
-				execution_manager.execute_script(line, false);
+				scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(line, false), std::cout);
+				std::cout << std::endl;
 			}
 		}
 	}
