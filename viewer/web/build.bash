@@ -33,21 +33,6 @@ then
 fi
 
 python "${EMSCRIPTEN}/tools/file_packager.py" \
-  ./shader_vertex_simple.data \
-  --preload ../shader_vertex_simple.glsl@/ \
-  --js-output=./shader_vertex_simple.js
-
-python "${EMSCRIPTEN}/tools/file_packager.py" \
-  ./shader_vertex_with_instancing.data \
-  --preload ../shader_vertex_with_instancing.glsl@/ \
-  --js-output=./shader_vertex_with_instancing.js
-
-python "${EMSCRIPTEN}/tools/file_packager.py" \
-  ./shader_fragment_simple.data \
-  --preload ../shader_fragment_simple.glsl@/ \
-  --js-output=./shader_fragment_simple.js
-
-python "${EMSCRIPTEN}/tools/file_packager.py" \
   ./startup_script.data \
   --preload ./startup_script.vvs@/ \
   --js-output=./startup_script.js

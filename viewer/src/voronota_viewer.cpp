@@ -10,9 +10,9 @@ int main(const int argc, const char** argv)
 	app_parameters.suggested_window_width=800;
 	app_parameters.suggested_window_height=600;
 	app_parameters.title="voronota-viewer";
-	app_parameters.shader_vertex="shader_vertex_simple.glsl";
-	app_parameters.shader_vertex_with_instancing="shader_vertex_with_instancing.glsl";
-	app_parameters.shader_fragment="shader_fragment_simple.glsl";
+	app_parameters.shader_vertex="_shader_vertex_simple";
+	app_parameters.shader_vertex_with_instancing="_shader_vertex_with_instancing";
+	app_parameters.shader_fragment="_shader_fragment_simple";
 
 	std::string raw_arguments;
 

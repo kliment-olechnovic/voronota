@@ -2,6 +2,7 @@
 #define UV_SHADING_CONTROLLER_H_
 
 #include "common.h"
+#include "stocked_default_shaders.h"
 
 namespace uv
 {
@@ -219,112 +220,17 @@ private:
 	{
 		std::string predefined_input;
 
-		if(filename=="_vertex_shader_simple")
+		if(filename=="_shader_vertex_simple")
 		{
-			predefined_input=
-					"#version 100\n"
-					"uniform mat4 projection_matrix;\n"
-					"uniform mat4 viewtransform_matrix;\n"
-					"uniform mat4 modeltransform_matrix;\n"
-					"attribute vec3 vertex_position;\n"
-					"attribute vec3 vertex_normal;\n"
-					"attribute vec3 vertex_color_for_selection;\n"
-					"attribute vec3 vertex_color_for_display;\n"
-					"attribute vec3 vertex_adjunct;\n"
-					"varying vec3 fragment_position;\n"
-					"varying vec3 fragment_normal;\n"
-					"varying vec3 fragment_color_for_selection;\n"
-					"varying vec3 fragment_color_for_display;\n"
-					"varying vec3 fragment_adjunct;\n"
-					"void main()\n"
-					"{\n"
-					"    vec4 vertex_position_in_world=modeltransform_matrix*vec4(vertex_position, 1.0);\n"
-					"    fragment_position=vec3(vertex_position_in_world);\n"
-					"    fragment_normal=mat3(modeltransform_matrix)*vertex_normal;\n"
-					"    fragment_color_for_selection=vertex_color_for_selection;\n"
-					"    fragment_color_for_display=vertex_color_for_display;\n"
-					"    fragment_adjunct=vertex_adjunct;\n"
-					"    gl_Position=projection_matrix*viewtransform_matrix*vertex_position_in_world;\n"
-					"}\n";
+			predefined_input=default_shader_vertex_simple();
 		}
-		else if(filename=="_vertex_shader_with_instancing")
+		else if(filename=="_shader_vertex_with_instancing")
 		{
-			predefined_input=
-					"#version 100\n"
-					"uniform mat4 projection_matrix;\n"
-					"uniform mat4 viewtransform_matrix;\n"
-					"uniform mat4 modeltransform_matrix;\n"
-					"attribute vec3 vertex_position;\n"
-					"attribute vec3 vertex_normal;\n"
-					"attribute vec3 vertex_color_for_selection;\n"
-					"attribute vec3 vertex_color_for_display;\n"
-					"attribute vec3 vertex_adjunct;\n"
-					"attribute vec4 vertex_transformation_0;\n"
-					"attribute vec4 vertex_transformation_1;\n"
-					"attribute vec4 vertex_transformation_2;\n"
-					"attribute vec4 vertex_transformation_3;\n"
-					"varying vec3 fragment_position;\n"
-					"varying vec3 fragment_normal;\n"
-					"varying vec3 fragment_color_for_selection;\n"
-					"varying vec3 fragment_color_for_display;\n"
-					"varying vec3 fragment_adjunct;\n"
-					"void main()\n"
-					"{\n"
-					"    mat4 vertex_transformation_matrix=mat4(vertex_transformation_0, vertex_transformation_1, vertex_transformation_2, vertex_transformation_3);\n"
-					"    vec4 transformed_vertex_position=vertex_transformation_matrix*vec4(vertex_position, 1.0);\n"
-					"    vec3 transformed_vertex_normal=mat3(vertex_transformation_matrix)*vertex_normal;\n"
-					"    vec4 vertex_position_in_world=modeltransform_matrix*transformed_vertex_position;\n"
-					"    fragment_position=vec3(vertex_position_in_world);\n"
-					"    fragment_normal=mat3(modeltransform_matrix)*transformed_vertex_normal;\n"
-					"    fragment_color_for_selection=vertex_color_for_selection;\n"
-					"    fragment_color_for_display=vertex_color_for_display;\n"
-					"    fragment_adjunct=vertex_adjunct;\n"
-					"    gl_Position=projection_matrix*viewtransform_matrix*vertex_position_in_world;\n"
-					"}\n";
+			predefined_input=default_shader_vertex_with_instancing();
 		}
-		else if(filename=="_fragment_shader_simple")
+		else if(filename=="_shader_fragment_simple")
 		{
-			predefined_input=
-					"#version 100\n"
-					"precision mediump float;\n"
-					"uniform int selection_mode_enabled;\n"
-					"uniform int fog_enabled;\n"
-					"varying vec3 fragment_position;\n"
-					"varying vec3 fragment_normal;\n"
-					"varying vec3 fragment_color_for_selection;\n"
-					"varying vec3 fragment_color_for_display;\n"
-					"varying vec3 fragment_adjunct;\n"
-					"void main()\n"
-					"{\n"
-					"    if(selection_mode_enabled==0)\n"
-					"    {\n"
-					"        vec3 light_direction=vec3(1.0, 1.0, 1.0);\n"
-					"        vec3 light_color=vec3(1.0, 1.0, 1.0);\n"
-					"        float ambient_value=0.2;\n"
-					"        vec3 ambient=ambient_value*light_color;\n"
-					"        float diffuse_value=abs(dot(normalize(fragment_normal), normalize(light_direction)));\n"
-					"        vec3 diffuse=diffuse_value*light_color;\n"
-					"        vec3 final_color=(ambient+diffuse)*fragment_color_for_display;"
-					"        if(fog_enabled==1)\n"
-					"        {\n"
-					"            float fog_density=1.0/(1.0+exp(0.1*(fragment_position.z+0.0)));\n"
-					"            final_color=mix(final_color, vec3(1.0, 1.0, 1.0), fog_density);\n"
-					"        }\n"
-					"        if((fragment_adjunct[0]>0.5) && (mod(floor(gl_FragCoord.x), 2.0)<0.5 || mod(floor(gl_FragCoord.y), 2.0)<0.5))\n"
-					"        {\n"
-					"            final_color=vec3(1.0, 0.0, 1.0);\n"
-					"            if(fragment_color_for_display[0]>0.5 && fragment_color_for_display[1]<0.25 && fragment_color_for_display[2]>0.5)\n"
-					"            {\n"
-					"                final_color=vec3(0.0, 1.0, 0.0);\n"
-					"            }\n"
-					"        }\n"
-					"        gl_FragColor=vec4(final_color, 1.0);\n"
-					"    }\n"
-					"    else\n"
-					"    {\n"
-					"        gl_FragColor=vec4(fragment_color_for_selection, 1.0);\n"
-					"    }\n"
-					"}\n";
+			predefined_input=default_shader_fragment_simple();
 		}
 
 		if(!predefined_input.empty())
