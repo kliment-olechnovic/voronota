@@ -29,16 +29,18 @@ fi
 
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
 
 coproc VORONOTA_PROC { voronota x-run-script --interactive --max-unfolding 0; }
 exec 5<&${VORONOTA_PROC[0]} 6>&${VORONOTA_PROC[1]}
 
-readonly VORONOTA_PROC_TMPDIR="$(mktemp -d)"
+readonly VC_TMPDIR="$(mktemp -d)"
+export VC_TMPDIR
 
 function exit_environment
 {
 	exec 5<&- 6>&-
-	rm -r "$VORONOTA_PROC_TMPDIR"
+	rm -r "$VC_TMPDIR"
 }
 
 trap exit_environment EXIT
@@ -46,9 +48,9 @@ trap exit_environment EXIT
 function vc
 {
 	echo "$*" >&6
-	read VORONOTAOUT <&5
-	echo "$VORONOTAOUT"
-	unset VORONOTAOUT
+	read VC_OUT <&5
+	VC_SUCCESS="$(echo "$VC_OUT" | jq '.script_summary | .commands_successful == .commands_all')"
+	echo "$VC_OUT"
 }
 
 function vcq
@@ -56,20 +58,21 @@ function vcq
 	vc "$*" > /dev/null
 }
 
-voronota-resources radii > "$VORONOTA_PROC_TMPDIR/_radii"
-voronota-resources voromqa_v1_energy_potential > "$VORONOTA_PROC_TMPDIR/_voromqa_v1_energy_potential"
-voronota-resources voromqa_v1_energy_means_and_sds > "$VORONOTA_PROC_TMPDIR/_voromqa_v1_energy_means_and_sds"
-vc "setup-loading --radii-file '$VORONOTA_PROC_TMPDIR/_radii'"
-vc "setup-voromqa --potential '$VORONOTA_PROC_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$VORONOTA_PROC_TMPDIR/_voromqa_v1_energy_means_and_sds'"
+export -f vc
+export -f vcq
+
+voronota-resources radii > "$VC_TMPDIR/_radii"
+voronota-resources voromqa_v1_energy_potential > "$VC_TMPDIR/_voromqa_v1_energy_potential"
+voronota-resources voromqa_v1_energy_means_and_sds > "$VC_TMPDIR/_voromqa_v1_energy_means_and_sds"
+
+vc "setup-loading --radii-file '$VC_TMPDIR/_radii'"
+vc "setup-voromqa --potential '$VC_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$VC_TMPDIR/_voromqa_v1_energy_means_and_sds'"
 
 if $NONINTERACTIVE
 then
-	SCRIPTFILE="$VORONOTA_PROC_TMPDIR/_script.bash"
+	SCRIPTFILE="$VC_TMPDIR/_script.bash"
 	cat | egrep -v '^#' > "$SCRIPTFILE"
 	chmod +x "$SCRIPTFILE"
-	export VORONOTA_PROC_TMPDIR
-	export -f vc
-	export -f vcq
 	$SCRIPTFILE "${ALLARGS[@]}"
 fi
 
