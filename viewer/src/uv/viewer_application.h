@@ -86,7 +86,7 @@ public:
 
 		if(!glfwInit())
 		{
-			std::cout << "Error: failed to init GLFW3" << std::endl;
+			std::cerr << "Error: failed to init GLFW3" << std::endl;
 			return false;
 		}
 
@@ -98,7 +98,7 @@ public:
 		window_=glfwCreateWindow(window_width_, window_height_, parameters.title.c_str(), 0, 0);
 		if(!window_)
 		{
-			std::cout << "Error: failed to create window with GLFW3" << std::endl;
+			std::cerr << "Error: failed to create window with GLFW3" << std::endl;
 			glfwTerminate();
 			return false;
 		}
@@ -122,13 +122,13 @@ public:
 		{
 			const GLubyte* renderer;
 			renderer=glGetString(GL_RENDERER);
-			std::cout << "Renderer: " << renderer << std::endl;
+			std::cerr << "Renderer: " << renderer << std::endl;
 		}
 
 		{
 			const GLubyte* version;
 			version=glGetString(GL_VERSION);
-			std::cout << "Version: " << version << std::endl;
+			std::cerr << "Version: " << version << std::endl;
 		}
 
 		//glEnable(GL_MULTISAMPLE);
@@ -137,14 +137,14 @@ public:
 
 		if(!shading_simple_.init(parameters.shader_vertex, parameters.shader_fragment))
 		{
-			std::cout << "Error: failed to init shading simple." << std::endl;
+			std::cerr << "Error: failed to init shading simple." << std::endl;
 			glfwTerminate();
 			return false;
 		}
 
 		if(!shading_with_instancing_.init(parameters.shader_vertex_with_instancing, parameters.shader_fragment))
 		{
-			std::cout << "Error: failed to init shading with instancing." << std::endl;
+			std::cerr << "Error: failed to init shading with instancing." << std::endl;
 			glfwTerminate();
 			return false;
 		}

@@ -175,7 +175,9 @@ protected:
 	{
 		if(ReadingThread::check_data())
 		{
+			script_execution_manager_.set_output_stream_mode(1);
 			script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
+			script_execution_manager_.set_output_stream_mode(0);
 		}
 
 		if(!pending_commands_.empty())

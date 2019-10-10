@@ -141,7 +141,7 @@ public:
 					GLenum err=glGetError();
 					while(err!=GL_NO_ERROR)
 					{
-						std::cout << "OpenGL error " << err << " in file " __FILE__ << " line " << __LINE__ << "\n";
+						std::cerr << "OpenGL error " << err << " in file " __FILE__ << " line " << __LINE__ << "\n";
 						err=glGetError();
 					}
 				}

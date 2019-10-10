@@ -78,7 +78,7 @@ int main(const int argc, const char** argv)
 
 	if(!app.init(app_parameters))
 	{
-		std::cout << "Error: failed to init application." << std::endl;
+		std::cerr << "Error: failed to init application." << std::endl;
 		return 1;
 	}
 

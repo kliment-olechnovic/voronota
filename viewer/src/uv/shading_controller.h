@@ -38,14 +38,14 @@ public:
 		std::vector<char> vertex_shader_source;
 		if(!read_file_to_memory(vertex_shader_filename, vertex_shader_source))
 		{
-			std::cout << "Error: failed to read vertex shader source file '" << vertex_shader_filename << "'." << std::endl;
+			std::cerr << "Error: failed to read vertex shader source file '" << vertex_shader_filename << "'." << std::endl;
 			return false;
 		}
 
 		std::vector<char> fragment_shader_source;
 		if(!read_file_to_memory(fragment_shader_filename, fragment_shader_source))
 		{
-			std::cout << "Error: failed to read fragment shader source file '" << fragment_shader_filename << "'." << std::endl;
+			std::cerr << "Error: failed to read fragment shader source file '" << fragment_shader_filename << "'." << std::endl;
 			return false;
 		}
 
@@ -57,7 +57,7 @@ public:
 		glCompileShader(vertex_shader);
 		if(check_shader_compilation_status(vertex_shader))
 		{
-			std::cout << "Error: failed to compile vertex shader." << std::endl;
+			std::cerr << "Error: failed to compile vertex shader." << std::endl;
 			return false;
 		}
 
@@ -69,7 +69,7 @@ public:
 		glCompileShader(fragment_shader);
 		if(check_shader_compilation_status(fragment_shader))
 		{
-			std::cout << "Error: failed to compile fragment shader." << std::endl;
+			std::cerr << "Error: failed to compile fragment shader." << std::endl;
 			return false;
 		}
 
@@ -209,7 +209,7 @@ private:
 			glGetShaderInfoLog(shader, 2048, &log_length, log);
 			if(log_length>0)
 			{
-				std::cout << "Shader compile log:\n" << log << std::endl;
+				std::cerr << "Shader compile log:\n" << log << std::endl;
 			}
 		}
 		return (status!=GL_TRUE);
