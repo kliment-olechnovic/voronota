@@ -6,6 +6,7 @@
 #include "../imgui/imgui_impl_glfw_gl3.h"
 
 #include "script_execution_manager.h"
+#include "reading_thread.h"
 
 namespace viewer
 {
@@ -172,6 +173,11 @@ protected:
 
 	void on_after_rendered_frame()
 	{
+		if(ReadingThread::check_data())
+		{
+			script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
+		}
+
 		if(!pending_commands_.empty())
 		{
 			if((++waiting_stage_)>2)
