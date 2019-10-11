@@ -1,78 +1,209 @@
 #!/bin/bash
 
-#
-# Non-interactive execution example:
-#    voronota-runscript arg1 arg2 arg3 < ./script.bash
-#
-# Interactive execution example:
-#    bash --init-file ./voronota-runscript
-#
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
 
-NONINTERACTIVE=true
+'voronota-runscript' script provides a way to run a bash script that controls Voronota.
 
-if [ -t 0 ]
+For example, let there be a script "test.sh" with the following contents:
+
+  curl 'https://files.rcsb.org/download/2ZSK.pdb.gz' | zcat > tmp.pdb
+  v load tmp.pdb
+  rm tmp.pdb
+  $V_SUCCESS || { echo "No valid file"; exit 1; }
+  v construct-contacts
+  v voromqa-global | jq '.commands[-1].output.quality_score'
+  for CHAIN in A B
+  do
+    v "voromqa-local -atoms [-chain $CHAIN]" | jq '.commands[-1].output.atoms_result.quality_score'
+  done
+  v "restrict-atoms [-chain A]"
+  $V_SUCCESS || { echo "No chain A"; exit 1; }
+  v "construct-contacts"
+  vq "voromqa-global"
+  echo "$V_OUT_TAIL" | jq '.output.quality_score'
+
+The above script can be run non-interactively:
+
+  voronota-runscript -i test.sh
+
+or
+
+  cat test.sh | voronota-runscript
+
+Another way is to start a special bash session:
+
+  bash --init-file /path/to/voronota-runscript
+
+and, inside the session, run the script
+
+  ./test.sh
+  
+or
+
+  source ./test.sh
+
+EOF
+exit 1
+}
+
+INFILE=""
+PASSARGS=()
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	-g|--gui)
+		V_GUI=true
+		;;
+	-t|--no-gui)
+		V_GUI=false
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		PASSARGS+=("$OPTION")
+		;;
+	esac
+done
+
+if $HELP_MODE
 then
-	NONINTERACTIVE=false
+	print_help_and_exit
 fi
 
-if $NONINTERACTIVE
+if [ -z "$INFILE" ] && [ ! -t 0 ]
 then
-	ZEROARG=$0
-	ALLARGS=("$@")
-	if [[ "$ZEROARG" == *"/"* ]]
-	then
-		cd $(dirname $ZEROARG)
-		export PATH=$(pwd):$PATH
-		cd - &> /dev/null
-	fi
+	INFILE="-"
 fi
 
-command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
 
-coproc VORONOTA_PROC { voronota x-run-script --interactive --max-unfolding 0; }
+if [ "$V_GUI" == "true" ]
+then
+	command -v voronota-viewer &> /dev/null || { echo >&2 "Error: 'voronota-viewer' executable not in binaries path"; exit 1; }
+	coproc VORONOTA_PROC { voronota-viewer; }
+else
+	command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+	coproc VORONOTA_PROC { voronota x-run-script --interactive --max-unfolding 0; }
+fi
+
+if [ -z "$VORONOTA_PROC_PID" ]
+then
+	echo "Error: failed to start app"
+	exit 1
+fi
+
+FD5_OUTPUT="$(true 2>/dev/null >&5; echo $?)"
+FD5_INPUT="$(true 2>/dev/null <&5; echo $?)"
+FD6_OUTPUT="$(true 2>/dev/null >&6; echo $?)"
+FD6_INPUT="$(true 2>/dev/null <&6; echo $?)"
+
+if [ "$FD5_OUTPUT" == "0" ] || [ "$FD5_INPUT" == "0" ]
+then
+	echo "Error: file discriptor 5 not free"
+	exit 1
+fi
+
+if [ "$FD6_OUTPUT" == "0" ] || [ "$FD6_INPUT" == "0" ]
+then
+	echo "Error: file discriptor 6 not free"
+	exit 1
+fi
+
 exec 5<&${VORONOTA_PROC[0]} 6>&${VORONOTA_PROC[1]}
 
-readonly VC_TMPDIR="$(mktemp -d)"
-export VC_TMPDIR
-
-function exit_environment
+function on_exit_premature
 {
 	exec 5<&- 6>&-
-	rm -r "$VC_TMPDIR"
 }
 
-trap exit_environment EXIT
+trap on_exit_premature EXIT
 
-function vc
-{
-	echo "$*" >&6
-	read VC_OUT <&5
-	VC_SUCCESS="$(echo "$VC_OUT" | jq '.script_summary | .commands_successful == .commands_all')"
-	echo "$VC_OUT"
-}
+FD5_INPUT="$(true 2>/dev/null <&5; echo $?)"
+FD6_OUTPUT="$(true 2>/dev/null >&6; echo $?)"
 
-function vcq
-{
-	vc "$*" > /dev/null
-}
-
-export -f vc
-export -f vcq
-
-voronota-resources radii > "$VC_TMPDIR/_radii"
-voronota-resources voromqa_v1_energy_potential > "$VC_TMPDIR/_voromqa_v1_energy_potential"
-voronota-resources voromqa_v1_energy_means_and_sds > "$VC_TMPDIR/_voromqa_v1_energy_means_and_sds"
-
-vc "setup-loading --radii-file '$VC_TMPDIR/_radii'"
-vc "setup-voromqa --potential '$VC_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$VC_TMPDIR/_voromqa_v1_energy_means_and_sds'"
-
-if $NONINTERACTIVE
+if [ "$FD5_INPUT" != "0" ] || [ "$FD6_OUTPUT" != "0" ]
 then
-	SCRIPTFILE="$VC_TMPDIR/_script.bash"
-	cat | egrep -v '^#' > "$SCRIPTFILE"
+	echo "Error: failed to init IO file discriptors 5 and 6"
+	exit 1
+fi
+
+function v
+{
+	unset V_OUT
+	unset V_SUCCESS
+	unset V_OUT_TAIL
+	unset V_SUCCESS_TAIL
+	echo "$*" >&6
+	read V_OUT <&5
+	V_SUCCESS="$(echo "$V_OUT" | jq '.script_summary | .commands_successful == .commands_all')"
+	V_OUT_TAIL="$(echo "$V_OUT" | jq '.commands[-1]')"
+	V_SUCCESS_TAIL="$(echo "$V_OUT_TAIL" | jq '.success')"
+	echo "$V_OUT"
+}
+
+export -f v
+
+function vq
+{
+	v "$*" > /dev/null
+}
+
+export -f vq
+
+vq echo
+
+if [ "$V_SUCCESS" != "true" ]
+then
+	echo "Error: v command test failed"
+	exit 1
+fi
+
+readonly V_TMPDIR="$(mktemp -d)"
+export V_TMPDIR
+
+function on_exit_final
+{
+	on_exit_premature
+	rm -r "$V_TMPDIR"
+}
+
+trap on_exit_final EXIT
+
+voronota-resources radii > "$V_TMPDIR/_radii"
+voronota-resources voromqa_v1_energy_potential > "$V_TMPDIR/_voromqa_v1_energy_potential"
+voronota-resources voromqa_v1_energy_means_and_sds > "$V_TMPDIR/_voromqa_v1_energy_means_and_sds"
+
+vq "setup-loading --radii-file '$V_TMPDIR/_radii'"
+vq "setup-voromqa --potential '$V_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$V_TMPDIR/_voromqa_v1_energy_means_and_sds'"
+
+if [ -n "$INFILE" ]
+then
+	SCRIPTFILE="$V_TMPDIR/_script.bash"
+	
+	if [ "$INFILE" == "-" ]
+	then
+		cat | egrep -v '^#' > "$SCRIPTFILE"
+	fi
+	
+	if [ -s "$INFILE" ]
+	then
+		cat "$INFILE" | egrep -v '^#' > "$SCRIPTFILE"
+	fi
+	
 	chmod +x "$SCRIPTFILE"
-	$SCRIPTFILE "${ALLARGS[@]}"
+	$SCRIPTFILE "${PASSARGS[@]}"
 fi
 
