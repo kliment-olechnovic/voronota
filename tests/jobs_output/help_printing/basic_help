@@ -15,5 +15,6 @@ score-contacts-potential
 compare-contacts
 write-balls-to-atoms-file
 query-balls-clashes
+run-script
 expand-descriptors
 

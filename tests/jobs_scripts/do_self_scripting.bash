@@ -114,7 +114,7 @@ quit
 list-objects
 EOF
 } \
-| $VORONOTA x-run-script \
+| $VORONOTA run-script \
 > $SUBDIR/script_output \
 2> $SUBDIR/script_errors
 

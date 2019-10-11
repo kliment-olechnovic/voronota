@@ -15,6 +15,7 @@ score-contacts-potential
 compare-contacts
 write-balls-to-atoms-file
 query-balls-clashes
+run-script
 expand-descriptors
 
 Command 'get-balls-from-atoms-file' options:
@@ -244,6 +245,13 @@ Command 'query-balls-clashes' options:
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  list of balls (line format: 'annotation x y z r')
 stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')
+
+Command 'run-script' options:
+--interactive                               flag for interactive mode
+--max-unfolding                 number      maximum level of output unfolding, default is 6
+--help                                      flag to print usage help to stdout and exit
+stdin   <-  script as plain text
+stdout  ->  output of script execution
 
 Command 'expand-descriptors' options:
 --help                                      flag to print usage help to stdout and exit

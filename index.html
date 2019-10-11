@@ -100,10 +100,15 @@
 <li><a href="#input-stream-12">Input stream:</a></li>
 <li><a href="#output-stream-12">Output stream:</a></li>
 </ul></li>
-<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
+<li><a href="#command-run-script">Command 'run-script'</a><ul>
 <li><a href="#command-line-arguments-13">Command line arguments:</a></li>
 <li><a href="#input-stream-13">Input stream:</a></li>
 <li><a href="#output-stream-13">Output stream:</a></li>
+</ul></li>
+<li><a href="#command-expand-descriptors">Command 'expand-descriptors'</a><ul>
+<li><a href="#command-line-arguments-14">Command line arguments:</a></li>
+<li><a href="#input-stream-14">Input stream:</a></li>
+<li><a href="#output-stream-14">Output stream:</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#wrapper-scripts">Wrapper scripts</a><ul>
@@ -276,6 +281,7 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <li>compare-contacts</li>
 <li>write-balls-to-atoms-file</li>
 <li>query-balls-clashes</li>
+<li>run-script</li>
 <li>expand-descriptors</li>
 </ul>
 <h2 id="command-get-balls-from-atoms-file">Command 'get-balls-from-atoms-file'</h2>
@@ -564,14 +570,25 @@ A  2  .  2  .  SER  CA  solvent  .    .  .     .  .    .    16.448  6.1    .  .<
 <pre><code>list of balls (line format: &#39;annotation x y z r&#39;)</code></pre>
 <h3 id="output-stream-12">Output stream:</h3>
 <pre><code>list of clashes (line format: &#39;annotation1 annotation2 distance min-distance-between-balls&#39;)</code></pre>
-<h2 id="command-expand-descriptors">Command 'expand-descriptors'</h2>
+<h2 id="command-run-script">Command 'run-script'</h2>
 <h3 id="command-line-arguments-13">Command line arguments:</h3>
 <pre><code>Name                            Type        Description
 ------------------------------- ------ ---- ------------------------------------------------------------------------
+--interactive                               flag for interactive mode
+--max-unfolding                 number      maximum level of output unfolding, default is 6
 --help                                      flag to print usage help to stdout and exit</code></pre>
 <h3 id="input-stream-13">Input stream:</h3>
-<pre><code>any text containing atom descriptors</code></pre>
+<pre><code>script as plain text</code></pre>
 <h3 id="output-stream-13">Output stream:</h3>
+<pre><code>output of script execution</code></pre>
+<h2 id="command-expand-descriptors">Command 'expand-descriptors'</h2>
+<h3 id="command-line-arguments-14">Command line arguments:</h3>
+<pre><code>Name                            Type        Description
+------------------------------- ------ ---- ------------------------------------------------------------------------
+--help                                      flag to print usage help to stdout and exit</code></pre>
+<h3 id="input-stream-14">Input stream:</h3>
+<pre><code>any text containing atom descriptors</code></pre>
+<h3 id="output-stream-14">Output stream:</h3>
 <pre><code>text with each atom descriptor expanded to &#39;chainID resSeq iCode serial altLoc resName name&#39;</code></pre>
 <h1 id="wrapper-scripts">Wrapper scripts</h1>
 <h2 id="voromqa-method-script">VoroMQA method script</h2>

@@ -300,6 +300,7 @@ Using "--help" option without specific command results in printing help for all 
 * compare-contacts
 * write-balls-to-atoms-file
 * query-balls-clashes
+* run-script
 * expand-descriptors
 
 ## Command 'get-balls-from-atoms-file'
@@ -678,6 +679,24 @@ Using "--help" option without specific command results in printing help for all 
 ### Output stream:
 
     list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')
+
+## Command 'run-script'
+
+### Command line arguments:
+
+    Name                            Type        Description
+    ------------------------------- ------ ---- ------------------------------------------------------------------------
+    --interactive                               flag for interactive mode
+    --max-unfolding                 number      maximum level of output unfolding, default is 6
+    --help                                      flag to print usage help to stdout and exit
+
+### Input stream:
+
+    script as plain text
+
+### Output stream:
+
+    output of script execution
 
 ## Command 'expand-descriptors'
 

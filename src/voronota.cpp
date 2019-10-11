@@ -86,6 +86,7 @@ std::vector<ModeDescriptor> get_list_of_modes()
 	list_of_modes.push_back(ModeDescriptor("compare-contacts", ModeDescriptor::FunctionPtr(compare_contacts)));
 	list_of_modes.push_back(ModeDescriptor("write-balls-to-atoms-file", ModeDescriptor::FunctionPtr(write_balls_to_atoms_file)));
 	list_of_modes.push_back(ModeDescriptor("query-balls-clashes", ModeDescriptor::FunctionPtr(query_balls_clashes)));
+	list_of_modes.push_back(ModeDescriptor("run-script", ModeDescriptor::FunctionPtr(run_script)));
 	list_of_modes.push_back(ModeDescriptor("expand-descriptors", ModeDescriptor::FunctionPtr(expand_descriptors)));
 	return list_of_modes;
 }
@@ -115,7 +116,6 @@ std::vector<ModeDescriptor> get_list_of_xmodes()
 	list_of_modes.push_back(ModeDescriptor("x-place-membrane", ModeDescriptor::FunctionPtr(place_membrane)));
 	list_of_modes.push_back(ModeDescriptor("x-demo-polygon-triangulation", ModeDescriptor::FunctionPtr(demo_polygon_triangulation)));
 	list_of_modes.push_back(ModeDescriptor("x-demo-hypercut", ModeDescriptor::FunctionPtr(demo_hypercut)));
-	list_of_modes.push_back(ModeDescriptor("x-run-script", ModeDescriptor::FunctionPtr(run_script)));
 	list_of_modes.push_back(ModeDescriptor("x-draw-values-bitmap", ModeDescriptor::FunctionPtr(draw_values_bitmap)));
 	list_of_modes.push_back(ModeDescriptor("x-reprint-hbp", ModeDescriptor::FunctionPtr(reprint_hbp)));
 	list_of_modes.push_back(ModeDescriptor("x-compare-files-as-sets", ModeDescriptor::FunctionPtr(compare_files_as_sets)));
