@@ -8,29 +8,35 @@ cat >&2 << 'EOF'
 
 For example, let there be a script "test.sh" with the following contents:
 
-  curl 'https://files.rcsb.org/download/2ZSK.pdb.gz' | zcat > tmp.pdb
+  PDBID="$1"
+  curl "https://files.rcsb.org/download/${PDBID}.pdb.gz" | zcat > tmp.pdb
   v load tmp.pdb
   rm tmp.pdb
   $V_SUCCESS || { echo "No valid file"; exit 1; }
   v construct-contacts
-  v voromqa-global | jq '.commands[-1].output.quality_score'
+  v voromqa-global
+  SCORE_GLOBAL="$(echo "$V_OUT" | jq '.commands[-1].output.quality_score')"
+  SCORE_CHAINS=()
   for CHAIN in A B
   do
-    v "voromqa-local -atoms [-chain $CHAIN]" | jq '.commands[-1].output.atoms_result.quality_score'
+    v "voromqa-local -contacts [-a1[-chain $CHAIN]]"
+    SCORE_CHAINS+=("$(echo "$V_TAIL_OUT" | jq '.output.atoms_result.quality_score')")
   done
+  echo "Complex scores: ${SCORE_GLOBAL} ${SCORE_CHAINS[@]}"
   v "restrict-atoms [-chain A]"
   $V_SUCCESS || { echo "No chain A"; exit 1; }
   v "construct-contacts"
-  vq "voromqa-global"
-  echo "$V_OUT_TAIL" | jq '.output.quality_score'
+  v "voromqa-global"
+  SCORE_CHAIN_A="$(echo "$V_TAIL_OUT" | jq '.output.quality_score')"
+  echo "Chain A score: ${SCORE_CHAIN_A}"
 
 The above script can be run non-interactively:
 
-  voronota-runscript -i test.sh
+  voronota-runscript -i test.sh 2ZSK
 
 or
 
-  cat test.sh | voronota-runscript
+  cat test.sh | voronota-runscript 2ZSK
 
 Another way is to start a special bash session:
 
@@ -38,11 +44,7 @@ Another way is to start a special bash session:
 
 and, inside the session, run the script
 
-  ./test.sh
-  
-or
-
-  source ./test.sh
+  ./test.sh 2ZSK
 
 EOF
 exit 1
@@ -140,28 +142,36 @@ then
 	exit 1
 fi
 
-function v
+function vraw
 {
 	unset V_OUT
 	unset V_SUCCESS
-	unset V_OUT_TAIL
-	unset V_SUCCESS_TAIL
+	unset V_TAIL_OUT
+	unset V_TAIL_SUCCESS
 	echo "$*" >&6
 	read V_OUT <&5
 	V_SUCCESS="$(echo "$V_OUT" | jq '.script_summary | .commands_successful == .commands_all')"
-	V_OUT_TAIL="$(echo "$V_OUT" | jq '.commands[-1]')"
-	V_SUCCESS_TAIL="$(echo "$V_OUT_TAIL" | jq '.success')"
+	V_TAIL_OUT="$(echo "$V_OUT" | jq -c '.commands[-1]')"
+	V_TAIL_SUCCESS="$(echo "$V_TAIL_OUT" | jq '.success')"
 	echo "$V_OUT"
 }
 
-export -f v
+export -f vraw
 
 function vq
 {
-	v "$*" > /dev/null
+	vraw "$*" > /dev/null
 }
 
 export -f vq
+
+function v
+{
+	vraw "$*" > /dev/null
+	echo "$V_OUT" | jq '.'
+}
+
+export -f v
 
 vq echo
 
