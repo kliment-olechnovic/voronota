@@ -103,7 +103,7 @@ fi
 
 if [ -z "$VORONOTA_PROC_PID" ]
 then
-	echo "Error: failed to start app"
+	echo >&2 "Error: failed to start app"
 	exit 1
 fi
 
@@ -114,13 +114,13 @@ FD6_INPUT="$(true 2>/dev/null <&6; echo $?)"
 
 if [ "$FD5_OUTPUT" == "0" ] || [ "$FD5_INPUT" == "0" ]
 then
-	echo "Error: file discriptor 5 not free"
+	echo >&2 "Error: file discriptor 5 not free"
 	exit 1
 fi
 
 if [ "$FD6_OUTPUT" == "0" ] || [ "$FD6_INPUT" == "0" ]
 then
-	echo "Error: file discriptor 6 not free"
+	echo >&2 "Error: file discriptor 6 not free"
 	exit 1
 fi
 
@@ -138,7 +138,7 @@ FD6_OUTPUT="$(true 2>/dev/null >&6; echo $?)"
 
 if [ "$FD5_INPUT" != "0" ] || [ "$FD6_OUTPUT" != "0" ]
 then
-	echo "Error: failed to init IO file discriptors 5 and 6"
+	echo >&2 "Error: failed to init IO file discriptors 5 and 6"
 	exit 1
 fi
 
@@ -173,13 +173,20 @@ function v
 
 export -f v
 
-vq echo
+function vassert
+{
+	vq echo
 
-if [ "$V_SUCCESS" != "true" ]
-then
-	echo "Error: v command test failed"
-	exit 1
-fi
+	if [ "$V_SUCCESS" != "true" ]
+	then
+		echo >&2 "Error: v command test failed"
+		exit 1
+	fi
+}
+
+export -f vassert
+
+vassert
 
 readonly V_TMPDIR="$(mktemp -d)"
 export V_TMPDIR
