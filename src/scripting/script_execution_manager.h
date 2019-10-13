@@ -414,6 +414,14 @@ private:
 		{
 			CongregationOfDataManagers::ObjectQuery query;
 			query.picked=true;
+			{
+				const std::vector<std::string> on_objects=command_record.command_input.get_value_vector_or_default<std::string>("on-objects", std::vector<std::string>());
+				if(!on_objects.empty())
+				{
+					query.names.insert(on_objects.begin(), on_objects.end());
+					query.picked=false;
+				}
+			}
 			std::vector<DataManager*> picked_data_managers=congregation_of_data_managers_.get_objects(query);
 			if(!picked_data_managers.empty())
 			{

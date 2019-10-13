@@ -75,14 +75,12 @@ readonly TMPLDIR=$(mktemp -d)
 
 function on_exit_final
 {
-	v-do-silent  "unpick-objects"
 	rm -r $TMPLDIR
 }
 
 trap on_exit_final EXIT
 
-v-do-silent  "pick-objects '$SOURCE_NAME'"
-v-do-silent  "save-atoms -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
+v-do-silent  "save-atoms -on-objects '$SOURCE_NAME' -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
 
 if [ ! -s "$TMPLDIR/source.pdb" ]
 then
