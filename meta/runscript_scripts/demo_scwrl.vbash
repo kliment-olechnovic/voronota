@@ -1,0 +1,11 @@
+v-do load -file tests/input/complex/target.pdb -title obj1
+./meta/runscript_scripts/v-scwrl -s obj1 -d obj2
+v-do pick-objects
+v-do show-atoms -rep sticks
+v-do pick-objects obj1
+v-do color-atoms 0xFFFF00
+v-do pick-objects obj2
+v-do color-atoms 0x0000FF
+v-do pick-objects
+v-do construct-contacts
+v-do voromqa-global
