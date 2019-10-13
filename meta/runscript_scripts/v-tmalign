@@ -16,7 +16,7 @@ EOF
 exit 1
 }
 
-v-assert-env || { echo >&2 "Error: 'voronota-runscript' environment not initialized"; exit 1; }
+v-test-env || { echo >&2 "Error: 'voronota-runscript' environment not valid"; exit 1; }
 
 TARGET_NAME=""
 MODEL_NAME=""

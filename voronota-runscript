@@ -137,41 +137,75 @@ then
 	exit 1
 fi
 
-function v-do-raw
+function v-check-env-app
+{
+	if [ -n "$VORONOTA_PROC_PID" ] && ps -p "$VORONOTA_PROC_PID" > /dev/null
+	then
+		return 0
+	fi
+	echo >&2 "Error: 'voronota-runscript' environment has no running Voronota"
+	return 1
+}
+
+function v-test-env
+{
+	if v-check-env-app
+	then
+		echo "echo" >&6
+		local V_TEST_OUT
+		read V_TEST_OUT <&5
+		if [ "$(echo "$V_TEST_OUT" | jq -c '.commands[-1].success')" == "true" ]
+		then
+			return 0
+		fi
+	fi
+	return 1
+}
+
+v-test-env || { echo >&2 "Error: 'voronota-runscript' environment not valid"; exit 1; }
+
+function v-unset-utility-variables
 {
 	unset V_OUT
 	unset V_SUCCESS
 	unset V_TAIL_OUT
 	unset V_TAIL_SUCCESS
-	echo "$*" >&6
-	read V_OUT <&5
-	V_SUCCESS="$(echo "$V_OUT" | jq -c '.script_summary | .commands_successful == .commands_all')"
-	V_TAIL_OUT="$(echo "$V_OUT" | jq -c '.commands[-1]')"
-	V_TAIL_SUCCESS="$(echo "$V_TAIL_OUT" | jq '.success')"
-	echo "$V_OUT"
+}
+
+function v-do-raw
+{
+	if v-check-env-app
+	then
+		v-unset-utility-variables
+		echo "$*" >&6
+		read V_OUT <&5
+		V_SUCCESS="$(echo "$V_OUT" | jq -c '.script_summary | .commands_successful == .commands_all')"
+		V_TAIL_OUT="$(echo "$V_OUT" | jq -c '.commands[-1]')"
+		V_TAIL_SUCCESS="$(echo "$V_TAIL_OUT" | jq '.success')"
+		echo "$V_OUT"
+		return 0
+	fi
+	return 1
 }
 
 function v-do-silent
 {
-	v-do-raw "$*" > /dev/null
+	if v-do-raw "$*" > /dev/null
+	then
+		return 0
+	fi
+	return 1
 }
 
 function v-do
 {
-	v-do-raw "$*" > /dev/null
-	echo "$V_OUT" | jq '.'
-}
-
-function v-assert-env
-{
-	if [ "$(v-do "echo" | jq -c '.commands[-1].success')" != "true" ]
+	if v-do-raw "$*" > /dev/null
 	then
-		echo >&2 "Error: 'voronota-runscript' environment is not valid"
-		exit 1
+		echo "$V_OUT" | jq '.'
+		return 0
 	fi
+	return 1
 }
-
-v-assert-env
 
 readonly V_TMPDIR="$(mktemp -d)"
 
@@ -189,14 +223,18 @@ voronota-resources voromqa_v1_energy_means_and_sds > "$V_TMPDIR/_voromqa_v1_ener
 
 v-do-silent "setup-loading --radii-file '$V_TMPDIR/_radii'"
 v-do-silent "setup-voromqa --potential '$V_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$V_TMPDIR/_voromqa_v1_energy_means_and_sds'"
+v-unset-utility-variables
 
+export VORONOTA_PROC_PID
 export V_TMPDIR
 export V_GUI
 
+export -f v-check-env-app
+export -f v-test-env
+export -f v-unset-utility-variables
 export -f v-do-raw
 export -f v-do-silent
 export -f v-do
-export -f v-assert-env
 
 if [ -n "$INFILE" ]
 then
