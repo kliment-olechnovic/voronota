@@ -6,45 +6,40 @@ cat >&2 << 'EOF'
 
 'voronota-runscript' script provides a way to run a bash script that controls Voronota.
 
-For example, let there be a script "test.sh" with the following contents:
+Options:
+    --input | -i           string      input script file
+    --gui | -g                         flag to run 'voronota-viewer'
+    --no-gui | -t                      flag to not run 'voronota-viewer' even if V_GUI is set to true
+    --help | -h                        flag to display help message and exit
 
-  PDBID="$1"
-  curl "https://files.rcsb.org/download/${PDBID}.pdb.gz" | zcat > tmp.pdb
-  v load tmp.pdb
-  rm tmp.pdb
-  $V_SUCCESS || { echo "No valid file"; exit 1; }
-  v construct-contacts
-  v voromqa-global
-  SCORE_GLOBAL="$(echo "$V_OUT" | jq '.commands[-1].output.quality_score')"
-  SCORE_CHAINS=()
-  for CHAIN in A B
-  do
-    v "voromqa-local -contacts [-a1[-chain $CHAIN]]"
-    SCORE_CHAINS+=("$(echo "$V_TAIL_OUT" | jq '.output.atoms_result.quality_score')")
-  done
-  echo "Complex scores: ${SCORE_GLOBAL} ${SCORE_CHAINS[@]}"
-  v "restrict-atoms [-chain A]"
-  $V_SUCCESS || { echo "No chain A"; exit 1; }
-  v "construct-contacts"
-  v "voromqa-global"
-  SCORE_CHAIN_A="$(echo "$V_TAIL_OUT" | jq '.output.quality_score')"
-  echo "Chain A score: ${SCORE_CHAIN_A}"
+For example, let there be a script "test.vbash" with the following contents:
+
+    PDBID="$1"
+    DIR="$(mktemp -d)"
+    trap "rm -r $DIR" EXIT
+    cd "$DIR"
+    curl "https://files.rcsb.org/download/${PDBID}.pdb1.gz" | zcat > "input.pdb"
+    [ -s "input.pdb" ] || { echo "Nothing downloaded."; exit 1; }
+    v-do "load -file ${DIR}/input.pdb -as-assembly"
+    v-do "construct-contacts"
+    v-do "voromqa-global"
+    v-do "voromqa-local -contacts [-inter-chain]"
 
 The above script can be run non-interactively:
 
-  voronota-runscript -i test.sh 2ZSK
+    voronota-runscript -i test.vbash 2ZSK
 
 or
 
-  cat test.sh | voronota-runscript 2ZSK
+    cat test.vbash | voronota-runscript 2ZSK
 
 Another way is to start a special bash session:
 
-  bash --init-file /path/to/voronota-runscript
+    bash --init-file /path/to/voronota-runscript
 
 and, inside the session, run the script
 
-  ./test.sh 2ZSK
+    ./test.vbash 2ZSK
 
 EOF
 exit 1
@@ -103,7 +98,7 @@ fi
 
 if [ -z "$VORONOTA_PROC_PID" ]
 then
-	echo >&2 "Error: failed to start app"
+	echo >&2 "Error: failed to start Voronota"
 	exit 1
 fi
 
@@ -142,7 +137,7 @@ then
 	exit 1
 fi
 
-function vraw
+function v-do-raw
 {
 	unset V_OUT
 	unset V_SUCCESS
@@ -150,46 +145,35 @@ function vraw
 	unset V_TAIL_SUCCESS
 	echo "$*" >&6
 	read V_OUT <&5
-	V_SUCCESS="$(echo "$V_OUT" | jq '.script_summary | .commands_successful == .commands_all')"
+	V_SUCCESS="$(echo "$V_OUT" | jq -c '.script_summary | .commands_successful == .commands_all')"
 	V_TAIL_OUT="$(echo "$V_OUT" | jq -c '.commands[-1]')"
 	V_TAIL_SUCCESS="$(echo "$V_TAIL_OUT" | jq '.success')"
 	echo "$V_OUT"
 }
 
-export -f vraw
-
-function vq
+function v-do-silent
 {
-	vraw "$*" > /dev/null
+	v-do-raw "$*" > /dev/null
 }
 
-export -f vq
-
-function v
+function v-do
 {
-	vraw "$*" > /dev/null
+	v-do-raw "$*" > /dev/null
 	echo "$V_OUT" | jq '.'
 }
 
-export -f v
-
-function vassert
+function v-assert-env
 {
-	vq echo
-
-	if [ "$V_SUCCESS" != "true" ]
+	if [ "$(v-do "echo" | jq -c '.commands[-1].success')" != "true" ]
 	then
-		echo >&2 "Error: v command test failed"
+		echo >&2 "Error: 'voronota-runscript' environment is not valid"
 		exit 1
 	fi
 }
 
-export -f vassert
-
-vassert
+v-assert-env
 
 readonly V_TMPDIR="$(mktemp -d)"
-export V_TMPDIR
 
 function on_exit_final
 {
@@ -203,22 +187,34 @@ voronota-resources radii > "$V_TMPDIR/_radii"
 voronota-resources voromqa_v1_energy_potential > "$V_TMPDIR/_voromqa_v1_energy_potential"
 voronota-resources voromqa_v1_energy_means_and_sds > "$V_TMPDIR/_voromqa_v1_energy_means_and_sds"
 
-vq "setup-loading --radii-file '$V_TMPDIR/_radii'"
-vq "setup-voromqa --potential '$V_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$V_TMPDIR/_voromqa_v1_energy_means_and_sds'"
+v-do-silent "setup-loading --radii-file '$V_TMPDIR/_radii'"
+v-do-silent "setup-voromqa --potential '$V_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$V_TMPDIR/_voromqa_v1_energy_means_and_sds'"
+
+export V_TMPDIR
+export V_GUI
+
+export -f v-do-raw
+export -f v-do-silent
+export -f v-do
+export -f v-assert-env
 
 if [ -n "$INFILE" ]
 then
 	SCRIPTFILE="$V_TMPDIR/_script.bash"
 	
-	if [ "$INFILE" == "-" ]
-	then
-		cat | egrep -v '^#' > "$SCRIPTFILE"
-	fi
-	
-	if [ -s "$INFILE" ]
-	then
-		cat "$INFILE" | egrep -v '^#' > "$SCRIPTFILE"
-	fi
+	{
+		if [ "$INFILE" == "-" ]
+		then
+			cat
+		fi
+		
+		if [ -s "$INFILE" ]
+		then
+			cat "$INFILE"
+		fi
+	} \
+	| egrep -v '^\S*#' \
+	> "$SCRIPTFILE"
 	
 	chmod +x "$SCRIPTFILE"
 	$SCRIPTFILE "${PASSARGS[@]}"
