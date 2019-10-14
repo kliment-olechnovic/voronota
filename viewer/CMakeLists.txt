@@ -11,4 +11,4 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 
 add_executable(voronota-viewer ${VORONOTA_VIEWER_SRC})
 
-target_link_libraries(voronota-viewer m GL GLEW glfw)
+target_link_libraries(voronota-viewer m GL GLEW glfw pthread)
