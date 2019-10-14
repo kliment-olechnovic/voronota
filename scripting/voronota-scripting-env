@@ -221,7 +221,7 @@ voronota-resources radii > "$V_TMPDIR/_radii"
 voronota-resources voromqa_v1_energy_potential > "$V_TMPDIR/_voromqa_v1_energy_potential"
 voronota-resources voromqa_v1_energy_means_and_sds > "$V_TMPDIR/_voromqa_v1_energy_means_and_sds"
 
-v-do-silent "setup-loading --radii-file '$V_TMPDIR/_radii'"
+v-do-silent "setup-loading --radii-file '$V_TMPDIR/_radii' --include-heteroatoms"
 v-do-silent "setup-voromqa --potential '$V_TMPDIR/_voromqa_v1_energy_potential' --means-and-sds '$V_TMPDIR/_voromqa_v1_energy_means_and_sds'"
 v-unset-utility-variables
 
