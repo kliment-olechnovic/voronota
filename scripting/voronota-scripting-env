@@ -177,7 +177,7 @@ function v-do-raw
 	if v-check-env-app
 	then
 		v-unset-utility-variables
-		echo "$*" >&6
+		echo "$*" | tr '\n' ';' | sed 's/;$/\n/' >&6
 		read V_OUT <&5
 		V_SUCCESS="$(echo "$V_OUT" | jq -c '.script_summary | .commands_successful == .commands_all')"
 		V_TAIL_OUT="$(echo "$V_OUT" | jq -c '.commands[-1]')"
