@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-scripting-interactive-env' script starts an interactive Bash session for conrolling Voronota.
+It uses 'voronota-scripting-env' script to initialize the Bash session.
+
+Options:
+    --gui | -g                         flag to run 'voronota-viewer'
+    --help | -h                        flag to display help message and exit
+
+EOF
+exit 1
+}
+
+V_GUI=false
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-g|--gui)
+		V_GUI=true
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if $HELP_MODE
+then
+	print_help_and_exit
+fi
+
+INIT_FILE="$(which voronota-scripting-env)"
+
+if [ ! -s "$INIT_FILE" ]
+then
+	echo >&2 "Error: 'voronota-scripting-env' script not found in binaries path"
+	exit 1
+fi
+
+export V_GUI
+
+bash --init-file "$INIT_FILE" -i
+

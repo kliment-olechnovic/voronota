@@ -1,5 +1,5 @@
 v-do load -file tests/input/complex/target.pdb -title obj1
-./meta/runscript_scripts/v-scwrl -s obj1 -d obj2
+v-scwrl -s obj1 -d obj2
 v-do pick-objects
 v-do show-atoms -rep sticks
 v-do pick-objects obj1

@@ -2,7 +2,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'v-scwrl' is a script that can be called from the 'voronota-runscript'
+'v-scwrl' is a script that can be called from the 'voronota-scripting-env'
 environment to use Scwrl4 to generate protein objects with rebuil sidechains
 
 Options:
@@ -14,7 +14,7 @@ EOF
 exit 1
 }
 
-v-test-env || { echo >&2 "Error: 'voronota-runscript' environment not valid"; exit 1; }
+v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
 SOURCE_NAME=""
 DESTINATION_NAME=""

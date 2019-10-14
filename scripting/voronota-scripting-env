@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-runscript' script provides a way to run a bash script that controls Voronota.
+'voronota-scripting-env' script provides a way to run a Bash script that controls Voronota.
 
 Options:
     --input | -i           string      input script file
@@ -27,15 +27,15 @@ For example, let there be a script "test.vbash" with the following contents:
 
 The above script can be run non-interactively:
 
-    voronota-runscript -i test.vbash 2ZSK
+    voronota-scripting-env -i test.vbash 2ZSK
 
 or
 
-    cat test.vbash | voronota-runscript 2ZSK
+    cat test.vbash | voronota-scripting-env 2ZSK
 
 Another way is to start a special bash session:
 
-    bash --init-file /path/to/voronota-runscript
+    bash --init-file "$(which voronota-scripting-env)"
 
 and, inside the session, run the script
 
@@ -143,7 +143,7 @@ function v-check-env-app
 	then
 		return 0
 	fi
-	echo >&2 "Error: 'voronota-runscript' environment has no running Voronota"
+	echo >&2 "Error: 'voronota-scripting-env' environment has no running Voronota"
 	return 1
 }
 
@@ -162,7 +162,7 @@ function v-test-env
 	return 1
 }
 
-v-test-env || { echo >&2 "Error: 'voronota-runscript' environment not valid"; exit 1; }
+v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
 function v-unset-utility-variables
 {
