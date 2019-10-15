@@ -244,6 +244,21 @@ do
 done
 )
 
+if command -v voronota-scripting-plugins &> /dev/null
+then
+	V_PLUGINSDIR="$V_TMPDIR/_plugins"
+	mkdir -p "$V_PLUGINSDIR"
+	voronota-scripting-plugins list_of_plugins \
+	| while read PLUGIN_NAME
+	do
+		PLUGIN_FILE="$V_PLUGINSDIR/$PLUGIN_NAME"
+		voronota-scripting-plugins "$PLUGIN_NAME" > "$PLUGIN_FILE"
+		chmod +x "$PLUGIN_FILE"
+	done
+	export V_PLUGINSDIR
+	export PATH="${V_PLUGINSDIR}:${PATH}"
+fi
+
 if [ -n "$INFILE" ]
 then
 	SCRIPTFILE="$V_TMPDIR/_script.bash"
