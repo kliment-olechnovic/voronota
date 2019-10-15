@@ -236,6 +236,14 @@ export -f v-do-raw
 export -f v-do-silent
 export -f v-do
 
+source <(
+v-do "list-commands" | jq '.commands[-1].output.outlines[].name' -r | while read CNAME
+do
+	echo "function v-${CNAME} { v-do \"${CNAME} \$*\"; }"
+	echo "export -f v-${CNAME}"
+done
+)
+
 if [ -n "$INFILE" ]
 then
 	SCRIPTFILE="$V_TMPDIR/_script.bash"

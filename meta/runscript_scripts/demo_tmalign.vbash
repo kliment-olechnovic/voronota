@@ -1,9 +1,9 @@
-v-do reset-time
-v-do load tests/input/complex/target.pdb
-v-do load tests/input/complex/model1.pdb
-v-do load tests/input/complex/model2.pdb
-v-do pick-objects
-v-do spectrum-atoms -by chain
+v-reset-time
+v-load tests/input/complex/target.pdb
+v-load tests/input/complex/model1.pdb
+v-load tests/input/complex/model2.pdb
+v-pick-objects
+v-spectrum-atoms -by chain
 v-tmalign -t target.pdb -m model1.pdb
 v-tmalign -t target.pdb -m model2.pdb
-v-do print-time
+v-print-time

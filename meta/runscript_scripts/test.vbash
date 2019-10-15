@@ -4,7 +4,7 @@ trap "rm -r $DIR" EXIT
 cd "$DIR"
 curl "https://files.rcsb.org/download/${PDBID}.pdb1.gz" | zcat > "input.pdb"
 [ -s "input.pdb" ] || { echo "Nothing downloaded."; exit 1; }
-v-do "load -file ${DIR}/input.pdb -as-assembly"
-v-do "construct-contacts"
-v-do "voromqa-global"
-v-do "voromqa-local -contacts [-inter-chain]"
+v-load -file ${DIR}/input.pdb -as-assembly
+v-construct-contacts
+v-voromqa-global
+v-voromqa-local -contacts '[-inter-chain]'
