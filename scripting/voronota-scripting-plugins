@@ -14,7 +14,7 @@ then
 cat << 'GLOBALEOF'
 v-fetch
 v-save-image
-v-save-rotating-gif
+v-save-rotation-movie
 v-tmalign
 v-scwrl
 GLOBALEOF
@@ -276,18 +276,22 @@ convert "$TMPLDIR/image.ppm" "$OUTPUT_FILE"
 GLOBALEOF
 fi
 
-if [ "$RESOURCE_NAME" == "v-save-rotating-gif" ]
+if [ "$RESOURCE_NAME" == "v-save-rotation-movie" ]
 then
 cat << 'GLOBALEOF'
 function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'v-save-rotating-gif' is a script that can be called from the 'voronota-scripting-env'
-environment to generate a rotating GIF image from 'voronota-viewer' screenshot image
+'v-save-rotation-movie' is a script that can be called from the 'voronota-scripting-env'
+environment to generate a rotation movie from 'voronota-viewer'
 
 Options:
-    --output | -o     string   *  output GIF file name, alternatively can be provided as an unnamed argument
+    --output | -o     string   *  output file name, alternatively can be provided as an unnamed argument
+    --angle | -a      number      motion step angle in degrees, default is 2
+    --steps | -s      number      number of motion steps, default is 30
+    --delay | -d      number      number of delay between frames, default is 2
+    --circle | -c                 flag to enable complete rotation
     --help | -h                   flag to display help message and exit
 
 EOF
@@ -303,6 +307,10 @@ then
 fi
 
 OUTPUT_FILE=""
+STEP_ANGLE=2
+STEPS=30
+DELAY=2
+CIRCLE=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -314,6 +322,21 @@ do
 	-o|--outfile)
 		OUTPUT_FILE="$OPTARG"
 		shift
+		;;
+	-a|--angle)
+		STEP_ANGLE="$OPTARG"
+		shift
+		;;
+	-s|--steps)
+		STEPS="$OPTARG"
+		shift
+		;;
+	-d|--delay)
+		DELAY="$OPTARG"
+		shift
+		;;
+	-c|--circle)
+		CIRCLE=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -336,9 +359,27 @@ then
 	exit 1
 fi
 
-if [ "$(basename "$OUTPUT_FILE")" == "$(basename "$OUTPUT_FILE" .gif)" ]
+if [ "$(basename "$OUTPUT_FILE")" == "$(basename "${OUTPUT_FILE}" ".mov")" ] && [ "$(basename "$OUTPUT_FILE")" == "$(basename "${OUTPUT_FILE}" ".gif")" ]
 then
-	OUTPUT_FILE="${OUTPUT_FILE}.gif"
+	OUTPUT_FILE="${OUTPUT_FILE}.mov"
+fi
+
+if [ -z "$STEPS" ] || [ "$STEPS" -lt "8" ] || [ "$STEPS" -gt "200" ]
+then
+	echo >&2 "Error: invalid number of steps, must be in interval from 8 to 200"
+	exit 1
+fi
+
+if [ -z "$STEP_ANGLE" ] || [ "$STEP_ANGLE" -lt "1" ] || [ "$STEP_ANGLE" -gt "10" ]
+then
+	echo >&2 "Error: invalid step angle, must be in interval from 1 to 10"
+	exit 1
+fi
+
+if [ -z "$DELAY" ] || [ "$DELAY" -lt "1" ] || [ "$DELAY" -gt "10" ]
+then
+	echo >&2 "Error: invalid delay, must be in interval from 1 to 10"
+	exit 1
 fi
 
 command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
@@ -352,32 +393,69 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-STEPS=40
-STEP_ANGLE=3
+function num_to_id
+{
+	echo "$1" | sed 's/^/00000/' | sed 's/.*\(....\)$/\1/'
+}
 
 STEPS="$((${STEPS}/2*2))"
-STEP_RETURN="$((${STEPS}/2+1))"
+STEP_ANGLE_D="$((${STEP_ANGLE}*2))"
 
-seq 1 "$STEPS" | while read NUM
-do
-	ID="$(echo "$NUM" | sed 's/^/00000/' | sed 's/.*\(....\)$/\1/')"
+if [ "$CIRCLE" != "true" ]
+then
+	NUM="$((${STEPS}/2+1))"
+	ID="$(num_to_id "$NUM")"
+	v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
 	
-	if [ "$NUM" -lt "$STEP_RETURN" ]
-	then
+	seq 1 "$((${STEPS}/2))" | tac \
+	| while read NUM
+	do
+		ID="$(num_to_id "$NUM")"
+		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE_D"
 		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
-		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE"
-	else
-		if [ "$NUM" -eq "$STEP_RETURN" ]
-		then
-			v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE"
-		else
-			v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
-			v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE"
-		fi
-	fi
-done
+	done
+	
+	seq 1 "$((${STEPS}/2))" | tac \
+	| while read NUM
+	do
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+	done
+	
+	seq "$((${STEPS}/2+1))" "$STEPS" \
+	| while read NUM
+	do
+		ID="$(num_to_id "$NUM")"
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
+	done
+	
+	seq "$((${STEPS}/2+1))" "$STEPS" \
+	| while read NUM
+	do
+		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE_D"
+	done
+	
+	{
+		seq 1 "$STEPS"
+		seq 2 "$((${STEPS}-1))"| tac
+	} | while read NUM
+	do
+		ID="$(num_to_id "$NUM")"
+		echo "$TMPLDIR/img${ID}.ppm"
+	done \
+	> "$TMPLDIR/sequence"
+else
+	seq 0 "$STEP_ANGLE" "$((360-${STEP_ANGLE}))" \
+	| while read NUM
+	do
+		ID="$(num_to_id "$NUM")"
+		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+		echo "$TMPLDIR/img${ID}.ppm"
+	done > "$TMPLDIR/sequence"
+fi
 
-convert -delay 4 $TMPLDIR/img*.ppm -loop 0 "$OUTPUT_FILE"
+convert -delay "$DELAY" $(cat $TMPLDIR/sequence) -loop 0 "$OUTPUT_FILE"
 
 GLOBALEOF
 fi
