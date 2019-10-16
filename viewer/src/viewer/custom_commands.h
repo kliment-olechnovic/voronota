@@ -189,7 +189,7 @@ public:
 				throw std::runtime_error(std::string("Invalid axis."));
 			}
 
-			const double angle_in_radians=(angle_in_degrees*glm::pi<double>()/360.0);
+			const double angle_in_radians=(angle_in_degrees*glm::pi<double>()/180.0);
 
 			app_.rotate(glm::vec3(axis[0], axis[1], axis[2]), angle_in_radians);
 		}

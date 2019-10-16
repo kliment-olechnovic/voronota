@@ -807,7 +807,9 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
+			const std::string color_from_id=cargs.input.get_value_or_default<std::string>("color-from-id", "");
+			const auxiliaries::ColorUtilities::ColorInteger color_value=
+					(color_from_id.empty() ? read_color(cargs.input) : auxiliaries::ColorUtilities::color_from_string_id(color_from_id));
 
 			cargs.input.assert_nothing_unusable();
 

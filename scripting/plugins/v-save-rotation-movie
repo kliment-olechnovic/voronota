@@ -26,7 +26,7 @@ then
 fi
 
 OUTPUT_FILE=""
-STEP_ANGLE=1
+STEP_ANGLE=2
 STEPS=30
 DELAY=4
 CIRCLE=false
@@ -118,7 +118,6 @@ function num_to_id
 }
 
 STEPS="$((${STEPS}/2*2))"
-STEP_ANGLE_D="$((${STEP_ANGLE}*2))"
 
 if [ "$CIRCLE" != "true" ]
 then
@@ -130,28 +129,28 @@ then
 	| while read NUM
 	do
 		ID="$(num_to_id "$NUM")"
-		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE_D"
+		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE"
 		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
 	done
 	
 	seq 1 "$((${STEPS}/2))" | tac \
 	| while read NUM
 	do
-		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE"
 	done
 	
 	seq "$((${STEPS}/2+1))" "$STEPS" \
 	| while read NUM
 	do
 		ID="$(num_to_id "$NUM")"
-		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE"
 		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
 	done
 	
 	seq "$((${STEPS}/2+1))" "$STEPS" \
 	| while read NUM
 	do
-		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE_D"
+		v-do-silent "rotate -axis 0 1 0 -angle -$STEP_ANGLE"
 	done
 	
 	{
@@ -171,7 +170,7 @@ else
 	do
 		ID="$(num_to_id "$NUM")"
 		v-do-silent "screenshot $TMPLDIR/img${ID}.ppm"
-		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE_D"
+		v-do-silent "rotate -axis 0 1 0 -angle $STEP_ANGLE"
 		echo "$TMPLDIR/img${ID}.ppm"
 	done > "$TMPLDIR/sequence"
 fi
