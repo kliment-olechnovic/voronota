@@ -26,9 +26,9 @@ then
 fi
 
 OUTPUT_FILE=""
-STEP_ANGLE=2
+STEP_ANGLE=1
 STEPS=30
-DELAY=2
+DELAY=4
 CIRCLE=false
 HELP_MODE=false
 
@@ -155,8 +155,10 @@ then
 	done
 	
 	{
+		yes 1 | head -5
 		seq 1 "$STEPS"
-		seq 2 "$((${STEPS}-1))"| tac
+		yes "$STEPS" | head -5
+		seq 2 "$((${STEPS}-1))" | tac
 	} | while read NUM
 	do
 		ID="$(num_to_id "$NUM")"
