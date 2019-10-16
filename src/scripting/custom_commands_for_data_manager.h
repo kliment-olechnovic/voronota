@@ -807,9 +807,8 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			const std::string color_from_id=cargs.input.get_value_or_default<std::string>("color-from-id", "");
-			const auxiliaries::ColorUtilities::ColorInteger color_value=
-					(color_from_id.empty() ? read_color(cargs.input) : auxiliaries::ColorUtilities::color_from_string_id(color_from_id));
+			const bool next_random_color=cargs.input.get_flag("next-random-color");
+			const auxiliaries::ColorUtilities::ColorInteger color_value=(next_random_color ? get_next_random_color() : read_color(cargs.input));
 
 			cargs.input.assert_nothing_unusable();
 
@@ -890,7 +889,7 @@ public:
 				throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
 			}
 
-			if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+			if(scheme!="random" && !auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
 			{
 				throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
 			}
@@ -1004,12 +1003,35 @@ public:
 				params.visual_ids=representation_ids;
 				params.assert_correctness();
 
-				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				if(scheme=="random")
 				{
-					params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-					if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
+					std::map<double, auxiliaries::ColorUtilities::ColorInteger> map_of_values_colors;
+					for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 					{
-						cargs.change_indicator.changed_atoms_display_states=true;
+						map_of_values_colors[it->second]=0;
+					}
+					for(std::map<double, auxiliaries::ColorUtilities::ColorInteger>::iterator it=map_of_values_colors.begin();it!=map_of_values_colors.end();++it)
+					{
+						it->second=get_next_random_color();
+					}
+					for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+					{
+						params.color=map_of_values_colors[it->second];
+						if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
+						{
+							cargs.change_indicator.changed_atoms_display_states=true;
+						}
+					}
+				}
+				else
+				{
+					for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+					{
+						params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+						if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
+						{
+							cargs.change_indicator.changed_atoms_display_states=true;
+						}
 					}
 				}
 			}
@@ -2502,7 +2524,8 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
+			const bool next_random_color=cargs.input.get_flag("next-random-color");
+			const auxiliaries::ColorUtilities::ColorInteger color_value=(next_random_color ? get_next_random_color() : read_color(cargs.input));
 
 			cargs.input.assert_nothing_unusable();
 
@@ -4187,7 +4210,8 @@ public:
 
 			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 			const std::vector<std::string> representation_names=cargs.input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-			const auxiliaries::ColorUtilities::ColorInteger color_value=read_color(cargs.input);
+			const bool next_random_color=cargs.input.get_flag("next-random-color");
+			const auxiliaries::ColorUtilities::ColorInteger color_value=(next_random_color ? get_next_random_color() : read_color(cargs.input));
 
 			cargs.input.assert_nothing_unusable();
 
@@ -4466,6 +4490,15 @@ private:
 			}
 		}
 		return auxiliaries::ColorUtilities::null_color();
+	}
+
+	static auxiliaries::ColorUtilities::ColorInteger get_next_random_color()
+	{
+		static unsigned long id=1;
+		std::ostringstream output;
+		output << id;
+		id++;
+		return auxiliaries::ColorUtilities::color_from_string_id(output.str());
 	}
 
 	static double calculate_zscore_reverse(const double zscore, const double mean_of_values, const double sd_of_values)

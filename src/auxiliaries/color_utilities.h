@@ -238,37 +238,35 @@ public:
 		return color_from_components(mix, false);
 	}
 
-	static ColorInteger color_from_gradient(const std::string& name, const double value)
+	static bool set_gradient_anchors_from_name(const std::string& name, std::vector<ColorInteger>& anchors)
 	{
-		static std::vector<ColorInteger> anchors;
-
 		if(name.empty())
 		{
-			return null_color();
+			return false;
 		}
 
 		if(name=="rainbow")
 		{
-			return color_from_gradient("rygcb", value);
+			return set_gradient_anchors_from_name("rygcb", anchors);
 		}
 		else if(name=="reverse-rainbow")
 		{
-			return color_from_gradient("bcgyr", value);
+			return set_gradient_anchors_from_name("bcgyr", anchors);
 		}
 		else if(name=="blue-white-red")
 		{
-			return color_from_gradient("bwr", value);
+			return set_gradient_anchors_from_name("bwr", anchors);
 		}
 		else if(name=="red-white-blue")
 		{
-			return color_from_gradient("rwb", value);
+			return set_gradient_anchors_from_name("rwb", anchors);
 		}
 
 		for(std::size_t i=0;i<name.size();i++)
 		{
 			if(!color_valid(color_from_name(name[i])))
 			{
-				return null_color();
+				return false;
 			}
 		}
 
@@ -276,6 +274,18 @@ public:
 		for(std::size_t i=0;i<name.size();i++)
 		{
 			anchors[i]=color_from_name(name[i]);
+		}
+
+		return true;
+	}
+
+	static ColorInteger color_from_gradient(const std::string& name, const double value)
+	{
+		static std::vector<ColorInteger> anchors;
+
+		if(!set_gradient_anchors_from_name(name, anchors))
+		{
+			return null_color();
 		}
 
 		return color_from_gradient(anchors, value);
