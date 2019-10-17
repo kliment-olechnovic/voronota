@@ -19,6 +19,7 @@ exit 1
 
 INFILE=""
 INSTRING=""
+PASSARGS=()
 V_GUI=false
 HELP_MODE=false
 
@@ -43,8 +44,7 @@ do
 		HELP_MODE=true
 		;;
 	*)
-		echo >&2 "Error: invalid command line option '$OPTION'"
-		exit 1
+		PASSARGS+=("$OPTION")
 		;;
 	esac
 done
@@ -78,6 +78,11 @@ trap "rm -r $TMPLDIR" EXIT
 	then
 		cat "$INFILE"
 	fi
+	
+	for FILEARG in "${PASSARGS[@]}"
+	do
+		echo "v-load '$FILEARG'"
+	done
 	
 	if [ -n "$INSTRING" ]
 	then
