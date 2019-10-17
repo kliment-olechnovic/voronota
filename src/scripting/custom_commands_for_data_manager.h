@@ -7,6 +7,7 @@
 #include "../common/writing_atomic_balls_in_pdb_format.h"
 #include "../common/construction_of_structural_cartoon.h"
 #include "../common/conversion_of_descriptors.h"
+#include "../common/construction_of_path_centralities.h"
 
 #include "generic_command_for_data_manager.h"
 #include "basic_assertions.h"
@@ -4397,6 +4398,101 @@ public:
 			cargs.data_manager.add_figure(figure);
 
 			cargs.change_indicator.changed_figures=true;
+		}
+	};
+
+	class calculate_betweenness : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_contacts_availability();
+
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query("", "[--min-seq-sep 1]", cargs.input);
+			const bool inter_residue=!cargs.input.get_flag("not-inter-residue");
+			const bool uniform=cargs.input.get_flag("uniform");
+			const bool normalize=!cargs.input.get_flag("not-normalize");
+			const std::string adjunct_atoms=cargs.input.get_value_or_default<std::string>("adj-atoms", "betweenness");
+			const std::string adjunct_contacts=cargs.input.get_value_or_default<std::string>("adj-contacts", "betweenness");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(adjunct_atoms, true);
+			assert_adjunct_name_input(adjunct_contacts, true);
+
+			const std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			typedef common::ConstructionOfPathCentralities COPC;
+
+			std::map<COPC::CRADsPair, double> map_of_contacts;
+			std::map< COPC::CRADsPair, std::set<std::size_t> > map_of_contacts_ids;
+			std::map< COPC::CRAD, std::set<std::size_t> > map_of_atoms_ids;
+
+			{
+				const std::vector<Atom>& atoms=cargs.data_manager.atoms();
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const Contact& contact=cargs.data_manager.contacts()[*it];
+					if(!contact.solvent())
+					{
+						COPC::CRADsPair crads=
+								COPC::CRADsPair(atoms[contact.ids[0]].crad, atoms[contact.ids[1]].crad).without_some_info(inter_residue, inter_residue, false, false);
+						map_of_contacts[crads]+=contact.value.area;
+						map_of_contacts_ids[crads].insert(*it);
+						map_of_atoms_ids[atoms[contact.ids[0]].crad.without_some_info(inter_residue, inter_residue, false, false)].insert(contact.ids[0]);
+						map_of_atoms_ids[atoms[contact.ids[1]].crad.without_some_info(inter_residue, inter_residue, false, false)].insert(contact.ids[1]);
+					}
+				}
+			}
+
+			for(std::map<COPC::CRADsPair, double>::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			{
+				it->second=(uniform ? 1.0 : (100.0/it->second));
+			}
+
+			const COPC::Graph graph=COPC::init_graph(map_of_contacts);
+
+			COPC::BetweennessCentralitiesResult result=COPC::calculate_betweenness_centralities(graph, 0.0, normalize);
+
+			if(!adjunct_atoms.empty())
+			{
+				cargs.change_indicator.changed_atoms_adjuncts=true;
+
+				for(COPC::ID id=0;id<graph.vertices.size();id++)
+				{
+					const std::set<std::size_t>& atom_ids=map_of_atoms_ids[graph.vertices[id].crad];
+					for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+					{
+						Atom& atom=cargs.data_manager.atoms_mutable()[*it];
+						atom.value.props.adjuncts[adjunct_atoms]=result.vertex_centralities[id];
+					}
+				}
+			}
+
+			if(!adjunct_contacts.empty())
+			{
+				cargs.change_indicator.changed_contacts_adjuncts=true;
+
+				for(std::size_t i=0;i<graph.edges.size();i++)
+				{
+					const COPC::Edge& edge=graph.edges[i];
+					const COPC::ID id1=edge.vertex_ids[0];
+					const COPC::ID id2=edge.vertex_ids[1];
+					const COPC::CRADsPair crads(graph.vertices[id1].crad, graph.vertices[id2].crad);
+					const std::set<std::size_t>& contact_ids=map_of_contacts_ids[crads];
+					for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+					{
+						Contact& contact=cargs.data_manager.contacts_mutable()[*it];
+						contact.value.props.adjuncts[adjunct_contacts]=result.edge_centralities[COPC::ordered_pair_of_ids(id1, id2)];
+					}
+				}
+			}
+
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
