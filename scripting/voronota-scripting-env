@@ -8,6 +8,7 @@ cat >&2 << 'EOF'
 
 Options:
     --input | -i           string      input script file
+    --string | -s          string      input script string
     --gui | -g                         flag to run 'voronota-viewer'
     --no-gui | -t                      flag to not run 'voronota-viewer' even if V_GUI is set to true
     --help | -h                        flag to display help message and exit
@@ -46,6 +47,7 @@ exit 1
 }
 
 INFILE=""
+INSTRING=""
 PASSARGS=()
 HELP_MODE=false
 
@@ -57,6 +59,10 @@ do
 	case $OPTION in
 	-i|--input)
 		INFILE="$OPTARG"
+		shift
+		;;
+	-s|--string)
+		INSTRING="$OPTARG"
 		shift
 		;;
 	-g|--gui)
@@ -77,6 +83,12 @@ done
 if $HELP_MODE
 then
 	print_help_and_exit
+fi
+
+if [ -n "$INFILE" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: invalid input file '$INFILE'"
+	exit 1
 fi
 
 if [ -z "$INFILE" ] && [ ! -t 0 ]
@@ -259,7 +271,7 @@ then
 	export PATH="${V_PLUGINSDIR}:${PATH}"
 fi
 
-if [ -n "$INFILE" ]
+if [ -n "$INFILE" ] || [ -n "$INSTRING" ]
 then
 	SCRIPTFILE="$V_TMPDIR/_script.bash"
 	
@@ -269,9 +281,14 @@ then
 			cat
 		fi
 		
-		if [ -s "$INFILE" ]
+		if [ -n "$INFILE" ]
 		then
 			cat "$INFILE"
+		fi
+		
+		if [ -n "$INSTRING" ]
+		then
+			echo "$INSTRING"
 		fi
 	} \
 	| egrep -v '^\S*#' \

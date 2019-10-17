@@ -8,6 +8,8 @@ cat >&2 << 'EOF'
 It uses 'voronota-scripting-env' script to initialize the Bash session.
 
 Options:
+    --input | -i           string      input script file
+    --string | -s          string      input script string
     --gui | -g                         flag to run 'voronota-viewer'
     --help | -h                        flag to display help message and exit
 
@@ -15,6 +17,8 @@ EOF
 exit 1
 }
 
+INFILE=""
+INSTRING=""
 V_GUI=false
 HELP_MODE=false
 
@@ -24,6 +28,14 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	-s|--string)
+		INSTRING="$OPTARG"
+		shift
+		;;
 	-g|--gui)
 		V_GUI=true
 		;;
@@ -42,6 +54,12 @@ then
 	print_help_and_exit
 fi
 
+if [ -n "$INFILE" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: invalid input file '$INFILE'"
+	exit 1
+fi
+
 INIT_FILE="$(which voronota-scripting-env)"
 
 if [ ! -s "$INIT_FILE" ]
@@ -50,7 +68,25 @@ then
 	exit 1
 fi
 
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+	cat "$INIT_FILE"
+
+	if [ -n "$INFILE" ]
+	then
+		cat "$INFILE"
+	fi
+	
+	if [ -n "$INSTRING" ]
+	then
+		echo "$INSTRING"
+	fi
+} \
+> "$TMPLDIR/full_init_file"
+
 export V_GUI
 
-bash --init-file "$INIT_FILE" -i
+bash --init-file "$TMPLDIR/full_init_file" -i
 
