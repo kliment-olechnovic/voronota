@@ -29,6 +29,8 @@ public:
 		set_command("stereo", new CustomCommands::stereo(viewer_application_));
 		set_command("grid-by-object", new CustomCommands::grid<0>(viewer_application_, grid_variant_));
 		set_command("grid-by-concept", new CustomCommands::grid<1>(viewer_application_, grid_variant_));
+		set_command("ortho", new CustomCommands::ortho(viewer_application_));
+		set_command("perspective", new CustomCommands::perspective(viewer_application_));
 		set_command("fog", new CustomCommands::fog(viewer_application_));
 		set_command("rotate", new CustomCommands::rotate(viewer_application_));
 		set_command("screenshot", new CustomCommands::screenshot(viewer_application_));

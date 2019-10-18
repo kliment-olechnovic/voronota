@@ -27,7 +27,7 @@ public:
 	{
 		TransformationMatrixController tmc;
 		float aspect_ratio=static_cast<float>(width)/static_cast<float>(height);
-		tmc.matrix_=glm::perspective(45.0f, aspect_ratio, 0.1f, 100.0f);
+		tmc.matrix_=glm::perspective(45.0f, aspect_ratio, 0.1f, 1000.0f);
 		return tmc;
 	}
 
@@ -50,8 +50,18 @@ public:
 	static TransformationMatrixController create_viewtransform_look_at(const double zoom_value)
 	{
 		TransformationMatrixController tmc;
-		float dist=static_cast<float>(50.0/zoom_value);
+		float dist=static_cast<float>(2.0/zoom_value);
 		tmc.matrix_=glm::lookAt(glm::vec3(0.0f, 0.0f, dist), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		return tmc;
+	}
+
+	static TransformationMatrixController create_viewtransform_look_at_stereo(const double zoom_value, const float stereo_angle, const float stereo_offset, const int index)
+	{
+		TransformationMatrixController tmc;
+		float dist=static_cast<float>(2.0/zoom_value);
+		float camera_x=dist*std::tan((index==0 ? -stereo_angle : stereo_angle)*0.5);
+		float origin_x=dist*stereo_offset;
+		tmc.matrix_=glm::lookAt(glm::vec3(camera_x, 0.0f, dist), glm::vec3(origin_x, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		return tmc;
 	}
 

@@ -140,6 +140,46 @@ public:
 		int& grid_variant_;
 	};
 
+	class ortho : public scripting::GenericCommand
+	{
+	public:
+		explicit ortho(uv::ViewerApplication& app) :
+			app_(app)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			app_.set_projection_mode_to_ortho();
+		}
+
+	private:
+		uv::ViewerApplication& app_;
+	};
+
+	class perspective : public scripting::GenericCommand
+	{
+	public:
+		explicit perspective(uv::ViewerApplication& app) :
+			app_(app)
+		{
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			app_.set_projection_mode_to_perspective();
+		}
+
+	private:
+		uv::ViewerApplication& app_;
+	};
+
 	class fog : public scripting::GenericCommand
 	{
 	public:

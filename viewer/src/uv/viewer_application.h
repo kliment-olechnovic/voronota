@@ -58,7 +58,8 @@ public:
 		stereo_angle_(0.09),
 		stereo_offset_(0.0),
 		grid_size_(1),
-		rendering_mode_(RenderingMode::simple)
+		rendering_mode_(RenderingMode::simple),
+		projection_mode_(ProjectionMode::ortho)
 	{
 		Utilities::calculate_color_from_integer(0, background_color_);
 	}
@@ -208,6 +209,16 @@ public:
 		return (rendering_mode_==RenderingMode::grid);
 	}
 
+	bool projection_mode_is_ortho() const
+	{
+		return (projection_mode_==ProjectionMode::ortho);
+	}
+
+	bool projection_mode_is_perspective() const
+	{
+		return (projection_mode_==ProjectionMode::perspective);
+	}
+
 	float stereo_angle() const
 	{
 		return stereo_angle_;
@@ -294,6 +305,20 @@ public:
 	{
 		set_grid_size(grid_size);
 		set_rendering_mode_to_grid();
+	}
+
+	void set_projection_mode_to_ortho()
+	{
+		projection_mode_=ProjectionMode::ortho;
+		refresh_shading_viewtransform();
+		refresh_shading_projection();
+	}
+
+	void set_projection_mode_to_perspective()
+	{
+		projection_mode_=ProjectionMode::perspective;
+		refresh_shading_viewtransform();
+		refresh_shading_projection();
 	}
 
 	void set_fog_enabled(const bool enabled)
@@ -474,6 +499,15 @@ private:
 			simple,
 			stereo,
 			grid
+		};
+	};
+
+	struct ProjectionMode
+	{
+		enum Mode
+		{
+			ortho,
+			perspective
 		};
 	};
 
@@ -697,7 +731,14 @@ private:
 			}
 			for(int i=0;i<2;i++)
 			{
-				refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
+				if(projection_mode_==ProjectionMode::perspective)
+				{
+					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_look_at_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
+				}
+				else
+				{
+					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
+				}
 				const int xpos=margin_left_+(width*i);
 				glViewport(xpos, margin_bottom_, width, full_rendering_area_height());
 				draw(shading_mode, 0);
@@ -761,7 +802,14 @@ private:
 
 	void refresh_shading_projection(const int new_width, const int new_height, const ShadingMode::Mode shading_mode)
 	{
-		refresh_shading_projection(TransformationMatrixController::create_projection_ortho(new_width, new_height, ortho_z_near_, ortho_z_far_), shading_mode);
+		if(projection_mode_==ProjectionMode::perspective)
+		{
+			refresh_shading_projection(TransformationMatrixController::create_projection_perspective(new_width, new_height), shading_mode);
+		}
+		else
+		{
+			refresh_shading_projection(TransformationMatrixController::create_projection_ortho(new_width, new_height, ortho_z_near_, ortho_z_far_), shading_mode);
+		}
 	}
 
 	void refresh_shading_projection(const ShadingMode::Mode shading_mode)
@@ -789,7 +837,14 @@ private:
 
 	void refresh_shading_viewtransform(const ShadingMode::Mode shading_mode)
 	{
-		refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple(zoom_value_), shading_mode);
+		if(projection_mode_==ProjectionMode::perspective)
+		{
+			refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_look_at(zoom_value_), shading_mode);
+		}
+		else
+		{
+			refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple(zoom_value_), shading_mode);
+		}
 	}
 
 	void refresh_shading_viewtransform()
@@ -958,6 +1013,7 @@ private:
 	float stereo_offset_;
 	int grid_size_;
 	RenderingMode::Mode rendering_mode_;
+	ProjectionMode::Mode projection_mode_;
 	float background_color_[3];
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
