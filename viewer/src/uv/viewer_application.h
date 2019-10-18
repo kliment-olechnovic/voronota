@@ -57,6 +57,9 @@ public:
 		call_for_selection_(0),
 		stereo_angle_(0.09),
 		stereo_offset_(0.0),
+		perspective_field_of_view_(0.79f),
+		perspective_near_z_(0.1f),
+		perspective_far_z_(5000.0f),
 		grid_size_(1),
 		rendering_mode_(RenderingMode::simple),
 		projection_mode_(ProjectionMode::ortho)
@@ -229,6 +232,21 @@ public:
 		return stereo_offset_;
 	}
 
+	float perspective_field_of_view() const
+	{
+		return perspective_field_of_view_;
+	}
+
+	float perspective_near_z() const
+	{
+		return perspective_near_z_;
+	}
+
+	float perspective_far_z() const
+	{
+		return perspective_far_z_;
+	}
+
 	int grid_size() const
 	{
 		return grid_size_;
@@ -321,6 +339,14 @@ public:
 		refresh_shading_projection();
 	}
 
+	void set_projection_mode_to_perspective(const float field_of_view, const float near_z, const float far_z)
+	{
+		set_perspective_field_of_view(field_of_view);
+		set_perspective_near_z(near_z);
+		set_perspective_far_z(far_z);
+		set_projection_mode_to_perspective();
+	}
+
 	void set_fog_enabled(const bool enabled)
 	{
 		if(!good())
@@ -340,6 +366,35 @@ public:
 	void set_stereo_offset(const float stereo_offset)
 	{
 		stereo_offset_=stereo_offset;
+	}
+
+	void set_perspective_field_of_view(const float field_of_view)
+	{
+		perspective_field_of_view_=field_of_view;
+	}
+
+	void set_perspective_near_z(const float near_z)
+	{
+		if(near_z>0.0f)
+		{
+			perspective_near_z_=near_z;
+		}
+		else
+		{
+			perspective_near_z_=0.01f;
+		}
+	}
+
+	void set_perspective_far_z(const float far_z)
+	{
+		if(far_z>perspective_near_z_)
+		{
+			perspective_far_z_=far_z;
+		}
+		else
+		{
+			perspective_far_z_=perspective_near_z_+0.01f;
+		}
 	}
 
 	void set_grid_size(const int grid_size)
@@ -804,7 +859,7 @@ private:
 	{
 		if(projection_mode_==ProjectionMode::perspective)
 		{
-			refresh_shading_projection(TransformationMatrixController::create_projection_perspective(new_width, new_height), shading_mode);
+			refresh_shading_projection(TransformationMatrixController::create_projection_perspective(new_width, new_height, perspective_field_of_view_, perspective_near_z_, perspective_far_z_), shading_mode);
 		}
 		else
 		{
@@ -1011,6 +1066,9 @@ private:
 	int call_for_selection_;
 	float stereo_angle_;
 	float stereo_offset_;
+	float perspective_field_of_view_;
+	float perspective_near_z_;
+	float perspective_far_z_;
 	int grid_size_;
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;

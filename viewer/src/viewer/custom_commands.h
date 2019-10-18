@@ -171,9 +171,13 @@ public:
 	protected:
 		void run(CommandArguments& cargs)
 		{
+			const float field_of_view=cargs.input.get_value_or_default<float>("field-of-view", app_.perspective_field_of_view());
+			const float near_z=cargs.input.get_value_or_default<float>("near-z", app_.perspective_near_z());
+			const float far_z=cargs.input.get_value_or_default<float>("far-z", app_.perspective_far_z());
+
 			cargs.input.assert_nothing_unusable();
 
-			app_.set_projection_mode_to_perspective();
+			app_.set_projection_mode_to_perspective(field_of_view, near_z, far_z);
 		}
 
 	private:

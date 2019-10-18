@@ -23,11 +23,11 @@ public:
 		return tmc;
 	}
 
-	static TransformationMatrixController create_projection_perspective(const int width, const int height)
+	static TransformationMatrixController create_projection_perspective(const int width, const int height, const float field_of_view, const float near_z, const float far_z)
 	{
 		TransformationMatrixController tmc;
 		float aspect_ratio=static_cast<float>(width)/static_cast<float>(height);
-		tmc.matrix_=glm::perspective(45.0f, aspect_ratio, 0.1f, 1000.0f);
+		tmc.matrix_=glm::perspective(field_of_view, aspect_ratio, near_z, far_z);
 		return tmc;
 	}
 
