@@ -70,7 +70,12 @@ trap "rm -r $TMPLDIR" EXIT
 				if [ "$EXT" == "sh" ] || [ "$EXT" == "bash" ] || [ "$EXT" == "vbash" ]
 				then
 					echo
-					echo "$PASSARG"
+					if [ "$(dirname "$PASSARG")" == "." ]
+					then
+						echo "./$BASENAME"
+					else
+						echo "$PASSARG"
+					fi
 				else
 					echo
 					echo >&2 "Unrecognize extension of file '$PASSARG'"
