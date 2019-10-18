@@ -697,13 +697,7 @@ private:
 			}
 			for(int i=0;i<2;i++)
 			{
-				{
-					TransformationMatrixController viewtransform_matrix;
-					viewtransform_matrix.add_scaling(zoom_value_);
-					viewtransform_matrix.add_rotation((i==0 ? stereo_angle_ : -stereo_angle_), glm::vec3(0.0f, 1.0f, 0.0f));
-					viewtransform_matrix.add_translation(glm::vec3((i==0 ? -stereo_offset_ : stereo_offset_), 0.0f, 0.0f));
-					refresh_shading_viewtransform(viewtransform_matrix, shading_mode);
-				}
+				refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
 				const int xpos=margin_left_+(width*i);
 				glViewport(xpos, margin_bottom_, width, full_rendering_area_height());
 				draw(shading_mode, 0);
@@ -767,8 +761,7 @@ private:
 
 	void refresh_shading_projection(const int new_width, const int new_height, const ShadingMode::Mode shading_mode)
 	{
-		const TransformationMatrixController projection_matrix(new_width, new_height, ortho_z_near_, ortho_z_far_);
-		refresh_shading_projection(projection_matrix, shading_mode);
+		refresh_shading_projection(TransformationMatrixController::create_projection_ortho(new_width, new_height, ortho_z_near_, ortho_z_far_), shading_mode);
 	}
 
 	void refresh_shading_projection(const ShadingMode::Mode shading_mode)
@@ -796,9 +789,7 @@ private:
 
 	void refresh_shading_viewtransform(const ShadingMode::Mode shading_mode)
 	{
-		TransformationMatrixController viewtransform_matrix;
-		viewtransform_matrix.add_scaling(zoom_value_);
-		refresh_shading_viewtransform(viewtransform_matrix, shading_mode);
+		refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple(zoom_value_), shading_mode);
 	}
 
 	void refresh_shading_viewtransform()

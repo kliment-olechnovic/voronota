@@ -13,12 +13,46 @@ public:
 	{
 	}
 
-	TransformationMatrixController(const int width, const int height, const float z_near, const float z_far) : matrix_(1.0f)
+	static TransformationMatrixController create_projection_ortho(const int width, const int height, const float z_near, const float z_far)
 	{
+		TransformationMatrixController tmc;
 		float side=static_cast<float>(std::min(width, height));
 		float width_range=static_cast<float>(width)/side;
 		float height_range=static_cast<float>(height)/side;
-		matrix_=glm::ortho(-width_range, +width_range, -height_range, +height_range, z_near, z_far);
+		tmc.matrix_=glm::ortho(-width_range, +width_range, -height_range, +height_range, z_near, z_far);
+		return tmc;
+	}
+
+	static TransformationMatrixController create_projection_perspective(const int width, const int height)
+	{
+		TransformationMatrixController tmc;
+		float aspect_ratio=static_cast<float>(width)/static_cast<float>(height);
+		tmc.matrix_=glm::perspective(45.0f, aspect_ratio, 0.1f, 100.0f);
+		return tmc;
+	}
+
+	static TransformationMatrixController create_viewtransform_simple(const double zoom_value)
+	{
+		TransformationMatrixController tmc;
+		tmc.add_scaling(zoom_value);
+		return tmc;
+	}
+
+	static TransformationMatrixController create_viewtransform_simple_stereo(const double zoom_value, const float stereo_angle, const float stereo_offset, const int index)
+	{
+		TransformationMatrixController tmc;
+		tmc.add_scaling(zoom_value);
+		tmc.add_rotation((index==0 ? stereo_angle : -stereo_angle), glm::vec3(0.0f, 1.0f, 0.0f));
+		tmc.add_translation(glm::vec3((index==0 ? -stereo_offset : stereo_offset), 0.0f, 0.0f));
+		return tmc;
+	}
+
+	static TransformationMatrixController create_viewtransform_look_at(const double zoom_value)
+	{
+		TransformationMatrixController tmc;
+		float dist=static_cast<float>(50.0/zoom_value);
+		tmc.matrix_=glm::lookAt(glm::vec3(0.0f, 0.0f, dist), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		return tmc;
 	}
 
 	const glm::mat4& matrix() const
