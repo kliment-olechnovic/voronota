@@ -806,6 +806,9 @@
             "name":"cad-score",
             "short_description":""},
           {
+            "name":"calculate-betweenness",
+            "short_description":""},
+          {
             "name":"calculate-burial-depth",
             "short_description":""},
           {
