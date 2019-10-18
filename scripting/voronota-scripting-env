@@ -133,12 +133,12 @@ fi
 
 exec 5<&${VORONOTA_PROC[0]} 6>&${VORONOTA_PROC[1]}
 
-function on_exit_premature
+function on_exit_stage1
 {
 	exec 5<&- 6>&-
 }
 
-trap on_exit_premature EXIT
+trap on_exit_stage1 EXIT
 
 FD5_INPUT="$(true 2>/dev/null <&5; echo $?)"
 FD6_OUTPUT="$(true 2>/dev/null >&6; echo $?)"
@@ -221,13 +221,17 @@ function v-do
 
 readonly V_TMPDIR="$(mktemp -d)"
 
-function on_exit_final
+function on_exit_stage2
 {
-	on_exit_premature
+	if [ -n "$VORONOTA_PROC_PID" ] && ps -p "$VORONOTA_PROC_PID" > /dev/null
+	then
+		v-do-silent "exit"
+	fi
+	on_exit_stage1
 	rm -r "$V_TMPDIR"
 }
 
-trap on_exit_final EXIT
+trap on_exit_stage2 EXIT
 
 voronota-resources radii > "$V_TMPDIR/_radii"
 voronota-resources voromqa_v1_energy_potential > "$V_TMPDIR/_voromqa_v1_energy_potential"

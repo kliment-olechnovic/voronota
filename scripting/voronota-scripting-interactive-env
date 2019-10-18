@@ -8,19 +8,15 @@ cat >&2 << 'EOF'
 It uses 'voronota-scripting-env' script to initialize the Bash session.
 
 Options:
-    --input | -i           string      input script file
-    --string | -s          string      input script string
-    --gui | -g                         flag to run 'voronota-viewer'
+    --no-gui | -t                      flag to not run 'voronota-viewer'
     --help | -h                        flag to display help message and exit
 
 EOF
 exit 1
 }
 
-INFILE=""
-INSTRING=""
 PASSARGS=()
-V_GUI=false
+V_GUI=true
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -29,16 +25,8 @@ do
 	OPTARG="$2"
 	shift
 	case $OPTION in
-	-i|--input)
-		INFILE="$OPTARG"
-		shift
-		;;
-	-s|--string)
-		INSTRING="$OPTARG"
-		shift
-		;;
-	-g|--gui)
-		V_GUI=true
+	-t|--no-gui)
+		V_GUI=false
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -54,12 +42,6 @@ then
 	print_help_and_exit
 fi
 
-if [ -n "$INFILE" ] && [ ! -s "$INFILE" ]
-then
-	echo >&2 "Error: invalid input file '$INFILE'"
-	exit 1
-fi
-
 INIT_FILE="$(which voronota-scripting-env)"
 
 if [ ! -s "$INIT_FILE" ]
@@ -73,21 +55,32 @@ trap "rm -r $TMPLDIR" EXIT
 
 {
 	cat "$INIT_FILE"
-
-	if [ -n "$INFILE" ]
-	then
-		cat "$INFILE"
-	fi
 	
-	for FILEARG in "${PASSARGS[@]}"
+	for PASSARG in "${PASSARGS[@]}"
 	do
-		echo "v-load '$FILEARG'"
+		if [ -s "$PASSARG" ]
+		then
+			BASENAME="$(basename "$PASSARG")"
+			EXT="$(echo "${BASENAME##*.}" | tr '[:upper:]' '[:lower:]')"
+			if [ "$EXT" == "pdb" ] || [ "$EXT" == "cif" ] || [ "$EXT" == "mmcif" ] || [ "$EXT" == "ent" ] || [ "$EXT" == "atoms" ] || [ "$EXT" == "pa" ] || [ "$EXT" == "pac" ]
+			then
+				echo
+				echo "v-load '$PASSARG'"
+			else
+				if [ "$EXT" == "sh" ] || [ "$EXT" == "bash" ] || [ "$EXT" == "vbash" ]
+				then
+					echo
+					echo "$PASSARG"
+				else
+					echo
+					echo >&2 "Unrecognize extension of file '$PASSARG'"
+				fi
+			fi
+		else
+			echo
+			echo "$PASSARG"
+		fi
 	done
-	
-	if [ -n "$INSTRING" ]
-	then
-		echo "$INSTRING"
-	fi
 } \
 > "$TMPLDIR/full_init_file"
 
