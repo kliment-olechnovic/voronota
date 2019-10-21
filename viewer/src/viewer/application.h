@@ -73,6 +73,7 @@ protected:
 
 	void on_mouse_cursor_moved(double xpos, double ypos)
 	{
+		cursor_label_.clear();
 		ImGui_ImplGlfwGL3_CursorPosCallback(window(), xpos, ypos);
 	}
 
@@ -126,6 +127,16 @@ protected:
 			ImGui::SetNextWindowSize(ImVec2(150, 30));
 			ImGui::Begin("Waiting", &waiting_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 			ImGui::Text("Please wait ...");
+			ImGui::End();
+		}
+
+		if(!cursor_label_.empty())
+		{
+			static bool cursor_label_window=false;
+			ImGui::SetNextWindowPos(ImVec2(mouse_x()+5.0f, std::max(0.0f, mouse_y()-35.0f)), 0);
+			ImGui::SetNextWindowSize(ImVec2(1+(cursor_label_.size()*8), 30));
+			ImGui::Begin("Label", &cursor_label_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+			ImGui::Text("%s", cursor_label_.c_str());
 			ImGui::End();
 		}
 
@@ -198,9 +209,21 @@ protected:
 
 	void on_selection(const unsigned int drawing_id, const int button_code, const bool mod_ctrl, const bool mod_shift)
 	{
-		std::ostringstream output_script;
-		script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl, mod_shift, output_script);
-		pending_commands_.push_back(output_script.str());
+		if(button_code==2)
+		{
+			std::ostringstream output_label;
+			if(script_execution_manager_.generate_click_label(drawing_id, output_label))
+			{
+				cursor_label_=output_label.str();
+			}
+		}
+		{
+			std::ostringstream output_script;
+			if(script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl, mod_shift, output_script))
+			{
+				pending_commands_.push_back(output_script.str());
+			}
+		}
 		waiting_stage_=100;
 	}
 
@@ -305,6 +328,7 @@ private:
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::size_t index_of_history_of_commands_;
+	std::string cursor_label_;
 	ScriptExecutionManager script_execution_manager_;
 };
 

@@ -65,6 +65,7 @@ public:
 					output_script << "unmarked-";
 				}
 				output_script << "atom " << dm_attributes.name << " " << deid.element_id.atom_id << "\n";
+				return true;
 			}
 			else if(deid.element_id.valid_contact_id())
 			{
@@ -77,8 +78,69 @@ public:
 					output_script << "unmarked-";
 				}
 				output_script << "contact " << dm_attributes.name << " " << deid.element_id.contact_id << "\n";
+				return true;
 			}
-			return true;
+		}
+		return false;
+	}
+
+	bool generate_click_label(const uv::DrawingID drawing_id, std::ostringstream& output_label)
+	{
+		CongregationOfDrawersForDataManagers::DrawerElementID deid=congregation_of_drawers_.resolve_drawing_id(drawing_id);
+		if(deid.valid())
+		{
+			if(deid.element_id.valid_atom_id())
+			{
+				common::ChainResidueAtomDescriptor crad=deid.element_id.data_manager_ptr->atoms()[deid.element_id.atom_id].crad;
+				output_label << crad.chainID << ",";
+				if(crad.resSeq!=crad.null_num())
+				{
+					output_label << crad.resSeq;
+				}
+				else
+				{
+					output_label << "?";
+				}
+				output_label << "," << crad.resName << "," << crad.name;
+				return true;
+			}
+			else if(deid.element_id.valid_contact_id())
+			{
+				common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(
+						deid.element_id.data_manager_ptr->atoms(),
+						deid.element_id.data_manager_ptr->contacts()[deid.element_id.contact_id]);
+
+				output_label << crads.a.chainID << ",";
+				if(crads.a.resSeq!=crads.a.null_num())
+				{
+					output_label << crads.a.resSeq;
+				}
+				else
+				{
+					output_label << "?";
+				}
+				output_label << "," << crads.a.resName << "," << crads.a.name << " | ";
+
+				if(deid.element_id.data_manager_ptr->contacts()[deid.element_id.contact_id].solvent())
+				{
+					output_label << "solvent";
+				}
+				else
+				{
+					output_label << crads.b.chainID << ",";
+					if(crads.b.resSeq!=crads.b.null_num())
+					{
+						output_label << crads.b.resSeq;
+					}
+					else
+					{
+						output_label << "?";
+					}
+					output_label << "," << crads.b.resName << "," << crads.b.name;
+				}
+
+				return true;
+			}
 		}
 		return false;
 	}

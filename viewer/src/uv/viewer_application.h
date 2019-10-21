@@ -192,6 +192,16 @@ public:
 		return window_height_;
 	}
 
+	float mouse_x() const
+	{
+		return static_cast<float>(mouse_cursor_x_);
+	}
+
+	float mouse_y() const
+	{
+		return static_cast<float>(mouse_cursor_y_);
+	}
+
 	const float* background_color() const
 	{
 		return &background_color_[0];
