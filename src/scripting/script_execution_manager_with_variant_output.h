@@ -49,6 +49,8 @@ protected:
 			dm.set_atoms_representation_implemented_always(0, true);
 			dm.add_contacts_representations(std::vector<std::string>(1, "contacts"));
 			dm.set_contacts_representation_implemented_always(0, true);
+			dm.add_figures_representations(std::vector<std::string>(1, "figures"));
+			dm.set_figures_representation_implemented_always(0, true);
 		}
 	}
 
