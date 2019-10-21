@@ -80,6 +80,14 @@ public:
 				output_script << "contact " << dm_attributes.name << " " << deid.element_id.contact_id << "\n";
 				return true;
 			}
+			else if(deid.element_id.valid_figure_id())
+			{
+				if(!mod_ctrl && !mod_shift)
+				{
+					output_script << "figure " << dm_attributes.name << " " << deid.element_id.figure_id << "\n";
+					return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -139,6 +147,15 @@ public:
 					output_label << "," << crads.b.resName << "," << crads.b.name;
 				}
 
+				return true;
+			}
+			else if(deid.element_id.valid_figure_id())
+			{
+				const std::vector<std::string>& name=deid.element_id.data_manager_ptr->figures()[deid.element_id.figure_id].name;
+				for(std::size_t i=0;i<name.size();i++)
+				{
+					output_label << name[i] << ((i+1)<name.size() ? "." : "");
+				}
 				return true;
 			}
 		}
@@ -332,6 +349,9 @@ private:
 		script_partitioner().set_alias("ctrl-shift-click-button1-on-marked-contact", "pick-objects ${1} ; unmark-contacts -id ${2} -full-residues ; print-contacts -id ${2}");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-unmarked-contact", "pick-objects ${1} ; unmark-contacts ; print-contacts -id ${2} -full-residues");
 		script_partitioner().set_alias("ctrl-shift-click-button2-on-marked-contact", "pick-objects ${1} ; unmark-contacts ; print-contacts -id ${2} -full-residues");
+
+		script_partitioner().set_alias("click-button1-on-figure", "pick-objects ${1} ; print-figures -id ${2}");
+		script_partitioner().set_alias("click-button2-on-figure", "pick-objects ${1} ; print-figures -id ${2}");
 
 		script_partitioner().set_alias("modify-just-loaded-object", "tag-atoms-by-secondary-structure");
 		script_partitioner().set_alias("zoom-just-loaded-object", "zoom-by-atoms");

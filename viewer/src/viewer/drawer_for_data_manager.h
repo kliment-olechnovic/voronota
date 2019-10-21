@@ -19,11 +19,13 @@ public:
 		scripting::DataManager* data_manager_ptr;
 		std::size_t atom_id;
 		std::size_t contact_id;
+		std::size_t figure_id;
 
 		ElementID() :
 			data_manager_ptr(0),
 			atom_id(std::numeric_limits<std::size_t>::max()),
-			contact_id(std::numeric_limits<std::size_t>::max())
+			contact_id(std::numeric_limits<std::size_t>::max()),
+			figure_id(std::numeric_limits<std::size_t>::max())
 		{
 		}
 
@@ -37,9 +39,14 @@ public:
 			return (data_manager_ptr!=0 && contact_id<data_manager_ptr->contacts().size());
 		}
 
+		bool valid_figure_id() const
+		{
+			return (data_manager_ptr!=0 && figure_id<data_manager_ptr->figures().size());
+		}
+
 		bool valid() const
 		{
-			return (valid_atom_id() || valid_contact_id());
+			return (valid_atom_id() || valid_contact_id() || valid_figure_id());
 		}
 	};
 
@@ -284,6 +291,15 @@ public:
 			{
 				eid.data_manager_ptr=&data_manager_;
 				eid.contact_id=id;
+				return eid;
+			}
+		}
+		{
+			const std::size_t id=find_figure_id_by_drawing_id(drawing_id);
+			if(id<data_manager_.figures().size())
+			{
+				eid.data_manager_ptr=&data_manager_;
+				eid.figure_id=id;
 				return eid;
 			}
 		}
@@ -991,6 +1007,32 @@ private:
 		}
 
 		return data_manager_.contacts().size();
+	}
+
+	std::size_t find_figure_id_by_drawing_id(const uv::DrawingID drawing_id) const
+	{
+		typedef std::map<uv::DrawingID, std::size_t> Map;
+		typedef std::map<uv::DrawingID, std::size_t>::const_iterator Iterator;
+
+		{
+			const Map& map=dc_figures_solid_.map_of_drawing_ids;
+			Iterator it=map.find(drawing_id);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+		}
+
+		{
+			const Map& map=dc_figures_mesh_.map_of_drawing_ids;
+			Iterator it=map.find(drawing_id);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+		}
+
+		return data_manager_.figures().size();
 	}
 
 	scripting::DataManager& data_manager_;

@@ -123,6 +123,7 @@ public:
 		set_command("describe-exposure", new CustomCommandsForDataManager::describe_exposure);
 		set_command("find-connected-components", new CustomCommandsForDataManager::find_connected_components);
 		set_command("add-figure", new CustomCommandsForDataManager::add_figure);
+		set_command("print-figures", new CustomCommandsForDataManager::print_figures);
 		set_command("show-figures", new CustomCommandsForDataManager::show_figures);
 		set_command("hide-figures", new CustomCommandsForDataManager::hide_figures);
 		set_command("color-figures", new CustomCommandsForDataManager::color_figures);

@@ -938,6 +938,9 @@
             "name":"print-contacts",
             "short_description":""},
           {
+            "name":"print-figures",
+            "short_description":""},
+          {
             "name":"print-sequence",
             "short_description":""},
           {

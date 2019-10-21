@@ -1699,20 +1699,24 @@ public:
 					const apollota::Quadruple& quadruple=vertices_vector[i].first;
 					const apollota::SimpleSphere& tangent_sphere=vertices_vector[i].second;
 
-					bool allowed=false;
-					if(strict)
+					bool allowed=quadruple.get_min_max().second<cargs.data_manager.atoms().size();
+
+					if(allowed)
 					{
-						allowed=(atom_ids.count(quadruple.get(0))>0
-								&& atom_ids.count(quadruple.get(1))>0
-								&& atom_ids.count(quadruple.get(2))>0
-								&& atom_ids.count(quadruple.get(3))>0);
-					}
-					else
-					{
-						allowed=(atom_ids.count(quadruple.get(0))>0
-								|| atom_ids.count(quadruple.get(1))>0
-								|| atom_ids.count(quadruple.get(2))>0
-								|| atom_ids.count(quadruple.get(3))>0);
+						if(strict)
+						{
+							allowed=(atom_ids.count(quadruple.get(0))>0
+									&& atom_ids.count(quadruple.get(1))>0
+									&& atom_ids.count(quadruple.get(2))>0
+									&& atom_ids.count(quadruple.get(3))>0);
+						}
+						else
+						{
+							allowed=(atom_ids.count(quadruple.get(0))>0
+									|| atom_ids.count(quadruple.get(1))>0
+									|| atom_ids.count(quadruple.get(2))>0
+									|| atom_ids.count(quadruple.get(3))>0);
+						}
 					}
 
 					if(allowed)
@@ -4131,6 +4135,51 @@ public:
 		}
 	};
 
+	class print_figures : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_figures_availability();
+
+			const std::vector<std::string> name=cargs.input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
+			const std::vector<std::size_t> forced_ids=cargs.input.get_value_vector_or_default<std::size_t>("id", std::vector<std::size_t>());
+
+			cargs.input.assert_nothing_unusable();
+
+			const std::set<std::size_t> ids=
+					Figure::match_name(cargs.data_manager.figures(), forced_ids.empty(), std::set<std::size_t>(forced_ids.begin(), forced_ids.end()), name);
+
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No figures selected."));
+			}
+
+			std::vector<VariantObject>& figures=cargs.heterostorage.variant_object.objects_array("figures");
+			figures.reserve(ids.size());
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Figure& figure=cargs.data_manager.figures()[*it];
+				figures.push_back(VariantObject());
+				for(std::size_t i=0;i<figure.name.size();i++)
+				{
+					figures.back().values_array("name").push_back(VariantValue(figure.name[i]));
+				}
+				if(!figure.props.empty())
+				{
+					VariantSerialization::write(figure.props, figures.back());
+				}
+				figures.back().value("id")=(*it);
+			}
+		}
+	};
+
 	class show_figures : public GenericCommandForDataManager
 	{
 	public:
@@ -4352,28 +4401,38 @@ public:
 				const apollota::Triangulation::VerticesVector vertices_vector=
 						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
 
+				double total_relevant_tetrahedron_volume=0.0;
+
 				for(std::size_t i=0;i<vertices_vector.size();i++)
 				{
 					const apollota::Quadruple& quadruple=vertices_vector[i].first;
 
-					bool allowed=false;
-					if(strict)
+					bool allowed=quadruple.get_min_max().second<cargs.data_manager.atoms().size();
+
+					if(allowed)
 					{
-						allowed=(atom_ids.count(quadruple.get(0))>0
-								&& atom_ids.count(quadruple.get(1))>0
-								&& atom_ids.count(quadruple.get(2))>0
-								&& atom_ids.count(quadruple.get(3))>0);
-					}
-					else
-					{
-						allowed=(atom_ids.count(quadruple.get(0))>0
-								|| atom_ids.count(quadruple.get(1))>0
-								|| atom_ids.count(quadruple.get(2))>0
-								|| atom_ids.count(quadruple.get(3))>0);
+						if(strict)
+						{
+							allowed=(atom_ids.count(quadruple.get(0))>0
+									&& atom_ids.count(quadruple.get(1))>0
+									&& atom_ids.count(quadruple.get(2))>0
+									&& atom_ids.count(quadruple.get(3))>0);
+						}
+						else
+						{
+							allowed=(atom_ids.count(quadruple.get(0))>0
+									|| atom_ids.count(quadruple.get(1))>0
+									|| atom_ids.count(quadruple.get(2))>0
+									|| atom_ids.count(quadruple.get(3))>0);
+						}
 					}
 
 					if(allowed)
 					{
+						const double volume=fabs(apollota::signed_volume_of_tetrahedron(
+								balls[quadruple.get(0)], balls[quadruple.get(1)], balls[quadruple.get(2)], balls[quadruple.get(3)]));
+						total_relevant_tetrahedron_volume+=volume;
+
 						for(unsigned int j=0;j<4;j++)
 						{
 							apollota::Triple triple=quadruple.exclude(j);
@@ -4393,6 +4452,8 @@ public:
 						}
 					}
 				}
+
+				figure.props.adjuncts["total_relevant_tetrahedron_volume"]=total_relevant_tetrahedron_volume;
 			}
 
 			cargs.data_manager.add_figure(figure);
