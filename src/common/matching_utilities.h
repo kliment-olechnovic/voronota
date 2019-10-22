@@ -166,7 +166,24 @@ private:
 			if(eq_pos!=std::string::npos && (eq_pos+1)<value.size())
 			{
 				const std::size_t sep_pos=value.find(':', eq_pos+1);
-				if(sep_pos!=std::string::npos)
+				if(sep_pos==std::string::npos)
+				{
+					std::string spaced_value=value;
+					spaced_value[eq_pos]=' ';
+					std::istringstream input(spaced_value);
+					if(input.good())
+					{
+						std::string name;
+						double a=0.0;
+						input >> name >> a;
+						if(!input.fail() && !name.empty())
+						{
+							std::map<std::string, double>::const_iterator it=adjuncts.find(name);
+							return (it!=adjuncts.end() && it->second==a);
+						}
+					}
+				}
+				else
 				{
 					std::string spaced_value=value;
 					spaced_value[eq_pos]=' ';
