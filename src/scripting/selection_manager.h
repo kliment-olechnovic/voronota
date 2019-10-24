@@ -209,7 +209,7 @@ public:
 		std::set<std::size_t> result;
 		for(std::size_t i=0;i<atoms().size();i++)
 		{
-			if(common::MatchingUtilities::match_crad_with_set_of_crads(atoms()[i].crad, set_of_crads))
+			if(common::MatchingUtilities::match_crad_with_set_of_crads(true, atoms()[i].crad, set_of_crads))
 			{
 				result.insert(i);
 			}
@@ -308,7 +308,7 @@ public:
 		for(std::size_t i=0;i<contacts().size();i++)
 		{
 			if(common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(
-					common::ConversionOfDescriptors::get_contact_descriptor(atoms(), contacts()[i]), set_of_crads_pairs))
+					true, common::ConversionOfDescriptors::get_contact_descriptor(atoms(), contacts()[i]), set_of_crads_pairs))
 			{
 				result.insert(i);
 			}

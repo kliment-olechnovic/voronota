@@ -69,8 +69,8 @@ void sum_contacts_into_inter_residue_contacts(const std::string& summing_excepti
 	for(std::map< CRADsPair, common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const CRADsPair& raw_crads=it->first;
-		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(raw_crads.a, summing_exceptions_set_of_crads));
-		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(raw_crads.b, summing_exceptions_set_of_crads));
+		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.a, summing_exceptions_set_of_crads));
+		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.b, summing_exceptions_set_of_crads));
 		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()), raw_crads.reversed_display);
 		if(!(crads.a==crads.b))
 		{
@@ -168,19 +168,19 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
 					common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-					(match_external_pairs.empty() || common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(crads, matchable_external_set_of_crad_pairs))
+					(match_external_pairs.empty() || common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, crads, matchable_external_set_of_crad_pairs))
 			)
 			{
 				const bool matched_first_second=(
 						common::MatchingUtilities::match_crad(crads.a, match_first, match_first_not) &&
 						common::MatchingUtilities::match_crad(crads.b, match_second, match_second_not) &&
-						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_first_set_of_crads)) &&
-						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_second_set_of_crads)));
+						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_second_set_of_crads)));
 				const bool matched_second_first=matched_first_second || (
 						common::MatchingUtilities::match_crad(crads.b, match_first, match_first_not) &&
 						common::MatchingUtilities::match_crad(crads.a, match_second, match_second_not) &&
-						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crads.b, matchable_external_first_set_of_crads)) &&
-						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crads.a, matchable_external_second_set_of_crads)));
+						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_second_set_of_crads)));
 				passed=(matched_first_second || matched_second_first);
 				if(passed && !invert)
 				{
@@ -225,7 +225,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!map_of_external_adjunct_values.empty())
 				{
-					const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crads_pair_with_map_of_crads_pairs(it->first, map_of_external_adjunct_values);
+					const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crads_pair_with_map_of_crads_pairs(false, it->first, map_of_external_adjunct_values);
 					if(adjunct_value.first)
 					{
 						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
@@ -245,7 +245,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!set_of_hbplus_crad_pairs.empty())
 				{
-					if(common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(it->first, set_of_hbplus_crad_pairs))
+					if(common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, it->first, set_of_hbplus_crad_pairs))
 					{
 						it->second.props.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
 					}
@@ -298,7 +298,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
 			{
-				if(crads[i]!=CRAD::any() && common::MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crads[i], matchable_external_first_set_of_crads)))
+				if(crads[i]!=CRAD::any() && common::MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads[i], matchable_external_first_set_of_crads)))
 				{
 					common::ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
 					cv.add(it->second->second);

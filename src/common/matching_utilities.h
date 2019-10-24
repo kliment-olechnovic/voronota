@@ -29,53 +29,123 @@ public:
 				&& (negative_values.empty() || !match_container_with_multiple_values(adjuncts, functor_match_map_of_adjuncts_with_single_value(), negative_values)));
 	}
 
-	static bool match_crad_with_set_of_crads(const ChainResidueAtomDescriptor& crad, const std::set<ChainResidueAtomDescriptor>& set_of_crads)
+	static bool match_crad_with_set_of_crads(const bool simplified, const ChainResidueAtomDescriptor& crad, const std::set<ChainResidueAtomDescriptor>& set_of_crads)
 	{
 		if(set_of_crads.count(crad)>0)
 		{
 			return true;
 		}
-		for(std::set<ChainResidueAtomDescriptor>::const_iterator it=set_of_crads.begin();it!=set_of_crads.end();++it)
+		if(simplified)
 		{
-			if(crad.contains(*it))
+			if(
+					set_of_crads.count(crad.without_some_info(true, true, false, false))>0 ||
+					set_of_crads.count(crad.without_some_info(true, false, false, false))>0 ||
+					set_of_crads.count(crad.without_some_info(true, false, false, true))>0 ||
+					set_of_crads.count(crad.without_some_info(true, false, true, false))>0 ||
+					set_of_crads.count(crad.without_some_info(true, false, true, true))>0 ||
+					set_of_crads.count(crad.without_some_info(true, true, false, true))>0 ||
+					set_of_crads.count(crad.without_some_info(true, true, true, false))>0 ||
+					set_of_crads.count(crad.without_some_info(true, true, true, true))>0)
 			{
 				return true;
+			}
+		}
+		else
+		{
+			for(std::set<ChainResidueAtomDescriptor>::const_iterator it=set_of_crads.begin();it!=set_of_crads.end();++it)
+			{
+				if(crad.contains(*it))
+				{
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
-	static bool match_crads_pair_with_set_of_crads_pairs(const ChainResidueAtomDescriptorsPair& crads_pair, const std::set<ChainResidueAtomDescriptorsPair>& crads_pairs)
+	static bool match_crads_pair_with_set_of_crads_pairs(const bool simplified, const ChainResidueAtomDescriptorsPair& crads_pair, const std::set<ChainResidueAtomDescriptorsPair>& crads_pairs)
 	{
 		if(crads_pairs.count(crads_pair)>0)
 		{
 			return true;
 		}
-		for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=crads_pairs.begin();it!=crads_pairs.end();++it)
+		if(simplified)
 		{
-			if((crads_pair.a.contains(it->a) && crads_pair.b.contains(it->b)) ||
-					(crads_pair.a.contains(it->b) && crads_pair.b.contains(it->a)))
+			if(
+					crads_pairs.count(crads_pair.without_some_info(true, true, false, false))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, false, false, false))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, false, false, true))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, false, true, false))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, false, true, true))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, true, false, true))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, true, true, false))>0 ||
+					crads_pairs.count(crads_pair.without_some_info(true, true, true, true))>0)
 			{
 				return true;
+			}
+		}
+		else
+		{
+			for(std::set<ChainResidueAtomDescriptorsPair>::const_iterator it=crads_pairs.begin();it!=crads_pairs.end();++it)
+			{
+				if((crads_pair.a.contains(it->a) && crads_pair.b.contains(it->b)) ||
+						(crads_pair.a.contains(it->b) && crads_pair.b.contains(it->a)))
+				{
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
-	static std::pair<bool, double>  match_crad_with_map_of_crads(const ChainResidueAtomDescriptor& crad, const std::map<ChainResidueAtomDescriptor, double>& map_of_crads)
+	static std::pair<bool, double>  match_crad_with_map_of_crads(const bool simplified, const ChainResidueAtomDescriptor& crad, const std::map<ChainResidueAtomDescriptor, double>& map_of_crads)
 	{
 		std::map<ChainResidueAtomDescriptor, double>::const_iterator result_it=map_of_crads.find(crad);
 		if(result_it==map_of_crads.end())
 		{
-			result_it=map_of_crads.find(crad.without_atom());
+			result_it=map_of_crads.find(crad.without_some_info(true, true, false, false));
 		}
-		if(result_it==map_of_crads.end())
+		if(simplified)
 		{
-			for(std::map<ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
+			if(result_it==map_of_crads.end())
 			{
-				if(crad.contains(it->first))
+				result_it=map_of_crads.find(crad.without_some_info(true, false, false, false));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, false, false, true));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, false, true, false));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, false, true, true));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, true, false, true));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, true, true, false));
+			}
+			if(result_it==map_of_crads.end())
+			{
+				result_it=map_of_crads.find(crad.without_some_info(true, true, true, true));
+			}
+		}
+		else
+		{
+			if(result_it==map_of_crads.end())
+			{
+				for(std::map<ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
 				{
-					result_it=it;
+					if(crad.contains(it->first))
+					{
+						result_it=it;
+					}
 				}
 			}
 		}
@@ -86,21 +156,55 @@ public:
 		return std::pair<bool, double>(false, 0.0);
 	}
 
-	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const ChainResidueAtomDescriptorsPair& crads_pair, const std::map<ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
+	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const bool simplified, const ChainResidueAtomDescriptorsPair& crads_pair, const std::map<ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
 	{
 		std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
 		if(result_it==map_of_crads_pairs.end())
 		{
-			result_it=map_of_crads_pairs.find(ChainResidueAtomDescriptorsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()));
+			result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, true, false, false));
 		}
-		if(result_it==map_of_crads_pairs.end())
+		if(simplified)
 		{
-			for(std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
+			if(result_it==map_of_crads_pairs.end())
 			{
-				if((crads_pair.a.contains(it->first.a) && crads_pair.b.contains(it->first.b)) ||
-						(crads_pair.a.contains(it->first.b) && crads_pair.b.contains(it->first.a)))
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, false, false, false));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, false, false, true));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, false, true, false));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, false, true, true));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, true, false, true));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, true, true, false));
+			}
+			if(result_it==map_of_crads_pairs.end())
+			{
+				result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, true, true, true));
+			}
+		}
+		else
+		{
+			if(result_it==map_of_crads_pairs.end())
+			{
+				for(std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
 				{
-					result_it=it;
+					if((crads_pair.a.contains(it->first.a) && crads_pair.b.contains(it->first.b)) ||
+							(crads_pair.a.contains(it->first.b) && crads_pair.b.contains(it->first.a)))
+					{
+						result_it=it;
+					}
 				}
 			}
 		}

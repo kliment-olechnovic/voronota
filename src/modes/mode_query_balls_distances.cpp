@@ -59,12 +59,12 @@ void query_balls_distances(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const CRAD& crad=list_of_balls[i].first;
 		if(common::MatchingUtilities::match_crad(crad, match_first, match_first_not) &&
-				(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_crads_first)))
+				(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crad, matchable_external_crads_first)))
 		{
 			ids_first.insert(ids_first.end(), i);
 		}
 		if(common::MatchingUtilities::match_crad(crad, match_second, match_second_not) &&
-				(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_crads_second)))
+				(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crad, matchable_external_crads_second)))
 		{
 			ids_second.insert(ids_second.end(), i);
 		}

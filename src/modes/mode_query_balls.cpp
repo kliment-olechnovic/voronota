@@ -228,7 +228,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			const bool passed=(common::MatchingUtilities::match_crad(crad, match, match_not) &&
 					common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-					(match_external_annotations.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(crad, matchable_external_set_of_crads)));
+					(match_external_annotations.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crad, matchable_external_set_of_crads)));
 			if((passed && !invert) || (!passed && invert))
 			{
 				selected_set_of_ball_ids.insert(selected_set_of_ball_ids.end(), i);
@@ -244,7 +244,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			for(std::size_t i=0;i<list_of_balls.size();i++)
 			{
-				if(common::MatchingUtilities::match_crad_with_set_of_crads(list_of_balls[i].first, residues_crads))
+				if(common::MatchingUtilities::match_crad_with_set_of_crads(false, list_of_balls[i].first, residues_crads))
 				{
 					selected_set_of_ball_ids.insert(i);
 				}
@@ -304,7 +304,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!map_of_external_adjunct_values.empty())
 			{
-				const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crad_with_map_of_crads(crad, map_of_external_adjunct_values);
+				const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crad_with_map_of_crads(false, crad, map_of_external_adjunct_values);
 				if(adjunct_value.first)
 				{
 					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
