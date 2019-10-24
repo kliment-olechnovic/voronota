@@ -3389,23 +3389,45 @@ public:
 				atom_solvent_contact_energy_means.swap(updated_atom_solvent_contact_energy_means);
 			}
 
-			cargs.change_indicator.changed_contacts_adjuncts=(!adjunct_contact_frustration_energy_mean.empty());
-			cargs.change_indicator.changed_atoms_adjuncts=(!adjunct_atom_frustration_energy_mean.empty());
-
-			for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+			if(!adjunct_contact_frustration_energy_mean.empty())
 			{
-				const std::size_t central_id=(*it);
+				cargs.change_indicator.changed_contacts_adjuncts=true;
 
-				if(!adjunct_contact_frustration_energy_mean.empty())
+				for(std::size_t i=0;i<cargs.data_manager.contacts_mutable().size();i++)
 				{
-					Contact& contact=cargs.data_manager.contacts_mutable()[atom_solvent_contact_ids[central_id]];
-					contact.value.props.adjuncts[adjunct_contact_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+					Contact& contact=cargs.data_manager.contacts_mutable()[i];
+					contact.value.props.adjuncts.erase(adjunct_contact_frustration_energy_mean);
 				}
+			}
 
-				if(!adjunct_atom_frustration_energy_mean.empty())
+			if(!adjunct_atom_frustration_energy_mean.empty())
+			{
+				cargs.change_indicator.changed_atoms_adjuncts=true;
+
+				for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
 				{
-					Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
-					atom.value.props.adjuncts[adjunct_atom_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					atom.value.props.adjuncts.erase(adjunct_atom_frustration_energy_mean);
+				}
+			}
+
+			if(!adjunct_contact_frustration_energy_mean.empty() || !adjunct_atom_frustration_energy_mean.empty())
+			{
+				for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+				{
+					const std::size_t central_id=(*it);
+
+					if(!adjunct_contact_frustration_energy_mean.empty())
+					{
+						Contact& contact=cargs.data_manager.contacts_mutable()[atom_solvent_contact_ids[central_id]];
+						contact.value.props.adjuncts[adjunct_contact_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+					}
+
+					if(!adjunct_atom_frustration_energy_mean.empty())
+					{
+						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+						atom.value.props.adjuncts[adjunct_atom_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+					}
 				}
 			}
 		}
@@ -3529,14 +3551,20 @@ public:
 
 			score_orientation(atom_descriptors, best_score.direction, membrane_width, membrane_width_extended);
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
-			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			if(!adjunct_atom_membrane_place_value.empty())
 			{
-				const AtomDescriptor& ad=atom_descriptors[i];
-				Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
-				if(!adjunct_atom_membrane_place_value.empty())
+				cargs.change_indicator.changed_atoms_adjuncts=true;
+
+				for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
 				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					atom.value.props.adjuncts.erase(adjunct_atom_membrane_place_value);
+				}
+
+				for(std::size_t i=0;i<atom_descriptors.size();i++)
+				{
+					const AtomDescriptor& ad=atom_descriptors[i];
+					Atom& atom=cargs.data_manager.atoms_mutable()[ad.atom_id];
 					atom.value.props.adjuncts[adjunct_atom_membrane_place_value]=ad.membrane_place_value;
 				}
 			}
@@ -3927,15 +3955,24 @@ public:
 					atoms_values.swap(updated_atoms_values);
 				}
 
-				cargs.change_indicator.changed_atoms_adjuncts=true;
-
-				for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+				if(!adjunct_atom_exposure_value.empty())
 				{
-					const std::size_t central_id=(*it);
-					Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
-					if(atoms_weights[central_id]>0.0)
+					cargs.change_indicator.changed_atoms_adjuncts=true;
+
+					for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
 					{
-						atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values[central_id];
+						Atom& atom=cargs.data_manager.atoms_mutable()[i];
+						atom.value.props.adjuncts.erase(adjunct_atom_exposure_value);
+					}
+
+					for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
+					{
+						const std::size_t central_id=(*it);
+						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+						if(atoms_weights[central_id]>0.0)
+						{
+							atom.value.props.adjuncts[adjunct_atom_exposure_value]=atoms_values[central_id];
+						}
 					}
 				}
 			}
@@ -4078,15 +4115,24 @@ public:
 				}
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
-			for(std::set<std::size_t>::const_iterator it=all_atom_ids.begin();it!=all_atom_ids.end();++it)
+			if(!adjunct_component_number.empty())
 			{
-				const std::size_t central_id=(*it);
-				if(atoms_component_nums[central_id]>0)
+				cargs.change_indicator.changed_atoms_adjuncts=true;
+
+				for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
 				{
-					Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
-					atom.value.props.adjuncts[adjunct_component_number]=atoms_component_nums[central_id];
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					atom.value.props.adjuncts.erase(adjunct_component_number);
+				}
+
+				for(std::set<std::size_t>::const_iterator it=all_atom_ids.begin();it!=all_atom_ids.end();++it)
+				{
+					const std::size_t central_id=(*it);
+					if(atoms_component_nums[central_id]>0)
+					{
+						Atom& atom=cargs.data_manager.atoms_mutable()[central_id];
+						atom.value.props.adjuncts[adjunct_component_number]=atoms_component_nums[central_id];
+					}
 				}
 			}
 
@@ -4523,6 +4569,12 @@ public:
 			{
 				cargs.change_indicator.changed_atoms_adjuncts=true;
 
+				for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
+				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					atom.value.props.adjuncts.erase(adjunct_atoms);
+				}
+
 				for(COPC::ID id=0;id<graph.vertices.size();id++)
 				{
 					const std::set<std::size_t>& atom_ids=map_of_atoms_ids[graph.vertices[id].crad];
@@ -4537,6 +4589,12 @@ public:
 			if(!adjunct_contacts.empty())
 			{
 				cargs.change_indicator.changed_contacts_adjuncts=true;
+
+				for(std::size_t i=0;i<cargs.data_manager.contacts_mutable().size();i++)
+				{
+					Contact& contact=cargs.data_manager.contacts_mutable()[i];
+					contact.value.props.adjuncts.erase(adjunct_contacts);
+				}
 
 				for(std::size_t i=0;i<graph.edges.size();i++)
 				{
