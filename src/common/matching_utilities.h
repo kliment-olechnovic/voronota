@@ -98,9 +98,10 @@ public:
 		return false;
 	}
 
-	static std::pair<bool, double>  match_crad_with_map_of_crads(const bool simplified, const ChainResidueAtomDescriptor& crad, const std::map<ChainResidueAtomDescriptor, double>& map_of_crads)
+	template<typename MapType>
+	static std::pair<bool, typename MapType::mapped_type>  match_crad_with_map_of_crads(const bool simplified, const ChainResidueAtomDescriptor& crad, const MapType& map_of_crads)
 	{
-		std::map<ChainResidueAtomDescriptor, double>::const_iterator result_it=map_of_crads.find(crad);
+		typename MapType::const_iterator result_it=map_of_crads.find(crad);
 		if(result_it==map_of_crads.end())
 		{
 			result_it=map_of_crads.find(crad.without_some_info(true, true, false, false));
@@ -140,7 +141,7 @@ public:
 		{
 			if(result_it==map_of_crads.end())
 			{
-				for(std::map<ChainResidueAtomDescriptor, double>::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
+				for(typename MapType::const_iterator it=map_of_crads.begin();result_it==map_of_crads.end() && it!=map_of_crads.end();++it)
 				{
 					if(crad.contains(it->first))
 					{
@@ -151,14 +152,15 @@ public:
 		}
 		if(result_it!=map_of_crads.end())
 		{
-			return std::pair<bool, double>(true, result_it->second);
+			return std::pair<bool, typename MapType::mapped_type>(true, result_it->second);
 		}
-		return std::pair<bool, double>(false, 0.0);
+		return std::pair<bool, typename MapType::mapped_type>(false, typename MapType::mapped_type());
 	}
 
-	static std::pair<bool, double>  match_crads_pair_with_map_of_crads_pairs(const bool simplified, const ChainResidueAtomDescriptorsPair& crads_pair, const std::map<ChainResidueAtomDescriptorsPair, double>& map_of_crads_pairs)
+	template<typename MapType>
+	static std::pair<bool, typename MapType::mapped_type>  match_crads_pair_with_map_of_crads_pairs(const bool simplified, const ChainResidueAtomDescriptorsPair& crads_pair, const MapType& map_of_crads_pairs)
 	{
-		std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
+		typename MapType::const_iterator result_it=map_of_crads_pairs.find(crads_pair);
 		if(result_it==map_of_crads_pairs.end())
 		{
 			result_it=map_of_crads_pairs.find(crads_pair.without_some_info(true, true, false, false));
@@ -198,7 +200,7 @@ public:
 		{
 			if(result_it==map_of_crads_pairs.end())
 			{
-				for(std::map<ChainResidueAtomDescriptorsPair, double>::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
+				for(typename MapType::const_iterator it=map_of_crads_pairs.begin();result_it==map_of_crads_pairs.end() && it!=map_of_crads_pairs.end();++it)
 				{
 					if((crads_pair.a.contains(it->first.a) && crads_pair.b.contains(it->first.b)) ||
 							(crads_pair.a.contains(it->first.b) && crads_pair.b.contains(it->first.a)))
@@ -210,9 +212,9 @@ public:
 		}
 		if(result_it!=map_of_crads_pairs.end())
 		{
-			return std::pair<bool, double>(true, result_it->second);
+			return std::pair<bool, typename MapType::mapped_type>(true, result_it->second);
 		}
-		return std::pair<bool, double>(false, 0.0);
+		return std::pair<bool, typename MapType::mapped_type>(false, typename MapType::mapped_type());
 	}
 
 private:
