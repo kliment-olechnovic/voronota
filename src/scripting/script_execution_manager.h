@@ -73,6 +73,8 @@ public:
 		set_command("delete-tags-of-atoms", new CustomCommandsForDataManager::delete_tags_of_atoms());
 		set_command("adjunct-atoms", new CustomCommandsForDataManager::adjunct_atoms());
 		set_command("delete-adjuncts-of-atoms", new CustomCommandsForDataManager::delete_adjuncts_of_atoms());
+		set_command("write-adjuncts-of-atoms", new CustomCommandsForDataManager::write_adjuncts_of_atoms());
+		set_command("read-adjuncts-of-atoms", new CustomCommandsForDataManager::read_adjuncts_of_atoms());
 		set_command("mark-atoms", new CustomCommandsForDataManager::mark_atoms());
 		set_command("unmark-atoms", new CustomCommandsForDataManager::unmark_atoms());
 		set_command("show-atoms", new CustomCommandsForDataManager::show_atoms());

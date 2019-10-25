@@ -664,6 +664,219 @@ public:
 		}
 	};
 
+	class write_adjuncts_of_atoms : public GenericCommandForDataManager
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			assert_file_name_input(file, false);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+			const bool all=cargs.input.get_flag("all");
+			std::vector<std::string> adjuncts=cargs.input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
+
+			cargs.input.assert_nothing_unusable();
+
+			if(!all && adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("No adjuncts specified."));
+			}
+
+			if(all && !adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
+			}
+
+			std::set<std::size_t> ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting);
+			if(ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			if(all)
+			{
+				std::set<std::string> all_adjuncts;
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					const Atom& atom=cargs.data_manager.atoms()[*it];
+					for(std::map<std::string, double>::const_iterator jt=atom.value.props.adjuncts.begin();jt!=atom.value.props.adjuncts.end();++jt)
+					{
+						all_adjuncts.insert(jt->first);
+					}
+				}
+				if(all_adjuncts.empty())
+				{
+					throw std::runtime_error(std::string("Selected atoms have no adjuncts."));
+				}
+				adjuncts=std::vector<std::string>(all_adjuncts.begin(), all_adjuncts.end());
+			}
+
+			OutputSelector output_selector(file);
+			std::ostream& output=output_selector.stream();
+			assert_io_stream(file, output);
+
+			output << "ID";
+			for(std::size_t i=0;i<adjuncts.size();i++)
+			{
+				output << " " << adjuncts[i];
+			}
+			output << "\n";
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const Atom& atom=cargs.data_manager.atoms()[*it];
+				output << atom.crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
+				for(std::size_t i=0;i<adjuncts.size();i++)
+				{
+					output << " ";
+					std::map<std::string, double>::const_iterator jt=atom.value.props.adjuncts.find(adjuncts[i]);
+					if(jt!=atom.value.props.adjuncts.end())
+					{
+						output << jt->second;
+					}
+					else
+					{
+						output << "NA";
+					}
+				}
+				output << "\n";
+			}
+
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+		}
+	};
+
+	class read_adjuncts_of_atoms : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+
+			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
+			const bool no_serial=cargs.input.get_flag("no-serial");
+			const bool no_name=cargs.input.get_flag("no-name");
+			const bool no_resSeq=cargs.input.get_flag("no-resSeq");
+			const bool no_resName=cargs.input.get_flag("no-resName");
+
+			cargs.input.assert_nothing_unusable();
+
+			if(file.empty())
+			{
+				throw std::runtime_error(std::string("Empty input adjuncts file name."));
+			}
+
+			InputSelector finput_selector(file);
+			std::istream& finput=finput_selector.stream();
+
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read file '")+file+"'.");
+			}
+
+			std::vector<std::string> header;
+			{
+				std::string line;
+				std::getline(finput, line);
+				if(!line.empty())
+				{
+					std::istringstream linput(line);
+					while(linput.good())
+					{
+						std::string token;
+						linput >> token;
+						if(!token.empty())
+						{
+							header.push_back(token);
+						}
+					}
+				}
+			}
+
+			if(header.size()<2 || header[0]!="ID")
+			{
+				throw std::runtime_error(std::string("Invalid header in file."));
+			}
+
+			std::map< std::string, std::map<common::ChainResidueAtomDescriptor, double> > maps_of_adjuncts;
+
+			while(finput.good())
+			{
+				std::string line;
+				std::getline(finput, line);
+				if(!line.empty())
+				{
+					std::istringstream linput(line);
+					common::ChainResidueAtomDescriptor crad;
+					linput >> crad;
+					if(linput.fail() || !crad.valid())
+					{
+						throw std::runtime_error(std::string("Invalid ID in file."));
+					}
+					for(std::size_t i=1;i<header.size();i++)
+					{
+						std::string token;
+						linput >> token;
+						if(linput.fail() || token.empty())
+						{
+							throw std::runtime_error(std::string("Missing value in file."));
+						}
+						if(token!="NA")
+						{
+							std::istringstream vinput(token);
+							double value=0.0;
+							vinput >> value;
+							if(vinput.fail())
+							{
+								throw std::runtime_error(std::string("Invalid value '")+token+"'.");
+							}
+							maps_of_adjuncts[header[i]][crad.without_some_info(no_serial, no_name, no_resSeq, no_resName)]=value;
+						}
+					}
+				}
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::map< std::string, std::map<common::ChainResidueAtomDescriptor, double> >::const_iterator it=maps_of_adjuncts.begin();it!=maps_of_adjuncts.end();++it)
+			{
+				const std::string& adjunct_name=it->first;
+				const std::map<common::ChainResidueAtomDescriptor, double>& adjunct_map=it->second;
+
+				for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
+				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[i];
+					const std::pair<bool, double> value=common::MatchingUtilities::match_crad_with_map_of_crads(true, atom.crad, adjunct_map);
+					if(value.first)
+					{
+						atom.value.props.adjuncts[adjunct_name]=value.second;
+					}
+				}
+			}
+
+			{
+				VariantObject& info=cargs.heterostorage.variant_object;
+				std::vector<VariantValue>& adjunct_names=info.values_array("adjunct_names");
+				for(std::map< std::string, std::map<common::ChainResidueAtomDescriptor, double> >::const_iterator it=maps_of_adjuncts.begin();it!=maps_of_adjuncts.end();++it)
+				{
+					adjunct_names.push_back(VariantValue(it->first));
+				}
+			}
+		}
+	};
+
 	class mark_atoms : public GenericCommandForDataManager
 	{
 	public:

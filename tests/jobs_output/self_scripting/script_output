@@ -953,6 +953,9 @@
             "name":"print-virtual-file",
             "short_description":""},
           {
+            "name":"read-adjuncts-of-atoms",
+            "short_description":""},
+          {
             "name":"read-selection-of-atoms",
             "short_description":""},
           {
@@ -1056,6 +1059,9 @@
             "short_description":""},
           {
             "name":"voromqa-membrane-place",
+            "short_description":""},
+          {
+            "name":"write-adjuncts-of-atoms",
             "short_description":""},
           {
             "name":"write-atoms-as-pymol-cgo",
