@@ -17,6 +17,7 @@ v-save-image
 v-save-rotation-movie
 v-tmalign
 v-scwrl
+v-analyze-adjuncts-of-atoms
 GLOBALEOF
 fi
 
@@ -717,5 +718,129 @@ fi
 v-do-silent "load -file '$TMPLDIR/destination.pdb' -title '$DESTINATION_NAME'"
 
 v-do "list-objects"
+GLOBALEOF
+fi
+
+if [ "$RESOURCE_NAME" == "v-analyze-adjuncts-of-atoms" ]
+then
+cat << 'GLOBALEOF'
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'v-analyze-adjuncts-of-atoms' is a script that can be called from the 'voronota-scripting-env'
+environment to use R to analyze adjunct values of atoms and calculate new adjunct values
+
+Options:
+    --atoms | -a              string      atoms selection expression, default is '[]'
+    --script | -s             string   *  R script to run
+    --help | -h                           flag to display help message and exit
+
+R script example:
+
+    output$new_val1=input$val1*(input$val2+input$val3);
+    output$new_val2=pmin(input$val1, input$val2);
+    output=output[which(output$new_val2>0.0),];
+
+EOF
+exit 1
+}
+
+v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
+
+ATOMS="[]"
+RSCRIPT=""
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-a|--atoms)
+		ATOMS="$OPTARG"
+		shift
+		;;
+	-s|--script)
+		RSCRIPT="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if $HELP_MODE
+then
+	print_help_and_exit
+fi
+
+if [ -z "$ATOMS" ]
+then
+	echo >&2 "Error: missing atoms selection expression"
+	exit 1
+fi
+
+if [ -z "$RSCRIPT" ]
+then
+	echo >&2 "Error: missing script"
+	exit 1
+fi
+
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
+readonly TMPLDIR=$(mktemp -d)
+
+function on_exit_final
+{
+	rm -r $TMPLDIR
+}
+
+trap on_exit_final EXIT
+
+v-do-silent  "write-adjuncts-of-atoms -use '$ATOMS' -all -file '$TMPLDIR/adjuncts.txt'"
+
+if [ ! -s "$TMPLDIR/adjuncts.txt" ]
+then
+	echo >&2 "Error: no adjuncts exported"
+	exit 1
+fi
+
+{
+cat << 'EOF'
+args=commandArgs(TRUE);
+infile=args[1];
+outfile=args[2];
+input=read.table(infile, header=TRUE, stringsAsFactors=FALSE);
+output=data.frame(ID=input[,"ID"], stringsAsFactors=FALSE);
+EOF
+
+if [ -s "$RSCRIPT" ]
+then
+	cat "$RSCRIPT"
+else
+	echo "$RSCRIPT"
+fi
+
+cat << 'EOF'
+if(ncol(output)>1)
+{
+	write.table(output, outfile, quote=FALSE, col.names=TRUE, row.names=FALSE);
+}
+EOF
+} \
+| R --slave --vanilla --args "$TMPLDIR/adjuncts.txt" "$TMPLDIR/result.txt"
+
+if [ -s "$TMPLDIR/result.txt" ]
+then
+	v-do-silent  "read-adjuncts-of-atoms -file '$TMPLDIR/result.txt'"
+fi
+
 GLOBALEOF
 fi
