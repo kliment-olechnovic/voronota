@@ -53,6 +53,27 @@ public:
 		}
 	}
 
+	const char* execute_command(const char* str)
+	{
+		static std::string last_output_string;
+
+		const std::string command(str);
+
+		if(!command.empty())
+		{
+			script_execution_manager_.execute_script(command, false);
+			std::ostringstream raw_output;
+			scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), script_execution_manager_.last_output(), raw_output);
+			last_output_string=raw_output.str();
+		}
+		else
+		{
+			last_output_string.clear();
+		}
+
+		return last_output_string.c_str();
+	}
+
 	void upload_file(const char* name, const char* data)
 	{
 		std::string object_name=name;

@@ -135,6 +135,12 @@ EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
 	app->add_command(command);
 }
 
+EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
+{
+	viewer::Application* app=viewer::Application::self_ptr;
+	return app->execute_command(command);
+}
+
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
 {
 	viewer::Application* app=viewer::Application::self_ptr;

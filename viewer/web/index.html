@@ -131,6 +131,12 @@
 				Module.ccall('application_add_command', null, ['string'], [command]);
 			}
 			
+			function v_do(command)
+			{
+				var result=JSON.parse(Module.ccall('application_execute_command', 'string', ['string'], [command]));
+				return result;
+			}
+			
 			function application_upload_file(name, data)
 			{
 				Module.ccall('application_upload_file', null, ['string','string'], [name,data]);
@@ -138,9 +144,9 @@
 			
 			function from_application_display_output(text)
 			{
+				var element=document.getElementById('output_area');
 				if(text.startsWith("{"))
 				{
-				    var element=document.getElementById('output_area');
 				    element.value=text;
 					element.scrollTop=element.scrollHeight;
 				}
