@@ -44,6 +44,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v curl &> /dev/null || { echo >&2 "Error: 'curl' executable not in binaries path"; exit 1; }
+
 PDB_ID=""
 PDB_SELECTED_ASSEMBLY=1
 PDB_SELECTED_CONFORMER=1
@@ -106,7 +108,7 @@ curl "http://www.rcsb.org/pdb/rest/getEntityInfo?structureId=${PDB_ID}" > "$TMPL
 
 if [ ! -s "$TMPLDIR/pdbinfo" ]
 then
-	echo >&2 "Error: failed to get info for PDB ID '$PDBID'"
+	echo >&2 "Error: failed to get info for PDB ID '$PDB_ID'"
 	exit 1
 fi
 
@@ -131,7 +133,7 @@ PDB_CHAINS="$(cat "$TMPLDIR/pdbinfo" \
 
 if [ "$PDB_ID_CONFIRMED" != "$PDB_ID" ]
 then
-	echo >&2 "Error: failed to get info for PDB ID '$PDBID'"
+	echo >&2 "Error: failed to get info for PDB ID '$PDB_ID'"
 	exit 1
 fi
 
@@ -213,6 +215,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
+
 if [ "$V_GUI" != "true" ]
 then
 	echo >&2 "Error: Voronota not running in GUI mode"
@@ -252,8 +256,6 @@ then
 	echo >&2 "Error: missing output file path"
 	exit 1
 fi
-
-command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
 
 readonly TMPLDIR=$(mktemp -d)
 
@@ -300,6 +302,8 @@ exit 1
 }
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
+
+command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
 
 if [ "$V_GUI" != "true" ]
 then
@@ -382,8 +386,6 @@ then
 	echo >&2 "Error: invalid delay, must be in interval from 1 to 10"
 	exit 1
 fi
-
-command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
 
 readonly TMPLDIR=$(mktemp -d)
 
@@ -485,6 +487,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v TMalign &> /dev/null || { echo >&2 "Error: 'TMalign' executable not in binaries path"; exit 1; }
+
 TARGET_NAME=""
 MODEL_NAME=""
 TARGET_SEL="[]"
@@ -539,8 +543,6 @@ then
 	echo >&2 "Error: missing model name"
 	exit 1
 fi
-
-command -v TMalign &> /dev/null || { echo >&2 "Error: 'TMalign' executable not in binaries path"; exit 1; }
 
 v-do-silent  "list-objects '$TARGET_NAME'"
 
@@ -635,6 +637,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v Scwrl4 &> /dev/null || { echo >&2 "Error: 'Scwrl4' executable not in binaries path"; exit 1; }
+
 SOURCE_NAME=""
 DESTINATION_NAME=""
 HELP_MODE=false
@@ -679,8 +683,6 @@ then
 	echo >&2 "Error: missing destination name"
 	exit 1
 fi
-
-command -v Scwrl4 &> /dev/null || { echo >&2 "Error: 'Scwrl4' executable not in binaries path"; exit 1; }
 
 v-do-silent "list-objects '$SOURCE_NAME'"
 
@@ -748,6 +750,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
 ATOMS="[]"
 RSCRIPT=""
 HELP_MODE=false
@@ -792,8 +796,6 @@ then
 	echo >&2 "Error: missing script"
 	exit 1
 fi
-
-command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
 
 readonly TMPLDIR=$(mktemp -d)
 

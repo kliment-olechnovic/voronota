@@ -18,6 +18,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v TMalign &> /dev/null || { echo >&2 "Error: 'TMalign' executable not in binaries path"; exit 1; }
+
 TARGET_NAME=""
 MODEL_NAME=""
 TARGET_SEL="[]"
@@ -72,8 +74,6 @@ then
 	echo >&2 "Error: missing model name"
 	exit 1
 fi
-
-command -v TMalign &> /dev/null || { echo >&2 "Error: 'TMalign' executable not in binaries path"; exit 1; }
 
 v-do-silent  "list-objects '$TARGET_NAME'"
 

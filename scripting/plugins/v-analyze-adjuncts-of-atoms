@@ -22,6 +22,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
+
 ATOMS="[]"
 RSCRIPT=""
 HELP_MODE=false
@@ -66,8 +68,6 @@ then
 	echo >&2 "Error: missing script"
 	exit 1
 fi
-
-command -v R &> /dev/null || { echo >&2 "Error: 'R' executable not in binaries path"; exit 1; }
 
 readonly TMPLDIR=$(mktemp -d)
 

@@ -18,6 +18,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v curl &> /dev/null || { echo >&2 "Error: 'curl' executable not in binaries path"; exit 1; }
+
 PDB_ID=""
 PDB_SELECTED_ASSEMBLY=1
 PDB_SELECTED_CONFORMER=1
@@ -80,7 +82,7 @@ curl "http://www.rcsb.org/pdb/rest/getEntityInfo?structureId=${PDB_ID}" > "$TMPL
 
 if [ ! -s "$TMPLDIR/pdbinfo" ]
 then
-	echo >&2 "Error: failed to get info for PDB ID '$PDBID'"
+	echo >&2 "Error: failed to get info for PDB ID '$PDB_ID'"
 	exit 1
 fi
 
@@ -105,7 +107,7 @@ PDB_CHAINS="$(cat "$TMPLDIR/pdbinfo" \
 
 if [ "$PDB_ID_CONFIRMED" != "$PDB_ID" ]
 then
-	echo >&2 "Error: failed to get info for PDB ID '$PDBID'"
+	echo >&2 "Error: failed to get info for PDB ID '$PDB_ID'"
 	exit 1
 fi
 

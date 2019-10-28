@@ -16,6 +16,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v Scwrl4 &> /dev/null || { echo >&2 "Error: 'Scwrl4' executable not in binaries path"; exit 1; }
+
 SOURCE_NAME=""
 DESTINATION_NAME=""
 HELP_MODE=false
@@ -60,8 +62,6 @@ then
 	echo >&2 "Error: missing destination name"
 	exit 1
 fi
-
-command -v Scwrl4 &> /dev/null || { echo >&2 "Error: 'Scwrl4' executable not in binaries path"; exit 1; }
 
 v-do-silent "list-objects '$SOURCE_NAME'"
 

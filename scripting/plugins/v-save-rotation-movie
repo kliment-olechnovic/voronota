@@ -19,6 +19,8 @@ exit 1
 
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
+command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
+
 if [ "$V_GUI" != "true" ]
 then
 	echo >&2 "Error: Voronota not running in GUI mode"
@@ -100,8 +102,6 @@ then
 	echo >&2 "Error: invalid delay, must be in interval from 1 to 10"
 	exit 1
 fi
-
-command -v convert &> /dev/null || { echo >&2 "Error: 'convert' executable not in binaries path"; exit 1; }
 
 readonly TMPLDIR=$(mktemp -d)
 
