@@ -10,7 +10,7 @@
         "script":"print-sequence --secondary-structure"},
       "success":true},
     {
-      "line":"load --file ./input/single/structure.cif",
+      "line":"import --file ./input/single/structure.cif",
       "output":{
         "atoms_summary":{
           "number_total":1771,
@@ -18,7 +18,7 @@
         "object_name":"structure.cif"},
       "success":true},
     {
-      "line":"load -file \"./input/single/structure.pdb\"",
+      "line":"import -file \"./input/single/structure.pdb\"",
       "output":{
         "atoms_summary":{
           "number_total":1717,
@@ -26,7 +26,7 @@
         "object_name":"structure.pdb"},
       "success":true},
     {
-      "line":"load ./input/single/structure.pdb --include-heteroatoms",
+      "line":"import ./input/single/structure.pdb --include-heteroatoms",
       "output":{
         "atoms_summary":{
           "number_total":1771,
@@ -153,7 +153,7 @@
           "area":20568.7}},
       "success":true},
     {
-      "line":"save-atoms --file './jobs_output/self_scripting/plain_atoms'",
+      "line":"export-atoms --file './jobs_output/self_scripting/plain_atoms'",
       "data_object":"structure.pdb_2",
       "output":{
         "file":"./jobs_output/self_scripting/plain_atoms",
@@ -162,7 +162,7 @@
           "volume":41027.8}},
       "success":true},
     {
-      "line":"save-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume",
+      "line":"export-atoms --file './jobs_output/self_scripting/pdb_atoms' --as-pdb --pdb-b-factor volume",
       "data_object":"structure.pdb_2",
       "output":{
         "file":"./jobs_output/self_scripting/pdb_atoms",
@@ -171,7 +171,7 @@
           "volume":41027.8}},
       "success":true},
     {
-      "line":"save-contacts './jobs_output/self_scripting/plain_contacts'",
+      "line":"export-contacts './jobs_output/self_scripting/plain_contacts'",
       "data_object":"structure.pdb_2",
       "output":{
         "file":"./jobs_output/self_scripting/plain_contacts",
@@ -203,7 +203,7 @@
         "deleted_objects":["structure.cif","structure.pdb","structure.pdb_2"]},
       "success":true},
     {
-      "line":"load --file './jobs_output/self_scripting/plain_atoms' --format plain",
+      "line":"import --file './jobs_output/self_scripting/plain_atoms' --format plain",
       "output":{
         "atoms_summary":{
           "number_total":1717,
@@ -225,7 +225,7 @@
       "errors":["No contacts available."],
       "success":false},
     {
-      "line":"load-contacts --file './jobs_output/self_scripting/plain_contacts'",
+      "line":"import-contacts --file './jobs_output/self_scripting/plain_contacts'",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/plain_contacts",
@@ -245,7 +245,7 @@
         "selection_name":"cs1"},
       "success":true},
     {
-      "line":"write-selection-of-contacts [cs1] -file './jobs_output/self_scripting/saved_selection_cs1'",
+      "line":"export-selection-of-contacts [cs1] -file './jobs_output/self_scripting/saved_selection_cs1'",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/saved_selection_cs1",
@@ -256,7 +256,7 @@
         "number_of_descriptors_written":5},
       "success":true},
     {
-      "line":"read-selection-of-contacts -file './jobs_output/self_scripting/saved_selection_cs1' -name cs1_copy",
+      "line":"import-selection-of-contacts -file './jobs_output/self_scripting/saved_selection_cs1' -name cs1_copy",
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
@@ -272,13 +272,13 @@
         "deleted_selections":["cs1_copy"]},
       "success":true},
     {
-      "line":"set-alias multitag \"tag-contacts [--min-area ${1}] med; delete-tags-of-contacts [--min-area ${2}] --tags med\"",
+      "line":"set-alias multitag \"set-tag-of-contacts [--min-area ${1}] med; delete-tags-of-contacts [--min-area ${2}] --tags med\"",
       "output":{
         "alias":"multitag",
-        "script":"tag-contacts [--min-area ${1}] med; delete-tags-of-contacts [--min-area ${2}] --tags med"},
+        "script":"set-tag-of-contacts [--min-area ${1}] med; delete-tags-of-contacts [--min-area ${2}] --tags med"},
       "success":true},
     {
-      "line":"tag-contacts [--min-area 6.0] med",
+      "line":"set-tag-of-contacts [--min-area 6.0] med",
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
@@ -408,7 +408,7 @@
         "selection_name":"as1"},
       "success":true},
     {
-      "line":"write-selection-of-atoms [as1] -file './jobs_output/self_scripting/saved_selection_as1'",
+      "line":"export-selection-of-atoms [as1] -file './jobs_output/self_scripting/saved_selection_as1'",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/saved_selection_as1",
@@ -418,7 +418,7 @@
         "number_of_descriptors_written":5},
       "success":true},
     {
-      "line":"read-selection-of-atoms -file './jobs_output/self_scripting/saved_selection_as1' -name as1_copy",
+      "line":"import-selection-of-atoms -file './jobs_output/self_scripting/saved_selection_as1' -name as1_copy",
       "data_object":"plain_atoms",
       "output":{
         "atoms_summary":{
@@ -433,7 +433,7 @@
         "deleted_selections":["as1_copy"]},
       "success":true},
     {
-      "line":"tag-atoms [A<C,N,O,CA,CB>] --tag pept",
+      "line":"set-tag-of-atoms [A<C,N,O,CA,CB>] --tag pept",
       "data_object":"plain_atoms",
       "output":{
         "atoms_summary":{
@@ -590,7 +590,7 @@
           "volume":41027.8}},
       "success":true},
     {
-      "line":"write-atoms-as-pymol-cgo [r<70:90>] -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms",
+      "line":"export-atoms-as-pymol-cgo [r<70:90>] -file './jobs_output/self_scripting/cgo_atoms.py' -name atoms",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_atoms.py",
@@ -599,7 +599,7 @@
           "volume":3864.44}},
       "success":true},
     {
-      "line":"write-atoms-as-pymol-cgo [r<70:90>] -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf",
+      "line":"export-atoms-as-pymol-cgo [r<70:90>] -wireframe -file './jobs_output/self_scripting/cgo_atoms_wf.py' -name atoms_wf",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_atoms_wf.py",
@@ -622,7 +622,7 @@
           "sd_of_values":65.0001}},
       "success":true},
     {
-      "line":"write-cartoon-as-pymol-cgo [r<45:60>&A<CA>] -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",
+      "line":"export-cartoon-as-pymol-cgo [r<45:60>&A<CA>] -file './jobs_output/self_scripting/cgo_cartoon.py' -name cartoon",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_cartoon.py",
@@ -631,7 +631,7 @@
           "volume":262.219}},
       "success":true},
     {
-      "line":"write-cartoon-as-pymol-cgo [r<45:60>&A<CA>] -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf",
+      "line":"export-cartoon-as-pymol-cgo [r<45:60>&A<CA>] -wireframe -file './jobs_output/self_scripting/cgo_cartoon_wf.py' -name cartoon_wf",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_cartoon_wf.py",
@@ -676,7 +676,7 @@
           "area":211.8}},
       "success":true},
     {
-      "line":"write-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
+      "line":"export-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_contacts.py",
@@ -695,7 +695,7 @@
           "area":211.8}},
       "success":true},
     {
-      "line":"write-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
+      "line":"export-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/cgo_contacts_wf.py",
@@ -705,7 +705,7 @@
           "area":211.8}},
       "success":true},
     {
-      "line":"save-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'",
+      "line":"export-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'",
       "data_object":"plain_atoms",
       "output":{
         "file":"./jobs_output/self_scripting/plain_atoms_and_contacts",
@@ -718,7 +718,7 @@
           "area":47017.2}},
       "success":true},
     {
-      "line":"load './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
+      "line":"import './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain",
       "output":{
         "atoms_summary":{
           "number_total":1717,
@@ -730,7 +730,7 @@
         "object_name":"plain_atoms_and_contacts"},
       "success":true},
     {
-      "line":"load './jobs_output/self_scripting/plain_atoms' -format plain",
+      "line":"import './jobs_output/self_scripting/plain_atoms' -format plain",
       "output":{
         "atoms_summary":{
           "number_total":1717,
@@ -748,7 +748,7 @@
           "number_voronoi_vertices":11470}},
       "success":true},
     {
-      "line":"write-triangulation '_virtual/plain_triangulation' -link",
+      "line":"export-triangulation '_virtual/plain_triangulation' -link",
       "data_object":"plain_atoms_2",
       "output":{
         "file":"_virtual/plain_triangulation",
@@ -769,7 +769,7 @@
         "total_bytes":1291834},
       "success":true},
     {
-      "line":"save-virtual-file -name '_virtual/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
+      "line":"download-virtual-file -name '_virtual/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
       "success":true},
     {
       "line":"delete-virtual-files '_virtual/plain_triangulation'",
@@ -795,12 +795,6 @@
             "short_description":""},
           {
             "name":"add-figure-of-triangulation",
-            "short_description":""},
-          {
-            "name":"adjunct-atoms",
-            "short_description":""},
-          {
-            "name":"adjunct-contacts",
             "short_description":""},
           {
             "name":"cad-score",
@@ -863,6 +857,9 @@
             "name":"describe-exposure",
             "short_description":""},
           {
+            "name":"download-virtual-file",
+            "short_description":""},
+          {
             "name":"echo",
             "short_description":""},
           {
@@ -870,6 +867,36 @@
             "short_description":""},
           {
             "name":"explain-command",
+            "short_description":""},
+          {
+            "name":"export-adjuncts-of-atoms",
+            "short_description":""},
+          {
+            "name":"export-atoms",
+            "short_description":""},
+          {
+            "name":"export-atoms-and-contacts",
+            "short_description":""},
+          {
+            "name":"export-atoms-as-pymol-cgo",
+            "short_description":""},
+          {
+            "name":"export-cartoon-as-pymol-cgo",
+            "short_description":""},
+          {
+            "name":"export-contacts",
+            "short_description":""},
+          {
+            "name":"export-contacts-as-pymol-cgo",
+            "short_description":""},
+          {
+            "name":"export-selection-of-atoms",
+            "short_description":""},
+          {
+            "name":"export-selection-of-contacts",
+            "short_description":""},
+          {
+            "name":"export-triangulation",
             "short_description":""},
           {
             "name":"find-connected-components",
@@ -885,6 +912,21 @@
             "short_description":""},
           {
             "name":"hide-objects",
+            "short_description":""},
+          {
+            "name":"import",
+            "short_description":""},
+          {
+            "name":"import-adjuncts-of-atoms",
+            "short_description":""},
+          {
+            "name":"import-contacts",
+            "short_description":""},
+          {
+            "name":"import-selection-of-atoms",
+            "short_description":""},
+          {
+            "name":"import-selection-of-contacts",
             "short_description":""},
           {
             "name":"list-commands",
@@ -903,12 +945,6 @@
             "short_description":""},
           {
             "name":"list-virtual-files",
-            "short_description":""},
-          {
-            "name":"load",
-            "short_description":""},
-          {
-            "name":"load-contacts",
             "short_description":""},
           {
             "name":"make-drawable-contacts",
@@ -953,15 +989,6 @@
             "name":"print-virtual-file",
             "short_description":""},
           {
-            "name":"read-adjuncts-of-atoms",
-            "short_description":""},
-          {
-            "name":"read-selection-of-atoms",
-            "short_description":""},
-          {
-            "name":"read-selection-of-contacts",
-            "short_description":""},
-          {
             "name":"rename-object",
             "short_description":""},
           {
@@ -977,25 +1004,28 @@
             "name":"restrict-atoms",
             "short_description":""},
           {
-            "name":"save-atoms",
-            "short_description":""},
-          {
-            "name":"save-atoms-and-contacts",
-            "short_description":""},
-          {
-            "name":"save-contacts",
-            "short_description":""},
-          {
-            "name":"save-virtual-file",
-            "short_description":""},
-          {
             "name":"select-atoms",
             "short_description":""},
           {
             "name":"select-contacts",
             "short_description":""},
           {
+            "name":"set-adjunct-of-atoms",
+            "short_description":""},
+          {
+            "name":"set-adjunct-of-contacts",
+            "short_description":""},
+          {
             "name":"set-alias",
+            "short_description":""},
+          {
+            "name":"set-tag-of-atoms",
+            "short_description":""},
+          {
+            "name":"set-tag-of-atoms-by-secondary-structure",
+            "short_description":""},
+          {
+            "name":"set-tag-of-contacts",
             "short_description":""},
           {
             "name":"setup-loading",
@@ -1025,15 +1055,6 @@
             "name":"spectrum-contacts",
             "short_description":""},
           {
-            "name":"tag-atoms",
-            "short_description":""},
-          {
-            "name":"tag-atoms-by-secondary-structure",
-            "short_description":""},
-          {
-            "name":"tag-contacts",
-            "short_description":""},
-          {
             "name":"unmark-atoms",
             "short_description":""},
           {
@@ -1059,27 +1080,6 @@
             "short_description":""},
           {
             "name":"voromqa-membrane-place",
-            "short_description":""},
-          {
-            "name":"write-adjuncts-of-atoms",
-            "short_description":""},
-          {
-            "name":"write-atoms-as-pymol-cgo",
-            "short_description":""},
-          {
-            "name":"write-cartoon-as-pymol-cgo",
-            "short_description":""},
-          {
-            "name":"write-contacts-as-pymol-cgo",
-            "short_description":""},
-          {
-            "name":"write-selection-of-atoms",
-            "short_description":""},
-          {
-            "name":"write-selection-of-contacts",
-            "short_description":""},
-          {
-            "name":"write-triangulation",
             "short_description":""},
           {
             "name":"zoom-by-atoms",

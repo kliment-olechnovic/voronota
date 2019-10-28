@@ -80,7 +80,7 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-v-do-silent  "save-atoms -on-objects '$SOURCE_NAME' -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
+v-do-silent  "export-atoms -on-objects '$SOURCE_NAME' -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
 
 if [ ! -s "$TMPLDIR/source.pdb" ]
 then
@@ -96,6 +96,6 @@ then
 	exit 1
 fi
 
-v-do-silent "load -file '$TMPLDIR/destination.pdb' -title '$DESTINATION_NAME'"
+v-do-silent "import -file '$TMPLDIR/destination.pdb' -title '$DESTINATION_NAME'"
 
 v-do "list-objects"

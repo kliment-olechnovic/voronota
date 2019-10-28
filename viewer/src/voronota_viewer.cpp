@@ -39,7 +39,7 @@ int main(const int argc, const char** argv)
 			}
 			else if(argv_i=="--input-pdb" && (i+1)<argc)
 			{
-				raw_arguments+="load --format pdb --include-heteroatoms --file '";
+				raw_arguments+="import --format pdb --include-heteroatoms --file '";
 				raw_arguments+=argv[++i];
 				raw_arguments+="'\n";
 			}

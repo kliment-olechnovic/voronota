@@ -124,7 +124,7 @@ public:
 		}
 	};
 
-	class load : public GenericCommandForCongregationOfDataManagers
+	class import : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
 		void run(CommandArguments& cargs)

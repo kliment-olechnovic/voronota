@@ -163,6 +163,6 @@ then
 	exit 1
 fi
 
-v-do-silent "load -format pdb -file '$PDB_FILE' $LOADING_PARAMS -title '$(basename "$PDB_FILE" .pdb)'"
+v-do-silent "import -format pdb -file '$PDB_FILE' $LOADING_PARAMS -title '$(basename "$PDB_FILE" .pdb)'"
 v-do "list-objects"
 

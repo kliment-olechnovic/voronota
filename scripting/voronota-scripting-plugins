@@ -189,7 +189,7 @@ then
 	exit 1
 fi
 
-v-do-silent "load -format pdb -file '$PDB_FILE' $LOADING_PARAMS -title '$(basename "$PDB_FILE" .pdb)'"
+v-do-silent "import -format pdb -file '$PDB_FILE' $LOADING_PARAMS -title '$(basename "$PDB_FILE" .pdb)'"
 v-do "list-objects"
 
 GLOBALEOF
@@ -569,7 +569,7 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-v-do-silent  "save-atoms -on-objects '$TARGET_NAME' -use '(($TARGET_SEL) and ([-aname CA]))' -as-pdb -file '$TMPLDIR/target.pdb'"
+v-do-silent  "export-atoms -on-objects '$TARGET_NAME' -use '(($TARGET_SEL) and ([-aname CA]))' -as-pdb -file '$TMPLDIR/target.pdb'"
 
 if [ ! -s "$TMPLDIR/target.pdb" ]
 then
@@ -577,7 +577,7 @@ then
 	exit 1
 fi
 
-v-do-silent  "save-atoms -on-objects '$MODEL_NAME' -use '(($MODEL_SEL) and ([-aname CA]))' -as-pdb -file '$TMPLDIR/model.pdb'"
+v-do-silent  "export-atoms -on-objects '$MODEL_NAME' -use '(($MODEL_SEL) and ([-aname CA]))' -as-pdb -file '$TMPLDIR/model.pdb'"
 
 if [ ! -s "$TMPLDIR/model.pdb" ]
 then
@@ -701,7 +701,7 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-v-do-silent  "save-atoms -on-objects '$SOURCE_NAME' -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
+v-do-silent  "export-atoms -on-objects '$SOURCE_NAME' -use '[-aname CA,C,N,O,OXT]' -as-pdb -file '$TMPLDIR/source.pdb'"
 
 if [ ! -s "$TMPLDIR/source.pdb" ]
 then
@@ -717,7 +717,7 @@ then
 	exit 1
 fi
 
-v-do-silent "load -file '$TMPLDIR/destination.pdb' -title '$DESTINATION_NAME'"
+v-do-silent "import -file '$TMPLDIR/destination.pdb' -title '$DESTINATION_NAME'"
 
 v-do "list-objects"
 GLOBALEOF
@@ -806,7 +806,7 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-v-do-silent  "write-adjuncts-of-atoms -use '$ATOMS' -all -file '$TMPLDIR/adjuncts.txt'"
+v-do-silent "export-adjuncts-of-atoms -use '$ATOMS' -all -file '$TMPLDIR/adjuncts.txt'"
 
 if [ ! -s "$TMPLDIR/adjuncts.txt" ]
 then
@@ -841,7 +841,7 @@ EOF
 
 if [ -s "$TMPLDIR/result.txt" ]
 then
-	v-do-silent  "read-adjuncts-of-atoms -file '$TMPLDIR/result.txt'"
+	v-do-silent  "import-adjuncts-of-atoms -file '$TMPLDIR/result.txt'"
 fi
 
 GLOBALEOF

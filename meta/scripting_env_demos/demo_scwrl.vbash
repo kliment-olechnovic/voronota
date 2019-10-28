@@ -1,4 +1,4 @@
-v-load -file tests/input/complex/target.pdb -title obj1
+v-import -file tests/input/complex/target.pdb -title obj1
 v-scwrl -s obj1 -d obj2
 v-pick-objects
 v-show-atoms -rep sticks

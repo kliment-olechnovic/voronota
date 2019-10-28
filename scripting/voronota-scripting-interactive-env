@@ -65,7 +65,7 @@ trap "rm -r $TMPLDIR" EXIT
 			if [ "$EXT" == "pdb" ] || [ "$EXT" == "cif" ] || [ "$EXT" == "mmcif" ] || [ "$EXT" == "ent" ] || [ "$EXT" == "atoms" ] || [ "$EXT" == "pa" ] || [ "$EXT" == "pac" ]
 			then
 				echo
-				echo "v-load '$PASSARG'"
+				echo "v-import '$PASSARG'"
 			else
 				if [ "$EXT" == "sh" ] || [ "$EXT" == "bash" ] || [ "$EXT" == "vbash" ]
 				then

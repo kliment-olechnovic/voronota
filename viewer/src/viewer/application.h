@@ -62,7 +62,7 @@ public:
 		}
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
-		pending_commands_.push_back(std::string("load --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+		pending_commands_.push_back(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
 	}
 
 protected:

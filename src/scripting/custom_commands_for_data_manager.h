@@ -148,7 +148,7 @@ public:
 		}
 	};
 
-	class save_atoms : public GenericCommandForDataManager
+	class export_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -281,7 +281,7 @@ public:
 		}
 	};
 
-	class write_selection_of_atoms : public GenericCommandForDataManager
+	class export_selection_of_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -330,7 +330,7 @@ public:
 		}
 	};
 
-	class read_selection_of_atoms : public GenericCommandForDataManager
+	class import_selection_of_atoms : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -412,7 +412,7 @@ public:
 		}
 	};
 
-	class tag_atoms : public GenericCommandForDataManager
+	class set_tag_of_atoms : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -450,7 +450,7 @@ public:
 		}
 	};
 
-	class tag_atoms_by_secondary_structure : public GenericCommandForDataManager
+	class set_tag_of_atoms_by_secondary_structure : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -554,7 +554,7 @@ public:
 		}
 	};
 
-	class adjunct_atoms : public GenericCommandForDataManager
+	class set_adjunct_of_atoms : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -664,7 +664,7 @@ public:
 		}
 	};
 
-	class write_adjuncts_of_atoms : public GenericCommandForDataManager
+	class export_adjuncts_of_atoms : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -752,7 +752,7 @@ public:
 		}
 	};
 
-	class read_adjuncts_of_atoms : public GenericCommandForDataManager
+	class import_adjuncts_of_atoms : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -1442,7 +1442,7 @@ public:
 		}
 	};
 
-	class write_atoms_as_pymol_cgo : public GenericCommandForDataManager
+	class export_atoms_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -1561,7 +1561,7 @@ public:
 		}
 	};
 
-	class write_cartoon_as_pymol_cgo : public GenericCommandForDataManager
+	class export_cartoon_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -1823,7 +1823,7 @@ public:
 		}
 	};
 
-	class write_triangulation : public GenericCommandForDataManager
+	class export_triangulation : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -2109,7 +2109,7 @@ public:
 		}
 	};
 
-	class save_contacts : public GenericCommandForDataManager
+	class export_contacts : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -2143,7 +2143,7 @@ public:
 		}
 	};
 
-	class load_contacts : public GenericCommandForDataManager
+	class import_contacts : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -2258,7 +2258,7 @@ public:
 		}
 	};
 
-	class write_selection_of_contacts : public GenericCommandForDataManager
+	class export_selection_of_contacts : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -2310,7 +2310,7 @@ public:
 		}
 	};
 
-	class read_selection_of_contacts : public GenericCommandForDataManager
+	class import_selection_of_contacts : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -2392,7 +2392,7 @@ public:
 		}
 	};
 
-	class tag_contacts : public GenericCommandForDataManager
+	class set_tag_of_contacts : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -2487,7 +2487,7 @@ public:
 		}
 	};
 
-	class adjunct_contacts : public GenericCommandForDataManager
+	class set_adjunct_of_contacts : public GenericCommandForDataManager
 	{
 	public:
 		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
@@ -3062,7 +3062,7 @@ public:
 		}
 	};
 
-	class write_contacts_as_pymol_cgo : public GenericCommandForDataManager
+	class export_contacts_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -3255,7 +3255,7 @@ public:
 		}
 	};
 
-	class save_atoms_and_contacts : public GenericCommandForDataManager
+	class export_atoms_and_contacts : public GenericCommandForDataManager
 	{
 	protected:
 		void run(CommandArguments& cargs)

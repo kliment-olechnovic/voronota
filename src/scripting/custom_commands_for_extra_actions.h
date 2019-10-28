@@ -144,7 +144,7 @@ public:
 		}
 	};
 
-	class save_virtual_file : public GenericCommand
+	class download_virtual_file : public GenericCommand
 	{
 	protected:
 		void run(CommandArguments& cargs)

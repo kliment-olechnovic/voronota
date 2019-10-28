@@ -78,7 +78,7 @@ function on_exit_final
 
 trap on_exit_final EXIT
 
-v-do-silent  "write-adjuncts-of-atoms -use '$ATOMS' -all -file '$TMPLDIR/adjuncts.txt'"
+v-do-silent "export-adjuncts-of-atoms -use '$ATOMS' -all -file '$TMPLDIR/adjuncts.txt'"
 
 if [ ! -s "$TMPLDIR/adjuncts.txt" ]
 then
@@ -113,6 +113,6 @@ EOF
 
 if [ -s "$TMPLDIR/result.txt" ]
 then
-	v-do-silent  "read-adjuncts-of-atoms -file '$TMPLDIR/result.txt'"
+	v-do-silent  "import-adjuncts-of-atoms -file '$TMPLDIR/result.txt'"
 fi
 

@@ -353,7 +353,7 @@ private:
 		script_partitioner().set_alias("click-button1-on-figure", "pick-objects ${1} ; print-figures -id ${2}");
 		script_partitioner().set_alias("click-button2-on-figure", "pick-objects ${1} ; print-figures -id ${2}");
 
-		script_partitioner().set_alias("modify-just-loaded-object", "tag-atoms-by-secondary-structure");
+		script_partitioner().set_alias("modify-just-loaded-object", "set-tag-of-atoms-by-secondary-structure");
 		script_partitioner().set_alias("zoom-just-loaded-object", "zoom-by-atoms");
 		script_partitioner().set_alias("show-just-loaded-object", "hide-atoms ; hide-contacts ; show-atoms [-t! het] -rep cartoon ; show-atoms [-t het] -rep sticks");
 		script_partitioner().set_alias("color-just-loaded-object", "color-atoms [-t! het] -next-random-color ; color-atoms [-t het] -next-random-color");
