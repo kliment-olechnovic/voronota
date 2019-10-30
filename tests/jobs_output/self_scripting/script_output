@@ -1016,6 +1016,9 @@
             "name":"set-adjunct-of-atoms-by-contact-areas",
             "short_description":""},
           {
+            "name":"set-adjunct-of-atoms-by-residue-pooling",
+            "short_description":""},
+          {
             "name":"set-adjunct-of-contacts",
             "short_description":""},
           {
