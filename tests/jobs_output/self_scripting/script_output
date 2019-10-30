@@ -1013,6 +1013,9 @@
             "name":"set-adjunct-of-atoms",
             "short_description":""},
           {
+            "name":"set-adjunct-of-atoms-by-contact-areas",
+            "short_description":""},
+          {
             "name":"set-adjunct-of-contacts",
             "short_description":""},
           {

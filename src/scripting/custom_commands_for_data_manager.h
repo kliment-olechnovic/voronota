@@ -607,6 +607,60 @@ public:
 		}
 	};
 
+	class set_adjunct_of_atoms_by_contact_areas : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_contacts_availability();
+
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const std::string name=cargs.input.get_value<std::string>("name");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(name, false);
+
+			const std::set<std::size_t> contacts_ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			if(contacts_ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(name);
+			}
+
+			std::set<std::size_t> atom_ids;
+
+			for(std::set<std::size_t>::const_iterator it=contacts_ids.begin();it!=contacts_ids.end();++it)
+			{
+				const Contact& contact=cargs.data_manager.contacts()[*it];
+
+				for(int i=0;i<(contact.solvent() ? 1 : 2);i++)
+				{
+					Atom& atom=cargs.data_manager.atoms_mutable()[contact.ids[i]];
+					atom.value.props.adjuncts[name]+=contact.value.area;
+					atom_ids.insert(contact.ids[i]);
+				}
+			}
+
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), contacts_ids), cargs.heterostorage.variant_object.object("contacts_summary"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+		}
+	};
+
 	class delete_adjuncts_of_atoms : public GenericCommandForDataManager
 	{
 	public:
