@@ -682,7 +682,7 @@ public:
 			const SelectionManager::Query parameters_for_selecting_destination_atoms=read_generic_selecting_query("destination-atoms-", "[]", cargs.input);
 			const std::string source_name=cargs.input.get_value<std::string>("source-name");
 			const std::string destination_name=cargs.input.get_value<std::string>("destination-name");
-			const std::string pooling_mode=cargs.input.get_value_or_default<std::string>("pooling-mode", "mean");
+			const std::string pooling_mode=cargs.input.get_value<std::string>("pooling-mode");
 
 			cargs.input.assert_nothing_unusable();
 
