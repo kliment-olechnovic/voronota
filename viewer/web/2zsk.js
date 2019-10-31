@@ -126,6 +126,11 @@ Module.expectedDataFileDownloads++;
       }
     };
 
+        var files = metadata.files;
+        for (var i = 0; i < files.length; ++i) {
+          new DataRequest(files[i].start, files[i].end, files[i].audio).open('GET', files[i].filename);
+        }
+
   
     function processPackageData(arrayBuffer) {
       Module.finishedDataFileDownloads++;
@@ -134,13 +139,18 @@ Module.expectedDataFileDownloads++;
       var byteArray = new Uint8Array(arrayBuffer);
       var curr;
       
-          var compressedData = {"data":null,"cachedOffset":152158,"cachedIndexes":[-1,-1],"cachedChunks":[null,null],"offsets":[0,1051,2166,3234,4358,5433,6504,7580,8669,9743,10845,11918,13025,14103,15165,16241,17313,18400,19459,20526,21622,22712,23771,24866,25961,27079,28176,29284,30372,31498,32573,33635,34705,35790,36902,37982,39054,40126,41200,42322,43413,44514,45603,46704,47774,48876,49985,51095,52210,53324,54411,55474,56530,57586,58687,59750,60817,61894,62988,64105,65224,66306,67426,68516,69601,70665,71737,72826,73914,75001,76106,77219,78311,79384,80472,81531,82641,83688,84751,85834,86909,87980,89019,90087,91177,92272,93364,94474,95493,96590,97664,98739,99842,100939,102071,103133,104203,105279,106350,107469,108561,109639,110719,111789,112883,113994,115058,116135,117206,118299,119406,120493,121560,122620,123698,124780,125882,126990,128073,129157,130202,131286,132347,133425,134535,135620,136683,137749,138819,139943,141053,142169,143243,144330,145380,146485,147555,148633,149690,150764,151832],"sizes":[1051,1115,1068,1124,1075,1071,1076,1089,1074,1102,1073,1107,1078,1062,1076,1072,1087,1059,1067,1096,1090,1059,1095,1095,1118,1097,1108,1088,1126,1075,1062,1070,1085,1112,1080,1072,1072,1074,1122,1091,1101,1089,1101,1070,1102,1109,1110,1115,1114,1087,1063,1056,1056,1101,1063,1067,1077,1094,1117,1119,1082,1120,1090,1085,1064,1072,1089,1088,1087,1105,1113,1092,1073,1088,1059,1110,1047,1063,1083,1075,1071,1039,1068,1090,1095,1092,1110,1019,1097,1074,1075,1103,1097,1132,1062,1070,1076,1071,1119,1092,1078,1080,1070,1094,1111,1064,1077,1071,1093,1107,1087,1067,1060,1078,1082,1102,1108,1083,1084,1045,1084,1061,1078,1110,1085,1063,1066,1070,1124,1110,1116,1074,1087,1050,1105,1070,1078,1057,1074,1068,326],"successes":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]}
-;
-          compressedData.data = byteArray;
-          assert(typeof LZ4 === 'object', 'LZ4 not present - was your app build with  -s LZ4=1  ?');
-          LZ4.loadPackage({ 'metadata': metadata, 'compressedData': compressedData });
-          Module['removeRunDependency']('datafile_./2zsk.data');
-    
+        // copy the entire loaded file into a spot in the heap. Files will refer to slices in that. They cannot be freed though
+        // (we may be allocating before malloc is ready, during startup).
+        var ptr = Module['getMemory'](byteArray.length);
+        Module['HEAPU8'].set(byteArray, ptr);
+        DataRequest.prototype.byteArray = Module['HEAPU8'].subarray(ptr, ptr+byteArray.length);
+  
+          var files = metadata.files;
+          for (var i = 0; i < files.length; ++i) {
+            DataRequest.prototype.requests[files[i].filename].onload();
+          }
+              Module['removeRunDependency']('datafile_./2zsk.data');
+
     };
     Module['addRunDependency']('datafile_./2zsk.data');
   
@@ -163,6 +173,6 @@ Module.expectedDataFileDownloads++;
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 287307, "filename": "/2zsk.pdb"}], "remote_package_size": 156254, "package_uuid": "c8f8a8c4-3515-41c8-90af-bbd073e7f079"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 287307, "filename": "/2zsk.pdb"}], "remote_package_size": 287307, "package_uuid": "6393ecaa-f193-4e70-8c49-640882fd96ef"});
 
 })();
