@@ -625,7 +625,7 @@ public:
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_contacts_availability();
 
-			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query("", "[--min-seq-sep 1]", cargs.input);
 			const std::string name=cargs.input.get_value<std::string>("name");
 
 			cargs.input.assert_nothing_unusable();
@@ -657,6 +657,85 @@ public:
 					Atom& atom=cargs.data_manager.atoms_mutable()[contact.ids[i]];
 					atom.value.props.adjuncts[name]+=contact.value.area;
 					atom_ids.insert(contact.ids[i]);
+				}
+			}
+
+			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), contacts_ids), cargs.heterostorage.variant_object.object("contacts_summary"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+		}
+	};
+
+	class set_adjunct_of_atoms_by_contact_adjuncts : public GenericCommandForDataManager
+	{
+	public:
+		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+		{
+			return true;
+		}
+
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_atoms_availability();
+			cargs.data_manager.assert_contacts_availability();
+
+			const SelectionManager::Query parameters_for_selecting=read_generic_selecting_query(cargs.input);
+			const std::string source_name=cargs.input.get_value<std::string>("source-name");
+			const std::string destination_name=cargs.input.get_value<std::string>("destination-name");
+			const std::string pooling_mode=cargs.input.get_value<std::string>("pooling-mode");
+
+			cargs.input.assert_nothing_unusable();
+
+			assert_adjunct_name_input(source_name, false);
+			assert_adjunct_name_input(destination_name, false);
+
+			if(pooling_mode!="sum" && pooling_mode!="min" && pooling_mode!="max")
+			{
+				throw std::runtime_error(std::string("Invalid pooling mode, valid options are: 'sum', 'min', 'max'."));
+			}
+
+			const std::set<std::size_t> contacts_ids=cargs.data_manager.selection_manager().select_contacts(parameters_for_selecting);
+			if(contacts_ids.empty())
+			{
+				throw std::runtime_error(std::string("No contacts selected."));
+			}
+
+			cargs.change_indicator.changed_atoms_adjuncts=true;
+
+			for(std::size_t i=0;i<cargs.data_manager.atoms_mutable().size();i++)
+			{
+				Atom& atom=cargs.data_manager.atoms_mutable()[i];
+				atom.value.props.adjuncts.erase(destination_name);
+			}
+
+			std::set<std::size_t> atom_ids;
+
+			for(std::set<std::size_t>::const_iterator it=contacts_ids.begin();it!=contacts_ids.end();++it)
+			{
+				const Contact& contact=cargs.data_manager.contacts()[*it];
+
+				if(contact.value.props.adjuncts.count(source_name)>0)
+				{
+					const double source_value=(contact.value.props.adjuncts.find(source_name)->second);
+					for(int i=0;i<(contact.solvent() ? 1 : 2);i++)
+					{
+						Atom& atom=cargs.data_manager.atoms_mutable()[contact.ids[i]];
+						const bool first_setting=(atom.value.props.adjuncts.count(destination_name)==0);
+						double& destination_value=atom.value.props.adjuncts[destination_name];
+						if(pooling_mode=="sum")
+						{
+							destination_value+=source_value;
+						}
+						else if(pooling_mode=="min")
+						{
+							destination_value=(first_setting ? source_value : std::min(source_value, destination_value));
+						}
+						else if(pooling_mode=="max")
+						{
+							destination_value=(first_setting ? source_value : std::max(source_value, destination_value));
+						}
+						atom_ids.insert(contact.ids[i]);
+					}
 				}
 			}
 

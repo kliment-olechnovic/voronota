@@ -73,6 +73,7 @@ public:
 		set_command("delete-tags-of-atoms", new CustomCommandsForDataManager::delete_tags_of_atoms());
 		set_command("set-adjunct-of-atoms", new CustomCommandsForDataManager::set_adjunct_of_atoms());
 		set_command("set-adjunct-of-atoms-by-contact-areas", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_contact_areas());
+		set_command("set-adjunct-of-atoms-by-contact-adjuncts", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_contact_adjuncts());
 		set_command("set-adjunct-of-atoms-by-residue-pooling", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_residue_pooling());
 		set_command("delete-adjuncts-of-atoms", new CustomCommandsForDataManager::delete_adjuncts_of_atoms());
 		set_command("export-adjuncts-of-atoms", new CustomCommandsForDataManager::export_adjuncts_of_atoms());
