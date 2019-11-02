@@ -454,8 +454,18 @@ protected:
 	{
 	}
 
+	virtual bool check_mouse_button_use_intercepted(int button, int action, int mods)
+	{
+		return false;
+	}
+
 	virtual void on_mouse_button_used(int button, int action, int mods)
 	{
+	}
+
+	virtual bool check_mouse_cursor_move_intercepted(double xpos, double ypos)
+	{
+		return false;
 	}
 
 	virtual void on_mouse_cursor_moved(double xpos, double ypos)
@@ -641,6 +651,10 @@ private:
 
 	void callback_on_mouse_button_used(int button, int action, int mods)
 	{
+		if(check_mouse_button_use_intercepted(button, action, mods))
+		{
+			return;
+		}
 		if(button==GLFW_MOUSE_BUTTON_LEFT)
 		{
 			if(action==GLFW_PRESS)
@@ -680,6 +694,10 @@ private:
 
 	void callback_on_mouse_cursor_moved(double xpos, double ypos)
 	{
+		if(check_mouse_cursor_move_intercepted(xpos, ypos))
+		{
+			return;
+		}
 		mouse_cursor_prev_x_=mouse_cursor_x_;
 		mouse_cursor_prev_y_=mouse_cursor_y_;
 		mouse_cursor_x_=xpos;

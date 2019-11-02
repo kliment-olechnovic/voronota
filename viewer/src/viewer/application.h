@@ -34,14 +34,6 @@ public:
 	void set_console_enabled(const bool enabled)
 	{
 		console_configuration_.enabled=enabled;
-		if(console_configuration_.enabled)
-		{
-			set_margins(0, 0, (console_configuration_.height+(console_configuration_.padding*2)), 0);
-		}
-		else
-		{
-			set_margins(0, 0, 0, 0);
-		}
 	}
 
 	void add_command(const char* str)
@@ -87,15 +79,21 @@ public:
 	}
 
 protected:
-	void on_mouse_button_used(int button, int action, int mods)
+	bool check_mouse_button_use_intercepted(int button, int action, int mods)
 	{
 		ImGui_ImplGlfwGL3_MouseButtonCallback(window(), button, action, mods);
+		return (ImGui::IsMouseHoveringAnyWindow());
+	}
+
+	bool check_mouse_cursor_move_intercepted(double xpos, double ypos)
+	{
+		ImGui_ImplGlfwGL3_CursorPosCallback(window(), xpos, ypos);
+		return (ImGui::IsMouseHoveringAnyWindow());
 	}
 
 	void on_mouse_cursor_moved(double xpos, double ypos)
 	{
 		cursor_label_.clear();
-		ImGui_ImplGlfwGL3_CursorPosCallback(window(), xpos, ypos);
 	}
 
 	void on_key_used(int key, int scancode, int action, int mods)
@@ -133,29 +131,54 @@ protected:
 
 	void on_draw_overlay()
 	{
-		const int console_height=30;
-		const int console_padding=10;
-		const int console_x_pos=console_padding;
-		const int console_y_pos=std::max(console_padding, window_height()-(console_height+console_padding));
-		const int console_width=window_width()-console_padding*2;
-
 		ImGui_ImplGlfwGL3_NewFrame();
+
+		if(console_configuration_.enabled)
+		{
+			if(ImGui::BeginMainMenuBar())
+			{
+				if(ImGui::BeginMenu("Background"))
+				{
+					if(ImGui::MenuItem("White", ""))
+					{
+						pending_commands_.push_back(std::string("background white"));
+					}
+					if(ImGui::MenuItem("Black", ""))
+					{
+						pending_commands_.push_back(std::string("background black"));
+					}
+					if(ImGui::MenuItem("Gray", ""))
+					{
+						pending_commands_.push_back(std::string("background 0xCCCCCC"));
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMainMenuBar();
+			}
+		}
 
 		if(waiting_stage_>0 && waiting_stage_<=2)
 		{
-			static bool waiting_window=false;
-			ImGui::SetNextWindowPos(ImVec2(5, 5));
-			ImGui::SetNextWindowSize(ImVec2(150, 30));
-			ImGui::Begin("Waiting", &waiting_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
-			ImGui::Text("Please wait ...");
-			ImGui::End();
+			const int label_width=150;
+			const int label_height=30;
+			const int label_x_pos=(window_width()/2)-(label_width/2);
+			const int label_y_pos=(window_height()/2)-(label_height/2);
+
+			{
+				static bool waiting_window=false;
+				ImGui::SetNextWindowPos(ImVec2(label_x_pos, label_y_pos));
+				ImGui::SetNextWindowSize(ImVec2(label_width, label_height));
+				ImGui::Begin("Waiting", &waiting_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+				ImGui::Text("Please wait ...");
+				ImGui::End();
+			}
 		}
 
 		if(!cursor_label_.empty())
 		{
 			static bool cursor_label_window=false;
 			ImGui::SetNextWindowPos(ImVec2(mouse_x()+5.0f, std::max(0.0f, mouse_y()-35.0f)), 0);
-			ImGui::SetNextWindowSize(ImVec2(1+(cursor_label_.size()*8), 30));
+			ImGui::SetNextWindowSize(ImVec2(3+(cursor_label_.size()*8), 30));
 			ImGui::Begin("Label", &cursor_label_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 			ImGui::Text("%s", cursor_label_.c_str());
 			ImGui::End();
@@ -163,6 +186,12 @@ protected:
 
 		if(console_configuration_.enabled)
 		{
+			const int console_height=30;
+			const int console_padding=10;
+			const int console_x_pos=console_padding;
+			const int console_y_pos=std::max(console_padding, window_height()-(console_height+console_padding));
+			const int console_width=window_width()-console_padding*2;
+
 			{
 				ImGui::SetNextWindowPos(ImVec2(console_x_pos, console_y_pos));
 				ImGui::SetNextWindowSize(ImVec2(console_width, console_height));
@@ -170,8 +199,8 @@ protected:
 				ImGui::Begin("Console input", &console_configuration_.enabled, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 				{
-					ImVec4 color_text=ImVec4(0.0f, 0.0f, 0.7f, 1.0f);
-					ImVec4 color_background=ImVec4(1.0f, 1.0f, 1.0f, 0.0f);
+					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+					ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 					if(ImGui::InputText("", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory, &on_command_input_data_request, this))
@@ -253,14 +282,10 @@ private:
 	{
 		bool enabled;
 		bool need_keyboard_focus;
-		int padding;
-		int height;
 
 		ConsoleConfiguration() :
 			enabled(false),
-			need_keyboard_focus(false),
-			padding(10),
-			height(30)
+			need_keyboard_focus(false)
 		{
 		}
 	};

@@ -89,26 +89,6 @@ int main(const int argc, const char** argv)
 		io.IniFilename=0;
 	}
 
-	{
-		ImGuiStyle& style=ImGui::GetStyle();
-
-		for(int i=0;i<ImGuiCol_COUNT;i++)
-		{
-			ImVec4& col=style.Colors[i];
-			float H=0.0f;
-			float S=0.0f;
-			float V=0.0f;
-			ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, H, S, V);
-			V=1.0-V;
-			ImGui::ColorConvertHSVtoRGB(H, S, V, col.x, col.y, col.z);
-		}
-
-		style.WindowRounding=0.0f;
-		style.FrameRounding=0.0f;
-		style.GrabRounding=0.0f;
-		style.ScrollbarRounding=0.0f;
-	}
-
 	app.set_console_enabled(false);
 
 	app.add_command(raw_arguments.c_str());
