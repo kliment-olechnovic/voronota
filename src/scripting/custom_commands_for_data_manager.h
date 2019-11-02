@@ -5178,11 +5178,109 @@ private:
 
 	static auxiliaries::ColorUtilities::ColorInteger get_next_random_color()
 	{
-		static unsigned long id=1;
-		std::ostringstream output;
-		output << id;
-		id++;
-		return auxiliaries::ColorUtilities::color_from_string_id(output.str());
+		const unsigned long m=2147483647L;
+		const unsigned long a=48271L;
+		const unsigned long c=0L;
+
+		static unsigned long x=111L;
+
+		static double value_prev=-1.0;
+
+		static std::vector<auxiliaries::ColorUtilities::ColorInteger> anchors;
+
+		if(anchors.empty())
+		{
+			anchors.push_back(0xFF4444);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0xFF4444);
+			anchors.push_back(0x888888);
+			anchors.push_back(0xFF4444);
+
+			anchors.push_back(0xFF6644);
+
+			anchors.push_back(0xFF8844);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0xFF8844);
+			anchors.push_back(0x888888);
+			anchors.push_back(0xFF8844);
+
+			anchors.push_back(0xFFCC44);
+
+			anchors.push_back(0xFFFF44);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0xFFFF44);
+			anchors.push_back(0x888888);
+			anchors.push_back(0xFFFF44);
+
+			anchors.push_back(0xCCFF44);
+
+			anchors.push_back(0x88FF44);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x88FF44);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x88FF44);
+
+			anchors.push_back(0x66FF44);
+
+			anchors.push_back(0x44FF44);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x44FF44);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x44FF44);
+
+			anchors.push_back(0x44FF66);
+
+			anchors.push_back(0x44FF88);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x44FF88);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x44FF88);
+
+			anchors.push_back(0x44FFCC);
+
+			anchors.push_back(0x44FFFF);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x44FFFF);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x44FFFF);
+
+			anchors.push_back(0x44CCFF);
+
+			anchors.push_back(0x4488FF);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x4488FF);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x4488FF);
+
+			anchors.push_back(0x4466FF);
+
+			anchors.push_back(0x4444FF);
+			anchors.push_back(0xEEEEEE);
+			anchors.push_back(0x4444FF);
+			anchors.push_back(0x888888);
+			anchors.push_back(0x4444FF);
+		}
+
+		x=((a*x+c)%m);
+
+		double value=static_cast<double>(x%100000L)/static_cast<double>(99999L);
+
+		if(value_prev>=0.0 && std::abs(value-value_prev)<0.1)
+		{
+			value+=((value<value_prev) ? -0.1 : 0.1);
+			if(value<0.0)
+			{
+				value+=1.0;
+			}
+			if(value>1.0)
+			{
+				value-=1.0;
+			}
+		}
+
+		value_prev=value;
+
+		return auxiliaries::ColorUtilities::color_from_gradient(anchors, value);
 	}
 
 	static double calculate_zscore_reverse(const double zscore, const double mean_of_values, const double sd_of_values)

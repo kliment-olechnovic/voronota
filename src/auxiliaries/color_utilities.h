@@ -290,30 +290,6 @@ public:
 
 		return color_from_gradient(anchors, value);
 	}
-
-	static ColorInteger color_from_string_id(const std::string& str)
-	{
-		const long generator=123456789;
-		const long limiter=0xFFFFFF;
-		long hash=generator;
-		for(std::size_t i=0;i<str.size();i++)
-		{
-			hash+=static_cast<long>(str[i]+1)*static_cast<long>(i+1)*generator;
-		}
-		const ColorInteger color=static_cast<unsigned int>(hash%limiter);
-		double rgb[3]={0.0, 0.0, 0.0};
-		color_to_components(color, rgb, true);
-		{
-			const double ban_start=0.2;
-			const double ban_end=0.05;
-			for(int i=0;i<3;i++)
-			{
-				rgb[i]=ban_start+((1.0-ban_start-ban_end)*rgb[i]);
-
-			}
-		}
-		return color_from_components(rgb, true);
-	}
 };
 
 }
