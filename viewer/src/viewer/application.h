@@ -137,19 +137,59 @@ protected:
 		{
 			if(ImGui::BeginMainMenuBar())
 			{
-				if(ImGui::BeginMenu("Background"))
+				if(ImGui::BeginMenu("Settings"))
 				{
-					if(ImGui::MenuItem("White", ""))
+					if(ImGui::BeginMenu("Background color"))
 					{
-						pending_commands_.push_back(std::string("background white"));
+						if(ImGui::MenuItem("White", ""))
+						{
+							pending_commands_.push_back(std::string("background white"));
+						}
+						if(ImGui::MenuItem("Gray", ""))
+						{
+							pending_commands_.push_back(std::string("background 0xCCCCCC"));
+						}
+						if(ImGui::MenuItem("Black", ""))
+						{
+							pending_commands_.push_back(std::string("background black"));
+						}
+						ImGui::EndMenu();
 					}
-					if(ImGui::MenuItem("Black", ""))
+					if(ImGui::BeginMenu("Grid mode"))
 					{
-						pending_commands_.push_back(std::string("background black"));
+						if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_grid()))
+						{
+							pending_commands_.push_back(std::string("mono"));
+						}
+						if(ImGui::MenuItem("Enable grid by object", "", false, !rendering_mode_is_grid()))
+						{
+							pending_commands_.push_back(std::string("grid-by-object"));
+						}
+						ImGui::EndMenu();
 					}
-					if(ImGui::MenuItem("Gray", ""))
+					if(ImGui::BeginMenu("Projection mode"))
 					{
-						pending_commands_.push_back(std::string("background 0xCCCCCC"));
+						if(ImGui::MenuItem("Orthographic", "", false, !projection_mode_is_ortho()))
+						{
+							pending_commands_.push_back(std::string("ortho"));
+						}
+						if(ImGui::MenuItem("Perspective", "", false, !projection_mode_is_perspective()))
+						{
+							pending_commands_.push_back(std::string("perspective"));
+						}
+						ImGui::EndMenu();
+					}
+					if(ImGui::BeginMenu("Stereo"))
+					{
+						if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_stereo()))
+						{
+							pending_commands_.push_back(std::string("mono"));
+						}
+						if(ImGui::MenuItem("Enable", "", false, !rendering_mode_is_stereo()))
+						{
+							pending_commands_.push_back(std::string("stereo"));
+						}
+						ImGui::EndMenu();
 					}
 					ImGui::EndMenu();
 				}
