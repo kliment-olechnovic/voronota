@@ -1,0 +1,50 @@
+INFILE="$1"
+MAXPROBE="$2"
+ELEVEL1="$3"
+ELEVEL2="$4"
+
+if [ -z "$ELEVEL1" ]
+then
+	ELEVEL1=0.8
+fi
+
+if [ -z "$ELEVEL2" ]
+then
+	ELEVEL1=0.5
+fi
+
+if [ -z "$INFILE" ] || [ -z "$MAXPROBE" ] || [ -z "$ELEVEL1" ] || [ -z "$ELEVEL2" ]
+then
+	echo >&2 "Error: not enough parameters"
+	exit 1
+fi
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: invalid input file '$INFILE'"
+	exit 1
+fi
+
+v-import -file $INFILE
+v-restrict-atoms [-t! het]
+v-construct-contacts
+v-describe-exposure -adj-atom-exposure-value exposure -probe-min 1.4 -probe-max $MAXPROBE -expansion 0.1 -smoothing-iterations 3 -smoothing-depth 1
+v-find-connected-components -atoms-core-use [-v exposure=${ELEVEL1}:1.0] -atoms-all-use [-v exposure=${ELEVEL2}:1.0] -contacts-use [-t peripherial] -adj-component-number pocket_id
+v-select-atoms [-v pocket_id=1] -name pocket_atoms
+v-select-atoms [pocket_atoms] -full-residues -name pocket_residue_atoms
+v-print-triangulation [pocket_atoms] -only-summary -strict
+v-print-triangulation [pocket_residue_atoms] -only-summary -strict
+
+if [ "$V_GUI" == "true" ]
+then
+	v-hide-atoms
+	v-show-atoms -rep sticks
+	v-color-atoms 0x555555
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00
+	v-color-atoms [pocket_atoms] -col 0xFF0000
+	v-add-figure-of-triangulation [pocket_residue_atoms] -strict -figure-name pocket_volume
+	v-show-figures -rep solid mesh
+	v-color-figures -col 0x33FFFF
+	v-color-figures -rep mesh -col 0x000000
+fi
+
