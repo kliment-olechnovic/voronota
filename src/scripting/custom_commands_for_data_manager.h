@@ -5332,7 +5332,7 @@ private:
 				(as_z_scores ? calculate_zscore_reverse(max_val, mean_of_values, sd_of_values) : max_val) :
 				max_val_actual);
 
-		if(max_val_to_use<=min_val_to_use)
+		if(max_val_to_use<min_val_to_use)
 		{
 			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
 		}
