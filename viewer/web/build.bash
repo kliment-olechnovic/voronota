@@ -1,5 +1,18 @@
 #!/bin/bash
 
+#
+# Must be run after executing the following command:
+#   source ~/software/emsdk/emsdk_env.sh
+# 
+# If backspace key does not work for HTML input, then the JS file
+#   ~/software/emsdk/upstream/emscripten/src/library_glfw.js
+# should be modified.
+# This block:
+#   if (event.keyCode === 8 || event.keyCode === 9) { event.preventDefault(); }
+# should be replaced with this block:
+#   if (event.keyCode === 9) { event.preventDefault(); }
+#
+
 cd "$(dirname "$0")"
 
 if [ -z "$EMSDK" ] || [ ! -d "$EMSDK" ]
