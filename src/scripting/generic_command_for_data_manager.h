@@ -79,6 +79,15 @@ protected:
 	}
 };
 
+class GenericCommandForDataManagerScaled : public GenericCommandForDataManager
+{
+public:
+	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+	{
+		return true;
+	}
+};
+
 }
 
 #endif /* SCRIPTING_GENERIC_COMMAND_FOR_DATA_MANAGER_H_ */

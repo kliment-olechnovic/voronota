@@ -26,14 +26,8 @@ namespace scripting
 class CustomCommandsForDataManager
 {
 public:
-	class restrict_atoms : public GenericCommandForDataManager
+	class restrict_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 //		void document(CommandDocumentation& doc) const
 //		{
@@ -73,14 +67,8 @@ public:
 		}
 	};
 
-	class move_atoms : public GenericCommandForDataManager
+	class move_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 //		void document(CommandDocumentation& doc) const
 //		{
@@ -116,14 +104,8 @@ public:
 		}
 	};
 
-	class center_atoms : public GenericCommandForDataManager
+	class center_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -214,14 +196,8 @@ public:
 		}
 	};
 
-	class select_atoms : public GenericCommandForDataManager
+	class select_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -334,14 +310,8 @@ public:
 		}
 	};
 
-	class import_selection_of_atoms : public GenericCommandForDataManager
+	class import_selection_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -416,14 +386,8 @@ public:
 		}
 	};
 
-	class set_tag_of_atoms : public GenericCommandForDataManager
+	class set_tag_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -454,14 +418,8 @@ public:
 		}
 	};
 
-	class set_tag_of_atoms_by_secondary_structure : public GenericCommandForDataManager
+	class set_tag_of_atoms_by_secondary_structure : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -501,14 +459,8 @@ public:
 		}
 	};
 
-	class delete_tags_of_atoms : public GenericCommandForDataManager
+	class delete_tags_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -558,14 +510,8 @@ public:
 		}
 	};
 
-	class set_adjunct_of_atoms : public GenericCommandForDataManager
+	class set_adjunct_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -611,14 +557,8 @@ public:
 		}
 	};
 
-	class set_adjunct_of_atoms_by_contact_areas : public GenericCommandForDataManager
+	class set_adjunct_of_atoms_by_contact_areas : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -665,14 +605,8 @@ public:
 		}
 	};
 
-	class set_adjunct_of_atoms_by_contact_adjuncts : public GenericCommandForDataManager
+	class set_adjunct_of_atoms_by_contact_adjuncts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -744,14 +678,8 @@ public:
 		}
 	};
 
-	class set_adjunct_of_atoms_by_residue_pooling : public GenericCommandForDataManager
+	class set_adjunct_of_atoms_by_residue_pooling : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -863,14 +791,8 @@ public:
 		}
 	};
 
-	class delete_adjuncts_of_atoms : public GenericCommandForDataManager
+	class delete_adjuncts_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1008,14 +930,8 @@ public:
 		}
 	};
 
-	class import_adjuncts_of_atoms : public GenericCommandForDataManager
+	class import_adjuncts_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1133,7 +1049,7 @@ public:
 		}
 	};
 
-	class mark_atoms : public GenericCommandForDataManager
+	class mark_atoms : public GenericCommandForDataManagerScaled
 	{
 	public:
 		mark_atoms() : positive_(true)
@@ -1142,11 +1058,6 @@ public:
 
 		explicit mark_atoms(const bool positive) : positive_(positive)
 		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
 		}
 
 	protected:
@@ -1190,7 +1101,7 @@ public:
 		}
 	};
 
-	class show_atoms : public GenericCommandForDataManager
+	class show_atoms : public GenericCommandForDataManagerScaled
 	{
 	public:
 		show_atoms() : positive_(true)
@@ -1199,11 +1110,6 @@ public:
 
 		explicit show_atoms(const bool positive) : positive_(positive)
 		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
 		}
 
 	protected:
@@ -1261,14 +1167,8 @@ public:
 		}
 	};
 
-	class color_atoms : public GenericCommandForDataManager
+	class color_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1314,14 +1214,8 @@ public:
 		}
 	};
 
-	class spectrum_atoms : public GenericCommandForDataManager
+	class spectrum_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -1520,7 +1414,7 @@ public:
 	};
 
 
-	class print_atoms : public GenericCommandForDataManager
+	class print_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -1550,7 +1444,7 @@ public:
 		}
 	};
 
-	class print_sequence : public GenericCommandForDataManager
+	class print_sequence : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -1947,7 +1841,7 @@ public:
 		}
 	};
 
-	class list_selections_of_atoms : public GenericCommandForDataManager
+	class list_selections_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -1967,14 +1861,8 @@ public:
 		}
 	};
 
-	class delete_selections_of_atoms : public GenericCommandForDataManager
+	class delete_selections_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2016,14 +1904,8 @@ public:
 		}
 	};
 
-	class rename_selection_of_atoms : public GenericCommandForDataManager
+	class rename_selection_of_atoms : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2046,14 +1928,8 @@ public:
 		}
 	};
 
-	class construct_triangulation : public GenericCommandForDataManager
+	class construct_triangulation : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2124,7 +2000,7 @@ public:
 		}
 	};
 
-	class print_triangulation : public GenericCommandForDataManager
+	class print_triangulation : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -2257,14 +2133,8 @@ public:
 		}
 	};
 
-	class construct_contacts : public GenericCommandForDataManager
+	class construct_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2299,14 +2169,8 @@ public:
 		}
 	};
 
-	class make_drawable_contacts : public GenericCommandForDataManager
+	class make_drawable_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2335,14 +2199,8 @@ public:
 		}
 	};
 
-	class make_undrawable_contacts : public GenericCommandForDataManager
+	class make_undrawable_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2443,14 +2301,8 @@ public:
 		}
 	};
 
-	class select_contacts : public GenericCommandForDataManager
+	class select_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2566,14 +2418,8 @@ public:
 		}
 	};
 
-	class import_selection_of_contacts : public GenericCommandForDataManager
+	class import_selection_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2648,14 +2494,8 @@ public:
 		}
 	};
 
-	class set_tag_of_contacts : public GenericCommandForDataManager
+	class set_tag_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2686,14 +2526,8 @@ public:
 		}
 	};
 
-	class delete_tags_of_contacts : public GenericCommandForDataManager
+	class delete_tags_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2743,14 +2577,8 @@ public:
 		}
 	};
 
-	class set_adjunct_of_contacts : public GenericCommandForDataManager
+	class set_adjunct_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2796,14 +2624,8 @@ public:
 		}
 	};
 
-	class delete_adjuncts_of_contacts : public GenericCommandForDataManager
+	class delete_adjuncts_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -2854,7 +2676,7 @@ public:
 	};
 
 
-	class mark_contacts : public GenericCommandForDataManager
+	class mark_contacts : public GenericCommandForDataManagerScaled
 	{
 	public:
 		mark_contacts() : positive_(true)
@@ -2863,11 +2685,6 @@ public:
 
 		explicit mark_contacts(const bool positive) : positive_(positive)
 		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
 		}
 
 	protected:
@@ -2911,7 +2728,7 @@ public:
 		}
 	};
 
-	class show_contacts : public GenericCommandForDataManager
+	class show_contacts : public GenericCommandForDataManagerScaled
 	{
 	public:
 		show_contacts() : positive_(true)
@@ -2920,11 +2737,6 @@ public:
 
 		explicit show_contacts(const bool positive) : positive_(positive)
 		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
 		}
 
 	protected:
@@ -2982,14 +2794,8 @@ public:
 		}
 	};
 
-	class color_contacts : public GenericCommandForDataManager
+	class color_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3035,14 +2841,8 @@ public:
 		}
 	};
 
-	class spectrum_contacts : public GenericCommandForDataManager
+	class spectrum_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3222,7 +3022,7 @@ public:
 		}
 	};
 
-	class print_contacts : public GenericCommandForDataManager
+	class print_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -3412,7 +3212,7 @@ public:
 		}
 	};
 
-	class list_selections_of_contacts : public GenericCommandForDataManager
+	class list_selections_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -3432,14 +3232,8 @@ public:
 		}
 	};
 
-	class delete_selections_of_contacts : public GenericCommandForDataManager
+	class delete_selections_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3481,14 +3275,8 @@ public:
 		}
 	};
 
-	class rename_selection_of_contacts : public GenericCommandForDataManager
+	class rename_selection_of_contacts : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3550,14 +3338,8 @@ public:
 		}
 	};
 
-	class calculate_burial_depth : public GenericCommandForDataManager
+	class calculate_burial_depth : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3597,14 +3379,8 @@ public:
 		}
 	};
 
-	class voromqa_global : public GenericCommandForDataManager
+	class voromqa_global : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3645,14 +3421,8 @@ public:
 		}
 	};
 
-	class voromqa_local : public GenericCommandForDataManager
+	class voromqa_local : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3748,14 +3518,8 @@ public:
 		}
 	};
 
-	class voromqa_frustration : public GenericCommandForDataManager
+	class voromqa_frustration : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -3902,14 +3666,8 @@ public:
 		}
 	};
 
-	class voromqa_membrane_place : public GenericCommandForDataManager
+	class voromqa_membrane_place : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4248,14 +4006,8 @@ public:
 		}
 	};
 
-	class describe_exposure : public GenericCommandForDataManager
+	class describe_exposure : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4448,14 +4200,8 @@ public:
 		}
 	};
 
-	class find_connected_components : public GenericCommandForDataManager
+	class find_connected_components : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4611,14 +4357,8 @@ public:
 		}
 	};
 
-	class add_figure : public GenericCommandForDataManager
+	class add_figure : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return false;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4650,14 +4390,8 @@ public:
 		}
 	};
 
-	class print_figures : public GenericCommandForDataManager
+	class print_figures : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4695,7 +4429,7 @@ public:
 		}
 	};
 
-	class show_figures : public GenericCommandForDataManager
+	class show_figures : public GenericCommandForDataManagerScaled
 	{
 	public:
 		show_figures() : positive_(true)
@@ -4704,11 +4438,6 @@ public:
 
 		explicit show_figures(const bool positive) : positive_(positive)
 		{
-		}
-
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
 		}
 
 	protected:
@@ -4759,14 +4488,8 @@ public:
 		}
 	};
 
-	class color_figures : public GenericCommandForDataManager
+	class color_figures : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4810,14 +4533,8 @@ public:
 		}
 	};
 
-	class list_figures : public GenericCommandForDataManager
+	class list_figures : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4847,14 +4564,8 @@ public:
 		}
 	};
 
-	class delete_figures : public GenericCommandForDataManager
+	class delete_figures : public GenericCommandForDataManagerScaled
 	{
-	public:
-		bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
-		{
-			return true;
-		}
-
 	protected:
 		void run(CommandArguments& cargs)
 		{
@@ -4888,7 +4599,7 @@ public:
 		}
 	};
 
-	class add_figure_of_triangulation : public GenericCommandForDataManager
+	class add_figure_of_triangulation : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -4977,7 +4688,7 @@ public:
 		}
 	};
 
-	class calculate_betweenness : public GenericCommandForDataManager
+	class calculate_betweenness : public GenericCommandForDataManagerScaled
 	{
 	protected:
 		void run(CommandArguments& cargs)
