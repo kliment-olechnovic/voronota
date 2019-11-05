@@ -121,6 +121,8 @@ public:
 			DataManager* object_original=cargs.congregation_of_data_managers.get_object(name_original);
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(*object_original, name_new);
 			cargs.change_indicator.added_objects.insert(object_new);
+
+			cargs.heterostorage.variant_object.value("object_name")=cargs.congregation_of_data_managers.get_object_attributes(object_new).name;
 		}
 	};
 
@@ -178,7 +180,7 @@ public:
 			cargs.congregation_of_data_managers.set_object_picked(object_new, true);
 			cargs.change_indicator.changed_objects_picks=true;
 
-			cargs.heterostorage.variant_object.value("object_name")=title;
+			cargs.heterostorage.variant_object.value("object_name")=cargs.congregation_of_data_managers.get_object_attributes(object_new).name;;
 		}
 	};
 
