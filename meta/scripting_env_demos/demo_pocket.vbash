@@ -1,48 +1,110 @@
-INFILE="$1"
-WPOWER="$2"
-MINPROBE="$3"
-MAXPROBE="$4"
-ELEVEL1="$5"
-ELEVEL2="$6"
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
 
-if [ -z "$INFILE" ] || [ -z "$MINPROBE" ] || [ -z "$MAXPROBE" ] || [ -z "$ELEVEL1" ] || [ -z "$ELEVEL2" ]
+Options:
+    --probe-min | -pmin              number    default is 2.0
+    --probe-max | -pmax              number    default is 5.0
+    --weight-power | -wp             number    default is 2
+    --smoothing-iterations | -si     number    default is 2
+    --exposure-core | -ec            number    default is 0.7
+    --exposure-rim | -er             number    default is 0.3
+    --help | -h                                flag to display help message and exit
+
+EOF
+exit 1
+}
+
+v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
+
+MINPROBE="2.0"
+MAXPROBE="5.0"
+WPOWER="2"
+SMITERATIONS="2"
+EXPCORE="0.7"
+EXPRIM="0.3"
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-pmin|--probe-min)
+		MINPROBE="$OPTARG"
+		shift
+		;;
+	-pmax|--probe-max)
+		MAXPROBE="$OPTARG"
+		shift
+		;;
+	-wp|--weight-power)
+		WPOWER="$OPTARG"
+		shift
+		;;
+	-si|--smoothing-iterations)
+		SMITERATIONS="$OPTARG"
+		shift
+		;;
+	-ec|--exposure-core)
+		EXPCORE="$OPTARG"
+		shift
+		;;
+	-er|--exposure-rim)
+		EXPRIM="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if $HELP_MODE
 then
-	echo >&2 "Error: not enough parameters"
-	exit 1
+	print_help_and_exit
 fi
 
-if [ ! -s "$INFILE" ]
-then
-	echo >&2 "Error: invalid input file '$INFILE'"
-	exit 1
-fi
-
-v-import -file $INFILE -title objA
-OBJ_A="$(echo "$V_OUT" | jq -r '.commands[0].output.object_name')"
 v-restrict-atoms [-t! het]
 v-construct-contacts
-v-describe-exposure -weight-power "$WPOWER" -adj-atom-exposure-value exposure -probe-min $MINPROBE -probe-max $MAXPROBE -expansion 0.1 -smoothing-iterations 2 -smoothing-depth 1
-v-find-connected-components -atoms-core-use [-v exposure=${ELEVEL1}:1.0] -atoms-all-use [-v exposure=${ELEVEL2}:1.0] -contacts-use [-t peripherial] -adj-component-number pocket_id
-v-select-atoms [-v pocket_id=1] -name pocket_atoms
+
+v-describe-exposure \
+  -weight-power "$WPOWER" \
+  -probe-min "$MINPROBE" \
+  -probe-max "$MAXPROBE" \
+  -expansion 0.1 \
+  -smoothing-iterations "$SMITERATIONS" \
+  -smoothing-depth 1 \
+  -adj-atom-exposure-value exposure
+
+v-find-connected-components \
+  -atoms-core-use [-v exposure=${EXPCORE}:1.0] \
+  -atoms-all-use [-v exposure=${EXPRIM}:1.0] \
+  -contacts-use [-t peripherial] \
+  -adj-component-number pocket_id
+
+v-select-atoms [-v pocket_id=1:1000] -name pocket_atoms
 v-select-atoms [pocket_atoms] -full-residues -name pocket_residue_atoms
 
-v-grid-by-object
-
 v-hide-atoms
-v-show-atoms -rep balls
-v-color-atoms 0x555555
-v-spectrum-atoms -adjunct exposure -min-val 0.0 -max-val 1.0 -scheme bwr
+v-color-atoms -col 0x555555
 
-v-copy-object "$OBJ_A" objB
-OBJ_B="$(echo "$V_OUT" | jq -r '.commands[0].output.object_name')"
-v-pick-objects "$OBJ_B"
-v-hide-atoms
-v-show-atoms -rep sticks
-v-color-atoms 0x555555
-v-color-atoms [pocket_residue_atoms] -col 0xFFFF00
-v-color-atoms [pocket_atoms] -col 0xFF0000
+v-spectrum-atoms -adjunct exposure -min-val 0.0 -max-val 1.0 -scheme bwr -rep balls
+
+v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
+v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
+
+v-delete-figures
 v-add-figure-of-triangulation [pocket_residue_atoms] -strict -figure-name pocket_volume
+v-color-figures -col 0x33FFFF -rep solid
+v-color-figures -col 0x000000 -rep mesh
+
+v-show-atoms -rep cartoon
 v-show-figures -rep solid mesh
-v-color-figures -col 0x33FFFF
-v-color-figures -rep mesh -col 0x000000
+
 
