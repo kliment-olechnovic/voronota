@@ -628,7 +628,7 @@ cat >&2 << 'EOF'
 environment to use TMalign to superpose all protein objects on a single target
 
 Options:
-    --target | -t          string   *  target name
+    --target | -t          string      target name, first object is chosen if no name provided
     --target-sel | -ts     string      target atoms selection expression
     --model-sel | -ms      string      model atoms selection expression
     --help | -h                        flag to display help message and exit
@@ -677,6 +677,11 @@ done
 if $HELP_MODE
 then
 	print_help_and_exit
+fi
+
+if [ -z "$TARGET_NAME" ]
+then
+	TARGET_NAME="$(v-do "list-objects" | jq -r '.commands[0].output.objects[].name' 2> /dev/null | head -1)"
 fi
 
 if [ -z "$TARGET_NAME" ]
