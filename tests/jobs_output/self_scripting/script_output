@@ -31,7 +31,7 @@
         "atoms_summary":{
           "number_total":1771,
           "volume":null},
-        "object_name":"structure.pdb"},
+        "object_name":"structure.pdb_2"},
       "success":true},
     {
       "line":"print-sequence --secondary-structure",
@@ -735,7 +735,7 @@
         "atoms_summary":{
           "number_total":1717,
           "volume":41027.8},
-        "object_name":"plain_atoms"},
+        "object_name":"plain_atoms_2"},
       "success":true},
     {
       "line":"construct-triangulation",
