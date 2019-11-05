@@ -54,6 +54,7 @@ public:
 		mouse_cursor_y_(0.0),
 		mouse_cursor_prev_x_(0.0),
 		mouse_cursor_prev_y_(0.0),
+		hovered_(false),
 		call_for_selection_(0),
 		stereo_angle_(0.09),
 		stereo_offset_(0.0),
@@ -115,6 +116,7 @@ public:
 		glfwSetScrollCallback(window_, callback_on_window_scrolled);
 		glfwSetMouseButtonCallback(window_, callback_on_mouse_button_used);
 		glfwSetCursorPosCallback(window_, callback_on_mouse_cursor_moved);
+		glfwSetCursorEnterCallback(window_, callback_on_mouse_cursor_entered);
 		glfwSetKeyCallback(window_, callback_on_key_used);
 		glfwSetCharCallback(window_, callback_on_character_used);
 
@@ -200,6 +202,11 @@ public:
 	float mouse_y() const
 	{
 		return static_cast<float>(mouse_cursor_y_);
+	}
+
+	bool hovered() const
+	{
+		return hovered_;
 	}
 
 	const float* background_color() const
@@ -620,6 +627,12 @@ private:
 		app->callback_on_mouse_cursor_moved(xpos, ypos);
 	}
 
+	static void callback_on_mouse_cursor_entered(GLFWwindow* window, int entered)
+	{
+		ViewerApplication* app=static_cast<ViewerApplication*>(glfwGetWindowUserPointer(window));
+		app->callback_on_mouse_cursor_entered(entered);
+	}
+
 	static void callback_on_key_used(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		ViewerApplication* app=static_cast<ViewerApplication*>(glfwGetWindowUserPointer(window));
@@ -710,6 +723,18 @@ private:
 				(mouse_button_right_down_ && modkeys_status_.shift_any() && !modkeys_status_.ctrl_any()),
 				(mouse_button_right_down_ && !modkeys_status_.shift_any() && modkeys_status_.ctrl_any()));
 		on_mouse_cursor_moved(xpos, ypos);
+	}
+
+	void callback_on_mouse_cursor_entered(int entered)
+	{
+		if(entered)
+		{
+			hovered_=true;
+		}
+		else
+		{
+			hovered_=false;
+		}
 	}
 
 	void callback_on_key_used(int key, int scancode, int action, int mods)
@@ -1091,6 +1116,7 @@ private:
 	double mouse_cursor_y_;
 	double mouse_cursor_prev_x_;
 	double mouse_cursor_prev_y_;
+	bool hovered_;
 	int call_for_selection_;
 	float stereo_angle_;
 	float stereo_offset_;

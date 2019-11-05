@@ -107,7 +107,10 @@ protected:
 			}
 			else if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
-				console_configuration_.need_keyboard_focus=console_configuration_.enabled;
+				if(hovered())
+				{
+					console_configuration_.need_keyboard_focus=console_configuration_.enabled;
+				}
 			}
 		}
 

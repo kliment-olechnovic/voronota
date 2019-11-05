@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#
-# Must be run after executing the following command:
-#   source ~/software/emsdk/emsdk_env.sh
 # 
 # If backspace key does not work for HTML input, then the JS file
 #   ~/software/emsdk/upstream/emscripten/src/library_glfw.js
@@ -14,6 +11,11 @@
 #
 
 cd "$(dirname "$0")"
+
+if [ -z "$EMSDK" ]
+then
+	source ~/software/emsdk/emsdk_env.sh
+fi
 
 if [ -z "$EMSDK" ] || [ ! -d "$EMSDK" ]
 then
