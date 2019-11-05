@@ -115,6 +115,14 @@ private:
 		for(std::size_t i=0;i<atoms.size();i++)
 		{
 			spheres[i]=apollota::SimpleSphere(atoms[i].value, ball_collision_radius);
+			const std::string& name=atoms[i].crad.name;
+			if(
+				name.find_first_of("SPZMF", 0)==0 ||
+				name.rfind("CL", 0)==0
+				)
+			{
+				spheres[i].r+=0.2;
+			}
 		}
 
 		apollota::BoundingSpheresHierarchy bsh(spheres, bsh_initial_radius, 1);
