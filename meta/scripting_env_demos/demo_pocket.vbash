@@ -4,7 +4,7 @@ cat >&2 << 'EOF'
 
 Options:
     --probe-min | -pmin              number    default is 2.0
-    --probe-max | -pmax              number    default is 20.0
+    --probe-max | -pmax              number    default is 10.0
     --weight-power | -wp             number    default is 3
     --smoothing-iterations | -si     number    default is 3
     --exposure-core | -ec            number    default is 0.7
@@ -19,7 +19,7 @@ exit 1
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
 MINPROBE="2.0"
-MAXPROBE="20.0"
+MAXPROBE="10.0"
 WPOWER="3"
 SMITERATIONS="3"
 EXPCORE="0.7"
@@ -133,4 +133,19 @@ then
 	v-show-atoms -rep sticks cartoon
 	v-show-figures -rep solid mesh
 fi
+
+if [ "$VISUALIZATION" == "4" ]
+then
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
+	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
+	
+	v-delete-figures
+	v-add-figure-of-triangulation [pocket_atoms] -figure-name pocket_volume
+	v-color-figures -col 0x33FFFF -rep solid
+	v-color-figures -col 0x000000 -rep mesh
+	
+	v-show-atoms -rep sticks cartoon
+	v-show-figures -rep solid mesh
+fi
+
 
