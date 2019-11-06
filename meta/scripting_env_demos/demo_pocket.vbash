@@ -4,11 +4,12 @@ cat >&2 << 'EOF'
 
 Options:
     --probe-min | -pmin              number    default is 2.0
-    --probe-max | -pmax              number    default is 5.0
-    --weight-power | -wp             number    default is 2
-    --smoothing-iterations | -si     number    default is 2
+    --probe-max | -pmax              number    default is 20.0
+    --weight-power | -wp             number    default is 3
+    --smoothing-iterations | -si     number    default is 3
     --exposure-core | -ec            number    default is 0.7
     --exposure-rim | -er             number    default is 0.3
+    --visualization | -v             number    default is 0
     --help | -h                                flag to display help message and exit
 
 EOF
@@ -18,11 +19,12 @@ exit 1
 v-test-env || { echo >&2 "Error: 'voronota-scripting-env' environment not valid"; exit 1; }
 
 MINPROBE="2.0"
-MAXPROBE="5.0"
-WPOWER="2"
-SMITERATIONS="2"
+MAXPROBE="20.0"
+WPOWER="3"
+SMITERATIONS="3"
 EXPCORE="0.7"
 EXPRIM="0.3"
+VISUALIZATION="0"
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -55,6 +57,10 @@ do
 		EXPRIM="$OPTARG"
 		shift
 		;;
+	-v|--visualization)
+		VISUALIZATION="$OPTARG"
+		shift
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -77,7 +83,7 @@ v-describe-exposure \
   -weight-power "$WPOWER" \
   -probe-min "$MINPROBE" \
   -probe-max "$MAXPROBE" \
-  -expansion 0.1 \
+  -expansion 0.5 \
   -smoothing-iterations "$SMITERATIONS" \
   -smoothing-depth 1 \
   -adj-atom-exposure-value exposure
@@ -88,23 +94,43 @@ v-find-connected-components \
   -contacts-use [-t peripherial] \
   -adj-component-number pocket_id
 
-v-select-atoms [-v pocket_id=1:1000] -name pocket_atoms
+v-select-atoms [-v pocket_id=1] -name pocket_atoms
 v-select-atoms [pocket_atoms] -full-residues -name pocket_residue_atoms
 
 v-hide-atoms
 v-color-atoms -col 0x555555
-
-v-spectrum-atoms -adjunct exposure -min-val 0.0 -max-val 1.0 -scheme bwr -rep balls
-
-v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
-v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
-
 v-delete-figures
-v-add-figure-of-triangulation [pocket_residue_atoms] -strict -figure-name pocket_volume
-v-color-figures -col 0x33FFFF -rep solid
-v-color-figures -col 0x000000 -rep mesh
 
-v-show-atoms -rep cartoon
-v-show-figures -rep solid mesh
+if [ "$VISUALIZATION" == "0" ]
+then
+	v-spectrum-atoms -adjunct exposure -min-val 0.0 -max-val 1.0 -scheme bwr -rep balls
+	v-show-atoms -rep balls
+fi
 
+if [ "$VISUALIZATION" == "1" ]
+then
+	v-spectrum-atoms -adjunct pocket_id -scheme rygcb -rep balls
+	v-show-atoms -rep balls
+fi
+
+if [ "$VISUALIZATION" == "2" ]
+then
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep balls
+	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep balls
+	v-show-atoms -rep balls
+fi
+
+if [ "$VISUALIZATION" == "3" ]
+then
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
+	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
+	
+	v-delete-figures
+	v-add-figure-of-triangulation [pocket_atoms] -strict -figure-name pocket_volume
+	v-color-figures -col 0x33FFFF -rep solid
+	v-color-figures -col 0x000000 -rep mesh
+	
+	v-show-atoms -rep sticks cartoon
+	v-show-figures -rep solid mesh
+fi
 
