@@ -140,7 +140,7 @@ then
 	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
 	
 	v-delete-figures
-	v-add-figure-of-triangulation [pocket_atoms] -figure-name pocket_volume
+	v-add-figure-of-triangulation [pocket_atoms] -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -figure-name pocket_volume
 	v-color-figures -col 0x33FFFF -rep solid
 	v-color-figures -col 0x000000 -rep mesh
 	

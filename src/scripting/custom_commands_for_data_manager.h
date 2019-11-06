@@ -4608,6 +4608,7 @@ public:
 
 			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
 			const bool strict=cargs.input.get_flag("strict");
+			const double max_edge=cargs.input.get_value_or_default<double>("max-edge", std::numeric_limits<double>::max());
 			const std::vector<std::string> figure_name=cargs.input.get_value_vector<std::string>("figure-name");
 
 			cargs.input.assert_nothing_unusable();
@@ -4650,6 +4651,17 @@ public:
 									|| atom_ids.count(quadruple.get(1))>0
 									|| atom_ids.count(quadruple.get(2))>0
 									|| atom_ids.count(quadruple.get(3))>0);
+						}
+					}
+
+					if(allowed && max_edge<std::numeric_limits<double>::max())
+					{
+						for(int a=0;a<3 && allowed;a++)
+						{
+							for(int b=(a+1);b<4 && allowed;b++)
+							{
+								allowed=allowed && (apollota::distance_from_point_to_point(balls[quadruple.get(a)], balls[quadruple.get(b)])<max_edge);
+							}
 						}
 					}
 
