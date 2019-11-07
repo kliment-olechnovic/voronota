@@ -148,4 +148,31 @@ then
 	v-show-figures -rep solid mesh
 fi
 
+if [ "$VISUALIZATION" == "5" ]
+then
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
+	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
+	
+	v-delete-figures
+	v-add-figure-of-triangulation [pocket_atoms] -expansion 0.5 -strict -figure-name pocket_volume
+	v-color-figures -col 0x33FFFF -rep solid
+	v-color-figures -col 0x000000 -rep mesh
+	
+	v-show-atoms -rep sticks cartoon
+	v-show-figures -rep solid mesh
+fi
+
+if [ "$VISUALIZATION" == "6" ]
+then
+	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
+	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
+	
+	v-delete-figures
+	v-add-figure-of-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -figure-name pocket_volume
+	v-color-figures -col 0x33FFFF -rep solid
+	v-color-figures -col 0x000000 -rep mesh
+	
+	v-show-atoms -rep sticks cartoon
+	v-show-figures -rep solid mesh
+fi
 

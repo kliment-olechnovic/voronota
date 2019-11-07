@@ -4609,6 +4609,9 @@ public:
 			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
 			const bool strict=cargs.input.get_flag("strict");
 			const double max_edge=cargs.input.get_value_or_default<double>("max-edge", std::numeric_limits<double>::max());
+			const double min_radius=cargs.input.get_value_or_default<double>("min-radius", -1000000.0);
+			const double max_radius=cargs.input.get_value_or_default<double>("max-radius", std::numeric_limits<double>::max());
+			const double expansion=cargs.input.get_value_or_default<double>("expansion", 0.0);
 			const std::vector<std::string> figure_name=cargs.input.get_value_vector<std::string>("figure-name");
 
 			cargs.input.assert_nothing_unusable();
@@ -4625,6 +4628,8 @@ public:
 			{
 				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
 
+				const apollota::BoundingSpheresHierarchy bsh=((expansion>0.0) ? apollota::BoundingSpheresHierarchy(balls, 3.5, 1) : apollota::BoundingSpheresHierarchy());
+
 				const apollota::Triangulation::VerticesVector vertices_vector=
 						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
 
@@ -4633,24 +4638,55 @@ public:
 				for(std::size_t i=0;i<vertices_vector.size();i++)
 				{
 					const apollota::Quadruple& quadruple=vertices_vector[i].first;
+					const apollota::SimpleSphere& sphere=vertices_vector[i].second;
 
-					bool allowed=quadruple.get_min_max().second<cargs.data_manager.atoms().size();
+					bool allowed=(quadruple.get_min_max().second<cargs.data_manager.atoms().size());
+
+					allowed=allowed && (sphere.r>min_radius) && (sphere.r<max_radius);
 
 					if(allowed)
 					{
-						if(strict)
+						if(expansion>0.0)
 						{
-							allowed=(atom_ids.count(quadruple.get(0))>0
-									&& atom_ids.count(quadruple.get(1))>0
-									&& atom_ids.count(quadruple.get(2))>0
-									&& atom_ids.count(quadruple.get(3))>0);
+							const std::vector<std::size_t> near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(sphere, sphere.r+expansion));
+							if(strict)
+							{
+								std::size_t found_count=0;
+								for(std::size_t j=0;j<near_ids.size();j++)
+								{
+									if(atom_ids.count(near_ids[j])>0)
+									{
+										found_count++;
+									}
+								}
+								allowed=(found_count>=4);
+							}
+							else
+							{
+								bool found_id=false;
+								for(std::size_t j=0;j<near_ids.size() && !found_id;j++)
+								{
+									found_id=found_id || (atom_ids.count(near_ids[j])>0);
+								}
+								allowed=found_id;
+							}
 						}
 						else
 						{
-							allowed=(atom_ids.count(quadruple.get(0))>0
-									|| atom_ids.count(quadruple.get(1))>0
-									|| atom_ids.count(quadruple.get(2))>0
-									|| atom_ids.count(quadruple.get(3))>0);
+							if(strict)
+							{
+								allowed=(atom_ids.count(quadruple.get(0))>0
+										&& atom_ids.count(quadruple.get(1))>0
+										&& atom_ids.count(quadruple.get(2))>0
+										&& atom_ids.count(quadruple.get(3))>0);
+							}
+							else
+							{
+								allowed=(atom_ids.count(quadruple.get(0))>0
+										|| atom_ids.count(quadruple.get(1))>0
+										|| atom_ids.count(quadruple.get(2))>0
+										|| atom_ids.count(quadruple.get(3))>0);
+							}
 						}
 					}
 

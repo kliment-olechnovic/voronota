@@ -14,6 +14,10 @@ namespace apollota
 class BoundingSpheresHierarchy
 {
 public:
+	BoundingSpheresHierarchy()
+	{
+	}
+
 	template<typename InputSphereType>
 	BoundingSpheresHierarchy(const std::vector<InputSphereType>& input_spheres, const double initial_radius_for_spheres_bucketing, const std::size_t min_number_of_clusters) :
 		leaves_spheres_(convert_input_spheres_to_simple_spheres(input_spheres)),
@@ -145,7 +149,6 @@ public:
 	}
 
 private:
-
 	class Cluster : public SimpleSphere
 	{
 	public:
