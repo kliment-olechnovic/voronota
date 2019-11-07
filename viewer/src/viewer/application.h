@@ -230,7 +230,7 @@ protected:
 		if(console_configuration_.enabled)
 		{
 			const int console_height=30;
-			const int console_padding=10;
+			const int console_padding=2;
 			const int console_x_pos=console_padding;
 			const int console_y_pos=std::max(console_padding, window_height()-(console_height+console_padding));
 			const int console_width=window_width()-console_padding*2;
@@ -239,13 +239,14 @@ protected:
 				ImGui::SetNextWindowPos(ImVec2(console_x_pos, console_y_pos));
 				ImGui::SetNextWindowSize(ImVec2(console_width, console_height));
 
-				ImGui::Begin("Console input", &console_configuration_.enabled, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+				ImGui::Begin("Console input", &console_configuration_.enabled, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 				{
 					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-					ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+					ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
+					ImGui::PushItemWidth(-1);
 					if(ImGui::InputText("", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory, &on_command_input_data_request, this))
 					{
 						pending_commands_.push_back(std::string(command_buffer_.data()));
@@ -253,6 +254,7 @@ protected:
 						command_buffer_.assign(command_buffer_.size(), 0);
 						console_configuration_.need_keyboard_focus=true;
 					}
+					ImGui::PopItemWidth();
 					ImGui::PopStyleColor();
 					ImGui::PopStyleColor();
 				}
