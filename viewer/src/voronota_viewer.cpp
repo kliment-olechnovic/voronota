@@ -89,8 +89,6 @@ int main(const int argc, const char** argv)
 		io.IniFilename=0;
 	}
 
-	app.set_console_enabled(false);
-
 	app.add_command(raw_arguments.c_str());
 
 #ifdef FOR_WEB
