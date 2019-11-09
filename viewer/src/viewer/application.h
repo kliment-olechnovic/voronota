@@ -5,6 +5,7 @@
 
 #include "../widgets/console.h"
 #include "../widgets/waiting_indicator.h"
+#include "../widgets/cursor_label.h"
 
 #include "../imgui/imgui_impl_glfw_gl3.h"
 
@@ -143,15 +144,7 @@ protected:
 
 		waiting_indicator_.execute(window_width(), window_height());
 
-		if(!cursor_label_.empty())
-		{
-			static bool cursor_label_window=false;
-			ImGui::SetNextWindowPos(ImVec2(mouse_x()+5.0f, std::max(0.0f, mouse_y()-35.0f)), 0);
-			ImGui::SetNextWindowSize(ImVec2(3+(cursor_label_.size()*8), 30));
-			ImGui::Begin("Label", &cursor_label_window, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
-			ImGui::Text("%s", cursor_label_.c_str());
-			ImGui::End();
-		}
+		cursor_label_.execute(mouse_x(),  mouse_y());
 
 		add_command(console_.execute_on_bottom(window_width(), window_height(), 2));
 
@@ -195,7 +188,7 @@ protected:
 			std::ostringstream output_label;
 			if(script_execution_manager_.generate_click_label(drawing_id, output_label))
 			{
-				cursor_label_=output_label.str();
+				cursor_label_.set(output_label.str());
 			}
 		}
 		{
@@ -282,7 +275,7 @@ private:
 	std::list<std::string> pending_commands_;
 	widgets::Console console_;
 	widgets::WaitingIndicator waiting_indicator_;
-	std::string cursor_label_;
+	widgets::CursorLabel cursor_label_;
 	bool menu_enabled_;
 };
 
