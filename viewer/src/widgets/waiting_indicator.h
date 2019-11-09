@@ -15,15 +15,22 @@ public:
 	{
 	}
 
-	bool waiting()
+	bool check_waiting()
 	{
 		waiting_stage_=std::min(waiting_stage_+1, waiting_limit_);
 		return (waiting_stage_<waiting_limit_);
 	}
 
-	void reset()
+	void keep_waiting(const bool need)
 	{
-		waiting_stage_=0;
+		if(need)
+		{
+			waiting_stage_=(waiting_limit_-1);
+		}
+		else
+		{
+			waiting_stage_=0;
+		}
 	}
 
 	void disable()

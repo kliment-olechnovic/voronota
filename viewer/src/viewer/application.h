@@ -174,14 +174,11 @@ protected:
 
 		if(!pending_commands_.empty())
 		{
-			if(!waiting_indicator_.waiting())
+			if(!waiting_indicator_.check_waiting())
 			{
 				script_execution_manager_.execute_script(pending_commands_.front(), false);
 				pending_commands_.pop_front();
-				if(pending_commands_.empty())
-				{
-					waiting_indicator_.reset();
-				}
+				waiting_indicator_.keep_waiting(!pending_commands_.empty());
 			}
 		}
 
