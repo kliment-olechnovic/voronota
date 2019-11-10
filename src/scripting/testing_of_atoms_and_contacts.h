@@ -18,6 +18,14 @@ public:
 	public:
 		std::set<std::size_t> allowed_ids;
 
+		TesterOfID()
+		{
+		}
+
+		virtual ~TesterOfID()
+		{
+		}
+
 		virtual bool operator()(const std::size_t id) const
 		{
 			if(allowed_ids.empty() || allowed_ids.count(id)>0)
@@ -44,6 +52,10 @@ public:
 
 		explicit TesterOfAtom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
+		{
+		}
+
+		virtual ~TesterOfAtom()
 		{
 		}
 
@@ -164,6 +176,10 @@ public:
 			no_solvent(false),
 			solvent(false),
 			no_same_chain(false)
+		{
+		}
+
+		virtual ~TesterOfContact()
 		{
 		}
 
