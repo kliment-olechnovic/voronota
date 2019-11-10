@@ -19,6 +19,7 @@
 #include "variant_serialization.h"
 #include "updating_of_data_manager_display_states.h"
 #include "io_selectors.h"
+#include "filtering_of_triangulation.h"
 
 namespace scripting
 {
@@ -2008,128 +2009,67 @@ public:
 			cargs.data_manager.assert_triangulation_info_availability();
 
 			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
-			const bool strict=cargs.input.get_flag("strict");
-			const bool link=cargs.input.get_flag("link");
+			FilteringOfTriangulation::Query filtering_query=read_filtering_of_triangulation_query(cargs.input);
 			const bool only_summary=cargs.input.get_flag("only-summary");
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
-			if(atom_ids.empty())
+			filtering_query.atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+			if(filtering_query.atom_ids.empty())
 			{
-				throw std::runtime_error(std::string("No atoms selected."));
+			    throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			std::size_t number_of_relevant_voronoi_vertices=0;
-			double total_relevant_tetrahedron_volume=0.0;
+			const FilteringOfTriangulation::MatchingResult filtering_result=FilteringOfTriangulation::match_vertices(cargs.data_manager.triangulation_info(), filtering_query);
 
+			if(filtering_result.vertices_info.empty())
 			{
-				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
+			    throw std::runtime_error(std::string("No triangulation parts selected."));
+			}
 
-				const apollota::Triangulation::VerticesVector vertices_vector=
-						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
-
-				const apollota::Triangulation::VerticesGraph vertices_graph=(!link ? apollota::Triangulation::VerticesGraph() :
-						apollota::Triangulation::construct_vertices_graph(cargs.data_manager.triangulation_info().spheres, cargs.data_manager.triangulation_info().quadruples_map));
-
-				if(link && vertices_vector.size()!=vertices_graph.size())
-				{
-					throw std::runtime_error(std::string("Invalid graph of vertices."));
-				}
-
+			if(!only_summary)
+			{
 				std::vector<VariantObject> output_array;
 
-				for(std::size_t i=0;i<vertices_vector.size();i++)
+				for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
 				{
-					const apollota::Quadruple& quadruple=vertices_vector[i].first;
-					const apollota::SimpleSphere& tangent_sphere=vertices_vector[i].second;
+					const FilteringOfTriangulation::VertexInfo& vi=filtering_result.vertices_info[i];
 
-					bool allowed=quadruple.get_min_max().second<cargs.data_manager.atoms().size();
+					VariantObject info;
+					info.value("id")=vi.id;
 
-					if(allowed)
 					{
-						if(strict)
+						std::vector<VariantValue>& suboutput=info.values_array("quadruple");
+						for(std::size_t j=0;j<4;j++)
 						{
-							allowed=(atom_ids.count(quadruple.get(0))>0
-									&& atom_ids.count(quadruple.get(1))>0
-									&& atom_ids.count(quadruple.get(2))>0
-									&& atom_ids.count(quadruple.get(3))>0);
-						}
-						else
-						{
-							allowed=(atom_ids.count(quadruple.get(0))>0
-									|| atom_ids.count(quadruple.get(1))>0
-									|| atom_ids.count(quadruple.get(2))>0
-									|| atom_ids.count(quadruple.get(3))>0);
+							suboutput.push_back(VariantValue(vi.quadruple.get(j)));
 						}
 					}
 
-					if(allowed)
 					{
-						number_of_relevant_voronoi_vertices++;
-
-						const double volume=fabs(apollota::signed_volume_of_tetrahedron(
-								balls[quadruple.get(0)], balls[quadruple.get(1)], balls[quadruple.get(2)], balls[quadruple.get(3)]));
-						total_relevant_tetrahedron_volume+=volume;
-
-						if(!only_summary)
-						{
-							VariantObject info;
-							info.value("id")=i;
-
-							{
-								std::vector<VariantValue>& suboutput=info.values_array("quadruple");
-								for(std::size_t j=0;j<4;j++)
-								{
-									suboutput.push_back(VariantValue(quadruple.get(j)));
-								}
-							}
-
-							{
-								std::vector<VariantValue>& suboutput=info.values_array("tangent_sphere");
-								suboutput.push_back(VariantValue(tangent_sphere.x));
-								suboutput.push_back(VariantValue(tangent_sphere.y));
-								suboutput.push_back(VariantValue(tangent_sphere.z));
-								suboutput.push_back(VariantValue(tangent_sphere.r));
-							}
-
-							info.value("tetrahedron_volume")=volume;
-
-							if(link)
-							{
-								const std::vector<std::size_t>& links=vertices_graph[i];
-								std::vector<VariantValue>& suboutput=info.values_array("links");
-								for(std::size_t j=0;j<links.size();j++)
-								{
-									if(links[j]==apollota::npos)
-									{
-										suboutput.push_back(VariantValue(-1));
-									}
-									else
-									{
-										suboutput.push_back(VariantValue(links[j]));
-									}
-								}
-							}
-
-							output_array.push_back(info);
-						}
+						std::vector<VariantValue>& suboutput=info.values_array("tangent_sphere");
+						suboutput.push_back(VariantValue(vi.sphere.x));
+						suboutput.push_back(VariantValue(vi.sphere.y));
+						suboutput.push_back(VariantValue(vi.sphere.z));
+						suboutput.push_back(VariantValue(vi.sphere.r));
 					}
+
+					info.value("tetrahedron_volume")=vi.tetrahedron_volume;
+
+					output_array.push_back(info);
 				}
 
-				if(!only_summary)
-				{
-					cargs.heterostorage.variant_object.objects_array("vertices")=output_array;
-				}
+				cargs.heterostorage.variant_object.objects_array("vertices")=output_array;
 			}
 
 			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("full_triangulation_summary"));
 
-			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), filtering_query.atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 
-			cargs.heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=number_of_relevant_voronoi_vertices;
+			cargs.heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=filtering_result.vertices_info.size();
 
-			cargs.heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=total_relevant_tetrahedron_volume;
+			cargs.heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=filtering_result.total_relevant_tetrahedron_volume;
 		}
 	};
 
@@ -4607,19 +4547,23 @@ public:
 			cargs.data_manager.assert_triangulation_info_availability();
 
 			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
-			const bool strict=cargs.input.get_flag("strict");
-			const double max_edge=cargs.input.get_value_or_default<double>("max-edge", std::numeric_limits<double>::max());
-			const double min_radius=cargs.input.get_value_or_default<double>("min-radius", -1000000.0);
-			const double max_radius=cargs.input.get_value_or_default<double>("max-radius", std::numeric_limits<double>::max());
-			const double expansion=cargs.input.get_value_or_default<double>("expansion", 0.0);
+			FilteringOfTriangulation::Query filtering_query=read_filtering_of_triangulation_query(cargs.input);
 			const std::vector<std::string> figure_name=cargs.input.get_value_vector<std::string>("figure-name");
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
-			if(atom_ids.empty())
+			filtering_query.atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+			if(filtering_query.atom_ids.empty())
 			{
 				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			const FilteringOfTriangulation::MatchingResult filtering_result=FilteringOfTriangulation::match_vertices(cargs.data_manager.triangulation_info(), filtering_query);
+
+			if(filtering_result.vertices_info.empty())
+			{
+				throw std::runtime_error(std::string("No triangulation parts selected."));
 			}
 
 			Figure figure;
@@ -4628,107 +4572,31 @@ public:
 			{
 				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
 
-				const apollota::BoundingSpheresHierarchy bsh=((expansion>0.0) ? apollota::BoundingSpheresHierarchy(balls, 3.5, 1) : apollota::BoundingSpheresHierarchy());
-
-				const apollota::Triangulation::VerticesVector vertices_vector=
-						apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map);
-
-				double total_relevant_tetrahedron_volume=0.0;
-
-				for(std::size_t i=0;i<vertices_vector.size();i++)
+				for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
 				{
-					const apollota::Quadruple& quadruple=vertices_vector[i].first;
-					const apollota::SimpleSphere& sphere=vertices_vector[i].second;
+					const apollota::Quadruple& quadruple=filtering_result.vertices_info[i].quadruple;
 
-					bool allowed=(quadruple.get_min_max().second<cargs.data_manager.atoms().size());
-
-					allowed=allowed && (sphere.r>min_radius) && (sphere.r<max_radius);
-
-					if(allowed)
+					for(unsigned int j=0;j<4;j++)
 					{
-						if(expansion>0.0)
+						apollota::Triple triple=quadruple.exclude(j);
+						const apollota::SimplePoint normal=apollota::plane_normal_from_three_points<apollota::SimplePoint>(balls[triple.get(0)], balls[triple.get(1)], balls[triple.get(2)]);
+						figure.indices.push_back(figure.vertices.size()/3);
+						figure.indices.push_back(figure.vertices.size()/3+1);
+						figure.indices.push_back(figure.vertices.size()/3+2);
+						for(unsigned int e=0;e<3;e++)
 						{
-							const std::vector<std::size_t> near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(sphere, sphere.r+expansion));
-							if(strict)
-							{
-								std::size_t found_count=0;
-								for(std::size_t j=0;j<near_ids.size();j++)
-								{
-									if(atom_ids.count(near_ids[j])>0)
-									{
-										found_count++;
-									}
-								}
-								allowed=(found_count>=4);
-							}
-							else
-							{
-								bool found_id=false;
-								for(std::size_t j=0;j<near_ids.size() && !found_id;j++)
-								{
-									found_id=found_id || (atom_ids.count(near_ids[j])>0);
-								}
-								allowed=found_id;
-							}
-						}
-						else
-						{
-							if(strict)
-							{
-								allowed=(atom_ids.count(quadruple.get(0))>0
-										&& atom_ids.count(quadruple.get(1))>0
-										&& atom_ids.count(quadruple.get(2))>0
-										&& atom_ids.count(quadruple.get(3))>0);
-							}
-							else
-							{
-								allowed=(atom_ids.count(quadruple.get(0))>0
-										|| atom_ids.count(quadruple.get(1))>0
-										|| atom_ids.count(quadruple.get(2))>0
-										|| atom_ids.count(quadruple.get(3))>0);
-							}
-						}
-					}
-
-					if(allowed && max_edge<std::numeric_limits<double>::max())
-					{
-						for(int a=0;a<3 && allowed;a++)
-						{
-							for(int b=(a+1);b<4 && allowed;b++)
-							{
-								allowed=allowed && (apollota::distance_from_point_to_point(balls[quadruple.get(a)], balls[quadruple.get(b)])<max_edge);
-							}
-						}
-					}
-
-					if(allowed)
-					{
-						const double volume=fabs(apollota::signed_volume_of_tetrahedron(
-								balls[quadruple.get(0)], balls[quadruple.get(1)], balls[quadruple.get(2)], balls[quadruple.get(3)]));
-						total_relevant_tetrahedron_volume+=volume;
-
-						for(unsigned int j=0;j<4;j++)
-						{
-							apollota::Triple triple=quadruple.exclude(j);
-							const apollota::SimplePoint normal=apollota::plane_normal_from_three_points<apollota::SimplePoint>(balls[triple.get(0)], balls[triple.get(1)], balls[triple.get(2)]);
-							figure.indices.push_back(figure.vertices.size()/3);
-							figure.indices.push_back(figure.vertices.size()/3+1);
-							figure.indices.push_back(figure.vertices.size()/3+2);
-							for(unsigned int e=0;e<3;e++)
-							{
-								figure.vertices.push_back(balls[triple.get(e)].x);
-								figure.vertices.push_back(balls[triple.get(e)].y);
-								figure.vertices.push_back(balls[triple.get(e)].z);
-								figure.normals.push_back(normal.x);
-								figure.normals.push_back(normal.y);
-								figure.normals.push_back(normal.z);
-							}
+							figure.vertices.push_back(balls[triple.get(e)].x);
+							figure.vertices.push_back(balls[triple.get(e)].y);
+							figure.vertices.push_back(balls[triple.get(e)].z);
+							figure.normals.push_back(normal.x);
+							figure.normals.push_back(normal.y);
+							figure.normals.push_back(normal.z);
 						}
 					}
 				}
-
-				figure.props.adjuncts["total_relevant_tetrahedron_volume"]=total_relevant_tetrahedron_volume;
 			}
+
+			figure.props.adjuncts["total_relevant_tetrahedron_volume"]=filtering_result.total_relevant_tetrahedron_volume;
 
 			cargs.data_manager.add_figure(figure);
 
@@ -5112,6 +4980,17 @@ private:
 				val=(val-min_val_to_use)/(max_val_to_use-min_val_to_use);
 			}
 		}
+	}
+
+	static FilteringOfTriangulation::Query read_filtering_of_triangulation_query(CommandInput& input)
+	{
+		FilteringOfTriangulation::Query query;
+		query.strict=input.get_flag("strict");
+		query.max_edge=input.get_value_or_default<double>("max-edge", query.max_edge);
+		query.min_radius=input.get_value_or_default<double>("min-radius", query.min_radius);
+		query.max_radius=input.get_value_or_default<double>("max-radius", query.max_radius);
+		query.expansion=input.get_value_or_default<double>("expansion", query.expansion);
+		return query;
 	}
 };
 
