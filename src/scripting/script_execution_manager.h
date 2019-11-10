@@ -136,6 +136,8 @@ public:
 		set_command("delete-figures", new CustomCommandsForDataManager::delete_figures);
 		set_command("add-figure-of-triangulation", new CustomCommandsForDataManager::add_figure_of_triangulation);
 		set_command("calculate-betweenness", new CustomCommandsForDataManager::calculate_betweenness);
+		set_command("set-text-description", new CustomCommandsForDataManager::set_text_description);
+		set_command("print-text-description", new CustomCommandsForDataManager::print_text_description);
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));

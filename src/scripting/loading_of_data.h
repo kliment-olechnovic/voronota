@@ -5,6 +5,7 @@
 
 #include "../common/construction_of_atomic_balls.h"
 
+#include "basic_types.h"
 #include "io_selectors.h"
 
 namespace scripting

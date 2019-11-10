@@ -4711,6 +4711,32 @@ public:
 		}
 	};
 
+	class set_text_description : public GenericCommandForDataManagerScaled
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			const std::string text=cargs.input.get_value_or_first_unused_unnamed_value("text");
+
+			cargs.input.assert_nothing_unusable();
+
+			cargs.data_manager.set_text_description(text);
+
+			cargs.heterostorage.variant_object.value("text_description")=cargs.data_manager.text_description();
+		}
+	};
+
+	class print_text_description : public GenericCommandForDataManagerScaled
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.input.assert_nothing_unusable();
+
+			cargs.heterostorage.variant_object.value("text_description")=cargs.data_manager.text_description();
+		}
+	};
+
 private:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)
 	{

@@ -191,6 +191,7 @@ public:
 		triangulation_info_=dm.triangulation_info_;
 		selection_manager_=dm.selection_manager_.make_adjusted_copy(atoms_, contacts_);
 		history_of_actions_on_contacts_=dm.history_of_actions_on_contacts_;
+		text_description_=dm.text_description_;
 		return (*this);
 	}
 
@@ -257,6 +258,11 @@ public:
 	const RepresentationsDescriptor& figures_representation_descriptor() const
 	{
 		return figures_representations_descriptor_;
+	}
+
+	const std::string& text_description() const
+	{
+		return text_description_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -564,6 +570,12 @@ public:
 	bool set_figures_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
 		return set_representation_implemented(figures_representations_descriptor_.names, representation_id, statuses, figures_display_states_);
+	}
+
+	bool set_text_description(const std::string& text)
+	{
+		text_description_=text;
+		return true;
 	}
 
 	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
@@ -1394,6 +1406,7 @@ private:
 	common::ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
 	HistoryOfActionsOnContacts history_of_actions_on_contacts_;
+	std::string text_description_;
 };
 
 }
