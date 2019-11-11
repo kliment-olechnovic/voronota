@@ -980,6 +980,9 @@
             "name":"print-sequence",
             "short_description":""},
           {
+            "name":"print-text-description",
+            "short_description":""},
+          {
             "name":"print-time",
             "short_description":""},
           {
@@ -1035,6 +1038,9 @@
             "short_description":""},
           {
             "name":"set-tag-of-contacts",
+            "short_description":""},
+          {
+            "name":"set-text-description",
             "short_description":""},
           {
             "name":"setup-loading",
