@@ -495,7 +495,15 @@ protected:
 	{
 	}
 
-	virtual void on_draw_overlay()
+	virtual void on_draw_overlay_start()
+	{
+	}
+
+	virtual void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
+	{
+	}
+
+	virtual void on_draw_overlay_end()
 	{
 	}
 
@@ -822,7 +830,7 @@ private:
 
 		glViewport(0, 0, window_width_, window_height_);
 		glUseProgram(0);
-		on_draw_overlay();
+		render_overlay();
 
 		glfwSwapBuffers(window_);
 
@@ -849,7 +857,7 @@ private:
 				}
 				const int xpos=margin_left_+(width*i);
 				glViewport(xpos, margin_bottom_, width, full_rendering_area_height());
-				draw(shading_mode, 0);
+				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
 			refresh_shading_projection(shading_mode);
@@ -872,7 +880,7 @@ private:
 				{
 					const int xpos=margin_left_+(width*j);
 					glViewport(xpos, ypos, width, height);
-					draw(shading_mode, grid_id);
+					draw_scene(shading_mode, grid_id);
 					grid_id++;
 				}
 			}
@@ -880,11 +888,11 @@ private:
 		}
 		else
 		{
-			draw(shading_mode, 0);
+			draw_scene(shading_mode, 0);
 		}
 	}
 
-	void draw(const ShadingMode::Mode shading_mode, const int grid_id)
+	void draw_scene(const ShadingMode::Mode shading_mode, const int grid_id)
 	{
 		if(shading_mode==ShadingMode::simple)
 		{
@@ -894,6 +902,44 @@ private:
 		{
 			on_draw_with_instancing(grid_id);
 		}
+	}
+
+	void render_overlay()
+	{
+		on_draw_overlay_start();
+		if(rendering_mode_==RenderingMode::stereo)
+		{
+			const int width=full_rendering_area_width()/2;
+			for(int i=0;i<2;i++)
+			{
+				const int xpos=margin_left_+(width*i);
+				on_draw_overlay_middle(xpos, margin_top_, width, full_rendering_area_height(), true, false, i);
+			}
+		}
+		else if(rendering_mode_==RenderingMode::grid && grid_size_>1)
+		{
+			int n_rows=1;
+			int n_columns=1;
+			Utilities::calculate_grid_dimensions(grid_size_, full_rendering_area_width(), full_rendering_area_height(), n_rows, n_columns);
+			const int width=full_rendering_area_width()/n_columns;
+			const int height=full_rendering_area_height()/n_rows;
+			int grid_id=0;
+			for(int i=0;(i<n_rows) && (grid_id<grid_size_);i++)
+			{
+				const int ypos=margin_top_+(height*i);
+				for(int j=0;(j<n_columns) && (grid_id<grid_size_);j++)
+				{
+					const int xpos=margin_left_+(width*j);
+					on_draw_overlay_middle(xpos, ypos, width, height, false, true, grid_id);
+					grid_id++;
+				}
+			}
+		}
+		else
+		{
+			on_draw_overlay_middle(margin_left_, margin_top_, full_rendering_area_width(), full_rendering_area_height(), false, false, 0);
+		}
+		on_draw_overlay_end();
 	}
 
 	void refresh_shading_projection(const TransformationMatrixController& projection_matrix, const ShadingMode::Mode shading_mode)

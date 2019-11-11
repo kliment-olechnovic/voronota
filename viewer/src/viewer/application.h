@@ -22,7 +22,8 @@ public:
 
 	Application() :
 		script_execution_manager_(*this),
-		menu_enabled_(false)
+		menu_enabled_(false),
+		info_box_enabled_(true)
 	{
 		self_ptr=this;
 		set_background_color(0xCCCCCC);
@@ -136,7 +137,7 @@ protected:
 		script_execution_manager_.draw(true, grid_id);
 	}
 
-	void on_draw_overlay()
+	void on_draw_overlay_start()
 	{
 		ImGui_ImplGlfwGL3_NewFrame();
 
@@ -147,7 +148,15 @@ protected:
 		cursor_label_.execute(mouse_x(),  mouse_y());
 
 		add_command(console_.execute_on_bottom(window_width(), window_height(), 2));
+	}
 
+	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
+	{
+		execute_info_box(box_x, box_y, box_w, box_h, stereo, grid, id);
+	}
+
+	void on_draw_overlay_end()
+	{
 		ImGui::Render();
 	}
 
@@ -158,13 +167,6 @@ protected:
 
 	void on_after_rendered_frame()
 	{
-		if(ReadingThread::check_data())
-		{
-			script_execution_manager_.set_output_stream_mode(1);
-			script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
-			script_execution_manager_.set_output_stream_mode(0);
-		}
-
 		if(!pending_commands_.empty())
 		{
 			if(!waiting_indicator_.check_waiting())
@@ -172,6 +174,16 @@ protected:
 				script_execution_manager_.execute_script(pending_commands_.front(), false);
 				pending_commands_.pop_front();
 				waiting_indicator_.keep_waiting(!pending_commands_.empty());
+			}
+		}
+		else if(ReadingThread::check_data())
+		{
+			if(!waiting_indicator_.check_waiting())
+			{
+				script_execution_manager_.set_output_stream_mode(1);
+				script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
+				script_execution_manager_.set_output_stream_mode(0);
+				waiting_indicator_.keep_waiting(false);
 			}
 		}
 
@@ -265,9 +277,80 @@ private:
 					}
 					ImGui::EndMenu();
 				}
+				if(ImGui::BeginMenu("Object text description"))
+				{
+					if(ImGui::MenuItem("Disable", "", false, info_box_enabled_))
+					{
+						info_box_enabled_=false;
+					}
+					if(ImGui::MenuItem("Enable", "", false, !info_box_enabled_))
+					{
+						info_box_enabled_=true;
+					}
+					ImGui::EndMenu();
+				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
+		}
+	}
+
+	void execute_info_box(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
+	{
+		if(!info_box_enabled_)
+		{
+			return;
+		}
+
+		std::ostringstream output_text;
+		if(!script_execution_manager_.generate_text_description(id, output_text))
+		{
+			return;
+		}
+
+		std::ostringstream window_name;
+		{
+			window_name << "text_description_";
+			if(stereo)
+			{
+				window_name << "stereo_" << id;
+			}
+			if(grid)
+			{
+				window_name << "grid_" << id;
+			}
+		}
+
+		{
+			std::string raw_text=output_text.str();
+			int text_height=1;
+			int text_width=0;
+			{
+				int line_width=0;
+				for(std::size_t i=0;i<raw_text.size();i++)
+				{
+					if(raw_text[i]=='\n')
+					{
+						text_height++;
+						text_width=std::max(text_width, line_width);
+						line_width=0;
+					}
+					else
+					{
+						line_width++;
+					}
+				}
+				text_width=std::max(text_width, line_width);
+			}
+
+			ImGui::SetNextWindowPos(ImVec2(box_x+5, box_y+35), 0);
+			ImGui::SetNextWindowSize(ImVec2(3+(text_width*8), 15+(text_height*15)));
+			ImVec4 color_text=ImVec4(0.5f, 0.0f, 1.0f, 1.0f);
+			ImGui::Begin(window_name.str().c_str(), 0, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+			ImGui::Text("%s", raw_text.c_str());
+			ImGui::PopStyleColor();
+			ImGui::End();
 		}
 	}
 
@@ -277,6 +360,7 @@ private:
 	widgets::WaitingIndicator waiting_indicator_;
 	widgets::CursorLabel cursor_label_;
 	bool menu_enabled_;
+	bool info_box_enabled_;
 };
 
 }
