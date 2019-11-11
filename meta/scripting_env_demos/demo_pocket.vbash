@@ -101,6 +101,8 @@ v-hide-atoms
 v-color-atoms -col 0x555555
 v-delete-figures
 
+v-set-text-description "''"
+
 if [ "$VISUALIZATION" == "0" ]
 then
 	v-spectrum-atoms -adjunct exposure -min-val 0.0 -max-val 1.0 -scheme bwr -rep balls
@@ -132,6 +134,12 @@ then
 	
 	v-show-atoms -rep sticks cartoon
 	v-show-figures -rep solid mesh
+	
+	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
+	do
+		VOLUME=$(v-print-triangulation [pocket_atoms] -strict -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
+	done
 fi
 
 if [ "$VISUALIZATION" == "4" ]
@@ -146,6 +154,12 @@ then
 	
 	v-show-atoms -rep sticks cartoon
 	v-show-figures -rep solid mesh
+	
+	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
+	do
+		VOLUME=$(v-print-triangulation [pocket_atoms] -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
+	done
 fi
 
 if [ "$VISUALIZATION" == "5" ]
@@ -160,6 +174,12 @@ then
 	
 	v-show-atoms -rep sticks cartoon
 	v-show-figures -rep solid mesh
+	
+	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
+	do
+		VOLUME=$(v-print-triangulation [pocket_atoms] -expansion 0.5 -strict -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
+	done
 fi
 
 if [ "$VISUALIZATION" == "6" ]
@@ -174,5 +194,11 @@ then
 	
 	v-show-atoms -rep sticks cartoon
 	v-show-figures -rep solid mesh
+	
+	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
+	do
+		VOLUME=$(v-print-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
+	done
 fi
 
