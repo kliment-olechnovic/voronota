@@ -76,6 +76,8 @@ then
 	print_help_and_exit
 fi
 
+MAXEDGE="$(awk "BEGIN {print (${MAXPROBE}*2)}")"
+
 v-restrict-atoms [-t! het]
 v-construct-contacts
 
@@ -94,7 +96,7 @@ v-find-connected-components \
   -contacts-use [-t peripherial] \
   -adj-component-number pocket_id
 
-v-select-atoms [-v pocket_id=1] -name pocket_atoms
+v-select-atoms [-v pocket_id] -name pocket_atoms
 v-select-atoms [pocket_atoms] -full-residues -name pocket_residue_atoms
 
 v-hide-atoms
@@ -128,7 +130,7 @@ then
 	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
 	
 	v-delete-figures
-	v-add-figure-of-triangulation [pocket_atoms] -strict -figure-name pocket_volume
+	v-add-figure-of-triangulation [pocket_atoms] -max-edge "$MAXEDGE" -figure-name pocket_volume
 	v-color-figures -col 0x33FFFF -rep solid
 	v-color-figures -col 0x000000 -rep mesh
 	
@@ -137,7 +139,7 @@ then
 	
 	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
 	do
-		VOLUME=$(v-print-triangulation [pocket_atoms] -strict -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		VOLUME=$(v-print-triangulation [pocket_atoms] -max-edge "$MAXEDGE" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
 		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
 	done
 fi
@@ -148,7 +150,7 @@ then
 	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
 	
 	v-delete-figures
-	v-add-figure-of-triangulation [pocket_atoms] -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -figure-name pocket_volume
+	v-add-figure-of-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$MAXEDGE" -figure-name pocket_volume
 	v-color-figures -col 0x33FFFF -rep solid
 	v-color-figures -col 0x000000 -rep mesh
 	
@@ -157,47 +159,7 @@ then
 	
 	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
 	do
-		VOLUME=$(v-print-triangulation [pocket_atoms] -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
-		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
-	done
-fi
-
-if [ "$VISUALIZATION" == "5" ]
-then
-	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
-	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
-	
-	v-delete-figures
-	v-add-figure-of-triangulation [pocket_atoms] -expansion 0.5 -strict -figure-name pocket_volume
-	v-color-figures -col 0x33FFFF -rep solid
-	v-color-figures -col 0x000000 -rep mesh
-	
-	v-show-atoms -rep sticks cartoon
-	v-show-figures -rep solid mesh
-	
-	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
-	do
-		VOLUME=$(v-print-triangulation [pocket_atoms] -expansion 0.5 -strict -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
-		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
-	done
-fi
-
-if [ "$VISUALIZATION" == "6" ]
-then
-	v-color-atoms [pocket_residue_atoms] -col 0xFFFF00 -rep sticks cartoon
-	v-color-atoms [pocket_atoms] -col 0xFF0000 -rep sticks
-	
-	v-delete-figures
-	v-add-figure-of-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -figure-name pocket_volume
-	v-color-figures -col 0x33FFFF -rep solid
-	v-color-figures -col 0x000000 -rep mesh
-	
-	v-show-atoms -rep sticks cartoon
-	v-show-figures -rep solid mesh
-	
-	v-list-objects -picked | jq -r '.commands[0].output.objects[].name' | while read OBJNAME
-	do
-		VOLUME=$(v-print-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$(awk "BEGIN {print (${MAXPROBE}*2)}")" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
+		VOLUME=$(v-print-triangulation [pocket_atoms] -expansion 0.5 -max-edge "$MAXEDGE" -only-summary -on-objects "$OBJNAME" | jq -r '.commands[0].output.total_relevant_tetrahedron_volume')
 		v-set-text-description "'$VOLUME'" -on-objects "$OBJNAME"
 	done
 fi
