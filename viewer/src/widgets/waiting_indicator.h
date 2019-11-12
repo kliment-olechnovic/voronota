@@ -10,19 +10,40 @@ class WaitingIndicator
 {
 public:
 	WaitingIndicator() :
+		enabled_(false),
 		waiting_limit_(3),
 		waiting_stage_(0)
 	{
 	}
 
+	bool enabled() const
+	{
+		return enabled_;
+	}
+
+	void set_enabled(const bool enabled)
+	{
+		enabled_=enabled;
+	}
+
 	bool check_waiting()
 	{
+		if(!enabled_)
+		{
+			return false;
+		}
+
 		waiting_stage_=std::min(waiting_stage_+1, waiting_limit_);
 		return (waiting_stage_<waiting_limit_);
 	}
 
 	void keep_waiting(const bool need)
 	{
+		if(!enabled_)
+		{
+			return;
+		}
+
 		if(need)
 		{
 			waiting_stage_=(waiting_limit_-1);
@@ -33,13 +54,23 @@ public:
 		}
 	}
 
-	void disable()
+	void disable_for_next_operation()
 	{
+		if(!enabled_)
+		{
+			return;
+		}
+
 		waiting_stage_=waiting_limit_;
 	}
 
 	void execute(const int window_width, const int window_height)
 	{
+		if(!enabled_)
+		{
+			return;
+		}
+
 		if(waiting_stage_<1 || waiting_stage_>=waiting_limit_)
 		{
 			return;
@@ -60,6 +91,7 @@ public:
 	}
 
 private:
+	bool enabled_;
 	int waiting_limit_;
 	int waiting_stage_;
 };

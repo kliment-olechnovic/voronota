@@ -27,6 +27,9 @@ public:
 	{
 		self_ptr=this;
 		set_background_color(0xCCCCCC);
+#ifdef FOR_WEB
+		waiting_indicator_.set_enabled(true);
+#endif
 	}
 
 	~Application()
@@ -210,7 +213,7 @@ protected:
 				add_command(output_script.str());
 			}
 		}
-		waiting_indicator_.disable();
+		waiting_indicator_.disable_for_next_operation();
 	}
 
 private:
@@ -286,6 +289,18 @@ private:
 					if(ImGui::MenuItem("Enable", "", false, !info_box_enabled_))
 					{
 						info_box_enabled_=true;
+					}
+					ImGui::EndMenu();
+				}
+				if(ImGui::BeginMenu("Waiting indicator"))
+				{
+					if(ImGui::MenuItem("Disable", "", false, waiting_indicator_.enabled()))
+					{
+						waiting_indicator_.set_enabled(false);
+					}
+					if(ImGui::MenuItem("Enable", "", false, !waiting_indicator_.enabled()))
+					{
+						waiting_indicator_.set_enabled(true);
 					}
 					ImGui::EndMenu();
 				}
