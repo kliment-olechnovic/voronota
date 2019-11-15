@@ -859,6 +859,7 @@ The script interface is presented below:
         --input-model-chains-renaming               input text file with renaming rules for chains
         --remap-chains                              flag to automatically rearrange chain names for higher scores
         --remap-chains-output           string      output file with chain names rearrangement
+        --neighborhood-depth            number      number of layers to for per-residue scoring, default is 0
         --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
     
     Standard output (one line):
