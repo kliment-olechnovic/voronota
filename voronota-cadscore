@@ -30,6 +30,7 @@ Advanced options:
     --input-model-chains-renaming               input text file with renaming rules for chains
     --remap-chains                              flag to automatically rearrange chain names for higher scores
     --remap-chains-output           string      output file with chain names rearrangement
+    --neighborhood-depth            number      number of layers to for per-residue scoring, default is 0
     --old-regime                                flag to calculate areas as in pre-Voronota CAD-score
 
 Standard output (one line):
@@ -60,6 +61,7 @@ INPUT_MODEL_CHAINS_RENAMING=""
 REMAP_CHAINS=false
 REMAP_CHAINS_LOG_OPTION=""
 REMAP_CHAINS_OUTPUT=""
+NEIGHBORHOOD_DEPTH="0"
 ENABLE_SITE_BASED_SCORING=false
 OUTPUT_HEADER=false
 OLD_REGIME=false
@@ -138,6 +140,10 @@ do
 		;;
 	--remap-chains-output)
 		REMAP_CHAINS_OUTPUT="$OPTARG"
+		shift
+		;;
+	--neighborhood-depth)
+		NEIGHBORHOOD_DEPTH="$OPTARG"
 		shift
 		;;
 	--enable-site-based-scoring)
@@ -396,7 +402,7 @@ then
 	rename_model_chains_by_dictionary "$INPUT_MODEL_CHAINS_RENAMING"
 fi
 
-STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth 0 --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
+STANDARD_OPTIONS_FOR_COMPARE_CONTACTS="--depth $NEIGHBORHOOD_DEPTH --residue-level-only --detailed-output $IGNORE_RESIDUE_NAMES_OPTION"
 
 if $REMAP_CHAINS
 then
