@@ -3614,6 +3614,7 @@ public:
 			cargs.data_manager.assert_contacts_availability();
 
 			const std::string adjunct_contact_frustration_value=cargs.input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
+			const std::string adjunct_atom_exposure_value=cargs.input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 			const std::string adjunct_atom_membrane_place_value=cargs.input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 			const double membrane_width=cargs.input.get_value<double>("membrane-width");
 			const double membrane_width_extended=cargs.input.get_value_or_default<double>("membrane-width-extended", membrane_width);
@@ -3621,6 +3622,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			assert_adjunct_name_input(adjunct_contact_frustration_value, false);
+			assert_adjunct_name_input(adjunct_atom_exposure_value, true);
 			assert_adjunct_name_input(adjunct_atom_membrane_place_value, true);
 
 			if(membrane_width<6.0)
@@ -3679,9 +3681,14 @@ public:
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				const Contact& contact=cargs.data_manager.contacts()[atom_descriptors[i].solvent_contact_id];
+				const Atom& atom=cargs.data_manager.atoms()[atom_descriptors[i].atom_id];
 				atom_descriptors[i].area=contact.value.area;
 				atom_descriptors[i].frustration=contact.value.props.adjuncts.find(adjunct_contact_frustration_value)->second;
-				atom_descriptors[i].point=apollota::SimplePoint(cargs.data_manager.atoms()[atom_descriptors[i].atom_id].value);
+				atom_descriptors[i].point=apollota::SimplePoint(atom.value);
+				if(!adjunct_atom_exposure_value.empty() && atom.value.props.adjuncts.count(adjunct_atom_exposure_value)>0)
+				{
+					atom_descriptors[i].exposure=atom.value.props.adjuncts.find(adjunct_atom_exposure_value)->second;
+				}
 			}
 
 			OrientationScore best_score;
@@ -3755,6 +3762,7 @@ public:
 			std::size_t atom_id;
 			std::size_t solvent_contact_id;
 			double area;
+			double exposure;
 			double frustration;
 			double projection;
 			double membrane_place_value;
@@ -3764,6 +3772,7 @@ public:
 				atom_id(0),
 				solvent_contact_id(0),
 				area(0),
+				exposure(0),
 				frustration(0),
 				projection(0),
 				membrane_place_value(0)
@@ -3773,6 +3782,11 @@ public:
 			bool operator<(const AtomDescriptor& v) const
 			{
 				return (projection<v.projection);
+			}
+
+			double calc_weight() const
+			{
+				return area*(1.0-std::max(0.0, std::min(exposure, 1.0)));
 			}
 		};
 
@@ -3879,7 +3893,7 @@ public:
 				{
 					AtomDescriptor& ad_i=atom_descriptors[i];
 					x[i]=ad_i.frustration;
-					w[i]=ad_i.area;
+					w[i]=ad_i.calc_weight();
 				}
 
 				const double var_x=calc_covariance(x, x, w);
