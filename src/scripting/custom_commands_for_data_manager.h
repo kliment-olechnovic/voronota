@@ -2073,6 +2073,73 @@ public:
 		}
 	};
 
+	class select_atoms_by_triangulation_query : public GenericCommandForDataManagerScaled
+	{
+	protected:
+		void run(CommandArguments& cargs)
+		{
+			cargs.data_manager.assert_triangulation_info_availability();
+
+			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
+			FilteringOfTriangulation::Query filtering_query=read_filtering_of_triangulation_query(cargs.input);
+			const std::string name=cargs.input.get_value_or_default<std::string>("name", "");
+
+			cargs.input.assert_nothing_unusable();
+
+			filtering_query.atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+			if(filtering_query.atom_ids.empty())
+			{
+			    throw std::runtime_error(std::string("No initial atoms selected."));
+			}
+
+			const FilteringOfTriangulation::MatchingResult filtering_result=FilteringOfTriangulation::match_vertices(cargs.data_manager.triangulation_info(), filtering_query);
+
+			if(filtering_result.vertices_info.empty())
+			{
+			    throw std::runtime_error(std::string("No triangulation parts selected."));
+			}
+
+			std::set<std::size_t> result_ids;
+
+			for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
+			{
+				const FilteringOfTriangulation::VertexInfo& vi=filtering_result.vertices_info[i];
+				for(std::size_t j=0;j<4;j++)
+				{
+					result_ids.insert(vi.quadruple.get(j));
+				}
+			}
+
+			if(result_ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			if(!name.empty())
+			{
+				cargs.data_manager.selection_manager().set_atoms_selection(name, result_ids);
+			}
+
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), filtering_query.atom_ids), cargs.heterostorage.variant_object.object("initial_atoms_summary"));
+
+			cargs.heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=filtering_result.vertices_info.size();
+
+			cargs.heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=filtering_result.total_relevant_tetrahedron_volume;
+
+			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), result_ids), cargs.heterostorage.variant_object.object("selected_atoms_summary"));
+
+			if(name.empty())
+			{
+				cargs.heterostorage.variant_object.value("selection_name").set_null();
+			}
+			else
+			{
+				cargs.heterostorage.variant_object.value("selection_name")=name;
+			}
+		}
+	};
+
 	class construct_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:

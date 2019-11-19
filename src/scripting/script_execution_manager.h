@@ -95,6 +95,7 @@ public:
 		set_command("construct-triangulation", new CustomCommandsForDataManager::construct_triangulation());
 		set_command("export-triangulation", new CustomCommandsForDataManager::export_triangulation());
 		set_command("print-triangulation", new CustomCommandsForDataManager::print_triangulation());
+		set_command("select-atoms-by-triangulation-query", new CustomCommandsForDataManager::select_atoms_by_triangulation_query());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
 		set_command("make-drawable-contacts", new CustomCommandsForDataManager::make_drawable_contacts());
 		set_command("make-undrawable-contacts", new CustomCommandsForDataManager::make_undrawable_contacts());
