@@ -4344,6 +4344,7 @@ public:
 			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
 			FilteringOfTriangulation::Query filtering_query=read_filtering_of_triangulation_query(cargs.input);
 			const std::vector<std::string> figure_name=cargs.input.get_value_vector<std::string>("figure-name");
+			const bool as_spheres=cargs.input.get_flag("as-spheres");
 
 			cargs.input.assert_nothing_unusable();
 
@@ -4364,6 +4365,21 @@ public:
 			Figure figure;
 			figure.name=figure_name;
 
+			if(as_spheres)
+			{
+				const apollota::SubdividedIcosahedron sih0(0);
+				const apollota::SubdividedIcosahedron sih1(1);
+				const apollota::SubdividedIcosahedron sih2(2);
+				for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
+				{
+					const apollota::SimpleSphere& sphere=filtering_result.vertices_info[i].sphere;
+					if(sphere.r>0.0)
+					{
+						figure.add_sphere((sphere.r<0.5 ? sih0 : (sphere.r<1.5 ? sih1 : sih2)), apollota::SimplePoint(sphere), sphere.r);
+					}
+				}
+			}
+			else
 			{
 				const std::vector<apollota::SimpleSphere>& balls=cargs.data_manager.triangulation_info().spheres;
 

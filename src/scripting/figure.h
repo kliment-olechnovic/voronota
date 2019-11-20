@@ -115,6 +115,21 @@ public:
 	{
 		add_triangle(a, b, c, n, n, n);
 	}
+
+	template<class SubdividedIcosahedron, class Point>
+	void add_sphere(const SubdividedIcosahedron& sih, const Point& center, const double radius)
+	{
+		for(std::size_t i=0;i<sih.triples().size();i++)
+		{
+			add_triangle(
+					center+(sih.vertices()[sih.triples()[i].get(0)].unit()*radius),
+					center+(sih.vertices()[sih.triples()[i].get(1)].unit()*radius),
+					center+(sih.vertices()[sih.triples()[i].get(2)].unit()*radius),
+					sih.vertices()[sih.triples()[i].get(0)].unit(),
+					sih.vertices()[sih.triples()[i].get(1)].unit(),
+					sih.vertices()[sih.triples()[i].get(2)].unit());
+		}
+	}
 };
 
 }
