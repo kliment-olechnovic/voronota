@@ -4375,18 +4375,7 @@ public:
 					{
 						apollota::Triple triple=quadruple.exclude(j);
 						const apollota::SimplePoint normal=apollota::plane_normal_from_three_points<apollota::SimplePoint>(balls[triple.get(0)], balls[triple.get(1)], balls[triple.get(2)]);
-						figure.indices.push_back(figure.vertices.size()/3);
-						figure.indices.push_back(figure.vertices.size()/3+1);
-						figure.indices.push_back(figure.vertices.size()/3+2);
-						for(unsigned int e=0;e<3;e++)
-						{
-							figure.vertices.push_back(balls[triple.get(e)].x);
-							figure.vertices.push_back(balls[triple.get(e)].y);
-							figure.vertices.push_back(balls[triple.get(e)].z);
-							figure.normals.push_back(normal.x);
-							figure.normals.push_back(normal.y);
-							figure.normals.push_back(normal.z);
-						}
+						figure.add_triangle(balls[triple.get(0)], balls[triple.get(1)], balls[triple.get(2)], normal);
 					}
 				}
 			}
