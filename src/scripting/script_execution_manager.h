@@ -136,6 +136,7 @@ public:
 		set_command("list-figures", new CustomCommandsForDataManager::list_figures);
 		set_command("delete-figures", new CustomCommandsForDataManager::delete_figures);
 		set_command("add-figure-of-triangulation", new CustomCommandsForDataManager::add_figure_of_triangulation);
+		set_command("export-figures-as-pymol-cgo", new CustomCommandsForDataManager::export_figures_as_pymol_cgo);
 		set_command("calculate-betweenness", new CustomCommandsForDataManager::calculate_betweenness);
 		set_command("set-text-description", new CustomCommandsForDataManager::set_text_description);
 		set_command("print-text-description", new CustomCommandsForDataManager::print_text_description);
