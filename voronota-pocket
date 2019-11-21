@@ -10,6 +10,7 @@ Options:
     --probe-max                     number      scanning probe radius maximum, default is 10.0
     --buriedness-core               number      buriedness minimum for pocket start, default is 0.8
     --buriedness-rim                number      buriedness maximum for pocket end, default is 0.5
+    --subpockets                    number      number of sorted subpockets to include, default is 999999
     --output-atoms                  string      file to output analyzed atoms with annotations
     --output-buriedness-pdb         string      file to output PDB file with buriedness in b-factors
     --output-pocketness-pdb         string      file to output PDB file with pocketness in b-factors
@@ -28,6 +29,7 @@ PROBE_MIN="2.0"
 PROBE_MAX="10.0"
 BURIEDNESS_CORE="0.8"
 BURIEDNESS_RIM="0.5"
+SUBPOCKETS="999999"
 OUTPUT_ATOMS=""
 OUTPUT_BURIEDNESS_PDB=""
 OUTPUT_POCKETNESS_PDB=""
@@ -60,6 +62,10 @@ do
 		;;
 	--buriedness-rim)
 		BURIEDNESS_RIM="$OPTARG"
+		shift
+		;;
+	--subpockets)
+		SUBPOCKETS="$OPTARG"
 		shift
 		;;
 	--output-atoms)
@@ -147,11 +153,8 @@ construct-contacts
 describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
 spectrum-atoms -adjunct buriedness
 find-connected-components -atoms-core-use [-v buriedness=${BURIEDNESS_CORE}:1.0] -atoms-all-use [-v buriedness=${BURIEDNESS_RIM}:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]
-select-atoms -use [-v pocket_id] -name pocket_atoms_main
+select-atoms -use [-v pocket_id=1:${SUBPOCKETS}] -name pocket_atoms_main
 select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius 1.4 -name pocket_atoms_all
-set-adjunct-of-atoms -name pocketness -value 0
-set-adjunct-of-atoms -use [pocket_atoms_all] -name pocketness -value 1
-set-adjunct-of-atoms -use (not [-v buriedness]) -name buriedness -value 0
 EOF
 
 if [ -n "$OUTPUT_ATOMS" ]
@@ -164,6 +167,7 @@ fi
 if [ -n "$OUTPUT_BURIEDNESS_PDB" ]
 then
 cat << EOF
+set-adjunct-of-atoms -use (not [-v buriedness]) -name buriedness -value 0
 export-atoms -as-pdb -pdb-b-factor buriedness -file $TMPLDIR/result_buriedness.pdb
 EOF
 fi
@@ -171,7 +175,15 @@ fi
 if [ -n "$OUTPUT_POCKETNESS_PDB" ]
 then
 cat << EOF
-export-atoms -as-pdb -pdb-b-factor pocketness -file $TMPLDIR/result_pocketness.pdb
+set-adjunct-of-atoms -use (not [-v pocket_id]) -name pocket_id -value 0
+export-atoms -as-pdb -pdb-b-factor pocket_id -file $TMPLDIR/result_pocketness.pdb
+EOF
+fi
+
+if [ -n "$OUTPUT_VERTICES" ]
+then
+cat << EOF
+export-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -file $TMPLDIR/result_vertices
 EOF
 fi
 
@@ -195,14 +207,12 @@ export-figures-as-pymol-cgo -figure-name pocket_spheres -cgo-name '$CGO_NAME_OF_
 EOF
 fi
 
-cat << EOF
-print-triangulation [pocket_atoms_all] -strict -min-radius 1.4
-EOF
+echo 'print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -only-summary'
 } \
-| voronota run-script --max-unfolding 5 \
+| voronota run-script --exit-on-first-failure --max-unfolding 5 \
 > "$TMPLDIR/result_log.txt"
 
-cat "$TMPLDIR/result_log.txt"
+cat >&2 "$TMPLDIR/result_log.txt"
 
 if [ -n "$OUTPUT_ATOMS" ]
 then
@@ -210,7 +220,7 @@ then
 	then
 		mv "$TMPLDIR/result_atoms" "$OUTPUT_ATOMS"
 	else
-		echo "Error: failed to output atoms."
+		echo >&2 "Error: failed to output atoms."
 	fi
 fi
 
@@ -220,7 +230,7 @@ then
 	then
 		mv "$TMPLDIR/result_buriedness.pdb" "$OUTPUT_BURIEDNESS_PDB"
 	else
-		echo "Error: failed to output buriedness as PDB file."
+		echo >&2 "Error: failed to output buriedness as PDB file."
 	fi
 fi
 
@@ -230,7 +240,22 @@ then
 	then
 		mv "$TMPLDIR/result_pocketness.pdb" "$OUTPUT_POCKETNESS_PDB"
 	else
-		echo "Error: failed to output pocketness as PDB file."
+		echo >&2 "Error: failed to output pocketness as PDB file."
+	fi
+fi
+
+if [ -n "$OUTPUT_VERTICES" ]
+then
+	if [ -s "$TMPLDIR/result_vertices" ]
+	then
+		{
+			echo "A B C D S.x S.y S.z S.r Vol"
+			cat "$TMPLDIR/result_vertices"
+		} \
+		| column -t \
+		> "$OUTPUT_VERTICES"
+	else
+		echo >&2 "Error: failed to output vertices."
 	fi
 fi
 
@@ -240,7 +265,7 @@ then
 	then
 		mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
 	else
-		echo "Error: failed to output tetrahedrons drawing script."
+		echo >&2 "Error: failed to output tetrahedrons drawing script."
 	fi
 fi
 
@@ -250,7 +275,7 @@ then
 	then
 		mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
 	else
-		echo "Error: failed to output spheres drawing script."
+		echo >&2 "Error: failed to output spheres drawing script."
 	fi
 fi
 

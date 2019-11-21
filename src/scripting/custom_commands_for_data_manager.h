@@ -1964,11 +1964,26 @@ public:
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
+			const SelectionManager::Query parameters_for_selecting_atoms=read_generic_selecting_query(cargs.input);
+			FilteringOfTriangulation::Query filtering_query=read_filtering_of_triangulation_query(cargs.input);
 			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 			assert_file_name_input(file, false);
-			const bool link=cargs.input.get_flag("link");
 
 			cargs.input.assert_nothing_unusable();
+
+			filtering_query.atom_ids=cargs.data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+			if(filtering_query.atom_ids.empty())
+			{
+				throw std::runtime_error(std::string("No atoms selected."));
+			}
+
+			const FilteringOfTriangulation::MatchingResult filtering_result=FilteringOfTriangulation::match_vertices(cargs.data_manager.triangulation_info(), filtering_query);
+
+			if(filtering_result.vertices_info.empty())
+			{
+				throw std::runtime_error(std::string("No triangulation parts selected."));
+			}
 
 			OutputSelector output_selector(file);
 
@@ -1976,17 +1991,15 @@ public:
 				std::ostream& output=output_selector.stream();
 				assert_io_stream(file, output);
 
-				if(link)
+				for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
 				{
-					apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(
-							apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map),
-							apollota::Triangulation::construct_vertices_graph(cargs.data_manager.triangulation_info().spheres, cargs.data_manager.triangulation_info().quadruples_map),
-							output);
-				}
-				else
-				{
-					apollota::TriangulationOutput::print_vertices_vector(
-							apollota::Triangulation::collect_vertices_vector_from_quadruples_map(cargs.data_manager.triangulation_info().quadruples_map), output);
+					const FilteringOfTriangulation::VertexInfo& vi=filtering_result.vertices_info[i];
+					for(int j=0;j<4;j++)
+					{
+						output << vi.quadruple.get(j) << " ";
+					}
+					output << vi.sphere.x << " " << vi.sphere.y << " " << vi.sphere.z << " " << vi.sphere.r << " ";
+					output << vi.tetrahedron_volume << "\n";
 				}
 			}
 
@@ -1997,7 +2010,14 @@ public:
 				{
 					info.value("dump")=output_selector.str();
 				}
-				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), info.object("triangulation_summary"));
+
+				VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("full_triangulation_summary"));
+
+				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), filtering_query.atom_ids), cargs.heterostorage.variant_object.object("atoms_summary"));
+
+				cargs.heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=filtering_result.vertices_info.size();
+
+				cargs.heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=filtering_result.total_relevant_tetrahedron_volume;
 			}
 		}
 	};
