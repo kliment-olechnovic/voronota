@@ -1,0 +1,257 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+Options:
+    --input | -i                    string   *  input structure file in PDB or mmCIF format
+    --probe-min                     number      scanning probe radius minimum, default is 2.0
+    --probe-max                     number      scanning probe radius maximum, default is 10.0
+    --buriedness-core               number      buriedness minimum for pocket start, default is 0.8
+    --buriedness-rim                number      buriedness maximum for pocket end, default is 0.5
+    --output-atoms                  string      file to output analyzed atoms with annotations
+    --output-buriedness-pdb         string      file to output PDB file with buriedness in b-factors
+    --output-pocketness-pdb         string      file to output PDB file with pocketness in b-factors
+    --output-vertices               string      file to output Voronoi vertices of pocket
+    --draw-tetrahedrons             string      file to output PyMol script for drawing pocket tetrahedrons
+    --draw-spheres                  string      file to output PyMol script for drawing pocket spheres
+    --help | -h                                 flag to display help message and exit
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+INFILE=""
+PROBE_MIN="2.0"
+PROBE_MAX="10.0"
+BURIEDNESS_CORE="0.8"
+BURIEDNESS_RIM="0.5"
+OUTPUT_ATOMS=""
+OUTPUT_BURIEDNESS_PDB=""
+OUTPUT_POCKETNESS_PDB=""
+OUTPUT_VERTICES=""
+DRAW_TETRAHEDRONS=""
+DRAW_SPHERES=""
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--probe-min)
+		PROBE_MIN="$OPTARG"
+		shift
+		;;
+	--probe-max)
+		PROBE_MAX="$OPTARG"
+		shift
+		;;
+	--buriedness-core)
+		BURIEDNESS_CORE="$OPTARG"
+		shift
+		;;
+	--buriedness-rim)
+		BURIEDNESS_RIM="$OPTARG"
+		shift
+		;;
+	--output-atoms)
+		OUTPUT_ATOMS="$OPTARG"
+		shift
+		;;
+	--output-buriedness-pdb)
+		OUTPUT_BURIEDNESS_PDB="$OPTARG"
+		shift
+		;;
+	--output-pocketness-pdb)
+		OUTPUT_POCKETNESS_PDB="$OPTARG"
+		shift
+		;;
+	--output-vertices)
+		OUTPUT_VERTICES="$OPTARG"
+		shift
+		;;
+	--draw-tetrahedrons)
+		DRAW_TETRAHEDRONS="$OPTARG"
+		shift
+		;;
+	--draw-spheres)
+		DRAW_SPHERES="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || $HELP_MODE
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file does not exist"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+	if [[ "$INFILE" == *".gz" ]]
+	then
+		zcat "$INFILE"
+	else
+		cat "$INFILE"
+	fi
+} \
+| voronota get-balls-from-atoms-file \
+  --annotated \
+  --input-format detect \
+  --radii-file <(voronota-resources radii) \
+> $TMPLDIR/balls
+
+if [ ! -s "$TMPLDIR/balls" ]
+then
+	echo >&2 "Error: no atoms in input file '$INFILE'"
+	exit 1
+fi
+
+{
+cat << EOF
+import -format plain -file $TMPLDIR/balls
+construct-contacts
+describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
+spectrum-atoms -adjunct buriedness
+find-connected-components -atoms-core-use [-v buriedness=${BURIEDNESS_CORE}:1.0] -atoms-all-use [-v buriedness=${BURIEDNESS_RIM}:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]
+select-atoms -use [-v pocket_id] -name pocket_atoms_main
+select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius 1.4 -name pocket_atoms_all
+set-adjunct-of-atoms -name pocketness -value 0
+set-adjunct-of-atoms -use [pocket_atoms_all] -name pocketness -value 1
+set-adjunct-of-atoms -use (not [-v buriedness]) -name buriedness -value 0
+EOF
+
+if [ -n "$OUTPUT_ATOMS" ]
+then
+cat << EOF
+export-atoms -file $TMPLDIR/result_atoms
+EOF
+fi
+
+if [ -n "$OUTPUT_BURIEDNESS_PDB" ]
+then
+cat << EOF
+export-atoms -as-pdb -pdb-b-factor buriedness -file $TMPLDIR/result_buriedness.pdb
+EOF
+fi
+
+if [ -n "$OUTPUT_POCKETNESS_PDB" ]
+then
+cat << EOF
+export-atoms -as-pdb -pdb-b-factor pocketness -file $TMPLDIR/result_pocketness.pdb
+EOF
+fi
+
+if [ -n "$DRAW_TETRAHEDRONS" ]
+then
+CGO_NAME_OF_TETRAHEDRONS="$(basename "$DRAW_TETRAHEDRONS" .py | tr ' ' '_')"
+cat << EOF
+add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -figure-name pocket_tetrahedrons
+color-figures -name pocket_tetrahedrons -col 0x00FFFF
+export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name '$CGO_NAME_OF_TETRAHEDRONS' -file $TMPLDIR/result_draw_tetrahedrons.py
+EOF
+fi
+
+if [ -n "$DRAW_SPHERES" ]
+then
+CGO_NAME_OF_SPHERES="$(basename "$DRAW_SPHERES" .py | tr ' ' '_')"
+cat << EOF
+add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -as-spheres -figure-name pocket_spheres
+color-figures -name pocket_spheres -col 0xFFFF00
+export-figures-as-pymol-cgo -figure-name pocket_spheres -cgo-name '$CGO_NAME_OF_SPHERES' -file $TMPLDIR/result_draw_spheres.py
+EOF
+fi
+
+cat << EOF
+print-triangulation [pocket_atoms_all] -strict -min-radius 1.4
+EOF
+} \
+| voronota run-script --max-unfolding 5 \
+> "$TMPLDIR/result_log.txt"
+
+cat "$TMPLDIR/result_log.txt"
+
+if [ -n "$OUTPUT_ATOMS" ]
+then
+	if [ -s "$TMPLDIR/result_atoms" ]
+	then
+		mv "$TMPLDIR/result_atoms" "$OUTPUT_ATOMS"
+	else
+		echo "Error: failed to output atoms."
+	fi
+fi
+
+if [ -n "$OUTPUT_BURIEDNESS_PDB" ]
+then
+	if [ -s "$TMPLDIR/result_buriedness.pdb" ]
+	then
+		mv "$TMPLDIR/result_buriedness.pdb" "$OUTPUT_BURIEDNESS_PDB"
+	else
+		echo "Error: failed to output buriedness as PDB file."
+	fi
+fi
+
+if [ -n "$OUTPUT_POCKETNESS_PDB" ]
+then
+	if [ -s "$TMPLDIR/result_pocketness.pdb" ]
+	then
+		mv "$TMPLDIR/result_pocketness.pdb" "$OUTPUT_POCKETNESS_PDB"
+	else
+		echo "Error: failed to output pocketness as PDB file."
+	fi
+fi
+
+if [ -n "$DRAW_TETRAHEDRONS" ]
+then
+	if [ -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
+	then
+		mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
+	else
+		echo "Error: failed to output tetrahedrons drawing script."
+	fi
+fi
+
+if [ -n "$DRAW_SPHERES" ]
+then
+	if [ -s "$TMPLDIR/result_draw_spheres.py" ]
+	then
+		mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
+	else
+		echo "Error: failed to output spheres drawing script."
+	fi
+fi
+
+
