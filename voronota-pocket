@@ -4,10 +4,13 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
+'voronota-pocket' script provides a way for identifying and describing
+pockets, cavities and channels using the Voronoi tessellation vertices.
+
 Options:
     --input | -i                    string   *  input structure file in PDB or mmCIF format
     --probe-min                     number      scanning probe radius minimum, default is 2.0
-    --probe-max                     number      scanning probe radius maximum, default is 10.0
+    --probe-max                     number      scanning probe radius maximum, default is 30.0
     --buriedness-core               number      buriedness minimum for pocket start, default is 0.8
     --buriedness-rim                number      buriedness maximum for pocket end, default is 0.5
     --subpockets                    number      number of sorted subpockets to include, default is 999999
@@ -17,7 +20,11 @@ Options:
     --output-vertices               string      file to output Voronoi vertices of pocket
     --draw-tetrahedrons             string      file to output PyMol script for drawing pocket tetrahedrons
     --draw-spheres                  string      file to output PyMol script for drawing pocket spheres
+    --output-log                    string      file to output detailed log on calculations
     --help | -h                                 flag to display help message and exit
+
+Standard output (one line):
+    {input file} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
 
 EOF
 exit 1
@@ -26,7 +33,7 @@ exit 1
 readonly ZEROARG=$0
 INFILE=""
 PROBE_MIN="2.0"
-PROBE_MAX="10.0"
+PROBE_MAX="30.0"
 BURIEDNESS_CORE="0.8"
 BURIEDNESS_RIM="0.5"
 SUBPOCKETS="999999"
@@ -36,6 +43,7 @@ OUTPUT_POCKETNESS_PDB=""
 OUTPUT_VERTICES=""
 DRAW_TETRAHEDRONS=""
 DRAW_SPHERES=""
+OUTPUT_LOG=""
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -92,6 +100,10 @@ do
 		DRAW_SPHERES="$OPTARG"
 		shift
 		;;
+	--output-log)
+		OUTPUT_LOG="$OPTARG"
+		shift
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -116,6 +128,7 @@ fi
 
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
 
 if [ ! -s "$INFILE" ]
 then
@@ -175,8 +188,9 @@ fi
 if [ -n "$OUTPUT_POCKETNESS_PDB" ]
 then
 cat << EOF
-set-adjunct-of-atoms -use (not [-v pocket_id]) -name pocket_id -value 0
-export-atoms -as-pdb -pdb-b-factor pocket_id -file $TMPLDIR/result_pocketness.pdb
+set-adjunct-of-atoms -name pocketness -value 0
+set-adjunct-of-atoms -use [pocket_atoms_all] -name pocketness -value 1
+export-atoms -as-pdb -pdb-b-factor pocketness -file $TMPLDIR/result_pocketness.pdb
 EOF
 fi
 
@@ -212,71 +226,97 @@ echo 'print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -only-summa
 | voronota run-script --exit-on-first-failure --max-unfolding 5 \
 > "$TMPLDIR/result_log.txt"
 
-cat >&2 "$TMPLDIR/result_log.txt"
+GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.script_summary | .commands_successful == .commands_all')"
 
-if [ -n "$OUTPUT_ATOMS" ]
+if [ -n "$OUTPUT_LOG" ]
 then
-	if [ -s "$TMPLDIR/result_atoms" ]
-	then
-		mv "$TMPLDIR/result_atoms" "$OUTPUT_ATOMS"
-	else
-		echo >&2 "Error: failed to output atoms."
-	fi
+	cat "$TMPLDIR/result_log.txt" > "$OUTPUT_LOG"
 fi
 
-if [ -n "$OUTPUT_BURIEDNESS_PDB" ]
+if [ "$GLOBAL_SUCCESS" != "true" ]
 then
-	if [ -s "$TMPLDIR/result_buriedness.pdb" ]
-	then
-		mv "$TMPLDIR/result_buriedness.pdb" "$OUTPUT_BURIEDNESS_PDB"
-	else
-		echo >&2 "Error: failed to output buriedness as PDB file."
-	fi
+	cat >&2 "$TMPLDIR/result_log.txt"
+	echo >&2 "Error: failed to complete all steps, see the log above."
+	exit 1
 fi
 
-if [ -n "$OUTPUT_POCKETNESS_PDB" ]
+if [ -n "$OUTPUT_ATOMS" ] && [ ! -s "$TMPLDIR/result_atoms" ]
 then
-	if [ -s "$TMPLDIR/result_pocketness.pdb" ]
-	then
-		mv "$TMPLDIR/result_pocketness.pdb" "$OUTPUT_POCKETNESS_PDB"
-	else
-		echo >&2 "Error: failed to output pocketness as PDB file."
-	fi
+	echo >&2 "Error: failed to output atoms."
+	exit 1
 fi
 
-if [ -n "$OUTPUT_VERTICES" ]
+if [ -n "$OUTPUT_BURIEDNESS_PDB" ] && [ ! -s "$TMPLDIR/result_buriedness.pdb" ]
 then
-	if [ -s "$TMPLDIR/result_vertices" ]
-	then
-		{
-			echo "A B C D S.x S.y S.z S.r Vol"
-			cat "$TMPLDIR/result_vertices"
-		} \
-		| column -t \
-		> "$OUTPUT_VERTICES"
-	else
-		echo >&2 "Error: failed to output vertices."
-	fi
+	echo >&2 "Error: failed to output buriedness as PDB file."
+	exit 1
 fi
 
-if [ -n "$DRAW_TETRAHEDRONS" ]
+if [ -n "$OUTPUT_POCKETNESS_PDB" ] && [ ! -s "$TMPLDIR/result_buriedness.pdb" ]
 then
-	if [ -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
-	then
-		mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
-	else
-		echo >&2 "Error: failed to output tetrahedrons drawing script."
-	fi
+	echo >&2 "Error: failed to output pocketness as PDB file."
+	exit 1
 fi
 
-if [ -n "$DRAW_SPHERES" ]
+if [ -n "$OUTPUT_VERTICES" ] && [ ! -s "$TMPLDIR/result_vertices" ]
 then
-	if [ -s "$TMPLDIR/result_draw_spheres.py" ]
-	then
-		mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
-	else
-		echo >&2 "Error: failed to output spheres drawing script."
-	fi
+	echo >&2 "Error: failed to output vertices."
+	exit 1
+fi
+
+if [ -n "$DRAW_TETRAHEDRONS" ] && [ ! -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
+then
+	echo >&2 "Error: failed to output tetrahedrons drawing script."
+	exit 1
+fi
+
+if [ -n "$DRAW_SPHERES" ] && [ ! -s "$TMPLDIR/result_draw_spheres.py" ]
+then
+	echo >&2 "Error: failed to output spheres drawing script."
+	exit 1
+fi
+
+NUM_OF_ALL_ATOMS="$(jq -c '.commands[-1].output.full_triangulation_summary.number_input_balls' < "$TMPLDIR/result_log.txt")"
+NUM_OF_ALL_VERTICES="$(jq -c '.commands[-1].output.full_triangulation_summary.number_voronoi_vertices' < "$TMPLDIR/result_log.txt")"
+NUM_OF_POCKET_ATOMS="$(jq -c '.commands[-1].output.atoms_summary.number_total' < "$TMPLDIR/result_log.txt")"
+NUM_OF_POCKET_VERTICES="$(jq -c '.commands[-1].output.number_of_relevant_voronoi_vertices' < "$TMPLDIR/result_log.txt")"
+VOLUME_OF_POCKET_TETRAHEDRONS="$(jq -c '.commands[-1].output.total_relevant_tetrahedron_volume' < "$TMPLDIR/result_log.txt")"
+
+echo "$INFILE $NUM_OF_ALL_ATOMS $NUM_OF_ALL_VERTICES $NUM_OF_POCKET_ATOMS $NUM_OF_POCKET_VERTICES $VOLUME_OF_POCKET_TETRAHEDRONS"
+
+if [ -n "$OUTPUT_ATOMS" ] && [ -s "$TMPLDIR/result_atoms" ]
+then
+	mv "$TMPLDIR/result_atoms" "$OUTPUT_ATOMS"
+fi
+
+if [ -n "$OUTPUT_BURIEDNESS_PDB" ] && [ -s "$TMPLDIR/result_buriedness.pdb" ]
+then
+	mv "$TMPLDIR/result_buriedness.pdb" "$OUTPUT_BURIEDNESS_PDB"
+fi
+
+if [ -n "$OUTPUT_POCKETNESS_PDB" ] && [ -s "$TMPLDIR/result_pocketness.pdb" ]
+then
+	mv "$TMPLDIR/result_pocketness.pdb" "$OUTPUT_POCKETNESS_PDB"
+fi
+
+if [ -n "$OUTPUT_VERTICES" ] && [ -s "$TMPLDIR/result_vertices" ]
+then
+	{
+		echo "A B C D S.x S.y S.z S.r Vol"
+		cat "$TMPLDIR/result_vertices"
+	} \
+	| column -t \
+	> "$OUTPUT_VERTICES"
+fi
+
+if [ -n "$DRAW_TETRAHEDRONS" ] && [ -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
+then
+	mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
+fi
+
+if [ -n "$DRAW_SPHERES" ] && [ -s "$TMPLDIR/result_draw_spheres.py" ]
+then
+	mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
 fi
 
 
