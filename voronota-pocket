@@ -8,20 +8,21 @@ cat >&2 << 'EOF'
 pockets, cavities and channels using the Voronoi tessellation vertices.
 
 Options:
-    --input | -i                    string   *  input structure file in PDB or mmCIF format
-    --probe-min                     number      scanning probe radius minimum, default is 2.0
-    --probe-max                     number      scanning probe radius maximum, default is 30.0
-    --buriedness-core               number      buriedness minimum for pocket start, default is 0.8
-    --buriedness-rim                number      buriedness maximum for pocket end, default is 0.5
-    --subpockets                    number      number of sorted subpockets to include, default is 999999
-    --output-atoms                  string      file to output analyzed atoms with annotations
-    --output-buriedness-pdb         string      file to output PDB file with buriedness in b-factors
-    --output-pocketness-pdb         string      file to output PDB file with pocketness in b-factors
-    --output-vertices               string      file to output Voronoi vertices of pocket
-    --draw-tetrahedrons             string      file to output PyMol script for drawing pocket tetrahedrons
-    --draw-spheres                  string      file to output PyMol script for drawing pocket spheres
-    --output-log                    string      file to output detailed log on calculations
-    --help | -h                                 flag to display help message and exit
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
+    --input-filter-query           string      input atoms filtering query, default is '--match-tags-not het'
+    --probe-min                    number      scanning probe radius minimum, default is 2.0
+    --probe-max                    number      scanning probe radius maximum, default is 30.0
+    --buriedness-core              number      buriedness minimum for pocket start, default is 0.8
+    --buriedness-rim               number      buriedness maximum for pocket end, default is 0.5
+    --subpockets                   number      number of sorted subpockets to include, default is 999999
+    --output-atoms                 string      file to output analyzed atoms with annotations
+    --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
+    --output-pocketness-pdb        string      file to output PDB file with pocketness in b-factors
+    --output-vertices              string      file to output Voronoi vertices of pocket
+    --draw-tetrahedrons            string      file to output PyMol script for drawing pocket tetrahedrons
+    --draw-spheres                 string      file to output PyMol script for drawing pocket spheres
+    --output-log                   string      file to output detailed log on calculations
+    --help | -h                                flag to display help message and exit
 
 Standard output (one line):
     {input file} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
@@ -32,6 +33,7 @@ exit 1
 
 readonly ZEROARG=$0
 INFILE=""
+INPUT_FILTER_QUERY="--match-tags-not het"
 PROBE_MIN="2.0"
 PROBE_MAX="30.0"
 BURIEDNESS_CORE="0.8"
@@ -54,6 +56,10 @@ do
 	case $OPTION in
 	-i|--input)
 		INFILE="$OPTARG"
+		shift
+		;;
+	--input-filter-query)
+		INPUT_FILTER_QUERY="$OPTARG"
 		shift
 		;;
 	--probe-min)
@@ -151,6 +157,10 @@ trap "rm -r $TMPLDIR" EXIT
   --annotated \
   --input-format detect \
   --radii-file <(voronota-resources radii) \
+  --include-heteroatoms \
+| voronota query-balls \
+  --drop-altloc-indicators \
+| voronota query-balls $INPUT_FILTER_QUERY \
 > $TMPLDIR/balls
 
 if [ ! -s "$TMPLDIR/balls" ]
