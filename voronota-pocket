@@ -274,7 +274,7 @@ then
 	exit 1
 fi
 
-if [ -n "$OUTPUT_POCKETNESS_PDB" ] && [ ! -s "$TMPLDIR/result_buriedness.pdb" ]
+if [ -n "$OUTPUT_POCKETNESS_PDB" ] && [ ! -s "$TMPLDIR/result_pocketness.pdb" ]
 then
 	echo >&2 "Error: failed to output pocketness as PDB file."
 	exit 1

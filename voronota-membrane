@@ -1,0 +1,196 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-membrane' script provides a way for fitting a membrane
+for a protein struture using VoroMQA-based surface frustration analysis.
+
+Options:
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
+    --input-filter-query           string      input atoms filtering query, default is ''
+    --membrane-width               number      membrane width, default is 30.0
+    --output-atoms                 string      file to output analyzed atoms with annotations
+    --output-membraneness-pdb      string      file to output PDB file with membraneness in b-factors
+    --output-log                   string      file to output detailed log on calculations
+    --help | -h                                flag to display help message and exit
+
+Standard output (one line):
+    {input file} {membrane fitting score} {direction x} {direction y} {direction z} {center projection}
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+INFILE=""
+INPUT_FILTER_QUERY=""
+MEMBRANE_WIDTH="30.0"
+OUTPUT_ATOMS=""
+OUTPUT_MEMBRANENESS_PDB=""
+OUTPUT_LOG=""
+HELP_MODE=false
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--input-filter-query)
+		INPUT_FILTER_QUERY="$OPTARG"
+		shift
+		;;
+	--membrane-width)
+		MEMBRANE_WIDTH="$OPTARG"
+		shift
+		;;
+	--output-atoms)
+		OUTPUT_ATOMS="$OPTARG"
+		shift
+		;;
+	--output-membraneness-pdb)
+		OUTPUT_MEMBRANENESS_PDB="$OPTARG"
+		shift
+		;;
+	--output-log)
+		OUTPUT_LOG="$OPTARG"
+		shift
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || $HELP_MODE
+then
+	print_help_and_exit
+fi
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file does not exist"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+	if [[ "$INFILE" == *".gz" ]]
+	then
+		zcat "$INFILE"
+	else
+		cat "$INFILE"
+	fi
+} \
+| voronota get-balls-from-atoms-file \
+  --annotated \
+  --input-format detect \
+  --radii-file <(voronota-resources radii) \
+| voronota query-balls \
+  --drop-altloc-indicators \
+| voronota query-balls $INPUT_FILTER_QUERY \
+> $TMPLDIR/balls
+
+if [ ! -s "$TMPLDIR/balls" ]
+then
+	echo >&2 "Error: no atoms in input file '$INFILE'"
+	exit 1
+fi
+
+voronota-resources voromqa_v1_energy_potential > "$TMPLDIR/voromqa_v1_energy_potential"
+voronota-resources voromqa_v1_energy_means_and_sds > "$TMPLDIR/voromqa_v1_energy_means_and_sds"
+
+{
+cat << EOF
+setup-voromqa --potential '$TMPLDIR/voromqa_v1_energy_potential' --means-and-sds '$TMPLDIR/voromqa_v1_energy_means_and_sds'
+import -format plain -file $TMPLDIR/balls
+construct-contacts
+describe-exposure -probe-min 1.4 -probe-max 30.0 -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
+voromqa-global
+voromqa-frustration -adj-atom-frustration-energy-mean frustration -adj-contact-frustration-energy-mean cfem -smoothing-iterations 3 -smoothing-depth 1
+voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value membraneness -membrane-width $MEMBRANE_WIDTH -adj-atom-exposure-value buriedness
+EOF
+
+if [ -n "$OUTPUT_ATOMS" ]
+then
+cat << EOF
+export-atoms -file $TMPLDIR/result_atoms
+EOF
+fi
+
+if [ -n "$OUTPUT_MEMBRANENESS_PDB" ]
+then
+cat << EOF
+export-atoms -as-pdb -pdb-b-factor membraneness -file $TMPLDIR/result_membraneness.pdb
+EOF
+fi
+} \
+| voronota run-script --exit-on-first-failure --max-unfolding 5 \
+> "$TMPLDIR/result_log.txt"
+
+GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.script_summary | .commands_successful == .commands_all')"
+
+if [ -n "$OUTPUT_LOG" ]
+then
+	cat "$TMPLDIR/result_log.txt" > "$OUTPUT_LOG"
+fi
+
+if [ "$GLOBAL_SUCCESS" != "true" ]
+then
+	cat >&2 "$TMPLDIR/result_log.txt"
+	echo >&2 "Error: failed to complete all steps, see the log above."
+	exit 1
+fi
+
+if [ -n "$OUTPUT_ATOMS" ] && [ ! -s "$TMPLDIR/result_atoms" ]
+then
+	echo >&2 "Error: failed to output atoms."
+	exit 1
+fi
+
+if [ -n "$OUTPUT_MEMBRANENESS_PDB" ] && [ ! -s "$TMPLDIR/result_membraneness.pdb" ]
+then
+	echo >&2 "Error: failed to output membraneness as PDB file."
+	exit 1
+fi
+
+MEMBRANE_FITTING_CORE="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.best_score' | grep -v null | tail -1)"
+DIRECTION="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.direction' | grep -v null | tail -1 | tr -d '[' | tr -d ']' | tr ',' ' ')"
+CENTER_PROJECTION="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.projection_center' | grep -v null | tail -1)"
+
+echo "$INFILE $MEMBRANE_FITTING_CORE $DIRECTION $CENTER_PROJECTION"
+
+if [ -n "$OUTPUT_ATOMS" ] && [ -s "$TMPLDIR/result_atoms" ]
+then
+	mv "$TMPLDIR/result_atoms" "$OUTPUT_ATOMS"
+fi
+
+if [ -n "$OUTPUT_MEMBRANENESS_PDB" ] && [ -s "$TMPLDIR/result_membraneness.pdb" ]
+then
+	mv "$TMPLDIR/result_membraneness.pdb" "$OUTPUT_MEMBRANENESS_PDB"
+fi
+
+
