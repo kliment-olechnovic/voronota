@@ -687,6 +687,7 @@ Using "--help" option without specific command results in printing help for all 
     Name                            Type        Description
     ------------------------------- ------ ---- ------------------------------------------------------------------------
     --interactive                               flag for interactive mode
+    --exit-on-first-failure                     flag to terminate script when a command fails
     --max-unfolding                 number      maximum level of output unfolding, default is 6
     --help                                      flag to print usage help to stdout and exit
 

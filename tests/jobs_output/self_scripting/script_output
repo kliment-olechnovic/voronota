@@ -748,15 +748,20 @@
           "number_voronoi_vertices":11470}},
       "success":true},
     {
-      "line":"export-triangulation '_virtual/plain_triangulation' -link",
+      "line":"export-triangulation '_virtual/plain_triangulation'",
       "data_object":"plain_atoms_2",
       "output":{
         "file":"_virtual/plain_triangulation",
-        "triangulation_summary":{
+        "full_triangulation_summary":{
           "number_input_balls":1717,
           "number_all_balls":1725,
           "number_quadruples":11469,
-          "number_voronoi_vertices":11470}},
+          "number_voronoi_vertices":11470},
+        "atoms_summary":{
+          "number_total":1717,
+          "volume":41027.8},
+        "number_of_relevant_voronoi_vertices":11122,
+        "total_relevant_tetrahedron_volume":35325.6},
       "success":true},
     {
       "line":"list-virtual-files",
@@ -764,9 +769,9 @@
         "files":[
           {
             "name":"_virtual/plain_triangulation",
-            "bytes":1291834}],
+            "bytes":644082}],
         "total_count":1,
-        "total_bytes":1291834},
+        "total_bytes":644082},
       "success":true},
     {
       "line":"download-virtual-file -name '_virtual/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'",
@@ -890,6 +895,9 @@
             "name":"export-contacts-as-pymol-cgo",
             "short_description":""},
           {
+            "name":"export-figures-as-pymol-cgo",
+            "short_description":""},
+          {
             "name":"export-selection-of-atoms",
             "short_description":""},
           {
@@ -1008,6 +1016,9 @@
             "short_description":""},
           {
             "name":"select-atoms",
+            "short_description":""},
+          {
+            "name":"select-atoms-by-triangulation-query",
             "short_description":""},
           {
             "name":"select-contacts",

@@ -83,7 +83,7 @@ import './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain
 import './jobs_output/self_scripting/plain_atoms' -format plain
 
 construct-triangulation
-export-triangulation '_virtual/plain_triangulation' -link
+export-triangulation '_virtual/plain_triangulation'
 list-virtual-files
 download-virtual-file -name '_virtual/plain_triangulation' -file './jobs_output/self_scripting/plain_triangulation'
 delete-virtual-files '_virtual/plain_triangulation'

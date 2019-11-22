@@ -90,7 +90,7 @@ import '$SUBDIR/plain_atoms_and_contacts' -format plain
 import '$SUBDIR/plain_atoms' -format plain
 
 construct-triangulation
-export-triangulation '_virtual/plain_triangulation' -link
+export-triangulation '_virtual/plain_triangulation'
 list-virtual-files
 download-virtual-file -name '_virtual/plain_triangulation' -file '$SUBDIR/plain_triangulation'
 delete-virtual-files '_virtual/plain_triangulation'

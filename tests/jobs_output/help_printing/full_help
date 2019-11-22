@@ -248,6 +248,7 @@ stdout  ->  list of clashes (line format: 'annotation1 annotation2 distance min-
 
 Command 'run-script' options:
 --interactive                               flag for interactive mode
+--exit-on-first-failure                     flag to terminate script when a command fails
 --max-unfolding                 number      maximum level of output unfolding, default is 6
 --help                                      flag to print usage help to stdout and exit
 stdin   <-  script as plain text
