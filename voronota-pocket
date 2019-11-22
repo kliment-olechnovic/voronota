@@ -12,8 +12,8 @@ Options:
     --input-filter-query           string      input atoms filtering query, default is '--match-tags-not het'
     --probe-min                    number      scanning probe radius minimum, default is 2.0
     --probe-max                    number      scanning probe radius maximum, default is 30.0
-    --buriedness-core              number      buriedness minimum for pocket start, default is 0.8
-    --buriedness-rim               number      buriedness maximum for pocket end, default is 0.5
+    --buriedness-core              number      buriedness minimum for pocket start, default is 0.7
+    --buriedness-rim               number      buriedness maximum for pocket end, default is 0.4
     --subpockets                   number      number of sorted subpockets to include, default is 999999
     --output-atoms                 string      file to output analyzed atoms with annotations
     --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
@@ -36,8 +36,8 @@ INFILE=""
 INPUT_FILTER_QUERY="--match-tags-not het"
 PROBE_MIN="2.0"
 PROBE_MAX="30.0"
-BURIEDNESS_CORE="0.8"
-BURIEDNESS_RIM="0.5"
+BURIEDNESS_CORE="0.7"
+BURIEDNESS_RIM="0.4"
 SUBPOCKETS="999999"
 OUTPUT_ATOMS=""
 OUTPUT_BURIEDNESS_PDB=""
