@@ -15,6 +15,8 @@ Options:
     --buriedness-core              number      buriedness minimum for pocket start, default is 0.7
     --buriedness-rim               number      buriedness maximum for pocket end, default is 0.4
     --subpockets                   number      number of sorted subpockets to include, default is 999999
+    --tangent-radius-min           number      tanget sphere radius minimum, default is 1.4
+    --tetrahedron-edge-max         number      tetrahedron edge maximum, default is 999999
     --output-atoms                 string      file to output analyzed atoms with annotations
     --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
     --output-pocketness-pdb        string      file to output PDB file with pocketness in b-factors
@@ -39,6 +41,8 @@ PROBE_MAX="30.0"
 BURIEDNESS_CORE="0.7"
 BURIEDNESS_RIM="0.4"
 SUBPOCKETS="999999"
+TANGENT_RADIUS_MIN="1.4"
+TETRAHEDRON_EDGE_MAX="999999"
 OUTPUT_ATOMS=""
 OUTPUT_BURIEDNESS_PDB=""
 OUTPUT_POCKETNESS_PDB=""
@@ -80,6 +84,14 @@ do
 		;;
 	--subpockets)
 		SUBPOCKETS="$OPTARG"
+		shift
+		;;
+	--tangent-radius-min)
+		TANGENT_RADIUS_MIN="$OPTARG"
+		shift
+		;;
+	--tetrahedron-edge-max)
+		TETRAHEDRON_EDGE_MAX="$OPTARG"
 		shift
 		;;
 	--output-atoms)
@@ -177,7 +189,7 @@ describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure
 spectrum-atoms -adjunct buriedness
 find-connected-components -atoms-core-use [-v buriedness=${BURIEDNESS_CORE}:1.0] -atoms-all-use [-v buriedness=${BURIEDNESS_RIM}:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]
 select-atoms -use [-v pocket_id=1:${SUBPOCKETS}] -name pocket_atoms_main
-select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius 1.4 -name pocket_atoms_all
+select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -name pocket_atoms_all
 EOF
 
 if [ -n "$OUTPUT_ATOMS" ]
@@ -207,7 +219,7 @@ fi
 if [ -n "$OUTPUT_VERTICES" ]
 then
 cat << EOF
-export-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -file $TMPLDIR/result_vertices
+export-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -file $TMPLDIR/result_vertices
 EOF
 fi
 
@@ -215,7 +227,7 @@ if [ -n "$DRAW_TETRAHEDRONS" ]
 then
 CGO_NAME_OF_TETRAHEDRONS="$(basename "$DRAW_TETRAHEDRONS" .py | tr ' ' '_')"
 cat << EOF
-add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -figure-name pocket_tetrahedrons
+add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -figure-name pocket_tetrahedrons
 color-figures -name pocket_tetrahedrons -col 0x00FFFF
 export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name '$CGO_NAME_OF_TETRAHEDRONS' -file $TMPLDIR/result_draw_tetrahedrons.py
 EOF
@@ -225,13 +237,13 @@ if [ -n "$DRAW_SPHERES" ]
 then
 CGO_NAME_OF_SPHERES="$(basename "$DRAW_SPHERES" .py | tr ' ' '_')"
 cat << EOF
-add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -as-spheres -figure-name pocket_spheres
+add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -as-spheres -figure-name pocket_spheres
 color-figures -name pocket_spheres -col 0xFFFF00
 export-figures-as-pymol-cgo -figure-name pocket_spheres -cgo-name '$CGO_NAME_OF_SPHERES' -file $TMPLDIR/result_draw_spheres.py
 EOF
 fi
 
-echo 'print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -only-summary'
+echo "print-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -only-summary"
 } \
 | voronota run-script --exit-on-first-failure --max-unfolding 5 \
 > "$TMPLDIR/result_log.txt"
