@@ -252,12 +252,20 @@ GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.script_summary | .comm
 
 if [ -n "$OUTPUT_LOG" ]
 then
-	cat "$TMPLDIR/result_log.txt" > "$OUTPUT_LOG"
+	if [ "$OUTPUT_LOG" == "-" ]
+	then
+		cat >&2 "$TMPLDIR/result_log.txt"
+	else
+		cat "$TMPLDIR/result_log.txt" > "$OUTPUT_LOG"
+	fi
 fi
 
 if [ "$GLOBAL_SUCCESS" != "true" ]
 then
-	cat >&2 "$TMPLDIR/result_log.txt"
+	if [ "$OUTPUT_LOG" != "-" ]
+	then
+		cat >&2 "$TMPLDIR/result_log.txt"
+	fi
 	echo >&2 "Error: failed to complete all steps, see the log above."
 	exit 1
 fi
