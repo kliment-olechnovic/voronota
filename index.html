@@ -118,6 +118,8 @@
 <li><a href="#cad-score-method-script">CAD-score method script</a></li>
 <li><a href="#contacts-calculation-convenience-script">Contacts calculation convenience script</a></li>
 <li><a href="#volumes-calculation-convenience-script">Volumes calculation convenience script</a></li>
+<li><a href="#pocket-analysis-script">Pocket analysis script</a></li>
+<li><a href="#membrane-fitting-script">Membrane fitting script</a></li>
 </ul></li>
 </ul>
 </div>
@@ -764,5 +766,51 @@ Advanced options:
 
 Standard output (multiple lines):
     {name} {volume}</code></pre>
+<h2 id="pocket-analysis-script">Pocket analysis script</h2>
+<p>'voronota-pocket' script provides a way for identifying and describing pockets, cavities and channels using the Voronoi tessellation vertices.</p>
+<pre><code>Options:
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
+    --input-filter-query           string      input atoms filtering query, default is &#39;--match-tags-not het&#39;
+    --probe-min                    number      scanning probe radius minimum, default is 2.0
+    --probe-max                    number      scanning probe radius maximum, default is 30.0
+    --buriedness-core              number      buriedness minimum for pocket start, default is 0.7
+    --buriedness-rim               number      buriedness maximum for pocket end, default is 0.4
+    --subpockets                   number      number of sorted subpockets to include, default is 999999
+    --tangent-radius-min           number      tanget sphere radius minimum, default is 1.4
+    --tetrahedron-edge-max         number      tetrahedron edge maximum, default is 999999
+    --output-atoms                 string      file to output analyzed atoms with annotations
+    --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
+    --output-pocketness-pdb        string      file to output PDB file with pocketness in b-factors
+    --output-vertices              string      file to output Voronoi vertices of pocket
+    --draw-tetrahedrons            string      file to output PyMol script for drawing pocket tetrahedrons
+    --draw-spheres                 string      file to output PyMol script for drawing pocket spheres
+    --output-log                   string      file to output detailed log on calculations
+    --help | -h                                flag to display help message and exit
+
+Standard output (one line):
+    {input file} {max buriedness} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
+
+Suggested parameters
+    for pocket analysis:
+        --probe-min 2 --probe-max 30 --buriedness-core 0.7 --buriedness-rim 0.4
+    for large channel analysis:
+        --probe-min 5 --probe-max 30 --buriedness-core 0.8 --buriedness-rim 0.6
+
+Other suggestions:
+    For large pockets or channels the spheres drawing option may
+    produce very large files (too large for PyMol).</code></pre>
+<h2 id="membrane-fitting-script">Membrane fitting script</h2>
+<p>'voronota-membrane' script provides a way for fitting a membrane for a protein struture using VoroMQA-based surface frustration analysis.</p>
+<pre><code>Options:
+    --input | -i                   string   *  input structure file in PDB or mmCIF format
+    --input-filter-query           string      input atoms filtering query, default is &#39;&#39;
+    --membrane-width               number      membrane width, default is 30.0
+    --output-atoms                 string      file to output analyzed atoms with annotations
+    --output-membraneness-pdb      string      file to output PDB file with membraneness in b-factors
+    --output-log                   string      file to output detailed log on calculations
+    --help | -h                                flag to display help message and exit
+
+Standard output (one line):
+    {input file} {membrane fitting score} {direction x} {direction y} {direction z} {center projection}</code></pre>
 </body>
 </html>

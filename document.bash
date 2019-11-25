@@ -60,6 +60,18 @@ cat << EOF
 EOF
 ./voronota-volumes -h 2>&1 | tail -n +4 | sed 's/^/    /'
 
+echo -e "\n## Pocket analysis script\n"
+cat << EOF
+'voronota-pocket' script provides a way for identifying and describing pockets, cavities and channels using the Voronoi tessellation vertices.
+EOF
+./voronota-pocket -h 2>&1 | tail -n +4 | sed 's/^/    /'
+
+echo -e "\n## Membrane fitting script\n"
+cat << EOF
+'voronota-membrane' script provides a way for fitting a membrane for a protein struture using VoroMQA-based surface frustration analysis.
+EOF
+./voronota-membrane -h 2>&1 | tail -n +4 | sed 's/^/    /'
+
 } > $TMPDIR/documentation.markdown
 
 cat > $TMPDIR/include_in_header.html << 'EOF'

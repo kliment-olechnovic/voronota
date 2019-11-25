@@ -12,4 +12,4 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-lib
 add_executable(voronota ${VORONOTA_SRC})
 
 install(TARGETS voronota RUNTIME DESTINATION bin)
-install(PROGRAMS voronota-cadscore voronota-contacts voronota-resources voronota-voromqa voronota-volumes DESTINATION bin)
+install(PROGRAMS voronota-cadscore voronota-contacts voronota-resources voronota-voromqa voronota-volumes voronota-pocket voronota-membrane DESTINATION bin)

@@ -17,7 +17,7 @@ rm -r -f $PACKAGE_NAME
 mkdir -p $PACKAGE_NAME
 cp -r src $PACKAGE_NAME/src
 cp LICENSE.txt CMakeLists.txt $PACKAGE_NAME
-cp voronota-cadscore voronota-voromqa voronota-contacts voronota-volumes $PACKAGE_NAME
+cp voronota-cadscore voronota-voromqa voronota-contacts voronota-volumes voronota-pocket voronota-membrane $PACKAGE_NAME
 
 ./stock.bash
 cp voronota-resources $PACKAGE_NAME/voronota-resources
