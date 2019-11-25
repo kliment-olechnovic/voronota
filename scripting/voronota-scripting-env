@@ -295,7 +295,7 @@ then
 			echo "$INSTRING"
 		fi
 	} \
-	| egrep -v '^\S*#' \
+	| egrep -v '^\s*#' \
 	> "$SCRIPTFILE"
 	
 	chmod +x "$SCRIPTFILE"
