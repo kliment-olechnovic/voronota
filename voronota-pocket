@@ -45,6 +45,7 @@ fi
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
+command -v bc &> /dev/null || { echo >&2 "Error: 'bc' executable not in binaries path"; exit 1; }
 
 INFILE=""
 INPUT_FILTER_QUERY="--match-tags-not het"
@@ -152,6 +153,42 @@ fi
 if [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file does not exist"
+	exit 1
+fi
+
+if [ "$(echo "$BURIEDNESS_CORE <= 0.0" | bc -l)" == "1" ] || [ "$(echo "$BURIEDNESS_CORE > 1.0" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: buriedness core value '$BURIEDNESS_CORE' not in range (0,1]"
+	exit 1
+fi
+
+if [ "$(echo "$BURIEDNESS_RIM <= 0.0" | bc -l)" == "1" ] || [ "$(echo "$BURIEDNESS_RIM > $BURIEDNESS_CORE" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: buriedness rim value '$BURIEDNESS_RIM' not in range (0,$BURIEDNESS_CORE] (rim value must be not greater than core value)"
+	exit 1
+fi
+
+if [ "$(echo "$PROBE_MIN <= 0.0" | bc -l)" == "1" ] || [ "$(echo "$PROBE_MIN > $PROBE_MAX" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: probe min value '$PROBE_MIN' not in range (0,$PROBE_MAX] (probe min value must be not greater than probe max value)"
+	exit 1
+fi
+
+if [ "$(echo "$SUBPOCKETS < 1" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: number of subpockets '$SUBPOCKETS' is less than 1"
+	exit 1
+fi
+
+if [ "$(echo "$TANGENT_RADIUS_MIN <= 0.0" | bc -l)" == "1" ] || [ "$(echo "$TANGENT_RADIUS_MIN > $PROBE_MAX" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: tangent radius min value '$TANGENT_RADIUS_MIN' not in range (0,$PROBE_MAX] (tangent radius min value must be not greater than probe max value)"
+	exit 1
+fi
+
+if [ "$(echo "$TETRAHEDRON_EDGE_MAX <= $TANGENT_RADIUS_MIN" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: tetrahedron edge max value '$TETRAHEDRON_EDGE_MAX' is less than tangent radius min value '$TANGENT_RADIUS_MIN'"
 	exit 1
 fi
 

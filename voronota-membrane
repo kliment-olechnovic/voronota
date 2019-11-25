@@ -35,6 +35,7 @@ fi
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
 command -v jq &> /dev/null || { echo >&2 "Error: 'jq' executable not in binaries path"; exit 1; }
+command -v bc &> /dev/null || { echo >&2 "Error: 'bc' executable not in binaries path"; exit 1; }
 
 INFILE=""
 INPUT_FILTER_QUERY=""
@@ -92,6 +93,12 @@ fi
 if [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file does not exist"
+	exit 1
+fi
+
+if [ "$(echo "$MEMBRANE_WIDTH < 6.0" | bc -l)" == "1" ] || [ "$(echo "$MEMBRANE_WIDTH > 100.0" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: membrane width value '$MEMBRANE_WIDTH' not in range (6,100]"
 	exit 1
 fi
 
