@@ -27,7 +27,7 @@ Options:
     --help | -h                                flag to display help message and exit
 
 Standard output (one line):
-    {input file} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
+    {input file} {max buriedness} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
 
 EOF
 exit 1
@@ -224,7 +224,7 @@ cat << EOF
 import -format plain -file $TMPLDIR/balls
 construct-contacts
 describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
-spectrum-atoms -adjunct buriedness
+spectrum-atoms -adjunct buriedness -only-summarize
 find-connected-components -atoms-core-use [-v buriedness=${BURIEDNESS_CORE}:1.0] -atoms-all-use [-v buriedness=${BURIEDNESS_RIM}:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]
 select-atoms -use [-v pocket_id=1:${SUBPOCKETS}] -name pocket_atoms_main
 select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -name pocket_atoms_all
@@ -344,6 +344,8 @@ then
 	exit 1
 fi
 
+OBSERVED_MAX_BURIEDNESS="$(jq '.commands[] | select(.line=="spectrum-atoms -adjunct buriedness -only-summarize") | .output.spectrum_summary.max_value' < "$TMPLDIR/result_log.txt")"
+
 POCKET_INFO="$(jq -c '.commands[-1].output' < "$TMPLDIR/result_log.txt")"
 
 NUM_OF_ALL_ATOMS="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.number_input_balls')"
@@ -352,7 +354,7 @@ NUM_OF_POCKET_ATOMS="$(echo "$POCKET_INFO" | jq -c '.atoms_summary.number_total'
 NUM_OF_POCKET_VERTICES="$(echo "$POCKET_INFO" | jq -c '.number_of_relevant_voronoi_vertices')"
 VOLUME_OF_POCKET_TETRAHEDRONS="$(echo "$POCKET_INFO" | jq -c '.total_relevant_tetrahedron_volume')"
 
-echo "$INFILE $NUM_OF_ALL_ATOMS $NUM_OF_ALL_VERTICES $NUM_OF_POCKET_ATOMS $NUM_OF_POCKET_VERTICES $VOLUME_OF_POCKET_TETRAHEDRONS"
+echo "$INFILE $OBSERVED_MAX_BURIEDNESS $NUM_OF_ALL_ATOMS $NUM_OF_ALL_VERTICES $NUM_OF_POCKET_ATOMS $NUM_OF_POCKET_VERTICES $VOLUME_OF_POCKET_TETRAHEDRONS"
 
 if [ -n "$OUTPUT_ATOMS" ] && [ -s "$TMPLDIR/result_atoms" ]
 then
