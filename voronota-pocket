@@ -344,11 +344,13 @@ then
 	exit 1
 fi
 
-NUM_OF_ALL_ATOMS="$(jq -c '.commands[-1].output.full_triangulation_summary.number_input_balls' < "$TMPLDIR/result_log.txt")"
-NUM_OF_ALL_VERTICES="$(jq -c '.commands[-1].output.full_triangulation_summary.number_voronoi_vertices' < "$TMPLDIR/result_log.txt")"
-NUM_OF_POCKET_ATOMS="$(jq -c '.commands[-1].output.atoms_summary.number_total' < "$TMPLDIR/result_log.txt")"
-NUM_OF_POCKET_VERTICES="$(jq -c '.commands[-1].output.number_of_relevant_voronoi_vertices' < "$TMPLDIR/result_log.txt")"
-VOLUME_OF_POCKET_TETRAHEDRONS="$(jq -c '.commands[-1].output.total_relevant_tetrahedron_volume' < "$TMPLDIR/result_log.txt")"
+POCKET_INFO="$(jq -c '.commands[-1].output' < "$TMPLDIR/result_log.txt")"
+
+NUM_OF_ALL_ATOMS="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.number_input_balls')"
+NUM_OF_ALL_VERTICES="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.number_voronoi_vertices')"
+NUM_OF_POCKET_ATOMS="$(echo "$POCKET_INFO" | jq -c '.atoms_summary.number_total')"
+NUM_OF_POCKET_VERTICES="$(echo "$POCKET_INFO" | jq -c '.number_of_relevant_voronoi_vertices')"
+VOLUME_OF_POCKET_TETRAHEDRONS="$(echo "$POCKET_INFO" | jq -c '.total_relevant_tetrahedron_volume')"
 
 echo "$INFILE $NUM_OF_ALL_ATOMS $NUM_OF_ALL_VERTICES $NUM_OF_POCKET_ATOMS $NUM_OF_POCKET_VERTICES $VOLUME_OF_POCKET_TETRAHEDRONS"
 

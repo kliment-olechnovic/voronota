@@ -193,9 +193,11 @@ then
 	exit 1
 fi
 
-MEMBRANE_FITTING_CORE="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.best_score' | grep -v null | tail -1)"
-DIRECTION="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.direction' | grep -v null | tail -1 | tr -d '[' | tr -d ']' | tr ',' ' ')"
-CENTER_PROJECTION="$(cat "$TMPLDIR/result_log.txt" | jq -c '.commands[].output.projection_center' | grep -v null | tail -1)"
+MEMBRANE_INFO="$(jq -c '.commands[] | select(.line | contains("voromqa-membrane-place")) | .output' < "$TMPLDIR/result_log.txt")"
+
+MEMBRANE_FITTING_CORE="$(echo "$MEMBRANE_INFO" | jq -c '.best_score')"
+DIRECTION="$(echo "$MEMBRANE_INFO" | jq -c '.direction' | tail -1 | tr -d '[' | tr -d ']' | tr ',' ' ')"
+CENTER_PROJECTION="$(echo "$MEMBRANE_INFO" | jq -c '.projection_center')"
 
 echo "$INFILE $MEMBRANE_FITTING_CORE $DIRECTION $CENTER_PROJECTION"
 
