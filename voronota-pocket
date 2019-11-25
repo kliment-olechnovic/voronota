@@ -29,6 +29,16 @@ Options:
 Standard output (one line):
     {input file} {max buriedness} {all atoms} {all vertices} {pocket atoms} {pocket vertices} {volume of pocket tetrahedrons}
 
+Suggested parameters
+	for pocket analysis:
+		--probe-min 2 --probe-max 30 --buriedness-core 0.7 --buriedness-rim 0.4
+	for large channel analysis:
+		--probe-min 5 --probe-max 30 --buriedness-core 0.8 --buriedness-rim 0.6
+
+Other suggestions:
+	For large pockets or channels the spheres drawing option may
+	produce very large files (too large for PyMol).
+
 EOF
 exit 1
 }
