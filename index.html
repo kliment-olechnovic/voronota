@@ -151,7 +151,8 @@ make</code></pre>
 <p>Alternatively, to keep files more organized, CMake can be run in a separate &quot;build&quot; directory:</p>
 <pre><code>mkdir build
 cd build
-cmake ../</code></pre>
+cmake ../
+cp ./voronota ../voronota</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
 <p>To allow the usage of OpenMP when calling the &quot;calculate-vertices-in-parallel&quot; command, the &quot;-fopenmp&quot; flag needs to be set when building.</p>
 <p>When building using C++ compiler directly, just add &quot;-fopenmp&quot;:</p>

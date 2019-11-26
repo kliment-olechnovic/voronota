@@ -29,31 +29,6 @@ typedef std::vector<Triangle> TriangleList;
 
 typedef std::pair<TriangleList, TriangleList> TriangleListSplit;
 
-inline TriangleList subdivide_triangle_in_four(const Triangle& t)
-{
-	TriangleList result(4);
-	result[0]=Triangle((t.p[0]+t.p[1])*0.5, (t.p[0]+t.p[2])*0.5, (t.p[1]+t.p[2])*0.5);
-	result[1]=Triangle(t.p[0], result[0].p[0], result[0].p[1]);
-	result[1]=Triangle(t.p[1], result[0].p[0], result[0].p[2]);
-	result[1]=Triangle(t.p[2], result[0].p[1], result[0].p[2]);
-	return result;
-}
-
-inline TriangleList subdivide_triangle_in_three(const Triangle& t)
-{
-	const apollota::SimplePoint c=(t.p[0]+t.p[1]+t.p[2])*(1.0/3.0);
-	TriangleList result(3);
-	result[0]=Triangle(t.p[0], t.p[1], c);
-	result[1]=Triangle(t.p[0], t.p[2], c);
-	result[2]=Triangle(t.p[1], t.p[2], c);
-	return result;
-}
-
-inline TriangleList subdivide_triangle(const Triangle& t, const bool in_three)
-{
-	return (in_three ? subdivide_triangle_in_three(t) : subdivide_triangle_in_four(t));
-}
-
 inline Triangle project_triangle_on_hyperboloid(const Triangle& t, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
 {
 	return Triangle(

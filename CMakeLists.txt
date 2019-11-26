@@ -6,8 +6,8 @@ file(GLOB VORONOTA_SRC "${PROJECT_SOURCE_DIR}/src/voronota.cpp" "${PROJECT_SOURC
 
 set(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -pedantic-errors -Wall -Werror -Wextra")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 
 add_executable(voronota ${VORONOTA_SRC})
 

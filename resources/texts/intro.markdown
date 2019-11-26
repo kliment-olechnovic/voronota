@@ -71,6 +71,7 @@ Alternatively, to keep files more organized, CMake can be run in a separate "bui
     mkdir build
     cd build
     cmake ../
+    cp ./voronota ../voronota
 
 ## Enabling OpenMP
 
