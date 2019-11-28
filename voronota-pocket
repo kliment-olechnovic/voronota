@@ -202,6 +202,18 @@ then
 	exit 1
 fi
 
+if [ -n "$DRAW_TETRAHEDRONS" ] && [[ "$DRAW_TETRAHEDRONS" != *".py" ]]
+then
+	echo >&2 "Error: terahedrons drawing script file name '$DRAW_TETRAHEDRONS' does not end with '.py'"
+	exit 1
+fi
+
+if [ -n "$DRAW_SPHERES" ] && [[ "$DRAW_SPHERES" != *".py" ]]
+then
+	echo >&2 "Error: spheres drawing script file name '$DRAW_SPHERES' does not end with '.py'"
+	exit 1
+fi
+
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
@@ -393,12 +405,32 @@ fi
 
 if [ -n "$DRAW_TETRAHEDRONS" ] && [ -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
 then
-	mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
+	CGO_LONG_NAME="$(basename "$DRAW_TETRAHEDRONS" .py | tr ' ' '_')"
+	if [[ "$CGO_LONG_NAME" == *"_state_"* ]]
+	then
+		CGO_STATE="$(echo "$CGO_LONG_NAME" | sed 's/^.*_state_\(.*\)$/\1/')"
+		CGO_SHORT_NAME="$(echo "$CGO_LONG_NAME" | sed 's/^\(.*\)_state_.*$/\1/')"
+		cat "$TMPLDIR/result_draw_tetrahedrons.py" \
+		| sed "s/cmd.load_cgo($CGO_LONG_NAME,.\+)/cmd.load_cgo($CGO_LONG_NAME, '$CGO_SHORT_NAME', $CGO_STATE)/" \
+		> "$DRAW_TETRAHEDRONS"
+	else
+		mv "$TMPLDIR/result_draw_tetrahedrons.py" "$DRAW_TETRAHEDRONS"
+	fi
 fi
 
 if [ -n "$DRAW_SPHERES" ] && [ -s "$TMPLDIR/result_draw_spheres.py" ]
 then
-	mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
+	CGO_LONG_NAME="$(basename "$DRAW_SPHERES" .py | tr ' ' '_')"
+	if [[ "$CGO_LONG_NAME" == *"_state_"* ]]
+	then
+		CGO_STATE="$(echo "$CGO_LONG_NAME" | sed 's/^.*_state_\(.*\)$/\1/')"
+		CGO_SHORT_NAME="$(echo "$CGO_LONG_NAME" | sed 's/^\(.*\)_state_.*$/\1/')"
+		cat "$TMPLDIR/result_draw_spheres.py" \
+		| sed "s/cmd.load_cgo($CGO_LONG_NAME,.\+)/cmd.load_cgo($CGO_LONG_NAME, '$CGO_SHORT_NAME', $CGO_STATE)/" \
+		> "$DRAW_SPHERES"
+	else
+		mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
+	fi
 fi
 
 
