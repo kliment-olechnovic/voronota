@@ -15,6 +15,7 @@ Options:
     --buriedness-core              number      buriedness minimum for pocket start, default is 0.7
     --buriedness-rim               number      buriedness maximum for pocket end, default is 0.4
     --subpockets                   number      number of sorted subpockets to include, default is 999999
+    --tangent-leeway               number      tangent sphere radius expansion for atom checks, default is 0.5
     --tangent-radius-min           number      tanget sphere radius minimum, default is 1.4
     --tetrahedron-edge-max         number      tetrahedron edge maximum, default is 999999
     --output-atoms                 string      file to output analyzed atoms with annotations
@@ -64,6 +65,7 @@ PROBE_MAX="30.0"
 BURIEDNESS_CORE="0.7"
 BURIEDNESS_RIM="0.4"
 SUBPOCKETS="999999"
+TANGENT_LEEWAY="0.5"
 TANGENT_RADIUS_MIN="1.4"
 TETRAHEDRON_EDGE_MAX="999999"
 OUTPUT_ATOMS=""
@@ -107,6 +109,10 @@ do
 		;;
 	--subpockets)
 		SUBPOCKETS="$OPTARG"
+		shift
+		;;
+	--tangent-leeway)
+		TANGENT_LEEWAY="$OPTARG"
 		shift
 		;;
 	--tangent-radius-min)
@@ -190,6 +196,12 @@ then
 	exit 1
 fi
 
+if [ "$(echo "$TANGENT_LEEWAY < 0.0" | bc -l)" == "1" ] || [ "$(echo "$TANGENT_LEEWAY > 1" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: tangent leeway value '$PROBE_MIN' not in range [0,1]"
+	exit 1
+fi
+
 if [ "$(echo "$TANGENT_RADIUS_MIN <= 0.0" | bc -l)" == "1" ] || [ "$(echo "$TANGENT_RADIUS_MIN > $PROBE_MAX" | bc -l)" == "1" ]
 then
 	echo >&2 "Error: tangent radius min value '$TANGENT_RADIUS_MIN' not in range (0,$PROBE_MAX] (tangent radius min value must be not greater than probe max value)"
@@ -245,11 +257,11 @@ fi
 cat << EOF
 import -format plain -file $TMPLDIR/balls
 construct-contacts
-describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1
+describe-exposure -probe-min $PROBE_MIN -probe-max $PROBE_MAX -adj-atom-exposure-value buriedness -weight-power 3 -expansion $TANGENT_LEEWAY -smoothing-iterations 3 -smoothing-depth 1
 spectrum-atoms -adjunct buriedness -only-summarize
 find-connected-components -atoms-core-use [-v buriedness=${BURIEDNESS_CORE}:1.0] -atoms-all-use [-v buriedness=${BURIEDNESS_RIM}:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]
 select-atoms -use [-v pocket_id=1:${SUBPOCKETS}] -name pocket_atoms_main
-select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -name pocket_atoms_all
+select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion $TANGENT_LEEWAY -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -name pocket_atoms_all
 EOF
 
 if [ -n "$OUTPUT_ATOMS" ]
