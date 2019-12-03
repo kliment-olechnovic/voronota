@@ -924,6 +924,7 @@ The script interface is presented below:
         --buriedness-core              number      buriedness minimum for pocket start, default is 0.7
         --buriedness-rim               number      buriedness maximum for pocket end, default is 0.4
         --subpockets                   number      number of sorted subpockets to include, default is 999999
+        --tangent-leeway               number      tangent sphere radius expansion for atom checks, default is 0.5
         --tangent-radius-min           number      tanget sphere radius minimum, default is 1.4
         --tetrahedron-edge-max         number      tetrahedron edge maximum, default is 999999
         --output-atoms                 string      file to output analyzed atoms with annotations
