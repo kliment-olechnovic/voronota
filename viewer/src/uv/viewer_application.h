@@ -98,6 +98,10 @@ public:
 		window_width_=std::max(minimum_window_width_, parameters.suggested_window_width);
 		window_height_=std::max(minimum_window_height_, parameters.suggested_window_height);
 
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
 		window_=glfwCreateWindow(window_width_, window_height_, parameters.title.c_str(), 0, 0);
