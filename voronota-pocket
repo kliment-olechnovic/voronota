@@ -293,7 +293,7 @@ export-atoms -as-pdb -pdb-b-factor pocketness -file $TMPLDIR/result_pocketness.p
 EOF
 fi
 
-if [ -n "$OUTPUT_VERTICES" ]
+if [ -n "$OUTPUT_VERTICES" ] || [ -n "$DRAW_SPHERES" ]
 then
 cat << EOF
 export-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -file $TMPLDIR/result_vertices
@@ -307,16 +307,6 @@ cat << EOF
 add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -figure-name pocket_tetrahedrons
 color-figures -name pocket_tetrahedrons -col 0x00FFFF
 export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name '$CGO_NAME_OF_TETRAHEDRONS' -file $TMPLDIR/result_draw_tetrahedrons.py
-EOF
-fi
-
-if [ -n "$DRAW_SPHERES" ]
-then
-CGO_NAME_OF_SPHERES="$(basename "$DRAW_SPHERES" .py | tr ' ' '_')"
-cat << EOF
-add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -as-spheres -figure-name pocket_spheres
-color-figures -name pocket_spheres -col 0xFFFF00
-export-figures-as-pymol-cgo -figure-name pocket_spheres -cgo-name '$CGO_NAME_OF_SPHERES' -file $TMPLDIR/result_draw_spheres.py
 EOF
 fi
 
@@ -377,7 +367,7 @@ then
 	exit 1
 fi
 
-if [ -n "$DRAW_SPHERES" ] && [ ! -s "$TMPLDIR/result_draw_spheres.py" ]
+if [ -n "$DRAW_SPHERES" ] && [ ! -s "$TMPLDIR/result_vertices" ]
 then
 	echo >&2 "Error: failed to output spheres drawing script."
 	exit 1
@@ -440,19 +430,24 @@ then
 	fi
 fi
 
-if [ -n "$DRAW_SPHERES" ] && [ -s "$TMPLDIR/result_draw_spheres.py" ]
+if [ -n "$DRAW_SPHERES" ] && [ -s "$TMPLDIR/result_vertices" ]
 then
 	CGO_LONG_NAME="$(basename "$DRAW_SPHERES" .py | tr ' ' '_')"
-	if [[ "$CGO_LONG_NAME" == *"_state_"* ]]
-	then
-		CGO_STATE="$(echo "$CGO_LONG_NAME" | sed 's/^.*_state_\(.*\)$/\1/')"
-		CGO_SHORT_NAME="$(echo "$CGO_LONG_NAME" | sed 's/^\(.*\)_state_.*$/\1/')"
-		cat "$TMPLDIR/result_draw_spheres.py" \
-		| sed "s/cmd.load_cgo($CGO_LONG_NAME,.\+)/cmd.load_cgo($CGO_LONG_NAME, '$CGO_SHORT_NAME', $CGO_STATE)/" \
-		> "$DRAW_SPHERES"
-	else
-		mv "$TMPLDIR/result_draw_spheres.py" "$DRAW_SPHERES"
-	fi
+	{
+		echo 'from pymol.cgo import *'
+		echo 'from pymol import cmd'
+		echo "$CGO_LONG_NAME = [COLOR, 1.0, 1.0, 0.0,"
+		echo 'ALPHA, 1.0,'
+		cat "$TMPLDIR/result_vertices" | awk '{print "SPHERE, " $5 ", " $6 ", " $7 ", " $8 ","}'
+		echo ']'
+		if [[ "$CGO_LONG_NAME" == *"_state_"* ]]
+		then
+			CGO_STATE="$(echo "$CGO_LONG_NAME" | sed 's/^.*_state_\(.*\)$/\1/')"
+			CGO_SHORT_NAME="$(echo "$CGO_LONG_NAME" | sed 's/^\(.*\)_state_.*$/\1/')"
+			echo "cmd.load_cgo($CGO_LONG_NAME, '$CGO_SHORT_NAME', $CGO_STATE)"
+		else
+			echo "cmd.load_cgo($CGO_LONG_NAME, '$CGO_LONG_NAME')"
+		fi
+	} > "$DRAW_SPHERES"
 fi
-
 
