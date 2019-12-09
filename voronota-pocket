@@ -25,6 +25,7 @@ Options:
     --draw-tetrahedrons            string      file to output PyMol script for drawing pocket tetrahedrons
     --draw-spheres                 string      file to output PyMol script for drawing pocket spheres
     --output-log                   string      file to output detailed log on calculations
+    --output-header                            flag to output header before result line
     --help | -h                                flag to display help message and exit
 
 Standard output (one line):
@@ -75,6 +76,7 @@ OUTPUT_VERTICES=""
 DRAW_TETRAHEDRONS=""
 DRAW_SPHERES=""
 OUTPUT_LOG=""
+OUTPUT_HEADER=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -150,6 +152,9 @@ do
 	--output-log)
 		OUTPUT_LOG="$OPTARG"
 		shift
+		;;
+	--output-header)
+		OUTPUT_HEADER=true
 		;;
 	-h|--help)
 		HELP_MODE=true
@@ -387,6 +392,11 @@ NUM_OF_ALL_VERTICES="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.
 NUM_OF_POCKET_ATOMS="$(echo "$POCKET_INFO" | jq -c '.atoms_summary.number_total')"
 NUM_OF_POCKET_VERTICES="$(echo "$POCKET_INFO" | jq -c '.number_of_relevant_voronoi_vertices')"
 VOLUME_OF_POCKET_TETRAHEDRONS="$(echo "$POCKET_INFO" | jq -c '.total_relevant_tetrahedron_volume')"
+
+if $OUTPUT_HEADER
+then
+	echo "input_file max_buriedness all_atoms all_vertices pocket_atoms pocket_vertices volume_of_pocket_tetrahedrons"
+fi
 
 echo "$INFILE $OBSERVED_MAX_BURIEDNESS $NUM_OF_ALL_ATOMS $NUM_OF_ALL_VERTICES $NUM_OF_POCKET_ATOMS $NUM_OF_POCKET_VERTICES $VOLUME_OF_POCKET_TETRAHEDRONS"
 
