@@ -94,6 +94,7 @@ public:
 		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
 		set_command("construct-triangulation", new CustomCommandsForDataManager::construct_triangulation());
 		set_command("export-triangulation", new CustomCommandsForDataManager::export_triangulation());
+		set_command("export-triangulation-voxels", new CustomCommandsForDataManager::export_triangulation_voxels());
 		set_command("print-triangulation", new CustomCommandsForDataManager::print_triangulation());
 		set_command("select-atoms-by-triangulation-query", new CustomCommandsForDataManager::select_atoms_by_triangulation_query());
 		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());

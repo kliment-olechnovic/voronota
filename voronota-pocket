@@ -22,6 +22,7 @@ Options:
     --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
     --output-pocketness-pdb        string      file to output PDB file with pocketness in b-factors
     --output-vertices              string      file to output Voronoi vertices of pocket
+    --output-voxels-pdb            string      file to output voxels as PDB file
     --draw-tetrahedrons            string      file to output PyMol script for drawing pocket tetrahedrons
     --draw-spheres                 string      file to output PyMol script for drawing pocket spheres
     --output-log                   string      file to output detailed log on calculations
@@ -73,6 +74,7 @@ OUTPUT_ATOMS=""
 OUTPUT_BURIEDNESS_PDB=""
 OUTPUT_POCKETNESS_PDB=""
 OUTPUT_VERTICES=""
+OUTPUT_VOXELS_PDB=""
 DRAW_TETRAHEDRONS=""
 DRAW_SPHERES=""
 OUTPUT_LOG=""
@@ -139,6 +141,10 @@ do
 		;;
 	--output-vertices)
 		OUTPUT_VERTICES="$OPTARG"
+		shift
+		;;
+	--output-voxels-pdb)
+		OUTPUT_VOXELS_PDB="$OPTARG"
 		shift
 		;;
 	--draw-tetrahedrons)
@@ -310,6 +316,13 @@ export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name '$CGO_NAM
 EOF
 fi
 
+if [ -n "$OUTPUT_VOXELS_PDB" ]
+then
+cat << EOF
+export-triangulation-voxels [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -search-step-factor 1 -file $TMPLDIR/voxels_raw
+EOF
+fi
+
 echo "print-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -only-summary"
 } \
 | voronota run-script --exit-on-first-failure --max-unfolding 5 \
@@ -358,6 +371,12 @@ fi
 if [ -n "$OUTPUT_VERTICES" ] && [ ! -s "$TMPLDIR/result_vertices" ]
 then
 	echo >&2 "Error: failed to output vertices."
+	exit 1
+fi
+
+if [ -n "$OUTPUT_VOXELS_PDB" ] && [ ! -s "$TMPLDIR/voxels_raw" ]
+then
+	echo >&2 "Error: failed to output voxels."
 	exit 1
 fi
 
@@ -413,6 +432,14 @@ then
 	} \
 	| column -t \
 	> "$OUTPUT_VERTICES"
+fi
+
+if [ -n "$OUTPUT_VOXELS_PDB" ] && [ -s "$TMPLDIR/voxels_raw" ]
+then
+	cat "$TMPLDIR/voxels_raw" \
+	| awk '{print "R<VRT>A<O> " $1 " " $2 " " $3 " 1.4 . ."}' \
+	| voronota write-balls-to-atoms-file --pdb-output "$OUTPUT_VOXELS_PDB" \
+	> /dev/null
 fi
 
 if [ -n "$DRAW_TETRAHEDRONS" ] && [ -s "$TMPLDIR/result_draw_tetrahedrons.py" ]
