@@ -907,6 +907,9 @@
             "name":"export-triangulation",
             "short_description":""},
           {
+            "name":"export-triangulation-voxels",
+            "short_description":""},
+          {
             "name":"find-connected-components",
             "short_description":""},
           {
