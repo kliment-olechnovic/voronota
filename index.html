@@ -19,9 +19,10 @@
 <li><a href="#about-voronota">About Voronota</a></li>
 <li><a href="#getting-the-latest-version">Getting the latest version</a></li>
 <li><a href="#building-from-source-code">Building from source code</a><ul>
-<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
+<li><a href="#requirements">Requirements</a></li>
 <li><a href="#using-make">Using make</a></li>
 <li><a href="#using-cmake">Using CMake</a></li>
+<li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
 <li><a href="#enabling-openmp">Enabling OpenMP</a></li>
 <li><a href="#enabling-mpi">Enabling MPI</a></li>
 <li><a href="#tr1-usage-switch">TR1 usage switch</a></li>
@@ -133,10 +134,8 @@
 <p>On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command:</p>
 <pre><code>sudo apt install voronota</code></pre>
 <h1 id="building-from-source-code">Building from source code</h1>
-<h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
+<h2 id="requirements">Requirements</h2>
 <p>Voronota has no required external dependencies, only a standard-compliant C++ compiler is needed to build it.</p>
-<p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
-<pre><code>g++ -O3 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="using-make">Using make</h2>
 <p>Inside the unpacked downloaded Voronota archive, you can generate and use a makefile:</p>
 <pre><code>./configure
@@ -153,6 +152,9 @@ make</code></pre>
 cd build
 cmake ../
 cp ./voronota ../voronota</code></pre>
+<h2 id="using-c-compiler-directly">Using C++ compiler directly</h2>
+<p>For example, &quot;voronota&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
+<pre><code>g++ -O3 -o voronota $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h2 id="enabling-openmp">Enabling OpenMP</h2>
 <p>To allow the usage of OpenMP when calling the &quot;calculate-vertices-in-parallel&quot; command, the &quot;-fopenmp&quot; flag needs to be set when building.</p>
 <p>When building using C++ compiler directly, just add &quot;-fopenmp&quot;:</p>

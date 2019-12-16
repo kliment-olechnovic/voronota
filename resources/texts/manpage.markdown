@@ -1,6 +1,6 @@
 % VORONOTA(1)
 % Kliment Olechnovic
-% May, 2017
+% December, 2019
 
 # NAME
 
@@ -17,6 +17,10 @@ voronota-cadscore [*options*]...
 voronota-contacts [*options*]...
 
 voronota-volumes [*options*]...
+
+voronota-pocket [*options*]...
+
+voronota-membrane [*options*]...
 
 # DESCRIPTION
 
@@ -51,6 +55,8 @@ There are several Voronota wrapper scripts, their interfaces can displayed simil
     voronota-cadscore --help
     voronota-contacts --help
     voronota-volumes --help
+    voronota-pocket --help
+    voronota-membrane --help
 
 # SEE ALSO
 

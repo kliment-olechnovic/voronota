@@ -34,15 +34,10 @@ On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command
 
 # Building from source code
 
-## Using C++ compiler directly
+## Requirements
 
 Voronota has no required external dependencies, only
 a standard-compliant C++ compiler is needed to build it.
-
-For example, "voronota" executable can be built from
-the sources in "src" directory using GNU C++ compiler:
-
-    g++ -O3 -o voronota $(find ./src/ -name '*.cpp')
 
 ## Using make
 
@@ -73,6 +68,13 @@ Alternatively, to keep files more organized, CMake can be run in a separate "bui
     cmake ../
     cp ./voronota ../voronota
 
+## Using C++ compiler directly
+
+For example, "voronota" executable can be built from
+the sources in "src" directory using GNU C++ compiler:
+
+    g++ -O3 -o voronota $(find ./src/ -name '*.cpp')
+    
 ## Enabling OpenMP
 
 To allow the usage of OpenMP when calling the "calculate-vertices-in-parallel" command,
