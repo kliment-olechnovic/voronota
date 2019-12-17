@@ -126,21 +126,22 @@ private:
 	{
 		if(!adjunct_atom_scores.empty())
 		{
-			for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
+			for(std::size_t i=0;i<dm.atoms().size();i++)
 			{
-				Atom& atom=dm.atoms_mutable()[i];
+				const Atom& atom=dm.atoms()[i];
+				AtomValue& atom_value=dm.atom_value_mutable(i);
 				if(!adjunct_atom_scores.empty())
 				{
 					std::map<common::ConstructionOfCADScore::CRAD, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 							bundle.map_of_atom_cad_descriptors.find(atom.crad);
 					if(jt!=bundle.map_of_atom_cad_descriptors.end())
 					{
-						atom.value.props.adjuncts[adjunct_atom_scores]=jt->second.score();
+						atom_value.props.adjuncts[adjunct_atom_scores]=jt->second.score();
 						dm_ci.changed_atoms_adjuncts=true;
 					}
 					else
 					{
-						atom.value.props.adjuncts.erase(adjunct_atom_scores);
+						atom_value.props.adjuncts.erase(adjunct_atom_scores);
 					}
 				}
 			}
@@ -149,21 +150,22 @@ private:
 		if(!adjunct_residue_scores.empty())
 		{
 			const std::map<common::ConstructionOfCADScore::CRAD, double> smoothed_residue_scores=bundle.residue_scores(smoothing_window);
-			for(std::size_t i=0;i<dm.atoms_mutable().size();i++)
+			for(std::size_t i=0;i<dm.atoms().size();i++)
 			{
-				Atom& atom=dm.atoms_mutable()[i];
+				const Atom& atom=dm.atoms()[i];
+				AtomValue& atom_value=dm.atom_value_mutable(i);
 				if(!adjunct_residue_scores.empty())
 				{
 					std::map<common::ConstructionOfCADScore::CRAD, double>::const_iterator jt=
 							smoothed_residue_scores.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 					if(jt!=smoothed_residue_scores.end())
 					{
-						atom.value.props.adjuncts[adjunct_residue_scores]=jt->second;
+						atom_value.props.adjuncts[adjunct_residue_scores]=jt->second;
 						dm_ci.changed_atoms_adjuncts=true;
 					}
 					else
 					{
-						atom.value.props.adjuncts.erase(adjunct_residue_scores);
+						atom_value.props.adjuncts.erase(adjunct_residue_scores);
 					}
 				}
 			}
@@ -171,21 +173,22 @@ private:
 
 		if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_residue_scores.empty())
 		{
-			for(std::size_t i=0;i<dm.contacts_mutable().size();i++)
+			for(std::size_t i=0;i<dm.contacts().size();i++)
 			{
-				Contact& contact=dm.contacts_mutable()[i];
+				ContactValue& contact_value=dm.contact_value_mutable(i);
 				if(!adjunct_inter_atom_scores.empty())
 				{
-					contact.value.props.adjuncts.erase(adjunct_inter_atom_scores);
+					contact_value.props.adjuncts.erase(adjunct_inter_atom_scores);
 				}
 				if(!adjunct_inter_residue_scores.empty())
 				{
-					contact.value.props.adjuncts.erase(adjunct_inter_residue_scores);
+					contact_value.props.adjuncts.erase(adjunct_inter_residue_scores);
 				}
 			}
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
-				Contact& contact=dm.contacts_mutable()[*it];
+				const Contact& contact=dm.contacts()[*it];
+				ContactValue& contact_value=dm.contact_value_mutable(*it);
 				const common::ConstructionOfCADScore::CRADsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
 				if(crads.valid())
 				{
@@ -195,7 +198,7 @@ private:
 								bundle.map_of_inter_atom_cad_descriptors.find(crads);
 						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							contact.value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+							contact_value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
 							dm_ci.changed_contacts_adjuncts=true;
 						}
 					}
@@ -208,7 +211,7 @@ private:
 								bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
 						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							contact.value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+							contact_value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
 							dm_ci.changed_contacts_adjuncts=true;
 						}
 					}

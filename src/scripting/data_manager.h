@@ -466,14 +466,14 @@ public:
 		return selection_manager_;
 	}
 
-	std::vector<Atom>& atoms_mutable()
+	AtomValue& atom_value_mutable(const std::size_t id)
 	{
-		return atoms_;
+		return atoms_[id].value;
 	}
 
-	std::vector<Contact>& contacts_mutable()
+	ContactValue& contact_value_mutable(const std::size_t id)
 	{
-		return contacts_;
+		return contacts_[id].value;
 	}
 
 	std::vector<Figure>& figures_mutable()
@@ -891,14 +891,14 @@ public:
 		{
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms().size();i++)
 			{
-				atoms_mutable()[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
+				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
 			}
 		}
 
 		history_of_actions_on_contacts_.constructing.clear();
 		history_of_actions_on_contacts_.constructing.push_back(parameters_to_construct_contacts);
 
-		common::ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_mutable());
+		common::ConstructionOfContacts::enhance_contacts(parameters_to_enhance_contacts, triangulation_info(), contacts_);
 
 		history_of_actions_on_contacts_.enhancing.clear();
 		history_of_actions_on_contacts_.enhancing.push_back(parameters_to_enhance_contacts);
@@ -977,7 +977,7 @@ public:
 
 		happened=true;
 
-		common::ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_mutable());
+		common::ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_);
 
 		update_contacts_display_states_drawable(ids_for_updating);
 

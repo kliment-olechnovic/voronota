@@ -10,6 +10,9 @@ namespace scripting
 typedef common::ConstructionOfAtomicBalls::AtomicBall Atom;
 typedef common::ConstructionOfContacts::Contact Contact;
 
+typedef common::BallValue AtomValue;
+typedef common::ContactValue ContactValue;
+
 struct BoundingBox
 {
 	bool filled;
