@@ -38,6 +38,7 @@ public:
 
 		try
 		{
+			data_manager.reset_change_indicator();
 			data_manager.sync_selections_with_display_states_if_requested_in_string(record.command_input.get_canonical_input_command_string());
 			run(cargs);
 			record.successful=true;
@@ -47,7 +48,7 @@ public:
 			record.save_error(e);
 		}
 
-		record.change_indicator.ensure_correctness();
+		record.change_indicator=DataManager::ChangeIndicator::merge(record.change_indicator, data_manager.change_indicator());
 
 		return record;
 	}

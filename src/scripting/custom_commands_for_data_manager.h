@@ -17,7 +17,6 @@
 #include "basic_assertions.h"
 #include "scoring_of_data_manager_using_voromqa.h"
 #include "variant_serialization.h"
-#include "updating_of_data_manager_display_states.h"
 #include "io_selectors.h"
 #include "filtering_of_triangulation.h"
 #include "membrane_placement_for_data_manager_using_voromqa.h"
@@ -241,22 +240,8 @@ public:
 
 			if(mark)
 			{
-				{
-					UpdatingOfDataManagerDisplayStates::Parameters params;
-					params.unmark=true;
-					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, cargs.data_manager.atoms_display_states_mutable()))
-					{
-						cargs.change_indicator.changed_atoms_display_states=true;
-					}
-				}
-				{
-					UpdatingOfDataManagerDisplayStates::Parameters params;
-					params.mark=true;
-					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
-					{
-						cargs.change_indicator.changed_atoms_display_states=true;
-					}
-				}
+				cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_unmark(true));
+				cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(true), ids);
 			}
 
 			cargs.heterostorage.vectors_of_ids["selection_of_atoms"]=std::vector<std::size_t>(ids.begin(), ids.end());
@@ -1074,15 +1059,7 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			{
-				UpdatingOfDataManagerDisplayStates::Parameters params;
-				params.mark=positive_;
-				params.unmark=!positive_;
-				if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
-				{
-					cargs.change_indicator.changed_atoms_display_states=true;
-				}
-			}
+			cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(positive_).set_unmark(!positive_), ids);
 
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
@@ -1138,17 +1115,7 @@ public:
 				throw std::runtime_error(std::string("No drawable atoms selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.show=positive_;
-			params.hide=!positive_;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_atoms_display_states=true;
-			}
+			cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive_).set_hide(!positive_), ids);
 
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
@@ -1197,16 +1164,7 @@ public:
 				throw std::runtime_error(std::string("No drawable atoms selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.color=color_value;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.atoms_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_atoms_display_states=true;
-			}
+			cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_color(color_value), ids);
 
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
 		}
@@ -1361,10 +1319,8 @@ public:
 
 			if(!only_summarize)
 			{
-				UpdatingOfDataManagerDisplayStates::Parameters params;
-				params.visual_ids=representation_ids;
-				params.assert_correctness();
-
+				DataManager::DisplayStateUpdater dsu;
+				dsu.visual_ids=representation_ids;
 				if(scheme=="random")
 				{
 					std::map<double, auxiliaries::ColorUtilities::ColorInteger> map_of_values_colors;
@@ -1378,22 +1334,16 @@ public:
 					}
 					for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 					{
-						params.color=map_of_values_colors[it->second];
-						if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
-						{
-							cargs.change_indicator.changed_atoms_display_states=true;
-						}
+						dsu.color=map_of_values_colors[it->second];
+						cargs.data_manager.update_atoms_display_state(dsu, it->first);
 					}
 				}
 				else
 				{
 					for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 					{
-						params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-						if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.atoms_display_states_mutable()))
-						{
-							cargs.change_indicator.changed_atoms_display_states=true;
-						}
+						dsu.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+						cargs.data_manager.update_atoms_display_state(dsu, it->first);
 					}
 				}
 			}
@@ -2472,22 +2422,8 @@ public:
 
 			if(mark)
 			{
-				{
-					UpdatingOfDataManagerDisplayStates::Parameters params;
-					params.unmark=true;
-					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, cargs.data_manager.contacts_display_states_mutable()))
-					{
-						cargs.change_indicator.changed_contacts_display_states=true;
-					}
-				}
-				{
-					UpdatingOfDataManagerDisplayStates::Parameters params;
-					params.mark=true;
-					if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
-					{
-						cargs.change_indicator.changed_contacts_display_states=true;
-					}
-				}
+				cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_unmark(true));
+				cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_mark(true), ids);
 			}
 
 			cargs.heterostorage.vectors_of_ids["selection_of_contacts"]=std::vector<std::size_t>(ids.begin(), ids.end());
@@ -2831,13 +2767,7 @@ public:
 			}
 
 			{
-				UpdatingOfDataManagerDisplayStates::Parameters params;
-				params.mark=positive_;
-				params.unmark=!positive_;
-				if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
-				{
-					cargs.change_indicator.changed_contacts_display_states=true;
-				}
+				cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_mark(positive_).set_unmark(!positive_), ids);
 			}
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
@@ -2894,17 +2824,7 @@ public:
 				throw std::runtime_error(std::string("No drawable contacts selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.show=positive_;
-			params.hide=!positive_;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_contacts_display_states=true;
-			}
+			cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive_).set_hide(!positive_), ids);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
@@ -2953,16 +2873,7 @@ public:
 				throw std::runtime_error(std::string("No drawable contacts selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.color=color_value;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.contacts_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_contacts_display_states=true;
-			}
+			cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_color(color_value), ids);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
@@ -3122,17 +3033,13 @@ public:
 
 			if(!only_summarize)
 			{
-				UpdatingOfDataManagerDisplayStates::Parameters params;
-				params.visual_ids=representation_ids;
-				params.assert_correctness();
+				DataManager::DisplayStateUpdater dsu;
+				dsu.visual_ids=representation_ids;
 
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 				{
-					params.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-					if(UpdatingOfDataManagerDisplayStates::update_display_state(params, it->first, cargs.data_manager.contacts_display_states_mutable()))
-					{
-						cargs.change_indicator.changed_contacts_display_states=true;
-					}
+					dsu.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					cargs.data_manager.update_contacts_display_state(dsu, it->first);
 				}
 			}
 
@@ -4308,17 +4215,7 @@ public:
 				throw std::runtime_error(std::string("No drawable figures selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.show=positive_;
-			params.hide=!positive_;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_figures_display_states=true;
-			}
+			cargs.data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive_).set_hide(!positive_), ids);
 		}
 
 	private:
@@ -4365,16 +4262,7 @@ public:
 				throw std::runtime_error(std::string("No drawable figures selected."));
 			}
 
-			UpdatingOfDataManagerDisplayStates::Parameters params;
-			params.visual_ids=representation_ids;
-			params.color=color_value;
-
-			params.assert_correctness();
-
-			if(UpdatingOfDataManagerDisplayStates::update_display_states(params, ids, cargs.data_manager.figures_display_states_mutable()))
-			{
-				cargs.change_indicator.changed_figures_display_states=true;
-			}
+			cargs.data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_color(color_value), ids);
 		}
 	};
 

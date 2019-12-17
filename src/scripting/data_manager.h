@@ -1,6 +1,8 @@
 #ifndef SCRIPTING_DATA_MANAGER_H_
 #define SCRIPTING_DATA_MANAGER_H_
 
+#include "../auxiliaries/color_utilities.h"
+
 #include "../common/construction_of_secondary_structure.h"
 #include "../common/construction_of_bonding_links.h"
 
@@ -64,6 +66,23 @@ public:
 					|| changed_atoms_display_states
 					|| changed_contacts_display_states
 					|| changed_figures_display_states);
+		}
+
+		static ChangeIndicator merge(const ChangeIndicator& a, const ChangeIndicator& b)
+		{
+			ChangeIndicator result;
+			result.changed_atoms=(a.changed_atoms || b.changed_atoms);
+			result.changed_contacts=(a.changed_contacts || b.changed_contacts);
+			result.changed_figures=(a.changed_figures || b.changed_figures);
+			result.changed_atoms_tags=(a.changed_atoms_tags || b.changed_atoms_tags);
+			result.changed_contacts_tags=(a.changed_contacts_tags || b.changed_contacts_tags);
+			result.changed_atoms_adjuncts=(a.changed_atoms_adjuncts || b.changed_atoms_adjuncts);
+			result.changed_contacts_adjuncts=(a.changed_contacts_adjuncts || b.changed_contacts_adjuncts);
+			result.changed_atoms_display_states=(a.changed_atoms_display_states || b.changed_atoms_display_states);
+			result.changed_contacts_display_states=(a.changed_contacts_display_states || b.changed_contacts_display_states);
+			result.changed_figures_display_states=(a.changed_figures_display_states || b.changed_figures_display_states);
+			result.ensure_correctness();
+			return result;
 		}
 	};
 
@@ -158,6 +177,192 @@ public:
 				}
 			}
 			return result;
+		}
+	};
+
+	class DisplayStateUpdater
+	{
+	public:
+		bool mark;
+		bool unmark;
+		bool show;
+		bool hide;
+		auxiliaries::ColorUtilities::ColorInteger color;
+		std::set<std::size_t> visual_ids;
+
+		DisplayStateUpdater() :
+			mark(false),
+			unmark(false),
+			show(false),
+			hide(false),
+			color(auxiliaries::ColorUtilities::null_color())
+		{
+		}
+
+		DisplayStateUpdater& set_mark(const bool value)
+		{
+			mark=value;
+			return (*this);
+		}
+
+		DisplayStateUpdater& set_unmark(const bool value)
+		{
+			unmark=value;
+			return (*this);
+		}
+
+		DisplayStateUpdater& set_show(const bool value)
+		{
+			show=value;
+			return (*this);
+		}
+
+		DisplayStateUpdater& set_hide(const bool value)
+		{
+			hide=value;
+			return (*this);
+		}
+
+		DisplayStateUpdater& set_color(const auxiliaries::ColorUtilities::ColorInteger value)
+		{
+			color=value;
+			return (*this);
+		}
+
+		DisplayStateUpdater& set_visual_ids(const std::set<std::size_t>& value)
+		{
+			visual_ids=value;
+			return (*this);
+		}
+
+		bool color_valid() const
+		{
+			return auxiliaries::ColorUtilities::color_valid(color);
+		}
+
+		void assert_correctness() const
+		{
+			if(hide && show)
+			{
+				throw std::runtime_error(std::string("Cannot show and hide at the same time."));
+			}
+
+			if(mark && unmark)
+			{
+				throw std::runtime_error(std::string("Cannot mark and unmark at the same time."));
+			}
+		}
+
+		bool update_display_state(DisplayState& ds) const
+		{
+			bool updated=false;
+			if(show || hide || mark || unmark || color_valid())
+			{
+				if(mark || unmark)
+				{
+					updated=(updated || (ds.marked!=mark));
+					ds.marked=mark;
+				}
+				if(ds.implemented())
+				{
+					if(show || hide || color_valid())
+					{
+						if(visual_ids.empty())
+						{
+							for(std::size_t i=0;i<ds.visuals.size();i++)
+							{
+								if(update_display_state_visual(ds.visuals[i]))
+								{
+									updated=true;
+								}
+							}
+						}
+						else
+						{
+							for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end();++jt)
+							{
+								const std::size_t visual_id=(*jt);
+								if(visual_id<ds.visuals.size())
+								{
+									if(update_display_state_visual(ds.visuals[visual_id]))
+									{
+										updated=true;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return updated;
+		}
+
+		bool update_display_state(const std::size_t id, std::vector<DisplayState>& display_states) const
+		{
+			assert_correctness();
+			bool updated=false;
+			if(id<display_states.size() && update_display_state(display_states[id]))
+			{
+				updated=true;
+			}
+			return updated;
+		}
+
+		bool update_display_states(const std::set<std::size_t>& ids, std::vector<DisplayState>& display_states) const
+		{
+			assert_correctness();
+			bool updated=false;
+			if(show || hide || mark || unmark || color_valid())
+			{
+				for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+				{
+					if((*it)<display_states.size() && update_display_state(display_states[*it]))
+					{
+						updated=true;
+					}
+				}
+			}
+			return updated;
+		}
+
+		bool update_display_states(std::vector<DisplayState>& display_states) const
+		{
+			assert_correctness();
+			bool updated=false;
+			if(show || hide || mark || unmark || color_valid())
+			{
+				for(std::size_t i=0;i<display_states.size();i++)
+				{
+					if(update_display_state(display_states[i]))
+					{
+						updated=true;
+					}
+				}
+			}
+			return updated;
+		}
+
+	private:
+		bool update_display_state_visual(DisplayState::Visual& visual) const
+		{
+			bool updated=false;
+
+			if(visual.implemented)
+			{
+				if(show || hide)
+				{
+					updated=(updated || (visual.visible!=show));
+					visual.visible=show;
+				}
+
+				if(color_valid())
+				{
+					updated=(updated || (visual.color!=color));
+					visual.color=color;
+				}
+			}
+
+			return updated;
 		}
 	};
 
@@ -263,6 +468,11 @@ public:
 	const std::string& text_description() const
 	{
 		return text_description_;
+	}
+
+	const ChangeIndicator& change_indicator() const
+	{
+		return change_indicator_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -476,26 +686,77 @@ public:
 		return contacts_[id].value;
 	}
 
-	std::vector<Figure>& figures_mutable()
+	void update_atoms_display_state(const DisplayStateUpdater& dsu, const std::size_t id)
 	{
-		return figures_;
+		if(dsu.update_display_state(id, atoms_display_states_))
+		{
+			change_indicator_.changed_atoms_display_states=true;
+		}
 	}
 
-	std::vector<DisplayState>& atoms_display_states_mutable()
+	void update_atoms_display_states(const DisplayStateUpdater& dsu, const std::set<std::size_t>& ids)
 	{
-		return atoms_display_states_;
+		if(dsu.update_display_states(ids, atoms_display_states_))
+		{
+			change_indicator_.changed_atoms_display_states=true;
+		}
 	}
 
-	std::vector<DisplayState>& contacts_display_states_mutable()
+	void update_atoms_display_states(const DisplayStateUpdater& dsu)
 	{
-		return contacts_display_states_;
+		if(dsu.update_display_states(atoms_display_states_))
+		{
+			change_indicator_.changed_atoms_display_states=true;
+		}
 	}
 
-	std::vector<DisplayState>& figures_display_states_mutable()
+	void update_contacts_display_state(const DisplayStateUpdater& dsu, const std::size_t id)
 	{
-		return figures_display_states_;
+		if(dsu.update_display_state(id, contacts_display_states_))
+		{
+			change_indicator_.changed_contacts_display_states=true;
+		}
 	}
 
+	void update_contacts_display_states(const DisplayStateUpdater& dsu, const std::set<std::size_t>& ids)
+	{
+		if(dsu.update_display_states(ids, contacts_display_states_))
+		{
+			change_indicator_.changed_contacts_display_states=true;
+		}
+	}
+
+	void update_contacts_display_states(const DisplayStateUpdater& dsu)
+	{
+		if(dsu.update_display_states(contacts_display_states_))
+		{
+			change_indicator_.changed_contacts_display_states=true;
+		}
+	}
+
+	void update_figures_display_state(const DisplayStateUpdater& dsu, const std::size_t id)
+	{
+		if(dsu.update_display_state(id, figures_display_states_))
+		{
+			change_indicator_.changed_figures_display_states=true;
+		}
+	}
+
+	void update_figures_display_states(const DisplayStateUpdater& dsu, const std::set<std::size_t>& ids)
+	{
+		if(dsu.update_display_states(ids, figures_display_states_))
+		{
+			change_indicator_.changed_figures_display_states=true;
+		}
+	}
+
+	void update_figures_display_states(const DisplayStateUpdater& dsu)
+	{
+		if(dsu.update_display_states(figures_display_states_))
+		{
+			change_indicator_.changed_figures_display_states=true;
+		}
+	}
 
 	bool add_atoms_representations(const std::vector<std::string>& names)
 	{
@@ -576,6 +837,16 @@ public:
 	{
 		text_description_=text;
 		return true;
+	}
+
+	void reset_change_indicator(const ChangeIndicator& change_indicator)
+	{
+		change_indicator_=change_indicator;
+	}
+
+	void reset_change_indicator()
+	{
+		change_indicator_=ChangeIndicator();
 	}
 
 	void reset_atoms_by_swapping(std::vector<Atom>& atoms)
@@ -1407,6 +1678,7 @@ private:
 	SelectionManager selection_manager_;
 	HistoryOfActionsOnContacts history_of_actions_on_contacts_;
 	std::string text_description_;
+	ChangeIndicator change_indicator_;
 };
 
 }
