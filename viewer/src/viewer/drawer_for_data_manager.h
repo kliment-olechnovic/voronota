@@ -130,29 +130,17 @@ public:
 		dc_figures_solid_(0),
 		dc_figures_mesh_(1)
 	{
-		{
-			std::vector<std::string> names;
-			names.push_back("balls");
-			names.push_back("sticks");
-			names.push_back("trace");
-			names.push_back("cartoon");
-			data_manager_.add_atoms_representations(names);
-		}
+		data_manager_.add_atoms_representation("balls");
+		data_manager_.add_atoms_representation("sticks");
+		data_manager_.add_atoms_representation("trace");
+		data_manager_.add_atoms_representation("cartoon");
 
-		{
-			std::vector<std::string> names;
-			names.push_back("faces");
-			names.push_back("sas-mesh");
-			names.push_back("edges");
-			data_manager_.add_contacts_representations(names);
-		}
+		data_manager_.add_contacts_representation("faces");
+		data_manager_.add_contacts_representation("sas-mesh");
+		data_manager_.add_contacts_representation("edges");
 
-		{
-			std::vector<std::string> names;
-			names.push_back("solid");
-			names.push_back("mesh");
-			data_manager_.add_figures_representations(names);
-		}
+		data_manager_.add_figures_representation("solid");
+		data_manager_.add_figures_representation("mesh");
 	}
 
 	scripting::DataManager* data_manager_ptr()

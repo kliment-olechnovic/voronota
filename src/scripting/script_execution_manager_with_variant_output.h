@@ -45,12 +45,9 @@ protected:
 		for(std::set<DataManager*>::const_iterator it=cr.change_indicator.added_objects.begin();it!=cr.change_indicator.added_objects.end();++it)
 		{
 			DataManager& dm=(*(*it));
-			dm.add_atoms_representations(std::vector<std::string>(1, "atoms"));
-			dm.set_atoms_representation_implemented_always(0, true);
-			dm.add_contacts_representations(std::vector<std::string>(1, "contacts"));
-			dm.set_contacts_representation_implemented_always(0, true);
-			dm.add_figures_representations(std::vector<std::string>(1, "figures"));
-			dm.set_figures_representation_implemented_always(0, true);
+			dm.add_atoms_representation("atoms", true);
+			dm.add_contacts_representation("contacts", true);
+			dm.add_figures_representation("figures", true);
 		}
 	}
 
