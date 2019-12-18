@@ -44,18 +44,6 @@ public:
 					|| !added_objects.empty()
 					|| !deleted_objects.empty());
 		}
-
-		bool handled_objects_changed() const
-		{
-			for(std::map<DataManager*, DataManager::ChangeIndicator>::const_iterator it=handled_objects.begin();it!=handled_objects.end();++it)
-			{
-				if(it->second.changed())
-				{
-					return true;
-				}
-			}
-			return false;
-		}
 	};
 
 	struct ObjectAttributes

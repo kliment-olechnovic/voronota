@@ -56,7 +56,7 @@ public:
 			output_script << "click-button" << button_code << "-on-";
 			if(deid.element_id.valid_atom_id())
 			{
-				if(deid.element_id.data_manager_ptr->atoms_display_states_mutable()[deid.element_id.atom_id].marked)
+				if(deid.element_id.data_manager_ptr->atoms_display_states()[deid.element_id.atom_id].marked)
 				{
 					output_script << "marked-";
 				}
@@ -69,7 +69,7 @@ public:
 			}
 			else if(deid.element_id.valid_contact_id())
 			{
-				if(deid.element_id.data_manager_ptr->contacts_display_states_mutable()[deid.element_id.contact_id].marked)
+				if(deid.element_id.data_manager_ptr->contacts_display_states()[deid.element_id.contact_id].marked)
 				{
 					output_script << "marked-";
 				}

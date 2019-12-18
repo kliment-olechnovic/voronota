@@ -48,7 +48,7 @@ public:
 			record.save_error(e);
 		}
 
-		record.change_indicator=DataManager::ChangeIndicator::merge(record.change_indicator, data_manager.change_indicator());
+		record.change_indicator=data_manager.change_indicator();
 
 		return record;
 	}
@@ -64,13 +64,11 @@ protected:
 		CommandInput& input;
 		HeterogeneousStorage& heterostorage;
 		DataManager& data_manager;
-		DataManager::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
 			input(command_record.command_input),
 			heterostorage(command_record.heterostorage),
-			data_manager(*command_record.data_manager_ptr),
-			change_indicator(command_record.change_indicator)
+			data_manager(*command_record.data_manager_ptr)
 		{
 		}
 	};

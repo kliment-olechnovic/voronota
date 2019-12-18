@@ -54,6 +54,13 @@ public:
 			changed_figures_display_states=(changed_figures_display_states || changed_figures);
 		}
 
+		ChangeIndicator corrected() const
+		{
+			ChangeIndicator ci=(*this);
+			ci.ensure_correctness();
+			return ci;
+		}
+
 		bool changed() const
 		{
 			return (changed_atoms
@@ -66,23 +73,6 @@ public:
 					|| changed_atoms_display_states
 					|| changed_contacts_display_states
 					|| changed_figures_display_states);
-		}
-
-		static ChangeIndicator merge(const ChangeIndicator& a, const ChangeIndicator& b)
-		{
-			ChangeIndicator result;
-			result.changed_atoms=(a.changed_atoms || b.changed_atoms);
-			result.changed_contacts=(a.changed_contacts || b.changed_contacts);
-			result.changed_figures=(a.changed_figures || b.changed_figures);
-			result.changed_atoms_tags=(a.changed_atoms_tags || b.changed_atoms_tags);
-			result.changed_contacts_tags=(a.changed_contacts_tags || b.changed_contacts_tags);
-			result.changed_atoms_adjuncts=(a.changed_atoms_adjuncts || b.changed_atoms_adjuncts);
-			result.changed_contacts_adjuncts=(a.changed_contacts_adjuncts || b.changed_contacts_adjuncts);
-			result.changed_atoms_display_states=(a.changed_atoms_display_states || b.changed_atoms_display_states);
-			result.changed_contacts_display_states=(a.changed_contacts_display_states || b.changed_contacts_display_states);
-			result.changed_figures_display_states=(a.changed_figures_display_states || b.changed_figures_display_states);
-			result.ensure_correctness();
-			return result;
 		}
 	};
 
@@ -470,9 +460,9 @@ public:
 		return text_description_;
 	}
 
-	const ChangeIndicator& change_indicator() const
+	ChangeIndicator change_indicator() const
 	{
-		return change_indicator_;
+		return change_indicator_.corrected();
 	}
 
 	void assert_atoms_representations_availability() const
@@ -676,14 +666,28 @@ public:
 		return selection_manager_;
 	}
 
-	AtomValue& atom_value_mutable(const std::size_t id)
+	std::set<std::string>& atom_tags_mutable(const std::size_t id)
 	{
-		return atoms_[id].value;
+		change_indicator_.changed_atoms_tags=true;
+		return atoms_[id].value.props.tags;
 	}
 
-	ContactValue& contact_value_mutable(const std::size_t id)
+	std::map<std::string, double>& atom_adjuncts_mutable(const std::size_t id)
 	{
-		return contacts_[id].value;
+		change_indicator_.changed_atoms_adjuncts=true;
+		return atoms_[id].value.props.adjuncts;
+	}
+
+	std::set<std::string>& contact_tags_mutable(const std::size_t id)
+	{
+		change_indicator_.changed_contacts_tags=true;
+		return contacts_[id].value.props.tags;
+	}
+
+	std::map<std::string, double>& contact_adjuncts_mutable(const std::size_t id)
+	{
+		change_indicator_.changed_contacts_adjuncts=true;
+		return contacts_[id].value.props.adjuncts;
 	}
 
 	void update_atoms_display_state(const DisplayStateUpdater& dsu, const std::size_t id)
@@ -762,7 +766,10 @@ public:
 	{
 		if(add_names_to_representations(names, atoms_representations_descriptor_.names))
 		{
-			resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_);
+			if(resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_))
+			{
+				change_indicator_.changed_atoms_display_states=true;
+			}
 			return true;
 		}
 		return false;
@@ -772,7 +779,10 @@ public:
 	{
 		if(add_names_to_representations(names, contacts_representations_descriptor_.names))
 		{
-			resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
+			if(resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_))
+			{
+				change_indicator_.changed_contacts_display_states=true;
+			}
 			return true;
 		}
 		return false;
@@ -782,7 +792,10 @@ public:
 	{
 		if(add_names_to_representations(names, figures_representations_descriptor_.names))
 		{
-			resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_);
+			if(resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_))
+			{
+				change_indicator_.changed_figures_display_states=true;
+			}
 			return true;
 		}
 		return false;
@@ -820,17 +833,32 @@ public:
 
 	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, atoms_display_states_);
+		if(set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, atoms_display_states_))
+		{
+			change_indicator_.changed_atoms_display_states=true;
+			return true;
+		}
+		return false;
 	}
 
 	bool set_contacts_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(contacts_representations_descriptor_.names, representation_id, statuses, contacts_display_states_);
+		if(set_representation_implemented(contacts_representations_descriptor_.names, representation_id, statuses, contacts_display_states_))
+		{
+			change_indicator_.changed_contacts_display_states=true;
+			return true;
+		}
+		return false;
 	}
 
 	bool set_figures_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
-		return set_representation_implemented(figures_representations_descriptor_.names, representation_id, statuses, figures_display_states_);
+		if(set_representation_implemented(figures_representations_descriptor_.names, representation_id, statuses, figures_display_states_))
+		{
+			change_indicator_.changed_figures_display_states=true;
+			return true;
+		}
+		return false;
 	}
 
 	bool set_text_description(const std::string& text)
@@ -855,6 +883,7 @@ public:
 		{
 			throw std::runtime_error(std::string("No atoms to set."));
 		}
+		change_indicator_.changed_atoms=true;
 		atoms_.swap(atoms);
 		reset_atoms_display_states();
 		reset_data_dependent_on_atoms();
@@ -868,6 +897,7 @@ public:
 
 	void reset_atoms_display_states()
 	{
+		change_indicator_.changed_atoms_display_states=true;
 		atoms_display_states_.clear();
 		atoms_display_states_.resize(atoms_.size());
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)
@@ -902,6 +932,8 @@ public:
 			restricted_atoms.push_back(atoms_[id]);
 			restricted_atoms_display_states.push_back(atoms_display_states_[id]);
 		}
+
+		change_indicator_.changed_atoms=true;
 
 		atoms_.swap(restricted_atoms);
 		atoms_display_states_.swap(restricted_atoms_display_states);
@@ -950,6 +982,8 @@ public:
 		{
 			throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
 		}
+
+		change_indicator_.changed_atoms=true;
 
 		if(!pre_translation_vector.empty())
 		{
@@ -1072,9 +1106,7 @@ public:
 		reset_triangulation_info_by_swapping(triangulation_info_copy);
 	}
 
-	void reset_triangulation_info_by_creating(
-			const common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters,
-			bool& happened)
+	void reset_triangulation_info_by_creating(const common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation& parameters)
 	{
 		const std::vector<apollota::SimpleSphere> atomic_balls=common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(atoms());
 
@@ -1091,12 +1123,11 @@ public:
 		}
 
 		reset_triangulation_info_by_swapping(bundle_of_triangulation_information);
-
-		happened=true;
 	}
 
 	void remove_contacts()
 	{
+		change_indicator_.changed_contacts=true;
 		contacts_.clear();
 		contacts_display_states_.clear();
 		selection_manager_.set_contacts(0);
@@ -1114,6 +1145,7 @@ public:
 		{
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
 		}
+		change_indicator_.changed_contacts=true;
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
 		selection_manager_.set_contacts(&contacts_);
@@ -1128,13 +1160,12 @@ public:
 
 	void reset_contacts_by_creating(
 			const common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation& parameters_to_construct_contacts,
-			const common::ConstructionOfContacts::ParametersToEnhanceContacts& parameters_to_enhance_contacts,
-			bool& happened)
+			const common::ConstructionOfContacts::ParametersToEnhanceContacts& parameters_to_enhance_contacts)
 	{
 		{
 			common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation parameters_to_construct_triangulation;
 			parameters_to_construct_triangulation.artificial_boundary_shift=std::max(parameters_to_construct_contacts.probe*2.0, 5.0);
-			reset_triangulation_info_by_creating(parameters_to_construct_triangulation, happened);
+			reset_triangulation_info_by_creating(parameters_to_construct_triangulation);
 		}
 
 		if(!contacts_.empty()
@@ -1156,10 +1187,9 @@ public:
 
 		reset_contacts_by_swapping(bundle_of_contact_information.contacts);
 
-		happened=true;
-
 		if(parameters_to_construct_contacts.calculate_volumes)
 		{
+			change_indicator_.changed_atoms_adjuncts=true;
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms().size();i++)
 			{
 				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
@@ -1177,6 +1207,7 @@ public:
 
 	void reset_contacts_display_states()
 	{
+		change_indicator_.changed_contacts_display_states=true;
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size());
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
@@ -1187,7 +1218,7 @@ public:
 		set_contacts_representations_implemented_if_required_always();
 	}
 
-	void remove_contacts_graphics(const std::set<std::size_t>& ids, bool& happened)
+	void remove_contacts_graphics(const std::set<std::size_t>& ids)
 	{
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
@@ -1196,7 +1227,7 @@ public:
 			{
 				if(!contacts_[id].value.graphics.empty())
 				{
-					happened=true;
+					change_indicator_.changed_contacts=true;
 					contacts_[id].value.graphics.clear();
 					history_of_actions_on_contacts_.graphics_creating.erase(id);
 				}
@@ -1207,8 +1238,7 @@ public:
 
 	void reset_contacts_graphics_by_creating(
 			const common::ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
-			const std::set<std::size_t>& ids,
-			bool& happened)
+			const std::set<std::size_t>& ids)
 	{
 		assert_contacts_availability();
 
@@ -1246,7 +1276,7 @@ public:
 			throw std::runtime_error(std::string("The triangulation artificial boundary is not compatible with the probe radius."));
 		}
 
-		happened=true;
+		change_indicator_.changed_contacts=true;
 
 		common::ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_);
 
@@ -1260,6 +1290,7 @@ public:
 
 	void remove_figures()
 	{
+		change_indicator_.changed_figures=true;
 		figures_.clear();
 		figures_display_states_.clear();
 	}
@@ -1274,6 +1305,7 @@ public:
 		{
 			throw std::runtime_error(std::string("Invalid ids provided to remove atoms."));
 		}
+		change_indicator_.changed_figures=true;
 		for(std::set<std::size_t>::const_reverse_iterator it=ids.rbegin();it!=ids.rend();++it)
 		{
 			figures_.erase(figures_.begin()+(*it));
@@ -1287,6 +1319,7 @@ public:
 		{
 			throw std::runtime_error(std::string("No figures to add."));
 		}
+		change_indicator_.changed_figures=true;
 		for(std::size_t i=0;i<new_figures.size();i++)
 		{
 			if(Figure::match_name(new_figures, new_figures[i].name).size()>1)
@@ -1320,6 +1353,7 @@ public:
 
 	void reset_figures_display_states()
 	{
+		change_indicator_.changed_figures_display_states=true;
 		figures_display_states_.clear();
 		figures_display_states_.resize(contacts_.size());
 		for(std::size_t i=0;i<figures_display_states_.size();i++)
@@ -1533,19 +1567,23 @@ private:
 		return true;
 	}
 
-	static void resize_visuals_in_display_states(const std::size_t size, std::vector<DisplayState>& display_states)
+	static bool resize_visuals_in_display_states(const std::size_t size, std::vector<DisplayState>& display_states)
 	{
+		bool resized=false;
 		for(std::size_t i=0;i<display_states.size();i++)
 		{
 			if(display_states[i].drawable && display_states[i].visuals.size()!=size)
 			{
 				display_states[i].visuals.resize(size);
+				resized=true;
 			}
 			else if(!display_states[i].drawable)
 			{
 				display_states[i].visuals.clear();
+				resized=true;
 			}
 		}
+		return resized;
 	}
 
 	static std::set<std::size_t> filter_drawable_implemented_ids(

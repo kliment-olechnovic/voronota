@@ -39,8 +39,6 @@ public:
 	struct Result
 	{
 		common::ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
-		DataManager::ChangeIndicator target_dm_ci;
-		DataManager::ChangeIndicator model_dm_ci;
 	};
 
 	static void construct_result(const Parameters& params, DataManager& target_dm, DataManager& model_dm, Result& result)
@@ -83,11 +81,11 @@ public:
 		write_adjuncts(result.bundle, params.smoothing_window, target_contacts_ids,
 				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
 				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
-				target_dm, result.target_dm_ci);
+				target_dm);
 		write_adjuncts(result.bundle, params.smoothing_window, model_contact_ids,
 				params.model_adjunct_atom_scores, params.model_adjunct_residue_scores,
 				params.model_adjunct_inter_atom_scores, params.model_adjunct_inter_residue_scores,
-				model_dm, result.model_dm_ci);
+				model_dm);
 	}
 
 private:
@@ -121,27 +119,25 @@ private:
 			const std::string& adjunct_residue_scores,
 			const std::string& adjunct_inter_atom_scores,
 			const std::string& adjunct_inter_residue_scores,
-			DataManager& dm,
-			DataManager::ChangeIndicator& dm_ci)
+			DataManager& dm)
 	{
 		if(!adjunct_atom_scores.empty())
 		{
 			for(std::size_t i=0;i<dm.atoms().size();i++)
 			{
 				const Atom& atom=dm.atoms()[i];
-				AtomValue& atom_value=dm.atom_value_mutable(i);
+				std::map<std::string, double>& atom_adjuncts=dm.atom_adjuncts_mutable(i);
 				if(!adjunct_atom_scores.empty())
 				{
 					std::map<common::ConstructionOfCADScore::CRAD, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 							bundle.map_of_atom_cad_descriptors.find(atom.crad);
 					if(jt!=bundle.map_of_atom_cad_descriptors.end())
 					{
-						atom_value.props.adjuncts[adjunct_atom_scores]=jt->second.score();
-						dm_ci.changed_atoms_adjuncts=true;
+						atom_adjuncts[adjunct_atom_scores]=jt->second.score();
 					}
 					else
 					{
-						atom_value.props.adjuncts.erase(adjunct_atom_scores);
+						atom_adjuncts.erase(adjunct_atom_scores);
 					}
 				}
 			}
@@ -153,19 +149,18 @@ private:
 			for(std::size_t i=0;i<dm.atoms().size();i++)
 			{
 				const Atom& atom=dm.atoms()[i];
-				AtomValue& atom_value=dm.atom_value_mutable(i);
+				std::map<std::string, double>& atom_adjuncts=dm.atom_adjuncts_mutable(i);
 				if(!adjunct_residue_scores.empty())
 				{
 					std::map<common::ConstructionOfCADScore::CRAD, double>::const_iterator jt=
 							smoothed_residue_scores.find(atom.crad.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 					if(jt!=smoothed_residue_scores.end())
 					{
-						atom_value.props.adjuncts[adjunct_residue_scores]=jt->second;
-						dm_ci.changed_atoms_adjuncts=true;
+						atom_adjuncts[adjunct_residue_scores]=jt->second;
 					}
 					else
 					{
-						atom_value.props.adjuncts.erase(adjunct_residue_scores);
+						atom_adjuncts.erase(adjunct_residue_scores);
 					}
 				}
 			}
@@ -175,20 +170,20 @@ private:
 		{
 			for(std::size_t i=0;i<dm.contacts().size();i++)
 			{
-				ContactValue& contact_value=dm.contact_value_mutable(i);
+				std::map<std::string, double>& contact_adjuncts=dm.contact_adjuncts_mutable(i);
 				if(!adjunct_inter_atom_scores.empty())
 				{
-					contact_value.props.adjuncts.erase(adjunct_inter_atom_scores);
+					contact_adjuncts.erase(adjunct_inter_atom_scores);
 				}
 				if(!adjunct_inter_residue_scores.empty())
 				{
-					contact_value.props.adjuncts.erase(adjunct_inter_residue_scores);
+					contact_adjuncts.erase(adjunct_inter_residue_scores);
 				}
 			}
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				const Contact& contact=dm.contacts()[*it];
-				ContactValue& contact_value=dm.contact_value_mutable(*it);
+				std::map<std::string, double>& contact_adjuncts=dm.contact_adjuncts_mutable(*it);
 				const common::ConstructionOfCADScore::CRADsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
 				if(crads.valid())
 				{
@@ -198,8 +193,7 @@ private:
 								bundle.map_of_inter_atom_cad_descriptors.find(crads);
 						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							contact_value.props.adjuncts[adjunct_inter_atom_scores]=jt->second.score();
-							dm_ci.changed_contacts_adjuncts=true;
+							contact_adjuncts[adjunct_inter_atom_scores]=jt->second.score();
 						}
 					}
 					if(!adjunct_inter_residue_scores.empty())
@@ -211,8 +205,7 @@ private:
 								bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
 						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end() && jt->second.target_area_sum>0.0)
 						{
-							contact_value.props.adjuncts[adjunct_inter_residue_scores]=jt->second.score();
-							dm_ci.changed_contacts_adjuncts=true;
+							contact_adjuncts[adjunct_inter_residue_scores]=jt->second.score();
 						}
 					}
 				}

@@ -363,11 +363,14 @@ public:
 			DataManager& target_dm=*cargs.congregation_of_data_managers.get_object(target_name);
 			DataManager& model_dm=*cargs.congregation_of_data_managers.get_object(model_name);
 
+			target_dm.reset_change_indicator();
+			model_dm.reset_change_indicator();
+
 			ScoringOfDataManagersUsingCADScore::Result result;
 			ScoringOfDataManagersUsingCADScore::construct_result(params, target_dm, model_dm, result);
 
-			cargs.change_indicator.handled_objects[&target_dm]=result.target_dm_ci;
-			cargs.change_indicator.handled_objects[&model_dm]=result.model_dm_ci;
+			cargs.change_indicator.handled_objects[&target_dm]=target_dm.change_indicator();
+			cargs.change_indicator.handled_objects[&model_dm]=model_dm.change_indicator();
 
 			if(result.bundle.parameters_of_construction.atom_level)
 			{

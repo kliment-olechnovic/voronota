@@ -57,7 +57,6 @@ public:
 				VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms()), info.object("atoms_summary_old"));
 
 				cargs.data_manager.restrict_atoms(ids);
-				cargs.change_indicator.changed_atoms=true;
 			}
 			else
 			{
@@ -100,8 +99,6 @@ public:
 			}
 
 			cargs.data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, rotation_matrix, rotation_axis_and_angle, post_translation_vector);
-
-			cargs.change_indicator.changed_atoms=true;
 		}
 	};
 
@@ -130,8 +127,6 @@ public:
 			translation_vector[2]=translation.z;
 
 			cargs.data_manager.transform_coordinates_of_atoms(ids, translation_vector, std::vector<double>(), std::vector<double>(), std::vector<double>());
-
-			cargs.change_indicator.changed_atoms=true;
 		}
 	};
 
@@ -393,11 +388,9 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_tags=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				cargs.data_manager.atom_value_mutable(*it).props.tags.insert(tag);
+				cargs.data_manager.atom_tags_mutable(*it).insert(tag);
 			}
 
 			VariantSerialization::write(SummaryOfAtoms(cargs.data_manager.atoms(), ids), cargs.heterostorage.variant_object.object("atoms_summary"));
@@ -416,13 +409,11 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			cargs.change_indicator.changed_atoms_tags=true;
-
 			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 			{
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(i);
-				atom_value.props.tags.erase(tag_for_alpha);
-				atom_value.props.tags.erase(tag_for_beta);
+				std::set<std::string>& atom_tags=cargs.data_manager.atom_tags_mutable(i);
+				atom_tags.erase(tag_for_alpha);
+				atom_tags.erase(tag_for_beta);
 			}
 
 			for(std::size_t residue_id=0;residue_id<cargs.data_manager.secondary_structure_info().residue_descriptors.size();residue_id++)
@@ -431,14 +422,14 @@ public:
 				const std::vector<std::size_t>& atom_ids=cargs.data_manager.primary_structure_info().residues[residue_id].atom_ids;
 				for(std::size_t i=0;i<atom_ids.size();i++)
 				{
-					AtomValue& atom_value=cargs.data_manager.atom_value_mutable(atom_ids[i]);
+					std::set<std::string>& atom_tags=cargs.data_manager.atom_tags_mutable(atom_ids[i]);
 					if(residue_descriptor.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
 					{
-						atom_value.props.tags.insert(tag_for_alpha);
+						atom_tags.insert(tag_for_alpha);
 					}
 					else if(residue_descriptor.secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
 					{
-						atom_value.props.tags.insert(tag_for_beta);
+						atom_tags.insert(tag_for_beta);
 					}
 				}
 			}
@@ -474,20 +465,18 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_tags=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(*it);
+				std::set<std::string>& atom_tags=cargs.data_manager.atom_tags_mutable(*it);
 				if(all)
 				{
-					atom_value.props.tags.clear();
+					atom_tags.clear();
 				}
 				else
 				{
 					for(std::size_t i=0;i<tags.size();i++)
 					{
-						atom_value.props.tags.erase(tags[i]);
+						atom_tags.erase(tags[i]);
 					}
 				}
 			}
@@ -524,18 +513,16 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(*it);
+				std::map<std::string, double>& atom_adjuncts=cargs.data_manager.atom_adjuncts_mutable(*it);
 				if(remove)
 				{
-					atom_value.props.adjuncts.erase(name);
+					atom_adjuncts.erase(name);
 				}
 				else
 				{
-					atom_value.props.adjuncts[name]=value;
+					atom_adjuncts[name]=value;
 				}
 			}
 
@@ -564,11 +551,9 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 			{
-				cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(name);
+				cargs.data_manager.atom_adjuncts_mutable(i).erase(name);
 			}
 
 			std::set<std::size_t> atom_ids;
@@ -579,7 +564,7 @@ public:
 
 				for(int i=0;i<(contact.solvent() ? 1 : 2);i++)
 				{
-					cargs.data_manager.atom_value_mutable(contact.ids[i]).props.adjuncts[name]+=contact.value.area;
+					cargs.data_manager.atom_adjuncts_mutable(contact.ids[i])[name]+=contact.value.area;
 					atom_ids.insert(contact.ids[i]);
 				}
 			}
@@ -618,11 +603,9 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 			{
-				cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(destination_name);
+				cargs.data_manager.atom_adjuncts_mutable(i).erase(destination_name);
 			}
 
 			std::set<std::size_t> atom_ids;
@@ -636,9 +619,9 @@ public:
 					const double source_value=(contact.value.props.adjuncts.find(source_name)->second);
 					for(int i=0;i<(contact.solvent() ? 1 : 2);i++)
 					{
-						AtomValue& atom_value=cargs.data_manager.atom_value_mutable(contact.ids[i]);
-						const bool first_setting=(atom_value.props.adjuncts.count(destination_name)==0);
-						double& destination_value=atom_value.props.adjuncts[destination_name];
+						std::map<std::string, double>& atom_adjuncts=cargs.data_manager.atom_adjuncts_mutable(contact.ids[i]);
+						const bool first_setting=(atom_adjuncts.count(destination_name)==0);
+						double& destination_value=atom_adjuncts[destination_name];
 						if(pooling_mode=="sum")
 						{
 							destination_value+=source_value;
@@ -756,16 +739,14 @@ public:
 				}
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::set<std::size_t>::const_iterator it=destination_atom_ids.begin();it!=destination_atom_ids.end();++it)
 			{
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(*it);
-				atom_value.props.adjuncts.erase(destination_name);
+				std::map<std::string, double>& atom_adjuncts=cargs.data_manager.atom_adjuncts_mutable(*it);
+				atom_adjuncts.erase(destination_name);
 				const std::size_t residue_id=cargs.data_manager.primary_structure_info().map_of_atoms_to_residues[*it];
 				if(residue_pooled_values.count(residue_id)>0)
 				{
-					atom_value.props.adjuncts[destination_name]=residue_pooled_values[residue_id];
+					atom_adjuncts[destination_name]=residue_pooled_values[residue_id];
 				}
 			}
 
@@ -803,20 +784,18 @@ public:
 				throw std::runtime_error(std::string("No atoms selected."));
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(*it);
+				std::map<std::string, double>& atom_adjuncts=cargs.data_manager.atom_adjuncts_mutable(*it);
 				if(all)
 				{
-					atom_value.props.adjuncts.clear();
+					atom_adjuncts.clear();
 				}
 				else
 				{
 					for(std::size_t i=0;i<adjuncts.size();i++)
 					{
-						atom_value.props.adjuncts.erase(adjuncts[i]);
+						atom_adjuncts.erase(adjuncts[i]);
 					}
 				}
 			}
@@ -1003,8 +982,6 @@ public:
 				}
 			}
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::map< std::string, std::map<common::ChainResidueAtomDescriptor, double> >::const_iterator it=maps_of_adjuncts.begin();it!=maps_of_adjuncts.end();++it)
 			{
 				const std::string& adjunct_name=it->first;
@@ -1016,7 +993,7 @@ public:
 					const std::pair<bool, double> value=common::MatchingUtilities::match_crad_with_map_of_crads(true, atom.crad, adjunct_map);
 					if(value.first)
 					{
-						cargs.data_manager.atom_value_mutable(i).props.adjuncts[adjunct_name]=value.second;
+						cargs.data_manager.atom_adjuncts_mutable(i)[adjunct_name]=value.second;
 					}
 				}
 			}
@@ -1894,10 +1871,9 @@ public:
 			if(force)
 			{
 				cargs.data_manager.remove_triangulation_info();
-				cargs.change_indicator.changed_contacts=true;
 			}
 
-			cargs.data_manager.reset_triangulation_info_by_creating(parameters_to_construct_triangulation, cargs.change_indicator.changed_contacts);
+			cargs.data_manager.reset_triangulation_info_by_creating(parameters_to_construct_triangulation);
 
 			VariantSerialization::write(SummaryOfTriangulation(cargs.data_manager.triangulation_info()), cargs.heterostorage.variant_object.object("triangulation_summary"));
 		}
@@ -2237,10 +2213,9 @@ public:
 			if(force)
 			{
 				cargs.data_manager.remove_contacts();
-				cargs.change_indicator.changed_contacts=true;
 			}
 
-			cargs.data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts, cargs.change_indicator.changed_contacts);
+			cargs.data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts);
 
 			VariantObject& info=cargs.heterostorage.variant_object;
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts()), info.object("contacts_summary"));
@@ -2271,7 +2246,7 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, cargs.change_indicator.changed_contacts);
+			cargs.data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
@@ -2295,7 +2270,7 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.data_manager.remove_contacts_graphics(ids, cargs.change_indicator.changed_contacts);
+			cargs.data_manager.remove_contacts_graphics(ids);
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
 		}
@@ -2366,7 +2341,6 @@ public:
 			if(!contacts.empty())
 			{
 				cargs.data_manager.reset_contacts_by_swapping(contacts);
-				cargs.change_indicator.changed_contacts=true;
 
 				VariantObject& info=cargs.heterostorage.variant_object;
 				info.value("file")=file;
@@ -2578,11 +2552,9 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_contacts_tags=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				cargs.data_manager.contact_value_mutable(*it).props.tags.insert(tag);
+				cargs.data_manager.contact_tags_mutable(*it).insert(tag);
 			}
 
 			VariantSerialization::write(SummaryOfContacts(cargs.data_manager.contacts(), ids), cargs.heterostorage.variant_object.object("contacts_summary"));
@@ -2618,20 +2590,18 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_contacts_tags=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				ContactValue& contact_value=cargs.data_manager.contact_value_mutable(*it);
+				std::set<std::string>& contact_tags=cargs.data_manager.contact_tags_mutable(*it);
 				if(all)
 				{
-					contact_value.props.tags.clear();
+					contact_tags.clear();
 				}
 				else
 				{
 					for(std::size_t i=0;i<tags.size();i++)
 					{
-						contact_value.props.tags.erase(tags[i]);
+						contact_tags.erase(tags[i]);
 					}
 				}
 			}
@@ -2668,18 +2638,16 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_contacts_adjuncts=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				ContactValue& contact_value=cargs.data_manager.contact_value_mutable(*it);
+				std::map<std::string, double>& contact_adjuncts=cargs.data_manager.contact_adjuncts_mutable(*it);
 				if(remove)
 				{
-					contact_value.props.adjuncts.erase(name);
+					contact_adjuncts.erase(name);
 				}
 				else
 				{
-					contact_value.props.adjuncts[name]=value;
+					contact_adjuncts[name]=value;
 				}
 			}
 
@@ -2716,20 +2684,18 @@ public:
 				throw std::runtime_error(std::string("No contacts selected."));
 			}
 
-			cargs.change_indicator.changed_contacts_adjuncts=true;
-
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				ContactValue& contact_value=cargs.data_manager.contact_value_mutable(*it);
+				std::map<std::string, double>& contact_adjuncts=cargs.data_manager.contact_adjuncts_mutable(*it);
 				if(all)
 				{
-					contact_value.props.adjuncts.clear();
+					contact_adjuncts.clear();
 				}
 				else
 				{
 					for(std::size_t i=0;i<adjuncts.size();i++)
 					{
-						contact_value.props.adjuncts.erase(adjuncts[i]);
+						contact_adjuncts.erase(adjuncts[i]);
 					}
 				}
 			}
@@ -3398,17 +3364,15 @@ public:
 
 			const std::map<common::ChainResidueAtomDescriptor, int> map_crad_to_depth=common::ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
 
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-
 			for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 			{
 				const Atom& atom=cargs.data_manager.atoms()[i];
-				AtomValue& atom_value=cargs.data_manager.atom_value_mutable(i);
-				atom_value.props.adjuncts.erase(name);
+				std::map<std::string, double>& atom_adjuncts=cargs.data_manager.atom_adjuncts_mutable(i);
+				atom_adjuncts.erase(name);
 				std::map<common::ChainResidueAtomDescriptor, int>::const_iterator it=map_crad_to_depth.find(atom.crad);
 				if(it!=map_crad_to_depth.end())
 				{
-					atom_value.props.adjuncts[name]=it->second;
+					atom_adjuncts[name]=it->second;
 				}
 			}
 		}
@@ -3438,9 +3402,6 @@ public:
 			assert_adjunct_name_input(params.adjunct_atom_quality_scores, true);
 			assert_adjunct_name_input(params.adjunct_residue_quality_scores_raw, true);
 			assert_adjunct_name_input(params.adjunct_residue_quality_scores_smoothed, true);
-
-			cargs.change_indicator.changed_atoms_adjuncts=true;
-			cargs.change_indicator.changed_contacts_adjuncts=true;
 
 			ScoringOfDataManagerUsingVoroMQA::Result result;
 			ScoringOfDataManagerUsingVoroMQA::construct_result(params, cargs.data_manager, result);
@@ -3659,21 +3620,17 @@ public:
 
 			if(!adjunct_contact_frustration_energy_mean.empty())
 			{
-				cargs.change_indicator.changed_contacts_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.contacts().size();i++)
 				{
-					cargs.data_manager.contact_value_mutable(i).props.adjuncts.erase(adjunct_contact_frustration_energy_mean);
+					cargs.data_manager.contact_adjuncts_mutable(i).erase(adjunct_contact_frustration_energy_mean);
 				}
 			}
 
 			if(!adjunct_atom_frustration_energy_mean.empty())
 			{
-				cargs.change_indicator.changed_atoms_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 				{
-					cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(adjunct_atom_frustration_energy_mean);
+					cargs.data_manager.atom_adjuncts_mutable(i).erase(adjunct_atom_frustration_energy_mean);
 				}
 			}
 
@@ -3685,12 +3642,12 @@ public:
 
 					if(!adjunct_contact_frustration_energy_mean.empty())
 					{
-						cargs.data_manager.contact_value_mutable(atom_solvent_contact_ids[central_id]).props.adjuncts[adjunct_contact_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+						cargs.data_manager.contact_adjuncts_mutable(atom_solvent_contact_ids[central_id])[adjunct_contact_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
 					}
 
 					if(!adjunct_atom_frustration_energy_mean.empty())
 					{
-						cargs.data_manager.atom_value_mutable(central_id).props.adjuncts[adjunct_atom_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
+						cargs.data_manager.atom_adjuncts_mutable(central_id)[adjunct_atom_frustration_energy_mean]=atom_solvent_contact_energy_means[central_id];
 					}
 				}
 			}
@@ -3734,17 +3691,15 @@ public:
 
 			if(!adjunct_atom_membrane_place_value.empty())
 			{
-				cargs.change_indicator.changed_atoms_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 				{
-					cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(adjunct_atom_membrane_place_value);
+					cargs.data_manager.atom_adjuncts_mutable(i).erase(adjunct_atom_membrane_place_value);
 				}
 
 				for(std::size_t i=0;i<atom_descriptors.size();i++)
 				{
 					const MembranePlacementForDataManagerUsingVoroMQA::AtomDescriptor& ad=atom_descriptors[i];
-					cargs.data_manager.atom_value_mutable(ad.atom_id).props.adjuncts[adjunct_atom_membrane_place_value]=ad.membrane_place_value;
+					cargs.data_manager.atom_adjuncts_mutable(ad.atom_id)[adjunct_atom_membrane_place_value]=ad.membrane_place_value;
 				}
 			}
 
@@ -3934,11 +3889,9 @@ public:
 
 				if(!adjunct_atom_exposure_value.empty())
 				{
-					cargs.change_indicator.changed_atoms_adjuncts=true;
-
 					for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 					{
-						cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(adjunct_atom_exposure_value);
+						cargs.data_manager.atom_adjuncts_mutable(i).erase(adjunct_atom_exposure_value);
 					}
 
 					for(std::set<std::size_t>::const_iterator it=exterior_atom_ids.begin();it!=exterior_atom_ids.end();++it)
@@ -3946,7 +3899,7 @@ public:
 						const std::size_t central_id=(*it);
 						if(atoms_weights[central_id]>0.0)
 						{
-							cargs.data_manager.atom_value_mutable(central_id).props.adjuncts[adjunct_atom_exposure_value]=atoms_values[central_id];
+							cargs.data_manager.atom_adjuncts_mutable(central_id)[adjunct_atom_exposure_value]=atoms_values[central_id];
 						}
 					}
 				}
@@ -4086,11 +4039,9 @@ public:
 
 			if(!adjunct_component_number.empty())
 			{
-				cargs.change_indicator.changed_atoms_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 				{
-					cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(adjunct_component_number);
+					cargs.data_manager.atom_adjuncts_mutable(i).erase(adjunct_component_number);
 				}
 
 				for(std::set<std::size_t>::const_iterator it=all_atom_ids.begin();it!=all_atom_ids.end();++it)
@@ -4098,7 +4049,7 @@ public:
 					const std::size_t central_id=(*it);
 					if(atoms_component_nums[central_id]>0)
 					{
-						cargs.data_manager.atom_value_mutable(central_id).props.adjuncts[adjunct_component_number]=atoms_component_nums[central_id];
+						cargs.data_manager.atom_adjuncts_mutable(central_id)[adjunct_component_number]=atoms_component_nums[central_id];
 					}
 				}
 			}
@@ -4128,8 +4079,6 @@ public:
 			figure.indices=indices;
 
 			cargs.data_manager.add_figure(figure);
-
-			cargs.change_indicator.changed_figures=true;
 
 			{
 				const Figure& figure=cargs.data_manager.figures().back();
@@ -4327,8 +4276,6 @@ public:
 			}
 
 			cargs.data_manager.remove_figures(ids);
-
-			cargs.change_indicator.changed_figures=true;
 		}
 	};
 
@@ -4397,8 +4344,6 @@ public:
 			figure.props.adjuncts["total_relevant_tetrahedron_volume"]=filtering_result.total_relevant_tetrahedron_volume;
 
 			cargs.data_manager.add_figure(figure);
-
-			cargs.change_indicator.changed_figures=true;
 		}
 	};
 
@@ -4562,11 +4507,9 @@ public:
 
 			if(!adjunct_atoms.empty())
 			{
-				cargs.change_indicator.changed_atoms_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.atoms().size();i++)
 				{
-					cargs.data_manager.atom_value_mutable(i).props.adjuncts.erase(adjunct_atoms);
+					cargs.data_manager.atom_adjuncts_mutable(i).erase(adjunct_atoms);
 				}
 
 				for(COPC::ID id=0;id<graph.vertices.size();id++)
@@ -4574,18 +4517,16 @@ public:
 					const std::set<std::size_t>& atom_ids=map_of_atoms_ids[graph.vertices[id].crad];
 					for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
 					{
-						cargs.data_manager.atom_value_mutable(*it).props.adjuncts[adjunct_atoms]=result.vertex_centralities[id];
+						cargs.data_manager.atom_adjuncts_mutable(*it)[adjunct_atoms]=result.vertex_centralities[id];
 					}
 				}
 			}
 
 			if(!adjunct_contacts.empty())
 			{
-				cargs.change_indicator.changed_contacts_adjuncts=true;
-
 				for(std::size_t i=0;i<cargs.data_manager.contacts().size();i++)
 				{
-					cargs.data_manager.contact_value_mutable(i).props.adjuncts.erase(adjunct_contacts);
+					cargs.data_manager.contact_adjuncts_mutable(i).erase(adjunct_contacts);
 				}
 
 				for(std::size_t i=0;i<graph.edges.size();i++)
@@ -4597,7 +4538,7 @@ public:
 					const std::set<std::size_t>& contact_ids=map_of_contacts_ids[crads];
 					for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 					{
-						cargs.data_manager.contact_value_mutable(*it).props.adjuncts[adjunct_contacts]=result.edge_centralities[COPC::ordered_pair_of_ids(id1, id2)];
+						cargs.data_manager.contact_adjuncts_mutable(*it)[adjunct_contacts]=result.edge_centralities[COPC::ordered_pair_of_ids(id1, id2)];
 					}
 				}
 			}
