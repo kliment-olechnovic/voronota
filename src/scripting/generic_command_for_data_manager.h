@@ -10,16 +10,22 @@ namespace scripting
 class GenericCommandForDataManager : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public CommonGenericCommandRecord
+	class CommandRecord : public CommonGenericCommandRecord
 	{
-		DataManager* data_manager_ptr;
-		DataManager::ChangeIndicator change_indicator;
-
+	public:
 		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
 			CommonGenericCommandRecord(command_input),
-			data_manager_ptr(&data_manager)
+			data_manager_ptr_(&data_manager)
 		{
 		}
+
+		DataManager* data_manager_ptr() const
+		{
+			return data_manager_ptr_;
+		}
+
+	private:
+		DataManager* data_manager_ptr_;
 	};
 
 	GenericCommandForDataManager()
@@ -48,8 +54,6 @@ public:
 			record.save_error(e);
 		}
 
-		record.change_indicator=data_manager.change_indicator();
-
 		return record;
 	}
 
@@ -68,7 +72,7 @@ protected:
 		explicit CommandArguments(CommandRecord& command_record) :
 			input(command_record.command_input),
 			heterostorage(command_record.heterostorage),
-			data_manager(*command_record.data_manager_ptr)
+			data_manager(*command_record.data_manager_ptr())
 		{
 		}
 	};

@@ -10,16 +10,22 @@ namespace scripting
 class GenericCommandForCongregationOfDataManagers : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public CommonGenericCommandRecord
+	class CommandRecord : public CommonGenericCommandRecord
 	{
-		CongregationOfDataManagers* congregation_of_data_managers_ptr;
-		CongregationOfDataManagers::ChangeIndicator change_indicator;
-
+	public:
 		CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
 			CommonGenericCommandRecord(command_input),
-			congregation_of_data_managers_ptr(&congregation_of_data_managers)
+			congregation_of_data_managers_ptr_(&congregation_of_data_managers)
 		{
 		}
+
+		CongregationOfDataManagers* congregation_of_data_managers_ptr() const
+		{
+			return congregation_of_data_managers_ptr_;
+		}
+
+	private:
+		CongregationOfDataManagers* congregation_of_data_managers_ptr_;
 	};
 
 	GenericCommandForCongregationOfDataManagers()
@@ -48,8 +54,6 @@ public:
 			record.save_error(e);
 		}
 
-		record.change_indicator=congregation_of_data_managers.change_indicator();
-
 		return record;
 	}
 
@@ -63,7 +67,7 @@ protected:
 		explicit CommandArguments(CommandRecord& command_record) :
 			input(command_record.command_input),
 			heterostorage(command_record.heterostorage),
-			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr)
+			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr())
 		{
 		}
 	};

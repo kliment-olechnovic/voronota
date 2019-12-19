@@ -42,7 +42,8 @@ protected:
 
 	void on_after_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
-		for(std::set<DataManager*>::const_iterator it=cr.change_indicator.added_objects.begin();it!=cr.change_indicator.added_objects.end();++it)
+		const CongregationOfDataManagers::ChangeIndicator ci=cr.congregation_of_data_managers_ptr()->change_indicator();
+		for(std::set<DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
 		{
 			DataManager& dm=(*(*it));
 			dm.add_atoms_representation("atoms", true);
@@ -53,7 +54,7 @@ protected:
 
 	void on_after_command_for_data_manager(const GenericCommandForDataManager::CommandRecord& cr)
 	{
-		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(cr.data_manager_ptr);
+		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(cr.data_manager_ptr());
 		current_command_object().value("data_object")=object_attributes.name;
 	}
 

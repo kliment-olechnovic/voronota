@@ -276,19 +276,20 @@ public:
 protected:
 	void on_after_command_for_congregation_of_data_managers(const scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
 	{
-		for(std::set<scripting::DataManager*>::const_iterator it=cr.change_indicator.added_objects.begin();it!=cr.change_indicator.added_objects.end();++it)
+		const scripting::CongregationOfDataManagers::ChangeIndicator ci=cr.congregation_of_data_managers_ptr()->change_indicator();
+
+		for(std::set<scripting::DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
 		{
 			congregation_of_drawers_.add_object(*(*it));
 		}
 
-		for(std::set<scripting::DataManager*>::const_iterator it=cr.change_indicator.deleted_objects.begin();it!=cr.change_indicator.deleted_objects.end();++it)
+		for(std::set<scripting::DataManager*>::const_iterator it=ci.deleted_objects.begin();it!=ci.deleted_objects.end();++it)
 		{
 			congregation_of_drawers_.delete_object(*it);
 		}
 
-		if(cr.congregation_of_data_managers_ptr!=0)
 		{
-			std::vector<scripting::DataManager*> data_managers=cr.congregation_of_data_managers_ptr->get_objects();
+			const std::vector<scripting::DataManager*> data_managers=cr.congregation_of_data_managers_ptr()->get_objects();
 			for(std::size_t i=0;i<data_managers.size();i++)
 			{
 				scripting::DataManager* data_manager=data_managers[i];
@@ -312,12 +313,14 @@ protected:
 	{
 		scripting::ScriptExecutionManagerWithVariantOutput::on_after_command_for_data_manager(cr);
 
-		if(cr.change_indicator.changed())
+		const scripting::DataManager::ChangeIndicator ci=cr.data_manager_ptr()->change_indicator();
+
+		if(ci.changed())
 		{
-			DrawerForDataManager* drawer=congregation_of_drawers_.get_object(cr.data_manager_ptr);
+			DrawerForDataManager* drawer=congregation_of_drawers_.get_object(cr.data_manager_ptr());
 			if(drawer!=0)
 			{
-				drawer->update(cr.change_indicator);
+				drawer->update(ci);
 			}
 		}
 

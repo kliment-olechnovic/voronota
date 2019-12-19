@@ -32,8 +32,9 @@ protected:
 	}
 };
 
-struct CommonGenericCommandRecord
+class CommonGenericCommandRecord
 {
+public:
 	bool successful;
 	CommandInput command_input;
 	HeterogeneousStorage heterostorage;
