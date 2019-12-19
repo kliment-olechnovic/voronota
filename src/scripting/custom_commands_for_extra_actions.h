@@ -3,7 +3,7 @@
 
 #include "../auxiliaries/time_utilities.h"
 
-#include "generic_command.h"
+#include "generic_command_for_extra_actions.h"
 #include "collection_of_command_documentations.h"
 #include "loading_of_data.h"
 #include "scoring_of_data_manager_using_voromqa.h"
@@ -14,7 +14,7 @@ namespace scripting
 class CustomsCommandsForExtraActions
 {
 public:
-	class reset_time : public GenericCommand
+	class reset_time : public GenericCommandForExtraActions
 	{
 	public:
 		explicit reset_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
@@ -33,7 +33,7 @@ public:
 		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
 	};
 
-	class print_time : public GenericCommand
+	class print_time : public GenericCommandForExtraActions
 	{
 	public:
 		explicit print_time(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) :
@@ -57,7 +57,7 @@ public:
 		auxiliaries::ElapsedProcessorTime& elapsed_processor_time_;
 	};
 
-	class exit : public GenericCommand
+	class exit : public GenericCommandForExtraActions
 	{
 	public:
 		explicit exit(bool& exit_status) :
@@ -76,7 +76,7 @@ public:
 		bool& exit_status_;
 	};
 
-	class echo : public GenericCommand
+	class echo : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -93,7 +93,7 @@ public:
 		}
 	};
 
-	class list_virtual_files : public GenericCommand
+	class list_virtual_files : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -113,7 +113,7 @@ public:
 		}
 	};
 
-	class upload_virtual_file : public GenericCommand
+	class upload_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -144,7 +144,7 @@ public:
 		}
 	};
 
-	class download_virtual_file : public GenericCommand
+	class download_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -172,7 +172,7 @@ public:
 		}
 	};
 
-	class print_virtual_file : public GenericCommand
+	class print_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -201,7 +201,7 @@ public:
 		}
 	};
 
-	class delete_virtual_files : public GenericCommand
+	class delete_virtual_files : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -230,7 +230,7 @@ public:
 		}
 	};
 
-	class setup_loading : public GenericCommand
+	class setup_loading : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -264,7 +264,7 @@ public:
 		}
 	};
 
-	class setup_voromqa : public GenericCommand
+	class setup_voromqa : public GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)
@@ -281,7 +281,7 @@ public:
 		}
 	};
 
-	class explain_command : public GenericCommand
+	class explain_command : public GenericCommandForExtraActions
 	{
 	public:
 		explicit explain_command(CollectionOfCommandDocumentations& collection_of_docs) :
@@ -330,7 +330,7 @@ public:
 		const CollectionOfCommandDocumentations& collection_of_command_documentations_;
 	};
 
-	class list_commands : public GenericCommand
+	class list_commands : public GenericCommandForExtraActions
 	{
 	public:
 		explicit list_commands(CollectionOfCommandDocumentations& collection_of_docs) :

@@ -36,11 +36,11 @@ protected:
 		current_command_object(true).value("line")=command_input.get_input_command_string();
 	}
 
-	void on_after_command_for_script_partitioner(const CommonGenericCommandRecord&, ScriptPartitioner&)
+	void on_after_command_for_script_partitioner(const GenericCommandRecord&, ScriptPartitioner&)
 	{
 	}
 
-	void on_after_command_for_congregation_of_data_managers(const CommonGenericCommandRecord&, CongregationOfDataManagers& congregation_of_data_managers)
+	void on_after_command_for_congregation_of_data_managers(const GenericCommandRecord&, CongregationOfDataManagers& congregation_of_data_managers)
 	{
 		const CongregationOfDataManagers::ChangeIndicator ci=congregation_of_data_managers.change_indicator();
 		for(std::set<DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
@@ -52,13 +52,13 @@ protected:
 		}
 	}
 
-	void on_after_command_for_data_manager(const CommonGenericCommandRecord&, DataManager& data_manager)
+	void on_after_command_for_data_manager(const GenericCommandRecord&, DataManager& data_manager)
 	{
 		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
 		current_command_object().value("data_object")=object_attributes.name;
 	}
 
-	void on_after_command_for_extra_actions(const CommonGenericCommandRecord&)
+	void on_after_command_for_extra_actions(const GenericCommandRecord&)
 	{
 	}
 
@@ -77,7 +77,7 @@ protected:
 		write_error_to_current_command_object("Command unrecognized.");
 	}
 
-	void on_after_any_command(const CommonGenericCommandRecord& cr)
+	void on_after_any_command(const GenericCommandRecord& cr)
 	{
 		for(std::size_t i=0;i<cr.heterostorage.errors.size();i++)
 		{

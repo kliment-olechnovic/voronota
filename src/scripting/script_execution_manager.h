@@ -233,7 +233,7 @@ protected:
 		}
 	}
 
-	void set_command(const std::string& name, GenericCommand* command_ptr)
+	void set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
 	{
 		unset_command(name);
 		if(command_ptr!=0)
@@ -251,19 +251,19 @@ protected:
 	{
 	}
 
-	virtual void on_after_command_for_script_partitioner(const CommonGenericCommandRecord&, ScriptPartitioner&)
+	virtual void on_after_command_for_script_partitioner(const GenericCommandRecord&, ScriptPartitioner&)
 	{
 	}
 
-	virtual void on_after_command_for_congregation_of_data_managers(const CommonGenericCommandRecord&, CongregationOfDataManagers&)
+	virtual void on_after_command_for_congregation_of_data_managers(const GenericCommandRecord&, CongregationOfDataManagers&)
 	{
 	}
 
-	virtual void on_after_command_for_data_manager(const CommonGenericCommandRecord&, DataManager&)
+	virtual void on_after_command_for_data_manager(const GenericCommandRecord&, DataManager&)
 	{
 	}
 
-	virtual void on_after_command_for_extra_actions(const CommonGenericCommandRecord&)
+	virtual void on_after_command_for_extra_actions(const GenericCommandRecord&)
 	{
 	}
 
@@ -279,7 +279,7 @@ protected:
 	{
 	}
 
-	virtual void on_after_any_command(const CommonGenericCommandRecord&)
+	virtual void on_after_any_command(const GenericCommandRecord&)
 	{
 	}
 
@@ -409,7 +409,7 @@ private:
 		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const CommonGenericCommandRecord cr=commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_);
+			const GenericCommandRecord cr=commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_);
 			command_record.successful=cr.successful;
 			on_after_command_for_script_partitioner(cr, script_partitioner_);
 			on_after_any_command(cr);
@@ -417,7 +417,7 @@ private:
 		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const CommonGenericCommandRecord cr=commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_);
+			const GenericCommandRecord cr=commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_);
 			command_record.successful=cr.successful;
 			on_after_command_for_congregation_of_data_managers(cr, congregation_of_data_managers_);
 			on_after_any_command(cr);
@@ -443,7 +443,7 @@ private:
 					for(std::size_t i=0;i<picked_data_managers.size();i++)
 					{
 						on_before_any_command(command_record.command_input);
-						const CommonGenericCommandRecord cr=commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]);
+						const GenericCommandRecord cr=commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]);
 						command_record.successful=cr.successful;
 						on_after_command_for_data_manager(cr, *picked_data_managers[i]);
 						on_after_any_command(cr);
@@ -453,20 +453,20 @@ private:
 				{
 					on_before_any_command(command_record.command_input);
 					on_command_not_allowed_for_multiple_data_managers(command_record.command_input);
-					on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
+					on_after_any_command(GenericCommandRecord(command_record.command_input));
 				}
 			}
 			else
 			{
 				on_before_any_command(command_record.command_input);
 				on_no_picked_data_manager_for_command(command_record.command_input);
-				on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
+				on_after_any_command(GenericCommandRecord(command_record.command_input));
 			}
 		}
 		else if(commands_for_extra_actions_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const CommonGenericCommandRecord cr=commands_for_extra_actions_[command_name]->execute(command_record.command_input);
+			const GenericCommandRecord cr=commands_for_extra_actions_[command_name]->execute(command_record.command_input);
 			command_record.successful=cr.successful;
 			on_after_command_for_extra_actions(cr);
 			on_after_any_command(cr);
@@ -475,14 +475,14 @@ private:
 		{
 			on_before_any_command(command_record.command_input);
 			on_unrecognized_command(command_name);
-			on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
+			on_after_any_command(GenericCommandRecord(command_record.command_input));
 		}
 	}
 
 	std::map<std::string, GenericCommandForScriptPartitioner*> commands_for_script_partitioner_;
 	std::map<std::string, GenericCommandForCongregationOfDataManagers*> commands_for_congregation_of_data_managers_;
 	std::map<std::string, GenericCommandForDataManager*> commands_for_data_manager_;
-	std::map<std::string, GenericCommand*> commands_for_extra_actions_;
+	std::map<std::string, GenericCommandForExtraActions*> commands_for_extra_actions_;
 	ScriptPartitioner script_partitioner_;
 	CongregationOfDataManagers congregation_of_data_managers_;
 	CollectionOfCommandDocumentations collection_of_command_documentations_;

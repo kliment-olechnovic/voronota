@@ -7,7 +7,7 @@
 namespace scripting
 {
 
-class GenericCommandForCongregationOfDataManagers : public CommonGenericCommandInterface
+class GenericCommandForCongregationOfDataManagers : public GenericCommandInterface
 {
 public:
 	GenericCommandForCongregationOfDataManagers()
@@ -18,9 +18,9 @@ public:
 	{
 	}
 
-	CommonGenericCommandRecord execute(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers)
+	GenericCommandRecord execute(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		CommonGenericCommandRecord record(command_input);
+		GenericCommandRecord record(command_input);
 
 		CommandArguments cargs(record, congregation_of_data_managers);
 
@@ -47,7 +47,7 @@ protected:
 		CongregationOfDataManagers& congregation_of_data_managers;
 
 		explicit CommandArguments(
-				CommonGenericCommandRecord& command_record,
+				GenericCommandRecord& command_record,
 				CongregationOfDataManagers& congregation_of_data_managers) :
 						input(command_record.command_input),
 						heterostorage(command_record.heterostorage),

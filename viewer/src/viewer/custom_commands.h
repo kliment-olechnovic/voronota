@@ -1,7 +1,7 @@
 #ifndef VIEWER_CUSTOM_COMMANDS_H_
 #define VIEWER_CUSTOM_COMMANDS_H_
 
-#include "../../../src/scripting/generic_command.h"
+#include "../../../src/scripting/generic_command_for_extra_actions.h"
 #include "../../../src/auxiliaries/color_utilities.h"
 
 #include "../uv/viewer_application.h"
@@ -12,7 +12,7 @@ namespace viewer
 class CustomCommands
 {
 public:
-	class resize_window : public scripting::GenericCommand
+	class resize_window : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit resize_window(uv::ViewerApplication& app) :
@@ -45,7 +45,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class background : public scripting::GenericCommand
+	class background : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit background(uv::ViewerApplication& app) :
@@ -72,7 +72,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class mono : public scripting::GenericCommand
+	class mono : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit mono(uv::ViewerApplication& app) :
@@ -91,7 +91,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class stereo : public scripting::GenericCommand
+	class stereo : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit stereo(uv::ViewerApplication& app) :
@@ -118,7 +118,7 @@ public:
 	};
 
 	template<int grid_variant_value>
-	class grid : public scripting::GenericCommand
+	class grid : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit grid(uv::ViewerApplication& app, int& grid_variant) :
@@ -140,7 +140,7 @@ public:
 		int& grid_variant_;
 	};
 
-	class ortho : public scripting::GenericCommand
+	class ortho : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit ortho(uv::ViewerApplication& app) :
@@ -160,7 +160,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class perspective : public scripting::GenericCommand
+	class perspective : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit perspective(uv::ViewerApplication& app) :
@@ -184,7 +184,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class fog : public scripting::GenericCommand
+	class fog : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit fog(uv::ViewerApplication& app) :
@@ -204,7 +204,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class rotate : public scripting::GenericCommand
+	class rotate : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit rotate(uv::ViewerApplication& app) :
@@ -242,7 +242,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class screenshot : public scripting::GenericCommand
+	class screenshot : public scripting::GenericCommandForExtraActions
 	{
 	public:
 		explicit screenshot(uv::ViewerApplication& app) :
@@ -288,7 +288,7 @@ public:
 		uv::ViewerApplication& app_;
 	};
 
-	class setup_rendering : public scripting::GenericCommand
+	class setup_rendering : public scripting::GenericCommandForExtraActions
 	{
 	protected:
 		void run(CommandArguments& cargs)

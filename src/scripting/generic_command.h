@@ -8,14 +8,14 @@
 namespace scripting
 {
 
-class CommonGenericCommandInterface
+class GenericCommandInterface
 {
 public:
-	CommonGenericCommandInterface()
+	GenericCommandInterface()
 	{
 	}
 
-	virtual ~CommonGenericCommandInterface()
+	virtual ~GenericCommandInterface()
 	{
 	}
 
@@ -32,75 +32,26 @@ protected:
 	}
 };
 
-class CommonGenericCommandRecord
+class GenericCommandRecord
 {
 public:
 	bool successful;
 	CommandInput command_input;
 	HeterogeneousStorage heterostorage;
 
-	explicit CommonGenericCommandRecord(const CommandInput& command_input) :
+	explicit GenericCommandRecord(const CommandInput& command_input) :
 		successful(false),
 		command_input(command_input)
 	{
 	}
 
-	virtual ~CommonGenericCommandRecord()
+	virtual ~GenericCommandRecord()
 	{
 	}
 
 	void save_error(const std::exception& e)
 	{
 		heterostorage.errors.push_back(std::string(e.what()));
-	}
-};
-
-class GenericCommand : public CommonGenericCommandInterface
-{
-public:
-	GenericCommand()
-	{
-	}
-
-	virtual ~GenericCommand()
-	{
-	}
-
-	CommonGenericCommandRecord execute(const CommandInput& command_input)
-	{
-		CommonGenericCommandRecord record(command_input);
-
-		CommandArguments cargs(record);
-
-		try
-		{
-			run(cargs);
-			record.successful=true;
-		}
-		catch(const std::exception& e)
-		{
-			record.save_error(e);
-		}
-
-		return record;
-	}
-
-protected:
-	struct CommandArguments
-	{
-	public:
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-
-		explicit CommandArguments(CommonGenericCommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage)
-		{
-		}
-	};
-
-	virtual void run(CommandArguments&)
-	{
 	}
 };
 

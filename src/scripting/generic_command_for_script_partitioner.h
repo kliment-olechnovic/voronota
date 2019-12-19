@@ -7,7 +7,7 @@
 namespace scripting
 {
 
-class GenericCommandForScriptPartitioner : public CommonGenericCommandInterface
+class GenericCommandForScriptPartitioner : public GenericCommandInterface
 {
 public:
 	GenericCommandForScriptPartitioner()
@@ -18,9 +18,9 @@ public:
 	{
 	}
 
-	CommonGenericCommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
+	GenericCommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
 	{
-		CommonGenericCommandRecord record(command_input);
+		GenericCommandRecord record(command_input);
 
 		CommandArguments cargs(record, script_partitioner);
 
@@ -45,7 +45,7 @@ protected:
 		ScriptPartitioner& script_partitioner;
 
 		explicit CommandArguments(
-				CommonGenericCommandRecord& command_record,
+				GenericCommandRecord& command_record,
 				ScriptPartitioner& script_partitioner) :
 						input(command_record.command_input),
 						heterostorage(command_record.heterostorage),
