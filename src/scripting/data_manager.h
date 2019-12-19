@@ -874,11 +874,6 @@ public:
 		return true;
 	}
 
-	void reset_change_indicator(const ChangeIndicator& change_indicator)
-	{
-		change_indicator_=change_indicator;
-	}
-
 	void reset_change_indicator()
 	{
 		change_indicator_=ChangeIndicator();

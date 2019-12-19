@@ -38,6 +38,8 @@ public:
 
 		try
 		{
+			congregation_of_data_managers.reset_change_indicator();
+			congregation_of_data_managers.reset_change_indicators_of_all_objects();
 			run(cargs);
 			record.successful=true;
 		}
@@ -46,7 +48,7 @@ public:
 			record.save_error(e);
 		}
 
-		record.change_indicator.ensure_correctness();
+		record.change_indicator=congregation_of_data_managers.change_indicator();
 
 		return record;
 	}
@@ -57,13 +59,11 @@ protected:
 		CommandInput& input;
 		HeterogeneousStorage& heterostorage;
 		CongregationOfDataManagers& congregation_of_data_managers;
-		CongregationOfDataManagers::ChangeIndicator& change_indicator;
 
 		explicit CommandArguments(CommandRecord& command_record) :
 			input(command_record.command_input),
 			heterostorage(command_record.heterostorage),
-			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr),
-			change_indicator(command_record.change_indicator)
+			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr)
 		{
 		}
 	};

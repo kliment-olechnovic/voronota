@@ -61,11 +61,7 @@ public:
 			{
 				cargs.heterostorage.variant_object.values_array("deleted_objects").push_back(
 						VariantValue(cargs.congregation_of_data_managers.get_object_attributes(objects[i]).name));
-				DataManager* ptr=cargs.congregation_of_data_managers.delete_object(objects[i]);
-				if(ptr!=0)
-				{
-					cargs.change_indicator.deleted_objects.insert(ptr);
-				}
+				cargs.congregation_of_data_managers.delete_object(objects[i]);
 			}
 		}
 	};
@@ -92,8 +88,6 @@ public:
 			cargs.congregation_of_data_managers.assert_object_availability(name_original);
 
 			cargs.congregation_of_data_managers.rename_object(name_original, name_new);
-
-			cargs.change_indicator.changed_objects_names=true;
 		}
 	};
 
@@ -120,7 +114,6 @@ public:
 
 			DataManager* object_original=cargs.congregation_of_data_managers.get_object(name_original);
 			DataManager* object_new=cargs.congregation_of_data_managers.add_object(*object_original, name_new);
-			cargs.change_indicator.added_objects.insert(object_new);
 
 			cargs.heterostorage.variant_object.value("object_name")=cargs.congregation_of_data_managers.get_object_attributes(object_new).name;
 		}
@@ -174,11 +167,8 @@ public:
 				VariantSerialization::write(summary_of_contacts, cargs.heterostorage.variant_object.object("contacts_summary"));
 			}
 
-			cargs.change_indicator.added_objects.insert(object_new);
-
 			cargs.congregation_of_data_managers.set_all_objects_picked(false);
 			cargs.congregation_of_data_managers.set_object_picked(object_new, true);
-			cargs.change_indicator.changed_objects_picks=true;
 
 			cargs.heterostorage.variant_object.value("object_name")=cargs.congregation_of_data_managers.get_object_attributes(object_new).name;;
 		}
@@ -208,8 +198,6 @@ public:
 			{
 				throw std::runtime_error(std::string("No objects selected."));
 			}
-
-			cargs.change_indicator.changed_objects_picks=true;
 
 			if(positive_ && !add_)
 			{
@@ -267,8 +255,6 @@ public:
 			{
 				throw std::runtime_error(std::string("No objects selected."));
 			}
-
-			cargs.change_indicator.changed_objects_visibilities=true;
 
 			for(std::size_t i=0;i<objects.size();i++)
 			{
@@ -363,14 +349,8 @@ public:
 			DataManager& target_dm=*cargs.congregation_of_data_managers.get_object(target_name);
 			DataManager& model_dm=*cargs.congregation_of_data_managers.get_object(model_name);
 
-			target_dm.reset_change_indicator();
-			model_dm.reset_change_indicator();
-
 			ScoringOfDataManagersUsingCADScore::Result result;
 			ScoringOfDataManagersUsingCADScore::construct_result(params, target_dm, model_dm, result);
-
-			cargs.change_indicator.handled_objects[&target_dm]=target_dm.change_indicator();
-			cargs.change_indicator.handled_objects[&model_dm]=model_dm.change_indicator();
 
 			if(result.bundle.parameters_of_construction.atom_level)
 			{

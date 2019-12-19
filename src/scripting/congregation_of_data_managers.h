@@ -17,7 +17,6 @@ public:
 		bool changed_objects_visibilities;
 		std::set<DataManager*> added_objects;
 		std::set<DataManager*> deleted_objects;
-		std::map<DataManager*, DataManager::ChangeIndicator> handled_objects;
 
 		ChangeIndicator() :
 			changed_objects(false),
@@ -33,6 +32,13 @@ public:
 			changed_objects_names=(changed_objects_names || changed_objects);
 			changed_objects_picks=(changed_objects_picks || changed_objects);
 			changed_objects_visibilities=(changed_objects_visibilities || changed_objects);
+		}
+
+		ChangeIndicator corrected() const
+		{
+			ChangeIndicator ci=(*this);
+			ci.ensure_correctness();
+			return ci;
 		}
 
 		bool changed() const
@@ -90,6 +96,11 @@ public:
 	{
 	}
 
+	ChangeIndicator change_indicator() const
+	{
+		return change_indicator_.corrected();
+	}
+
 	void assert_objects_availability() const
 	{
 		if(objects_.empty())
@@ -134,6 +145,19 @@ public:
 			}
 		}
 		return counter;
+	}
+
+	void reset_change_indicator()
+	{
+		change_indicator_=ChangeIndicator();
+	}
+
+	void reset_change_indicators_of_all_objects()
+	{
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			it->data_manager.reset_change_indicator();
+		}
 	}
 
 	std::vector<DataManager*> get_objects(const ObjectQuery& query)
@@ -190,6 +214,7 @@ public:
 	DataManager* add_object(const DataManager& data_manager, const std::string& name)
 	{
 		objects_.push_back(ObjectDescriptor(data_manager, unique_name(name)));
+		change_indicator_.added_objects.insert(&objects_.back().data_manager);
 		return (&objects_.back().data_manager);
 	}
 
@@ -200,6 +225,7 @@ public:
 		{
 			if(new_name!=it->attributes.name)
 			{
+				change_indicator_.changed_objects_names=true;
 				it->attributes.name=unique_name(new_name);
 			}
 			return (&it->data_manager);
@@ -218,6 +244,7 @@ public:
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			result.push_back(&it->data_manager);
+			change_indicator_.deleted_objects.insert(&it->data_manager);
 		}
 		objects_.clear();
 		return result;
@@ -229,6 +256,7 @@ public:
 		if(it!=objects_.end())
 		{
 			DataManager* result=&it->data_manager;
+			change_indicator_.deleted_objects.insert(result);
 			objects_.erase(it++);
 			return result;
 		}
@@ -244,7 +272,11 @@ public:
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			it->attributes.picked=picked;
+			if(it->attributes.picked!=picked)
+			{
+				change_indicator_.changed_objects_picks=true;
+				it->attributes.picked=picked;
+			}
 		}
 	}
 
@@ -253,7 +285,11 @@ public:
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			it->attributes.picked=picked;
+			if(it->attributes.picked!=picked)
+			{
+				change_indicator_.changed_objects_picks=true;
+				it->attributes.picked=picked;
+			}
 			return true;
 		}
 		return false;
@@ -268,7 +304,11 @@ public:
 	{
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
-			it->attributes.visible=visible;
+			if(it->attributes.visible!=visible)
+			{
+				change_indicator_.changed_objects_visibilities=true;
+				it->attributes.visible=visible;
+			}
 		}
 	}
 
@@ -277,7 +317,11 @@ public:
 		std::list<ObjectDescriptor>::iterator it=get_iterator(id);
 		if(it!=objects_.end())
 		{
-			it->attributes.visible=visible;
+			if(it->attributes.visible!=visible)
+			{
+				change_indicator_.changed_objects_visibilities=true;
+				it->attributes.visible=visible;
+			}
 			return true;
 		}
 		return false;
@@ -330,6 +374,7 @@ private:
 	}
 
 	std::list<ObjectDescriptor> objects_;
+	ChangeIndicator change_indicator_;
 };
 
 }

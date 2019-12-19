@@ -286,15 +286,19 @@ protected:
 			congregation_of_drawers_.delete_object(*it);
 		}
 
-		for(std::map<scripting::DataManager*, scripting::DataManager::ChangeIndicator>::const_iterator it=cr.change_indicator.handled_objects.begin();it!=cr.change_indicator.handled_objects.end();++it)
+		if(cr.congregation_of_data_managers_ptr!=0)
 		{
-			const scripting::DataManager::ChangeIndicator& ci=it->second;
-			if(ci.changed())
+			std::vector<scripting::DataManager*> data_managers=cr.congregation_of_data_managers_ptr->get_objects();
+			for(std::size_t i=0;i<data_managers.size();i++)
 			{
-				DrawerForDataManager* drawer=congregation_of_drawers_.get_object(it->first);
-				if(drawer!=0)
+				scripting::DataManager* data_manager=data_managers[i];
+				if(data_manager!=0 && data_manager->change_indicator().changed())
 				{
-					drawer->update(ci);
+					DrawerForDataManager* drawer=congregation_of_drawers_.get_object(data_manager);
+					if(drawer!=0)
+					{
+						drawer->update(data_manager->change_indicator());
+					}
 				}
 			}
 		}
