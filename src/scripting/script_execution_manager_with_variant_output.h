@@ -36,13 +36,13 @@ protected:
 		current_command_object(true).value("line")=command_input.get_input_command_string();
 	}
 
-	void on_after_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)
+	void on_after_command_for_script_partitioner(const CommonGenericCommandRecord&, ScriptPartitioner&)
 	{
 	}
 
-	void on_after_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
+	void on_after_command_for_congregation_of_data_managers(const CommonGenericCommandRecord&, CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		const CongregationOfDataManagers::ChangeIndicator ci=cr.congregation_of_data_managers_ptr()->change_indicator();
+		const CongregationOfDataManagers::ChangeIndicator ci=congregation_of_data_managers.change_indicator();
 		for(std::set<DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
 		{
 			DataManager& dm=(*(*it));
@@ -52,13 +52,13 @@ protected:
 		}
 	}
 
-	void on_after_command_for_data_manager(const GenericCommandForDataManager::CommandRecord& cr)
+	void on_after_command_for_data_manager(const CommonGenericCommandRecord&, DataManager& data_manager)
 	{
-		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(cr.data_manager_ptr());
+		const CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(&data_manager);
 		current_command_object().value("data_object")=object_attributes.name;
 	}
 
-	void on_after_command_for_extra_actions(const GenericCommand::CommandRecord&)
+	void on_after_command_for_extra_actions(const CommonGenericCommandRecord&)
 	{
 	}
 

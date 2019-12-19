@@ -251,19 +251,19 @@ protected:
 	{
 	}
 
-	virtual void on_after_command_for_script_partitioner(const GenericCommandForScriptPartitioner::CommandRecord&)
+	virtual void on_after_command_for_script_partitioner(const CommonGenericCommandRecord&, ScriptPartitioner&)
 	{
 	}
 
-	virtual void on_after_command_for_congregation_of_data_managers(const GenericCommandForCongregationOfDataManagers::CommandRecord&)
+	virtual void on_after_command_for_congregation_of_data_managers(const CommonGenericCommandRecord&, CongregationOfDataManagers&)
 	{
 	}
 
-	virtual void on_after_command_for_data_manager(const GenericCommandForDataManager::CommandRecord&)
+	virtual void on_after_command_for_data_manager(const CommonGenericCommandRecord&, DataManager&)
 	{
 	}
 
-	virtual void on_after_command_for_extra_actions(const GenericCommand::CommandRecord&)
+	virtual void on_after_command_for_extra_actions(const CommonGenericCommandRecord&)
 	{
 	}
 
@@ -409,17 +409,17 @@ private:
 		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const GenericCommandForScriptPartitioner::CommandRecord cr=commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_);
+			const CommonGenericCommandRecord cr=commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_);
 			command_record.successful=cr.successful;
-			on_after_command_for_script_partitioner(cr);
+			on_after_command_for_script_partitioner(cr, script_partitioner_);
 			on_after_any_command(cr);
 		}
 		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const GenericCommandForCongregationOfDataManagers::CommandRecord cr=commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_);
+			const CommonGenericCommandRecord cr=commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_);
 			command_record.successful=cr.successful;
-			on_after_command_for_congregation_of_data_managers(cr);
+			on_after_command_for_congregation_of_data_managers(cr, congregation_of_data_managers_);
 			on_after_any_command(cr);
 		}
 		else if(commands_for_data_manager_.count(command_name)==1)
@@ -443,9 +443,9 @@ private:
 					for(std::size_t i=0;i<picked_data_managers.size();i++)
 					{
 						on_before_any_command(command_record.command_input);
-						const GenericCommandForDataManager::CommandRecord cr=commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]);
+						const CommonGenericCommandRecord cr=commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]);
 						command_record.successful=cr.successful;
-						on_after_command_for_data_manager(cr);
+						on_after_command_for_data_manager(cr, *picked_data_managers[i]);
 						on_after_any_command(cr);
 					}
 				}
@@ -453,20 +453,20 @@ private:
 				{
 					on_before_any_command(command_record.command_input);
 					on_command_not_allowed_for_multiple_data_managers(command_record.command_input);
-					on_after_any_command(GenericCommand::CommandRecord(command_record.command_input));
+					on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
 				}
 			}
 			else
 			{
 				on_before_any_command(command_record.command_input);
 				on_no_picked_data_manager_for_command(command_record.command_input);
-				on_after_any_command(GenericCommand::CommandRecord(command_record.command_input));
+				on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
 			}
 		}
 		else if(commands_for_extra_actions_.count(command_name)==1)
 		{
 			on_before_any_command(command_record.command_input);
-			const GenericCommand::CommandRecord cr=commands_for_extra_actions_[command_name]->execute(command_record.command_input);
+			const CommonGenericCommandRecord cr=commands_for_extra_actions_[command_name]->execute(command_record.command_input);
 			command_record.successful=cr.successful;
 			on_after_command_for_extra_actions(cr);
 			on_after_any_command(cr);
@@ -475,7 +475,7 @@ private:
 		{
 			on_before_any_command(command_record.command_input);
 			on_unrecognized_command(command_name);
-			on_after_any_command(GenericCommand::CommandRecord(command_record.command_input));
+			on_after_any_command(CommonGenericCommandRecord(command_record.command_input));
 		}
 	}
 

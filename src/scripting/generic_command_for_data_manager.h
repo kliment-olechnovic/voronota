@@ -10,24 +10,6 @@ namespace scripting
 class GenericCommandForDataManager : public CommonGenericCommandInterface
 {
 public:
-	class CommandRecord : public CommonGenericCommandRecord
-	{
-	public:
-		CommandRecord(const CommandInput& command_input, DataManager& data_manager) :
-			CommonGenericCommandRecord(command_input),
-			data_manager_ptr_(&data_manager)
-		{
-		}
-
-		DataManager* data_manager_ptr() const
-		{
-			return data_manager_ptr_;
-		}
-
-	private:
-		DataManager* data_manager_ptr_;
-	};
-
 	GenericCommandForDataManager()
 	{
 	}
@@ -36,11 +18,11 @@ public:
 	{
 	}
 
-	CommandRecord execute(const CommandInput& command_input, DataManager& data_manager)
+	CommonGenericCommandRecord execute(const CommandInput& command_input, DataManager& data_manager)
 	{
-		CommandRecord record(command_input, data_manager);
+		CommonGenericCommandRecord record(command_input);
 
-		CommandArguments cargs(record);
+		CommandArguments cargs(record, data_manager);
 
 		try
 		{
@@ -69,10 +51,12 @@ protected:
 		HeterogeneousStorage& heterostorage;
 		DataManager& data_manager;
 
-		explicit CommandArguments(CommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage),
-			data_manager(*command_record.data_manager_ptr())
+		explicit CommandArguments(
+				CommonGenericCommandRecord& command_record,
+				DataManager& data_manager) :
+						input(command_record.command_input),
+						heterostorage(command_record.heterostorage),
+						data_manager(data_manager)
 		{
 		}
 	};

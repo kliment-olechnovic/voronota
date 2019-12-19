@@ -274,9 +274,9 @@ public:
 	}
 
 protected:
-	void on_after_command_for_congregation_of_data_managers(const scripting::GenericCommandForCongregationOfDataManagers::CommandRecord& cr)
+	void on_after_command_for_congregation_of_data_managers(const scripting::CommonGenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		const scripting::CongregationOfDataManagers::ChangeIndicator ci=cr.congregation_of_data_managers_ptr()->change_indicator();
+		const scripting::CongregationOfDataManagers::ChangeIndicator ci=congregation_of_data_managers.change_indicator();
 
 		for(std::set<scripting::DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
 		{
@@ -289,7 +289,7 @@ protected:
 		}
 
 		{
-			const std::vector<scripting::DataManager*> data_managers=cr.congregation_of_data_managers_ptr()->get_objects();
+			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers.get_objects();
 			for(std::size_t i=0;i<data_managers.size();i++)
 			{
 				scripting::DataManager* data_manager=data_managers[i];
@@ -309,15 +309,15 @@ protected:
 		zoom_if_requested(cr);
 	}
 
-	void on_after_command_for_data_manager(const scripting::GenericCommandForDataManager::CommandRecord& cr)
+	void on_after_command_for_data_manager(const scripting::CommonGenericCommandRecord& cr, scripting::DataManager& data_manager)
 	{
-		scripting::ScriptExecutionManagerWithVariantOutput::on_after_command_for_data_manager(cr);
+		scripting::ScriptExecutionManagerWithVariantOutput::on_after_command_for_data_manager(cr, data_manager);
 
-		const scripting::DataManager::ChangeIndicator ci=cr.data_manager_ptr()->change_indicator();
+		const scripting::DataManager::ChangeIndicator ci=data_manager.change_indicator();
 
 		if(ci.changed())
 		{
-			DrawerForDataManager* drawer=congregation_of_drawers_.get_object(cr.data_manager_ptr());
+			DrawerForDataManager* drawer=congregation_of_drawers_.get_object(&data_manager);
 			if(drawer!=0)
 			{
 				drawer->update(ci);

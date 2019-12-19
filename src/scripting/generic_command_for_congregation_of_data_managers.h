@@ -10,24 +10,6 @@ namespace scripting
 class GenericCommandForCongregationOfDataManagers : public CommonGenericCommandInterface
 {
 public:
-	class CommandRecord : public CommonGenericCommandRecord
-	{
-	public:
-		CommandRecord(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers) :
-			CommonGenericCommandRecord(command_input),
-			congregation_of_data_managers_ptr_(&congregation_of_data_managers)
-		{
-		}
-
-		CongregationOfDataManagers* congregation_of_data_managers_ptr() const
-		{
-			return congregation_of_data_managers_ptr_;
-		}
-
-	private:
-		CongregationOfDataManagers* congregation_of_data_managers_ptr_;
-	};
-
 	GenericCommandForCongregationOfDataManagers()
 	{
 	}
@@ -36,11 +18,11 @@ public:
 	{
 	}
 
-	CommandRecord execute(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers)
+	CommonGenericCommandRecord execute(const CommandInput& command_input, CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		CommandRecord record(command_input, congregation_of_data_managers);
+		CommonGenericCommandRecord record(command_input);
 
-		CommandArguments cargs(record);
+		CommandArguments cargs(record, congregation_of_data_managers);
 
 		try
 		{
@@ -64,10 +46,12 @@ protected:
 		HeterogeneousStorage& heterostorage;
 		CongregationOfDataManagers& congregation_of_data_managers;
 
-		explicit CommandArguments(CommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage),
-			congregation_of_data_managers(*command_record.congregation_of_data_managers_ptr())
+		explicit CommandArguments(
+				CommonGenericCommandRecord& command_record,
+				CongregationOfDataManagers& congregation_of_data_managers) :
+						input(command_record.command_input),
+						heterostorage(command_record.heterostorage),
+						congregation_of_data_managers(congregation_of_data_managers)
 		{
 		}
 	};

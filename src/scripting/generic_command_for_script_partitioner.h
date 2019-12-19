@@ -10,17 +10,6 @@ namespace scripting
 class GenericCommandForScriptPartitioner : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public CommonGenericCommandRecord
-	{
-		ScriptPartitioner* script_partitioner_ptr;
-
-		CommandRecord(const CommandInput& command_input, ScriptPartitioner& script_partitioner) :
-			CommonGenericCommandRecord(command_input),
-			script_partitioner_ptr(&script_partitioner)
-		{
-		}
-	};
-
 	GenericCommandForScriptPartitioner()
 	{
 	}
@@ -29,11 +18,11 @@ public:
 	{
 	}
 
-	CommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
+	CommonGenericCommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
 	{
-		CommandRecord record(command_input, script_partitioner);
+		CommonGenericCommandRecord record(command_input);
 
-		CommandArguments cargs(record);
+		CommandArguments cargs(record, script_partitioner);
 
 		try
 		{
@@ -55,10 +44,12 @@ protected:
 		HeterogeneousStorage& heterostorage;
 		ScriptPartitioner& script_partitioner;
 
-		explicit CommandArguments(CommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage),
-			script_partitioner(*command_record.script_partitioner_ptr)
+		explicit CommandArguments(
+				CommonGenericCommandRecord& command_record,
+				ScriptPartitioner& script_partitioner) :
+						input(command_record.command_input),
+						heterostorage(command_record.heterostorage),
+						script_partitioner(script_partitioner)
 		{
 		}
 	};

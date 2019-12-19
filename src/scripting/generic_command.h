@@ -58,14 +58,6 @@ public:
 class GenericCommand : public CommonGenericCommandInterface
 {
 public:
-	struct CommandRecord : public CommonGenericCommandRecord
-	{
-		explicit CommandRecord(const CommandInput& command_input) :
-			CommonGenericCommandRecord(command_input)
-		{
-		}
-	};
-
 	GenericCommand()
 	{
 	}
@@ -74,9 +66,9 @@ public:
 	{
 	}
 
-	CommandRecord execute(const CommandInput& command_input)
+	CommonGenericCommandRecord execute(const CommandInput& command_input)
 	{
-		CommandRecord record(command_input);
+		CommonGenericCommandRecord record(command_input);
 
 		CommandArguments cargs(record);
 
@@ -100,7 +92,7 @@ protected:
 		CommandInput& input;
 		HeterogeneousStorage& heterostorage;
 
-		explicit CommandArguments(CommandRecord& command_record) :
+		explicit CommandArguments(CommonGenericCommandRecord& command_record) :
 			input(command_record.command_input),
 			heterostorage(command_record.heterostorage)
 		{
