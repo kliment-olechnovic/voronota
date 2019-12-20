@@ -9,47 +9,56 @@ namespace scripting
 class CongregationOfDataManagers
 {
 public:
-	struct ChangeIndicator
+	class ChangeIndicator
 	{
-		bool changed_objects;
-		bool changed_objects_names;
-		bool changed_objects_picks;
-		bool changed_objects_visibilities;
-		std::set<DataManager*> added_objects;
-		std::set<DataManager*> deleted_objects;
-
+	public:
 		ChangeIndicator() :
-			changed_objects(false),
-			changed_objects_names(false),
-			changed_objects_picks(false),
-			changed_objects_visibilities(false)
+			changed_objects_(false),
+			changed_objects_names_(false),
+			changed_objects_picks_(false),
+			changed_objects_visibilities_(false)
 		{
 		}
 
-		void ensure_correctness()
-		{
-			changed_objects=(changed_objects || !added_objects.empty() || !deleted_objects.empty());
-			changed_objects_names=(changed_objects_names || changed_objects);
-			changed_objects_picks=(changed_objects_picks || changed_objects);
-			changed_objects_visibilities=(changed_objects_visibilities || changed_objects);
-		}
+		bool changed_objects() const { return changed_objects_; }
+		bool changed_objects_names() const { return changed_objects_names_; }
+		bool changed_objects_picks() const { return changed_objects_picks_; }
+		bool changed_objects_visibilities() const { return changed_objects_visibilities_; }
+		const std::set<DataManager*>& added_objects() const { return added_objects_; }
+		const std::set<DataManager*>& deleted_objects() const { return deleted_objects_; }
 
-		ChangeIndicator corrected() const
-		{
-			ChangeIndicator ci=(*this);
-			ci.ensure_correctness();
-			return ci;
-		}
+		void set_changed_objects(const bool value) { changed_objects_=value; ensure_correctness(); }
+		void set_changed_objects_names(const bool value) { changed_objects_names_=value; ensure_correctness(); }
+		void set_changed_objects_picks(const bool value) { changed_objects_picks_=value; ensure_correctness(); }
+		void set_changed_objects_visibilities(const bool value) { changed_objects_visibilities_=value; ensure_correctness(); }
+		void add_to_added_objects(DataManager* value) { added_objects_.insert(value); ensure_correctness(); }
+		void add_to_deleted_objects(DataManager* value) { deleted_objects_.insert(value); ensure_correctness(); }
 
 		bool changed() const
 		{
-			return (changed_objects
-					|| changed_objects_names
-					|| changed_objects_picks
-					|| changed_objects_visibilities
-					|| !added_objects.empty()
-					|| !deleted_objects.empty());
+			return (changed_objects_
+					|| changed_objects_names_
+					|| changed_objects_picks_
+					|| changed_objects_visibilities_
+					|| !added_objects_.empty()
+					|| !deleted_objects_.empty());
 		}
+
+	private:
+		void ensure_correctness()
+		{
+			changed_objects_=(changed_objects_ || !added_objects_.empty() || !deleted_objects_.empty());
+			changed_objects_names_=(changed_objects_names_ || changed_objects_);
+			changed_objects_picks_=(changed_objects_picks_ || changed_objects_);
+			changed_objects_visibilities_=(changed_objects_visibilities_ || changed_objects_);
+		}
+
+		bool changed_objects_;
+		bool changed_objects_names_;
+		bool changed_objects_picks_;
+		bool changed_objects_visibilities_;
+		std::set<DataManager*> added_objects_;
+		std::set<DataManager*> deleted_objects_;
 	};
 
 	struct ObjectAttributes
@@ -96,9 +105,9 @@ public:
 	{
 	}
 
-	ChangeIndicator change_indicator() const
+	const ChangeIndicator& change_indicator() const
 	{
-		return change_indicator_.corrected();
+		return change_indicator_;
 	}
 
 	void assert_objects_availability() const
@@ -214,7 +223,7 @@ public:
 	DataManager* add_object(const DataManager& data_manager, const std::string& name)
 	{
 		objects_.push_back(ObjectDescriptor(data_manager, unique_name(name)));
-		change_indicator_.added_objects.insert(&objects_.back().data_manager);
+		change_indicator_.add_to_added_objects(&objects_.back().data_manager);
 		return (&objects_.back().data_manager);
 	}
 
@@ -225,7 +234,7 @@ public:
 		{
 			if(new_name!=it->attributes.name)
 			{
-				change_indicator_.changed_objects_names=true;
+				change_indicator_.set_changed_objects_names(true);
 				it->attributes.name=unique_name(new_name);
 			}
 			return (&it->data_manager);
@@ -244,7 +253,7 @@ public:
 		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
 		{
 			result.push_back(&it->data_manager);
-			change_indicator_.deleted_objects.insert(&it->data_manager);
+			change_indicator_.add_to_deleted_objects(&it->data_manager);
 		}
 		objects_.clear();
 		return result;
@@ -256,7 +265,7 @@ public:
 		if(it!=objects_.end())
 		{
 			DataManager* result=&it->data_manager;
-			change_indicator_.deleted_objects.insert(result);
+			change_indicator_.add_to_deleted_objects(result);
 			objects_.erase(it++);
 			return result;
 		}
@@ -274,7 +283,7 @@ public:
 		{
 			if(it->attributes.picked!=picked)
 			{
-				change_indicator_.changed_objects_picks=true;
+				change_indicator_.set_changed_objects_picks(true);
 				it->attributes.picked=picked;
 			}
 		}
@@ -287,7 +296,7 @@ public:
 		{
 			if(it->attributes.picked!=picked)
 			{
-				change_indicator_.changed_objects_picks=true;
+				change_indicator_.set_changed_objects_picks(true);
 				it->attributes.picked=picked;
 			}
 			return true;
@@ -306,7 +315,7 @@ public:
 		{
 			if(it->attributes.visible!=visible)
 			{
-				change_indicator_.changed_objects_visibilities=true;
+				change_indicator_.set_changed_objects_visibilities(true);
 				it->attributes.visible=visible;
 			}
 		}
@@ -319,7 +328,7 @@ public:
 		{
 			if(it->attributes.visible!=visible)
 			{
-				change_indicator_.changed_objects_visibilities=true;
+				change_indicator_.set_changed_objects_visibilities(true);
 				it->attributes.visible=visible;
 			}
 			return true;

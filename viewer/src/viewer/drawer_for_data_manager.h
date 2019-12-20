@@ -222,37 +222,37 @@ public:
 	{
 		bool updated=false;
 
-		if(ci.changed_atoms)
+		if(ci.changed_atoms())
 		{
 			reset_drawing_atoms();
 			updated=true;
 		}
 
-		if(ci.changed_contacts)
+		if(ci.changed_contacts())
 		{
 			reset_drawing_contacts();
 			updated=true;
 		}
 
-		if(ci.changed_figures)
+		if(ci.changed_figures())
 		{
 			reset_drawing_figures();
 			updated=true;
 		}
 
-		if(ci.changed_atoms_display_states)
+		if(ci.changed_atoms_display_states())
 		{
 			update_drawing_atoms();
 			updated=true;
 		}
 
-		if(ci.changed_contacts_display_states)
+		if(ci.changed_contacts_display_states())
 		{
 			update_drawing_contacts();
 			updated=true;
 		}
 
-		if(ci.changed_figures_display_states)
+		if(ci.changed_figures_display_states())
 		{
 			update_drawing_figures();
 			updated=true;

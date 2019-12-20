@@ -15,65 +15,82 @@ namespace scripting
 class DataManager
 {
 public:
-	struct ChangeIndicator
+	class ChangeIndicator
 	{
-		bool changed_atoms;
-		bool changed_contacts;
-		bool changed_figures;
-		bool changed_atoms_tags;
-		bool changed_contacts_tags;
-		bool changed_atoms_adjuncts;
-		bool changed_contacts_adjuncts;
-		bool changed_atoms_display_states;
-		bool changed_contacts_display_states;
-		bool changed_figures_display_states;
-
+	public:
 		ChangeIndicator() :
-			changed_atoms(false),
-			changed_contacts(false),
-			changed_figures(false),
-			changed_atoms_tags(false),
-			changed_contacts_tags(false),
-			changed_atoms_adjuncts(false),
-			changed_contacts_adjuncts(false),
-			changed_atoms_display_states(false),
-			changed_contacts_display_states(false),
-			changed_figures_display_states(false)
+			changed_atoms_(false),
+			changed_contacts_(false),
+			changed_figures_(false),
+			changed_atoms_tags_(false),
+			changed_contacts_tags_(false),
+			changed_atoms_adjuncts_(false),
+			changed_contacts_adjuncts_(false),
+			changed_atoms_display_states_(false),
+			changed_contacts_display_states_(false),
+			changed_figures_display_states_(false)
 		{
 		}
 
-		void ensure_correctness()
-		{
-			changed_contacts=(changed_contacts || changed_atoms);
-			changed_atoms_tags=(changed_atoms_tags || changed_atoms);
-			changed_contacts_tags=(changed_contacts_tags || changed_contacts);
-			changed_atoms_adjuncts=(changed_atoms_adjuncts || changed_atoms);
-			changed_contacts_adjuncts=(changed_contacts_adjuncts || changed_contacts);
-			changed_atoms_display_states=(changed_atoms_display_states || changed_atoms);
-			changed_contacts_display_states=(changed_contacts_display_states || changed_contacts);
-			changed_figures_display_states=(changed_figures_display_states || changed_figures);
-		}
+		bool changed_atoms() const { return changed_atoms_; }
+		bool changed_contacts() const { return changed_contacts_; }
+		bool changed_figures() const { return changed_figures_; }
+		bool changed_atoms_tags() const { return changed_atoms_tags_; }
+		bool changed_contacts_tags() const { return changed_contacts_tags_; }
+		bool changed_atoms_adjuncts() const { return changed_atoms_adjuncts_; }
+		bool changed_contacts_adjuncts() const { return changed_contacts_adjuncts_; }
+		bool changed_atoms_display_states() const { return changed_atoms_display_states_; }
+		bool changed_contacts_display_states() const { return changed_contacts_display_states_; }
+		bool changed_figures_display_states() const { return changed_figures_display_states_; }
 
-		ChangeIndicator corrected() const
-		{
-			ChangeIndicator ci=(*this);
-			ci.ensure_correctness();
-			return ci;
-		}
+		void set_changed_atoms(const bool value) { changed_atoms_=value; ensure_correctness(); }
+		void set_changed_contacts(const bool value) { changed_contacts_=value; ensure_correctness(); }
+		void set_changed_figures(const bool value) { changed_figures_=value; ensure_correctness(); }
+		void set_changed_atoms_tags(const bool value) { changed_atoms_tags_=value; ensure_correctness(); }
+		void set_changed_contacts_tags(const bool value) { changed_contacts_tags_=value; ensure_correctness(); }
+		void set_changed_atoms_adjuncts(const bool value) { changed_atoms_adjuncts_=value; ensure_correctness(); }
+		void set_changed_contacts_adjuncts(const bool value) { changed_contacts_adjuncts_=value; ensure_correctness(); }
+		void set_changed_atoms_display_states(const bool value) { changed_atoms_display_states_=value; ensure_correctness(); }
+		void set_changed_contacts_display_states(const bool value) { changed_contacts_display_states_=value; ensure_correctness(); }
+		void set_changed_figures_display_states(const bool value) { changed_figures_display_states_=value; ensure_correctness(); }
 
 		bool changed() const
 		{
-			return (changed_atoms
-					|| changed_contacts
-					|| changed_figures
-					|| changed_atoms_tags
-					|| changed_contacts_tags
-					|| changed_atoms_adjuncts
-					|| changed_contacts_adjuncts
-					|| changed_atoms_display_states
-					|| changed_contacts_display_states
-					|| changed_figures_display_states);
+			return (changed_atoms_
+					|| changed_contacts_
+					|| changed_figures_
+					|| changed_atoms_tags_
+					|| changed_contacts_tags_
+					|| changed_atoms_adjuncts_
+					|| changed_contacts_adjuncts_
+					|| changed_atoms_display_states_
+					|| changed_contacts_display_states_
+					|| changed_figures_display_states_);
 		}
+
+	private:
+		void ensure_correctness()
+		{
+			changed_contacts_=(changed_contacts_ || changed_atoms_);
+			changed_atoms_tags_=(changed_atoms_tags_ || changed_atoms_);
+			changed_contacts_tags_=(changed_contacts_tags_ || changed_contacts_);
+			changed_atoms_adjuncts_=(changed_atoms_adjuncts_ || changed_atoms_);
+			changed_contacts_adjuncts_=(changed_contacts_adjuncts_ || changed_contacts_);
+			changed_atoms_display_states_=(changed_atoms_display_states_ || changed_atoms_);
+			changed_contacts_display_states_=(changed_contacts_display_states_ || changed_contacts_);
+			changed_figures_display_states_=(changed_figures_display_states_ || changed_figures_);
+		}
+
+		bool changed_atoms_;
+		bool changed_contacts_;
+		bool changed_figures_;
+		bool changed_atoms_tags_;
+		bool changed_contacts_tags_;
+		bool changed_atoms_adjuncts_;
+		bool changed_contacts_adjuncts_;
+		bool changed_atoms_display_states_;
+		bool changed_contacts_display_states_;
+		bool changed_figures_display_states_;
 	};
 
 	struct RepresentationsDescriptor
@@ -460,9 +477,9 @@ public:
 		return text_description_;
 	}
 
-	ChangeIndicator change_indicator() const
+	const ChangeIndicator& change_indicator() const
 	{
-		return change_indicator_.corrected();
+		return change_indicator_;
 	}
 
 	void assert_atoms_representations_availability() const
@@ -668,25 +685,25 @@ public:
 
 	std::set<std::string>& atom_tags_mutable(const std::size_t id)
 	{
-		change_indicator_.changed_atoms_tags=true;
+		change_indicator_.set_changed_atoms_tags(true);
 		return atoms_[id].value.props.tags;
 	}
 
 	std::map<std::string, double>& atom_adjuncts_mutable(const std::size_t id)
 	{
-		change_indicator_.changed_atoms_adjuncts=true;
+		change_indicator_.set_changed_atoms_adjuncts(true);
 		return atoms_[id].value.props.adjuncts;
 	}
 
 	std::set<std::string>& contact_tags_mutable(const std::size_t id)
 	{
-		change_indicator_.changed_contacts_tags=true;
+		change_indicator_.set_changed_contacts_tags(true);
 		return contacts_[id].value.props.tags;
 	}
 
 	std::map<std::string, double>& contact_adjuncts_mutable(const std::size_t id)
 	{
-		change_indicator_.changed_contacts_adjuncts=true;
+		change_indicator_.set_changed_contacts_adjuncts(true);
 		return contacts_[id].value.props.adjuncts;
 	}
 
@@ -696,7 +713,7 @@ public:
 		{
 			if(resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_))
 			{
-				change_indicator_.changed_atoms_display_states=true;
+				change_indicator_.set_changed_atoms_display_states(true);
 			}
 			if(implemented_always)
 			{
@@ -721,7 +738,7 @@ public:
 		{
 			if(resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_))
 			{
-				change_indicator_.changed_contacts_display_states=true;
+				change_indicator_.set_changed_contacts_display_states(true);
 			}
 			if(implemented_always)
 			{
@@ -746,7 +763,7 @@ public:
 		{
 			if(resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_))
 			{
-				change_indicator_.changed_figures_display_states=true;
+				change_indicator_.set_changed_figures_display_states(true);
 			}
 			if(implemented_always)
 			{
@@ -770,7 +787,7 @@ public:
 	{
 		if(set_representation_implemented(atoms_representations_descriptor_.names, representation_id, statuses, atoms_display_states_))
 		{
-			change_indicator_.changed_atoms_display_states=true;
+			change_indicator_.set_changed_atoms_display_states(true);
 			return true;
 		}
 		return false;
@@ -780,7 +797,7 @@ public:
 	{
 		if(set_representation_implemented(contacts_representations_descriptor_.names, representation_id, statuses, contacts_display_states_))
 		{
-			change_indicator_.changed_contacts_display_states=true;
+			change_indicator_.set_changed_contacts_display_states(true);
 			return true;
 		}
 		return false;
@@ -790,7 +807,7 @@ public:
 	{
 		if(set_representation_implemented(figures_representations_descriptor_.names, representation_id, statuses, figures_display_states_))
 		{
-			change_indicator_.changed_figures_display_states=true;
+			change_indicator_.set_changed_figures_display_states(true);
 			return true;
 		}
 		return false;
@@ -800,7 +817,7 @@ public:
 	{
 		if(dsu.update_display_state(id, atoms_display_states_))
 		{
-			change_indicator_.changed_atoms_display_states=true;
+			change_indicator_.set_changed_atoms_display_states(true);
 		}
 	}
 
@@ -808,7 +825,7 @@ public:
 	{
 		if(dsu.update_display_states(ids, atoms_display_states_))
 		{
-			change_indicator_.changed_atoms_display_states=true;
+			change_indicator_.set_changed_atoms_display_states(true);
 		}
 	}
 
@@ -816,7 +833,7 @@ public:
 	{
 		if(dsu.update_display_states(atoms_display_states_))
 		{
-			change_indicator_.changed_atoms_display_states=true;
+			change_indicator_.set_changed_atoms_display_states(true);
 		}
 	}
 
@@ -824,7 +841,7 @@ public:
 	{
 		if(dsu.update_display_state(id, contacts_display_states_))
 		{
-			change_indicator_.changed_contacts_display_states=true;
+			change_indicator_.set_changed_contacts_display_states(true);
 		}
 	}
 
@@ -832,7 +849,7 @@ public:
 	{
 		if(dsu.update_display_states(ids, contacts_display_states_))
 		{
-			change_indicator_.changed_contacts_display_states=true;
+			change_indicator_.set_changed_contacts_display_states(true);
 		}
 	}
 
@@ -840,7 +857,7 @@ public:
 	{
 		if(dsu.update_display_states(contacts_display_states_))
 		{
-			change_indicator_.changed_contacts_display_states=true;
+			change_indicator_.set_changed_contacts_display_states(true);
 		}
 	}
 
@@ -848,7 +865,7 @@ public:
 	{
 		if(dsu.update_display_state(id, figures_display_states_))
 		{
-			change_indicator_.changed_figures_display_states=true;
+			change_indicator_.set_changed_figures_display_states(true);
 		}
 	}
 
@@ -856,7 +873,7 @@ public:
 	{
 		if(dsu.update_display_states(ids, figures_display_states_))
 		{
-			change_indicator_.changed_figures_display_states=true;
+			change_indicator_.set_changed_figures_display_states(true);
 		}
 	}
 
@@ -864,7 +881,7 @@ public:
 	{
 		if(dsu.update_display_states(figures_display_states_))
 		{
-			change_indicator_.changed_figures_display_states=true;
+			change_indicator_.set_changed_figures_display_states(true);
 		}
 	}
 
@@ -885,7 +902,7 @@ public:
 		{
 			throw std::runtime_error(std::string("No atoms to set."));
 		}
-		change_indicator_.changed_atoms=true;
+		change_indicator_.set_changed_atoms(true);
 		atoms_.swap(atoms);
 		reset_atoms_display_states();
 		reset_data_dependent_on_atoms();
@@ -899,7 +916,7 @@ public:
 
 	void reset_atoms_display_states()
 	{
-		change_indicator_.changed_atoms_display_states=true;
+		change_indicator_.set_changed_atoms_display_states(true);
 		atoms_display_states_.clear();
 		atoms_display_states_.resize(atoms_.size());
 		for(std::size_t i=0;i<atoms_display_states_.size();i++)
@@ -935,7 +952,7 @@ public:
 			restricted_atoms_display_states.push_back(atoms_display_states_[id]);
 		}
 
-		change_indicator_.changed_atoms=true;
+		change_indicator_.set_changed_atoms(true);
 
 		atoms_.swap(restricted_atoms);
 		atoms_display_states_.swap(restricted_atoms_display_states);
@@ -985,7 +1002,7 @@ public:
 			throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
 		}
 
-		change_indicator_.changed_atoms=true;
+		change_indicator_.set_changed_atoms(true);
 
 		if(!pre_translation_vector.empty())
 		{
@@ -1129,7 +1146,7 @@ public:
 
 	void remove_contacts()
 	{
-		change_indicator_.changed_contacts=true;
+		change_indicator_.set_changed_contacts(true);
 		contacts_.clear();
 		contacts_display_states_.clear();
 		selection_manager_.set_contacts(0);
@@ -1147,7 +1164,7 @@ public:
 		{
 			throw std::runtime_error(std::string("Contacts are not compatible with atoms."));
 		}
-		change_indicator_.changed_contacts=true;
+		change_indicator_.set_changed_contacts(true);
 		contacts_.swap(contacts);
 		reset_contacts_display_states();
 		selection_manager_.set_contacts(&contacts_);
@@ -1191,7 +1208,7 @@ public:
 
 		if(parameters_to_construct_contacts.calculate_volumes)
 		{
-			change_indicator_.changed_atoms_adjuncts=true;
+			change_indicator_.set_changed_atoms_adjuncts(true);
 			for(std::size_t i=0;i<bundle_of_contact_information.volumes.size() && i<atoms().size();i++)
 			{
 				atoms_[i].value.props.adjuncts["volume"]=bundle_of_contact_information.volumes[i];
@@ -1209,7 +1226,7 @@ public:
 
 	void reset_contacts_display_states()
 	{
-		change_indicator_.changed_contacts_display_states=true;
+		change_indicator_.set_changed_contacts_display_states(true);
 		contacts_display_states_.clear();
 		contacts_display_states_.resize(contacts_.size());
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
@@ -1229,7 +1246,7 @@ public:
 			{
 				if(!contacts_[id].value.graphics.empty())
 				{
-					change_indicator_.changed_contacts=true;
+					change_indicator_.set_changed_contacts(true);
 					contacts_[id].value.graphics.clear();
 					history_of_actions_on_contacts_.graphics_creating.erase(id);
 				}
@@ -1278,7 +1295,7 @@ public:
 			throw std::runtime_error(std::string("The triangulation artificial boundary is not compatible with the probe radius."));
 		}
 
-		change_indicator_.changed_contacts=true;
+		change_indicator_.set_changed_contacts(true);
 
 		common::ConstructionOfContacts::draw_contacts(parameters_to_draw_contacts, triangulation_info(), ids_for_updating, contacts_);
 
@@ -1292,7 +1309,7 @@ public:
 
 	void remove_figures()
 	{
-		change_indicator_.changed_figures=true;
+		change_indicator_.set_changed_figures(true);
 		figures_.clear();
 		figures_display_states_.clear();
 	}
@@ -1307,7 +1324,7 @@ public:
 		{
 			throw std::runtime_error(std::string("Invalid ids provided to remove atoms."));
 		}
-		change_indicator_.changed_figures=true;
+		change_indicator_.set_changed_figures(true);
 		for(std::set<std::size_t>::const_reverse_iterator it=ids.rbegin();it!=ids.rend();++it)
 		{
 			figures_.erase(figures_.begin()+(*it));
@@ -1321,7 +1338,7 @@ public:
 		{
 			throw std::runtime_error(std::string("No figures to add."));
 		}
-		change_indicator_.changed_figures=true;
+		change_indicator_.set_changed_figures(true);
 		for(std::size_t i=0;i<new_figures.size();i++)
 		{
 			if(Figure::match_name(new_figures, new_figures[i].name).size()>1)
@@ -1355,7 +1372,7 @@ public:
 
 	void reset_figures_display_states()
 	{
-		change_indicator_.changed_figures_display_states=true;
+		change_indicator_.set_changed_figures_display_states(true);
 		figures_display_states_.clear();
 		figures_display_states_.resize(contacts_.size());
 		for(std::size_t i=0;i<figures_display_states_.size();i++)

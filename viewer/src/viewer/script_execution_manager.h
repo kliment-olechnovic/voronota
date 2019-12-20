@@ -276,14 +276,14 @@ public:
 protected:
 	void on_after_command_for_congregation_of_data_managers(const scripting::GenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		const scripting::CongregationOfDataManagers::ChangeIndicator ci=congregation_of_data_managers.change_indicator();
+		const scripting::CongregationOfDataManagers::ChangeIndicator& ci=congregation_of_data_managers.change_indicator();
 
-		for(std::set<scripting::DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
+		for(std::set<scripting::DataManager*>::const_iterator it=ci.added_objects().begin();it!=ci.added_objects().end();++it)
 		{
 			congregation_of_drawers_.add_object(*(*it));
 		}
 
-		for(std::set<scripting::DataManager*>::const_iterator it=ci.deleted_objects.begin();it!=ci.deleted_objects.end();++it)
+		for(std::set<scripting::DataManager*>::const_iterator it=ci.deleted_objects().begin();it!=ci.deleted_objects().end();++it)
 		{
 			congregation_of_drawers_.delete_object(*it);
 		}

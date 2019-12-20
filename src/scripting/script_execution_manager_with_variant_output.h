@@ -42,8 +42,8 @@ protected:
 
 	void on_after_command_for_congregation_of_data_managers(const GenericCommandRecord&, CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		const CongregationOfDataManagers::ChangeIndicator ci=congregation_of_data_managers.change_indicator();
-		for(std::set<DataManager*>::const_iterator it=ci.added_objects.begin();it!=ci.added_objects.end();++it)
+		const CongregationOfDataManagers::ChangeIndicator& ci=congregation_of_data_managers.change_indicator();
+		for(std::set<DataManager*>::const_iterator it=ci.added_objects().begin();it!=ci.added_objects().end();++it)
 		{
 			DataManager& dm=(*(*it));
 			dm.add_atoms_representation("atoms", true);
