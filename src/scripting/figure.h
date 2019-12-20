@@ -3,9 +3,7 @@
 
 #include "../common/properties_value.h"
 
-#include <string>
-#include <vector>
-#include <set>
+#include "long_name.h"
 
 namespace scripting
 {
@@ -13,50 +11,25 @@ namespace scripting
 class Figure
 {
 public:
-	static std::set<std::size_t> match_name(const std::vector<Figure>& figures, const std::vector<std::string>& refname)
-	{
-		std::set<std::size_t> ids;
-		for(std::size_t i=0;i<figures.size();i++)
-		{
-			if(figures[i].match_name(refname))
-			{
-				ids.insert(ids.end(), i);
-			}
-		}
-		return ids;
-	}
-
-	static std::set<std::size_t> match_name(const std::vector<Figure>& figures, const bool from_all, const std::set<std::size_t>& from_ids, const std::vector<std::string>& refname)
-	{
-		std::set<std::size_t> ids;
-		for(std::size_t i=0;i<figures.size();i++)
-		{
-			if(figures[i].match_name(refname) && (from_all || from_ids.count(i)>0))
-			{
-				ids.insert(ids.end(), i);
-			}
-		}
-		return ids;
-	}
-
-	std::vector<std::string> name;
+	LongName name;
 	std::vector<float> vertices;
 	std::vector<float> normals;
 	std::vector<unsigned int> indices;
 	common::PropertiesValue props;
 
+	Figure()
+	{
+	}
+
 	bool valid() const
 	{
-		if(name.empty() || vertices.size()<3 || vertices.size()!=normals.size() || indices.size()<3 || indices.size()%3!=0)
+		if(!name.valid())
 		{
 			return false;
 		}
-		for(std::size_t i=0;i<name.size();i++)
+		if(vertices.size()<3 || vertices.size()!=normals.size() || indices.size()<3 || indices.size()%3!=0)
 		{
-			if(name[i].empty())
-			{
-				return false;
-			}
+			return false;
 		}
 		for(std::size_t i=0;i<indices.size();i++)
 		{
@@ -68,20 +41,9 @@ public:
 		return true;
 	}
 
-	bool match_name(const std::vector<std::string>& refname) const
+	bool match(const LongName& longname) const
 	{
-		if(refname.size()>name.size())
-		{
-			return false;
-		}
-		for(std::size_t i=0;i<refname.size();i++)
-		{
-			if(name[i]!=refname[i])
-			{
-				return false;
-			}
-		}
-		return true;
+		return name.match(longname);
 	}
 
 	template<class Vertex, class Normal>

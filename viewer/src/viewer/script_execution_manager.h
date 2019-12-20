@@ -151,7 +151,7 @@ public:
 			}
 			else if(deid.element_id.valid_figure_id())
 			{
-				const std::vector<std::string>& name=deid.element_id.data_manager_ptr->figures()[deid.element_id.figure_id].name;
+				const std::vector<std::string>& name=deid.element_id.data_manager_ptr->figures()[deid.element_id.figure_id].name.subnames();
 				for(std::size_t i=0;i<name.size();i++)
 				{
 					output_label << name[i] << ((i+1)<name.size() ? "." : "");

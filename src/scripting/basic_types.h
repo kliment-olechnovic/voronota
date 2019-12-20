@@ -4,6 +4,8 @@
 #include "../common/construction_of_atomic_balls.h"
 #include "../common/construction_of_contacts.h"
 
+#include "figure.h"
+
 namespace scripting
 {
 

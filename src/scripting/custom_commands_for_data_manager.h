@@ -4073,7 +4073,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			Figure figure;
-			figure.name=name;
+			figure.name=LongName(name);
 			figure.vertices=vertices;
 			figure.normals=normals;
 			figure.indices=indices;
@@ -4083,9 +4083,9 @@ public:
 			{
 				const Figure& figure=cargs.data_manager.figures().back();
 				VariantObject& info=cargs.heterostorage.variant_object.object("added_figure");
-				for(std::size_t i=0;i<figure.name.size();i++)
+				for(std::size_t i=0;i<figure.name.subnames().size();i++)
 				{
-					info.values_array("name").push_back(VariantValue(figure.name[i]));
+					info.values_array("name").push_back(VariantValue(figure.name.subnames()[i]));
 				}
 			}
 		}
@@ -4104,7 +4104,7 @@ public:
 			cargs.input.assert_nothing_unusable();
 
 			const std::set<std::size_t> ids=
-					Figure::match_name(cargs.data_manager.figures(), forced_ids.empty(), std::set<std::size_t>(forced_ids.begin(), forced_ids.end()), name);
+					LongName::match(cargs.data_manager.figures(), forced_ids.empty(), std::set<std::size_t>(forced_ids.begin(), forced_ids.end()), LongName(name));
 
 			if(ids.empty())
 			{
@@ -4117,9 +4117,9 @@ public:
 			{
 				const Figure& figure=cargs.data_manager.figures()[*it];
 				figures.push_back(VariantObject());
-				for(std::size_t i=0;i<figure.name.size();i++)
+				for(std::size_t i=0;i<figure.name.subnames().size();i++)
 				{
-					figures.back().values_array("name").push_back(VariantValue(figure.name[i]));
+					figures.back().values_array("name").push_back(VariantValue(figure.name.subnames()[i]));
 				}
 				if(!figure.props.empty())
 				{
@@ -4156,7 +4156,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_figures_drawable_implemented_ids(
 					representation_ids,
-					Figure::match_name(cargs.data_manager.figures(), name),
+					LongName::match(cargs.data_manager.figures(), LongName(name)),
 					false);
 
 			if(ids.empty())
@@ -4203,7 +4203,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_figures_drawable_implemented_ids(
 					representation_ids,
-					Figure::match_name(cargs.data_manager.figures(), name),
+					LongName::match(cargs.data_manager.figures(), LongName(name)),
 					false);
 
 			if(ids.empty())
@@ -4226,7 +4226,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=Figure::match_name(cargs.data_manager.figures(), name);
+			const std::set<std::size_t> ids=LongName::match(cargs.data_manager.figures(), LongName(name));
 
 			if(ids.empty())
 			{
@@ -4237,9 +4237,9 @@ public:
 			{
 				const Figure& figure=cargs.data_manager.figures().at(*it);
 				VariantObject info;
-				for(std::size_t i=0;i<figure.name.size();i++)
+				for(std::size_t i=0;i<figure.name.subnames().size();i++)
 				{
-					info.values_array("name").push_back(VariantValue(figure.name[i]));
+					info.values_array("name").push_back(VariantValue(figure.name.subnames()[i]));
 				}
 				cargs.heterostorage.variant_object.objects_array("figures").push_back(info);
 			}
@@ -4257,7 +4257,7 @@ public:
 
 			cargs.input.assert_nothing_unusable();
 
-			const std::set<std::size_t> ids=Figure::match_name(cargs.data_manager.figures(), name);
+			const std::set<std::size_t> ids=LongName::match(cargs.data_manager.figures(), LongName(name));
 
 			if(ids.empty())
 			{
@@ -4268,9 +4268,9 @@ public:
 			{
 				const Figure& figure=cargs.data_manager.figures().at(*it);
 				VariantObject info;
-				for(std::size_t i=0;i<figure.name.size();i++)
+				for(std::size_t i=0;i<figure.name.subnames().size();i++)
 				{
-					info.values_array("name").push_back(VariantValue(figure.name[i]));
+					info.values_array("name").push_back(VariantValue(figure.name.subnames()[i]));
 				}
 				cargs.heterostorage.variant_object.objects_array("deleted_figures").push_back(info);
 			}
@@ -4308,7 +4308,7 @@ public:
 			}
 
 			Figure figure;
-			figure.name=figure_name;
+			figure.name=LongName(figure_name);
 
 			if(as_spheres)
 			{
@@ -4382,7 +4382,7 @@ public:
 
 			const std::set<std::size_t> ids=cargs.data_manager.filter_figures_drawable_implemented_ids(
 					representation_ids,
-					Figure::match_name(cargs.data_manager.figures(), figure_name),
+					LongName::match(cargs.data_manager.figures(), LongName(figure_name)),
 					false);
 
 			if(ids.empty())

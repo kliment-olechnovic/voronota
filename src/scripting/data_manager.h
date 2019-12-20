@@ -7,7 +7,6 @@
 #include "../common/construction_of_bonding_links.h"
 
 #include "selection_manager.h"
-#include "figure.h"
 
 namespace scripting
 {
@@ -1341,11 +1340,11 @@ public:
 		change_indicator_.set_changed_figures(true);
 		for(std::size_t i=0;i<new_figures.size();i++)
 		{
-			if(Figure::match_name(new_figures, new_figures[i].name).size()>1)
+			if(LongName::match(new_figures, new_figures[i].name).size()>1)
 			{
 				throw std::runtime_error(std::string("Repeating figure name."));
 			}
-			if(!Figure::match_name(figures(), new_figures[i].name).empty())
+			if(!LongName::match(figures(), new_figures[i].name).empty())
 			{
 				throw std::runtime_error(std::string("Redundant figure name."));
 			}
