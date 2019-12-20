@@ -18,10 +18,8 @@ public:
 	{
 	}
 
-	GenericCommandRecord execute(const CommandInput& command_input, ScriptPartitioner& script_partitioner)
+	bool execute(GenericCommandRecord& record, ScriptPartitioner& script_partitioner)
 	{
-		GenericCommandRecord record(command_input);
-
 		CommandArguments cargs(record, script_partitioner);
 
 		try
@@ -34,7 +32,7 @@ public:
 			record.save_error(e);
 		}
 
-		return record;
+		return record.successful;
 	}
 
 protected:

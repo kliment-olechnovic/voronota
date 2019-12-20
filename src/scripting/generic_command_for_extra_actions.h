@@ -17,10 +17,8 @@ public:
 	{
 	}
 
-	GenericCommandRecord execute(const CommandInput& command_input)
+	bool execute(GenericCommandRecord& record)
 	{
-		GenericCommandRecord record(command_input);
-
 		CommandArguments cargs(record);
 
 		try
@@ -33,7 +31,7 @@ public:
 			record.save_error(e);
 		}
 
-		return record;
+		return record.successful;
 	}
 
 protected:

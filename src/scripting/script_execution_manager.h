@@ -12,18 +12,18 @@ namespace scripting
 class ScriptExecutionManager
 {
 public:
-	struct CommandRecord
-	{
-		CommandInput command_input;
-		bool successful;
-
-		CommandRecord() : successful(false)
-		{
-		}
-	};
-
 	struct ScriptRecord
 	{
+		struct CommandRecord
+		{
+			CommandInput command_input;
+			bool successful;
+
+			CommandRecord() : successful(false)
+			{
+			}
+		};
+
 		std::vector<CommandRecord> command_records;
 		std::string termination_error;
 
@@ -373,11 +373,11 @@ private:
 				return;
 			}
 
-			CommandRecord command_record;
+			ScriptRecord::CommandRecord script_command_record;
 
 			try
 			{
-				command_record.command_input=CommandInput(command_string);
+				script_command_record.command_input=CommandInput(command_string);
 			}
 			catch(const std::exception& e)
 			{
@@ -385,11 +385,11 @@ private:
 				return;
 			}
 
-			execute_command(command_record);
+			execute_command(script_command_record);
 
-			script_record.command_records.push_back(command_record);
+			script_record.command_records.push_back(script_command_record);
 
-			if(!command_record.successful && exit_on_first_failure)
+			if(!script_command_record.successful && exit_on_first_failure)
 			{
 				script_record.termination_error="Terminated on the first failure.";
 				return;
@@ -402,23 +402,23 @@ private:
 		}
 	}
 
-	void execute_command(CommandRecord& command_record)
+	void execute_command(ScriptRecord::CommandRecord& script_command_record)
 	{
-		const std::string& command_name=command_record.command_input.get_command_name();
+		const std::string& command_name=script_command_record.command_input.get_command_name();
 
 		if(commands_for_script_partitioner_.count(command_name)==1)
 		{
-			on_before_any_command(command_record.command_input);
-			const GenericCommandRecord cr=commands_for_script_partitioner_[command_name]->execute(command_record.command_input, script_partitioner_);
-			command_record.successful=cr.successful;
+			on_before_any_command(script_command_record.command_input);
+			GenericCommandRecord cr(script_command_record.command_input);
+			script_command_record.successful=commands_for_script_partitioner_[command_name]->execute(cr, script_partitioner_);
 			on_after_command_for_script_partitioner(cr, script_partitioner_);
 			on_after_any_command(cr);
 		}
 		else if(commands_for_congregation_of_data_managers_.count(command_name)==1)
 		{
-			on_before_any_command(command_record.command_input);
-			const GenericCommandRecord cr=commands_for_congregation_of_data_managers_[command_name]->execute(command_record.command_input, congregation_of_data_managers_);
-			command_record.successful=cr.successful;
+			on_before_any_command(script_command_record.command_input);
+			GenericCommandRecord cr(script_command_record.command_input);
+			script_command_record.successful=commands_for_congregation_of_data_managers_[command_name]->execute(cr, congregation_of_data_managers_);
 			on_after_command_for_congregation_of_data_managers(cr, congregation_of_data_managers_);
 			on_after_any_command(cr);
 		}
@@ -427,7 +427,7 @@ private:
 			CongregationOfDataManagers::ObjectQuery query;
 			query.picked=true;
 			{
-				const std::vector<std::string> on_objects=command_record.command_input.get_value_vector_or_default<std::string>("on-objects", std::vector<std::string>());
+				const std::vector<std::string> on_objects=script_command_record.command_input.get_value_vector_or_default<std::string>("on-objects", std::vector<std::string>());
 				if(!on_objects.empty())
 				{
 					query.names.insert(on_objects.begin(), on_objects.end());
@@ -438,44 +438,44 @@ private:
 			if(!picked_data_managers.empty())
 			{
 				GenericCommandForDataManager* command_for_data_manager=commands_for_data_manager_[command_name];
-				if(picked_data_managers.size()==1 || command_for_data_manager->allowed_to_work_on_multiple_data_managers(command_record.command_input))
+				if(picked_data_managers.size()==1 || command_for_data_manager->allowed_to_work_on_multiple_data_managers(script_command_record.command_input))
 				{
 					for(std::size_t i=0;i<picked_data_managers.size();i++)
 					{
-						on_before_any_command(command_record.command_input);
-						const GenericCommandRecord cr=commands_for_data_manager_[command_name]->execute(command_record.command_input, *picked_data_managers[i]);
-						command_record.successful=cr.successful;
+						on_before_any_command(script_command_record.command_input);
+						GenericCommandRecord cr(script_command_record.command_input);
+						script_command_record.successful=commands_for_data_manager_[command_name]->execute(cr, *picked_data_managers[i]);
 						on_after_command_for_data_manager(cr, *picked_data_managers[i]);
 						on_after_any_command(cr);
 					}
 				}
 				else
 				{
-					on_before_any_command(command_record.command_input);
-					on_command_not_allowed_for_multiple_data_managers(command_record.command_input);
-					on_after_any_command(GenericCommandRecord(command_record.command_input));
+					on_before_any_command(script_command_record.command_input);
+					on_command_not_allowed_for_multiple_data_managers(script_command_record.command_input);
+					on_after_any_command(GenericCommandRecord(script_command_record.command_input));
 				}
 			}
 			else
 			{
-				on_before_any_command(command_record.command_input);
-				on_no_picked_data_manager_for_command(command_record.command_input);
-				on_after_any_command(GenericCommandRecord(command_record.command_input));
+				on_before_any_command(script_command_record.command_input);
+				on_no_picked_data_manager_for_command(script_command_record.command_input);
+				on_after_any_command(GenericCommandRecord(script_command_record.command_input));
 			}
 		}
 		else if(commands_for_extra_actions_.count(command_name)==1)
 		{
-			on_before_any_command(command_record.command_input);
-			const GenericCommandRecord cr=commands_for_extra_actions_[command_name]->execute(command_record.command_input);
-			command_record.successful=cr.successful;
+			on_before_any_command(script_command_record.command_input);
+			GenericCommandRecord cr(script_command_record.command_input);
+			script_command_record.successful=commands_for_extra_actions_[command_name]->execute(cr);
 			on_after_command_for_extra_actions(cr);
 			on_after_any_command(cr);
 		}
 		else
 		{
-			on_before_any_command(command_record.command_input);
+			on_before_any_command(script_command_record.command_input);
 			on_unrecognized_command(command_name);
-			on_after_any_command(GenericCommandRecord(command_record.command_input));
+			on_after_any_command(GenericCommandRecord(script_command_record.command_input));
 		}
 	}
 

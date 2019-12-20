@@ -18,10 +18,8 @@ public:
 	{
 	}
 
-	GenericCommandRecord execute(const CommandInput& command_input, DataManager& data_manager)
+	bool execute(GenericCommandRecord& record, DataManager& data_manager)
 	{
-		GenericCommandRecord record(command_input);
-
 		CommandArguments cargs(record, data_manager);
 
 		try
@@ -36,7 +34,7 @@ public:
 			record.save_error(e);
 		}
 
-		return record;
+		return record.successful;
 	}
 
 	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
