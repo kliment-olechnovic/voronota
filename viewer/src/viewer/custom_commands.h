@@ -21,7 +21,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const int width=cargs.input.get_value_or_default<int>("width", app_.window_width());
 			const int height=cargs.input.get_value_or_default<int>("height", app_.window_height());
@@ -54,7 +54,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			auxiliaries::ColorUtilities::ColorInteger color=auxiliaries::ColorUtilities::color_from_name(cargs.input.get_value_or_first_unused_unnamed_value("col"));
 
@@ -81,7 +81,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			app_.set_rendering_mode_to_simple();
@@ -100,7 +100,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const float angle=cargs.input.get_value_or_default<float>("angle", app_.stereo_angle());
 			const float offset=cargs.input.get_value_or_default<float>("offset", app_.stereo_offset());
@@ -128,7 +128,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			app_.set_rendering_mode_to_grid();
@@ -149,7 +149,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 
@@ -169,7 +169,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const float field_of_view=cargs.input.get_value_or_default<float>("field-of-view", app_.perspective_field_of_view());
 			const float near_z=cargs.input.get_value_or_default<float>("near-z", app_.perspective_near_z());
@@ -193,7 +193,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const bool off=cargs.input.get_flag("off");
 			cargs.input.assert_nothing_unusable();
@@ -213,7 +213,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			std::vector<double> default_axis(3, 0.0);
 			default_axis[1]=1.0;
@@ -251,7 +251,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			std::string filename=cargs.input.get_value_or_first_unused_unnamed_value("file");
 
@@ -291,7 +291,7 @@ public:
 	class setup_rendering : public scripting::GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			DrawerForDataManager::RenderingParameters p=DrawerForDataManager::RenderingParameters::default_rendering_parameters();
 

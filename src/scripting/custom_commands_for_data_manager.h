@@ -36,7 +36,7 @@ public:
 //			document_generic_selecting_query(doc);
 //		}
 
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -80,7 +80,7 @@ public:
 //			doc.set_option_decription("translate", "3 numeric values", "translation vector to apply after rotation");
 //		}
 
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -105,7 +105,7 @@ public:
 	class center_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -133,7 +133,7 @@ public:
 	class export_atoms : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -195,7 +195,7 @@ public:
 	class select_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -246,7 +246,7 @@ public:
 	class export_selection_of_atoms : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -295,7 +295,7 @@ public:
 	class import_selection_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -371,7 +371,7 @@ public:
 	class set_tag_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -400,7 +400,7 @@ public:
 	class set_tag_of_atoms_by_secondary_structure : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -439,7 +439,7 @@ public:
 	class delete_tags_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -488,7 +488,7 @@ public:
 	class set_adjunct_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -533,7 +533,7 @@ public:
 	class set_adjunct_of_atoms_by_contact_areas : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_contacts_availability();
@@ -577,7 +577,7 @@ public:
 	class set_adjunct_of_atoms_by_contact_adjuncts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_contacts_availability();
@@ -647,7 +647,7 @@ public:
 	class set_adjunct_of_atoms_by_residue_pooling : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -758,7 +758,7 @@ public:
 	class delete_adjuncts_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -807,7 +807,7 @@ public:
 	class export_adjuncts_of_atoms : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -895,7 +895,7 @@ public:
 	class import_adjuncts_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1021,7 +1021,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1065,7 +1065,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
@@ -1112,7 +1112,7 @@ public:
 	class color_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
@@ -1150,7 +1150,7 @@ public:
 	class spectrum_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
@@ -1342,7 +1342,7 @@ public:
 	class print_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1372,7 +1372,7 @@ public:
 	class print_sequence : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1496,7 +1496,7 @@ public:
 	class zoom_by_atoms : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1520,7 +1520,7 @@ public:
 	class export_atoms_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
@@ -1639,7 +1639,7 @@ public:
 	class export_cartoon_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_atoms_representations_availability();
@@ -1769,7 +1769,7 @@ public:
 	class list_selections_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			cargs.data_manager.sync_atoms_selections_with_display_states();
@@ -1789,7 +1789,7 @@ public:
 	class delete_selections_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_selections_availability();
 
@@ -1832,7 +1832,7 @@ public:
 	class rename_selection_of_atoms : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_selections_availability();
 
@@ -1856,7 +1856,7 @@ public:
 	class construct_triangulation : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -1882,7 +1882,7 @@ public:
 	class export_triangulation : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
@@ -1947,7 +1947,7 @@ public:
 	class export_triangulation_voxels : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
@@ -2051,7 +2051,7 @@ public:
 	class print_triangulation : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
@@ -2123,7 +2123,7 @@ public:
 	class select_atoms_by_triangulation_query : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
@@ -2190,7 +2190,7 @@ public:
 	class construct_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -2225,7 +2225,7 @@ public:
 	class make_drawable_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2255,7 +2255,7 @@ public:
 	class make_undrawable_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2279,7 +2279,7 @@ public:
 	class export_contacts : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2313,7 +2313,7 @@ public:
 	class import_contacts : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -2356,7 +2356,7 @@ public:
 	class select_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2407,7 +2407,7 @@ public:
 	class export_selection_of_contacts : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2459,7 +2459,7 @@ public:
 	class import_selection_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2535,7 +2535,7 @@ public:
 	class set_tag_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2564,7 +2564,7 @@ public:
 	class delete_tags_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2613,7 +2613,7 @@ public:
 	class set_adjunct_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2658,7 +2658,7 @@ public:
 	class delete_adjuncts_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2717,7 +2717,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -2763,7 +2763,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
@@ -2810,7 +2810,7 @@ public:
 	class color_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
@@ -2848,7 +2848,7 @@ public:
 	class spectrum_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
@@ -3025,7 +3025,7 @@ public:
 	class print_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3084,7 +3084,7 @@ public:
 	class zoom_by_contacts : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3121,7 +3121,7 @@ public:
 	class export_contacts_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 			cargs.data_manager.assert_contacts_representations_availability();
@@ -3215,7 +3215,7 @@ public:
 	class list_selections_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			cargs.data_manager.sync_contacts_selections_with_display_states();
@@ -3235,7 +3235,7 @@ public:
 	class delete_selections_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_selections_availability();
 
@@ -3278,7 +3278,7 @@ public:
 	class rename_selection_of_contacts : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_selections_availability();
 
@@ -3302,7 +3302,7 @@ public:
 	class export_atoms_and_contacts : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 			cargs.data_manager.assert_contacts_availability();
@@ -3341,7 +3341,7 @@ public:
 	class calculate_burial_depth : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3381,7 +3381,7 @@ public:
 	class voromqa_global : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3420,7 +3420,7 @@ public:
 	class voromqa_local : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_atoms_availability();
 
@@ -3517,7 +3517,7 @@ public:
 	class voromqa_frustration : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3657,7 +3657,7 @@ public:
 	class voromqa_membrane_place : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -3720,7 +3720,7 @@ public:
 	class describe_exposure : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 			cargs.data_manager.assert_contacts_availability();
@@ -3910,7 +3910,7 @@ public:
 	class find_connected_components : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -4063,7 +4063,7 @@ public:
 	class add_figure : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string> name=cargs.input.get_value_vector<std::string>("name");
 			const std::vector<float> vertices=cargs.input.get_value_vector<float>("vertices");
@@ -4094,7 +4094,7 @@ public:
 	class print_figures : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 
@@ -4142,7 +4142,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 			cargs.data_manager.assert_figures_representations_availability();
@@ -4182,7 +4182,7 @@ public:
 	class color_figures : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 			cargs.data_manager.assert_figures_representations_availability();
@@ -4218,7 +4218,7 @@ public:
 	class list_figures : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 
@@ -4249,7 +4249,7 @@ public:
 	class delete_figures : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 
@@ -4282,7 +4282,7 @@ public:
 	class add_figure_of_triangulation : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_triangulation_info_availability();
 
@@ -4350,7 +4350,7 @@ public:
 	class export_figures_as_pymol_cgo : public GenericCommandForDataManager
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_figures_availability();
 			cargs.data_manager.assert_figures_representations_availability();
@@ -4451,7 +4451,7 @@ public:
 	class calculate_betweenness : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.data_manager.assert_contacts_availability();
 
@@ -4550,7 +4550,7 @@ public:
 	class set_text_description : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string text=cargs.input.get_value_or_first_unused_unnamed_value("text");
 
@@ -4565,7 +4565,7 @@ public:
 	class print_text_description : public GenericCommandForDataManagerScaled
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 

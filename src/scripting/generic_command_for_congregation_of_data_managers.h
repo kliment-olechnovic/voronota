@@ -56,7 +56,7 @@ protected:
 		}
 	};
 
-	virtual void run(CommandArguments&)
+	virtual void run(CommandArguments&) const
 	{
 	}
 };

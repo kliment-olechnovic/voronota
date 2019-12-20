@@ -16,7 +16,7 @@ public:
 	class list_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
@@ -44,7 +44,7 @@ public:
 	class delete_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
@@ -69,7 +69,7 @@ public:
 	class rename_object : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
 			cargs.input.mark_all_unnamed_values_as_used();
@@ -94,7 +94,7 @@ public:
 	class copy_object : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
 			cargs.input.mark_all_unnamed_values_as_used();
@@ -122,7 +122,7 @@ public:
 	class import : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			LoadingOfData::Parameters params;
 			params.file=cargs.input.get_value_or_first_unused_unnamed_value("file");
@@ -186,7 +186,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
@@ -243,7 +243,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
@@ -277,7 +277,7 @@ public:
 	class zoom_by_objects : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.congregation_of_data_managers.assert_objects_availability();
 
@@ -308,7 +308,7 @@ public:
 	class cad_score : public GenericCommandForCongregationOfDataManagers
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string target_name=cargs.input.get_value<std::string>("target");
 			const std::string model_name=cargs.input.get_value<std::string>("model");

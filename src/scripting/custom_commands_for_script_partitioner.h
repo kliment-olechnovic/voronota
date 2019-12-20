@@ -13,7 +13,7 @@ public:
 	class set_alias : public GenericCommandForScriptPartitioner
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
 
@@ -37,7 +37,7 @@ public:
 	class unset_aliases : public GenericCommandForScriptPartitioner
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& names=cargs.input.get_list_of_unnamed_values();
 
@@ -63,7 +63,7 @@ public:
 	class source : public GenericCommandForScriptPartitioner
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string file=cargs.input.get_value_or_first_unused_unnamed_value("file");
 

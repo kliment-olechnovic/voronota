@@ -23,7 +23,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			elapsed_processor_time_.reset();
@@ -42,7 +42,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const bool reset=cargs.input.get_flag("reset");
 			cargs.input.assert_nothing_unusable();
@@ -66,7 +66,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 			exit_status_=true;
@@ -79,7 +79,7 @@ public:
 	class echo : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& strings=cargs.input.get_list_of_unnamed_values();
 			cargs.input.mark_all_unnamed_values_as_used();
@@ -96,7 +96,7 @@ public:
 	class list_virtual_files : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			cargs.input.assert_nothing_unusable();
 
@@ -116,7 +116,7 @@ public:
 	class upload_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string name=cargs.input.get_value<std::string>("name");
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -147,7 +147,7 @@ public:
 	class download_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string name=cargs.input.get_value<std::string>("name");
 			const std::string file=cargs.input.get_value<std::string>("file");
@@ -175,7 +175,7 @@ public:
 	class print_virtual_file : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string filename=cargs.input.get_value_or_first_unused_unnamed_value("name");
 			const bool line_by_line=cargs.input.get_flag("line-by-line");
@@ -204,7 +204,7 @@ public:
 	class delete_virtual_files : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::vector<std::string>& filenames=cargs.input.get_list_of_unnamed_values();
 			cargs.input.mark_all_unnamed_values_as_used();
@@ -233,7 +233,7 @@ public:
 	class setup_loading : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			LoadingOfData::Configuration config;
 			config.include_heteroatoms=cargs.input.get_flag("include-heteroatoms");
@@ -267,7 +267,7 @@ public:
 	class setup_voromqa : public GenericCommandForExtraActions
 	{
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string potential_file=cargs.input.get_value<std::string>("potential");
 			const std::string means_and_sds_file=cargs.input.get_value<std::string>("means-and-sds");
@@ -290,7 +290,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const std::string name=cargs.input.get_value_or_first_unused_unnamed_value("name");
 
@@ -339,7 +339,7 @@ public:
 		}
 
 	protected:
-		void run(CommandArguments& cargs)
+		void run(CommandArguments& cargs) const
 		{
 			const bool compact=cargs.input.get_flag("compact");
 
