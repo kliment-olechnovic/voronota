@@ -1,0 +1,60 @@
+#ifndef SCRIPTING_OPERATORS_MARK_ATOMS_H_
+#define SCRIPTING_OPERATORS_MARK_ATOMS_H_
+
+#include "common.h"
+
+namespace scripting
+{
+
+namespace operators
+{
+
+template<bool positive=true>
+class MarkAtoms
+{
+public:
+	struct Result
+	{
+		SummaryOfAtoms atoms_summary;
+	};
+
+	SelectionManager::Query parameters_for_selecting;
+
+	MarkAtoms()
+	{
+	}
+
+	MarkAtoms& init(CommandInput& input)
+	{
+		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		return (*this);
+	}
+
+	Result run(DataManager& data_manager) const
+	{
+		data_manager.assert_atoms_availability();
+
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
+
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(positive).set_unmark(!positive), ids);
+
+		Result result;
+		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);
+
+		return result;
+	}
+};
+
+typedef MarkAtoms<false> UnmarkAtoms;
+
+}
+
+}
+
+#endif /* SCRIPTING_OPERATORS_MARK_ATOMS_H_ */
+
