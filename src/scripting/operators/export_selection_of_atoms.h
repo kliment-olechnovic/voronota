@@ -18,6 +18,18 @@ public:
 		std::string dump;
 		SummaryOfAtoms atoms_summary;
 		std::size_t number_of_descriptors_written;
+
+		Result& write(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.value("file")=file;
+			if(!dump.empty())
+			{
+				heterostorage.variant_object.value("dump")=dump;
+			}
+			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.value("number_of_descriptors_written")=number_of_descriptors_written;
+			return (*this);
+		}
 	};
 
 	std::string file;
@@ -40,7 +52,6 @@ public:
 		no_name=input.get_flag("no-name");
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
-
 		return (*this);
 	}
 

@@ -17,6 +17,17 @@ public:
 		std::string file;
 		std::string dump;
 		SummaryOfAtoms atoms_summary;
+
+		Result& write(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.value("file")=file;
+			if(!dump.empty())
+			{
+				heterostorage.variant_object.value("dump")=dump;
+			}
+			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			return (*this);
+		}
 	};
 
     std::string file;

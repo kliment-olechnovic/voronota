@@ -238,8 +238,6 @@ public:
 				cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_unmark(true));
 				cargs.data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(true), ids);
 			}
-
-			cargs.heterostorage.vectors_of_ids["selection_of_atoms"]=std::vector<std::size_t>(ids.begin(), ids.end());
 		}
 	};
 
@@ -2399,8 +2397,6 @@ public:
 				cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_unmark(true));
 				cargs.data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_mark(true), ids);
 			}
-
-			cargs.heterostorage.vectors_of_ids["selection_of_contacts"]=std::vector<std::size_t>(ids.begin(), ids.end());
 		}
 	};
 

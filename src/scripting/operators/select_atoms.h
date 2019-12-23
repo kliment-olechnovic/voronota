@@ -17,6 +17,13 @@ public:
 		std::set<std::size_t> ids;
 		SummaryOfAtoms atoms_summary;
 		std::string selection_name;
+
+		Result& write(HeterogeneousStorage& heterostorage) const
+		{
+			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.value("selection_name")=selection_name;
+			return (*this);
+		}
 	};
 
 	SelectionManager::Query parameters_for_selecting;
