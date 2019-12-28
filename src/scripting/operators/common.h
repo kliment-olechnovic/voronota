@@ -1,6 +1,10 @@
 #ifndef SCRIPTING_OPERATORS_COMMON_H_
 #define SCRIPTING_OPERATORS_COMMON_H_
 
+#include <algorithm>
+#include <numeric>
+#include <functional>
+
 #include "../data_manager.h"
 #include "../heterogeneous_storage.h"
 #include "../basic_assertions.h"
