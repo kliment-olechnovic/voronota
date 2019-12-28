@@ -12,7 +12,7 @@ $VORONOTADIR/voronota-pocket \
   --buriedness-rim 0.4 \
   --output-atoms $SUBDIR/atoms1 \
   --output-pocketness-pdb $SUBDIR/pocketness1.pdb \
-  --output-vertices $SUBDIR/vertices1.pdb \
+  --output-vertices $SUBDIR/vertices1 \
   --output-voxels-pdb $SUBDIR/voxels1.pdb \
   --draw-tetrahedrons $SUBDIR/tetrahedrons1.py \
   --draw-spheres $SUBDIR/spheres1.py \
