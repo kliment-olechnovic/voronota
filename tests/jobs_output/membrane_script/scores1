@@ -1,0 +1,2 @@
+input_file                      membrane_fitting_score  direction_x  direction_y  direction_z  center_projection
+./input/membrane/structure.pdb  0.567084                -0.0206418   -0.167078    0.985728     -7.59596

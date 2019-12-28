@@ -1,0 +1,2 @@
+input_file                      max_buriedness  all_atoms  all_vertices  pocket_atoms  pocket_vertices  volume_of_pocket_tetrahedrons
+./input/membrane/structure.pdb  0.8087          2952       19765         539           1385             22415.9
