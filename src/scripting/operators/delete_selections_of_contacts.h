@@ -1,5 +1,5 @@
-#ifndef SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_ATOMS_H_
-#define SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_ATOMS_H_
+#ifndef SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_CONTACTS_H_
+#define SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_CONTACTS_H_
 
 #include "common.h"
 
@@ -9,7 +9,7 @@ namespace scripting
 namespace operators
 {
 
-class DeleteSelectionsOfAtoms
+class DeleteSelectionsOfContacts
 {
 public:
 	struct Result
@@ -29,11 +29,11 @@ public:
 	bool all;
 	std::vector<std::string> names;
 
-	DeleteSelectionsOfAtoms() : all(false)
+	DeleteSelectionsOfContacts() : all(false)
 	{
 	}
 
-	DeleteSelectionsOfAtoms& init(CommandInput& input)
+	DeleteSelectionsOfContacts& init(CommandInput& input)
 	{
 		all=input.get_flag("all");
 		if(!all)
@@ -46,7 +46,7 @@ public:
 
 	Result run(DataManager& data_manager) const
 	{
-		data_manager.assert_atoms_selections_availability();
+		data_manager.assert_contacts_selections_availability();
 
 		if(all && !names.empty())
 		{
@@ -57,7 +57,7 @@ public:
 
 		if(all)
 		{
-			names_filled=data_manager.selection_manager().get_names_of_atoms_selections();
+			names_filled=data_manager.selection_manager().get_names_of_contacts_selections();
 		}
 		else
 		{
@@ -66,14 +66,14 @@ public:
 
 		if(names_filled.empty())
 		{
-			throw std::runtime_error(std::string("No atoms selections names specified."));
+			throw std::runtime_error(std::string("No contacts selections names specified."));
 		}
 
-		data_manager.assert_atoms_selections_availability(names_filled);
+		data_manager.assert_contacts_selections_availability(names_filled);
 
 		for(std::size_t i=0;i<names_filled.size();i++)
 		{
-			data_manager.selection_manager().delete_atoms_selection(names_filled[i]);
+			data_manager.selection_manager().delete_contacts_selection(names_filled[i]);
 		}
 
 		Result result;
@@ -87,4 +87,4 @@ public:
 
 }
 
-#endif /* SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_ATOMS_H_ */
+#endif /* SCRIPTING_OPERATORS_DELETE_SELECTIONS_OF_CONTACTS_H_ */
