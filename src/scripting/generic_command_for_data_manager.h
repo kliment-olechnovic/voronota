@@ -22,8 +22,6 @@ public:
 	{
 		try
 		{
-			data_manager.reset_change_indicator();
-			data_manager.sync_selections_with_display_states_if_requested_in_string(record.command_input.get_canonical_input_command_string());
 			run(record.command_input, data_manager, record.heterostorage);
 			record.successful=true;
 		}
@@ -46,23 +44,33 @@ protected:
 	}
 };
 
-template<class Operator, bool on_multiple>
+template<class Operator>
 class GenericCommandForDataManagerFromOperator : public GenericCommandForDataManager
 {
 public:
-	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+	GenericCommandForDataManagerFromOperator(const Operator& op, const bool on_multiple) : op_(op), on_multiple_(on_multiple)
 	{
-		return on_multiple;
+	}
+
+	bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
+	{
+		return on_multiple_;
 	}
 
 protected:
 	void run(CommandInput& input, DataManager& data_manager, HeterogeneousStorage& heterostorage) const
 	{
-		Operator op;
+		data_manager.reset_change_indicator();
+		data_manager.sync_selections_with_display_states_if_requested_in_string(input.get_canonical_input_command_string());
+		Operator op=op_;
 		op.init(input);
 		input.assert_nothing_unusable();
 		op.run(data_manager).write(heterostorage);
 	}
+
+private:
+	Operator op_;
+	bool on_multiple_;
 };
 
 }

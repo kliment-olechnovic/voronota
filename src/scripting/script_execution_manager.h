@@ -1,9 +1,12 @@
 #ifndef SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
+#include "generic_command_for_data_manager.h"
+
+#include "operators/all.h"
+
 #include "custom_commands_for_script_partitioner.h"
 #include "custom_commands_for_congregation_of_data_managers.h"
-#include "custom_commands_for_data_manager.h"
 #include "custom_commands_for_extra_actions.h"
 
 namespace scripting
@@ -61,86 +64,87 @@ public:
 		set_command("zoom-by-objects", new CustomCommandsForCongregationOfDataManagers::zoom_by_objects());
 		set_command("cad-score", new CustomCommandsForCongregationOfDataManagers::cad_score());
 
-		set_command("restrict-atoms", new CustomCommandsForDataManager::restrict_atoms());
-		set_command("move-atoms", new CustomCommandsForDataManager::move_atoms());
-		set_command("center-atoms", new CustomCommandsForDataManager::center_atoms());
-		set_command("export-atoms", new CustomCommandsForDataManager::export_atoms());
-		set_command("select-atoms", new CustomCommandsForDataManager::select_atoms());
-		set_command("export-selection-of-atoms", new CustomCommandsForDataManager::export_selection_of_atoms());
-		set_command("import-selection-of-atoms", new CustomCommandsForDataManager::import_selection_of_atoms());
-		set_command("set-tag-of-atoms", new CustomCommandsForDataManager::set_tag_of_atoms());
-		set_command("set-tag-of-atoms-by-secondary-structure", new CustomCommandsForDataManager::set_tag_of_atoms_by_secondary_structure());
-		set_command("delete-tags-of-atoms", new CustomCommandsForDataManager::delete_tags_of_atoms());
-		set_command("set-adjunct-of-atoms", new CustomCommandsForDataManager::set_adjunct_of_atoms());
-		set_command("set-adjunct-of-atoms-by-contact-areas", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_contact_areas());
-		set_command("set-adjunct-of-atoms-by-contact-adjuncts", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_contact_adjuncts());
-		set_command("set-adjunct-of-atoms-by-residue-pooling", new CustomCommandsForDataManager::set_adjunct_of_atoms_by_residue_pooling());
-		set_command("delete-adjuncts-of-atoms", new CustomCommandsForDataManager::delete_adjuncts_of_atoms());
-		set_command("export-adjuncts-of-atoms", new CustomCommandsForDataManager::export_adjuncts_of_atoms());
-		set_command("import-adjuncts-of-atoms", new CustomCommandsForDataManager::import_adjuncts_of_atoms());
-		set_command("mark-atoms", new CustomCommandsForDataManager::mark_atoms());
-		set_command("unmark-atoms", new CustomCommandsForDataManager::unmark_atoms());
-		set_command("show-atoms", new CustomCommandsForDataManager::show_atoms());
-		set_command("hide-atoms", new CustomCommandsForDataManager::hide_atoms());
-		set_command("color-atoms", new CustomCommandsForDataManager::color_atoms());
-		set_command("spectrum-atoms", new CustomCommandsForDataManager::spectrum_atoms());
-		set_command("print-atoms", new CustomCommandsForDataManager::print_atoms());
-		set_command("print-sequence", new CustomCommandsForDataManager::print_sequence());
-		set_command("zoom-by-atoms", new CustomCommandsForDataManager::zoom_by_atoms());
-		set_command("export-atoms-as-pymol-cgo", new CustomCommandsForDataManager::export_atoms_as_pymol_cgo());
-		set_command("export-cartoon-as-pymol-cgo", new CustomCommandsForDataManager::export_cartoon_as_pymol_cgo());
-		set_command("list-selections-of-atoms", new CustomCommandsForDataManager::list_selections_of_atoms());
-		set_command("delete-selections-of-atoms", new CustomCommandsForDataManager::delete_selections_of_atoms());
-		set_command("rename-selection-of-atoms", new CustomCommandsForDataManager::rename_selection_of_atoms());
-		set_command("construct-triangulation", new CustomCommandsForDataManager::construct_triangulation());
-		set_command("export-triangulation", new CustomCommandsForDataManager::export_triangulation());
-		set_command("export-triangulation-voxels", new CustomCommandsForDataManager::export_triangulation_voxels());
-		set_command("print-triangulation", new CustomCommandsForDataManager::print_triangulation());
-		set_command("select-atoms-by-triangulation-query", new CustomCommandsForDataManager::select_atoms_by_triangulation_query());
-		set_command("construct-contacts", new CustomCommandsForDataManager::construct_contacts());
-		set_command("make-drawable-contacts", new CustomCommandsForDataManager::make_drawable_contacts());
-		set_command("make-undrawable-contacts", new CustomCommandsForDataManager::make_undrawable_contacts());
-		set_command("export-contacts", new CustomCommandsForDataManager::export_contacts());
-		set_command("import-contacts", new CustomCommandsForDataManager::import_contacts());
-		set_command("select-contacts", new CustomCommandsForDataManager::select_contacts());
-		set_command("export-selection-of-contacts", new CustomCommandsForDataManager::export_selection_of_contacts());
-		set_command("import-selection-of-contacts", new CustomCommandsForDataManager::import_selection_of_contacts());
-		set_command("set-tag-of-contacts", new CustomCommandsForDataManager::set_tag_of_contacts());
-		set_command("delete-tags-of-contacts", new CustomCommandsForDataManager::delete_tags_of_contacts());
-		set_command("set-adjunct-of-contacts", new CustomCommandsForDataManager::set_adjunct_of_contacts());
-		set_command("delete-adjuncts-of-contacts", new CustomCommandsForDataManager::delete_adjuncts_of_contacts());
-		set_command("mark-contacts", new CustomCommandsForDataManager::mark_contacts());
-		set_command("unmark-contacts", new CustomCommandsForDataManager::unmark_contacts());
-		set_command("show-contacts", new CustomCommandsForDataManager::show_contacts());
-		set_command("hide-contacts", new CustomCommandsForDataManager::hide_contacts());
-		set_command("color-contacts", new CustomCommandsForDataManager::color_contacts());
-		set_command("spectrum-contacts", new CustomCommandsForDataManager::spectrum_contacts());
-		set_command("print-contacts", new CustomCommandsForDataManager::print_contacts());
-		set_command("zoom-by-contacts", new CustomCommandsForDataManager::zoom_by_contacts());
-		set_command("export-contacts-as-pymol-cgo", new CustomCommandsForDataManager::export_contacts_as_pymol_cgo());
-		set_command("list-selections-of-contacts", new CustomCommandsForDataManager::list_selections_of_contacts());
-		set_command("delete-selections-of-contacts", new CustomCommandsForDataManager::delete_selections_of_contacts());
-		set_command("rename-selection-of-contacts", new CustomCommandsForDataManager::rename_selection_of_contacts());
-		set_command("export-atoms-and-contacts", new CustomCommandsForDataManager::export_atoms_and_contacts());
-		set_command("calculate-burial-depth", new CustomCommandsForDataManager::calculate_burial_depth());
-		set_command("voromqa-global", new CustomCommandsForDataManager::voromqa_global());
-		set_command("voromqa-local", new CustomCommandsForDataManager::voromqa_local);
-		set_command("voromqa-frustration", new CustomCommandsForDataManager::voromqa_frustration);
-		set_command("voromqa-membrane-place", new CustomCommandsForDataManager::voromqa_membrane_place);
-		set_command("describe-exposure", new CustomCommandsForDataManager::describe_exposure);
-		set_command("find-connected-components", new CustomCommandsForDataManager::find_connected_components);
-		set_command("add-figure", new CustomCommandsForDataManager::add_figure);
-		set_command("print-figures", new CustomCommandsForDataManager::print_figures);
-		set_command("show-figures", new CustomCommandsForDataManager::show_figures);
-		set_command("hide-figures", new CustomCommandsForDataManager::hide_figures);
-		set_command("color-figures", new CustomCommandsForDataManager::color_figures);
-		set_command("list-figures", new CustomCommandsForDataManager::list_figures);
-		set_command("delete-figures", new CustomCommandsForDataManager::delete_figures);
-		set_command("add-figure-of-triangulation", new CustomCommandsForDataManager::add_figure_of_triangulation);
-		set_command("export-figures-as-pymol-cgo", new CustomCommandsForDataManager::export_figures_as_pymol_cgo);
-		set_command("calculate-betweenness", new CustomCommandsForDataManager::calculate_betweenness);
-		set_command("set-text-description", new CustomCommandsForDataManager::set_text_description);
-		set_command("print-text-description", new CustomCommandsForDataManager::print_text_description);
+		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
+		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
+		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);
+		set_command_for_data_manager("calculate-burial-depth", operators::CalculateBurialDepth(), true);
+		set_command_for_data_manager("center-atoms", operators::CenterAtoms(), true);
+		set_command_for_data_manager("color-atoms", operators::ColorAtoms(), true);
+		set_command_for_data_manager("color-contacts", operators::ColorContacts(), true);
+		set_command_for_data_manager("color-figures", operators::ColorFigures(), true);
+		set_command_for_data_manager("construct-contacts", operators::ConstructContacts(), true);
+		set_command_for_data_manager("construct-triangulation", operators::ConstructTriangulation(), true);
+		set_command_for_data_manager("delete-adjuncts-of-atoms", operators::DeleteAdjunctsOfAtoms(), true);
+		set_command_for_data_manager("delete-adjuncts-of-contacts", operators::DeleteAdjunctsOfContacts(), true);
+		set_command_for_data_manager("delete-figures", operators::DeleteFigures(), true);
+		set_command_for_data_manager("delete-selections-of-atoms", operators::DeleteSelectionsOfAtoms(), true);
+		set_command_for_data_manager("delete-selections-of-contacts", operators::DeleteSelectionsOfContacts(), true);
+		set_command_for_data_manager("delete-tags-of-atoms", operators::DeleteTagsOfAtoms(), true);
+		set_command_for_data_manager("delete-tags-of-contacts", operators::DeleteTagsOfContacts(), true);
+		set_command_for_data_manager("describe-exposure", operators::DescribeExposure(), true);
+		set_command_for_data_manager("export-adjuncts-of-atoms", operators::ExportAdjunctsOfAtoms(), false);
+		set_command_for_data_manager("export-atoms-and-contacts", operators::ExportAtomsAndContacts(), false);
+		set_command_for_data_manager("export-atoms-as-pymol-cgo", operators::ExportAtomsAsPymolCGO(), false);
+		set_command_for_data_manager("export-atoms", operators::ExportAtoms(), false);
+		set_command_for_data_manager("export-cartoon-as-pymol-cgo", operators::ExportCartoonAsPymolCGO(), false);
+		set_command_for_data_manager("export-contacts-as-pymol-cgo", operators::ExportContactsAsPymolCGO(), false);
+		set_command_for_data_manager("export-contacts", operators::ExportContacts(), false);
+		set_command_for_data_manager("export-figures-as-pymol-cgo", operators::ExportFiguresAsPymolCGO(), false);
+		set_command_for_data_manager("export-selection-of-atoms", operators::ExportSelectionOfAtoms(), false);
+		set_command_for_data_manager("export-selection-of-contacts", operators::ExportSelectionOfContacts(), false);
+		set_command_for_data_manager("export-triangulation", operators::ExportTriangulation(), false);
+		set_command_for_data_manager("export-triangulation-voxels", operators::ExportTriangulationVoxels(), false);
+		set_command_for_data_manager("find-connected-components", operators::FindConnectedComponents(), true);
+		set_command_for_data_manager("hide-atoms", operators::HideAtoms(), true);
+		set_command_for_data_manager("hide-contacts", operators::HideContacts(), true);
+		set_command_for_data_manager("hide-figures", operators::HideFigures(), true);
+		set_command_for_data_manager("import-adjuncts-of-atoms", operators::ImportAdjunctsOfAtoms(), true);
+		set_command_for_data_manager("import-contacts", operators::ImportContacts(), false);
+		set_command_for_data_manager("import-selection-of-atoms", operators::ImportSelectionOfAtoms(), true);
+		set_command_for_data_manager("import-selection-of-contacts", operators::ImportSelectionOfContacts(), true);
+		set_command_for_data_manager("list-figures", operators::ListFigures(), true);
+		set_command_for_data_manager("list-selections-of-atoms", operators::ListSelectionsOfAtoms(), true);
+		set_command_for_data_manager("list-selections-of-contacts", operators::ListSelectionsOfContacts(), true);
+		set_command_for_data_manager("make-drawable-contacts", operators::MakeDrawableContacts(), true);
+		set_command_for_data_manager("make-undrawable-contacts", operators::MakeUndrawableContacts(), true);
+		set_command_for_data_manager("mark-atoms", operators::MarkAtoms(), true);
+		set_command_for_data_manager("mark-contacts", operators::MarkContacts(), true);
+		set_command_for_data_manager("move-atoms", operators::MoveAtoms(), true);
+		set_command_for_data_manager("print-atoms", operators::PrintAtoms(), true);
+		set_command_for_data_manager("print-contacts", operators::PrintContacts(), true);
+		set_command_for_data_manager("print-figures", operators::PrintFigures(), true);
+		set_command_for_data_manager("print-sequence", operators::PrintSequence(), true);
+		set_command_for_data_manager("print-text-description", operators::PrintTextDescription(), true);
+		set_command_for_data_manager("print-triangulation", operators::PrintTriangulation(), true);
+		set_command_for_data_manager("rename-selection-of-atoms", operators::RenameSelectionOfAtoms(), true);
+		set_command_for_data_manager("rename-selection-of-contacts", operators::RenameSelectionOfContacts(), true);
+		set_command_for_data_manager("restrict-atoms", operators::RestrictAtoms(), true);
+		set_command_for_data_manager("select-atoms-by-triangulation-query", operators::SelectAtomsByTriangulationQuery(), true);
+		set_command_for_data_manager("select-atoms", operators::SelectAtoms(), true);
+		set_command_for_data_manager("select-contacts", operators::SelectContacts(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-adjuncts", operators::SetAdjunctOfAtomsByContactAdjuncts(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-areas", operators::SetAdjunctOfAtomsByContactAreas(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-residue-pooling", operators::SetAdjunctOfAtomsByResiduePooling(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
+		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
+		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);
+		set_command_for_data_manager("set-tag-of-atoms", operators::SetTagOfAtoms(), true);
+		set_command_for_data_manager("set-tag-of-contacts", operators::SetTagOfContacts(), true);
+		set_command_for_data_manager("set-text-description", operators::SetTextDescription(), true);
+		set_command_for_data_manager("show-atoms", operators::ShowAtoms(), true);
+		set_command_for_data_manager("show-contacts", operators::ShowContacts(), true);
+		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);
+		set_command_for_data_manager("spectrum-atoms", operators::SpectrumAtoms(), true);
+		set_command_for_data_manager("spectrum-contacts", operators::SpectrumContacts(), true);
+		set_command_for_data_manager("unmark-atoms", operators::UnmarkAtoms(), true);
+		set_command_for_data_manager("unmark-contacts", operators::UnmarkContacts(), true);
+		set_command_for_data_manager("voromqa-frustration", operators::VoroMQAFrustration(), true);
+		set_command_for_data_manager("voromqa-global", operators::VoroMQAGlobal(), true);
+		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
+		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
+		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
+		set_command_for_data_manager("zoom-by-contacts", operators::ZoomByContacts(), false);
+
 
 		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
 		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
@@ -223,14 +227,13 @@ protected:
 		}
 	}
 
-	void set_command(const std::string& name, GenericCommandForDataManager* command_ptr)
+	template<class Operator>
+	void set_command_for_data_manager(const std::string& name, const Operator& op, const bool on_multiple)
 	{
 		unset_command(name);
-		if(command_ptr!=0)
-		{
-			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_data_manager_, name, command_ptr);
-			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
-		}
+		GenericCommandForDataManager* command_ptr=new GenericCommandForDataManagerFromOperator<Operator>(op, on_multiple);
+		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_data_manager_, name, command_ptr);
+		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
 	void set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
