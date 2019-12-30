@@ -20,11 +20,9 @@ public:
 
 	bool execute(GenericCommandRecord& record, ScriptPartitioner& script_partitioner)
 	{
-		CommandArguments cargs(record, script_partitioner);
-
 		try
 		{
-			run(cargs);
+			run(record.command_input, script_partitioner, record.heterostorage);
 			record.successful=true;
 		}
 		catch(const std::exception& e)
@@ -36,25 +34,30 @@ public:
 	}
 
 protected:
-	struct CommandArguments
-	{
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-		ScriptPartitioner& script_partitioner;
-
-		explicit CommandArguments(
-				GenericCommandRecord& command_record,
-				ScriptPartitioner& script_partitioner) :
-						input(command_record.command_input),
-						heterostorage(command_record.heterostorage),
-						script_partitioner(script_partitioner)
-		{
-		}
-	};
-
-	virtual void run(CommandArguments&) const
+	virtual void run(CommandInput&, ScriptPartitioner&, HeterogeneousStorage&) const
 	{
 	}
+};
+
+template<class Operator>
+class GenericCommandForScriptPartitionerFromOperator : public GenericCommandForScriptPartitioner
+{
+public:
+	GenericCommandForScriptPartitionerFromOperator(const Operator& op) : op_(op)
+	{
+	}
+
+protected:
+	void run(CommandInput& input, ScriptPartitioner& script_partitioner, HeterogeneousStorage& heterostorage) const
+	{
+		Operator op=op_;
+		op.init(input);
+		input.assert_nothing_unusable();
+		op.run(script_partitioner).write(heterostorage);
+	}
+
+private:
+	Operator op_;
 };
 
 }

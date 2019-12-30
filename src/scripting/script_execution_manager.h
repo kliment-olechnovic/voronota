@@ -2,10 +2,10 @@
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
 #include "generic_command_for_data_manager.h"
+#include "generic_command_for_script_partitioner.h"
 
 #include "operators/all.h"
 
-#include "custom_commands_for_script_partitioner.h"
 #include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_extra_actions.h"
 
@@ -47,9 +47,9 @@ public:
 	ScriptExecutionManager() :
 		exit_requested_(false)
 	{
-		set_command("set-alias", new CustomCommandsForScriptPartitioner::set_alias());
-		set_command("unset-aliases", new CustomCommandsForScriptPartitioner::unset_aliases());
-		set_command("source", new CustomCommandsForScriptPartitioner::source());
+		set_command_for_script_partitioner("set-alias", operators::SetAlias());
+		set_command_for_script_partitioner("unset-aliases", operators::UnsetAliases());
+		set_command_for_script_partitioner("source", operators::Source());
 
 		set_command("list-objects", new CustomCommandsForCongregationOfDataManagers::list_objects());
 		set_command("delete-objects", new CustomCommandsForCongregationOfDataManagers::delete_objects());
@@ -207,14 +207,13 @@ protected:
 		collection_of_command_documentations_.delete_documentation(name);
 	}
 
-	void set_command(const std::string& name, GenericCommandForScriptPartitioner* command_ptr)
+	template<class Operator>
+	void set_command_for_script_partitioner(const std::string& name, const Operator& op)
 	{
 		unset_command(name);
-		if(command_ptr!=0)
-		{
-			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_script_partitioner_, name, command_ptr);
-			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
-		}
+		GenericCommandForScriptPartitioner* command_ptr=new GenericCommandForScriptPartitionerFromOperator<Operator>(op);
+		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_script_partitioner_, name, command_ptr);
+		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
 	void set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
