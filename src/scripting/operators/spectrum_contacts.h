@@ -21,14 +21,15 @@ public:
 		double mean_of_values;
 		double sd_of_values;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
-			heterostorage.variant_object.value("min_value")=min_value;
-			heterostorage.variant_object.value("max_value")=max_value;
-			heterostorage.variant_object.value("number_of_values")=number_of_values;
-			heterostorage.variant_object.value("mean_of_values")=mean_of_values;
-			heterostorage.variant_object.value("sd_of_values")=sd_of_values;
+			VariantObject& info=heterostorage.variant_object.object("spectrum_summary");
+			info.value("min_value")=min_value;
+			info.value("max_value")=max_value;
+			info.value("number_of_values")=number_of_values;
+			info.value("mean_of_values")=mean_of_values;
+			info.value("sd_of_values")=sd_of_values;
 			return (*this);
 		}
 	};

@@ -16,7 +16,7 @@ public:
 	{
 		std::vector<VariantObject> deleted_figures;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("deleted_figures")=deleted_figures;
 			return (*this);

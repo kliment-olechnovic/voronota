@@ -16,7 +16,7 @@ public:
 	{
 		std::string text_description;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("text_description")=text_description;
 			return (*this);

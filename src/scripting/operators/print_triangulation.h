@@ -20,9 +20,12 @@ public:
 		std::size_t number_of_relevant_voronoi_vertices;
 		double total_relevant_tetrahedron_volume;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.objects_array("vertices")=vertices;
+			if(!vertices.empty())
+			{
+				heterostorage.variant_object.objects_array("vertices")=vertices;
+			}
 			VariantSerialization::write(full_triangulation_summary, heterostorage.variant_object.object("full_triangulation_summary"));
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=number_of_relevant_voronoi_vertices;

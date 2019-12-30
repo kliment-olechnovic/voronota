@@ -16,19 +16,19 @@ public:
 	{
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			return (*this);
 		}
 	};
 
-	const SelectionManager::Query parameters_for_selecting;
-	const std::vector<std::string> representation_names;
-	const bool next_random_color;
-	const auxiliaries::ColorUtilities::ColorInteger color_value;
+	SelectionManager::Query parameters_for_selecting;
+	std::vector<std::string> representation_names;
+	bool next_random_color;
+	auxiliaries::ColorUtilities::ColorInteger color_value;
 
-	ColorAtoms() : next_random_color(false)
+	ColorAtoms() : next_random_color(false), color_value(auxiliaries::ColorUtilities::null_color())
 	{
 	}
 

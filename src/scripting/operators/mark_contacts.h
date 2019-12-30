@@ -9,15 +9,15 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive=true>
-class MarkContacts
+template<bool positive>
+class MarkContactsTemplate
 {
 public:
 	struct Result
 	{
 		SummaryOfContacts contacts_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			return (*this);
@@ -26,11 +26,11 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 
-	MarkContacts()
+	MarkContactsTemplate()
 	{
 	}
 
-	MarkContacts& init(CommandInput& input)
+	MarkContactsTemplate& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		return (*this);
@@ -56,7 +56,8 @@ public:
 	}
 };
 
-typedef MarkContacts<false> UnmarkContacts;
+typedef MarkContactsTemplate<true> MarkContacts;
+typedef MarkContactsTemplate<false> UnmarkContacts;
 
 }
 

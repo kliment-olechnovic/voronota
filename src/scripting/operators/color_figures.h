@@ -14,7 +14,7 @@ class ColorFigures
 public:
 	struct Result
 	{
-		Result& write(HeterogeneousStorage&) const
+		const Result& write(HeterogeneousStorage&) const
 		{
 			return (*this);
 		}

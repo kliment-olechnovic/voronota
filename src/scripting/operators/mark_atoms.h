@@ -9,15 +9,15 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive=true>
-class MarkAtoms
+template<bool positive>
+class MarkAtomsTemplate
 {
 public:
 	struct Result
 	{
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			return (*this);
@@ -26,11 +26,11 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 
-	MarkAtoms()
+	MarkAtomsTemplate()
 	{
 	}
 
-	MarkAtoms& init(CommandInput& input)
+	MarkAtomsTemplate& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		return (*this);
@@ -56,7 +56,8 @@ public:
 	}
 };
 
-typedef MarkAtoms<false> UnmarkAtoms;
+typedef MarkAtomsTemplate<true> MarkAtoms;
+typedef MarkAtomsTemplate<false> UnmarkAtoms;
 
 }
 

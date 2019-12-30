@@ -19,7 +19,7 @@ public:
 		SummaryOfAtoms atoms_summary;
 		SummaryOfContacts contacts_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())

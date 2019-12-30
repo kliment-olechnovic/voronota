@@ -17,7 +17,7 @@ public:
 		SummaryOfAtoms used_source_atoms_summary;
 		SummaryOfAtoms destination_atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(used_source_atoms_summary, heterostorage.variant_object.object("used_source_atoms_summary"));
 			VariantSerialization::write(destination_atoms_summary, heterostorage.variant_object.object("destination_atoms_summary"));

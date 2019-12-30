@@ -18,7 +18,7 @@ public:
 		std::size_t number_of_inter_residue_contacts;
 		SummaryOfContacts contacts_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("contacts")=contacts;
 			if(number_of_inter_residue_contacts>0)

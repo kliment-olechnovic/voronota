@@ -18,7 +18,7 @@ public:
 		std::string dump;
 		int number_of_voxels;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
@@ -31,7 +31,7 @@ public:
 	};
 
 	SelectionManager::Query parameters_for_selecting_atoms;
-	FilteringOfTriangulation::Query filtering_query_without_ids;;
+	FilteringOfTriangulation::Query filtering_query_without_ids;
 	double search_step_factor;
 	std::string file;
 

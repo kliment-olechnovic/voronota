@@ -17,7 +17,7 @@ public:
 		VariantObject atoms_result;
 		VariantObject contacts_result;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.object("atoms_result")=atoms_result;
 			if(!contacts_result.empty())

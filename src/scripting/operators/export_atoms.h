@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_EXPORT_ATOMS_H_
 
 #include "common.h"
+#include "../../common/writing_atomic_balls_in_pdb_format.h"
 
 namespace scripting
 {
@@ -18,7 +19,7 @@ public:
 		std::string dump;
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
@@ -34,7 +35,7 @@ public:
     SelectionManager::Query parameters_for_selecting;
     bool as_pdb;
 	std::string pdb_b_factor_name;
-	const bool pdb_ter;
+	bool pdb_ter;
 
 	ExportAtoms() : file(""), as_pdb(false), pdb_b_factor_name("tf"), pdb_ter(false)
 	{

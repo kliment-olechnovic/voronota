@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_EXPORT_CARTOON_AS_PYMOL_CGO_H_
 
 #include "common.h"
+#include "../../common/construction_of_structural_cartoon.h"
 
 namespace scripting
 {
@@ -18,7 +19,7 @@ public:
 		std::string dump;
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())

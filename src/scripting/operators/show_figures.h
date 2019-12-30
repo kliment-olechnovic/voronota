@@ -9,13 +9,13 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive=true>
-class ShowFigures
+template<bool positive>
+class ShowFiguresTemplate
 {
 public:
 	struct Result
 	{
-		Result& write(HeterogeneousStorage&) const
+		const Result& write(HeterogeneousStorage&) const
 		{
 			return (*this);
 		}
@@ -24,11 +24,11 @@ public:
 	std::vector<std::string> name;
 	std::vector<std::string> representation_names;
 
-	ShowFigures()
+	ShowFiguresTemplate()
 	{
 	}
 
-	ShowFigures& init(CommandInput& input)
+	ShowFiguresTemplate& init(CommandInput& input)
 	{
 		name=input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
@@ -60,7 +60,8 @@ public:
 	}
 };
 
-typedef ShowFigures<false> HideFigures;
+typedef ShowFiguresTemplate<true> ShowFigures;
+typedef ShowFiguresTemplate<false> HideFigures;
 
 }
 

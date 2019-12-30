@@ -9,15 +9,15 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive=true>
-class ShowContacts
+template<bool positive>
+class ShowContactsTemplate
 {
 public:
 	struct Result
 	{
 		SummaryOfContacts contacts_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			return (*this);
@@ -27,11 +27,11 @@ public:
 	SelectionManager::Query parameters_for_selecting;
 	std::vector<std::string> representation_names;
 
-	ShowContacts()
+	ShowContactsTemplate()
 	{
 	}
 
-	ShowContacts& init(CommandInput& input)
+	ShowContactsTemplate& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
@@ -69,7 +69,8 @@ public:
 	}
 };
 
-typedef ShowContacts<false> HideContacts;
+typedef ShowContactsTemplate<true> ShowContacts;
+typedef ShowContactsTemplate<false> HideContacts;
 
 }
 

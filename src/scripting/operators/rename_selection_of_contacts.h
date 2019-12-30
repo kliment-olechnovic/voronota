@@ -14,7 +14,7 @@ class RenameSelectionOfContacts
 public:
 	struct Result
 	{
-		Result& write(HeterogeneousStorage&) const
+		const Result& write(HeterogeneousStorage&) const
 		{
 			return (*this);
 		}
@@ -56,7 +56,7 @@ public:
 
 		const std::set<std::size_t> ids=data_manager.selection_manager().get_contacts_selection(name_a);
 
-		if(name_a!=name_b.empty)
+		if(name_a!=name_b)
 		{
 			data_manager.selection_manager().set_contacts_selection(name_b, ids);
 			data_manager.selection_manager().delete_contacts_selection(name_a);

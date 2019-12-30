@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_PRINT_SEQUENCE_H_
 
 #include "common.h"
+#include "../../auxiliaries/residue_letters_coding.h"
 
 namespace scripting
 {
@@ -14,13 +15,13 @@ class PrintSequence
 public:
 	struct Result
 	{
-		std::vector<VariantObject> chains;
 		SummaryOfAtoms atoms_summary;
+		std::vector<VariantObject> chains;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.objects_array("chains")=chains;
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.objects_array("chains")=chains;
 			return (*this);
 		}
 

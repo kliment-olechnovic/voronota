@@ -16,7 +16,7 @@ public:
 	{
 		std::vector<VariantObject> figures;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("figures")=figures;
 			return (*this);

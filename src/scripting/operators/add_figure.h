@@ -16,7 +16,7 @@ public:
 	{
 		VariantObject added_figure;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.object("added_figure")=added_figure;
 			return (*this);

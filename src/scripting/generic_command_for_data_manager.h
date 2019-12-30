@@ -20,13 +20,11 @@ public:
 
 	bool execute(GenericCommandRecord& record, DataManager& data_manager)
 	{
-		CommandArguments cargs(record, data_manager);
-
 		try
 		{
 			data_manager.reset_change_indicator();
 			data_manager.sync_selections_with_display_states_if_requested_in_string(record.command_input.get_canonical_input_command_string());
-			run(cargs);
+			run(record.command_input, data_manager, record.heterostorage);
 			record.successful=true;
 		}
 		catch(const std::exception& e)
@@ -43,33 +41,27 @@ public:
 	}
 
 protected:
-	struct CommandArguments
-	{
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-		DataManager& data_manager;
-
-		explicit CommandArguments(
-				GenericCommandRecord& command_record,
-				DataManager& data_manager) :
-						input(command_record.command_input),
-						heterostorage(command_record.heterostorage),
-						data_manager(data_manager)
-		{
-		}
-	};
-
-	virtual void run(CommandArguments&) const
+	virtual void run(CommandInput&, DataManager&, HeterogeneousStorage&) const
 	{
 	}
 };
 
-class GenericCommandForDataManagerScaled : public GenericCommandForDataManager
+template<class Operator, bool on_multiple>
+class GenericCommandForDataManagerFromOperator : public GenericCommandForDataManager
 {
 public:
 	virtual bool allowed_to_work_on_multiple_data_managers(const CommandInput&) const
 	{
-		return true;
+		return on_multiple;
+	}
+
+protected:
+	void run(CommandInput& input, DataManager& data_manager, HeterogeneousStorage& heterostorage) const
+	{
+		Operator op;
+		op.init(input);
+		input.assert_nothing_unusable();
+		op.run(data_manager).write(heterostorage);
 	}
 };
 

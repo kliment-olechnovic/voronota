@@ -16,7 +16,7 @@ public:
 	{
 		std::vector<std::string> adjunct_names;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			std::vector<VariantValue>& array=heterostorage.variant_object.values_array("adjunct_names");
 			for(std::size_t i=0;i<adjunct_names.size();i++)
@@ -27,11 +27,11 @@ public:
 		}
 	};
 
-	const std::string file;
-	const bool no_serial;
-	const bool no_name;
-	const bool no_resSeq;
-	const bool no_resName;
+	std::string file;
+	bool no_serial;
+	bool no_name;
+	bool no_resSeq;
+	bool no_resName;
 
 	ImportAdjunctsOfAtoms() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false)
 	{

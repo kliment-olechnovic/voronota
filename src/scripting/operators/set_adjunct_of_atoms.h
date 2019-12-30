@@ -16,18 +16,18 @@ public:
 	{
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			return (*this);
 		}
 	};
 
-	const SelectionManager::Query parameters_for_selecting;
-	const std::string name;
-	const bool value_present;
-	const double value;
-	const bool remove;
+	SelectionManager::Query parameters_for_selecting;
+	std::string name;
+	bool value_present;
+	double value;
+	bool remove;
 
 	SetAdjunctOfAtoms() : value_present(false), value(0.0), remove(false)
 	{
@@ -35,11 +35,11 @@ public:
 
 	SetAdjunctOfAtoms& init(CommandInput& input)
 	{
-		SelectionManager::Query parameters_for_selecting=Utilities::read_generic_selecting_query(input);
-		std::string name=input.get_value<std::string>("name");
-		bool value_present=input.is_option("value");
-		double value=input.get_value_or_default<double>("value", 0.0);
-		bool remove=input.get_flag("remove");
+		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		name=input.get_value<std::string>("name");
+		value_present=input.is_option("value");
+		value=input.get_value_or_default<double>("value", 0.0);
+		remove=input.get_flag("remove");
 		return (*this);
 	}
 

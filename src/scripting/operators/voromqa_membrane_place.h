@@ -17,7 +17,7 @@ public:
 	{
 		MembranePlacementForDataManagerUsingVoroMQA::OrientationScore best_score;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantObject& info=heterostorage.variant_object;
 			info.value("number_of_checks")=best_score.number_of_checks;

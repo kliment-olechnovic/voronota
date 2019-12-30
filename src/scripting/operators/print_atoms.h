@@ -17,7 +17,7 @@ public:
 		std::vector<VariantObject> atoms;
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("atoms")=atoms;
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));

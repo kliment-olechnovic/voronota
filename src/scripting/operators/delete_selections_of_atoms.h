@@ -16,7 +16,7 @@ public:
 	{
 		std::vector<std::string> deleted_selections;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			for(std::size_t i=0;i<deleted_selections.size();i++)
 			{

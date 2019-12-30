@@ -16,7 +16,7 @@ public:
 	{
 		std::map<std::string, SummaryOfContacts> selections_summaries;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			for(std::map<std::string, SummaryOfContacts>::const_iterator it=selections_summaries.begin();it!=selections_summaries.end();++it)
 			{

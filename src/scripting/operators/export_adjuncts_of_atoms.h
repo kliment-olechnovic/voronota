@@ -16,7 +16,7 @@ public:
 	{
 		SummaryOfAtoms atoms_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			return (*this);
@@ -72,6 +72,8 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
+		std::vector<std::string> adjuncts_filled;
+
 		if(all)
 		{
 			std::set<std::string> all_adjuncts;
@@ -87,7 +89,16 @@ public:
 			{
 				throw std::runtime_error(std::string("Selected atoms have no adjuncts."));
 			}
-			adjuncts=std::vector<std::string>(all_adjuncts.begin(), all_adjuncts.end());
+			adjuncts_filled=std::vector<std::string>(all_adjuncts.begin(), all_adjuncts.end());
+		}
+		else
+		{
+			adjuncts_filled=adjuncts;
+		}
+
+		if(adjuncts_filled.empty())
+		{
+			throw std::runtime_error(std::string("No adjuncts specified."));
 		}
 
 		OutputSelector output_selector(file);
@@ -95,9 +106,9 @@ public:
 		assert_io_stream(file, output);
 
 		output << "ID";
-		for(std::size_t i=0;i<adjuncts.size();i++)
+		for(std::size_t i=0;i<adjuncts_filled.size();i++)
 		{
-			output << " " << adjuncts[i];
+			output << " " << adjuncts_filled[i];
 		}
 		output << "\n";
 
@@ -105,10 +116,10 @@ public:
 		{
 			const Atom& atom=data_manager.atoms()[*it];
 			output << atom.crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
-			for(std::size_t i=0;i<adjuncts.size();i++)
+			for(std::size_t i=0;i<adjuncts_filled.size();i++)
 			{
 				output << " ";
-				std::map<std::string, double>::const_iterator jt=atom.value.props.adjuncts.find(adjuncts[i]);
+				std::map<std::string, double>::const_iterator jt=atom.value.props.adjuncts.find(adjuncts_filled[i]);
 				if(jt!=atom.value.props.adjuncts.end())
 				{
 					output << jt->second;

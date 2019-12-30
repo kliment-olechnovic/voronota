@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_CALCULATE_BETWEENNESS_H_
 
 #include "common.h"
+#include "../../common/construction_of_path_centralities.h"
 
 namespace scripting
 {
@@ -16,7 +17,7 @@ public:
 	{
 		SummaryOfContacts contacts_summary;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			return (*this);

@@ -17,7 +17,7 @@ public:
 		SummaryOfContacts contacts_summary;
 		std::string selection_name;
 
-		Result& write(HeterogeneousStorage& heterostorage) const
+		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			if(selection_name.empty())
