@@ -19,11 +19,9 @@ public:
 
 	bool execute(GenericCommandRecord& record)
 	{
-		CommandArguments cargs(record);
-
 		try
 		{
-			run(cargs);
+			run(record.command_input, record.heterostorage);
 			record.successful=true;
 		}
 		catch(const std::exception& e)
@@ -35,23 +33,32 @@ public:
 	}
 
 protected:
-	struct CommandArguments
-	{
-	public:
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-
-		explicit CommandArguments(GenericCommandRecord& command_record) :
-			input(command_record.command_input),
-			heterostorage(command_record.heterostorage)
-		{
-		}
-	};
-
-	virtual void run(CommandArguments&) const
+	virtual void run(CommandInput&, HeterogeneousStorage&) const
 	{
 	}
 };
+
+template<class Operator>
+class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions
+{
+public:
+	GenericCommandForExtraActionsFromOperator(const Operator& op) : op_(op)
+	{
+	}
+
+protected:
+	void run(CommandInput& input, HeterogeneousStorage& heterostorage) const
+	{
+		Operator op=op_;
+		op.init(input);
+		input.assert_nothing_unusable();
+		op.run().write(heterostorage);
+	}
+
+private:
+	Operator op_;
+};
+
 }
 
 #endif /* SCRIPTING_GENERIC_COMMAND_FOR_EXTRA_ACTIONS_H_ */

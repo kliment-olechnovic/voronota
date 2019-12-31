@@ -1,0 +1,58 @@
+#ifndef SCRIPTING_OPERATORS_PRINT_TIME_H_
+#define SCRIPTING_OPERATORS_PRINT_TIME_H_
+
+#include "common.h"
+#include "../../auxiliaries/time_utilities.h"
+
+namespace scripting
+{
+
+namespace operators
+{
+
+class PrintTime
+{
+public:
+	struct Result
+	{
+		double elapsed_miliseconds;
+
+		const Result& write(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.value("elapsed_miliseconds")=elapsed_miliseconds;
+			return (*this);
+		}
+	};
+
+	bool reset;
+
+	PrintTime(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) : reset(false), elapsed_processor_time_ptr_(&elapsed_processor_time)
+	{
+	}
+
+	PrintTime& init(CommandInput& input)
+	{
+		reset=input.get_flag("reset");
+		return (*this);
+	}
+
+	Result run() const
+	{
+		Result result;
+		result.elapsed_miliseconds=elapsed_processor_time_ptr_->elapsed_miliseconds();
+		if(reset)
+		{
+			elapsed_processor_time_ptr_->reset();
+		}
+		return result;
+	}
+
+private:
+	auxiliaries::ElapsedProcessorTime* elapsed_processor_time_ptr_;
+};
+
+}
+
+}
+
+#endif /* SCRIPTING_OPERATORS_PRINT_TIME_H_ */

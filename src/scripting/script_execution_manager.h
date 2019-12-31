@@ -4,10 +4,9 @@
 #include "generic_command_for_data_manager.h"
 #include "generic_command_for_script_partitioner.h"
 #include "generic_command_for_congregation_of_data_managers.h"
+#include "generic_command_for_extra_actions.h"
 
 #include "operators/all.h"
-
-#include "custom_commands_for_extra_actions.h"
 
 namespace scripting
 {
@@ -145,20 +144,19 @@ public:
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
 		set_command_for_data_manager("zoom-by-contacts", operators::ZoomByContacts(), false);
 
-
-		set_command("reset-time", new CustomsCommandsForExtraActions::reset_time(elapsed_processor_time_));
-		set_command("print-time", new CustomsCommandsForExtraActions::print_time(elapsed_processor_time_));
-		set_command("exit", new CustomsCommandsForExtraActions::exit(exit_requested_));
-		set_command("echo", new CustomsCommandsForExtraActions::echo());
-		set_command("list-virtual-files", new CustomsCommandsForExtraActions::list_virtual_files());
-		set_command("upload-virtual-file", new CustomsCommandsForExtraActions::upload_virtual_file());
-		set_command("download-virtual-file", new CustomsCommandsForExtraActions::download_virtual_file());
-		set_command("print-virtual-file", new CustomsCommandsForExtraActions::print_virtual_file());
-		set_command("delete-virtual-files", new CustomsCommandsForExtraActions::delete_virtual_files());
-		set_command("setup-loading", new CustomsCommandsForExtraActions::setup_loading());
-		set_command("setup-voromqa", new CustomsCommandsForExtraActions::setup_voromqa());
-		set_command("explain-command", new CustomsCommandsForExtraActions::explain_command(collection_of_command_documentations_));
-		set_command("list-commands", new CustomsCommandsForExtraActions::list_commands(collection_of_command_documentations_));
+		set_command_for_extra_actions("reset-time", operators::ResetTime(elapsed_processor_time_));
+		set_command_for_extra_actions("print-time", operators::PrintTime(elapsed_processor_time_));
+		set_command_for_extra_actions("exit", operators::Exit(exit_requested_));
+		set_command_for_extra_actions("echo", operators::Echo());
+		set_command_for_extra_actions("list-virtual-files", operators::ListVirtualFiles());
+		set_command_for_extra_actions("upload-virtual-file", operators::UploadVirtualFile());
+		set_command_for_extra_actions("download-virtual-file", operators::DownloadVirtualFile());
+		set_command_for_extra_actions("print-virtual-file", operators::PrintVirtualFile());
+		set_command_for_extra_actions("delete-virtual-files", operators::DeleteVirtualFiles());
+		set_command_for_extra_actions("setup-loading", operators::SetupLoading());
+		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
+		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
+		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));
 	}
 
 	virtual ~ScriptExecutionManager()
@@ -234,14 +232,13 @@ protected:
 		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
-	void set_command(const std::string& name, GenericCommandForExtraActions* command_ptr)
+	template<class Operator>
+	void set_command_for_extra_actions(const std::string& name, const Operator& op)
 	{
 		unset_command(name);
-		if(command_ptr!=0)
-		{
-			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_extra_actions_, name, command_ptr);
-			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
-		}
+		GenericCommandForExtraActions* command_ptr=new GenericCommandForExtraActionsFromOperator<Operator>(op);
+		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_extra_actions_, name, command_ptr);
+		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
 	virtual void on_before_script(const std::string&)
