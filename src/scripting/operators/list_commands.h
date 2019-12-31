@@ -26,7 +26,7 @@ public:
 
 	bool compact;
 
-	ListCommands(CollectionOfCommandDocumentations& collection_of_command_documentations) : compact(false), collection_of_command_documentations_ptr_(&collection_of_command_documentations)
+	explicit ListCommands(CollectionOfCommandDocumentations& collection_of_command_documentations) : compact(false), collection_of_command_documentations_ptr_(&collection_of_command_documentations)
 	{
 	}
 

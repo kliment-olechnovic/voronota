@@ -20,7 +20,7 @@ public:
 		}
 	};
 
-	Exit(bool& exit_status) : exit_status_ptr_(&exit_status)
+	explicit Exit(bool& exit_status) : exit_status_ptr_(&exit_status)
 	{
 	}
 

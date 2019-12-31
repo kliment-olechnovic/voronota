@@ -26,7 +26,7 @@ public:
 
 	bool reset;
 
-	PrintTime(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) : reset(false), elapsed_processor_time_ptr_(&elapsed_processor_time)
+	explicit PrintTime(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) : reset(false), elapsed_processor_time_ptr_(&elapsed_processor_time)
 	{
 	}
 

@@ -26,7 +26,7 @@ public:
 
 	std::string name;
 
-	ExplainCommand(CollectionOfCommandDocumentations& collection_of_command_documentations) : collection_of_command_documentations_ptr_(&collection_of_command_documentations)
+	explicit ExplainCommand(CollectionOfCommandDocumentations& collection_of_command_documentations) : collection_of_command_documentations_ptr_(&collection_of_command_documentations)
 	{
 	}
 

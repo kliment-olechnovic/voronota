@@ -21,7 +21,7 @@ public:
 		}
 	};
 
-	ResetTime(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) : elapsed_processor_time_ptr_(&elapsed_processor_time)
+	explicit ResetTime(auxiliaries::ElapsedProcessorTime& elapsed_processor_time) : elapsed_processor_time_ptr_(&elapsed_processor_time)
 	{
 	}
 

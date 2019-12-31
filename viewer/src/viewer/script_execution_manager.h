@@ -10,7 +10,7 @@
 
 #include "congregations_of_drawers_for_data_managers.h"
 
-#include "custom_commands.h"
+#include "operators/all.h"
 
 namespace viewer
 {
@@ -23,18 +23,18 @@ public:
 		grid_variant_(0),
 		output_stream_mode_(0)
 	{
-		set_command("resize-window", new CustomCommands::resize_window(viewer_application_));
-		set_command("background", new CustomCommands::background(viewer_application_));
-		set_command("mono", new CustomCommands::mono(viewer_application_));
-		set_command("stereo", new CustomCommands::stereo(viewer_application_));
-		set_command("grid-by-object", new CustomCommands::grid<0>(viewer_application_, grid_variant_));
-		set_command("grid-by-concept", new CustomCommands::grid<1>(viewer_application_, grid_variant_));
-		set_command("ortho", new CustomCommands::ortho(viewer_application_));
-		set_command("perspective", new CustomCommands::perspective(viewer_application_));
-		set_command("fog", new CustomCommands::fog(viewer_application_));
-		set_command("rotate", new CustomCommands::rotate(viewer_application_));
-		set_command("screenshot", new CustomCommands::screenshot(viewer_application_));
-		set_command("setup-rendering", new CustomCommands::setup_rendering());
+		set_command_for_extra_actions("resize-window", operators::ResizeWindow(viewer_application_));
+		set_command_for_extra_actions("background", operators::Background(viewer_application_));
+		set_command_for_extra_actions("mono", operators::Mono(viewer_application_));
+		set_command_for_extra_actions("stereo", operators::Stereo(viewer_application_));
+		set_command_for_extra_actions("grid-by-object", operators::GridByObject(viewer_application_, grid_variant_));
+		set_command_for_extra_actions("grid-by-concept", operators::GridByConcept(viewer_application_, grid_variant_));
+		set_command_for_extra_actions("ortho", operators::Ortho(viewer_application_));
+		set_command_for_extra_actions("perspective", operators::Perspective(viewer_application_));
+		set_command_for_extra_actions("fog", operators::Fog(viewer_application_));
+		set_command_for_extra_actions("rotate", operators::Rotate(viewer_application_));
+		set_command_for_extra_actions("screenshot", operators::Screenshot(viewer_application_));
+		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());
 
 		set_default_aliases();
 	}

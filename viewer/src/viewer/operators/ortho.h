@@ -1,0 +1,47 @@
+#ifndef VIEWER_OPERATORS_ORTHO_H_
+#define VIEWER_OPERATORS_ORTHO_H_
+
+#include "common.h"
+
+namespace viewer
+{
+
+namespace operators
+{
+
+class Ortho
+{
+public:
+	struct Result
+	{
+		const Result& write(scripting::HeterogeneousStorage&) const
+		{
+			return (*this);
+		}
+	};
+
+	explicit Ortho(uv::ViewerApplication& app) : app_ptr_(&app)
+	{
+	}
+
+	Ortho& init(scripting::CommandInput&)
+	{
+		return (*this);
+	}
+
+	Result run() const
+	{
+		app_ptr_->set_projection_mode_to_ortho();
+		Result result;
+		return result;
+	}
+
+private:
+	uv::ViewerApplication* app_ptr_;
+};
+
+}
+
+}
+
+#endif /* VIEWER_OPERATORS_ORTHO_H_ */
