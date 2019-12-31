@@ -42,7 +42,7 @@ template<class Operator>
 class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions
 {
 public:
-	GenericCommandForExtraActionsFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : op_(op)
 	{
 	}
 

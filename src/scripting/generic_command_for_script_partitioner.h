@@ -43,7 +43,7 @@ template<class Operator>
 class GenericCommandForScriptPartitionerFromOperator : public GenericCommandForScriptPartitioner
 {
 public:
-	GenericCommandForScriptPartitionerFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForScriptPartitionerFromOperator(const Operator& op) : op_(op)
 	{
 	}
 

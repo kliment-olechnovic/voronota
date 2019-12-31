@@ -43,7 +43,7 @@ template<class Operator>
 class GenericCommandForCongregationOfDataManagersFromOperator : public GenericCommandForCongregationOfDataManagers
 {
 public:
-	GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : op_(op)
 	{
 	}
 
