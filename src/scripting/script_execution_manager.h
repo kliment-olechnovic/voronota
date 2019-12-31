@@ -436,7 +436,7 @@ private:
 			if(!picked_data_managers.empty())
 			{
 				GenericCommandForDataManager* command_for_data_manager=commands_for_data_manager_[command_name];
-				if(picked_data_managers.size()==1 || command_for_data_manager->allowed_to_work_on_multiple_data_managers(script_command_record.command_input))
+				if(picked_data_managers.size()==1 || command_for_data_manager->multiplicable())
 				{
 					for(std::size_t i=0;i<picked_data_managers.size();i++)
 					{

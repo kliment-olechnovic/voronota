@@ -7,7 +7,7 @@
 namespace scripting
 {
 
-class GenericCommandForScriptPartitioner : public GenericCommandInterface
+class GenericCommandForScriptPartitioner
 {
 public:
 	GenericCommandForScriptPartitioner()
@@ -18,46 +18,21 @@ public:
 	{
 	}
 
-	bool execute(GenericCommandRecord& record, ScriptPartitioner& script_partitioner)
-	{
-		try
-		{
-			run(record.command_input, script_partitioner, record.heterostorage);
-			record.successful=true;
-		}
-		catch(const std::exception& e)
-		{
-			record.save_error(e);
-		}
-
-		return record.successful;
-	}
-
-protected:
-	virtual void run(CommandInput&, ScriptPartitioner&, HeterogeneousStorage&) const
-	{
-	}
+	virtual bool execute(GenericCommandRecord&, ScriptPartitioner&) const = 0;
 };
 
 template<class Operator>
-class GenericCommandForScriptPartitionerFromOperator : public GenericCommandForScriptPartitioner
+class GenericCommandForScriptPartitionerFromOperator : public GenericCommandForScriptPartitioner, public GenericCommandForSubject<ScriptPartitioner, Operator>
 {
 public:
-	explicit GenericCommandForScriptPartitionerFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForScriptPartitionerFromOperator(const Operator& op) : GenericCommandForSubject<ScriptPartitioner, Operator>(op)
 	{
 	}
 
-protected:
-	void run(CommandInput& input, ScriptPartitioner& script_partitioner, HeterogeneousStorage& heterostorage) const
+	bool execute(GenericCommandRecord& record, ScriptPartitioner& script_partitioner) const
 	{
-		Operator op=op_;
-		op.init(input);
-		input.assert_nothing_unusable();
-		op.run(script_partitioner).write(heterostorage);
+		return GenericCommandForSubject<ScriptPartitioner, Operator>::run(record, script_partitioner);
 	}
-
-private:
-	Operator op_;
 };
 
 }

@@ -6,7 +6,7 @@
 namespace scripting
 {
 
-class GenericCommandForExtraActions : public GenericCommandInterface
+class GenericCommandForExtraActions
 {
 public:
 	GenericCommandForExtraActions()
@@ -17,46 +17,21 @@ public:
 	{
 	}
 
-	bool execute(GenericCommandRecord& record)
-	{
-		try
-		{
-			run(record.command_input, record.heterostorage);
-			record.successful=true;
-		}
-		catch(const std::exception& e)
-		{
-			record.save_error(e);
-		}
-
-		return record.successful;
-	}
-
-protected:
-	virtual void run(CommandInput&, HeterogeneousStorage&) const
-	{
-	}
+	virtual bool execute(GenericCommandRecord&) = 0;
 };
 
 template<class Operator>
-class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions
+class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions, public GenericCommandWithoutSubject<Operator>
 {
 public:
-	explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : GenericCommandWithoutSubject<Operator>(op)
 	{
 	}
 
-protected:
-	void run(CommandInput& input, HeterogeneousStorage& heterostorage) const
+	bool execute(GenericCommandRecord& record)
 	{
-		Operator op=op_;
-		op.init(input);
-		input.assert_nothing_unusable();
-		op.run().write(heterostorage);
+		return GenericCommandWithoutSubject<Operator>::run(record);
 	}
-
-private:
-	Operator op_;
 };
 
 }

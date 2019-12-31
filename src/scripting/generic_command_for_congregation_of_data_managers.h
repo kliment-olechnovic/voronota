@@ -7,7 +7,7 @@
 namespace scripting
 {
 
-class GenericCommandForCongregationOfDataManagers : public GenericCommandInterface
+class GenericCommandForCongregationOfDataManagers
 {
 public:
 	GenericCommandForCongregationOfDataManagers()
@@ -18,48 +18,28 @@ public:
 	{
 	}
 
-	bool execute(GenericCommandRecord& record, CongregationOfDataManagers& congregation_of_data_managers)
-	{
-		try
-		{
-			run(record.command_input, congregation_of_data_managers, record.heterostorage);
-			record.successful=true;
-		}
-		catch(const std::exception& e)
-		{
-			record.save_error(e);
-		}
-
-		return record.successful;
-	}
-
-protected:
-	virtual void run(CommandInput&, CongregationOfDataManagers&, HeterogeneousStorage&) const
-	{
-	}
+	virtual bool execute(GenericCommandRecord&, CongregationOfDataManagers&) const = 0;
 };
 
 template<class Operator>
-class GenericCommandForCongregationOfDataManagersFromOperator : public GenericCommandForCongregationOfDataManagers
+class GenericCommandForCongregationOfDataManagersFromOperator : public GenericCommandForCongregationOfDataManagers, public GenericCommandForSubject<CongregationOfDataManagers, Operator>
 {
 public:
-	explicit GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : op_(op)
+	explicit GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : GenericCommandForSubject<CongregationOfDataManagers, Operator>(op)
 	{
+	}
+
+	bool execute(GenericCommandRecord& record, CongregationOfDataManagers& congregation_of_data_managers) const
+	{
+		return GenericCommandForSubject<CongregationOfDataManagers, Operator>::run(record, congregation_of_data_managers);
 	}
 
 protected:
-	void run(CommandInput& input, CongregationOfDataManagers& congregation_of_data_managers, HeterogeneousStorage& heterostorage) const
+	void prepare(CongregationOfDataManagers& congregation_of_data_managers, CommandInput&) const
 	{
 		congregation_of_data_managers.reset_change_indicator();
 		congregation_of_data_managers.reset_change_indicators_of_all_objects();
-		Operator op=op_;
-		op.init(input);
-		input.assert_nothing_unusable();
-		op.run(congregation_of_data_managers).write(heterostorage);
 	}
-
-private:
-	Operator op_;
 };
 
 }
