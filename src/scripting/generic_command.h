@@ -3,7 +3,6 @@
 
 #include "command_input.h"
 #include "heterogeneous_storage.h"
-#include "command_documentation.h"
 
 namespace scripting
 {
@@ -16,18 +15,6 @@ public:
 	}
 
 	virtual ~GenericCommandInterface()
-	{
-	}
-
-	CommandDocumentation document() const
-	{
-		CommandDocumentation doc;
-		document(doc);
-		return doc;
-	}
-
-protected:
-	virtual void document(CommandDocumentation&) const
 	{
 	}
 };

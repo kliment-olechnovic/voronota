@@ -2,7 +2,7 @@
 #define SCRIPTING_OPERATORS_EXPLAIN_COMMAND_H_
 
 #include "common.h"
-#include "../collection_of_command_documentations.h"
+#include "../command_documentation.h"
 
 namespace scripting
 {
