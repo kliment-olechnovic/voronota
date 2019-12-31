@@ -1,0 +1,68 @@
+#ifndef SCRIPTING_OPERATORS_LIST_OBJECTS_H_
+#define SCRIPTING_OPERATORS_LIST_OBJECTS_H_
+
+#include "common.h"
+
+namespace scripting
+{
+
+namespace operators
+{
+
+class ListObjects
+{
+public:
+	struct Result
+	{
+		std::vector<VariantObject> objects;
+
+		const Result& write(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.objects_array("objects")=objects;
+			return (*this);
+		}
+	};
+
+	CongregationOfDataManagers::ObjectQuery query;
+
+	ListObjects()
+	{
+	}
+
+	ListObjects& init(CommandInput& input)
+	{
+		query=Utilities::read_congregation_of_data_managers_object_query(input);
+		return (*this);
+	}
+
+	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
+	{
+		congregation_of_data_managers.assert_objects_availability();
+
+		const std::vector<DataManager*> objects=congregation_of_data_managers.get_objects(query);
+		if(objects.empty())
+		{
+			throw std::runtime_error(std::string("No objects selected."));
+		}
+
+		Result result;
+
+		for(std::size_t i=0;i<objects.size();i++)
+		{
+			const CongregationOfDataManagers::ObjectAttributes attributes=congregation_of_data_managers.get_object_attributes(objects[i]);
+			VariantObject info;
+			info.value("name")=attributes.name;
+			info.value("picked")=attributes.picked;
+			info.value("visible")=attributes.visible;
+			result.objects.push_back(info);
+		}
+
+		return result;
+	}
+};
+
+}
+
+}
+
+#endif /* SCRIPTING_OPERATORS_LIST_OBJECTS_H_ */

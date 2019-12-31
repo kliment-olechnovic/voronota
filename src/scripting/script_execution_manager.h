@@ -3,10 +3,10 @@
 
 #include "generic_command_for_data_manager.h"
 #include "generic_command_for_script_partitioner.h"
+#include "generic_command_for_congregation_of_data_managers.h"
 
 #include "operators/all.h"
 
-#include "custom_commands_for_congregation_of_data_managers.h"
 #include "custom_commands_for_extra_actions.h"
 
 namespace scripting
@@ -51,18 +51,18 @@ public:
 		set_command_for_script_partitioner("unset-aliases", operators::UnsetAliases());
 		set_command_for_script_partitioner("source", operators::Source());
 
-		set_command("list-objects", new CustomCommandsForCongregationOfDataManagers::list_objects());
-		set_command("delete-objects", new CustomCommandsForCongregationOfDataManagers::delete_objects());
-		set_command("rename-object", new CustomCommandsForCongregationOfDataManagers::rename_object());
-		set_command("copy-object", new CustomCommandsForCongregationOfDataManagers::copy_object());
-		set_command("import", new CustomCommandsForCongregationOfDataManagers::import());
-		set_command("pick-objects", new CustomCommandsForCongregationOfDataManagers::pick_objects());
-		set_command("pick-more-objects", new CustomCommandsForCongregationOfDataManagers::pick_more_objects());
-		set_command("unpick-objects", new CustomCommandsForCongregationOfDataManagers::unpick_objects());
-		set_command("show-objects", new CustomCommandsForCongregationOfDataManagers::show_objects());
-		set_command("hide-objects", new CustomCommandsForCongregationOfDataManagers::hide_objects());
-		set_command("zoom-by-objects", new CustomCommandsForCongregationOfDataManagers::zoom_by_objects());
-		set_command("cad-score", new CustomCommandsForCongregationOfDataManagers::cad_score());
+		set_command_for_congregation_of_data_managers("list-objects", operators::ListObjects());
+		set_command_for_congregation_of_data_managers("delete-objects", operators::DeleteObjects());
+		set_command_for_congregation_of_data_managers("rename-object", operators::RenameObject());
+		set_command_for_congregation_of_data_managers("copy-object", operators::CopyObject());
+		set_command_for_congregation_of_data_managers("import", operators::Import());
+		set_command_for_congregation_of_data_managers("pick-objects", operators::PickObjects());
+		set_command_for_congregation_of_data_managers("pick-more-objects", operators::PickMoreObjects());
+		set_command_for_congregation_of_data_managers("unpick-objects", operators::UnpickObjects());
+		set_command_for_congregation_of_data_managers("show-objects", operators::ShowObjects());
+		set_command_for_congregation_of_data_managers("hide-objects", operators::HideObjects());
+		set_command_for_congregation_of_data_managers("zoom-by-objects", operators::ZoomByObjects());
+		set_command_for_congregation_of_data_managers("cad-score", operators::CADScore());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
@@ -216,14 +216,13 @@ protected:
 		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
-	void set_command(const std::string& name, GenericCommandForCongregationOfDataManagers* command_ptr)
+	template<class Operator>
+	void set_command_for_congregation_of_data_managers(const std::string& name, const Operator& op)
 	{
 		unset_command(name);
-		if(command_ptr!=0)
-		{
-			SafeUtilitiesForMapOfPointers::set_key_value(commands_for_congregation_of_data_managers_, name, command_ptr);
-			collection_of_command_documentations_.set_documentation(name, command_ptr->document());
-		}
+		GenericCommandForCongregationOfDataManagers* command_ptr=new GenericCommandForCongregationOfDataManagersFromOperator<Operator>(op);
+		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_congregation_of_data_managers_, name, command_ptr);
+		collection_of_command_documentations_.set_documentation(name, command_ptr->document());
 	}
 
 	template<class Operator>

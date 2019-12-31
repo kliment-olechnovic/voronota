@@ -20,13 +20,9 @@ public:
 
 	bool execute(GenericCommandRecord& record, CongregationOfDataManagers& congregation_of_data_managers)
 	{
-		CommandArguments cargs(record, congregation_of_data_managers);
-
 		try
 		{
-			congregation_of_data_managers.reset_change_indicator();
-			congregation_of_data_managers.reset_change_indicators_of_all_objects();
-			run(cargs);
+			run(record.command_input, congregation_of_data_managers, record.heterostorage);
 			record.successful=true;
 		}
 		catch(const std::exception& e)
@@ -38,25 +34,32 @@ public:
 	}
 
 protected:
-	struct CommandArguments
-	{
-		CommandInput& input;
-		HeterogeneousStorage& heterostorage;
-		CongregationOfDataManagers& congregation_of_data_managers;
-
-		explicit CommandArguments(
-				GenericCommandRecord& command_record,
-				CongregationOfDataManagers& congregation_of_data_managers) :
-						input(command_record.command_input),
-						heterostorage(command_record.heterostorage),
-						congregation_of_data_managers(congregation_of_data_managers)
-		{
-		}
-	};
-
-	virtual void run(CommandArguments&) const
+	virtual void run(CommandInput&, CongregationOfDataManagers&, HeterogeneousStorage&) const
 	{
 	}
+};
+
+template<class Operator>
+class GenericCommandForCongregationOfDataManagersFromOperator : public GenericCommandForCongregationOfDataManagers
+{
+public:
+	GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : op_(op)
+	{
+	}
+
+protected:
+	void run(CommandInput& input, CongregationOfDataManagers& congregation_of_data_managers, HeterogeneousStorage& heterostorage) const
+	{
+		congregation_of_data_managers.reset_change_indicator();
+		congregation_of_data_managers.reset_change_indicators_of_all_objects();
+		Operator op=op_;
+		op.init(input);
+		input.assert_nothing_unusable();
+		op.run(congregation_of_data_managers).write(heterostorage);
+	}
+
+private:
+	Operator op_;
 };
 
 }

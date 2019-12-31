@@ -6,6 +6,7 @@
 #include <functional>
 
 #include "../data_manager.h"
+#include "../congregation_of_data_managers.h"
 #include "../heterogeneous_storage.h"
 #include "../basic_assertions.h"
 #include "../variant_serialization.h"
@@ -288,6 +289,63 @@ public:
 		query.min_radius=input.get_value_or_default<double>("min-radius", query.min_radius);
 		query.max_radius=input.get_value_or_default<double>("max-radius", query.max_radius);
 		query.expansion=input.get_value_or_default<double>("expansion", query.expansion);
+		return query;
+	}
+
+	static void assert_new_object_name_input(const std::string& name)
+	{
+		if(name.empty())
+		{
+			throw std::runtime_error(std::string("New name is empty."));
+		}
+		if(name.find_first_of("{}()[]<>\\/*/'\"@#$%^&`~?|")!=std::string::npos)
+		{
+			throw std::runtime_error(std::string("New name '")+name+"' contains invalid symbols.");
+		}
+		else if(name.find_first_of("-+,;.: ", 0)==0)
+		{
+			throw std::runtime_error(std::string("New name '")+name+"' starts with invalid symbol.");
+		}
+	}
+
+	static std::string get_basename_from_path(const std::string& path)
+	{
+		const std::size_t pos=path.find_last_of("/\\");
+		if(pos==std::string::npos)
+		{
+			return path;
+		}
+		else if((pos+1)<path.size())
+		{
+			return path.substr(pos+1);
+		}
+		else
+		{
+			return std::string();
+		}
+	}
+
+	static CongregationOfDataManagers::ObjectQuery read_congregation_of_data_managers_object_query(CommandInput& input)
+	{
+		CongregationOfDataManagers::ObjectQuery query;
+
+		query.picked=input.get_flag("picked");
+		query.not_picked=input.get_flag("not-picked");
+		query.visible=input.get_flag("visible");
+		query.not_visible=input.get_flag("not-visible");
+
+		std::vector<std::string> names;
+		if(input.is_option("names"))
+		{
+			names=input.get_value_vector<std::string>("names");
+		}
+		else
+		{
+			names=input.get_list_of_unnamed_values();
+			input.mark_all_unnamed_values_as_used();
+		}
+		query.names.insert(names.begin(), names.end());
+
 		return query;
 	}
 };
