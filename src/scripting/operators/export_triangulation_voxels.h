@@ -79,7 +79,6 @@ public:
 			assert_io_stream(file, output);
 
 			const std::vector<apollota::SimpleSphere>& balls=data_manager.triangulation_info().spheres;
-			const double search_step=1.0/search_step_factor;
 
 			for(std::size_t i=0;i<filtering_result.vertices_info.size();i++)
 			{
@@ -96,15 +95,9 @@ public:
 					q_plane_halfspaces[j]=apollota::halfspace_of_point(q_plane_points[j], q_plane_normals[j], balls[vi.quadruple.get(j)]);
 				}
 
-				const double search_r=(vi.sphere.r-filtering_query.min_radius);
-				if(search_r<search_step)
 				{
-					const apollota::SimpleSphere candidate_ball(vi.sphere, filtering_query.min_radius);
-					output << candidate_ball.x << " " << candidate_ball.y << " " << candidate_ball.z << " " << candidate_ball.r << "\n";
-					number_of_voxels++;
-				}
-				else
-				{
+					const double search_r=(vi.sphere.r-filtering_query.min_radius);
+					int number_of_voxels_local=0;
 					for(double bx=ceil((vi.sphere.x-search_r)*search_step_factor);bx<=floor((vi.sphere.x+search_r)*search_step_factor);bx+=1.0)
 					{
 						for(double by=ceil((vi.sphere.y-search_r)*search_step_factor);by<=floor((vi.sphere.y+search_r)*search_step_factor);by+=1.0)
@@ -123,8 +116,26 @@ public:
 									{
 										output << candidate_ball.x << " " << candidate_ball.y << " " << candidate_ball.z << " " << candidate_ball.r << "\n";
 										number_of_voxels++;
+										number_of_voxels_local++;
 									}
 								}
+							}
+						}
+					}
+					if(number_of_voxels_local<1)
+					{
+						const apollota::SimpleSphere candidate_ball(vi.sphere, filtering_query.min_radius);
+						if(apollota::sphere_contains_sphere(vi.sphere, candidate_ball))
+						{
+							bool center_inside_tetrahedron=true;
+							for(unsigned int j=0;j<4 && center_inside_tetrahedron;j++)
+							{
+								center_inside_tetrahedron=(apollota::halfspace_of_point(q_plane_points[j], q_plane_normals[j], candidate_ball)==q_plane_halfspaces[j]);
+							}
+							if(center_inside_tetrahedron)
+							{
+								output << candidate_ball.x << " " << candidate_ball.y << " " << candidate_ball.z << " " << candidate_ball.r << "\n";
+								number_of_voxels++;
 							}
 						}
 					}

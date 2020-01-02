@@ -138,7 +138,7 @@
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/voxels_raw",
-        "number_of_voxels":8598},
+        "number_of_voxels":8059},
       "success":true},
     {
       "line":"print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -only-summary",
