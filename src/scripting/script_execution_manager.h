@@ -1,11 +1,6 @@
 #ifndef SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
-#include "generic_command_for_data_manager.h"
-#include "generic_command_for_script_partitioner.h"
-#include "generic_command_for_congregation_of_data_managers.h"
-#include "generic_command_for_extra_actions.h"
-
 #include "operators/all.h"
 
 namespace scripting
@@ -191,6 +186,29 @@ public:
 	}
 
 protected:
+	class GenericCommandRecord
+	{
+	public:
+		bool successful;
+		CommandInput command_input;
+		HeterogeneousStorage heterostorage;
+
+		explicit GenericCommandRecord(const CommandInput& command_input) :
+			successful(false),
+			command_input(command_input)
+		{
+		}
+
+		virtual ~GenericCommandRecord()
+		{
+		}
+
+		void save_error(const std::exception& e)
+		{
+			heterostorage.errors.push_back(std::string(e.what()));
+		}
+	};
+
 	ScriptPartitioner& script_partitioner()
 	{
 		return script_partitioner_;
@@ -289,6 +307,227 @@ private:
 	ScriptExecutionManager(const ScriptExecutionManager&);
 
 	const ScriptExecutionManager& operator=(const ScriptExecutionManager&);
+
+	template<class Operator>
+	class GenericCommandWithoutSubject
+	{
+	public:
+		explicit GenericCommandWithoutSubject(const Operator& op) : op_(op)
+		{
+		}
+
+		virtual ~GenericCommandWithoutSubject()
+		{
+		}
+
+		bool run(GenericCommandRecord& record) const
+		{
+			try
+			{
+				{
+					Operator op=op_;
+					op.init(record.command_input);
+					record.command_input.assert_nothing_unusable();
+					op.run().write(record.heterostorage);
+				}
+				record.successful=true;
+			}
+			catch(const std::exception& e)
+			{
+				record.save_error(e);
+			}
+
+			return record.successful;
+		}
+
+	private:
+		Operator op_;
+	};
+
+	template<class Subject, class Operator>
+	class GenericCommandForSubject
+	{
+	public:
+		GenericCommandForSubject(const Operator& op) : op_(op),  on_multiple_(true)
+		{
+		}
+
+		GenericCommandForSubject(const Operator& op, const bool on_multiple) : op_(op),  on_multiple_(on_multiple)
+		{
+		}
+
+		virtual ~GenericCommandForSubject()
+		{
+		}
+
+		bool on_multiple() const
+		{
+			return on_multiple_;
+		}
+
+		bool run(GenericCommandRecord& record, Subject& subject) const
+		{
+			try
+			{
+				prepare(subject, record.command_input);
+				{
+					Operator op=op_;
+					op.init(record.command_input);
+					record.command_input.assert_nothing_unusable();
+					op.run(subject).write(record.heterostorage);
+				}
+				record.successful=true;
+			}
+			catch(const std::exception& e)
+			{
+				record.save_error(e);
+			}
+
+			return record.successful;
+		}
+
+	protected:
+		virtual void prepare(Subject&, CommandInput&) const
+		{
+		}
+
+	private:
+		Operator op_;
+		bool on_multiple_;
+	};
+
+	class GenericCommandForDataManager
+	{
+	public:
+		GenericCommandForDataManager()
+		{
+		}
+
+		virtual ~GenericCommandForDataManager()
+		{
+		}
+
+		virtual bool execute(GenericCommandRecord&, DataManager&) const = 0;
+
+		virtual bool multiplicable() const = 0;
+	};
+
+	template<class Operator>
+	class GenericCommandForDataManagerFromOperator : public GenericCommandForDataManager, public GenericCommandForSubject<DataManager, Operator>
+	{
+	public:
+		GenericCommandForDataManagerFromOperator(const Operator& op, const bool on_multiple) : GenericCommandForSubject<DataManager, Operator>(op, on_multiple)
+		{
+		}
+
+		bool execute(GenericCommandRecord& record, DataManager& data_manager) const
+		{
+			return GenericCommandForSubject<DataManager, Operator>::run(record, data_manager);
+		}
+
+		bool multiplicable() const
+		{
+			return GenericCommandForSubject<DataManager, Operator>::on_multiple();
+		}
+
+	private:
+		void prepare(DataManager& data_manager, CommandInput& input) const
+		{
+			data_manager.reset_change_indicator();
+			data_manager.sync_selections_with_display_states_if_requested_in_string(input.get_canonical_input_command_string());
+		}
+	};
+
+	class GenericCommandForCongregationOfDataManagers
+	{
+	public:
+		GenericCommandForCongregationOfDataManagers()
+		{
+		}
+
+		virtual ~GenericCommandForCongregationOfDataManagers()
+		{
+		}
+
+		virtual bool execute(GenericCommandRecord&, CongregationOfDataManagers&) const = 0;
+	};
+
+	template<class Operator>
+	class GenericCommandForCongregationOfDataManagersFromOperator : public GenericCommandForCongregationOfDataManagers, public GenericCommandForSubject<CongregationOfDataManagers, Operator>
+	{
+	public:
+		explicit GenericCommandForCongregationOfDataManagersFromOperator(const Operator& op) : GenericCommandForSubject<CongregationOfDataManagers, Operator>(op)
+		{
+		}
+
+		bool execute(GenericCommandRecord& record, CongregationOfDataManagers& congregation_of_data_managers) const
+		{
+			return GenericCommandForSubject<CongregationOfDataManagers, Operator>::run(record, congregation_of_data_managers);
+		}
+
+	protected:
+		void prepare(CongregationOfDataManagers& congregation_of_data_managers, CommandInput&) const
+		{
+			congregation_of_data_managers.reset_change_indicator();
+			congregation_of_data_managers.reset_change_indicators_of_all_objects();
+		}
+	};
+
+	class GenericCommandForScriptPartitioner
+	{
+	public:
+		GenericCommandForScriptPartitioner()
+		{
+		}
+
+		virtual ~GenericCommandForScriptPartitioner()
+		{
+		}
+
+		virtual bool execute(GenericCommandRecord&, ScriptPartitioner&) const = 0;
+	};
+
+	template<class Operator>
+	class GenericCommandForScriptPartitionerFromOperator : public GenericCommandForScriptPartitioner, public GenericCommandForSubject<ScriptPartitioner, Operator>
+	{
+	public:
+		explicit GenericCommandForScriptPartitionerFromOperator(const Operator& op) : GenericCommandForSubject<ScriptPartitioner, Operator>(op)
+		{
+		}
+
+		bool execute(GenericCommandRecord& record, ScriptPartitioner& script_partitioner) const
+		{
+			return GenericCommandForSubject<ScriptPartitioner, Operator>::run(record, script_partitioner);
+		}
+	};
+
+	class GenericCommandForExtraActions
+	{
+	public:
+		GenericCommandForExtraActions()
+		{
+		}
+
+		virtual ~GenericCommandForExtraActions()
+		{
+		}
+
+		virtual bool execute(GenericCommandRecord&) = 0;
+	};
+
+	template<class Operator>
+	class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions, public GenericCommandWithoutSubject<Operator>
+	{
+	public:
+		explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : GenericCommandWithoutSubject<Operator>(op)
+		{
+		}
+
+		bool execute(GenericCommandRecord& record)
+		{
+			return GenericCommandWithoutSubject<Operator>::run(record);
+		}
+	};
 
 	class SafeUtilitiesForMapOfPointers
 	{

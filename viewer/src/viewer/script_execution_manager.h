@@ -274,7 +274,7 @@ public:
 	}
 
 protected:
-	void on_after_command_for_congregation_of_data_managers(const scripting::GenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
+	void on_after_command_for_congregation_of_data_managers(const GenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{
 		const scripting::CongregationOfDataManagers::ChangeIndicator& ci=congregation_of_data_managers.change_indicator();
 
@@ -309,7 +309,7 @@ protected:
 		zoom_if_requested(cr);
 	}
 
-	void on_after_command_for_data_manager(const scripting::GenericCommandRecord& cr, scripting::DataManager& data_manager)
+	void on_after_command_for_data_manager(const GenericCommandRecord& cr, scripting::DataManager& data_manager)
 	{
 		scripting::ScriptExecutionManagerWithVariantOutput::on_after_command_for_data_manager(cr, data_manager);
 

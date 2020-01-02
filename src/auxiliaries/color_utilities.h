@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <sstream>
 
 namespace auxiliaries
 {
