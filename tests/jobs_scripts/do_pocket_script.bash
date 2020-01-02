@@ -10,6 +10,7 @@ $VORONOTADIR/voronota-pocket \
   --probe-max 30.0 \
   --buriedness-core 0.7 \
   --buriedness-rim 0.4 \
+  --voxelization-factor 1.0 \
   --output-atoms $SUBDIR/atoms1 \
   --output-pocketness-pdb $SUBDIR/pocketness1.pdb \
   --output-vertices $SUBDIR/vertices1 \

@@ -18,6 +18,7 @@ Options:
     --tangent-leeway               number      tangent sphere radius expansion for atom checks, default is 0.5
     --tangent-radius-min           number      tanget sphere radius minimum, default is 1.4
     --tetrahedron-edge-max         number      tetrahedron edge maximum, default is 999999
+    --voxelization-factor          number      voxelization factor, default is 1.0
     --output-atoms                 string      file to output analyzed atoms with annotations
     --output-buriedness-pdb        string      file to output PDB file with buriedness in b-factors
     --output-pocketness-pdb        string      file to output PDB file with pocketness in b-factors
@@ -70,6 +71,7 @@ SUBPOCKETS="999999"
 TANGENT_LEEWAY="0.5"
 TANGENT_RADIUS_MIN="1.4"
 TETRAHEDRON_EDGE_MAX="999999"
+VOXELIZATION_FACTOR="1.0"
 OUTPUT_ATOMS=""
 OUTPUT_BURIEDNESS_PDB=""
 OUTPUT_POCKETNESS_PDB=""
@@ -125,6 +127,10 @@ do
 		;;
 	--tetrahedron-edge-max)
 		TETRAHEDRON_EDGE_MAX="$OPTARG"
+		shift
+		;;
+	--voxelization-factor)
+		VOXELIZATION_FACTOR="$OPTARG"
 		shift
 		;;
 	--output-atoms)
@@ -225,6 +231,12 @@ then
 	exit 1
 fi
 
+if [ "$(echo "$VOXELIZATION_FACTOR < 0.4" | bc -l)" == "1" ] || [ "$(echo "$VOXELIZATION_FACTOR > 1" | bc -l)" == "1" ]
+then
+	echo >&2 "Error: voxelization factor value '$VOXELIZATION_FACTOR' not in range [0.4,1.0]"
+	exit 1
+fi
+
 if [ -n "$DRAW_TETRAHEDRONS" ] && [[ "$DRAW_TETRAHEDRONS" != *".py" ]]
 then
 	echo >&2 "Error: terahedrons drawing script file name '$DRAW_TETRAHEDRONS' does not end with '.py'"
@@ -319,7 +331,7 @@ fi
 if [ -n "$OUTPUT_VOXELS_PDB" ]
 then
 cat << EOF
-export-triangulation-voxels [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -search-step-factor 1 -file $TMPLDIR/voxels_raw
+export-triangulation-voxels [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS_MIN -max-edge $TETRAHEDRON_EDGE_MAX -search-step-factor $VOXELIZATION_FACTOR -file $TMPLDIR/voxels_raw
 EOF
 fi
 

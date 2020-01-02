@@ -134,7 +134,7 @@
         "file":"/tmp/tmp.randomid/result_draw_tetrahedrons.py"},
       "success":true},
     {
-      "line":"export-triangulation-voxels [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -search-step-factor 1 -file /tmp/tmp.randomid/voxels_raw",
+      "line":"export-triangulation-voxels [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -search-step-factor 1.0 -file /tmp/tmp.randomid/voxels_raw",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/voxels_raw",
