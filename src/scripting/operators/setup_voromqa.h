@@ -35,7 +35,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file))
 		{

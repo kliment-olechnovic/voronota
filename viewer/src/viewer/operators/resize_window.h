@@ -34,7 +34,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(width<1 || width>9999)
 		{

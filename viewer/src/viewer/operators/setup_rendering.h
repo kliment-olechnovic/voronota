@@ -45,7 +45,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(rendering_parameters.ball_sphere_quality>4)
 		{

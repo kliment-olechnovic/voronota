@@ -32,7 +32,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		int W=0;
 		int H=0;

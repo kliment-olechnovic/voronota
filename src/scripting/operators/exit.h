@@ -29,7 +29,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		(*exit_status_ptr_)=true;
 		Result result;

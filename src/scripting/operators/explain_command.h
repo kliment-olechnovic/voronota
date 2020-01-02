@@ -36,7 +36,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(collection_of_command_documentations_ptr_->map_of_documentations().count(name)==0)
 		{

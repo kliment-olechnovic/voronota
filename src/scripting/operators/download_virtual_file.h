@@ -34,7 +34,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		VirtualFileStorage::assert_file_exists(name);
 

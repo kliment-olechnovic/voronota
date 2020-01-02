@@ -42,7 +42,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		LoadingOfData::Configuration config_filled=config;
 

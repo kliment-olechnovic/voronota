@@ -33,7 +33,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(filenames.empty())
 		{

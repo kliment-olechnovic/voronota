@@ -36,7 +36,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(angle_in_degrees>360.0 || angle_in_degrees<(-360.0))
 		{

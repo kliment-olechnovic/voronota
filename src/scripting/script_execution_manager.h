@@ -308,42 +308,6 @@ private:
 
 	const ScriptExecutionManager& operator=(const ScriptExecutionManager&);
 
-	template<class Operator>
-	class GenericCommandWithoutSubject
-	{
-	public:
-		explicit GenericCommandWithoutSubject(const Operator& op) : op_(op)
-		{
-		}
-
-		virtual ~GenericCommandWithoutSubject()
-		{
-		}
-
-		bool run(GenericCommandRecord& record) const
-		{
-			try
-			{
-				{
-					Operator op=op_;
-					op.init(record.command_input);
-					record.command_input.assert_nothing_unusable();
-					op.run().write(record.heterostorage);
-				}
-				record.successful=true;
-			}
-			catch(const std::exception& e)
-			{
-				record.save_error(e);
-			}
-
-			return record.successful;
-		}
-
-	private:
-		Operator op_;
-	};
-
 	template<class Subject, class Operator>
 	class GenericCommandForSubject
 	{
@@ -512,20 +476,21 @@ private:
 		{
 		}
 
-		virtual bool execute(GenericCommandRecord&) = 0;
+		virtual bool execute(GenericCommandRecord&) const = 0;
 	};
 
 	template<class Operator>
-	class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions, public GenericCommandWithoutSubject<Operator>
+	class GenericCommandForExtraActionsFromOperator : public GenericCommandForExtraActions, public GenericCommandForSubject<void*, Operator>
 	{
 	public:
-		explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : GenericCommandWithoutSubject<Operator>(op)
+		explicit GenericCommandForExtraActionsFromOperator(const Operator& op) : GenericCommandForSubject<void*, Operator>(op)
 		{
 		}
 
-		bool execute(GenericCommandRecord& record)
+		bool execute(GenericCommandRecord& record) const
 		{
-			return GenericCommandWithoutSubject<Operator>::run(record);
+			void* subject=0;
+			return GenericCommandForSubject<void*, Operator>::run(record, subject);
 		}
 	};
 

@@ -32,7 +32,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		if(!auxiliaries::ColorUtilities::color_valid(color))
 		{

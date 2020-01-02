@@ -36,7 +36,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		Result result;
 		result.elapsed_miliseconds=elapsed_processor_time_ptr_->elapsed_miliseconds();

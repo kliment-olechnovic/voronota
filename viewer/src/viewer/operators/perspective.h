@@ -36,7 +36,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		app_ptr_->set_projection_mode_to_perspective(field_of_view, near_z, far_z);
 		Result result;

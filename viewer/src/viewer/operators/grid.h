@@ -30,7 +30,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		app_ptr_->set_rendering_mode_to_grid();
 		(*grid_variant_ptr_)=grid_variant_value;

@@ -32,7 +32,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		app_ptr_->set_fog_enabled(!off);
 		Result result;

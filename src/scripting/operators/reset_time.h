@@ -30,7 +30,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		elapsed_processor_time_ptr_->reset();
 		Result result;

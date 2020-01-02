@@ -29,7 +29,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		app_ptr_->set_projection_mode_to_ortho();
 		Result result;

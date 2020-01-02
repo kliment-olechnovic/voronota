@@ -36,7 +36,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		const std::vector<std::string> names=collection_of_command_documentations_ptr_->get_all_names();
 

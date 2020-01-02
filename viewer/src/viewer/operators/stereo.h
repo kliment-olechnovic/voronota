@@ -39,7 +39,7 @@ public:
 		return (*this);
 	}
 
-	Result run() const
+	Result run(void*&) const
 	{
 		app_ptr_->set_rendering_mode_to_stereo(angle, offset);
 
