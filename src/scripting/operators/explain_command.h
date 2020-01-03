@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_EXPLAIN_COMMAND_H_
 #define SCRIPTING_OPERATORS_EXPLAIN_COMMAND_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../command_documentation.h"
 
 namespace scripting

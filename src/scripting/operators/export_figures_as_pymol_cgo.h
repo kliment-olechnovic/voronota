@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_EXPORT_FIGURES_AS_PYMOL_CGO_H_
 #define SCRIPTING_OPERATORS_EXPORT_FIGURES_AS_PYMOL_CGO_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_SHOW_OBJECTS_H_
 #define SCRIPTING_OPERATORS_SHOW_OBJECTS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

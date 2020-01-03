@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_MAKE_UNDRAWABLE_CONTACTS_H_
 #define SCRIPTING_OPERATORS_MAKE_UNDRAWABLE_CONTACTS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

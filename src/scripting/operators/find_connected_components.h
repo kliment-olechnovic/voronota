@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_FIND_CONNECTED_COMPONENTS_H_
 #define SCRIPTING_OPERATORS_FIND_CONNECTED_COMPONENTS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

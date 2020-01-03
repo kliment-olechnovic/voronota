@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_SET_ALIAS_H_
 #define SCRIPTING_OPERATORS_SET_ALIAS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 #include "../script_partitioner.h"
 

@@ -10,7 +10,7 @@
 
 #include "congregations_of_drawers_for_data_managers.h"
 
-#include "operators/all.h"
+#include "operators_all.h"
 
 namespace viewer
 {

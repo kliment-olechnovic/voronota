@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
-#include "operators/all.h"
+#include "operators_all.h"
 
 namespace scripting
 {

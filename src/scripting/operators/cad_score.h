@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_CAD_SCORE_H_
 #define SCRIPTING_OPERATORS_CAD_SCORE_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../scoring_of_data_managers_using_cad_score.h"
 
 namespace scripting

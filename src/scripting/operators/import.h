@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_IMPORT_H_
 #define SCRIPTING_OPERATORS_IMPORT_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../loading_of_data.h"
 
 namespace scripting

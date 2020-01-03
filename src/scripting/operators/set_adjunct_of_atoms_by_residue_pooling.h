@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_RESIDUE_POOLING_H_
 #define SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_RESIDUE_POOLING_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

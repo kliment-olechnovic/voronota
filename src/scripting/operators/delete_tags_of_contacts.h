@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_DELETE_TAGS_OF_CONTACTS_H_
 #define SCRIPTING_OPERATORS_DELETE_TAGS_OF_CONTACTS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_CALCULATE_BETWEENNESS_H_
 #define SCRIPTING_OPERATORS_CALCULATE_BETWEENNESS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../../common/construction_of_path_centralities.h"
 
 namespace scripting

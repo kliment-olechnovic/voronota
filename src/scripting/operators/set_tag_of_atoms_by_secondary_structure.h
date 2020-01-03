@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_SET_TAG_OF_ATOMS_BY_SECONDARY_STRUCTURE_H_
 #define SCRIPTING_OPERATORS_SET_TAG_OF_ATOMS_BY_SECONDARY_STRUCTURE_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

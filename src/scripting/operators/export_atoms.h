@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_EXPORT_ATOMS_H_
 #define SCRIPTING_OPERATORS_EXPORT_ATOMS_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../../common/writing_atomic_balls_in_pdb_format.h"
 
 namespace scripting

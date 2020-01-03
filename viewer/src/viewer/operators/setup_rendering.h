@@ -1,7 +1,7 @@
 #ifndef VIEWER_OPERATORS_SETUP_RENDERING_H_
 #define VIEWER_OPERATORS_SETUP_RENDERING_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../drawer_for_data_manager.h"
 
 namespace viewer

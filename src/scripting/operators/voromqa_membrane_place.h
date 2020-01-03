@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_VOROMQA_MEMBRANE_PLACE_H_
 #define SCRIPTING_OPERATORS_VOROMQA_MEMBRANE_PLACE_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../membrane_placement_for_data_manager_using_voromqa.h"
 
 namespace scripting

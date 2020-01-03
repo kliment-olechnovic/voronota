@@ -1,7 +1,7 @@
 #ifndef VIEWER_OPERATORS_PERSPECTIVE_H_
 #define VIEWER_OPERATORS_PERSPECTIVE_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace viewer
 {

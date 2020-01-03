@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_PRINT_TIME_H_
 #define SCRIPTING_OPERATORS_PRINT_TIME_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../../auxiliaries/time_utilities.h"
 
 namespace scripting

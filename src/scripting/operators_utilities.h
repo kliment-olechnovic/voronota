@@ -1,18 +1,14 @@
-#ifndef SCRIPTING_OPERATORS_COMMON_H_
-#define SCRIPTING_OPERATORS_COMMON_H_
+#ifndef SCRIPTING_OPERATORS_UTILITIES_H_
+#define SCRIPTING_OPERATORS_UTILITIES_H_
 
-#include <algorithm>
-#include <numeric>
-#include <functional>
-
-#include "../data_manager.h"
-#include "../congregation_of_data_managers.h"
-#include "../heterogeneous_storage.h"
-#include "../basic_assertions.h"
-#include "../variant_serialization.h"
-#include "../command_input.h"
-#include "../filtering_of_triangulation.h"
-#include "../io_selectors.h"
+#include "data_manager.h"
+#include "congregation_of_data_managers.h"
+#include "heterogeneous_storage.h"
+#include "basic_assertions.h"
+#include "variant_serialization.h"
+#include "command_input.h"
+#include "filtering_of_triangulation.h"
+#include "io_selectors.h"
 
 namespace scripting
 {
@@ -354,4 +350,4 @@ public:
 
 }
 
-#endif /* SCRIPTING_OPERATORS_COMMON_H_ */
+#endif /* SCRIPTING_OPERATORS_UTILITIES_H_ */

@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_PRINT_SEQUENCE_H_
 #define SCRIPTING_OPERATORS_PRINT_SEQUENCE_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../../auxiliaries/residue_letters_coding.h"
 
 namespace scripting

@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_ADD_FIGURE_OF_TRIANGULATION_H_
 #define SCRIPTING_OPERATORS_ADD_FIGURE_OF_TRIANGULATION_H_
 
-#include "common.h"
+#include "../operators_common.h"
 
 namespace scripting
 {

@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_EXPORT_CARTOON_AS_PYMOL_CGO_H_
 #define SCRIPTING_OPERATORS_EXPORT_CARTOON_AS_PYMOL_CGO_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../../common/construction_of_structural_cartoon.h"
 
 namespace scripting

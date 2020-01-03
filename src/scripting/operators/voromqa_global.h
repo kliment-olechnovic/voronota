@@ -1,7 +1,7 @@
 #ifndef SCRIPTING_OPERATORS_VOROMQA_GLOBAL_H_
 #define SCRIPTING_OPERATORS_VOROMQA_GLOBAL_H_
 
-#include "common.h"
+#include "../operators_common.h"
 #include "../scoring_of_data_manager_using_voromqa.h"
 
 namespace scripting
