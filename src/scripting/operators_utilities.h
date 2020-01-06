@@ -330,16 +330,7 @@ public:
 		query.visible=input.get_flag("visible");
 		query.not_visible=input.get_flag("not-visible");
 
-		std::vector<std::string> names;
-		if(input.is_option("names"))
-		{
-			names=input.get_value_vector<std::string>("names");
-		}
-		else
-		{
-			names=input.get_list_of_unnamed_values();
-			input.mark_all_unnamed_values_as_used();
-		}
+		const std::vector<std::string> names=input.get_value_vector_or_all_unnamed_values("names");
 		query.names.insert(names.begin(), names.end());
 
 		return query;

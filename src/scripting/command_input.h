@@ -299,6 +299,20 @@ public:
 		return get_value<std::string>(name);
 	}
 
+	std::vector<std::string> get_value_vector_or_all_unnamed_values(const std::string& name)
+	{
+		if(is_option(name))
+		{
+			return get_value_vector<std::string>(name);
+		}
+		else
+		{
+			std::vector<std::string> result=get_list_of_unnamed_values();
+			mark_all_unnamed_values_as_used();
+			return result;
+		}
+	}
+
 	void mark_unnamed_value_as_used(const std::size_t id)
 	{
 		if(id<list_of_unnamed_values_.size())

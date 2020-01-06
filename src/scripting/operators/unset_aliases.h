@@ -36,8 +36,7 @@ public:
 
 	UnsetAliases& init(CommandInput& input)
 	{
-		names=input.get_list_of_unnamed_values();
-		input.mark_all_unnamed_values_as_used();
+		names=input.get_value_vector_or_all_unnamed_values("names");
 		return (*this);
 	}
 

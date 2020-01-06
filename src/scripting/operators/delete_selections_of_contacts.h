@@ -36,11 +36,7 @@ public:
 	DeleteSelectionsOfContacts& init(CommandInput& input)
 	{
 		all=input.get_flag("all");
-		if(!all)
-		{
-			names=input.get_list_of_unnamed_values();
-			input.mark_all_unnamed_values_as_used();
-		}
+		names=input.get_value_vector_or_all_unnamed_values("names");
 		return (*this);
 	}
 

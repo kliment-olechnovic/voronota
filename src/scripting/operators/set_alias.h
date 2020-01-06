@@ -36,14 +36,8 @@ public:
 
 	SetAlias& init(CommandInput& input)
 	{
-		const std::vector<std::string>& strings=input.get_list_of_unnamed_values();
-		input.mark_all_unnamed_values_as_used();
-		if(strings.size()!=2)
-		{
-			throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
-		}
-		name=strings[0];
-		script_template=strings[1];
+		name=input.get_value_or_first_unused_unnamed_value("name");
+		script_template=input.get_value_or_first_unused_unnamed_value("script-template");
 		return (*this);
 	}
 

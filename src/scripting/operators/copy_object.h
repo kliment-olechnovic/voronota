@@ -32,14 +32,8 @@ public:
 
 	CopyObject& init(CommandInput& input)
 	{
-		const std::vector<std::string>& names=input.get_list_of_unnamed_values();
-		input.mark_all_unnamed_values_as_used();
-		if(names.size()!=2)
-		{
-			throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
-		}
-		name_original=names[0];
-		name_new=names[1];
+		name_original=input.get_value_or_first_unused_unnamed_value("original");
+		name_new=input.get_value_or_first_unused_unnamed_value("new");
 		return (*this);
 	}
 

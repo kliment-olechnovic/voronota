@@ -34,8 +34,7 @@ public:
 
 	Echo& init(CommandInput& input)
 	{
-		strings=input.get_list_of_unnamed_values();
-		input.mark_all_unnamed_values_as_used();
+		strings=input.get_value_vector_or_all_unnamed_values("strings");
 		return (*this);
 	}
 

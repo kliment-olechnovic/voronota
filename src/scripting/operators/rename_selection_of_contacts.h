@@ -20,8 +20,8 @@ public:
 		}
 	};
 
-	std::string name_a;
-	std::string name_b;
+	std::string name_original;
+	std::string name_new;
 
 	RenameSelectionOfContacts()
 	{
@@ -29,14 +29,8 @@ public:
 
 	RenameSelectionOfContacts& init(CommandInput& input)
 	{
-		const std::vector<std::string>& names=input.get_list_of_unnamed_values();
-		input.mark_all_unnamed_values_as_used();
-		if(names.size()!=2)
-		{
-			throw std::runtime_error(std::string("Not exactly two names provided for renaming."));
-		}
-		name_a=names[0];
-		name_b=names[1];
+		name_original=input.get_value_or_first_unused_unnamed_value("original");
+		name_new=input.get_value_or_first_unused_unnamed_value("new");
 		return (*this);
 	}
 
@@ -44,22 +38,22 @@ public:
 	{
 		data_manager.assert_contacts_selections_availability();
 
-		if(name_a.empty())
+		if(name_original.empty())
 		{
 			throw std::runtime_error(std::string("Empty first name provided for renaming."));
 		}
 
-		if(name_b.empty())
+		if(name_new.empty())
 		{
 			throw std::runtime_error(std::string("Empty second name provided for renaming."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.selection_manager().get_contacts_selection(name_a);
+		const std::set<std::size_t> ids=data_manager.selection_manager().get_contacts_selection(name_original);
 
-		if(name_a!=name_b)
+		if(name_original!=name_new)
 		{
-			data_manager.selection_manager().set_contacts_selection(name_b, ids);
-			data_manager.selection_manager().delete_contacts_selection(name_a);
+			data_manager.selection_manager().set_contacts_selection(name_new, ids);
+			data_manager.selection_manager().delete_contacts_selection(name_original);
 		}
 
 		Result result;
