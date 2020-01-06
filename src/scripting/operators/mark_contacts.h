@@ -9,8 +9,7 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive>
-class MarkContactsTemplate
+class MarkContacts
 {
 public:
 	struct Result
@@ -26,11 +25,15 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 
-	MarkContactsTemplate()
+	MarkContacts()
 	{
 	}
 
-	MarkContactsTemplate& init(CommandInput& input)
+	virtual ~MarkContacts()
+	{
+	}
+
+	MarkContacts& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		return (*this);
@@ -47,17 +50,29 @@ public:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_mark(positive).set_unmark(!positive), ids);
+		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_mark(positive()).set_unmark(!positive()), ids);
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
 };
 
-typedef MarkContactsTemplate<true> MarkContacts;
-typedef MarkContactsTemplate<false> UnmarkContacts;
+class UnmarkContacts : public MarkContacts
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 

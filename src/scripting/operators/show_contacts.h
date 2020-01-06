@@ -9,8 +9,7 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive>
-class ShowContactsTemplate
+class ShowContacts
 {
 public:
 	struct Result
@@ -27,11 +26,15 @@ public:
 	SelectionManager::Query parameters_for_selecting;
 	std::vector<std::string> representation_names;
 
-	ShowContactsTemplate()
+	ShowContacts()
 	{
 	}
 
-	ShowContactsTemplate& init(CommandInput& input)
+	virtual ~ShowContacts()
+	{
+	}
+
+	ShowContacts& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
@@ -45,7 +48,7 @@ public:
 
 		std::set<std::size_t> representation_ids=data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-		if(positive && representation_ids.empty() && data_manager.contacts_representation_descriptor().names.size()>1)
+		if(positive() && representation_ids.empty() && data_manager.contacts_representation_descriptor().names.size()>1)
 		{
 			representation_ids.insert(0);
 		}
@@ -60,17 +63,29 @@ public:
 			throw std::runtime_error(std::string("No drawable contacts selected."));
 		}
 
-		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive).set_hide(!positive), ids);
+		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive()).set_hide(!positive()), ids);
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
 };
 
-typedef ShowContactsTemplate<true> ShowContacts;
-typedef ShowContactsTemplate<false> HideContacts;
+class HideContacts : public ShowContacts
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 

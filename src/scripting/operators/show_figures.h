@@ -9,8 +9,7 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive>
-class ShowFiguresTemplate
+class ShowFigures
 {
 public:
 	struct Result
@@ -24,11 +23,15 @@ public:
 	std::vector<std::string> name;
 	std::vector<std::string> representation_names;
 
-	ShowFiguresTemplate()
+	ShowFigures()
 	{
 	}
 
-	ShowFiguresTemplate& init(CommandInput& input)
+	virtual ~ShowFigures()
+	{
+	}
+
+	ShowFigures& init(CommandInput& input)
 	{
 		name=input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
@@ -52,16 +55,28 @@ public:
 			throw std::runtime_error(std::string("No drawable figures selected."));
 		}
 
-		data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive).set_hide(!positive), ids);
+		data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive()).set_hide(!positive()), ids);
 
 		Result result;
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
 };
 
-typedef ShowFiguresTemplate<true> ShowFigures;
-typedef ShowFiguresTemplate<false> HideFigures;
+class HideFigures : public ShowFigures
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 

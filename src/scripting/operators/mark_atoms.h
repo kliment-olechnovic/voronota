@@ -9,8 +9,7 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive>
-class MarkAtomsTemplate
+class MarkAtoms
 {
 public:
 	struct Result
@@ -26,11 +25,15 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 
-	MarkAtomsTemplate()
+	MarkAtoms()
 	{
 	}
 
-	MarkAtomsTemplate& init(CommandInput& input)
+	virtual ~MarkAtoms()
+	{
+	}
+
+	MarkAtoms& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		return (*this);
@@ -47,17 +50,29 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(positive).set_unmark(!positive), ids);
+		data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_mark(positive()).set_unmark(!positive()), ids);
 
 		Result result;
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
 };
 
-typedef MarkAtomsTemplate<true> MarkAtoms;
-typedef MarkAtomsTemplate<false> UnmarkAtoms;
+class UnmarkAtoms : public MarkAtoms
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 

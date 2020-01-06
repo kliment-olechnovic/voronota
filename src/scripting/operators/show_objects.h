@@ -9,8 +9,7 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive>
-class ShowObjectsTemplate
+class ShowObjects
 {
 public:
 	struct Result
@@ -23,11 +22,15 @@ public:
 
 	CongregationOfDataManagers::ObjectQuery query;
 
-	ShowObjectsTemplate()
+	ShowObjects()
 	{
 	}
 
-	ShowObjectsTemplate& init(CommandInput& input)
+	virtual ~ShowObjects()
+	{
+	}
+
+	ShowObjects& init(CommandInput& input)
 	{
 		query=Utilities::read_congregation_of_data_managers_object_query(input);
 		return (*this);
@@ -45,17 +48,29 @@ public:
 
 		for(std::size_t i=0;i<objects.size();i++)
 		{
-			congregation_of_data_managers.set_object_visible(objects[i], positive);
+			congregation_of_data_managers.set_object_visible(objects[i], positive());
 		}
 
 		Result result;
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
 };
 
-typedef ShowObjectsTemplate<true> ShowObjects;
-typedef ShowObjectsTemplate<false> HideObjects;
+class HideObjects : public ShowObjects
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 
