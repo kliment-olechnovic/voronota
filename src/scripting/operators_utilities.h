@@ -27,32 +27,16 @@ public:
 
 		SelectionManager::Query query(default_expression);
 
-		if(input.is_option(type_for_expression))
+		if(prefix.empty())
 		{
-			query.expression_string=input.get_value<std::string>(type_for_expression);
+			query.expression_string=input.get_value_or_first_unused_unnamed_value_starting_with_prefix_or_default(type_for_expression, "([", true, default_expression);
 		}
-		else if(type_for_expression=="use" && input.is_any_unnamed_value_unused())
+		else
 		{
-			bool found=false;
-			for(std::size_t i=0;i<input.get_list_of_unnamed_values().size() && !found;i++)
-			{
-				if(!input.is_unnamed_value_used(i))
-				{
-					const std::string& candidate=input.get_list_of_unnamed_values()[i];
-					if(!candidate.empty() && candidate.find_first_of("([")==0)
-					{
-						query.expression_string=candidate;
-						input.mark_unnamed_value_as_used(i);
-						found=true;
-					}
-				}
-			}
+			query.expression_string=input.get_value_or_default<std::string>(type_for_expression, default_expression);
 		}
 
-		if(input.is_option(type_for_full_residues))
-		{
-			query.full_residues=input.get_flag(type_for_full_residues);
-		}
+		query.full_residues=input.get_flag(type_for_full_residues);
 
 		{
 			const std::vector<std::size_t> forced_ids_vector=input.get_value_vector_or_default<std::size_t>(type_for_forced_id, std::vector<std::size_t>());
@@ -72,30 +56,7 @@ public:
 
 	static auxiliaries::ColorUtilities::ColorInteger read_color(CommandInput& input)
 	{
-		if(input.is_option("col"))
-		{
-			return auxiliaries::ColorUtilities::color_from_name(input.get_value<std::string>("col"));
-		}
-		else if(input.is_any_unnamed_value_unused())
-		{
-			for(std::size_t i=0;i<input.get_list_of_unnamed_values().size();i++)
-			{
-				if(!input.is_unnamed_value_used(i))
-				{
-					const std::string& candidate_str=input.get_list_of_unnamed_values()[i];
-					if(candidate_str.size()>2 && candidate_str.rfind("0x", 0)==0)
-					{
-						auxiliaries::ColorUtilities::ColorInteger candidate_color=auxiliaries::ColorUtilities::color_from_name(candidate_str);
-						if(candidate_color!=auxiliaries::ColorUtilities::null_color())
-						{
-							input.mark_unnamed_value_as_used(i);
-							return candidate_color;
-						}
-					}
-				}
-			}
-		}
-		return auxiliaries::ColorUtilities::null_color();
+		return auxiliaries::ColorUtilities::color_from_name(input.get_value_or_first_unused_unnamed_value_starting_with_prefix("col", "0x", false));
 	}
 
 	static auxiliaries::ColorUtilities::ColorInteger get_next_random_color()

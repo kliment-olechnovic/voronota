@@ -215,6 +215,22 @@ public:
 		return false;
 	}
 
+	bool is_any_unnamed_value_unused_and_starting_with_prefix(const std::string& prefix, const bool prefix_as_chars) const
+	{
+		for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+		{
+			if(set_of_requested_ids_of_unnamed_values_.count(i)==0)
+			{
+				const std::string& candidate=list_of_unnamed_values_[i];
+				if(!candidate.empty() && ((prefix_as_chars && candidate.find_first_of(prefix)==0) || (!prefix_as_chars && candidate.rfind(prefix, 0)==0)))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	bool get_flag(const std::string& name)
 	{
 		MapOfValues::const_iterator it=map_of_values_.find(name);
@@ -283,20 +299,72 @@ public:
 		}
 	}
 
+	std::string get_first_unused_unnamed_value()
+	{
+		for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+		{
+			if(!is_unnamed_value_used(i))
+			{
+				mark_unnamed_value_as_used(i);
+				return list_of_unnamed_values_[i];
+			}
+		}
+		throw std::runtime_error(std::string("No unused unnamed value."));
+		return std::string();
+	}
+
 	std::string get_value_or_first_unused_unnamed_value(const std::string& name)
 	{
 		if(!is_option(name))
 		{
-			for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+			return get_first_unused_unnamed_value();
+		}
+		return get_value<std::string>(name);
+	}
+
+	std::string get_value_or_first_unused_unnamed_value_or_default(const std::string& name, const std::string& default_value)
+	{
+		if(!is_option(name) && is_any_unnamed_value_unused())
+		{
+			return get_first_unused_unnamed_value();
+		}
+		return get_value_or_default<std::string>(name, default_value);
+	}
+
+	std::string get_first_unused_unnamed_value_starting_with_prefix(const std::string& prefix, const bool prefix_as_chars)
+	{
+		for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+		{
+			if(!is_unnamed_value_used(i))
 			{
-				if(!is_unnamed_value_used(i))
+				const std::string& candidate=list_of_unnamed_values_[i];
+				if(!candidate.empty() && ((prefix_as_chars && candidate.find_first_of(prefix)==0) || (!prefix_as_chars && candidate.rfind(prefix, 0)==0)))
 				{
 					mark_unnamed_value_as_used(i);
-					return list_of_unnamed_values_[i];
+					return candidate;
 				}
 			}
 		}
+		throw std::runtime_error(std::string("No unused unnamed value starting with prefix '")+prefix+"'.");
+		return std::string();
+	}
+
+	std::string get_value_or_first_unused_unnamed_value_starting_with_prefix(const std::string& name, const std::string& prefix, const bool prefix_as_chars)
+	{
+		if(!prefix.empty() && !is_option(name))
+		{
+			return get_first_unused_unnamed_value_starting_with_prefix(prefix, prefix_as_chars);
+		}
 		return get_value<std::string>(name);
+	}
+
+	std::string get_value_or_first_unused_unnamed_value_starting_with_prefix_or_default(const std::string& name, const std::string& prefix, const bool prefix_as_chars, const std::string& default_value)
+	{
+		if(!prefix.empty() && !is_option(name) && is_any_unnamed_value_unused_and_starting_with_prefix(prefix, prefix_as_chars))
+		{
+			return get_first_unused_unnamed_value_starting_with_prefix(prefix, prefix_as_chars);
+		}
+		return get_value_or_default<std::string>(name, default_value);
 	}
 
 	std::vector<std::string> get_value_vector_or_all_unnamed_values(const std::string& name)
@@ -310,22 +378,6 @@ public:
 			std::vector<std::string> result=get_list_of_unnamed_values();
 			mark_all_unnamed_values_as_used();
 			return result;
-		}
-	}
-
-	void mark_unnamed_value_as_used(const std::size_t id)
-	{
-		if(id<list_of_unnamed_values_.size())
-		{
-			set_of_requested_ids_of_unnamed_values_.insert(id);
-		}
-	}
-
-	void mark_all_unnamed_values_as_used()
-	{
-		for(std::size_t id=0;id<list_of_unnamed_values_.size();id++)
-		{
-			mark_unnamed_value_as_used(id);
 		}
 	}
 
@@ -347,30 +399,6 @@ public:
 				throw std::runtime_error(std::string("Unusable unnamed value '")+list_of_unnamed_values_[id]+"'.");
 			}
 		}
-	}
-
-	std::string generate_string_from_arguments(const std::set<std::string>& names_to_exclude, const bool exclude_unnamed) const
-	{
-		std::ostringstream output;
-		if(!exclude_unnamed)
-		{
-			for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
-			{
-				output << " \"" << list_of_unnamed_values_[i] << "\"";
-			}
-		}
-		for(MapOfValues::const_iterator it=map_of_values_.begin();it!=map_of_values_.end();++it)
-		{
-			if(names_to_exclude.count(it->first)==0)
-			{
-				output << " --" << (it->first);
-				for(std::size_t i=0;i<it->second.size();i++)
-				{
-					output << " \"" << it->second[i] << "\"";
-				}
-			}
-		}
-		return output.str();
 	}
 
 private:
@@ -447,6 +475,22 @@ private:
 			throw std::runtime_error(std::string("Not exactly one value for option '")+name+"'.");
 		}
 		output=values.front();
+	}
+
+	void mark_unnamed_value_as_used(const std::size_t id)
+	{
+		if(id<list_of_unnamed_values_.size())
+		{
+			set_of_requested_ids_of_unnamed_values_.insert(id);
+		}
+	}
+
+	void mark_all_unnamed_values_as_used()
+	{
+		for(std::size_t id=0;id<list_of_unnamed_values_.size();id++)
+		{
+			mark_unnamed_value_as_used(id);
+		}
 	}
 
 	bool initialized_;
