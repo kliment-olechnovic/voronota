@@ -29,7 +29,7 @@ public:
 		return underlying().init(CommandInput(std::string("noname ")+args));
 	}
 
-	CommandDocumentation document() const
+	CommandDocumentation documentation() const
 	{
 		CommandDocumentation doc;
 		document(doc);

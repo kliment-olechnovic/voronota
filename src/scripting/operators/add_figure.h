@@ -41,6 +41,14 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
+		doc.set_option_decription(CDOD("vertices", CDOD::DATATYPE_FLOAT_ARRAY, "figure vertix coordinated"));
+		doc.set_option_decription(CDOD("normals", CDOD::DATATYPE_FLOAT_ARRAY, "figure normals coordinated"));
+		doc.set_option_decription(CDOD("indices", CDOD::DATATYPE_INT_ARRAY, "figure triangle indices"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		{
