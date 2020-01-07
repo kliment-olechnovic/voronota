@@ -4,6 +4,7 @@
 #include "command_input.h"
 #include "heterogeneous_storage.h"
 #include "json_writer.h"
+#include "command_documentation.h"
 
 namespace scripting
 {
@@ -26,6 +27,17 @@ public:
 	Operator& init(const std::string& args)
 	{
 		return underlying().init(CommandInput(std::string("noname ")+args));
+	}
+
+	CommandDocumentation document() const
+	{
+		CommandDocumentation doc;
+		document(doc);
+		return doc;
+	}
+
+	virtual void document(CommandDocumentation&) const
+	{
 	}
 
 private:

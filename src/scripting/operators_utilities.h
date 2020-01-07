@@ -9,6 +9,7 @@
 #include "command_input.h"
 #include "filtering_of_triangulation.h"
 #include "io_selectors.h"
+#include "command_documentation.h"
 
 namespace scripting
 {
@@ -49,14 +50,76 @@ public:
 		return query;
 	}
 
+	static void document_read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandDocumentation& doc)
+	{
+		doc.set_option_decription(CDOD(prefix+"use", CDOD::DATATYPE_STRING, "selection expression", default_expression));
+		doc.set_option_decription(CDOD(prefix+"full-residues", CDOD::DATATYPE_BOOL, "flag to consider full residues"));
+		doc.set_option_decription(CDOD(prefix+"id", CDOD::DATATYPE_INT_ARRAY, "selection identifiers", ""));
+	}
+
 	static SelectionManager::Query read_generic_selecting_query(CommandInput& input)
 	{
 		return read_generic_selecting_query("", "[]", input);
 	}
 
+	static void document_read_generic_selecting_query(CommandDocumentation& doc)
+	{
+		document_read_generic_selecting_query("", "[]", doc);
+	}
+
 	static auxiliaries::ColorUtilities::ColorInteger read_color(CommandInput& input)
 	{
 		return auxiliaries::ColorUtilities::color_from_name(input.get_value_or_first_unused_unnamed_value_starting_with_prefix("col", "0x", false));
+	}
+
+	static void document_read_color(CommandDocumentation& doc)
+	{
+		doc.set_option_decription(CDOD("col", CDOD::DATATYPE_STRING, "color"));
+	}
+
+	static FilteringOfTriangulation::Query read_filtering_of_triangulation_query(CommandInput& input)
+	{
+		FilteringOfTriangulation::Query query;
+		query.strict=input.get_flag("strict");
+		query.max_edge=input.get_value_or_default<double>("max-edge", query.max_edge);
+		query.min_radius=input.get_value_or_default<double>("min-radius", query.min_radius);
+		query.max_radius=input.get_value_or_default<double>("max-radius", query.max_radius);
+		query.expansion=input.get_value_or_default<double>("expansion", query.expansion);
+		return query;
+	}
+
+	static void document_read_filtering_of_triangulation_query(CommandDocumentation& doc)
+	{
+		FilteringOfTriangulation::Query query;
+		doc.set_option_decription(CDOD("strict", CDOD::DATATYPE_BOOL, "flag to enable strict triangulation query"));
+		doc.set_option_decription(CDOD("max-edge", CDOD::DATATYPE_FLOAT, "max edge of tetrahedron", query.max_edge));
+		doc.set_option_decription(CDOD("min-radius", CDOD::DATATYPE_FLOAT, "min radius of tangent sphere", query.min_radius));
+		doc.set_option_decription(CDOD("max-radius", CDOD::DATATYPE_FLOAT, "max radius of tangent sphere", query.max_radius));
+		doc.set_option_decription(CDOD("expansion", CDOD::DATATYPE_FLOAT, "tangent sphere radius expansion for searching", query.expansion));
+	}
+
+	static CongregationOfDataManagers::ObjectQuery read_congregation_of_data_managers_object_query(CommandInput& input)
+	{
+		CongregationOfDataManagers::ObjectQuery query;
+
+		query.picked=input.get_flag("picked");
+		query.not_picked=input.get_flag("not-picked");
+		query.visible=input.get_flag("visible");
+		query.not_visible=input.get_flag("not-visible");
+
+		const std::vector<std::string> names=input.get_value_vector_or_all_unnamed_values("names");
+		query.names.insert(names.begin(), names.end());
+
+		return query;
+	}
+
+	static void document_read_congregation_of_data_managers_object_query(CommandDocumentation& doc)
+	{
+		doc.set_option_decription(CDOD("picked", CDOD::DATATYPE_BOOL, "flag to select picked objects"));
+		doc.set_option_decription(CDOD("not-picked", CDOD::DATATYPE_BOOL, "flag to select non-picked objects"));
+		doc.set_option_decription(CDOD("visible", CDOD::DATATYPE_BOOL, "flag to select visible objects"));
+		doc.set_option_decription(CDOD("not-visible", CDOD::DATATYPE_BOOL, "flag to select non-visible objects"));
+		doc.set_option_decription(CDOD("names", CDOD::DATATYPE_STRING_ARRAY, "list of object names for selection", ""));
 	}
 
 	static auxiliaries::ColorUtilities::ColorInteger get_next_random_color()
@@ -238,17 +301,6 @@ public:
 		}
 	}
 
-	static FilteringOfTriangulation::Query read_filtering_of_triangulation_query(CommandInput& input)
-	{
-		FilteringOfTriangulation::Query query;
-		query.strict=input.get_flag("strict");
-		query.max_edge=input.get_value_or_default<double>("max-edge", query.max_edge);
-		query.min_radius=input.get_value_or_default<double>("min-radius", query.min_radius);
-		query.max_radius=input.get_value_or_default<double>("max-radius", query.max_radius);
-		query.expansion=input.get_value_or_default<double>("expansion", query.expansion);
-		return query;
-	}
-
 	static void assert_new_object_name_input(const std::string& name)
 	{
 		if(name.empty())
@@ -280,21 +332,6 @@ public:
 		{
 			return std::string();
 		}
-	}
-
-	static CongregationOfDataManagers::ObjectQuery read_congregation_of_data_managers_object_query(CommandInput& input)
-	{
-		CongregationOfDataManagers::ObjectQuery query;
-
-		query.picked=input.get_flag("picked");
-		query.not_picked=input.get_flag("not-picked");
-		query.visible=input.get_flag("visible");
-		query.not_visible=input.get_flag("not-visible");
-
-		const std::vector<std::string> names=input.get_value_vector_or_all_unnamed_values("names");
-		query.names.insert(names.begin(), names.end());
-
-		return query;
 	}
 };
 

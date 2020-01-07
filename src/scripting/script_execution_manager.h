@@ -229,7 +229,7 @@ protected:
 		unset_command(name);
 		GenericCommandForScriptPartitioner* command_ptr=new GenericCommandForScriptPartitionerFromOperator<Operator>(op);
 		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_script_partitioner_, name, command_ptr);
-		collection_of_command_documentations_.set_documentation(name);
+		collection_of_command_documentations_.set_documentation(name, op.document());
 	}
 
 	template<class Operator>
@@ -238,7 +238,7 @@ protected:
 		unset_command(name);
 		GenericCommandForCongregationOfDataManagers* command_ptr=new GenericCommandForCongregationOfDataManagersFromOperator<Operator>(op);
 		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_congregation_of_data_managers_, name, command_ptr);
-		collection_of_command_documentations_.set_documentation(name);
+		collection_of_command_documentations_.set_documentation(name, op.document());
 	}
 
 	template<class Operator>
@@ -247,7 +247,7 @@ protected:
 		unset_command(name);
 		GenericCommandForDataManager* command_ptr=new GenericCommandForDataManagerFromOperator<Operator>(op, on_multiple);
 		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_data_manager_, name, command_ptr);
-		collection_of_command_documentations_.set_documentation(name);
+		collection_of_command_documentations_.set_documentation(name, op.document());
 	}
 
 	template<class Operator>
@@ -256,7 +256,7 @@ protected:
 		unset_command(name);
 		GenericCommandForExtraActions* command_ptr=new GenericCommandForExtraActionsFromOperator<Operator>(op);
 		SafeUtilitiesForMapOfPointers::set_key_value(commands_for_extra_actions_, name, command_ptr);
-		collection_of_command_documentations_.set_documentation(name);
+		collection_of_command_documentations_.set_documentation(name, op.document());
 	}
 
 	virtual void on_before_script(const std::string&)

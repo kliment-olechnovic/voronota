@@ -14,31 +14,49 @@ class CommandDocumentation
 public:
 	struct OptionDescription
 	{
-		bool required;
-		std::string name;
-		std::string value_type;
-		std::string description;
+		enum DataType
+		{
+			DATATYPE_UNDEFINED,
+			DATATYPE_BOOL,
+			DATATYPE_INT,
+			DATATYPE_INT_ARRAY,
+			DATATYPE_FLOAT,
+			DATATYPE_FLOAT_ARRAY,
+			DATATYPE_STRING,
+			DATATYPE_STRING_ARRAY
+		};
 
+		std::string name;
+		DataType data_type;
+		std::string description;
+		bool required;
+		std::string default_value;
+
+		template<typename T>
 		OptionDescription(
 				const std::string& name,
-				const std::string& value_type,
-				const std::string& description) :
-					required(false),
+				const DataType data_type,
+				const std::string& description,
+				const T& raw_default_value) :
 					name(name),
-					value_type(value_type),
-					description(description)
+					data_type(data_type),
+					description(description),
+					required(false)
 		{
+			std::ostringstream output;
+			output << raw_default_value;
+			default_value=output.str();
 		}
 
 		OptionDescription(
 				const std::string& name,
-				const std::string& value_type,
-				const std::string& description,
-				const bool required) :
-					required(required),
+				const DataType data_type,
+				const std::string& description) :
 					name(name),
-					value_type(value_type),
-					description(description)
+					data_type(data_type),
+					description(description),
+					required(data_type!=DATATYPE_BOOL),
+					default_value(data_type!=DATATYPE_BOOL ? "" : "false")
 		{
 		}
 
@@ -109,16 +127,6 @@ public:
 		}
 	}
 
-	void set_option_decription(const std::string& name, const std::string& value_type, const std::string& description)
-	{
-		set_option_decription(OptionDescription(name, value_type, description));
-	}
-
-	void set_option_decription(const std::string& name, const std::string& value_type, const std::string& description, const bool required)
-	{
-		set_option_decription(OptionDescription(name, value_type, description, required));
-	}
-
 	void delete_option_decription(const std::string& name)
 	{
 		std::vector<OptionDescription>::iterator it=std::find(option_descriptions_.begin(), option_descriptions_.end(), name);
@@ -175,11 +183,6 @@ public:
 		map_of_documentations_[name]=doc;
 	}
 
-	void set_documentation(const std::string& name)
-	{
-		map_of_documentations_[name]=CommandDocumentation();
-	}
-
 	void delete_documentation(const std::string& name)
 	{
 		map_of_documentations_.erase(name);
@@ -188,6 +191,8 @@ public:
 private:
 	std::map<std::string, CommandDocumentation> map_of_documentations_;
 };
+
+typedef CommandDocumentation::OptionDescription CDOD;
 
 }
 
