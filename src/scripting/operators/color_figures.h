@@ -38,6 +38,14 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING_ARRAY, "figure name", ""));
+		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING, "representation names", ""));
+		doc.set_option_decription(CDOD("next-random-color", CDOD::DATATYPE_BOOL, "flag to use next random color"));
+		Utilities::document_read_color(doc);
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_figures_availability();

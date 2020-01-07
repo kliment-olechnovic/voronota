@@ -46,6 +46,16 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+		doc.set_option_decription(CDOD("not-inter-residue", CDOD::DATATYPE_BOOL, "flag not consider inter-residue contacts"));
+		doc.set_option_decription(CDOD("uniform", CDOD::DATATYPE_BOOL, "flag to not use contact areas"));
+		doc.set_option_decription(CDOD("not-normalize", CDOD::DATATYPE_BOOL, "flag to not normalize centrality values"));
+		doc.set_option_decription(CDOD("adj-atoms", CDOD::DATATYPE_STRING, "adjunct name to write centrality in atoms", "betweenness"));
+		doc.set_option_decription(CDOD("adj-contacts", CDOD::DATATYPE_STRING, "adjunct name to write centrality in contacts", "betweenness"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

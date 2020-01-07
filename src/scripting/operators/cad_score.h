@@ -71,6 +71,25 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("target", CDOD::DATATYPE_STRING, "target object name"));
+		doc.set_option_decription(CDOD("model", CDOD::DATATYPE_STRING, "model object name"));
+		doc.set_option_decription(CDOD("t-sel", CDOD::DATATYPE_STRING, "target selection expression", "[--no-solvent --min-seq-sep 1]"));
+		doc.set_option_decription(CDOD("m-sel", CDOD::DATATYPE_STRING, "model selection expression", "[--no-solvent --min-seq-sep 1]"));
+		doc.set_option_decription(CDOD("t-adj-atom", CDOD::DATATYPE_STRING, "target adjunct name for atom scores", ""));
+		doc.set_option_decription(CDOD("t-adj-inter-atom", CDOD::DATATYPE_STRING, "target adjunct name for inter-atom scores", ""));
+		doc.set_option_decription(CDOD("t-adj-residue", CDOD::DATATYPE_STRING, "target adjunct name for residue scores", ""));
+		doc.set_option_decription(CDOD("t-adj-inter-residue", CDOD::DATATYPE_STRING, "target adjunct name for inter-residue scores", ""));
+		doc.set_option_decription(CDOD("m-adj-atom", CDOD::DATATYPE_STRING, "model adjunct name for atom scores", ""));
+		doc.set_option_decription(CDOD("m-adj-inter-atom", CDOD::DATATYPE_STRING, "model adjunct name for inter-atom scores", ""));
+		doc.set_option_decription(CDOD("m-adj-residue", CDOD::DATATYPE_STRING, "model adjunct name for residue scores", ""));
+		doc.set_option_decription(CDOD("m-adj-inter-residue", CDOD::DATATYPE_STRING, "model adjunct name for inter-residue scores", ""));
+		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
+		doc.set_option_decription(CDOD("ignore-residue-names", CDOD::DATATYPE_BOOL, "flag to ignore residue names"));
+		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
+	}
+
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
 		if(target_name==model_name)

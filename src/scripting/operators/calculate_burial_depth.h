@@ -34,6 +34,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name to write value in atoms"));
+		doc.set_option_decription(CDOD("min-seq-sep", CDOD::DATATYPE_INT, "minimal sequence separation restriction for contacts", 1));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

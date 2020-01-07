@@ -789,7 +789,43 @@
       "line":"explain-command color-contacts",
       "output":{
         "command":"color-contacts",
-        "description":""},
+        "description":"",
+        "options":[
+          {
+            "name":"use",
+            "required":false,
+            "type":"string",
+            "description":"selection expression",
+            "default":"[]"},
+          {
+            "name":"full-residues",
+            "required":false,
+            "type":"bool",
+            "description":"flag to consider full residues",
+            "default":"false"},
+          {
+            "name":"id",
+            "required":false,
+            "type":"ints",
+            "description":"selection identifiers",
+            "default":""},
+          {
+            "name":"rep",
+            "required":false,
+            "type":"string",
+            "description":"representation names",
+            "default":""},
+          {
+            "name":"next-random-color",
+            "required":false,
+            "type":"bool",
+            "description":"flag to use next random color",
+            "default":"false"},
+          {
+            "name":"col",
+            "required":true,
+            "type":"string",
+            "description":"color"}]},
       "success":true},
     {
       "line":"list-commands",

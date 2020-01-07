@@ -49,6 +49,19 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation params;
+		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
+		doc.set_option_decription(CDOD("no-calculate-volumes", CDOD::DATATYPE_BOOL, "flag to not calculate volumes"));
+		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
+		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
+		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
+		doc.set_option_decription(CDOD("no-tag-centrality", CDOD::DATATYPE_BOOL, "flag to not add contact central tags"));
+		doc.set_option_decription(CDOD("no-tag-peripherial", CDOD::DATATYPE_BOOL, "flag to not add contact peripherial tags"));
+		doc.set_option_decription(CDOD("adjunct-solvent-direction", CDOD::DATATYPE_BOOL, "flag calculate SAS direction approximation"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

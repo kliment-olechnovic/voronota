@@ -39,6 +39,13 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to delete all tags"));
+		doc.set_option_decription(CDOD("tags", CDOD::DATATYPE_STRING_ARRAY, "tag names", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

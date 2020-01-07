@@ -39,6 +39,13 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag delete all adjuncts"));
+		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

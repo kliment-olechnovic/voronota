@@ -40,6 +40,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to delete all selections"));
+		doc.set_option_decription(CDOD("names", CDOD::DATATYPE_STRING_ARRAY, "selection names", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_selections_availability();

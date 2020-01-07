@@ -37,6 +37,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("original", CDOD::DATATYPE_STRING, "name of original object"));
+		doc.set_option_decription(CDOD("new", CDOD::DATATYPE_STRING, "name of new object"));
+	}
+
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
 		if(name_original.empty())

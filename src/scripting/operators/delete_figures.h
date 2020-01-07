@@ -35,6 +35,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING_ARRAY, "figure name", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_figures_availability();

@@ -34,6 +34,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("original", CDOD::DATATYPE_STRING, "original selection name"));
+		doc.set_option_decription(CDOD("new", CDOD::DATATYPE_STRING, "new selection name"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_selections_availability();
