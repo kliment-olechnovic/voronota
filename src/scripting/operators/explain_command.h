@@ -36,6 +36,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of command"));
+	}
+
 	Result run(void*&) const
 	{
 		if(collection_of_command_documentations_ptr_->map_of_documentations().count(name)==0)

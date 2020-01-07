@@ -34,6 +34,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+	}
+
 	Result run(ScriptPartitioner& script_partitioner) const
 	{
 		if(file.empty())

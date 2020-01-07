@@ -47,6 +47,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("no-graphics", CDOD::DATATYPE_BOOL, "flag to exclude graphics"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

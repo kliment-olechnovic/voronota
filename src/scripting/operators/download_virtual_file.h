@@ -34,6 +34,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of virtual file"));
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to real file"));
+	}
+
 	Result run(void*&) const
 	{
 		VirtualFileStorage::assert_file_exists(name);

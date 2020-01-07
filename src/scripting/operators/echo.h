@@ -38,6 +38,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("strings", CDOD::DATATYPE_STRING_ARRAY, "strings to output", ""));
+	}
+
 	Result run(void*&) const
 	{
 		Result result;

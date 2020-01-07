@@ -42,7 +42,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		Utilities::document_read_generic_selecting_query(doc);
-		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag delete all adjuncts"));
+		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to delete all adjuncts"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
 	}
 

@@ -36,7 +36,7 @@ public:
 	DescribeExposure& init(CommandInput& input)
 	{
 		adjunct_atom_exposure_value=input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
-		probe_min=input.get_value_or_default<double>("probe-min", 0);
+		probe_min=input.get_value_or_default<double>("probe-min", 0.0);
 		probe_max=input.get_value_or_default<double>("probe-max", 30.0);
 		expansion=input.get_value_or_default<double>("expansion", 1.0);
 		smoothing_iterations=input.get_value_or_default<unsigned int>("smoothing-iterations", 2);
@@ -44,6 +44,18 @@ public:
 		weight_power=input.get_value_or_default<double>("weight-power", 3.0);
 		use_sas_areas=input.get_flag("use-sas-areas");
 		return (*this);
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("adj-atom-exposure-value", CDOD::DATATYPE_STRING, "adjunct name", "exposure_value"));
+		doc.set_option_decription(CDOD("probe-min", CDOD::DATATYPE_FLOAT, "min probe radius", 0.0));
+		doc.set_option_decription(CDOD("probe-max", CDOD::DATATYPE_FLOAT, "max probe radius", 30.0));
+		doc.set_option_decription(CDOD("expansion", CDOD::DATATYPE_FLOAT, "tangent sphere radius expansion", 1.0));
+		doc.set_option_decription(CDOD("smoothing-iterations", CDOD::DATATYPE_INT, "number of smoothing iterations", 2));
+		doc.set_option_decription(CDOD("smoothing-depth", CDOD::DATATYPE_INT, "smoothing depth", 1));
+		doc.set_option_decription(CDOD("weight-power", CDOD::DATATYPE_FLOAT, "weight power", 3.0));
+		doc.set_option_decription(CDOD("use-sas-areas", CDOD::DATATYPE_BOOL, "flag to use SAS areas"));
 	}
 
 	Result run(DataManager& data_manager) const

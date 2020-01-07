@@ -35,6 +35,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("text", CDOD::DATATYPE_STRING, "any text"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.set_text_description(text);

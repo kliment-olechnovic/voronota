@@ -39,6 +39,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

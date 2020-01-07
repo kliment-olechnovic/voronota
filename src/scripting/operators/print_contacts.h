@@ -48,6 +48,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("inter-residue", CDOD::DATATYPE_BOOL, "flag to print inter-residue contacts"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

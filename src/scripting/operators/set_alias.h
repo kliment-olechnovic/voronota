@@ -41,6 +41,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "alias name"));
+		doc.set_option_decription(CDOD("script-template", CDOD::DATATYPE_STRING, "script template"));
+	}
+
 	Result run(ScriptPartitioner& script_partitioner) const
 	{
 		if(name.empty())
