@@ -9,15 +9,19 @@ namespace scripting
 namespace operators
 {
 
-class PrintVirtualFile
+class PrintVirtualFile : public OperatorBase<PrintVirtualFile>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string name;
 		bool line_by_line;
 		std::string data;
 		std::vector<std::string> lines;
+
+		Result() : line_by_line(false)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

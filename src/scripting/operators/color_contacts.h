@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ColorContacts
+class ColorContacts : public OperatorBase<ColorContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 

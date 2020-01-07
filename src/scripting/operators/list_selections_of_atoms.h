@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ListSelectionsOfAtoms
+class ListSelectionsOfAtoms : public OperatorBase<ListSelectionsOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::map<std::string, SummaryOfAtoms> selections_summaries;
 

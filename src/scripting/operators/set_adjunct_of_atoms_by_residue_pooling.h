@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SetAdjunctOfAtomsByResiduePooling
+class SetAdjunctOfAtomsByResiduePooling : public OperatorBase<SetAdjunctOfAtomsByResiduePooling>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms used_source_atoms_summary;
 		SummaryOfAtoms destination_atoms_summary;

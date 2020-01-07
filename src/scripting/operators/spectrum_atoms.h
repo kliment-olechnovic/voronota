@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SpectrumAtoms
+class SpectrumAtoms : public OperatorBase<SpectrumAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 		double min_value;
@@ -20,6 +20,10 @@ public:
 		int number_of_values;
 		double mean_of_values;
 		double sd_of_values;
+
+		Result() : min_value(0.0), max_value(0.0), number_of_values(0), mean_of_values(0.0), sd_of_values(0.0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

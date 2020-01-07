@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class AddFigure
+class AddFigure : public OperatorBase<AddFigure>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		VariantObject added_figure;
 

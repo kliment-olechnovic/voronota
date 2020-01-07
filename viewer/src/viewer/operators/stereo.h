@@ -9,13 +9,17 @@ namespace viewer
 namespace operators
 {
 
-class Stereo
+class Stereo : public scripting::operators::OperatorBase<Stereo>
 {
 public:
-	struct Result
+	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		float angle;
 		float offset;
+
+		Result() : angle(0.0), offset(0.0)
+		{
+		}
 
 		const Result& write(scripting::HeterogeneousStorage& heterostorage) const
 		{

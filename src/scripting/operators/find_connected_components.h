@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class FindConnectedComponents
+class FindConnectedComponents : public OperatorBase<FindConnectedComponents>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 		VariantObject components_summary;

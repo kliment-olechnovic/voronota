@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class DeleteVirtualFiles
+class DeleteVirtualFiles : public OperatorBase<DeleteVirtualFiles>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

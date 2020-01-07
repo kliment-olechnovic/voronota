@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class VoroMQAMembranePlace
+class VoroMQAMembranePlace : public OperatorBase<VoroMQAMembranePlace>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		MembranePlacementForDataManagerUsingVoroMQA::OrientationScore best_score;
 

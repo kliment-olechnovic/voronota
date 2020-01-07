@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ExportContactsAsPymolCGO
+class ExportContactsAsPymolCGO : public OperatorBase<ExportContactsAsPymolCGO>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;

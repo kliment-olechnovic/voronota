@@ -11,10 +11,10 @@ namespace scripting
 namespace operators
 {
 
-class SetAlias
+class SetAlias : public OperatorBase<SetAlias>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string alias;
 		std::string script;

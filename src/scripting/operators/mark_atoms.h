@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class MarkAtoms
+class MarkAtoms : public OperatorBase<MarkAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 

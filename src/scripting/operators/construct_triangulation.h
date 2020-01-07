@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ConstructTriangulation
+class ConstructTriangulation : public OperatorBase<ConstructTriangulation>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfTriangulation triangulation_summary;
 

@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class UploadVirtualFile
+class UploadVirtualFile : public OperatorBase<UploadVirtualFile>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

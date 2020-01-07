@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class Echo
+class Echo : public OperatorBase<Echo>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<std::string> strings;
 

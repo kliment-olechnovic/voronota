@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class DeleteSelectionsOfContacts
+class DeleteSelectionsOfContacts : public OperatorBase<DeleteSelectionsOfContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<std::string> deleted_selections;
 

@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class CADScore
+class CADScore : public OperatorBase<CADScore>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		common::ConstructionOfCADScore::CADDescriptor atom_level_result;
 		common::ConstructionOfCADScore::CADDescriptor residue_level_result;

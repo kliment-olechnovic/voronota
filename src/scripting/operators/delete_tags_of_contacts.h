@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class DeleteTagsOfContacts
+class DeleteTagsOfContacts : public OperatorBase<DeleteTagsOfContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 

@@ -9,11 +9,10 @@ namespace viewer
 namespace operators
 {
 
-template<int grid_variant_value>
-class GridTemplate
+class Grid : public scripting::operators::OperatorBase<Grid>
 {
 public:
-	struct Result
+	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		const Result& write(scripting::HeterogeneousStorage&) const
 		{
@@ -21,11 +20,11 @@ public:
 		}
 	};
 
-	GridTemplate(uv::ViewerApplication& app, int& grid_variant) : app_ptr_(&app), grid_variant_ptr_(&grid_variant)
+	Grid(const int grid_variant_value, uv::ViewerApplication& app, int& grid_variant) : grid_variant_value_(grid_variant_value), app_ptr_(&app), grid_variant_ptr_(&grid_variant)
 	{
 	}
 
-	GridTemplate& init(scripting::CommandInput& input)
+	Grid& init(scripting::CommandInput& input)
 	{
 		return (*this);
 	}
@@ -33,18 +32,16 @@ public:
 	Result run(void*&) const
 	{
 		app_ptr_->set_rendering_mode_to_grid();
-		(*grid_variant_ptr_)=grid_variant_value;
+		(*grid_variant_ptr_)=grid_variant_value_;
 		Result result;
 		return result;
 	}
 
 private:
+	int grid_variant_value_;
 	uv::ViewerApplication* app_ptr_;
 	int* grid_variant_ptr_;
 };
-
-typedef GridTemplate<0> GridByObject;
-typedef GridTemplate<1> GridByConcept;
 
 }
 

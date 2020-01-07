@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class RenameSelectionOfContacts
+class RenameSelectionOfContacts : public OperatorBase<RenameSelectionOfContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

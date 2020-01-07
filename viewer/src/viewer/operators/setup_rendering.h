@@ -10,10 +10,10 @@ namespace viewer
 namespace operators
 {
 
-class SetupRendering
+class SetupRendering : public scripting::operators::OperatorBase<SetupRendering>
 {
 public:
-	struct Result
+	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		const Result& write(scripting::HeterogeneousStorage&) const
 		{

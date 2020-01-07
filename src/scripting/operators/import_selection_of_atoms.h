@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ImportSelectionOfAtoms
+class ImportSelectionOfAtoms : public OperatorBase<ImportSelectionOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 		std::string selection_name;

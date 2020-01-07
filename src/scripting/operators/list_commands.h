@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class ListCommands
+class ListCommands : public OperatorBase<ListCommands>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		VariantObject info;
 

@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class ExportAtoms
+class ExportAtoms : public OperatorBase<ExportAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;

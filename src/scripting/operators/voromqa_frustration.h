@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class VoroMQAFrustration
+class VoroMQAFrustration : public OperatorBase<VoroMQAFrustration>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

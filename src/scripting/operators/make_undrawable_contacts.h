@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class MakeUndrawableContacts
+class MakeUndrawableContacts : public OperatorBase<MakeUndrawableContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 

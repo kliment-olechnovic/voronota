@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class SetupLoading
+class SetupLoading : public OperatorBase<SetupLoading>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

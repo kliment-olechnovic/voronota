@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SetTextDescription
+class SetTextDescription : public OperatorBase<SetTextDescription>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string text_description;
 

@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class ResetTime
+class ResetTime : public OperatorBase<ResetTime>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

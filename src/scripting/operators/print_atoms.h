@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class PrintAtoms
+class PrintAtoms : public OperatorBase<PrintAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<VariantObject> atoms;
 		SummaryOfAtoms atoms_summary;

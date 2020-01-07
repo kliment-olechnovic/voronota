@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SetTagOfAtoms
+class SetTagOfAtoms : public OperatorBase<SetTagOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 

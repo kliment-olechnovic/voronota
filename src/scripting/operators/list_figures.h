@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ListFigures
+class ListFigures : public OperatorBase<ListFigures>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<VariantObject> figures;
 

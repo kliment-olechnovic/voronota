@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class VoroMQAGlobal
+class VoroMQAGlobal : public OperatorBase<VoroMQAGlobal>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		VariantObject voromqa_result;
 

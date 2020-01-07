@@ -9,16 +9,20 @@ namespace scripting
 namespace operators
 {
 
-class SelectAtomsByTriangulationQuery
+class SelectAtomsByTriangulationQuery : public OperatorBase<SelectAtomsByTriangulationQuery>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms initial_atoms_summary;
 		std::size_t number_of_relevant_voronoi_vertices;
 		double total_relevant_tetrahedron_volume;
 		SummaryOfAtoms selected_atoms_summary;
 		std::string selection_name;
+
+		Result() : number_of_relevant_voronoi_vertices(0), total_relevant_tetrahedron_volume(0.0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

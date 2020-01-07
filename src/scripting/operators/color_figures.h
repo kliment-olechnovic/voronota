@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ColorFigures
+class ColorFigures : public OperatorBase<ColorFigures>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

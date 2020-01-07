@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class CalculateBurialDepth
+class CalculateBurialDepth : public OperatorBase<CalculateBurialDepth>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{

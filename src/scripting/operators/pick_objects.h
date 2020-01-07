@@ -9,11 +9,10 @@ namespace scripting
 namespace operators
 {
 
-template<bool positive, bool add>
-class PickObjectsTemplate
+class PickObjects : public OperatorBase<PickObjects>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		const Result& write(HeterogeneousStorage&) const
 		{
@@ -23,11 +22,15 @@ public:
 
 	CongregationOfDataManagers::ObjectQuery query;
 
-	PickObjectsTemplate()
+	PickObjects()
 	{
 	}
 
-	PickObjectsTemplate& init(CommandInput& input)
+	virtual ~PickObjects()
+	{
+	}
+
+	PickObjects& init(CommandInput& input)
 	{
 		query=Utilities::read_congregation_of_data_managers_object_query(input);
 		return (*this);
@@ -44,25 +47,50 @@ public:
 			throw std::runtime_error(std::string("No objects selected."));
 		}
 
-		if(positive && !add)
+		if(positive() && !add())
 		{
 			congregation_of_data_managers.set_all_objects_picked(false);
 		}
 
 		for(std::size_t i=0;i<objects.size();i++)
 		{
-			congregation_of_data_managers.set_object_picked(objects[i], positive);
+			congregation_of_data_managers.set_object_picked(objects[i], positive());
 		}
 
 		Result result;
 
 		return result;
 	}
+
+protected:
+	virtual bool positive() const
+	{
+		return true;
+	}
+
+	virtual bool add() const
+	{
+		return false;
+	}
 };
 
-typedef PickObjectsTemplate<true, false> PickObjects;
-typedef PickObjectsTemplate<true, true> PickMoreObjects;
-typedef PickObjectsTemplate<false, false> UnpickObjects;
+class PickMoreObjects : public PickObjects
+{
+protected:
+	bool add() const
+	{
+		return true;
+	}
+};
+
+class UnpickObjects : public PickObjects
+{
+protected:
+	bool positive() const
+	{
+		return false;
+	}
+};
 
 }
 

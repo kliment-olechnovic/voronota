@@ -9,14 +9,18 @@ namespace scripting
 namespace operators
 {
 
-class PrintContacts
+class PrintContacts : public OperatorBase<PrintContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<VariantObject> contacts;
 		std::size_t number_of_inter_residue_contacts;
 		SummaryOfContacts contacts_summary;
+
+		Result() : number_of_inter_residue_contacts(0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ExportAdjunctsOfAtoms
+class ExportAdjunctsOfAtoms : public OperatorBase<ExportAdjunctsOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 

@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class Import
+class Import : public OperatorBase<Import>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 		SummaryOfContacts contacts_summary;

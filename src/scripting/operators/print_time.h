@@ -10,12 +10,16 @@ namespace scripting
 namespace operators
 {
 
-class PrintTime
+class PrintTime : public OperatorBase<PrintTime>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		double elapsed_miliseconds;
+
+		Result() : elapsed_miliseconds(0.0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

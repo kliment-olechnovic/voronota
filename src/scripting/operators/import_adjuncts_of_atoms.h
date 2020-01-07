@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ImportAdjunctsOfAtoms
+class ImportAdjunctsOfAtoms : public OperatorBase<ImportAdjunctsOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<std::string> adjunct_names;
 

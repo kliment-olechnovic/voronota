@@ -9,10 +9,10 @@ namespace viewer
 namespace operators
 {
 
-class Screenshot
+class Screenshot : public scripting::operators::OperatorBase<Screenshot>
 {
 public:
-	struct Result
+	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		const Result& write(scripting::HeterogeneousStorage&) const
 		{

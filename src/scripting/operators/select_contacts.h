@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SelectContacts
+class SelectContacts : public OperatorBase<SelectContacts>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 		std::string selection_name;

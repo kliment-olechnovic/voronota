@@ -9,14 +9,18 @@ namespace scripting
 namespace operators
 {
 
-class ExportTriangulationVoxels
+class ExportTriangulationVoxels : public OperatorBase<ExportTriangulationVoxels>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;
 		int number_of_voxels;
+
+		Result() : number_of_voxels(0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

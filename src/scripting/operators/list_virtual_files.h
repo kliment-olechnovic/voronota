@@ -9,14 +9,18 @@ namespace scripting
 namespace operators
 {
 
-class ListVirtualFiles
+class ListVirtualFiles : public OperatorBase<ListVirtualFiles>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::map<std::string, std::size_t> map_of_names_to_bytes;
 		std::size_t total_count;
 		std::size_t total_bytes;
+
+		Result() : total_count(0), total_bytes(0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

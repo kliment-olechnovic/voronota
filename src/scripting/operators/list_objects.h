@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ListObjects
+class ListObjects : public OperatorBase<ListObjects>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<VariantObject> objects;
 

@@ -9,10 +9,10 @@ namespace viewer
 namespace operators
 {
 
-class Mono
+class Mono : public scripting::operators::OperatorBase<Mono>
 {
 public:
-	struct Result
+	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		const Result& write(scripting::HeterogeneousStorage&) const
 		{

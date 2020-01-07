@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ZoomByObjects
+class ZoomByObjects : public OperatorBase<ZoomByObjects>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms summary_of_atoms;
 

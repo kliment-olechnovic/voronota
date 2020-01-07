@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class CalculateBetweenness
+class CalculateBetweenness : public OperatorBase<CalculateBetweenness>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 

@@ -11,10 +11,10 @@ namespace scripting
 namespace operators
 {
 
-class UnsetAliases
+class UnsetAliases : public OperatorBase<UnsetAliases>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::vector<std::string> unset_aliases;
 

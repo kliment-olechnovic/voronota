@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class ExportTriangulation
+class ExportTriangulation : public OperatorBase<ExportTriangulation>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;
@@ -20,6 +20,10 @@ public:
 		SummaryOfAtoms atoms_summary;
 		std::size_t number_of_relevant_voronoi_vertices;
 		double total_relevant_tetrahedron_volume;
+
+		Result() : number_of_relevant_voronoi_vertices(0), total_relevant_tetrahedron_volume(0.0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{

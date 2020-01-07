@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class CopyObject
+class CopyObject : public OperatorBase<CopyObject>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string object_name;
 

@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class VoroMQALocal
+class VoroMQALocal : public OperatorBase<VoroMQALocal>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		VariantObject atoms_result;
 		VariantObject contacts_result;

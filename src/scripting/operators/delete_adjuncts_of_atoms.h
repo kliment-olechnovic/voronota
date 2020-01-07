@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class DeleteAdjunctsOfAtoms
+class DeleteAdjunctsOfAtoms : public OperatorBase<DeleteAdjunctsOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
 

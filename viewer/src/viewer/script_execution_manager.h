@@ -27,8 +27,8 @@ public:
 		set_command_for_extra_actions("background", operators::Background(viewer_application_));
 		set_command_for_extra_actions("mono", operators::Mono(viewer_application_));
 		set_command_for_extra_actions("stereo", operators::Stereo(viewer_application_));
-		set_command_for_extra_actions("grid-by-object", operators::GridByObject(viewer_application_, grid_variant_));
-		set_command_for_extra_actions("grid-by-concept", operators::GridByConcept(viewer_application_, grid_variant_));
+		set_command_for_extra_actions("grid-by-object", operators::Grid(0, viewer_application_, grid_variant_));
+		set_command_for_extra_actions("grid-by-concept", operators::Grid(1, viewer_application_, grid_variant_));
 		set_command_for_extra_actions("ortho", operators::Ortho(viewer_application_));
 		set_command_for_extra_actions("perspective", operators::Perspective(viewer_application_));
 		set_command_for_extra_actions("fog", operators::Fog(viewer_application_));

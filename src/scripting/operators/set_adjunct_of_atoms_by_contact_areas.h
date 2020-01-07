@@ -9,10 +9,10 @@ namespace scripting
 namespace operators
 {
 
-class SetAdjunctOfAtomsByContactAreas
+class SetAdjunctOfAtomsByContactAreas : public OperatorBase<SetAdjunctOfAtomsByContactAreas>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
 		SummaryOfAtoms atoms_summary;

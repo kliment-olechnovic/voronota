@@ -10,10 +10,10 @@ namespace scripting
 namespace operators
 {
 
-class ExportCartoonAsPymolCGO
+class ExportCartoonAsPymolCGO : public OperatorBase<ExportCartoonAsPymolCGO>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;

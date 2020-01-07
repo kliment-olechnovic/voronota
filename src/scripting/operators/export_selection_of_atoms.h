@@ -9,15 +9,19 @@ namespace scripting
 namespace operators
 {
 
-class ExportSelectionOfAtoms
+class ExportSelectionOfAtoms : public OperatorBase<ExportSelectionOfAtoms>
 {
 public:
-	struct Result
+	struct Result : public OperatorResultBase<Result>
 	{
 		std::string file;
 		std::string dump;
 		SummaryOfAtoms atoms_summary;
 		std::size_t number_of_descriptors_written;
+
+		Result() : number_of_descriptors_written(0)
+		{
+		}
 
 		const Result& write(HeterogeneousStorage& heterostorage) const
 		{
