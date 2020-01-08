@@ -39,6 +39,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("tag-for-alpha", CDOD::DATATYPE_STRING, "tag name for alpha helices", "ss=H"));
+		doc.set_option_decription(CDOD("tag-for-beta", CDOD::DATATYPE_STRING, "tag name for beta sheets", "ss=S"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

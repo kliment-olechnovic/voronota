@@ -40,6 +40,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("reset", CDOD::DATATYPE_BOOL, "flag to reset time afterwards"));
+	}
+
 	Result run(void*&) const
 	{
 		Result result;

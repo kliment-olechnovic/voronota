@@ -36,6 +36,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("compact", CDOD::DATATYPE_BOOL, "flag enable compact output mode"));
+	}
+
 	Result run(void*&) const
 	{
 		const std::vector<std::string> names=collection_of_command_documentations_ptr_->get_all_names();

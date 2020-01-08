@@ -43,6 +43,15 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("translate-before", CDOD::DATATYPE_FLOAT_ARRAY, "translation vector to apply before rotation", ""));
+		doc.set_option_decription(CDOD("rotate-by-matrix", CDOD::DATATYPE_FLOAT_ARRAY, "rotation matrix", ""));
+		doc.set_option_decription(CDOD("rotate-by-axis-and-angle", CDOD::DATATYPE_FLOAT_ARRAY, "vector with rotation axis and angle", ""));
+		doc.set_option_decription(CDOD("translate", CDOD::DATATYPE_FLOAT_ARRAY, "translation vector to apply after rotation", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

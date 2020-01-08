@@ -46,6 +46,10 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation&) const
+	{
+	}
+
 	Result run(void*&) const
 	{
 		Result result;

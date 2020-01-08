@@ -40,6 +40,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("names", CDOD::DATATYPE_STRING_ARRAY, "names of aliases", ""));
+	}
+
 	Result run(ScriptPartitioner& script_partitioner) const
 	{
 		if(names.empty())

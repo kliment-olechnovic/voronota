@@ -42,6 +42,17 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		common::ConstructionOfContacts::ParametersToDrawContacts params;
+		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
+		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
+		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
+		doc.set_option_decription(CDOD("simplify", CDOD::DATATYPE_BOOL, "flag to simplify graphics"));
+		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
+		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

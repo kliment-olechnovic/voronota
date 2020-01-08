@@ -812,7 +812,7 @@
           {
             "name":"rep",
             "required":false,
-            "type":"string",
+            "type":"strings",
             "description":"representation names",
             "default":""},
           {

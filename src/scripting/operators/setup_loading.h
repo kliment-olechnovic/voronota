@@ -42,6 +42,16 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
+		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
+		doc.set_option_decription(CDOD("as-assembly", CDOD::DATATYPE_BOOL, "flag import as a biological assembly"));
+		doc.set_option_decription(CDOD("radii-file", CDOD::DATATYPE_STRING, "path to radii file", ""));
+		doc.set_option_decription(CDOD("default-radius", CDOD::DATATYPE_FLOAT, "default radius value", LoadingOfData::Configuration::recommended_default_radius()));
+		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_BOOL, "flag to use default radius for all atoms"));
+	}
+
 	Result run(void*&) const
 	{
 		LoadingOfData::Configuration config_filled=config;

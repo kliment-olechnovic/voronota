@@ -24,7 +24,7 @@ public:
 		}
 	};
 
-	ScoringOfDataManagerUsingVoroMQA::Parameters params;
+	ScoringOfDataManagerUsingVoroMQA::Parameters parameters_to_score_using_voromqa;
 
 	VoroMQAGlobal()
 	{
@@ -32,30 +32,42 @@ public:
 
 	VoroMQAGlobal& init(CommandInput& input)
 	{
-		params=ScoringOfDataManagerUsingVoroMQA::Parameters();
-		params.adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
-		params.adjunct_inter_atom_energy_scores_normalized=input.get_value_or_default<std::string>("adj-contact-energy-normalized", "");
-		params.adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
-		params.adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
-		params.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
-		params.adjunct_residue_quality_scores_smoothed=input.get_value_or_default<std::string>("adj-residue-quality", "voromqa_score_r");
-		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", params.smoothing_window);
+		parameters_to_score_using_voromqa=ScoringOfDataManagerUsingVoroMQA::Parameters();
+		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
+		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_normalized=input.get_value_or_default<std::string>("adj-contact-energy-normalized", "");
+		parameters_to_score_using_voromqa.adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
+		parameters_to_score_using_voromqa.adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
+		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
+		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_smoothed=input.get_value_or_default<std::string>("adj-residue-quality", "voromqa_score_r");
+		parameters_to_score_using_voromqa.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", parameters_to_score_using_voromqa.smoothing_window);
 		return (*this);
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		ScoringOfDataManagerUsingVoroMQA::Parameters params;
+		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of output adjunct for raw energy values", "voromqa_energy"));
+		doc.set_option_decription(CDOD("adj-contact-energy-normalized", CDOD::DATATYPE_STRING, "name of output adjunct for normalized energy values", ""));
+		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of output adjunct for atom values", "voromqa_depth"));
+		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of output adjunct for atom quality scores", "voromqa_score_a"));
+		doc.set_option_decription(CDOD("adj-residue-quality-raw", CDOD::DATATYPE_STRING, "name of output adjunct for raw residue quality scores", ""));
+		doc.set_option_decription(CDOD("adj-residue-quality", CDOD::DATATYPE_STRING, "name of output adjunct for smoothed residue quality scores", "voromqa_score_r"));
+		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", params.smoothing_window));
 	}
 
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();
 
-		assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_raw, true);
-		assert_adjunct_name_input(params.adjunct_inter_atom_energy_scores_normalized, true);
-		assert_adjunct_name_input(params.adjunct_atom_depth_weights, true);
-		assert_adjunct_name_input(params.adjunct_atom_quality_scores, true);
-		assert_adjunct_name_input(params.adjunct_residue_quality_scores_raw, true);
-		assert_adjunct_name_input(params.adjunct_residue_quality_scores_smoothed, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_normalized, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_atom_depth_weights, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_atom_quality_scores, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_residue_quality_scores_smoothed, true);
 
 		ScoringOfDataManagerUsingVoroMQA::Result voromqa_result;
-		ScoringOfDataManagerUsingVoroMQA::construct_result(params, data_manager, voromqa_result);
+		ScoringOfDataManagerUsingVoroMQA::construct_result(parameters_to_score_using_voromqa, data_manager, voromqa_result);
 
 		Result result;
 		result.voromqa_result.value("quality_score")=voromqa_result.global_quality_score;

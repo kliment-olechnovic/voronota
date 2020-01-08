@@ -39,6 +39,11 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_congregation_of_data_managers_object_query(doc);
+	}
+
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
 		congregation_of_data_managers.assert_objects_availability();

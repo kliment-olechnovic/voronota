@@ -37,9 +37,16 @@ public:
 	SelectAtoms& init(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
-		name=(input.is_any_unnamed_value_unused() ? input.get_value_or_first_unused_unnamed_value("name") : input.get_value_or_default<std::string>("name", ""));
+		name=input.get_value_or_first_unused_unnamed_value_or_default("name", "");
 		mark=input.get_flag("mark");
 		return (*this);
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "atom selection name", ""));
+		doc.set_option_decription(CDOD("mark", CDOD::DATATYPE_BOOL, "flag to mark selected atoms"));
 	}
 
 	Result run(DataManager& data_manager) const

@@ -43,6 +43,14 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query("atoms-core-", "[]", doc);
+		Utilities::document_read_generic_selecting_query("atoms-all-", "[]", doc);
+		Utilities::document_read_generic_selecting_query("contacts-", "[]", doc);
+		doc.set_option_decription(CDOD("adj-component-number", CDOD::DATATYPE_STRING, "atom adjunct name for result values", "component_number"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

@@ -70,6 +70,19 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
+		doc.set_option_decription(CDOD("adjunct", CDOD::DATATYPE_STRING, "adjunct name", ""));
+		doc.set_option_decription(CDOD("by", CDOD::DATATYPE_STRING, "spectrum source ID", "residue-number"));
+		doc.set_option_decription(CDOD("scheme", CDOD::DATATYPE_STRING, "coloring scheme", "reverse-rainbow"));
+		doc.set_option_decription(CDOD("as-z-scores", CDOD::DATATYPE_BOOL, "flag to convert values to z-scores"));
+		doc.set_option_decription(CDOD("min-val", CDOD::DATATYPE_FLOAT, "min value", 0.0));
+		doc.set_option_decription(CDOD("max-val", CDOD::DATATYPE_FLOAT, "max value", 1.0));
+		doc.set_option_decription(CDOD("only-summarize", CDOD::DATATYPE_BOOL, "flag to only summarize values"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

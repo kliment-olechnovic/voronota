@@ -29,6 +29,10 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation&) const
+	{
+	}
+
 	Result run(void*&) const
 	{
 		(*exit_status_ptr_)=true;

@@ -52,6 +52,15 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("adj-contact-frustration-value", CDOD::DATATYPE_STRING, "name of input adjunct with frustration energy mean values", "frustration_energy_mean"));
+		doc.set_option_decription(CDOD("adj-atom-exposure-value", CDOD::DATATYPE_STRING, "name of input adjunct with exposure values", "exposure_value"));
+		doc.set_option_decription(CDOD("adj-atom-membrane-place-value", CDOD::DATATYPE_STRING, "name of output adjunct for membrane place values", "membrane_place_value"));
+		doc.set_option_decription(CDOD("membrane-width", CDOD::DATATYPE_FLOAT, "membrane width"));
+		doc.set_option_decription(CDOD("membrane-width-extended", CDOD::DATATYPE_FLOAT, "membrane width extended", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();

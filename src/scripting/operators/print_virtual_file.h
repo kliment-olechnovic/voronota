@@ -56,6 +56,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of virtual file"));
+		doc.set_option_decription(CDOD("line-by-line", CDOD::DATATYPE_BOOL, "flag to output file lines separately"));
+	}
+
 	Result run(void*&) const
 	{
 		Result result;

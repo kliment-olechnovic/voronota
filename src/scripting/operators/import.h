@@ -55,6 +55,16 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("format", CDOD::DATATYPE_STRING, "input file format", ""));
+		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
+		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
+		doc.set_option_decription(CDOD("as-assembly", CDOD::DATATYPE_BOOL, "flag import as a biological assembly"));
+		doc.set_option_decription(CDOD("title", CDOD::DATATYPE_STRING, "new object title", ""));
+	}
+
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
 		LoadingOfData::Result loading_result;

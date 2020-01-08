@@ -32,6 +32,10 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation&) const
+	{
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		Result result;

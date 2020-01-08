@@ -50,6 +50,15 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("atoms", CDOD::DATATYPE_STRING, "selection expression for atoms", "[]"));
+		doc.set_option_decription(CDOD("contacts", CDOD::DATATYPE_STRING, "selection expression for contacts", ""));
+		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of input adjunct with contact energy values", "voromqa_energy"));
+		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of input adjunct with atom values", "voromqa_depth"));
+		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of input adjunct with atom quality scores", "voromqa_score_a"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

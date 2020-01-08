@@ -58,6 +58,13 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query(doc);
+		Utilities::document_read_filtering_of_triangulation_query(doc);
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "atom selection name", ""));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_triangulation_info_availability();

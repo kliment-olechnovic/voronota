@@ -44,7 +44,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		Utilities::document_read_generic_selecting_query(doc);
-		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING, "representation names", ""));
+		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 	}
 
 	Result run(DataManager& data_manager) const

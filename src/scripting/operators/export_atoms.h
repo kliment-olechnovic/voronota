@@ -52,6 +52,15 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		Utilities::document_read_generic_selecting_query(doc);
+		doc.set_option_decription(CDOD("as-pdb", CDOD::DATATYPE_BOOL, "flag to output in PDB format"));
+		doc.set_option_decription(CDOD("pdb-b-factor", CDOD::DATATYPE_STRING, "name of adjunct values to write as b-factors in PDB output", "tf"));
+		doc.set_option_decription(CDOD("pdb-ter", CDOD::DATATYPE_BOOL, "flag to include TER lines in PDB output"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();

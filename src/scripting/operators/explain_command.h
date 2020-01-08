@@ -38,7 +38,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of command"));
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of a command"));
 	}
 
 	Result run(void*&) const

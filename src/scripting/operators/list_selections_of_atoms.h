@@ -38,6 +38,10 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation&) const
+	{
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.sync_atoms_selections_with_display_states();

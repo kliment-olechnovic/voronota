@@ -40,6 +40,12 @@ public:
 		return (*this);
 	}
 
+	void document(CommandDocumentation& doc) const
+	{
+		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
+	}
+
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_atoms_availability();
