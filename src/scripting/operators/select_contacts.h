@@ -40,12 +40,11 @@ public:
 	{
 	}
 
-	SelectContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		name=input.get_value_or_first_unused_unnamed_value_or_default("name", "");
 		mark=input.get_flag("mark");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

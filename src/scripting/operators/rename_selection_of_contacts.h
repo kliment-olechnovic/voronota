@@ -27,11 +27,10 @@ public:
 	{
 	}
 
-	RenameSelectionOfContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name_original=input.get_value_or_first_unused_unnamed_value("original");
 		name_new=input.get_value_or_first_unused_unnamed_value("new");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

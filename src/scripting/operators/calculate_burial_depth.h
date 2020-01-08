@@ -27,11 +27,10 @@ public:
 	{
 	}
 
-	CalculateBurialDepth& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value<std::string>("name");
 		min_seq_sep=input.get_value_or_default<int>("min-seq-sep", 1);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

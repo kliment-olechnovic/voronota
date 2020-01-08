@@ -50,12 +50,11 @@ public:
 	{
 	}
 
-	SelectAtomsByTriangulationQuery& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
 		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
 		name=input.get_value_or_default<std::string>("name", "");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

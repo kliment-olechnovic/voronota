@@ -31,11 +31,10 @@ public:
 	{
 	}
 
-	ShowFigures& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

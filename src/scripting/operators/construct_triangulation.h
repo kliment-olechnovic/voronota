@@ -30,14 +30,13 @@ public:
 	{
 	}
 
-	ConstructTriangulation& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_to_construct_triangulation=common::ConstructionOfTriangulation::ParametersToConstructBundleOfTriangulationInformation();
 		parameters_to_construct_triangulation.artificial_boundary_shift=input.get_value_or_default<double>("boundary-shift", 5.0);
 		parameters_to_construct_triangulation.init_radius_for_BSH=input.get_value_or_default<double>("init-radius-for-BSH", parameters_to_construct_triangulation.init_radius_for_BSH);
 		parameters_to_construct_triangulation.exclude_hidden_balls=input.get_flag("exclude-hidden-balls");
 		force=input.get_flag("force");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

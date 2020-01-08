@@ -32,13 +32,12 @@ public:
 	{
 	}
 
-	AddFigure& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value_vector<std::string>("name");
 		vertices=input.get_value_vector<float>("vertices");
 		normals=input.get_value_vector<float>("normals");
 		indices=input.get_value_vector<unsigned int>("indices");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

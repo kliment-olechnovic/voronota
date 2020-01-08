@@ -30,7 +30,7 @@ public:
 	{
 	}
 
-	MakeDrawableContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_to_draw_contacts=common::ConstructionOfContacts::ParametersToDrawContacts();
 		parameters_to_draw_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
@@ -39,7 +39,6 @@ public:
 		parameters_to_draw_contacts.simplify=input.get_flag("simplify");
 		parameters_to_draw_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_draw_contacts.sih_depth);
 		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

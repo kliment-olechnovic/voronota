@@ -30,12 +30,11 @@ public:
 	{
 	}
 
-	SetTagOfAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		tag=input.get_value_or_first_unused_unnamed_value("tag");
 		assert_tag_input(tag, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

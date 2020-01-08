@@ -27,11 +27,10 @@ public:
 	{
 	}
 
-	ResizeWindow& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		width=input.get_value_or_default<int>("width", app_ptr_->window_width());
 		height=input.get_value_or_default<int>("height", app_ptr_->window_height());
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

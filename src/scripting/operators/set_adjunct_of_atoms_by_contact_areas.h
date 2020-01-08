@@ -32,12 +32,11 @@ public:
 	{
 	}
 
-	SetAdjunctOfAtomsByContactAreas& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
 		name=input.get_value<std::string>("name");
 		assert_adjunct_name_input(name, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

@@ -29,10 +29,9 @@ public:
 	{
 	}
 
-	SetTextDescription& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		text=input.get_value_or_first_unused_unnamed_value("text");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

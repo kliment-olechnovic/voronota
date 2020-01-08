@@ -34,13 +34,12 @@ public:
 	{
 	}
 
-	SetAdjunctOfAtomsByContactAdjuncts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		source_name=input.get_value<std::string>("source-name");
 		destination_name=input.get_value<std::string>("destination-name");
 		pooling_mode=input.get_value<std::string>("pooling-mode");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

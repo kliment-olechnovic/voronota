@@ -28,10 +28,9 @@ public:
 	{
 	}
 
-	Source& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

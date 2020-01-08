@@ -30,7 +30,7 @@ public:
 	{
 	}
 
-	VoroMQAGlobal& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_to_score_using_voromqa=ScoringOfDataManagerUsingVoroMQA::Parameters();
 		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
@@ -40,7 +40,6 @@ public:
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_smoothed=input.get_value_or_default<std::string>("adj-residue-quality", "voromqa_score_r");
 		parameters_to_score_using_voromqa.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", parameters_to_score_using_voromqa.smoothing_window);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

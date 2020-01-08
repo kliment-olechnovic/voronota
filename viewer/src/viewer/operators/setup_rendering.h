@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	SetupRendering& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		rendering_parameters=DrawerForDataManager::RenderingParameters::default_rendering_parameters();
 		reset=input.get_flag("reset");
@@ -42,7 +42,6 @@ public:
 		rendering_parameters.trace_sphere_quality=input.get_value_or_default<unsigned int>("trace-sphere-quality", rendering_parameters.trace_sphere_quality);
 		rendering_parameters.trace_cylinder_quality=input.get_value_or_default<unsigned int>("trace-cylinder-quality", rendering_parameters.trace_cylinder_quality);
 		rendering_parameters.cartoon_style=input.get_value_or_default<int>("cartoon-style", rendering_parameters.cartoon_style);
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

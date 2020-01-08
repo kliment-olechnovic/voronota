@@ -31,12 +31,11 @@ public:
 	{
 	}
 
-	DeleteTagsOfContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		all=input.get_flag("all");
 		tags=input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

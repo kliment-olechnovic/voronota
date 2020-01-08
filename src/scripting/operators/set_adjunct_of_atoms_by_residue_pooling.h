@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	SetAdjunctOfAtomsByResiduePooling& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting_source_atoms=Utilities::read_generic_selecting_query("source-atoms-", "[]", input);
 		parameters_for_selecting_destination_atoms=Utilities::read_generic_selecting_query("destination-atoms-", "[]", input);
@@ -44,7 +44,6 @@ public:
 		pooling_mode=input.get_value<std::string>("pooling-mode");
 		assert_adjunct_name_input(source_name, false);
 		assert_adjunct_name_input(destination_name, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

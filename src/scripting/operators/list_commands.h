@@ -30,10 +30,9 @@ public:
 	{
 	}
 
-	ListCommands& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		compact=input.get_flag("compact");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

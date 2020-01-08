@@ -54,7 +54,7 @@ public:
 	{
 	}
 
-	SpectrumContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
@@ -67,7 +67,6 @@ public:
 		max_val_present=input.is_option("max-val");
 		max_val=input.get_value_or_default<double>("max-val", (as_z_scores ? 2.0 : 1.0));
 		only_summarize=input.get_flag("only-summarize");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

@@ -24,9 +24,8 @@ public:
 	{
 	}
 
-	Mono& init(scripting::CommandInput&)
+	void initialize(scripting::CommandInput&)
 	{
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation&) const

@@ -30,7 +30,7 @@ public:
 	{
 	}
 
-	SetupLoading& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		config=LoadingOfData::Configuration();
 		config.include_heteroatoms=input.get_flag("include-heteroatoms");
@@ -39,7 +39,6 @@ public:
 		radii_file=input.get_value_or_default<std::string>("radii-file", "");
 		default_radius=input.get_value_or_default<double>("default-radius", LoadingOfData::Configuration::recommended_default_radius());
 		only_default_radius=input.get_flag("same-radius-for-all");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

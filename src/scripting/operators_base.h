@@ -24,9 +24,15 @@ public:
 	{
 	}
 
+	Operator& init(CommandInput& input)
+	{
+		initialize(input);
+		return underlying();
+	}
+
 	Operator& init(const std::string& args)
 	{
-		return underlying().init(CommandInput(std::string("noname ")+args));
+		return init(CommandInput(std::string("noname ")+args));
 	}
 
 	CommandDocumentation documentation() const
@@ -34,6 +40,10 @@ public:
 		CommandDocumentation doc;
 		document(doc);
 		return doc;
+	}
+
+	virtual void initialize(CommandInput&)
+	{
 	}
 
 	virtual void document(CommandDocumentation&) const

@@ -26,10 +26,9 @@ public:
 	{
 	}
 
-	Fog& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		off=input.get_flag("off");
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

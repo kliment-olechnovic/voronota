@@ -33,14 +33,13 @@ public:
 	{
 	}
 
-	MoveAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		pre_translation_vector=input.get_value_vector_or_default<double>("translate-before", std::vector<double>());
 		rotation_matrix=input.get_value_vector_or_default<double>("rotate-by-matrix", std::vector<double>());
 		rotation_axis_and_angle=input.get_value_vector_or_default<double>("rotate-by-axis-and-angle", std::vector<double>());
 		post_translation_vector=input.get_value_vector_or_default<double>("translate", std::vector<double>());
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

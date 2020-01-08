@@ -30,11 +30,10 @@ public:
 	{
 	}
 
-	PrintFigures& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 		forced_ids=input.get_value_vector_or_default<std::size_t>("id", std::vector<std::size_t>());
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

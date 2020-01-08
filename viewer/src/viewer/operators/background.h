@@ -26,10 +26,9 @@ public:
 	{
 	}
 
-	Background& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		color=auxiliaries::ColorUtilities::color_from_name(input.get_value_or_first_unused_unnamed_value("col"));
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

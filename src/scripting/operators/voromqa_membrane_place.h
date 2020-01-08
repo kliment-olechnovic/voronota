@@ -42,14 +42,13 @@ public:
 	{
 	}
 
-	VoroMQAMembranePlace& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		adjunct_contact_frustration_value=input.get_value_or_default<std::string>("adj-contact-frustration-value", "frustration_energy_mean");
 		adjunct_atom_exposure_value=input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 		adjunct_atom_membrane_place_value=input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 		membrane_width=input.get_value<double>("membrane-width");
 		membrane_width_extended=input.get_value_or_default<double>("membrane-width-extended", membrane_width);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

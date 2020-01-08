@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	CalculateBetweenness& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
 		inter_residue=!input.get_flag("not-inter-residue");
@@ -43,7 +43,6 @@ public:
 		normalize=!input.get_flag("not-normalize");
 		adjunct_atoms=input.get_value_or_default<std::string>("adj-atoms", "betweenness");
 		adjunct_contacts=input.get_value_or_default<std::string>("adj-contacts", "betweenness");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

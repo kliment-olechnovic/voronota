@@ -33,14 +33,13 @@ public:
 	{
 	}
 
-	SetAdjunctOfAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		name=input.get_value<std::string>("name");
 		value_present=input.is_option("value");
 		value=input.get_value_or_default<double>("value", 0.0);
 		remove=input.get_flag("remove");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

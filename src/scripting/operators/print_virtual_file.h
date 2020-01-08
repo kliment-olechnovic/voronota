@@ -49,11 +49,10 @@ public:
 	{
 	}
 
-	PrintVirtualFile& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		filename=input.get_value_or_first_unused_unnamed_value("name");
 		line_by_line=input.get_flag("line-by-line");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

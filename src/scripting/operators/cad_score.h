@@ -50,7 +50,7 @@ public:
 	{
 	}
 
-	CADScore& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		target_name=input.get_value<std::string>("target");
 		model_name=input.get_value<std::string>("model");
@@ -68,7 +68,6 @@ public:
 		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		params.ignore_residue_names=input.get_flag("ignore-residue-names");
 		params.binarize=input.get_flag("binarize");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

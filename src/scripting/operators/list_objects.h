@@ -29,10 +29,9 @@ public:
 	{
 	}
 
-	ListObjects& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		query=Utilities::read_congregation_of_data_managers_object_query(input);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

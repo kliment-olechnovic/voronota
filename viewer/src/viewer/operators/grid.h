@@ -24,9 +24,8 @@ public:
 	{
 	}
 
-	Grid& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput&)
 	{
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation&) const

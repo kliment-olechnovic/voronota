@@ -36,11 +36,10 @@ public:
 	{
 	}
 
-	Stereo& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		angle=input.get_value_or_default<float>("angle", app_ptr_->stereo_angle());
 		offset=input.get_value_or_default<float>("offset", app_ptr_->stereo_offset());
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

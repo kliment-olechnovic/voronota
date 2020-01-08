@@ -34,10 +34,9 @@ public:
 	{
 	}
 
-	PrintTime& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		reset=input.get_flag("reset");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

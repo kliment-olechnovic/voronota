@@ -46,12 +46,11 @@ public:
 	{
 	}
 
-	PrintTriangulation& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
 		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
 		only_summary=input.get_flag("only-summary");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

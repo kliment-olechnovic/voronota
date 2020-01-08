@@ -36,7 +36,7 @@ public:
 	{
 	}
 
-	ExportAdjunctsOfAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
@@ -47,7 +47,6 @@ public:
 		no_resName=input.get_flag("no-resName");
 		all=input.get_flag("all");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

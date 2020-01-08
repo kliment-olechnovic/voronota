@@ -34,13 +34,12 @@ public:
 	{
 	}
 
-	FindConnectedComponents& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting_atoms_core=Utilities::read_generic_selecting_query("atoms-core-", "[]", input);
 		parameters_for_selecting_atoms_all=Utilities::read_generic_selecting_query("atoms-all-", parameters_for_selecting_atoms_core.expression_string, input);
 		parameters_for_selecting_contacts=Utilities::read_generic_selecting_query("contacts-", "[]", input);
 		adjunct_component_number=input.get_value_or_default<std::string>("adj-component-number", "component_number");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

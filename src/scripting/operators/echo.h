@@ -32,10 +32,9 @@ public:
 	{
 	}
 
-	Echo& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		strings=input.get_value_vector_or_all_unnamed_values("strings");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

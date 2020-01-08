@@ -40,7 +40,7 @@ public:
 	{
 	}
 
-	ExportContactsAsPymolCGO& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value_or_default<std::string>("name", "contacts");
 		wireframe=input.get_flag("wireframe");
@@ -48,7 +48,6 @@ public:
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

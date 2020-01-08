@@ -41,11 +41,10 @@ public:
 	{
 	}
 
-	PrintContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		inter_residue=input.get_flag("inter-residue");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

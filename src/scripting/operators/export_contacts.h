@@ -37,12 +37,11 @@ public:
 	{
 	}
 
-	ExportContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
 		no_graphics=input.get_flag("no-graphics");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

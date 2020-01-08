@@ -37,14 +37,13 @@ public:
 	{
 	}
 
-	ExportFiguresAsPymolCGO& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		figure_name=input.get_value_vector_or_default<std::string>("figure-name", std::vector<std::string>());
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		cgo_name=input.get_value_or_default<std::string>("cgo-name", "figures");
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

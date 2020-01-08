@@ -48,13 +48,12 @@ public:
 	{
 	}
 
-	ExportTriangulation& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
 		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

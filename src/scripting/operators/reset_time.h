@@ -25,9 +25,8 @@ public:
 	{
 	}
 
-	ResetTime& init(CommandInput&)
+	void initialize(CommandInput&)
 	{
-		return (*this);
 	}
 
 	void document(CommandDocumentation&) const

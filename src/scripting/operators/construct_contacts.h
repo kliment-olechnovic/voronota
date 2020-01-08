@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	ConstructContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_to_construct_contacts=common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation();
 		parameters_to_construct_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
@@ -46,7 +46,6 @@ public:
 		parameters_to_enhance_contacts.tag_peripherial=!input.get_flag("no-tag-peripherial");
 		parameters_to_enhance_contacts.adjunct_solvent_direction=input.get_flag("adjunct-solvent-direction");
 		force=input.get_flag("force");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

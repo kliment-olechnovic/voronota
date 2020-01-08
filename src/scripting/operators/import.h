@@ -40,7 +40,7 @@ public:
 	{
 	}
 
-	Import& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		params=LoadingOfData::Parameters();
 		params.file=input.get_value_or_first_unused_unnamed_value("file");
@@ -52,7 +52,6 @@ public:
 		params.include_hydrogens=input.get_flag("include-hydrogens");
 		params.multimodel_chains=input.get_flag("as-assembly");
 		title=(input.is_option("title") ? input.get_value<std::string>("title") : Utilities::get_basename_from_path(params.file));
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

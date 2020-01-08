@@ -33,7 +33,7 @@ public:
 	{
 	}
 
-	DescribeExposure& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		adjunct_atom_exposure_value=input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 		probe_min=input.get_value_or_default<double>("probe-min", 0.0);
@@ -43,7 +43,6 @@ public:
 		smoothing_depth=input.get_value_or_default<unsigned int>("smoothing-depth", 1);
 		weight_power=input.get_value_or_default<double>("weight-power", 3.0);
 		use_sas_areas=input.get_flag("use-sas-areas");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

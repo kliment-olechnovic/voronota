@@ -43,7 +43,7 @@ public:
 	{
 	}
 
-	ImportSelectionOfContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		name=input.get_value<std::string>("name");
@@ -51,7 +51,6 @@ public:
 		no_name=input.get_flag("no-name");
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

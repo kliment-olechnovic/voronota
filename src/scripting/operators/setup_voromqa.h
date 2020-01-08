@@ -28,11 +28,10 @@ public:
 	{
 	}
 
-	SetupVoroMQA& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		potential_file=input.get_value<std::string>("potential");
 		means_and_sds_file=input.get_value<std::string>("means-and-sds");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

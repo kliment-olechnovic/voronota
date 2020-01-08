@@ -30,10 +30,9 @@ public:
 	{
 	}
 
-	ExplainCommand& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value_or_first_unused_unnamed_value("name");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

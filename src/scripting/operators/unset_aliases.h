@@ -34,10 +34,9 @@ public:
 	{
 	}
 
-	UnsetAliases& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		names=input.get_value_vector_or_all_unnamed_values("names");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

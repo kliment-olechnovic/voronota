@@ -30,14 +30,13 @@ public:
 	{
 	}
 
-	VoroMQAFrustration& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		adjunct_contact_energy=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		adjunct_contact_frustration_energy_mean=input.get_value_or_default<std::string>("adj-contact-frustration-energy-mean", "frustration_energy_mean");
 		adjunct_atom_frustration_energy_mean=input.get_value_or_default<std::string>("adj-atom-frustration-energy-mean", "frustration_energy_mean");
 		smoothing_iterations=input.get_value_or_default<unsigned int>("smoothing-iterations", 1);
 		smoothing_depth=input.get_value_or_default<unsigned int>("smoothing-depth", 3);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

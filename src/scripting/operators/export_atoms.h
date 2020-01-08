@@ -41,7 +41,7 @@ public:
 	{
 	}
 
-	ExportAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
@@ -49,7 +49,6 @@ public:
 		as_pdb=input.get_flag("as-pdb");
 		pdb_b_factor_name=input.get_value_or_default<std::string>("pdb-b-factor", "tf");
 		pdb_ter=input.get_flag("pdb-ter");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

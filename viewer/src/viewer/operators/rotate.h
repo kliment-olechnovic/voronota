@@ -27,13 +27,12 @@ public:
 	{
 	}
 
-	Rotate& init(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input)
 	{
 		std::vector<double> default_axis(3, 0.0);
 		default_axis[1]=1.0;
 		angle_in_degrees=input.get_value_or_default<double>("angle", 10.0f);
 		axis=input.get_value_vector_or_default<double>("axis", default_axis);
-		return (*this);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const

@@ -39,7 +39,7 @@ public:
 	{
 	}
 
-	VoroMQALocal& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		selection_expresion_for_atoms=input.get_value_or_default<std::string>("atoms", "[]");
 		provided_selection_expresion_for_contacts=input.is_option("contacts");
@@ -47,7 +47,6 @@ public:
 		adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 		adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

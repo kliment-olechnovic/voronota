@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	ExportSelectionOfAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
@@ -56,7 +56,6 @@ public:
 		no_name=input.get_flag("no-name");
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

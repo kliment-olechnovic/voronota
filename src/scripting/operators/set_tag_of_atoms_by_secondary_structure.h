@@ -30,13 +30,12 @@ public:
 	{
 	}
 
-	SetTagOfAtomsBySecondaryStructure& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		tag_for_alpha=input.get_value_or_default<std::string>("tag-for-alpha", "ss=H");
 		tag_for_beta=input.get_value_or_default<std::string>("tag-for-beta", "ss=S");
 		assert_tag_input(tag_for_alpha, false);
 		assert_tag_input(tag_for_beta, false);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

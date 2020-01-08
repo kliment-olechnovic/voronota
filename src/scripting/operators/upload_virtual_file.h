@@ -27,11 +27,10 @@ public:
 	{
 	}
 
-	UploadVirtualFile& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		name=input.get_value<std::string>("name");
 		file=input.get_value<std::string>("file");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

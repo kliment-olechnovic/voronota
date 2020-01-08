@@ -26,10 +26,9 @@ public:
 	{
 	}
 
-	DeleteVirtualFiles& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		filenames=input.get_value_vector_or_all_unnamed_values("filenames");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

@@ -34,11 +34,10 @@ public:
 	{
 	}
 
-	PrintSequence& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		secondary_structure=input.get_flag("secondary-structure");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

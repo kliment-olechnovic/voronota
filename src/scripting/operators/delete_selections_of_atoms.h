@@ -33,11 +33,10 @@ public:
 	{
 	}
 
-	DeleteSelectionsOfAtoms& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		all=input.get_flag("all");
 		names=input.get_value_vector_or_all_unnamed_values("names");
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const

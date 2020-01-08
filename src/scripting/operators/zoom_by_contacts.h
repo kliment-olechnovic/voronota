@@ -30,10 +30,9 @@ public:
 	{
 	}
 
-	ZoomByContacts& init(CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
-		return (*this);
 	}
 
 	void document(CommandDocumentation& doc) const
