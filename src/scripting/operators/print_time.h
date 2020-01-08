@@ -21,10 +21,9 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("elapsed_miliseconds")=elapsed_miliseconds;
-			return (*this);
 		}
 	};
 

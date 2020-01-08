@@ -16,10 +16,9 @@ public:
 	{
 		std::string object_name;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("object_name")=object_name;
-			return (*this);
 		}
 	};
 

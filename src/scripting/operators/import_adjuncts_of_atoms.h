@@ -16,14 +16,13 @@ public:
 	{
 		std::vector<std::string> adjunct_names;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			std::vector<VariantValue>& array=heterostorage.variant_object.values_array("adjunct_names");
 			for(std::size_t i=0;i<adjunct_names.size();i++)
 			{
 				array.push_back(VariantValue(adjunct_names[i]));
 			}
-			return (*this);
 		}
 	};
 

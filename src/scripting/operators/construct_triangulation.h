@@ -16,10 +16,9 @@ public:
 	{
 		SummaryOfTriangulation triangulation_summary;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(triangulation_summary, heterostorage.variant_object.object("triangulation_summary"));
-			return (*this);
 		}
 	};
 

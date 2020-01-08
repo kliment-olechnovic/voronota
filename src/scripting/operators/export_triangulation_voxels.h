@@ -22,7 +22,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
@@ -30,7 +30,6 @@ public:
 				heterostorage.variant_object.value("dump")=dump;
 			}
 			heterostorage.variant_object.value("number_of_voxels")=number_of_voxels;
-			return (*this);
 		}
 	};
 

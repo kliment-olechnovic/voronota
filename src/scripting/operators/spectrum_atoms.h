@@ -25,7 +25,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			VariantObject& info=heterostorage.variant_object.object("spectrum_summary");
@@ -34,7 +34,6 @@ public:
 			info.value("number_of_values")=number_of_values;
 			info.value("mean_of_values")=mean_of_values;
 			info.value("sd_of_values")=sd_of_values;
-			return (*this);
 		}
 	};
 

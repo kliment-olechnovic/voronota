@@ -16,14 +16,13 @@ public:
 	{
 		SummaryOfAtoms summary_of_atoms;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			if(summary_of_atoms.bounding_box.filled)
 			{
 				heterostorage.summaries_of_atoms["zoomed"]=summary_of_atoms;
 				VariantSerialization::write(summary_of_atoms.bounding_box, heterostorage.variant_object.object("bounding_box"));
 			}
-			return (*this);
 		}
 	};
 

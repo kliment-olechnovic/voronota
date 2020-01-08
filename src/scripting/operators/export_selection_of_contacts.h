@@ -23,7 +23,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
@@ -32,7 +32,6 @@ public:
 			}
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			heterostorage.variant_object.value("number_of_descriptors_written")=number_of_descriptors_written;
-			return (*this);
 		}
 	};
 

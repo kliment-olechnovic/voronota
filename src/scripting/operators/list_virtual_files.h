@@ -22,7 +22,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			for(std::map<std::string, std::size_t>::const_iterator it=map_of_names_to_bytes.begin();it!=map_of_names_to_bytes.end();++it)
 			{
@@ -33,7 +33,6 @@ public:
 			}
 			heterostorage.variant_object.value("total_count")=total_count;
 			heterostorage.variant_object.value("total_bytes")=total_bytes;
-			return (*this);
 		}
 	};
 

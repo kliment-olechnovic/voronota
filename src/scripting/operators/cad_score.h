@@ -18,7 +18,7 @@ public:
 		common::ConstructionOfCADScore::CADDescriptor atom_level_result;
 		common::ConstructionOfCADScore::CADDescriptor residue_level_result;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			if(atom_level_result.target_area_sum>0.0)
 			{
@@ -28,7 +28,6 @@ public:
 			{
 				write_cad_descriptor(residue_level_result, heterostorage.variant_object.object("residue_level_result"));
 			}
-			return (*this);
 		}
 
 		static void write_cad_descriptor(const common::ConstructionOfCADScore::CADDescriptor& cadd, VariantObject& output)

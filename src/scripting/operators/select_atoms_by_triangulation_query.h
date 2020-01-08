@@ -24,7 +24,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(initial_atoms_summary, heterostorage.variant_object.object("initial_atoms_summary"));
 			heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=number_of_relevant_voronoi_vertices;
@@ -38,7 +38,6 @@ public:
 			{
 				heterostorage.variant_object.value("selection_name")=selection_name;
 			}
-			return (*this);
 		}
 	};
 

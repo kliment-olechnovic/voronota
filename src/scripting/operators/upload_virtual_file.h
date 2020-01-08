@@ -14,9 +14,8 @@ class UploadVirtualFile : public OperatorBase<UploadVirtualFile>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		const Result& write(HeterogeneousStorage&) const
+		void store(HeterogeneousStorage&) const
 		{
-			return (*this);
 		}
 	};
 

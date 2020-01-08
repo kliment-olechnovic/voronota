@@ -21,11 +21,10 @@ public:
 		{
 		}
 
-		const Result& write(scripting::HeterogeneousStorage& heterostorage) const
+		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("angle")=angle;
 			heterostorage.variant_object.value("offset")=offset;
-			return (*this);
 		}
 	};
 

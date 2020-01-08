@@ -23,7 +23,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("name")=name;
 			if(line_by_line)
@@ -38,7 +38,6 @@ public:
 			{
 				heterostorage.variant_object.value("data")=data;
 			}
-			return (*this);
 		}
 	};
 

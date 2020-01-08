@@ -17,7 +17,7 @@ public:
 	{
 		MembranePlacementForDataManagerUsingVoroMQA::OrientationScore best_score;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantObject& info=heterostorage.variant_object;
 			info.value("number_of_checks")=best_score.number_of_checks;
@@ -28,7 +28,6 @@ public:
 			direction[1]=best_score.direction.y;
 			direction[2]=best_score.direction.z;
 			info.value("projection_center")=best_score.projection_center;
-			return (*this);
 		}
 	};
 

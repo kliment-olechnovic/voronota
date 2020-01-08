@@ -19,7 +19,7 @@ public:
 		SummaryOfContacts contacts_summary;
 		std::string object_name;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			heterostorage.summaries_of_atoms["loaded"]=atoms_summary;
@@ -29,7 +29,6 @@ public:
 				heterostorage.summaries_of_contacts["loaded"]=contacts_summary;
 			}
 			heterostorage.variant_object.value("object_name")=object_name;
-			return (*this);
 		}
 	};
 

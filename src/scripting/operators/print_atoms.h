@@ -17,11 +17,10 @@ public:
 		std::vector<VariantObject> atoms;
 		SummaryOfAtoms atoms_summary;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("atoms")=atoms;
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
-			return (*this);
 		}
 	};
 

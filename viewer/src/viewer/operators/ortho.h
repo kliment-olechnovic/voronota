@@ -14,9 +14,8 @@ class Ortho : public scripting::operators::OperatorBase<Ortho>
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
-		const Result& write(scripting::HeterogeneousStorage&) const
+		void store(scripting::HeterogeneousStorage&) const
 		{
-			return (*this);
 		}
 	};
 

@@ -17,10 +17,9 @@ public:
 	{
 		VariantObject voromqa_result;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object=voromqa_result;
-			return (*this);
 		}
 	};
 

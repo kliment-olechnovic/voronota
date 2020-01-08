@@ -19,11 +19,10 @@ public:
 		std::string alias;
 		std::string script;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("alias")=alias;
 			heterostorage.variant_object.value("script")=script;
-			return (*this);
 		}
 	};
 

@@ -16,10 +16,9 @@ public:
 	{
 		std::vector<VariantObject> objects;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("objects")=objects;
-			return (*this);
 		}
 	};
 

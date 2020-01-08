@@ -16,13 +16,12 @@ public:
 	{
 		std::vector<std::string> deleted_objects;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			for(std::size_t i=0;i<deleted_objects.size();i++)
 			{
 				heterostorage.variant_object.values_array("deleted_objects").push_back(VariantValue(deleted_objects[i]));
 			}
-			return (*this);
 		}
 	};
 

@@ -14,9 +14,8 @@ class RenameSelectionOfContacts : public OperatorBase<RenameSelectionOfContacts>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		const Result& write(HeterogeneousStorage&) const
+		void store(HeterogeneousStorage&) const
 		{
-			return (*this);
 		}
 	};
 

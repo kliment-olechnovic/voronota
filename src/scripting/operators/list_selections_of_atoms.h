@@ -16,7 +16,7 @@ public:
 	{
 		std::map<std::string, SummaryOfAtoms> selections_summaries;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			for(std::map<std::string, SummaryOfAtoms>::const_iterator it=selections_summaries.begin();it!=selections_summaries.end();++it)
 			{
@@ -25,7 +25,6 @@ public:
 				VariantSerialization::write(it->second, info.object("atoms_summary"));
 				heterostorage.variant_object.objects_array("selections").push_back(info);
 			}
-			return (*this);
 		}
 	};
 

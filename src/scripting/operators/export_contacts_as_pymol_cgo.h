@@ -18,7 +18,7 @@ public:
 		std::string dump;
 		SummaryOfContacts contacts_summary;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
@@ -26,7 +26,6 @@ public:
 				heterostorage.variant_object.value("dump")=dump;
 			}
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
-			return (*this);
 		}
 	};
 

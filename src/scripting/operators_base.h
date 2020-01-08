@@ -69,10 +69,16 @@ public:
 	{
 	}
 
+	const OperatorResult& write(HeterogeneousStorage& heterostorage) const
+	{
+		store(heterostorage);
+		return underlying();
+	}
+
 	const OperatorResult& write(std::ostream& output) const
 	{
 		HeterogeneousStorage heterostorage;
-		underlying().write(heterostorage);
+		store(heterostorage);
 		if(heterostorage.variant_object.empty())
 		{
 			return std::string();
@@ -88,10 +94,14 @@ public:
 		return output.str();
 	}
 
+	virtual void store(HeterogeneousStorage&) const
+	{
+	}
+
 private:
 	const OperatorResult& underlying() const
 	{
-		return static_cast<OperatorResult&>(*this);
+		return static_cast<const OperatorResult&>(*this);
 	}
 };
 

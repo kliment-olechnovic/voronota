@@ -17,10 +17,9 @@ public:
 	{
 		VariantObject info;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object=info;
-			return (*this);
 		}
 	};
 

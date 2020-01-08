@@ -17,14 +17,13 @@ public:
 		std::string file;
 		std::string dump;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("file")=file;
 			if(!dump.empty())
 			{
 				heterostorage.variant_object.value("dump")=dump;
 			}
-			return (*this);
 		}
 	};
 

@@ -22,7 +22,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.objects_array("contacts")=contacts;
 			if(number_of_inter_residue_contacts>0)
@@ -30,7 +30,6 @@ public:
 				heterostorage.variant_object.value("number_of_inter_residue_contacts")=number_of_inter_residue_contacts;
 			}
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
-			return (*this);
 		}
 	};
 

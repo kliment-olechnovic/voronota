@@ -24,7 +24,7 @@ public:
 		{
 		}
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			if(!vertices.empty())
 			{
@@ -34,7 +34,6 @@ public:
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			heterostorage.variant_object.value("number_of_relevant_voronoi_vertices")=number_of_relevant_voronoi_vertices;
 			heterostorage.variant_object.value("total_relevant_tetrahedron_volume")=total_relevant_tetrahedron_volume;
-			return (*this);
 		}
 	};
 

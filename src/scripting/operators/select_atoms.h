@@ -18,11 +18,10 @@ public:
 		SummaryOfAtoms atoms_summary;
 		std::string selection_name;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
 			heterostorage.variant_object.value("selection_name")=selection_name;
-			return (*this);
 		}
 	};
 

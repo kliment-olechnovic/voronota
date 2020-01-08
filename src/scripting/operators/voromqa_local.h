@@ -17,14 +17,13 @@ public:
 		VariantObject atoms_result;
 		VariantObject contacts_result;
 
-		const Result& write(HeterogeneousStorage& heterostorage) const
+		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.object("atoms_result")=atoms_result;
 			if(!contacts_result.empty())
 			{
 				heterostorage.variant_object.object("contacts_result")=contacts_result;
 			}
-			return (*this);
 		}
 	};
 
