@@ -43,6 +43,12 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("angle", scripting::CDOD::DATATYPE_FLOAT, "stereo angle", ""));
+		doc.set_option_decription(scripting::CDOD("offset", scripting::CDOD::DATATYPE_FLOAT, "stereo offset", ""));
+	}
+
 	Result run(void*&) const
 	{
 		app_ptr_->set_rendering_mode_to_stereo(angle, offset);

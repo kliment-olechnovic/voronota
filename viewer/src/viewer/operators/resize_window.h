@@ -34,6 +34,12 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("width", scripting::CDOD::DATATYPE_INT, "window width", ""));
+		doc.set_option_decription(scripting::CDOD("height", scripting::CDOD::DATATYPE_INT, "window height", ""));
+	}
+
 	Result run(void*&) const
 	{
 		if(width<1 || width>9999)

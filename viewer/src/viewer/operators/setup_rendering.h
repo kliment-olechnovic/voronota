@@ -45,6 +45,17 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("reset", scripting::CDOD::DATATYPE_BOOL, "flag to reset rendering parameters"));
+		doc.set_option_decription(scripting::CDOD("ball-sphere-quality", scripting::CDOD::DATATYPE_INT, "ball sphere quality", ""));
+		doc.set_option_decription(scripting::CDOD("stick-sphere-quality", scripting::CDOD::DATATYPE_INT, "stick sphere quality", ""));
+		doc.set_option_decription(scripting::CDOD("stick-cylinder-quality", scripting::CDOD::DATATYPE_INT, "stick cylinder quality", ""));
+		doc.set_option_decription(scripting::CDOD("trace-sphere-quality", scripting::CDOD::DATATYPE_INT, "trace sphere quality", ""));
+		doc.set_option_decription(scripting::CDOD("trace-cylinder-quality", scripting::CDOD::DATATYPE_INT, "trace cylinder quality", ""));
+		doc.set_option_decription(scripting::CDOD("cartoon-style", scripting::CDOD::DATATYPE_INT, "cartoon style identifier", ""));
+	}
+
 	Result run(void*&) const
 	{
 		if(rendering_parameters.ball_sphere_quality>4)

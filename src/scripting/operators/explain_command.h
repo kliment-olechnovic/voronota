@@ -68,7 +68,7 @@ public:
 				obj.value("required")=od.required;
 				obj.value("type")=data_type_string(od.data_type);
 				obj.value("description")=od.description;
-				if(!od.required)
+				if(!od.default_value.empty())
 				{
 					obj.value("default")=od.default_value;
 				}

@@ -32,6 +32,11 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("off", scripting::CDOD::DATATYPE_BOOL, "flag to turn fog off"));
+	}
+
 	Result run(void*&) const
 	{
 		app_ptr_->set_fog_enabled(!off);

@@ -36,6 +36,13 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("field-of-view", scripting::CDOD::DATATYPE_FLOAT, "camera field of view", ""));
+		doc.set_option_decription(scripting::CDOD("near-z", scripting::CDOD::DATATYPE_FLOAT, "camera near Z coordinate", ""));
+		doc.set_option_decription(scripting::CDOD("far-z", scripting::CDOD::DATATYPE_FLOAT, "camera far Z coordinate", ""));
+	}
+
 	Result run(void*&) const
 	{
 		app_ptr_->set_projection_mode_to_perspective(field_of_view, near_z, far_z);

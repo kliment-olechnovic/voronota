@@ -32,6 +32,11 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		doc.set_option_decription(scripting::CDOD("file", scripting::CDOD::DATATYPE_STRING, "path to file"));
+	}
+
 	Result run(void*&) const
 	{
 		int W=0;

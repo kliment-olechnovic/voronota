@@ -807,14 +807,12 @@
             "name":"id",
             "required":false,
             "type":"ints",
-            "description":"selection identifiers",
-            "default":""},
+            "description":"selection identifiers"},
           {
             "name":"rep",
             "required":false,
             "type":"strings",
-            "description":"representation names",
-            "default":""},
+            "description":"representation names"},
           {
             "name":"next-random-color",
             "required":false,

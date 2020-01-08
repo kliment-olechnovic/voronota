@@ -29,6 +29,10 @@ public:
 		return (*this);
 	}
 
+	void document(scripting::CommandDocumentation&) const
+	{
+	}
+
 	Result run(void*&) const
 	{
 		app_ptr_->set_projection_mode_to_ortho();
