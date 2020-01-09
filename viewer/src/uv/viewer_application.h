@@ -35,14 +35,10 @@ public:
 	ViewerApplication() :
 		good_(false),
 		window_(0),
-		minimum_window_width_(default_minimum_window_width()),
-		minimum_window_height_(default_minimum_window_height()),
 		window_width_(0),
 		window_height_(0),
-		margin_left_(0),
-		margin_right_(0),
-		margin_bottom_(0),
-		margin_top_(0),
+		framebuffer_width_(0),
+		framebuffer_height_(0),
 		zoom_value_(1.0),
 		zoom_value_step_(1.05),
 		ortho_z_near_(-2.0f),
@@ -97,16 +93,13 @@ public:
 			return false;
 		}
 
-		window_width_=std::max(minimum_window_width_, parameters.suggested_window_width);
-		window_height_=std::max(minimum_window_height_, parameters.suggested_window_height);
-
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		glfwWindowHint(GLFW_SAMPLES, 4);
 
-		window_=glfwCreateWindow(window_width_, window_height_, parameters.title.c_str(), 0, 0);
+		window_=glfwCreateWindow(parameters.suggested_window_width, parameters.suggested_window_height, parameters.title.c_str(), 0, 0);
 		if(!window_)
 		{
 			std::cerr << "Error: failed to create window with GLFW3" << std::endl;
@@ -114,11 +107,13 @@ public:
 			return false;
 		}
 
-		//glfwSetWindowSizeLimits(window_, minimum_window_width_, minimum_window_height_, GLFW_DONT_CARE, GLFW_DONT_CARE);
-
 		glfwSetWindowUserPointer(window_, this);
 
+		glfwGetWindowSize(window_, &window_width_, &window_height_);
+		glfwGetFramebufferSize(window_, &framebuffer_width_, &framebuffer_height_);
+
 		glfwSetWindowSizeCallback(window_, callback_on_window_resized);
+		glfwSetFramebufferSizeCallback(window_, callback_on_framebuffer_resized);
 		glfwSetScrollCallback(window_, callback_on_window_scrolled);
 		glfwSetMouseButtonCallback(window_, callback_on_mouse_button_used);
 		glfwSetCursorPosCallback(window_, callback_on_mouse_cursor_moved);
@@ -143,7 +138,6 @@ public:
 			std::cerr << "Version: " << version << std::endl;
 		}
 
-		//glEnable(GL_MULTISAMPLE);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
@@ -198,6 +192,16 @@ public:
 	int window_height() const
 	{
 		return window_height_;
+	}
+
+	int framebuffer_width() const
+	{
+		return framebuffer_width_;
+	}
+
+	int framebuffer_height() const
+	{
+		return framebuffer_height_;
 	}
 
 	float mouse_x() const
@@ -427,8 +431,8 @@ public:
 
 	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
 	{
-		image_width=full_rendering_area_width();
-		image_height=full_rendering_area_height();
+		image_width=framebuffer_width_;
+		image_height=framebuffer_height_;
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
 
@@ -436,30 +440,17 @@ public:
 		glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_PACK_SKIP_ROWS, 0);
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glReadPixels(margin_left_, margin_bottom_, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
+		glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE, &image_data[0]);
 
 		return true;
 	}
 
 protected:
-	bool set_margins(const int margin_left, const int margin_right, const int margin_bottom, const int margin_top)
+	virtual void on_window_resized(int width, int height)
 	{
-		if(margin_left>=0 && margin_right>=0 && margin_top>=0 && margin_bottom>=0)
-		{
-			margin_left_=margin_left;
-			margin_right_=margin_right;
-			margin_bottom_=margin_bottom;
-			margin_top_=margin_top;
-			minimum_window_width_=margin_left_+margin_right_+default_minimum_window_width();
-			minimum_window_height_=margin_top_+margin_bottom_+default_minimum_window_height();
-//			glfwSetWindowSizeLimits(window_, minimum_window_width_, minimum_window_height_, GLFW_DONT_CARE, GLFW_DONT_CARE);
-			refresh_shading_projection();
-			return true;
-		}
-		return false;
 	}
 
-	virtual void on_window_resized(int width, int height)
+	virtual void on_framebuffer_resized(int width, int height)
 	{
 	}
 
@@ -623,6 +614,12 @@ private:
 		app->callback_on_window_resized(width, height);
 	}
 
+	static void callback_on_framebuffer_resized(GLFWwindow* window, int width, int height)
+	{
+		ViewerApplication* app=static_cast<ViewerApplication*>(glfwGetWindowUserPointer(window));
+		app->callback_on_framebuffer_resized(width, height);
+	}
+
 	static void callback_on_window_scrolled(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		ViewerApplication* app=static_cast<ViewerApplication*>(glfwGetWindowUserPointer(window));
@@ -663,8 +660,15 @@ private:
 	{
 		window_width_=width;
 		window_height_=height;
-		refresh_shading_projection();
 		on_window_resized(width, height);
+	}
+
+	void callback_on_framebuffer_resized(int width, int height)
+	{
+		framebuffer_width_=width;
+		framebuffer_height_=height;
+		refresh_shading_projection();
+		on_framebuffer_resized(width, height);
 	}
 
 	void callback_on_window_scrolled(double xoffset, double yoffset)
@@ -762,21 +766,21 @@ private:
 		on_character_used(codepoint);
 	}
 
-	bool mouse_cursor_not_on_margin() const
+	bool mouse_cursor_inside() const
 	{
 		const int x=static_cast<int>(mouse_cursor_x_);
 		const int y=window_height_-static_cast<int>(mouse_cursor_y_);
-		return (x>margin_left_ && x<(window_width_-margin_right_) && y>margin_bottom_ && y<(window_height_-margin_top_));
+		return (x>0 && x<window_width_ && y>0 && y<window_height_);
 	}
 
-	int full_rendering_area_width() const
+	int calc_pixel_x(const double screen_x) const
 	{
-		return (window_width_-margin_left_-margin_right_);
+		return static_cast<int>((screen_x/static_cast<double>(window_width_))*static_cast<double>(framebuffer_width_));
 	}
 
-	int full_rendering_area_height() const
+	int calc_pixel_y(const double screen_y) const
 	{
-		return (window_height_-margin_bottom_-margin_top_);
+		return static_cast<int>((screen_y/static_cast<double>(window_height_))*static_cast<double>(framebuffer_height_));
 	}
 
 	void render()
@@ -790,13 +794,11 @@ private:
 
 		glfwPollEvents();
 
-		glViewport(0, 0, window_width_, window_height_);
+		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glViewport(margin_left_, margin_bottom_, full_rendering_area_width(), full_rendering_area_height());
-
-		if(call_for_selection_>0 && mouse_cursor_not_on_margin())
+		if(call_for_selection_>0 && mouse_cursor_inside())
 		{
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -816,7 +818,7 @@ private:
 			}
 
 			unsigned char pixel[4]={0, 0, 0, 0};
-			glReadPixels(static_cast<int>(mouse_cursor_x_), window_height_-static_cast<int>(mouse_cursor_y_), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+			glReadPixels(calc_pixel_x(mouse_cursor_x_), calc_pixel_y(static_cast<double>(window_height_)-mouse_cursor_y_), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
 			const unsigned int color=static_cast<unsigned int>(pixel[0])*256*256+static_cast<unsigned int>(pixel[1])*256+static_cast<unsigned int>(pixel[2]);
 			if(color!=0xFFFFFF)
 			{
@@ -834,7 +836,7 @@ private:
 		shading_with_instancing_.enable();
 		render_scene(ShadingMode::with_instancing);
 
-		glViewport(0, 0, window_width_, window_height_);
+		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glUseProgram(0);
 		render_overlay();
 
@@ -847,9 +849,9 @@ private:
 	{
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=full_rendering_area_width()/2;
+			const int width=framebuffer_width_/2;
 			{
-				refresh_shading_projection(width, full_rendering_area_height(), shading_mode);
+				refresh_shading_projection(width, framebuffer_height_, shading_mode);
 			}
 			for(int i=0;i<2;i++)
 			{
@@ -861,8 +863,8 @@ private:
 				{
 					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
 				}
-				const int xpos=margin_left_+(width*i);
-				glViewport(xpos, margin_bottom_, width, full_rendering_area_height());
+				const int xpos=(width*i);
+				glViewport(xpos, 0, width, framebuffer_height_);
 				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
@@ -872,19 +874,19 @@ private:
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, full_rendering_area_width(), full_rendering_area_height(), n_rows, n_columns);
-			const int width=full_rendering_area_width()/n_columns;
-			const int height=full_rendering_area_height()/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, framebuffer_width_, framebuffer_height_, n_rows, n_columns);
+			const int width=framebuffer_width_/n_columns;
+			const int height=framebuffer_height_/n_rows;
 			{
 				refresh_shading_projection(width, height, shading_mode);
 			}
 			int grid_id=0;
 			for(int i=0;(i<n_rows) && (grid_id<grid_size_);i++)
 			{
-				const int ypos=margin_bottom_+(height*(n_rows-1-i));
+				const int ypos=(height*(n_rows-1-i));
 				for(int j=0;(j<n_columns) && (grid_id<grid_size_);j++)
 				{
-					const int xpos=margin_left_+(width*j);
+					const int xpos=(width*j);
 					glViewport(xpos, ypos, width, height);
 					draw_scene(shading_mode, grid_id);
 					grid_id++;
@@ -915,27 +917,27 @@ private:
 		on_draw_overlay_start();
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=full_rendering_area_width()/2;
+			const int width=framebuffer_width_/2;
 			for(int i=0;i<2;i++)
 			{
-				const int xpos=margin_left_+(width*i);
-				on_draw_overlay_middle(xpos, margin_top_, width, full_rendering_area_height(), true, false, i);
+				const int xpos=(width*i);
+				on_draw_overlay_middle(xpos, 0, width, framebuffer_height_, true, false, i);
 			}
 		}
 		else if(rendering_mode_==RenderingMode::grid && grid_size_>1)
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, full_rendering_area_width(), full_rendering_area_height(), n_rows, n_columns);
-			const int width=full_rendering_area_width()/n_columns;
-			const int height=full_rendering_area_height()/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, framebuffer_width_, framebuffer_height_, n_rows, n_columns);
+			const int width=framebuffer_width_/n_columns;
+			const int height=framebuffer_height_/n_rows;
 			int grid_id=0;
 			for(int i=0;(i<n_rows) && (grid_id<grid_size_);i++)
 			{
-				const int ypos=margin_top_+(height*i);
+				const int ypos=(height*i);
 				for(int j=0;(j<n_columns) && (grid_id<grid_size_);j++)
 				{
-					const int xpos=margin_left_+(width*j);
+					const int xpos=(width*j);
 					on_draw_overlay_middle(xpos, ypos, width, height, false, true, grid_id);
 					grid_id++;
 				}
@@ -943,7 +945,7 @@ private:
 		}
 		else
 		{
-			on_draw_overlay_middle(margin_left_, margin_top_, full_rendering_area_width(), full_rendering_area_height(), false, false, 0);
+			on_draw_overlay_middle(0, 0, framebuffer_width_, framebuffer_height_, false, false, 0);
 		}
 		on_draw_overlay_end();
 	}
@@ -974,7 +976,7 @@ private:
 
 	void refresh_shading_projection(const ShadingMode::Mode shading_mode)
 	{
-		refresh_shading_projection(full_rendering_area_width(), full_rendering_area_height(), shading_mode);
+		refresh_shading_projection(framebuffer_width_, framebuffer_height_, shading_mode);
 	}
 
 	void refresh_shading_projection()
@@ -1048,7 +1050,7 @@ private:
 			return false;
 		}
 
-		if(!mouse_cursor_not_on_margin())
+		if(!mouse_cursor_inside())
 		{
 			return false;
 		}
@@ -1057,13 +1059,13 @@ private:
 		bool change_in_viewtransform=false;
 		bool change_in_projection=false;
 
-		const double cursor_x=(mouse_cursor_x_-static_cast<double>(margin_left_));
-		const double cursor_y=(static_cast<double>(window_height_)-mouse_cursor_y_-static_cast<double>(margin_bottom_));
-		const double cursor_prev_x=(mouse_cursor_prev_x_-static_cast<double>(margin_left_));
-		const double cursor_prev_y=(static_cast<double>(window_height_)-mouse_cursor_prev_y_-static_cast<double>(margin_bottom_));
+		const double cursor_x=(mouse_cursor_x_);
+		const double cursor_y=(static_cast<double>(window_height_)-mouse_cursor_y_);
+		const double cursor_prev_x=(mouse_cursor_prev_x_);
+		const double cursor_prev_y=(static_cast<double>(window_height_)-mouse_cursor_prev_y_);
 
-		const double area_width=static_cast<double>(window_width_-margin_left_-margin_right_);
-		const double area_height=static_cast<double>(window_height_-margin_bottom_-margin_top_);
+		const double area_width=static_cast<double>(window_width_);
+		const double area_height=static_cast<double>(window_height_);
 		const double trackball_size=std::min(area_width, area_height);
 		const double area_width_in_trackball_size=area_width/trackball_size;
 		const double area_height_in_trackball_size=area_height/trackball_size;
@@ -1135,26 +1137,12 @@ private:
 		return (change_in_modeltransform || change_in_viewtransform || change_in_projection);
 	}
 
-	static int default_minimum_window_width()
-	{
-		return 320;
-	}
-
-	static int default_minimum_window_height()
-	{
-		return 240;
-	}
-
 	bool good_;
 	GLFWwindow* window_;
-	int minimum_window_width_;
-	int minimum_window_height_;
 	int window_width_;
 	int window_height_;
-	int margin_left_;
-	int margin_right_;
-	int margin_bottom_;
-	int margin_top_;
+	int framebuffer_width_;
+	int framebuffer_height_;
 	double zoom_value_;
 	double zoom_value_step_;
 	double ortho_z_near_;
