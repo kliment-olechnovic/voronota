@@ -43,6 +43,20 @@ public:
 		}
 	}
 
+	static const std::vector<std::string>& ordered_used_shader_attribute_names()
+	{
+		static std::vector<std::string> names;
+		if(names.empty())
+		{
+			names.push_back("vertex_position");
+			names.push_back("vertex_normal");
+			names.push_back("vertex_color_for_selection");
+			names.push_back("vertex_color_for_display");
+			names.push_back("vertex_adjunct");
+		}
+		return names;
+	}
+
 	bool init(
 			const std::vector<GLfloat>& vertices,
 			const std::vector<GLfloat>& normals,

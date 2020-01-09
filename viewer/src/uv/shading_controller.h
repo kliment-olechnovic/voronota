@@ -29,7 +29,7 @@ public:
 		}
 	}
 
-	bool init(const std::string& vertex_shader_filename, const std::string& fragment_shader_filename)
+	bool init(const std::string& vertex_shader_filename, const std::string& fragment_shader_filename, const std::vector<std::string>& attribute_names_to_bind_locations)
 	{
 		if(good())
 		{
@@ -75,8 +75,15 @@ public:
 		}
 
 		shader_program_=glCreateProgram();
+
 		glAttachShader(shader_program_, vertex_shader);
 		glAttachShader(shader_program_, fragment_shader);
+
+		for(std::size_t i=0;i<attribute_names_to_bind_locations.size();i++)
+		{
+			glBindAttribLocation(shader_program_, static_cast<GLuint>(i), static_cast<const GLchar*>(attribute_names_to_bind_locations[i].c_str()));
+		}
+
 		glLinkProgram(shader_program_);
 
 		glDeleteShader(vertex_shader);

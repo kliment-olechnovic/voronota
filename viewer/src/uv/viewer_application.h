@@ -5,6 +5,8 @@
 #include "shading_controller.h"
 #include "transformation_matrix_controller.h"
 #include "zoom_calculator.h"
+#include "drawing_controller.h"
+#include "drawing_with_instancing_controller.h"
 
 #include <GLFW/glfw3.h>
 
@@ -145,14 +147,14 @@ public:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
-		if(!shading_simple_.init(parameters.shader_vertex, parameters.shader_fragment))
+		if(!shading_simple_.init(parameters.shader_vertex, parameters.shader_fragment, DrawingController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading simple." << std::endl;
 			glfwTerminate();
 			return false;
 		}
 
-		if(!shading_with_instancing_.init(parameters.shader_vertex_with_instancing, parameters.shader_fragment))
+		if(!shading_with_instancing_.init(parameters.shader_vertex_with_instancing, parameters.shader_fragment, DrawingWithInstancingController::ordered_used_shader_attribute_names()))
 		{
 			std::cerr << "Error: failed to init shading with instancing." << std::endl;
 			glfwTerminate();
