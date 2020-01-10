@@ -7,6 +7,9 @@
 
 #include "filepath_utilities.h"
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -394,6 +397,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

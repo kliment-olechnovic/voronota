@@ -8,6 +8,9 @@
 
 #include "selection_manager.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -1736,6 +1739,8 @@ private:
 	std::string text_description_;
 	ChangeIndicator change_indicator_;
 };
+
+}
 
 }
 

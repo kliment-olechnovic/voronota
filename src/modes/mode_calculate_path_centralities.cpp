@@ -7,9 +7,9 @@
 
 #include "../common/construction_of_path_centralities.h"
 
-void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
+void calculate_path_centralities(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "graph (line format: 'annotation1 annotation2 weight')");
 	pohw.describe_io("stdout", false, true, "path centralities (line format: 'annotation1 annotation2 value')");
 
@@ -18,9 +18,9 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef common::ConstructionOfPathCentralities COPC;
+	typedef voronota::common::ConstructionOfPathCentralities COPC;
 
-	const std::map<COPC::CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<COPC::CRADsPair, double> >(std::cin);
+	const std::map<COPC::CRADsPair, double> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<COPC::CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
@@ -45,6 +45,6 @@ void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler& poh)
 		map_of_centralities[crads]=result.edge_centralities[COPC::ordered_pair_of_ids(id1, id2)];
 	}
 
-	auxiliaries::IOUtilities().write_map(map_of_centralities, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(map_of_centralities, std::cout);
 }
 

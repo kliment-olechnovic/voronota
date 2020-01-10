@@ -11,13 +11,13 @@ namespace
 
 struct Triangle
 {
-	std::vector<apollota::SimplePoint> p;
+	std::vector<voronota::apollota::SimplePoint> p;
 
 	Triangle() : p(3)
 	{
 	}
 
-	Triangle(const apollota::SimplePoint& a, const apollota::SimplePoint& b, const apollota::SimplePoint& c) : p(3)
+	Triangle(const voronota::apollota::SimplePoint& a, const voronota::apollota::SimplePoint& b, const voronota::apollota::SimplePoint& c) : p(3)
 	{
 		p[0]=a;
 		p[1]=b;
@@ -29,15 +29,15 @@ typedef std::vector<Triangle> TriangleList;
 
 typedef std::pair<TriangleList, TriangleList> TriangleListSplit;
 
-inline Triangle project_triangle_on_hyperboloid(const Triangle& t, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
+inline Triangle project_triangle_on_hyperboloid(const Triangle& t, const voronota::apollota::SimpleSphere& a, const voronota::apollota::SimpleSphere& b)
 {
 	return Triangle(
-			apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[0], a, b),
-			apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[1], a, b),
-			apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[2], a, b));
+			voronota::apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[0], a, b),
+			voronota::apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[1], a, b),
+			voronota::apollota::HyperboloidBetweenTwoSpheres::project_point_on_hyperboloid(t.p[2], a, b));
 }
 
-inline TriangleList multiple_project_triangle_on_hyperboloid(const TriangleList& tl, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
+inline TriangleList multiple_project_triangle_on_hyperboloid(const TriangleList& tl, const voronota::apollota::SimpleSphere& a, const voronota::apollota::SimpleSphere& b)
 {
 	TriangleList result;
 	result.reserve(tl.size());
@@ -48,12 +48,12 @@ inline TriangleList multiple_project_triangle_on_hyperboloid(const TriangleList&
 	return result;
 }
 
-inline TriangleListSplit cut_triangle_with_hyperboloid(const Triangle& t, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
+inline TriangleListSplit cut_triangle_with_hyperboloid(const Triangle& t, const voronota::apollota::SimpleSphere& a, const voronota::apollota::SimpleSphere& b)
 {
 	bool mask[3];
 	for(int i=0;i<3;i++)
 	{
-		mask[i]=(apollota::minimal_distance_from_point_to_sphere(t.p[i], a)<apollota::minimal_distance_from_point_to_sphere(t.p[i], b));
+		mask[i]=(voronota::apollota::minimal_distance_from_point_to_sphere(t.p[i], a)<voronota::apollota::minimal_distance_from_point_to_sphere(t.p[i], b));
 	}
 
 	if(mask[0] && mask[1] && mask[2])
@@ -87,8 +87,8 @@ inline TriangleListSplit cut_triangle_with_hyperboloid(const Triangle& t, const 
 
 	TriangleListSplit result;
 	{
-		const apollota::SimplePoint m01=t.p[ids[0]]+((t.p[ids[1]]-t.p[ids[0]]).unit()*apollota::HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(t.p[ids[0]], t.p[ids[1]], a, b));
-		const apollota::SimplePoint m02=t.p[ids[0]]+((t.p[ids[2]]-t.p[ids[0]]).unit()*apollota::HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(t.p[ids[0]], t.p[ids[2]], a, b));
+		const voronota::apollota::SimplePoint m01=t.p[ids[0]]+((t.p[ids[1]]-t.p[ids[0]]).unit()*voronota::apollota::HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(t.p[ids[0]], t.p[ids[1]], a, b));
+		const voronota::apollota::SimplePoint m02=t.p[ids[0]]+((t.p[ids[2]]-t.p[ids[0]]).unit()*voronota::apollota::HyperboloidBetweenTwoSpheres::intersect_vector_with_hyperboloid(t.p[ids[0]], t.p[ids[2]], a, b));
 		result.first.push_back(Triangle(t.p[ids[0]], m01, m02));
 		result.second.push_back(Triangle(m01, t.p[ids[1]], t.p[ids[2]]));
 		result.second.push_back(Triangle(m01, m02, t.p[ids[2]]));
@@ -100,7 +100,7 @@ inline TriangleListSplit cut_triangle_with_hyperboloid(const Triangle& t, const 
 	return result;
 }
 
-inline TriangleListSplit multiple_cut_triangle_with_hyperboloid(const TriangleList& tl, const apollota::SimpleSphere& a, const apollota::SimpleSphere& b)
+inline TriangleListSplit multiple_cut_triangle_with_hyperboloid(const TriangleList& tl, const voronota::apollota::SimpleSphere& a, const voronota::apollota::SimpleSphere& b)
 {
 	TriangleListSplit result;
 	for(std::size_t i=0;i<tl.size();i++)
@@ -112,27 +112,27 @@ inline TriangleListSplit multiple_cut_triangle_with_hyperboloid(const TriangleLi
 	return result;
 }
 
-inline TriangleList init_sphere_triangles(const apollota::SimpleSphere& s, const int depth)
+inline TriangleList init_sphere_triangles(const voronota::apollota::SimpleSphere& s, const int depth)
 {
-	apollota::SubdividedIcosahedron sih(depth);
+	voronota::apollota::SubdividedIcosahedron sih(depth);
 	sih.fit_into_sphere(s, s.r);
 	TriangleList result;
 	result.reserve(sih.triples().size());
 	for(std::size_t i=0;i<sih.triples().size();i++)
 	{
-		const apollota::Triple& t=sih.triples()[i];
+		const voronota::apollota::Triple& t=sih.triples()[i];
 		result.push_back(Triangle(sih.vertices()[t.get(0)], sih.vertices()[t.get(1)], sih.vertices()[t.get(2)]));
 	}
 	return result;
 }
 
-inline TriangleList init_spheres_intersection_hyperboloid_triangles(const apollota::SimpleSphere& a, const apollota::SimpleSphere& b, const int depth)
+inline TriangleList init_spheres_intersection_hyperboloid_triangles(const voronota::apollota::SimpleSphere& a, const voronota::apollota::SimpleSphere& b, const int depth)
 {
 	if(a.r<b.r)
 	{
 		return init_spheres_intersection_hyperboloid_triangles(b, a, depth);
 	}
-	if(apollota::sphere_intersects_sphere(a, b))
+	if(voronota::apollota::sphere_intersects_sphere(a, b))
 	{
 		const TriangleListSplit tls=multiple_cut_triangle_with_hyperboloid(init_sphere_triangles(a, depth), a, b);
 		return multiple_project_triangle_on_hyperboloid((tls.first.size()<tls.second.size() ? tls.first : tls.second), a, b);
@@ -143,32 +143,32 @@ inline TriangleList init_spheres_intersection_hyperboloid_triangles(const apollo
 	}
 }
 
-inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const Triangle& n)
+inline void draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const Triangle& n)
 {
 	opengl_printer.add_triangle_strip(t.p, n.p);
 }
 
-inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const apollota::SimplePoint& n)
+inline void draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const voronota::apollota::SimplePoint& n)
 {
 	draw_triangle(opengl_printer, t, Triangle(n, n, n));
 }
 
-inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const apollota::SimpleSphere& a)
+inline void draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const voronota::apollota::SimpleSphere& a)
 {
-	draw_triangle(opengl_printer, t, Triangle((t.p[0]-apollota::SimplePoint(a)).unit(), (t.p[1]-apollota::SimplePoint(a)).unit(), (t.p[2]-apollota::SimplePoint(a)).unit()));
+	draw_triangle(opengl_printer, t, Triangle((t.p[0]-voronota::apollota::SimplePoint(a)).unit(), (t.p[1]-voronota::apollota::SimplePoint(a)).unit(), (t.p[2]-voronota::apollota::SimplePoint(a)).unit()));
 }
 
-inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const std::pair<apollota::SimpleSphere, apollota::SimpleSphere>& ab)
+inline void draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const std::pair<voronota::apollota::SimpleSphere, voronota::apollota::SimpleSphere>& ab)
 {
 	Triangle n;
 	for(int i=0;i<3;i++)
 	{
-		const apollota::SimplePoint oa=(apollota::SimplePoint(ab.first)-t.p[i]).unit();
-		const apollota::SimplePoint ob=(apollota::SimplePoint(ab.second)-t.p[i]).unit();
-		const apollota::SimplePoint x=(oa&ob);
-		if(apollota::equal(x.module(), 0.0))
+		const voronota::apollota::SimplePoint oa=(voronota::apollota::SimplePoint(ab.first)-t.p[i]).unit();
+		const voronota::apollota::SimplePoint ob=(voronota::apollota::SimplePoint(ab.second)-t.p[i]).unit();
+		const voronota::apollota::SimplePoint x=(oa&ob);
+		if(voronota::apollota::equal(x.module(), 0.0))
 		{
-			n.p[i]=(apollota::SimplePoint(ab.second)-apollota::SimplePoint(ab.first)).unit();
+			n.p[i]=(voronota::apollota::SimplePoint(ab.second)-voronota::apollota::SimplePoint(ab.first)).unit();
 		}
 		else
 		{
@@ -178,13 +178,13 @@ inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Tria
 	draw_triangle(opengl_printer, t, n);
 }
 
-inline void draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const bool n)
+inline void draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t, const bool n)
 {
 	draw_triangle(opengl_printer, t, ((t.p[1]-t.p[0])&(t.p[2]-t.p[0])).unit()*(n ? 1.0 : -1.0));
 }
 
 template <typename NormalDescriptor>
-inline void multiple_draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, const TriangleList& tl, const NormalDescriptor& nd)
+inline void multiple_draw_triangle(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const TriangleList& tl, const NormalDescriptor& nd)
 {
 	for(std::size_t i=0;i<tl.size();i++)
 	{
@@ -192,12 +192,12 @@ inline void multiple_draw_triangle(auxiliaries::OpenGLPrinter& opengl_printer, c
 	}
 }
 
-inline void draw_triangle_lines(auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t)
+inline void draw_triangle_lines(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const Triangle& t)
 {
 	opengl_printer.add_line_loop(t.p);
 }
 
-inline void multiple_draw_triangle_lines(auxiliaries::OpenGLPrinter& opengl_printer, const TriangleList& tl)
+inline void multiple_draw_triangle_lines(voronota::auxiliaries::OpenGLPrinter& opengl_printer, const TriangleList& tl)
 {
 	for(std::size_t i=0;i<tl.size();i++)
 	{
@@ -207,9 +207,9 @@ inline void multiple_draw_triangle_lines(auxiliaries::OpenGLPrinter& opengl_prin
 
 }
 
-void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
+void demo_hypercut(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "nothing");
 	pohw.describe_io("stdout", false, true, "nothing");
 
@@ -225,11 +225,11 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector<apollota::SimpleSphere> spheres;
-	spheres.push_back(apollota::SimpleSphere(0, 0, 0, 1));
-	spheres.push_back(apollota::SimpleSphere(2, 0, 0, 0.5));
-	spheres.push_back(apollota::SimpleSphere(1.5, -2, 0, 0.4));
-	spheres.push_back(apollota::SimpleSphere(0.5, 0, 2, 0.75));
+	std::vector<voronota::apollota::SimpleSphere> spheres;
+	spheres.push_back(voronota::apollota::SimpleSphere(0, 0, 0, 1));
+	spheres.push_back(voronota::apollota::SimpleSphere(2, 0, 0, 0.5));
+	spheres.push_back(voronota::apollota::SimpleSphere(1.5, -2, 0, 0.4));
+	spheres.push_back(voronota::apollota::SimpleSphere(0.5, 0, 2, 0.75));
 
 	int colors_of_singles[4]={0xFF0000, 0x00FF00, 0x0000FF, 0x888888};
 
@@ -251,7 +251,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(int i=0;i<balls_count;i++)
 	{
-		auxiliaries::OpenGLPrinter opengl_printer;
+		voronota::auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(colors_of_singles[i]);
 		opengl_printer.add_sphere(spheres[i]);
 
@@ -263,9 +263,9 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(int i=0;i<balls_count;i++)
 	{
-		auxiliaries::OpenGLPrinter opengl_printer;
+		voronota::auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(colors_of_singles[i]);
-		opengl_printer.add_sphere(apollota::SimpleSphere(spheres[i], spheres[i].r+probe-0.01));
+		opengl_printer.add_sphere(voronota::apollota::SimpleSphere(spheres[i], spheres[i].r+probe-0.01));
 
 		std::ostringstream name;
 		name << name_prefix << "sball_" << i;
@@ -278,12 +278,12 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		for(int j=i+1;j<balls_count;j++)
 		{
 			const TriangleList big_full_face=init_spheres_intersection_hyperboloid_triangles(
-					apollota::SimpleSphere(spheres[i], spheres[i].r+big_probe),
-					apollota::SimpleSphere(spheres[j], spheres[j].r+big_probe),
+					voronota::apollota::SimpleSphere(spheres[i], spheres[i].r+big_probe),
+					voronota::apollota::SimpleSphere(spheres[j], spheres[j].r+big_probe),
 					depth);
 
 			{
-				auxiliaries::OpenGLPrinter opengl_printer;
+				voronota::auxiliaries::OpenGLPrinter opengl_printer;
 				opengl_printer.add_color(colors_of_pairs[i][j]);
 				multiple_draw_triangle(opengl_printer, big_full_face, std::make_pair(spheres[i], spheres[j]));
 
@@ -295,7 +295,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 			if(i==0 && j==1)
 			{
-				auxiliaries::OpenGLPrinter opengl_printer;
+				voronota::auxiliaries::OpenGLPrinter opengl_printer;
 				opengl_printer.add_color(0x111111);
 				multiple_draw_triangle_lines(opengl_printer, big_full_face);
 
@@ -306,12 +306,12 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 
 			const TriangleList full_face=init_spheres_intersection_hyperboloid_triangles(
-					apollota::SimpleSphere(spheres[i], spheres[i].r+probe),
-					apollota::SimpleSphere(spheres[j], spheres[j].r+probe),
+					voronota::apollota::SimpleSphere(spheres[i], spheres[i].r+probe),
+					voronota::apollota::SimpleSphere(spheres[j], spheres[j].r+probe),
 					depth);
 
 			{
-				auxiliaries::OpenGLPrinter opengl_printer;
+				voronota::auxiliaries::OpenGLPrinter opengl_printer;
 				opengl_printer.add_color(colors_of_pairs[i][j]);
 				multiple_draw_triangle(opengl_printer, full_face, std::make_pair(spheres[i], spheres[j]));
 
@@ -323,7 +323,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 			if(i==0 && j==1)
 			{
-				auxiliaries::OpenGLPrinter opengl_printer;
+				voronota::auxiliaries::OpenGLPrinter opengl_printer;
 				opengl_printer.add_color(0x111111);
 				multiple_draw_triangle_lines(opengl_printer, full_face);
 
@@ -340,7 +340,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 					const TriangleList cut_face_m=multiple_cut_triangle_with_hyperboloid(full_face, spheres[i], spheres[m]).first;
 
 					{
-						auxiliaries::OpenGLPrinter opengl_printer;
+						voronota::auxiliaries::OpenGLPrinter opengl_printer;
 						opengl_printer.add_color(colors_of_pairs[i][j]);
 						multiple_draw_triangle(opengl_printer, cut_face_m, std::make_pair(spheres[i], spheres[j]));
 
@@ -352,7 +352,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 					if(i==0 && j==1)
 					{
-						auxiliaries::OpenGLPrinter opengl_printer;
+						voronota::auxiliaries::OpenGLPrinter opengl_printer;
 						opengl_printer.add_color(0x111111);
 						multiple_draw_triangle_lines(opengl_printer, cut_face_m);
 
@@ -369,7 +369,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 							const TriangleList cut_face_m_n=multiple_cut_triangle_with_hyperboloid(cut_face_m, spheres[i], spheres[n]).first;
 
 							{
-								auxiliaries::OpenGLPrinter opengl_printer;
+								voronota::auxiliaries::OpenGLPrinter opengl_printer;
 								opengl_printer.add_color(colors_of_pairs[i][j]);
 								multiple_draw_triangle(opengl_printer, cut_face_m_n, std::make_pair(spheres[i], spheres[j]));
 
@@ -380,7 +380,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 							}
 
 							{
-								auxiliaries::OpenGLPrinter opengl_printer;
+								voronota::auxiliaries::OpenGLPrinter opengl_printer;
 								opengl_printer.add_color(0x111111);
 								multiple_draw_triangle_lines(opengl_printer, cut_face_m_n);
 
@@ -398,10 +398,10 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(int i=0;i<balls_count;i++)
 	{
-		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth);
+		TriangleList sface=init_sphere_triangles(voronota::apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth);
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(0x777777);
 			multiple_draw_triangle_lines(opengl_printer, sface);
 
@@ -420,7 +420,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(colors_of_singles[i]);
 			multiple_draw_triangle(opengl_printer, sface, spheres[i]);
 
@@ -431,7 +431,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(0x111111);
 			multiple_draw_triangle_lines(opengl_printer, sface);
 
@@ -448,10 +448,10 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			if(i!=j)
 			{
-				const TriangleList full_face=multiple_cut_triangle_with_hyperboloid(init_sphere_triangles(apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth), spheres[i], spheres[j]).second;
+				const TriangleList full_face=multiple_cut_triangle_with_hyperboloid(init_sphere_triangles(voronota::apollota::SimpleSphere(spheres[i], spheres[i].r+probe), depth), spheres[i], spheres[j]).second;
 
 				{
-					auxiliaries::OpenGLPrinter opengl_printer;
+					voronota::auxiliaries::OpenGLPrinter opengl_printer;
 					opengl_printer.add_color(colors_of_singles[j]);
 					multiple_draw_triangle(opengl_printer, full_face, spheres[i]);
 
@@ -463,7 +463,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 				if(i==0 && j==1)
 				{
-					auxiliaries::OpenGLPrinter opengl_printer;
+					voronota::auxiliaries::OpenGLPrinter opengl_printer;
 					opengl_printer.add_color(0x111111);
 					multiple_draw_triangle_lines(opengl_printer, full_face);
 
@@ -480,7 +480,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 						const TriangleList cut_face_m=multiple_cut_triangle_with_hyperboloid(full_face, spheres[j], spheres[m]).first;
 
 						{
-							auxiliaries::OpenGLPrinter opengl_printer;
+							voronota::auxiliaries::OpenGLPrinter opengl_printer;
 							opengl_printer.add_color(colors_of_singles[j]);
 							multiple_draw_triangle(opengl_printer, cut_face_m, spheres[i]);
 
@@ -492,7 +492,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 						if(i==0 && j==1)
 						{
-							auxiliaries::OpenGLPrinter opengl_printer;
+							voronota::auxiliaries::OpenGLPrinter opengl_printer;
 							opengl_printer.add_color(0x111111);
 							multiple_draw_triangle_lines(opengl_printer, cut_face_m);
 
@@ -509,7 +509,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 								const TriangleList cut_face_m_n=multiple_cut_triangle_with_hyperboloid(cut_face_m, spheres[j], spheres[n]).first;
 
 								{
-									auxiliaries::OpenGLPrinter opengl_printer;
+									voronota::auxiliaries::OpenGLPrinter opengl_printer;
 									opengl_printer.add_color(colors_of_singles[j]);
 									multiple_draw_triangle(opengl_printer, cut_face_m_n, spheres[i]);
 
@@ -521,7 +521,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 								if(i==0 && j==1)
 								{
-									auxiliaries::OpenGLPrinter opengl_printer;
+									voronota::auxiliaries::OpenGLPrinter opengl_printer;
 									opengl_printer.add_color(0x111111);
 									multiple_draw_triangle_lines(opengl_printer, cut_face_m_n);
 
@@ -540,10 +540,10 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(int i=0;i<=4;i++)
 	{
-		TriangleList sface=init_sphere_triangles(apollota::SimpleSphere(0, 0, 0, 1), i);
+		TriangleList sface=init_sphere_triangles(voronota::apollota::SimpleSphere(0, 0, 0, 1), i);
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(0xAAAAAA);
 			multiple_draw_triangle(opengl_printer, sface, true);
 
@@ -554,7 +554,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(0x111111);
 			multiple_draw_triangle_lines(opengl_printer, sface);
 
@@ -565,7 +565,7 @@ void demo_hypercut(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 
 		{
-			auxiliaries::OpenGLPrinter opengl_printer;
+			voronota::auxiliaries::OpenGLPrinter opengl_printer;
 			opengl_printer.add_color(0xAAAAAA);
 			multiple_draw_triangle(opengl_printer, sface, true);
 			opengl_printer.add_color(0x111111);

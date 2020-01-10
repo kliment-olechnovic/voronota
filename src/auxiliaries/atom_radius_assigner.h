@@ -6,6 +6,9 @@
 #include <vector>
 #include <iostream>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -87,6 +90,8 @@ private:
 	double default_radius;
 	std::map<Descriptor, double> radii_by_descriptors;
 };
+
+}
 
 }
 

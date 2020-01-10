@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../../auxiliaries/time_utilities.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -57,6 +60,8 @@ public:
 private:
 	auxiliaries::ElapsedProcessorTime* elapsed_processor_time_ptr_;
 };
+
+}
 
 }
 

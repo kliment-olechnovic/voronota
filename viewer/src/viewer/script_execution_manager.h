@@ -12,6 +12,9 @@
 
 #include "operators_all.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -434,6 +437,8 @@ private:
 	int grid_variant_;
 	int output_stream_mode_;
 };
+
+}
 
 }
 

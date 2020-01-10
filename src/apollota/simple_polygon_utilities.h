@@ -7,6 +7,9 @@
 #include "basic_operations_on_points.h"
 #include "tuple.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -256,6 +259,8 @@ private:
 		}
 	};
 };
+
+}
 
 }
 

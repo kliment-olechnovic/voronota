@@ -6,6 +6,9 @@
 #include "json_writer.h"
 #include "command_documentation.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -104,6 +107,8 @@ private:
 		return static_cast<const OperatorResult&>(*this);
 	}
 };
+
+}
 
 }
 

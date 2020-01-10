@@ -6,14 +6,14 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
-void query_contacts_interchain_exposure_values(const auxiliaries::ProgramOptionsHandler& poh)
+void query_contacts_interchain_exposure_values(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
 	pohw.describe_io("stdout", false, true, "list of solvation values (line format: 'annotation interface_area non_interface_area')");
 
@@ -22,7 +22,7 @@ void query_contacts_interchain_exposure_values(const auxiliaries::ProgramOptions
 		return;
 	}
 
-	const std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	const std::map<CRADsPair, double> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");

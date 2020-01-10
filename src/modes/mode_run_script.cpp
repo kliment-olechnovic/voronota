@@ -3,9 +3,9 @@
 #include "../scripting/script_execution_manager_with_variant_output.h"
 #include "../scripting/json_writer.h"
 
-void run_script(const auxiliaries::ProgramOptionsHandler& poh)
+void run_script(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "script as plain text");
 	pohw.describe_io("stdout", false, true, "output of script execution");
 
@@ -18,9 +18,9 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	scripting::JSONWriter::Configuration::setup_default_configuration(scripting::JSONWriter::Configuration(max_unfolding));
+	voronota::scripting::JSONWriter::Configuration::setup_default_configuration(voronota::scripting::JSONWriter::Configuration(max_unfolding));
 
-	scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
+	voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
 
 	if(interactive)
 	{
@@ -30,7 +30,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 			std::getline(std::cin, line);
 			if(!line.empty())
 			{
-				scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(line, false), std::cout);
+				voronota::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(line, false), std::cout);
 				std::cout << std::endl;
 			}
 		}
@@ -39,7 +39,7 @@ void run_script(const auxiliaries::ProgramOptionsHandler& poh)
 	{
 		std::istreambuf_iterator<char> eos;
 		std::string script(std::istreambuf_iterator<char>(std::cin), eos);
-		scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, exit_on_first_failure), std::cout);
+		voronota::scripting::JSONWriter::write(execution_manager.execute_script_and_return_last_output(script, exit_on_first_failure), std::cout);
 		std::cout << std::endl;
 	}
 }

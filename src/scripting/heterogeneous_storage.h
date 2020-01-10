@@ -4,6 +4,9 @@
 #include "basic_types.h"
 #include "variant_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -14,6 +17,8 @@ struct HeterogeneousStorage
 	std::map< std::string, SummaryOfContacts > summaries_of_contacts;
 	VariantObject variant_object;
 };
+
+}
 
 }
 

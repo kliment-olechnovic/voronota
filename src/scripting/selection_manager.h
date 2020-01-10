@@ -5,6 +5,9 @@
 
 #include "testing_of_atoms_and_contacts.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -794,6 +797,8 @@ private:
 	std::map< std::string, std::set<std::size_t> > map_of_atoms_selections_;
 	std::map< std::string, std::set<std::size_t> > map_of_contacts_selections_;
 };
+
+}
 
 }
 

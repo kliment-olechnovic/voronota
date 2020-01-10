@@ -5,6 +5,9 @@
 
 #include "construction_of_atomic_balls.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -128,6 +131,8 @@ private:
 		return model_number;
 	}
 };
+
+}
 
 }
 

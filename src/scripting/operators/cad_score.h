@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../scoring_of_data_managers_using_cad_score.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -135,5 +138,7 @@ public:
 
 
 
+
+}
 
 #endif /* SCRIPTING_OPERATORS_CAD_SCORE_H_ */

@@ -5,6 +5,9 @@
 
 #include "triangulation.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -71,6 +74,8 @@ public:
 	}
 
 };
+
+}
 
 }
 

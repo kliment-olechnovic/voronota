@@ -3,6 +3,9 @@
 
 #include "constrained_contacts_construction.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -182,6 +185,8 @@ inline bool check_inter_atom_contact_peripherial(
 		}
 	}
 	return false;
+}
+
 }
 
 }

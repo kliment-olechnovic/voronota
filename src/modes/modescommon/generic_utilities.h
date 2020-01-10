@@ -3,6 +3,9 @@
 
 #include <map>
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -38,5 +41,7 @@ public:
 
 }
 
+
+}
 
 #endif /* MODESCOMMON_GENERIC_UTILITIES_H_ */

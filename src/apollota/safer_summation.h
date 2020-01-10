@@ -1,6 +1,9 @@
 #ifndef APOLLOTA_SAFE_SUMMATION_H_
 #define APOLLOTA_SAFE_SUMMATION_H_
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -109,6 +112,8 @@ inline double safer_sum(const double v0, const double v1, const double v2, const
 	sum=sum+y;
 
 	return sum;
+}
+
 }
 
 }

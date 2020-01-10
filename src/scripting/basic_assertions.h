@@ -3,6 +3,9 @@
 
 #include "basic_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -92,6 +95,8 @@ inline void assert_io_stream(const std::string& name, const std::istream& input)
 	{
 		throw std::runtime_error(std::string("Failed to use input stream '")+name+"'");
 	}
+}
+
 }
 
 }

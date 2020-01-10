@@ -5,14 +5,14 @@
 
 namespace
 {
-	typedef common::ChainResidueAtomDescriptor CRAD;
-	typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
-	typedef common::InteractionName InteractionName;
+	typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+	typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
+	typedef voronota::common::InteractionName InteractionName;
 }
 
-void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler& poh)
+void simulate_potential_for_membrane_proteins(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "normal potential");
 	pohw.describe_io("stdout", false, true, "simulated potential");
 
@@ -21,7 +21,7 @@ void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsH
 		return;
 	}
 
-	std::map<InteractionName, double> normal_potential=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
+	std::map<InteractionName, double> normal_potential=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 
 	double sum_of_sas_values=0.0;
 	int num_of_sas_values=0;
@@ -84,5 +84,5 @@ void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsH
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(simulated_potential, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(simulated_potential, std::cout);
 }

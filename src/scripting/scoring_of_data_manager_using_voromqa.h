@@ -6,6 +6,9 @@
 
 #include "data_manager.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -311,6 +314,8 @@ public:
 		construct_result(Configuration::get_default_configuration(), params, data_manager, result);
 	}
 };
+
+}
 
 }
 

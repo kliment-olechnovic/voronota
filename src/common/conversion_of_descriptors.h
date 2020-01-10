@@ -5,6 +5,9 @@
 #include "construction_of_atomic_balls.h"
 #include "construction_of_contacts.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -32,6 +35,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

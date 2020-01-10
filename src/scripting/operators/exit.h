@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -41,6 +44,8 @@ public:
 private:
 	bool* exit_status_ptr_;
 };
+
+}
 
 }
 

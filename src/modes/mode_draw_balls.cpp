@@ -11,35 +11,35 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
 
 void draw_cylinder(
-		const apollota::SimpleSphere& a,
-		const apollota::SimpleSphere& b,
+		const voronota::apollota::SimpleSphere& a,
+		const voronota::apollota::SimpleSphere& b,
 		const int sides,
-		auxiliaries::OpenGLPrinter& opengl_printer)
+		voronota::auxiliaries::OpenGLPrinter& opengl_printer)
 {
-	apollota::SimplePoint pa(a);
-	apollota::SimplePoint pb(b);
-	const apollota::SimplePoint axis=(pb-pa);
-	apollota::Rotation rotation(axis, 0);
-	const apollota::SimplePoint first_point=apollota::any_normal_of_vector<apollota::SimplePoint>(rotation.axis);
+	voronota::apollota::SimplePoint pa(a);
+	voronota::apollota::SimplePoint pb(b);
+	const voronota::apollota::SimplePoint axis=(pb-pa);
+	voronota::apollota::Rotation rotation(axis, 0);
+	const voronota::apollota::SimplePoint first_point=voronota::apollota::any_normal_of_vector<voronota::apollota::SimplePoint>(rotation.axis);
 	const double angle_step=360.0/static_cast<double>(std::min(std::max(sides, 6), 30));
-	std::vector<apollota::SimplePoint> contour;
+	std::vector<voronota::apollota::SimplePoint> contour;
 	contour.reserve(sides+1);
 	contour.push_back(first_point);
 	for(rotation.angle=angle_step;rotation.angle<360;rotation.angle+=angle_step)
 	{
-		contour.push_back(rotation.rotate<apollota::SimplePoint>(first_point));
+		contour.push_back(rotation.rotate<voronota::apollota::SimplePoint>(first_point));
 	}
 	contour.push_back(first_point);
-	std::vector<apollota::SimplePoint> vertices;
-	std::vector<apollota::SimplePoint> normals;
+	std::vector<voronota::apollota::SimplePoint> vertices;
+	std::vector<voronota::apollota::SimplePoint> normals;
 	vertices.reserve(contour.size()*2);
 	normals.reserve(vertices.size());
 	for(std::size_t i=0;i<contour.size();i++)
 	{
-		const apollota::SimplePoint& p=contour[i];
+		const voronota::apollota::SimplePoint& p=contour[i];
 		vertices.push_back(pa+(p*a.r));
 		vertices.push_back(pb+(p*b.r));
 		normals.push_back(p);
@@ -49,40 +49,40 @@ void draw_cylinder(
 }
 
 void draw_links(
-		const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls,
 		const double ball_collision_radius,
 		const double bsh_initial_radius,
 		const double ball_drawing_radius,
 		const double cylinder_drawing_radius,
 		const int cylinder_sides,
 		const bool check_sequence,
-		const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
-		auxiliaries::OpenGLPrinter& opengl_printer)
+		const voronota::modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
+		voronota::auxiliaries::OpenGLPrinter& opengl_printer)
 {
-	std::vector<apollota::SimpleSphere> spheres(list_of_balls.size());
+	std::vector<voronota::apollota::SimpleSphere> spheres(list_of_balls.size());
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		spheres[i]=apollota::SimpleSphere(list_of_balls[i].second, ball_collision_radius);
+		spheres[i]=voronota::apollota::SimpleSphere(list_of_balls[i].second, ball_collision_radius);
 	}
-	apollota::BoundingSpheresHierarchy bsh(spheres, bsh_initial_radius, 1);
+	voronota::apollota::BoundingSpheresHierarchy bsh(spheres, bsh_initial_radius, 1);
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		const apollota::SimpleSphere& a=spheres[i];
+		const voronota::apollota::SimpleSphere& a=spheres[i];
 		const CRAD& a_crad=list_of_balls[i].first;
 		drawing_parameters_wrapper.process(a_crad, list_of_balls[i].second.props.adjuncts, opengl_printer);
-		opengl_printer.add_sphere(apollota::SimpleSphere(a, ball_drawing_radius));
-		std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
+		opengl_printer.add_sphere(voronota::apollota::SimpleSphere(a, ball_drawing_radius));
+		std::vector<std::size_t> collisions=voronota::apollota::SearchForSphericalCollisions::find_all_collisions(bsh, a);
 		for(std::size_t j=0;j<collisions.size();j++)
 		{
 			const std::size_t collision_id=collisions[j];
 			if(i!=collision_id)
 			{
-				const apollota::SimpleSphere& b=spheres[collision_id];
+				const voronota::apollota::SimpleSphere& b=spheres[collision_id];
 				const CRAD& b_crad=list_of_balls[collision_id].first;
 				if(!check_sequence || (a_crad.chainID==b_crad.chainID && abs(a_crad.resSeq-b_crad.resSeq)<=1))
 				draw_cylinder(
-						apollota::SimpleSphere(a, cylinder_drawing_radius),
-						apollota::SimpleSphere(apollota::sum_of_points<apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
+						voronota::apollota::SimpleSphere(a, cylinder_drawing_radius),
+						voronota::apollota::SimpleSphere(voronota::apollota::sum_of_points<voronota::apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
 						cylinder_sides,
 						opengl_printer);
 			}
@@ -91,14 +91,14 @@ void draw_links(
 }
 
 void draw_trace(
-		const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
+		const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls,
 		const std::string& atom_name,
 		const double max_distance,
 		const double drawing_radius,
-		const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
-		auxiliaries::OpenGLPrinter& opengl_printer)
+		const voronota::modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
+		voronota::auxiliaries::OpenGLPrinter& opengl_printer)
 {
-	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls_filtered;
+	std::vector< std::pair<CRAD, voronota::common::BallValue> > list_of_balls_filtered;
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
 		if(list_of_balls[i].first.name==atom_name)
@@ -134,11 +134,11 @@ public:
 	}
 
 	void draw_cartoon(
-			const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
-			const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
-			auxiliaries::OpenGLPrinter& opengl_printer)
+			const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls,
+			const voronota::modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
+			voronota::auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		std::map<CRAD, common::BallValue> map_of_crad_values;
+		std::map<CRAD, voronota::common::BallValue> map_of_crad_values;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
@@ -151,7 +151,7 @@ public:
 		for(std::map< CRAD, std::vector<RibbonVertebra> >::const_iterator it=spine.begin();it!=spine.end();++it)
 		{
 			const CRAD& crad=it->first;
-			const common::BallValue& ball_value=map_of_crad_values[crad];
+			const voronota::common::BallValue& ball_value=map_of_crad_values[crad];
 			const std::vector<RibbonVertebra>& subspine=it->second;
 			if(subspine.size()>1)
 			{
@@ -187,8 +187,8 @@ public:
 				{
 					for(int o=0;o<2;o++)
 					{
-						std::vector<apollota::SimplePoint> vertices;
-						std::vector<apollota::SimplePoint> normals;
+						std::vector<voronota::apollota::SimplePoint> vertices;
+						std::vector<voronota::apollota::SimplePoint> normals;
 						for(std::size_t i=0;i<subspine.size();i++)
 						{
 							double mwk=wk;
@@ -197,10 +197,10 @@ public:
 								mwk=(1.0-static_cast<double>(i)/static_cast<double>(subspine.size()-1))*arrow_width+loop_width;
 							}
 							const RibbonVertebra& rv=subspine[i];
-							const apollota::SimplePoint c=rv.center;
-							const apollota::SimplePoint u=(o==0 ? ((rv.up-c).unit()*(e==0 ? 1.0 : -1.0)*hk) : ((rv.right-c).unit()*(e==0 ? 1.0 : -1.0)*mwk));
-							const apollota::SimplePoint r=(o==0 ? ((rv.right-c).unit()*mwk) : ((rv.up-c).unit()*hk));
-							const apollota::SimplePoint l=r.inverted();
+							const voronota::apollota::SimplePoint c=rv.center;
+							const voronota::apollota::SimplePoint u=(o==0 ? ((rv.up-c).unit()*(e==0 ? 1.0 : -1.0)*hk) : ((rv.right-c).unit()*(e==0 ? 1.0 : -1.0)*mwk));
+							const voronota::apollota::SimplePoint r=(o==0 ? ((rv.right-c).unit()*mwk) : ((rv.up-c).unit()*hk));
+							const voronota::apollota::SimplePoint l=r.inverted();
 							vertices.push_back(c+l+u);
 							vertices.push_back(c+r+u);
 							normals.push_back(u.unit());
@@ -216,14 +216,14 @@ public:
 							mwk=(e==0 ? (arrow_width+loop_width) : loop_width);
 						}
 						const RibbonVertebra& rv=(e==0 ? subspine.front() : subspine.back());
-						const apollota::SimplePoint c=rv.center;
-						const apollota::SimplePoint u=(rv.up-c).unit()*hk;
-						const apollota::SimplePoint d=u.inverted();
-						const apollota::SimplePoint r=(rv.right-c).unit()*mwk;
-						const apollota::SimplePoint l=r.inverted();
-						const apollota::SimplePoint n=((subspine.front().center-subspine.back().center)*(e==0 ? 1.0 : -1.0)).unit();
-						std::vector<apollota::SimplePoint> vertices;
-						std::vector<apollota::SimplePoint> normals;
+						const voronota::apollota::SimplePoint c=rv.center;
+						const voronota::apollota::SimplePoint u=(rv.up-c).unit()*hk;
+						const voronota::apollota::SimplePoint d=u.inverted();
+						const voronota::apollota::SimplePoint r=(rv.right-c).unit()*mwk;
+						const voronota::apollota::SimplePoint l=r.inverted();
+						const voronota::apollota::SimplePoint n=((subspine.front().center-subspine.back().center)*(e==0 ? 1.0 : -1.0)).unit();
+						std::vector<voronota::apollota::SimplePoint> vertices;
+						std::vector<voronota::apollota::SimplePoint> normals;
 						vertices.push_back(c+d+l);
 						vertices.push_back(c+d+r);
 						vertices.push_back(c+u+l);
@@ -244,12 +244,12 @@ private:
 	{
 	public:
 		CRAD crad;
-		apollota::SimplePoint CA;
-		apollota::SimplePoint C;
-		apollota::SimplePoint N;
-		apollota::SimplePoint O;
-		apollota::SimplePoint up;
-		apollota::SimplePoint right;
+		voronota::apollota::SimplePoint CA;
+		voronota::apollota::SimplePoint C;
+		voronota::apollota::SimplePoint N;
+		voronota::apollota::SimplePoint O;
+		voronota::apollota::SimplePoint up;
+		voronota::apollota::SimplePoint right;
 		bool CA_flag;
 		bool C_flag;
 		bool N_flag;
@@ -281,7 +281,7 @@ private:
 			return (CA_flag && C_flag && N_flag && O_flag);
 		}
 
-		void orient(const apollota::SimplePoint& forward)
+		void orient(const voronota::apollota::SimplePoint& forward)
 		{
 			if(orientable())
 			{
@@ -304,13 +304,13 @@ private:
 
 	struct RibbonVertebra
 	{
-		apollota::SimplePoint center;
-		apollota::SimplePoint up;
-		apollota::SimplePoint right;
+		voronota::apollota::SimplePoint center;
+		voronota::apollota::SimplePoint up;
+		voronota::apollota::SimplePoint right;
 		int ss_type;
 	};
 
-	static int ss_type_from_ball_value(const common::BallValue& ball_value)
+	static int ss_type_from_ball_value(const voronota::common::BallValue& ball_value)
 	{
 		if(ball_value.props.tags.count("dssp=H")>0 || ball_value.props.tags.count("dssp=G")>0 || ball_value.props.tags.count("dssp=I")>0)
 		{
@@ -323,14 +323,14 @@ private:
 		return 0;
 	}
 
-	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls)
+	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls)
 	{
 		std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const common::BallValue& ball_value=list_of_balls[i].second;
-			const apollota::SimplePoint ball_center(ball_value);
+			const voronota::common::BallValue& ball_value=list_of_balls[i].second;
+			const voronota::apollota::SimplePoint ball_center(ball_value);
 			ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 			ro.crad=crad.without_atom();
 			if(crad.name=="CA")
@@ -368,7 +368,7 @@ private:
 				else
 				{
 					const ResidueOrientation& prev_ro=result.back().back();
-					if(prev_ro.crad.chainID==ro.crad.chainID && apollota::distance_from_point_to_point(prev_ro.C, ro.N)<1.6)
+					if(prev_ro.crad.chainID==ro.crad.chainID && voronota::apollota::distance_from_point_to_point(prev_ro.C, ro.N)<1.6)
 					{
 						result.back().push_back(ro);
 					}
@@ -429,9 +429,9 @@ private:
 			{
 				if(beta_ids.size()>2)
 				{
-					std::vector<apollota::SimplePoint> controls_center(beta_ids.size());
-					std::vector<apollota::SimplePoint> controls_up(beta_ids.size());
-					std::vector<apollota::SimplePoint> controls_right(beta_ids.size());
+					std::vector<voronota::apollota::SimplePoint> controls_center(beta_ids.size());
+					std::vector<voronota::apollota::SimplePoint> controls_up(beta_ids.size());
+					std::vector<voronota::apollota::SimplePoint> controls_right(beta_ids.size());
 					for(std::size_t j=0;j<beta_ids.size();j++)
 					{
 						const RibbonVertebra& rv=controls[beta_ids[j]];
@@ -443,9 +443,9 @@ private:
 					{
 						const double t=1.0/static_cast<double>(beta_ids.size()-1)*static_cast<double>(j);
 						RibbonVertebra& rv=controls[beta_ids[j]];
-						rv.center=apollota::bezier_curve_point(controls_center, t);
-						rv.up=apollota::bezier_curve_point(controls_up, t);
-						rv.right=apollota::bezier_curve_point(controls_right, t);
+						rv.center=voronota::apollota::bezier_curve_point(controls_center, t);
+						rv.up=voronota::apollota::bezier_curve_point(controls_up, t);
+						rv.right=voronota::apollota::bezier_curve_point(controls_right, t);
 					}
 				}
 				beta_ids.clear();
@@ -456,26 +456,26 @@ private:
 			for(std::size_t i=0;i+1<controls.size();i++)
 			{
 				int ss_types[4]={(i>0 ? controls[i-1].ss_type : 0), controls[i].ss_type, controls[i+1].ss_type, (i+2<controls.size() ? controls[i+2].ss_type : 0)};
-				std::vector<apollota::SimplePoint> strip_center;
-				std::vector<apollota::SimplePoint> strip_up;
-				std::vector<apollota::SimplePoint> strip_right;
+				std::vector<voronota::apollota::SimplePoint> strip_center;
+				std::vector<voronota::apollota::SimplePoint> strip_up;
+				std::vector<voronota::apollota::SimplePoint> strip_right;
 				if(i==0 || (ss_types[0]!=2 && ss_types[1]==2 && ss_types[2]==2))
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i].center+(controls[i].center-controls[i+1].center), controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
-					strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i].up+(controls[i].up-controls[i+1].up), controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
-					strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i].right+(controls[i].right-controls[i+1].right), controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i].center+(controls[i].center-controls[i+1].center), controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+					strip_up=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i].up+(controls[i].up-controls[i+1].up), controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+					strip_right=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i].right+(controls[i].right-controls[i+1].right), controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
 				}
 				else if(i+2==controls.size() || (ss_types[1]==2 && ss_types[2]==2 && ss_types[3]!=2))
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
-					strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
-					strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
+					strip_up=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+1].up+(controls[i+1].up-controls[i].up), k, steps);
+					strip_right=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+1].right+(controls[i+1].right-controls[i].right), k, steps);
 				}
 				else
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
-					strip_up=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
-					strip_right=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+					strip_up=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].up, controls[i].up, controls[i+1].up, controls[i+2].up, k, steps);
+					strip_right=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].right, controls[i].right, controls[i+1].right, controls[i+2].right, k, steps);
 				}
 				if(!strip_center.empty() && strip_center.size()==strip_up.size() && strip_center.size()==strip_right.size())
 				{
@@ -526,7 +526,7 @@ private:
 		return result;
 	}
 
-	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls, const double k, const int steps)
+	static std::map< CRAD, std::vector<RibbonVertebra> > construct_ribbon_spine(const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls, const double k, const int steps)
 	{
 		std::map< CRAD, std::vector<RibbonVertebra> > result;
 		const std::vector< std::vector<ResidueOrientation> > residue_orientations=collect_residue_orientations(list_of_balls);
@@ -558,11 +558,11 @@ public:
 	}
 
 	void draw_cartoon(
-			const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls,
-			const modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
-			auxiliaries::OpenGLPrinter& opengl_printer)
+			const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls,
+			const voronota::modescommon::DrawingParametersWrapper& drawing_parameters_wrapper,
+			voronota::auxiliaries::OpenGLPrinter& opengl_printer)
 	{
-		std::map<CRAD, common::BallValue> map_of_crad_values;
+		std::map<CRAD, voronota::common::BallValue> map_of_crad_values;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
@@ -582,12 +582,12 @@ public:
 			{
 				const RibbonVertebra& rv=subspine[i];
 				const RibbonVertebra& next_rv=subspine[i+1];
-				draw_cylinder(apollota::SimpleSphere(rv.center, main_radius), apollota::SimpleSphere(next_rv.center, main_radius), cylinder_quality, opengl_printer);
+				draw_cylinder(voronota::apollota::SimpleSphere(rv.center, main_radius), voronota::apollota::SimpleSphere(next_rv.center, main_radius), cylinder_quality, opengl_printer);
 			}
 			for(std::size_t i=0;i<subspine.size();i++)
 			{
 				const RibbonVertebra& rv=subspine[i];
-				opengl_printer.add_sphere(apollota::SimpleSphere(rv.center, main_radius));
+				opengl_printer.add_sphere(voronota::apollota::SimpleSphere(rv.center, main_radius));
 			}
 		}
 		for(std::size_t i=0;i<residue_orientations.size();i++)
@@ -596,10 +596,10 @@ public:
 			{
 				const ResidueOrientation& ro=residue_orientations[i][j];
 				const CRAD& crad=ro.crad;
-				const apollota::SimplePoint p=(ro.C3+((ro.C2-ro.C3).unit()*6.0));
+				const voronota::apollota::SimplePoint p=(ro.C3+((ro.C2-ro.C3).unit()*6.0));
 				drawing_parameters_wrapper.process(crad, map_of_crad_values[crad].props.adjuncts, opengl_printer);
-				draw_cylinder(apollota::SimpleSphere(ro.C3, side_radius), apollota::SimpleSphere(p, side_radius), cylinder_quality, opengl_printer);
-				opengl_printer.add_sphere(apollota::SimpleSphere(p, side_radius));
+				draw_cylinder(voronota::apollota::SimpleSphere(ro.C3, side_radius), voronota::apollota::SimpleSphere(p, side_radius), cylinder_quality, opengl_printer);
+				opengl_printer.add_sphere(voronota::apollota::SimpleSphere(p, side_radius));
 			}
 		}
 	}
@@ -609,8 +609,8 @@ private:
 	{
 	public:
 		CRAD crad;
-		apollota::SimplePoint C3;
-		apollota::SimplePoint C2;
+		voronota::apollota::SimplePoint C3;
+		voronota::apollota::SimplePoint C2;
 		bool C3_flag;
 		bool C2_flag;
 
@@ -626,17 +626,17 @@ private:
 
 	struct RibbonVertebra
 	{
-		apollota::SimplePoint center;
+		voronota::apollota::SimplePoint center;
 	};
 
-	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, common::BallValue> >& list_of_balls)
+	static std::vector< std::vector<ResidueOrientation> > collect_residue_orientations(const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls)
 	{
 		std::map<CRAD, ResidueOrientation> map_of_residue_orientations;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const common::BallValue& ball_value=list_of_balls[i].second;
-			const apollota::SimplePoint ball_center(ball_value);
+			const voronota::common::BallValue& ball_value=list_of_balls[i].second;
+			const voronota::apollota::SimplePoint ball_center(ball_value);
 			ResidueOrientation& ro=map_of_residue_orientations[crad.without_atom()];
 			ro.crad=crad.without_atom();
 			if(crad.name=="C3'")
@@ -663,7 +663,7 @@ private:
 				else
 				{
 					const ResidueOrientation& prev_ro=result.back().back();
-					if(prev_ro.crad.chainID==ro.crad.chainID && apollota::distance_from_point_to_point(prev_ro.C3, ro.C3)<8.0)
+					if(prev_ro.crad.chainID==ro.crad.chainID && voronota::apollota::distance_from_point_to_point(prev_ro.C3, ro.C3)<8.0)
 					{
 						result.back().push_back(ro);
 					}
@@ -691,18 +691,18 @@ private:
 		{
 			for(std::size_t i=0;i+1<controls.size();i++)
 			{
-				std::vector<apollota::SimplePoint> strip_center;
+				std::vector<voronota::apollota::SimplePoint> strip_center;
 				if(i==0)
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i].center+(controls[i].center-controls[i+1].center), controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i].center+(controls[i].center-controls[i+1].center), controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
 				}
 				else if(i+2==controls.size())
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+1].center+(controls[i+1].center-controls[i].center), k, steps);
 				}
 				else
 				{
-					strip_center=apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
+					strip_center=voronota::apollota::interpolate_using_cubic_hermite_spline(controls[i-1].center, controls[i].center, controls[i+1].center, controls[i+2].center, k, steps);
 				}
 				if(!strip_center.empty())
 				{
@@ -748,9 +748,9 @@ private:
 
 }
 
-void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
+void draw_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
@@ -758,7 +758,7 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "balls");
-	modescommon::DrawingParametersWrapper drawing_parameters_wrapper;
+	voronota::modescommon::DrawingParametersWrapper drawing_parameters_wrapper;
 	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
 	drawing_parameters_wrapper.adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
 	drawing_parameters_wrapper.adjunct_gradient_blue=poh.argument<double>(pohw.describe_option("--adjunct-gradient-blue", "number", "blue adjunct gradient value"), 0.0);
@@ -774,21 +774,21 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef std::vector< std::pair<CRAD, common::BallValue> > ListOfBalls;
-	const ListOfBalls list_of_balls=auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
+	typedef std::vector< std::pair<CRAD, voronota::common::BallValue> > ListOfBalls;
+	const ListOfBalls list_of_balls=voronota::auxiliaries::IOUtilities().read_lines_to_map<ListOfBalls>(std::cin);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	auxiliaries::OpenGLPrinter opengl_printer;
+	voronota::auxiliaries::OpenGLPrinter opengl_printer;
 	opengl_printer.add_color(drawing_parameters_wrapper.default_color);
 	if(representation=="vdw")
 	{
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const common::BallValue& value=list_of_balls[i].second;
+			const voronota::common::BallValue& value=list_of_balls[i].second;
 			drawing_parameters_wrapper.process(crad, value.props.adjuncts, opengl_printer);
 			opengl_printer.add_sphere(value);
 		}
@@ -830,5 +830,5 @@ void draw_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 }

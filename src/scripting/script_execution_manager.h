@@ -3,6 +3,9 @@
 
 #include "operators_all.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -691,6 +694,8 @@ private:
 	auxiliaries::ElapsedProcessorTime elapsed_processor_time_;
 	bool exit_requested_;
 };
+
+}
 
 }
 

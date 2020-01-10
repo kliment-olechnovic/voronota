@@ -9,12 +9,12 @@
 
 #include "../common/construction_of_cad_score.h"
 
-void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+void compare_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef common::ConstructionOfCADScore::CRADsPair CRADsPair;
-	typedef common::ConstructionOfCADScore::CADDescriptor CADDescriptor;
+	typedef voronota::common::ConstructionOfCADScore::CRADsPair CRADsPair;
+	typedef voronota::common::ConstructionOfCADScore::CADDescriptor CADDescriptor;
 
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of model contacts (line format: 'annotation1 annotation2 area')");
 	pohw.describe_io("stdout", false, true, "global scores (atom-level and residue-level)");
 
@@ -39,19 +39,19 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<CRADsPair, double> map_of_target_contacts=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(target_contacts_file);
+	const std::map<CRADsPair, double> map_of_target_contacts=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(target_contacts_file);
 	if(map_of_target_contacts.empty())
 	{
 		throw std::runtime_error("No target contacts input.");
 	}
 
-	common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters;
+	voronota::common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters;
 
 	parameters.ignore_residue_names=ignore_residue_names;
 	parameters.remap_chains=remap_chains;
@@ -62,26 +62,26 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!chains_renaming_file.empty())
 	{
-		parameters.map_of_renamings=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<std::string, std::string> >(chains_renaming_file);
+		parameters.map_of_renamings=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<std::string, std::string> >(chains_renaming_file);
 	}
 
-	common::ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
+	voronota::common::ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
 
-	if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(parameters, map_of_target_contacts, map_of_contacts, bundle))
+	if(!voronota::common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(parameters, map_of_target_contacts, map_of_contacts, bundle))
 	{
 		throw std::runtime_error("Failed to calculate CAD-score.");
 	}
 
 	if(parameters.remap_chains)
 	{
-		auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_renamings_from_remapping, remapped_chains_file);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_renamings_from_remapping, remapped_chains_file);
 	}
 
 	if(parameters.atom_level)
 	{
-		auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_inter_atom_cad_descriptors, inter_atom_scores_file);
 
-		auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_atom_cad_descriptors, atom_scores_file);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_atom_cad_descriptors, atom_scores_file);
 
 		std::cout << "atom_level_global " << bundle.atom_level_global_descriptor << "\n";
 		std::cout << "atom_average_local " << bundle.atom_average_local_score << "\n";
@@ -90,13 +90,13 @@ void compare_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(parameters.residue_level)
 	{
-		auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_inter_residue_cad_descriptors, inter_residue_scores_file);
 
-		auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_residue_cad_descriptors, residue_scores_file);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.map_of_residue_cad_descriptors, residue_scores_file);
 
 		if(!smoothed_scores_file.empty())
 		{
-			auxiliaries::IOUtilities().write_map_to_file(bundle.residue_scores(smoothing_window), smoothed_scores_file);
+			voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.residue_scores(smoothing_window), smoothed_scores_file);
 		}
 
 		std::cout << "residue_level_global " << bundle.residue_level_global_descriptor << "\n";

@@ -7,6 +7,9 @@
 #include "rotation.h"
 #include "safer_quadratic_equation_root.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -217,6 +220,8 @@ private:
 		return std::max(default_comparison_epsilon(), 0.001);
 	}
 };
+
+}
 
 }
 

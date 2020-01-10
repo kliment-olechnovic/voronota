@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -74,6 +77,8 @@ protected:
 		return false;
 	}
 };
+
+}
 
 }
 

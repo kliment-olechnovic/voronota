@@ -13,8 +13,8 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file_name, const bool inter_residue_hbplus_tags)
 {
@@ -22,13 +22,13 @@ std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file
 	if(!hbplus_file_name.empty())
 	{
 		std::ifstream input_file(hbplus_file_name.c_str(), std::ios::in);
-		auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data=auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
+		voronota::auxiliaries::AtomsIO::HBPlusReader::Data hbplus_file_data=voronota::auxiliaries::AtomsIO::HBPlusReader::read_data_from_file_stream(input_file);
 		if(!hbplus_file_data.hbplus_records.empty())
 		{
-			for(std::vector<auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
+			for(std::vector<voronota::auxiliaries::AtomsIO::HBPlusReader::HBPlusRecord>::const_iterator it=hbplus_file_data.hbplus_records.begin();it!=hbplus_file_data.hbplus_records.end();++it)
 			{
-				const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
-				const auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
+				const voronota::auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& a=it->first;
+				const voronota::auxiliaries::AtomsIO::HBPlusReader::ShortAtomDescriptor& b=it->second;
 				const CRADsPair crads_pair(CRAD(CRAD::null_num(), a.chainID, a.resSeq, a.resName, a.name, "", ""), CRAD(CRAD::null_num(), b.chainID, b.resSeq, b.resName, b.name, "", ""));
 				set_of_hbplus_crad_pairs.insert(inter_residue_hbplus_tags ? CRADsPair(crads_pair.a.without_atom(), crads_pair.b.without_atom()) : crads_pair);
 			}
@@ -37,13 +37,13 @@ std::set<CRADsPair> init_set_of_hbplus_crad_pairs(const std::string& hbplus_file
 	return set_of_hbplus_crad_pairs;
 }
 
-void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, common::ContactValue>& map_of_contacts)
+void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CRADsPair, voronota::common::ContactValue>& map_of_contacts)
 {
-	const std::map<CRAD, CRAD> renaming_map_of_crads=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
+	const std::map<CRAD, CRAD> renaming_map_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, CRAD> >(renaming_map);
 	if(!renaming_map_of_crads.empty())
 	{
-		std::map< CRADsPair, common::ContactValue > map_of_renamed_contacts;
-		for(std::map< CRADsPair, common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		std::map< CRADsPair, voronota::common::ContactValue > map_of_renamed_contacts;
+		for(std::map< CRADsPair, voronota::common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
@@ -62,15 +62,15 @@ void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CR
 	}
 }
 
-void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, common::ContactValue>& map_of_contacts)
+void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, voronota::common::ContactValue>& map_of_contacts)
 {
-	const std::set<CRAD> summing_exceptions_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
-	std::map< CRADsPair, common::ContactValue > map_of_reduced_contacts;
-	for(std::map< CRADsPair, common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	const std::set<CRAD> summing_exceptions_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
+	std::map< CRADsPair, voronota::common::ContactValue > map_of_reduced_contacts;
+	for(std::map< CRADsPair, voronota::common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		const CRADsPair& raw_crads=it->first;
-		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.a, summing_exceptions_set_of_crads));
-		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.b, summing_exceptions_set_of_crads));
+		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.a, summing_exceptions_set_of_crads));
+		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.b, summing_exceptions_set_of_crads));
 		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()), raw_crads.reversed_display);
 		if(!(crads.a==crads.b))
 		{
@@ -82,9 +82,9 @@ void sum_contacts_into_inter_residue_contacts(const std::string& summing_excepti
 
 }
 
-void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts [graphics]')");
 
@@ -125,15 +125,15 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string summing_exceptions=poh.argument<std::string>(pohw.describe_option("--summing-exceptions", "string", "file path to input inter-residue summing exceptions annotations"), "");
 	const bool summarize=poh.contains_option(pohw.describe_option("--summarize", "", "flag to output only summary of matched contacts"));
 	const bool summarize_by_first=poh.contains_option(pohw.describe_option("--summarize-by-first", "", "flag to output only summary of matched contacts by first identifier"));
-	common::enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
+	voronota::common::enabled_output_of_ContactValue_graphics()=poh.contains_option(pohw.describe_option("--preserve-graphics", "", "flag to preserve graphics in output"));
 
 	if(!pohw.assert_or_print_help(false))
 	{
 		return;
 	}
 
-	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	std::map<CRADsPair, voronota::common::ContactValue> map_of_contacts;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -149,16 +149,16 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
 	}
 
-	std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator> selected_contacts;
+	std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator> selected_contacts;
 
-	const std::set<CRAD> matchable_external_first_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
-	const std::set<CRAD> matchable_external_second_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
+	const std::set<CRAD> matchable_external_first_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_first);
+	const std::set<CRAD> matchable_external_second_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_second);
 	{
-		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
-		for(std::map< CRADsPair, common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		const std::set<CRADsPair> matchable_external_set_of_crad_pairs=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRADsPair> >(match_external_pairs);
+		for(std::map< CRADsPair, voronota::common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			const common::ContactValue& value=it->second;
+			const voronota::common::ContactValue& value=it->second;
 			bool passed=false;
 			if(
 					value.area>=match_min_area && value.area<=match_max_area &&
@@ -166,21 +166,21 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					(!no_solvent || !(crads.a==CRAD::solvent() || crads.b==CRAD::solvent())) &&
 					(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
 					CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
-					common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
-					common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-					(match_external_pairs.empty() || common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, crads, matchable_external_set_of_crad_pairs))
+					voronota::common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+					voronota::common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+					(match_external_pairs.empty() || voronota::common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, crads, matchable_external_set_of_crad_pairs))
 			)
 			{
 				const bool matched_first_second=(
-						common::MatchingUtilities::match_crad(crads.a, match_first, match_first_not) &&
-						common::MatchingUtilities::match_crad(crads.b, match_second, match_second_not) &&
-						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_first_set_of_crads)) &&
-						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_second_set_of_crads)));
+						voronota::common::MatchingUtilities::match_crad(crads.a, match_first, match_first_not) &&
+						voronota::common::MatchingUtilities::match_crad(crads.b, match_second, match_second_not) &&
+						(match_external_first.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_second_set_of_crads)));
 				const bool matched_second_first=matched_first_second || (
-						common::MatchingUtilities::match_crad(crads.b, match_first, match_first_not) &&
-						common::MatchingUtilities::match_crad(crads.a, match_second, match_second_not) &&
-						(match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_first_set_of_crads)) &&
-						(match_external_second.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_second_set_of_crads)));
+						voronota::common::MatchingUtilities::match_crad(crads.b, match_first, match_first_not) &&
+						voronota::common::MatchingUtilities::match_crad(crads.a, match_second, match_second_not) &&
+						(match_external_first.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.b, matchable_external_first_set_of_crads)) &&
+						(match_external_second.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crads.a, matchable_external_second_set_of_crads)));
 				passed=(matched_first_second || matched_second_first);
 				if(passed && !invert)
 				{
@@ -197,14 +197,14 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool update_mode=(drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_external_means.empty() || !set_hbplus_tags.empty() || !set_distance_bins_tags.empty());
 	if(update_mode && !selected_contacts.empty())
 	{
-		const std::map<CRADsPair, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
-		const std::map<CRAD, double> map_of_external_values_for_averaging=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_means);
+		const std::map<CRADsPair, double> map_of_external_adjunct_values=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRADsPair, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_values_for_averaging=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_means);
 		const std::set<CRADsPair> set_of_hbplus_crad_pairs=init_set_of_hbplus_crad_pairs(set_hbplus_tags, inter_residue_hbplus_tags);
-		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
+		const std::set<double> distance_thresholds_for_bins=(set_distance_bins_tags.empty() ? std::set<double>() : voronota::auxiliaries::IOUtilities(';').read_string_lines_to_set< std::set<double> >(set_distance_bins_tags));
 
-		for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
+		for(std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator>::iterator selected_map_it=selected_contacts.begin();selected_map_it!=selected_contacts.end();++selected_map_it)
 		{
-			std::map<CRADsPair, common::ContactValue>::iterator it=selected_map_it->second;
+			std::map<CRADsPair, voronota::common::ContactValue>::iterator it=selected_map_it->second;
 			if(it!=map_of_contacts.end())
 			{
 				if(drop_tags)
@@ -225,7 +225,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!map_of_external_adjunct_values.empty())
 				{
-					const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crads_pair_with_map_of_crads_pairs(false, it->first, map_of_external_adjunct_values);
+					const std::pair<bool, double> adjunct_value=voronota::common::MatchingUtilities::match_crads_pair_with_map_of_crads_pairs(false, it->first, map_of_external_adjunct_values);
 					if(adjunct_value.first)
 					{
 						it->second.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
@@ -245,7 +245,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 				if(!set_of_hbplus_crad_pairs.empty())
 				{
-					if(common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, it->first, set_of_hbplus_crad_pairs))
+					if(voronota::common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, it->first, set_of_hbplus_crad_pairs))
 					{
 						it->second.props.tags.insert(inter_residue_hbplus_tags ? "rhb" : "hb");
 					}
@@ -282,8 +282,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(summarize)
 	{
-		common::ContactValue summary;
-		for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+		voronota::common::ContactValue summary;
+		for(std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 		{
 			summary.add(it->second->second);
 			summary.graphics.clear();
@@ -292,15 +292,15 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(summarize_by_first)
 	{
-		std::map< CRADsPair, common::ContactValue > map_of_summaries;
-		for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+		std::map< CRADsPair, voronota::common::ContactValue > map_of_summaries;
+		for(std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 		{
 			CRAD crads[2]={it->first.a, it->first.b};
 			for(int i=0;i<2;i++)
 			{
-				if(crads[i]!=CRAD::any() && common::MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crads[i], matchable_external_first_set_of_crads)))
+				if(crads[i]!=CRAD::any() && voronota::common::MatchingUtilities::match_crad(crads[i], match_first, match_first_not) && (match_external_first.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crads[i], matchable_external_first_set_of_crads)))
 				{
-					common::ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
+					voronota::common::ContactValue& cv=map_of_summaries[CRADsPair(crads[i], CRAD::any())];
 					cv.add(it->second->second);
 					cv.graphics.clear();
 				}
@@ -310,13 +310,13 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_summaries);
 		}
-		auxiliaries::IOUtilities().write_map(map_of_summaries, std::cout);
+		voronota::auxiliaries::IOUtilities().write_map(map_of_summaries, std::cout);
 	}
 	else
 	{
 		if(!update_mode && !inter_residue_summation_needed)
 		{
-			for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+			for(std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 			{
 				std::cout << it->first << " " << it->second->second << "\n";
 			}
@@ -325,8 +325,8 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		{
 			if(!update_mode)
 			{
-				std::map< CRADsPair, common::ContactValue > map_of_selected_contacts;
-				for(std::map<CRADsPair, std::map<CRADsPair, common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
+				std::map< CRADsPair, voronota::common::ContactValue > map_of_selected_contacts;
+				for(std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator>::const_iterator it=selected_contacts.begin();it!=selected_contacts.end();++it)
 				{
 					map_of_selected_contacts.insert(std::make_pair(it->first, it->second->second));
 				}
@@ -336,7 +336,7 @@ void query_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 			{
 				sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
 			}
-			auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
+			voronota::auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 		}
 	}
 }

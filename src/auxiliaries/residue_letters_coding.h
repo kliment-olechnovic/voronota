@@ -4,6 +4,9 @@
 #include <string>
 #include <map>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -70,6 +73,8 @@ private:
 		return m;
 	}
 };
+
+}
 
 }
 

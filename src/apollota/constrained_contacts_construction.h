@@ -9,6 +9,9 @@
 #include "constrained_contact_remainder.h"
 #include "triangulation_queries.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -413,6 +416,8 @@ private:
 		return result;
 	}
 };
+
+}
 
 }
 

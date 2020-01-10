@@ -6,6 +6,9 @@
 #include <vector>
 #include <map>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -69,6 +72,8 @@ private:
 	std::string contents_;
 	std::vector<XMLWriter> children_;
 };
+
+}
 
 }
 

@@ -9,6 +9,9 @@
 #include "rotation.h"
 #include "simple_polygon_utilities.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -670,6 +673,8 @@ private:
 		return star_domain;
 	}
 };
+
+}
 
 }
 

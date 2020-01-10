@@ -7,6 +7,9 @@
 #include <vector>
 #include <limits>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -989,6 +992,8 @@ private:
 	ObjectTyper object_typer_;
 	std::ostringstream string_stream_;
 };
+
+}
 
 }
 

@@ -59,9 +59,9 @@ std::map< std::pair<int, int>, int > summarize_join_map(const std::map< std::str
 
 }
 
-void compare_files_as_sets(const auxiliaries::ProgramOptionsHandler& poh)
+void compare_files_as_sets(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "nothing");
 	pohw.describe_io("stdout", false, true, "results");
 

@@ -6,6 +6,9 @@
 #include <string>
 #include <sstream>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -292,6 +295,8 @@ public:
 		return color_from_gradient(anchors, value);
 	}
 };
+
+}
 
 }
 

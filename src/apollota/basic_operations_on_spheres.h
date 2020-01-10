@@ -3,6 +3,9 @@
 
 #include "basic_operations_on_points.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -215,6 +218,8 @@ inline T& operator>>(T& input, SimpleSphere& sphere)
 {
 	input >> sphere.x >> sphere.y >> sphere.z >> sphere.r;
 	return input;
+}
+
 }
 
 }

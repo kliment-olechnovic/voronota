@@ -21,10 +21,10 @@ struct ParallelComputationResult
 	{
 	}
 
-	std::vector<apollota::SimpleSphere> input_spheres;
+	std::vector<voronota::apollota::SimpleSphere> input_spheres;
 	std::size_t number_of_initialized_parts;
 	std::size_t number_of_produced_quadruples;
-	apollota::Triangulation::QuadruplesMap merged_quadruples_map;
+	voronota::apollota::Triangulation::QuadruplesMap merged_quadruples_map;
 };
 
 class ParallelComputationProcessingSimulated
@@ -37,19 +37,19 @@ public:
 			ParallelComputationResult& result)
 	{
 		result.input_spheres.clear();
-		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+		std::vector<voronota::apollota::SimpleSphere>& spheres=result.input_spheres;
+		voronota::auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
-		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+		const std::vector< std::vector<std::size_t> > distributed_ids=voronota::apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
 
-		const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+		const voronota::apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
 		for(std::size_t i=0;i<distributed_ids.size();i++)
 		{
-			const apollota::Triangulation::QuadruplesMap partial_quadruples_map=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
+			const voronota::apollota::Triangulation::QuadruplesMap partial_quadruples_map=voronota::apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
 			result.number_of_produced_quadruples+=partial_quadruples_map.size();
-			apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
+			voronota::apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
 		}
 	}
 };
@@ -65,15 +65,15 @@ public:
 			ParallelComputationResult& result)
 	{
 		result.input_spheres.clear();
-		std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
-		auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+		std::vector<voronota::apollota::SimpleSphere>& spheres=result.input_spheres;
+		voronota::auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 
-		const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+		const std::vector< std::vector<std::size_t> > distributed_ids=voronota::apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 		result.number_of_initialized_parts=distributed_ids.size();
 
-		const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+		const voronota::apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
-		std::vector<apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
+		std::vector<voronota::apollota::Triangulation::QuadruplesMap> distributed_quadruples_maps(distributed_ids.size());
 		std::vector<int> distributed_errors(distributed_ids.size(), 0);
 
 		const int distributed_ids_size=static_cast<int>(distributed_ids.size());
@@ -83,7 +83,7 @@ public:
 			{
 				try
 				{
-					distributed_quadruples_maps[i]=apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
+					distributed_quadruples_maps[i]=voronota::apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map;
 				}
 				catch(...)
 				{
@@ -111,7 +111,7 @@ public:
 		for(std::size_t i=0;i<distributed_quadruples_maps.size();i++)
 		{
 			result.number_of_produced_quadruples+=distributed_quadruples_maps[i].size();
-			apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result.merged_quadruples_map);
+			voronota::apollota::Triangulation::merge_quadruples_maps(distributed_quadruples_maps[i], result.merged_quadruples_map);
 		}
 	}
 };
@@ -137,13 +137,13 @@ public:
 		else
 		{
 			result.input_spheres.clear();
-			std::vector<apollota::SimpleSphere>& spheres=result.input_spheres;
+			std::vector<voronota::apollota::SimpleSphere>& spheres=result.input_spheres;
 			{
 				std::vector<double> spheres_plain_vector;
 				int spheres_plain_vector_length=0;
 				if(mpi_handle.rank()==0)
 				{
-					auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
+					voronota::auxiliaries::IOUtilities().read_lines_to_set(std::cin, spheres);
 					fill_plain_vector_from_spheres(spheres, spheres_plain_vector);
 					spheres_plain_vector_length=static_cast<int>(spheres_plain_vector.size());
 				}
@@ -159,7 +159,7 @@ public:
 				}
 			}
 
-			const std::vector< std::vector<std::size_t> > distributed_ids=apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
+			const std::vector< std::vector<std::size_t> > distributed_ids=voronota::apollota::SplittingOfSpheres::split_for_number_of_parts(spheres, parts);
 			result.number_of_initialized_parts=distributed_ids.size();
 
 			{
@@ -177,21 +177,21 @@ public:
 						{
 							plain_vector.resize(static_cast<std::size_t>(plain_vector_size));
 							MPI_Recv(&plain_vector[0], plain_vector_size, MPI_DOUBLE, status.MPI_SOURCE, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-							apollota::Triangulation::QuadruplesMap partial_quadruples_map;
+							voronota::apollota::Triangulation::QuadruplesMap partial_quadruples_map;
 							fill_quadruples_map_from_plain_vector(plain_vector, partial_quadruples_map);
 							result.number_of_produced_quadruples+=partial_quadruples_map.size();
-							apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
+							voronota::apollota::Triangulation::merge_quadruples_maps(partial_quadruples_map, result.merged_quadruples_map);
 						}
 					}
 				}
 				else
 				{
-					const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+					const voronota::apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 					for(std::size_t i=0;i<distributed_ids.size();i++)
 					{
 						if(mpi_handle.rank()==(static_cast<int>(i)%(mpi_handle.size()-1)+1))
 						{
-							fill_plain_vector_from_quadruples_map(apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map, plain_vector);
+							fill_plain_vector_from_quadruples_map(voronota::apollota::Triangulation::construct_result_for_admittance_set(bsh, distributed_ids[i], include_surplus_quadruples).quadruples_map, plain_vector);
 							MPI_Send(&plain_vector[0], static_cast<int>(plain_vector.size()), MPI_DOUBLE, 0, QUADRUPLES_MAP_DATA_TAG, MPI_COMM_WORLD);
 						}
 					}
@@ -275,7 +275,7 @@ private:
 		double start_time_;
 	};
 
-	static void fill_plain_vector_from_spheres(const std::vector<apollota::SimpleSphere>& spheres, std::vector<double>& plain_vector)
+	static void fill_plain_vector_from_spheres(const std::vector<voronota::apollota::SimpleSphere>& spheres, std::vector<double>& plain_vector)
 	{
 		plain_vector.resize(spheres.size()*4);
 		for(std::size_t i=0;i<spheres.size();i++)
@@ -287,7 +287,7 @@ private:
 		}
 	}
 
-	static void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std::vector<apollota::SimpleSphere>& spheres)
+	static void fill_spheres_from_plain_vector(const std::vector<double>& plain_vector, std::vector<voronota::apollota::SimpleSphere>& spheres)
 	{
 		spheres.resize(plain_vector.size()/4);
 		for(std::size_t i=0;i<spheres.size();i++)
@@ -299,14 +299,14 @@ private:
 		}
 	}
 
-	static void fill_plain_vector_from_quadruples_map(const apollota::Triangulation::QuadruplesMap& quadruples_map, std::vector<double>& plain_vector)
+	static void fill_plain_vector_from_quadruples_map(const voronota::apollota::Triangulation::QuadruplesMap& quadruples_map, std::vector<double>& plain_vector)
 	{
-		plain_vector.resize(apollota::Triangulation::count_tangent_spheres_in_quadruples_map(quadruples_map)*8);
+		plain_vector.resize(voronota::apollota::Triangulation::count_tangent_spheres_in_quadruples_map(quadruples_map)*8);
 		std::size_t i=0;
-		for(apollota::Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
+		for(voronota::apollota::Triangulation::QuadruplesMap::const_iterator it=quadruples_map.begin();it!=quadruples_map.end();++it)
 		{
-			const apollota::Quadruple& q=it->first;
-			const std::vector<apollota::SimpleSphere>& ts=it->second;
+			const voronota::apollota::Quadruple& q=it->first;
+			const std::vector<voronota::apollota::SimpleSphere>& ts=it->second;
 			for(std::size_t j=0;j<ts.size();j++)
 			{
 				plain_vector[i*8+0]=q.get(0);
@@ -322,17 +322,17 @@ private:
 		}
 	}
 
-	static void fill_quadruples_map_from_plain_vector(const std::vector<double>& plain_vector, apollota::Triangulation::QuadruplesMap& quadruples_map)
+	static void fill_quadruples_map_from_plain_vector(const std::vector<double>& plain_vector, voronota::apollota::Triangulation::QuadruplesMap& quadruples_map)
 	{
 		quadruples_map.clear();
 		const std::size_t n=(plain_vector.size()/8);
 		for(std::size_t i=0;i<n;i++)
 		{
-			quadruples_map[apollota::Quadruple(
+			quadruples_map[voronota::apollota::Quadruple(
 					static_cast<std::size_t>(plain_vector[i*8+0]+0.5),
 					static_cast<std::size_t>(plain_vector[i*8+1]+0.5),
 					static_cast<std::size_t>(plain_vector[i*8+2]+0.5),
-					static_cast<std::size_t>(plain_vector[i*8+3]+0.5))].push_back(apollota::SimpleSphere(
+					static_cast<std::size_t>(plain_vector[i*8+3]+0.5))].push_back(voronota::apollota::SimpleSphere(
 							plain_vector[i*8+4],
 							plain_vector[i*8+5],
 							plain_vector[i*8+6],
@@ -349,7 +349,7 @@ inline bool number_is_power_of_two(const unsigned long x)
 
 }
 
-void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& poh)
+void calculate_vertices_in_parallel(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
 	std::set<std::string> available_processing_method_names;
 	{
@@ -372,7 +372,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 		available_processing_method_names_string=output.str();
 	}
 
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'x y z r')");
 	pohw.describe_io("stdout", false, true, "list of Voronoi vertices, i.e. quadruples with tangent spheres (line format: 'q1 q2 q3 q4 x y z r')");
 
@@ -431,11 +431,11 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 	{
 		if(link)
 		{
-			apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), apollota::Triangulation::construct_vertices_graph(result.input_spheres, result.merged_quadruples_map), std::cout);
+			voronota::apollota::TriangulationOutput::print_vertices_vector_with_vertices_graph(voronota::apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), voronota::apollota::Triangulation::construct_vertices_graph(result.input_spheres, result.merged_quadruples_map), std::cout);
 		}
 		else
 		{
-			apollota::TriangulationOutput::print_vertices_vector(apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
+			voronota::apollota::TriangulationOutput::print_vertices_vector(voronota::apollota::Triangulation::collect_vertices_vector_from_quadruples_map(result.merged_quadruples_map), std::cout);
 		}
 
 		if(print_log)
@@ -444,7 +444,7 @@ void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler& po
 			std::clog << "parts " << result.number_of_initialized_parts << "\n";
 			std::clog << "produced_quadruples " << result.number_of_produced_quadruples << "\n";
 			std::clog << "merged_quadruples " << result.merged_quadruples_map.size() << "\n";
-			std::clog << "tangent_spheres " << apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
+			std::clog << "tangent_spheres " << voronota::apollota::Triangulation::count_tangent_spheres_in_quadruples_map(result.merged_quadruples_map) << "\n";
 		}
 	}
 }

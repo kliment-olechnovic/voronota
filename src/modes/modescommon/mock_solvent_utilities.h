@@ -3,6 +3,9 @@
 
 #include "../../common/chain_residue_atom_descriptor.h"
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -14,6 +17,8 @@ inline std::string mock_solvent_name()
 inline bool identify_mock_solvent(const common::ChainResidueAtomDescriptor& crad)
 {
 	return (crad.name==mock_solvent_name() && crad.resName==mock_solvent_name());
+}
+
 }
 
 }

@@ -12,6 +12,9 @@
 #include "basic_operations_on_points.h"
 #include "tuple.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -183,6 +186,8 @@ private:
 	std::vector<Triple> triples_;
 	std::vector< std::pair<std::size_t, std::size_t> > history_of_growth_;
 };
+
+}
 
 }
 

@@ -8,6 +8,9 @@
 #include <map>
 #include <set>
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -502,6 +505,8 @@ private:
 	std::vector<std::string> list_of_unnamed_values_;
 	std::set<std::size_t> set_of_requested_ids_of_unnamed_values_;
 };
+
+}
 
 }
 

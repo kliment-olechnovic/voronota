@@ -5,6 +5,9 @@
 
 #include "safer_comparison_of_numbers.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -387,6 +390,8 @@ inline T& operator>>(T& input, SimplePoint& p)
 {
 	input >> p.x >> p.y >> p.z;
 	return input;
+}
+
 }
 
 }

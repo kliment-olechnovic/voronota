@@ -8,6 +8,9 @@
 #include <set>
 #include <algorithm>
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -387,6 +390,8 @@ private:
 	std::set<std::string> names_;
 	std::vector<std::string> ordered_names_;
 };
+
+}
 
 }
 

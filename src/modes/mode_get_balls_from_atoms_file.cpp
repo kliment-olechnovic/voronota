@@ -20,9 +20,9 @@ std::string refine_empty_string(const std::string& x)
 
 }
 
-void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
+void get_balls_from_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false,
 			"file in PDB or mmCIF format");
 	pohw.describe_io("stdout", false, true,
@@ -48,7 +48,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Invalid input format specifier.");
 	}
 
-	std::vector<auxiliaries::AtomsIO::AtomRecord> atoms;
+	std::vector<voronota::auxiliaries::AtomsIO::AtomRecord> atoms;
 
 	if(input_format=="detect")
 	{
@@ -57,20 +57,20 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 
 		if(!stdin_data.empty())
 		{
-			const bool mmcif_detected=auxiliaries::AtomsIO::MMCIFReader::detect_string_format(stdin_data);
+			const bool mmcif_detected=voronota::auxiliaries::AtomsIO::MMCIFReader::detect_string_format(stdin_data);
 
 			std::istringstream stdin_data_stream(stdin_data);
 
 			atoms=(mmcif_detected ?
-					auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
-					auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+					voronota::auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
+					voronota::auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(stdin_data_stream, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
 		}
 	}
 	else
 	{
 		atoms=(input_format=="mmcif" ?
-				auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
-				auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
+				voronota::auxiliaries::AtomsIO::MMCIFReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains).atom_records :
+				voronota::auxiliaries::AtomsIO::PDBReader::read_data_from_file_stream(std::cin, include_heteroatoms, include_hydrogens, multimodel_chains, false).atom_records);
 	}
 
 	if(atoms.empty())
@@ -78,7 +78,7 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No atoms provided to stdin.");
 	}
 
-	auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
+	voronota::auxiliaries::AtomRadiusAssigner atom_radius_assigner(default_radius);
 	if(!only_default_radius)
 	{
 		if(radii_file.empty())
@@ -93,23 +93,23 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
-			auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
+			voronota::auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, voronota::auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
 
-	std::vector<apollota::SimpleSphere> all_spheres;
+	std::vector<voronota::apollota::SimpleSphere> all_spheres;
 	all_spheres.reserve(atoms.size());
 
 	for(std::size_t i=0;i<atoms.size();i++)
 	{
-		const auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
+		const voronota::auxiliaries::AtomsIO::AtomRecord& atom=atoms[i];
 		const double radius=atom_radius_assigner.get_atom_radius(atom.resName, atom.name);
 		if(annotated)
 		{
-			const common::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
+			const voronota::common::ChainResidueAtomDescriptor crad(atom.serial, atom.chainID, atom.resSeq, atom.resName, atom.name, atom.altLoc, atom.iCode);
 			if(crad.valid())
 			{
-				common::BallValue value;
+				voronota::common::BallValue value;
 				value.x=atom.x;
 				value.y=atom.y;
 				value.z=atom.z;
@@ -131,28 +131,28 @@ void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 					value.props.adjuncts["tf"]=atom.tempFactor;
 				}
 				std::cout << crad << " " << value << "\n";
-				all_spheres.push_back(apollota::SimpleSphere(value));
+				all_spheres.push_back(voronota::apollota::SimpleSphere(value));
 			}
 		}
 		else
 		{
-			std::cout << apollota::SimpleSphere(atom, radius);
+			std::cout << voronota::apollota::SimpleSphere(atom, radius);
 			std::cout << " # " << atom.serial << " " << refine_empty_string(atom.chainID) << " " << atom.resSeq << " " << refine_empty_string(atom.resName) << " " << refine_empty_string(atom.name) << " " << refine_empty_string(atom.altLoc) << " " << refine_empty_string(atom.iCode) << "\n";
-			all_spheres.push_back(apollota::SimpleSphere(atom, radius));
+			all_spheres.push_back(voronota::apollota::SimpleSphere(atom, radius));
 		}
 	}
 
 	if(hull_offset>0.0 && !all_spheres.empty())
 	{
-		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(all_spheres, hull_offset);
+		const std::vector<voronota::apollota::SimpleSphere> artificial_boundary=voronota::apollota::construct_artificial_boundary(all_spheres, hull_offset);
 		for(std::size_t i=0;i<artificial_boundary.size();i++)
 		{
-			const apollota::SimpleSphere& s=artificial_boundary[i];
+			const voronota::apollota::SimpleSphere& s=artificial_boundary[i];
 			if(annotated)
 			{
-				common::ChainResidueAtomDescriptor crad;
+				voronota::common::ChainResidueAtomDescriptor crad;
 				crad.chainID="hull";
-				common::BallValue value;
+				voronota::common::BallValue value;
 				value.x=s.x;
 				value.y=s.y;
 				value.z=s.z;

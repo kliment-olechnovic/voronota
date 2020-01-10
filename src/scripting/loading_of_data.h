@@ -8,6 +8,9 @@
 #include "basic_types.h"
 #include "io_selectors.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -253,6 +256,8 @@ private:
 		throw std::runtime_error(std::string("Failed to read atoms from file '")+file+"' in '"+format+"' format.");
 	}
 };
+
+}
 
 }
 

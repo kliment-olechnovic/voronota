@@ -6,6 +6,9 @@
 
 #include "basic_operations_on_spheres.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -41,6 +44,8 @@ inline std::vector<SimpleSphere> construct_artificial_boundary(const std::vector
 		result.push_back(SimpleSphere(b.x+shift_more, b.y+shift_more, b.z+shift_more, r));
 	}
 	return result;
+}
+
 }
 
 }

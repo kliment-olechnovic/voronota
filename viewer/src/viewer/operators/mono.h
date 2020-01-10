@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -41,6 +44,8 @@ public:
 private:
 	uv::ViewerApplication* app_ptr_;
 };
+
+}
 
 }
 

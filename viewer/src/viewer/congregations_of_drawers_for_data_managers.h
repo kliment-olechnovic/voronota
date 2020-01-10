@@ -3,6 +3,9 @@
 
 #include "drawer_for_data_manager.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -104,6 +107,8 @@ private:
 
 	MapOfDrawers map_of_drawers_;
 };
+
+}
 
 }
 

@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -89,5 +92,7 @@ public:
 
 
 
+
+}
 
 #endif /* SCRIPTING_OPERATORS_EXPORT_ATOMS_AND_CONTACTS_H_ */

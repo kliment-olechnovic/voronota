@@ -3,6 +3,9 @@
 
 #include "properties_value.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -73,6 +76,8 @@ inline std::istream& operator>>(std::istream& input, ContactValue& value)
 		std::getline(input, value.graphics, '"');
 	}
 	return input;
+}
+
 }
 
 }

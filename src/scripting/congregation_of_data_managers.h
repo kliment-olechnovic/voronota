@@ -3,6 +3,9 @@
 
 #include "data_manager.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -385,6 +388,8 @@ private:
 	std::list<ObjectDescriptor> objects_;
 	ChangeIndicator change_indicator_;
 };
+
+}
 
 }
 

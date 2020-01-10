@@ -3,6 +3,9 @@
 
 #include "../../auxiliaries/xml_writer.h"
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -77,6 +80,8 @@ public:
 		return (*this);
 	}
 };
+
+}
 
 }
 

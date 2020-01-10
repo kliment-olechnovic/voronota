@@ -212,9 +212,9 @@ std::pair<double, double> calc_best_MCC(const std::map<double, ClassificationRes
 
 }
 
-void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
+void score_scores(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "pairs of reference and testable scores files");
 	pohw.describe_io("stdout", false, true, "global results");
 
@@ -229,7 +229,7 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const SetOfStringsPairs input_file_pairs=auxiliaries::IOUtilities().read_lines_to_map<SetOfStringsPairs>(std::cin);
+	const SetOfStringsPairs input_file_pairs=voronota::auxiliaries::IOUtilities().read_lines_to_map<SetOfStringsPairs>(std::cin);
 	if(input_file_pairs.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -238,9 +238,9 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	std::map<double, ClassificationResults> classification_results_map;
 	for(SetOfStringsPairs::const_iterator it=input_file_pairs.begin();it!=input_file_pairs.end();++it)
 	{
-		const MapOfNamedValues reference_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->first);
-		const MapOfNamedValues testable_scores_map=auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->second);
-		const MapOfNamedValuesPairs merged_scores_map=modescommon::GenericUtilities::merge_two_maps(reference_scores_map, testable_scores_map);
+		const MapOfNamedValues reference_scores_map=voronota::auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->first);
+		const MapOfNamedValues testable_scores_map=voronota::auxiliaries::IOUtilities().read_file_lines_to_map<MapOfNamedValues>(it->second);
+		const MapOfNamedValuesPairs merged_scores_map=voronota::modescommon::GenericUtilities::merge_two_maps(reference_scores_map, testable_scores_map);
 		if(!merged_scores_map.empty())
 		{
 			update_classification_results_map(merged_scores_map, reference_threshold, testable_step, classification_results_map);
@@ -253,9 +253,9 @@ void score_scores(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::pair<double, double> best_accuracy=calc_best_accuracy(classification_results_map);
 	const std::pair<double, double> best_MCC=calc_best_MCC(classification_results_map);
 
-	auxiliaries::IOUtilities().write_map_to_file(classification_results_map, outcomes_file);
-	auxiliaries::IOUtilities().write_map_to_file(ROC_curve_coordinates, ROC_curve_file);
-	auxiliaries::IOUtilities().write_map_to_file(PR_curve_coordinates, PR_curve_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(classification_results_map, outcomes_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(ROC_curve_coordinates, ROC_curve_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(PR_curve_coordinates, PR_curve_file);
 
 	std::cout << "ROC_AUC " << calc_AUC(ROC_curve_coordinates) << "\n";
 	std::cout << "PR_AUC " << calc_AUC(PR_curve_coordinates) << "\n";

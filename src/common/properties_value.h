@@ -6,6 +6,9 @@
 #include <set>
 #include <map>
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -79,6 +82,8 @@ inline std::istream& operator>>(std::istream& input, PropertiesValue& value)
 		value.update_adjuncts(adjuncts_str);
 	}
 	return input;
+}
+
 }
 
 }

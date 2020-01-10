@@ -4,6 +4,9 @@
 #include <vector>
 #include <algorithm>
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -113,6 +116,8 @@ private:
 		return depth;
 	}
 };
+
+}
 
 }
 

@@ -4,6 +4,9 @@
 #include <string>
 #include <set>
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -31,6 +34,8 @@ inline std::size_t calc_common_path_start_length(const std::set<std::string>& fi
 		}
 	}
 	return common_path_start_length;
+}
+
 }
 
 }

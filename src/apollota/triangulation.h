@@ -22,6 +22,9 @@
 #include "tangent_sphere_of_four_spheres.h"
 #include "tangent_sphere_of_three_spheres.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -1259,6 +1262,8 @@ typedef std::unordered_set<Triple, Triple::HashFunctor> TriplesSet;
 		}
 	}
 };
+
+}
 
 }
 

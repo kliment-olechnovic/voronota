@@ -5,6 +5,9 @@
 
 #include "../../common/chain_residue_atom_descriptor.h"
 
+namespace voronota
+{
+
 namespace modescommon
 {
 
@@ -178,6 +181,8 @@ private:
 		return output.str();
 	}
 };
+
+}
 
 }
 

@@ -3,6 +3,9 @@
 
 #include "../common/construction_of_triangulation.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -155,5 +158,7 @@ public:
 }
 
 
+
+}
 
 #endif /* SCRIPTING_FILTERING_OF_TRIANGULATION_H_ */

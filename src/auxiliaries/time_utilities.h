@@ -3,6 +3,9 @@
 
 #include <ctime>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -28,6 +31,8 @@ public:
 private:
 	std::clock_t start_;
 };
+
+}
 
 }
 

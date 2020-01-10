@@ -9,6 +9,9 @@
 #include "polar_sorting.h"
 #include "rotation.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -221,6 +224,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

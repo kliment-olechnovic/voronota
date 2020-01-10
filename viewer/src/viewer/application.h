@@ -12,6 +12,9 @@
 #include "script_execution_manager.h"
 #include "reading_thread.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -377,6 +380,8 @@ private:
 	bool menu_enabled_;
 	bool info_box_enabled_;
 };
+
+}
 
 }
 

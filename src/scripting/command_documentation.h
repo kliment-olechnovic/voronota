@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <map>
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -193,6 +196,8 @@ private:
 };
 
 typedef CommandDocumentation::OptionDescription CDOD;
+
+}
 
 }
 

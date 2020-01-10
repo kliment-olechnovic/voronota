@@ -8,20 +8,20 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 std::string generate_generalized_crad_file_name(const CRAD& crad, const std::string& prefix)
 {
-	const CRAD generalized_crad=common::generalize_crad(crad);
+	const CRAD generalized_crad=voronota::common::generalize_crad(crad);
 	return (prefix+generalized_crad.resName+"_"+generalized_crad.name);
 }
 
 }
 
-void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& poh)
+void vectorize_contact_environments(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area')");
 	pohw.describe_io("stdout", false, true, "table of environments");
 
@@ -37,7 +37,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 		return;
 	}
 
-	std::map<CRADsPair, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
+	std::map<CRADsPair, double> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<CRADsPair, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
@@ -59,14 +59,14 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 
 	std::set<CRAD> refined_set_of_names;
 	{
-		const std::set<CRAD> set_of_names=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(names_file);
+		const std::set<CRAD> set_of_names=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(names_file);
 		if(set_of_names.empty())
 		{
 			throw std::runtime_error("No environment names input.");
 		}
 		for(std::set<CRAD>::const_iterator it=set_of_names.begin();it!=set_of_names.end();++it)
 		{
-			refined_set_of_names.insert(inter_residue ? common::generalize_crad(*it).without_atom() : common::generalize_crad(*it));
+			refined_set_of_names.insert(inter_residue ? voronota::common::generalize_crad(*it).without_atom() : voronota::common::generalize_crad(*it));
 		}
 	}
 
@@ -94,7 +94,7 @@ void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler& po
 				{
 					std::vector<double>& environment=map_of_environments[crad1];
 					environment.resize(map_of_names_ids.size(), 0.0);
-					std::map<CRAD, std::size_t>::const_iterator map_of_names_ids_it=map_of_names_ids.find(common::generalize_crad(crad2));
+					std::map<CRAD, std::size_t>::const_iterator map_of_names_ids_it=map_of_names_ids.find(voronota::common::generalize_crad(crad2));
 					if(map_of_names_ids_it!=map_of_names_ids.end())
 					{
 						environment[map_of_names_ids_it->second]+=area;

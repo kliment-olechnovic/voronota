@@ -5,6 +5,9 @@
 #include <vector>
 #include <set>
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -93,6 +96,8 @@ private:
 
 	std::vector<std::string> subnames_;
 };
+
+}
 
 }
 

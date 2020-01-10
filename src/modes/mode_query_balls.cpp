@@ -13,8 +13,8 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef auxiliaries::AtomsIO::DSSPReader::DSSPRecord DSSPRecord;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::auxiliaries::AtomsIO::DSSPReader::DSSPRecord DSSPRecord;
 
 std::map<CRAD, DSSPRecord> init_map_of_dssp_records(const std::string& dssp_file_name)
 {
@@ -22,7 +22,7 @@ std::map<CRAD, DSSPRecord> init_map_of_dssp_records(const std::string& dssp_file
 	if(!dssp_file_name.empty())
 	{
 		std::ifstream input_file(dssp_file_name.c_str(), std::ios::in);
-		const auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data=auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
+		const voronota::auxiliaries::AtomsIO::DSSPReader::Data dssp_file_data=voronota::auxiliaries::AtomsIO::DSSPReader::read_data_from_file_stream(input_file);
 		for(std::size_t i=0;i<dssp_file_data.dssp_records.size();i++)
 		{
 			const DSSPRecord& record=dssp_file_data.dssp_records[i];
@@ -38,9 +38,9 @@ std::map<CRAD, DSSPRecord> init_map_of_dssp_records(const std::string& dssp_file
 
 }
 
-void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
+void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
@@ -79,8 +79,8 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, voronota::common::BallValue> > list_of_balls;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -144,11 +144,11 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!renumber_from_adjunct.empty())
 	{
-		std::vector< std::pair<CRAD, common::BallValue> > refined_list_of_balls;
+		std::vector< std::pair<CRAD, voronota::common::BallValue> > refined_list_of_balls;
 		refined_list_of_balls.reserve(list_of_balls.size());
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
-			const common::BallValue& value=list_of_balls[i].second;
+			const voronota::common::BallValue& value=list_of_balls[i].second;
 			if(value.props.adjuncts.count(renumber_from_adjunct)>0)
 			{
 				refined_list_of_balls.push_back(list_of_balls[i]);
@@ -219,16 +219,16 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::set<std::size_t> selected_set_of_ball_ids;
 	{
-		const std::set<CRAD> matchable_external_set_of_crads=auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
+		const std::set<CRAD> matchable_external_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(match_external_annotations);
 
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{
 			const CRAD& crad=list_of_balls[i].first;
-			const common::BallValue& value=list_of_balls[i].second;
-			const bool passed=(common::MatchingUtilities::match_crad(crad, match, match_not) &&
-					common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
-					common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
-					(match_external_annotations.empty() || common::MatchingUtilities::match_crad_with_set_of_crads(false, crad, matchable_external_set_of_crads)));
+			const voronota::common::BallValue& value=list_of_balls[i].second;
+			const bool passed=(voronota::common::MatchingUtilities::match_crad(crad, match, match_not) &&
+					voronota::common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
+					voronota::common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
+					(match_external_annotations.empty() || voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, crad, matchable_external_set_of_crads)));
 			if((passed && !invert) || (!passed && invert))
 			{
 				selected_set_of_ball_ids.insert(selected_set_of_ball_ids.end(), i);
@@ -244,7 +244,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			for(std::size_t i=0;i<list_of_balls.size();i++)
 			{
-				if(common::MatchingUtilities::match_crad_with_set_of_crads(false, list_of_balls[i].first, residues_crads))
+				if(voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, list_of_balls[i].first, residues_crads))
 				{
 					selected_set_of_ball_ids.insert(i);
 				}
@@ -269,15 +269,15 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 	const bool update_mode=(drop_atom_serial || drop_altloc_indicators || drop_tags || drop_adjuncts || !set_tags.empty() || !set_adjuncts.empty() || !set_external_adjuncts.empty() || !set_dssp_info.empty() || !set_ref_seq_num_adjunct.empty());
 	if(update_mode && !selected_set_of_ball_ids.empty())
 	{
-		const std::map<CRAD, double> map_of_external_adjunct_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
+		const std::map<CRAD, double> map_of_external_adjunct_values=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
-		const std::string reference_sequence=modescommon::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
-		const std::map<CRAD, int> sequence_mapping=modescommon::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+		const std::string reference_sequence=voronota::modescommon::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
+		const std::map<CRAD, int> sequence_mapping=voronota::modescommon::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
 
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
 			CRAD& crad=list_of_balls[*it].first;
-			common::BallValue& value=list_of_balls[*it].second;
+			voronota::common::BallValue& value=list_of_balls[*it].second;
 			if(drop_atom_serial)
 			{
 				crad.serial=CRAD::null_num();
@@ -304,7 +304,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(!map_of_external_adjunct_values.empty())
 			{
-				const std::pair<bool, double> adjunct_value=common::MatchingUtilities::match_crad_with_map_of_crads(false, crad, map_of_external_adjunct_values);
+				const std::pair<bool, double> adjunct_value=voronota::common::MatchingUtilities::match_crad_with_map_of_crads(false, crad, map_of_external_adjunct_values);
 				if(adjunct_value.first)
 				{
 					value.props.adjuncts[set_external_adjuncts_name]=adjunct_value.second;
@@ -341,7 +341,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(update_mode)
 	{
-		auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+		voronota::auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 	}
 	else
 	{
@@ -356,7 +356,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(seq_output.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			foutput << modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
+			foutput << voronota::modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
 		}
 	}
 
@@ -373,7 +373,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 			std::map<std::string, std::string> map_of_chains_sequences;
 			for(std::map< std::string, std::vector<CRAD> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
 			{
-				map_of_chains_sequences[it->first]=modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
+				map_of_chains_sequences[it->first]=voronota::modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
 			}
 			std::set<std::string> representative_chains;
 			std::set<std::string> repeated_chains;
@@ -386,7 +386,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 					++it2;
 					for(;it2!=map_of_chains_sequences.end();++it2)
 					{
-						if(modescommon::SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=chains_seq_identity)
+						if(voronota::modescommon::SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=chains_seq_identity)
 						{
 							repeated_chains.insert(it2->first);
 						}
@@ -394,7 +394,7 @@ void query_balls(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 			foutput << map_of_chains_sequences.size() << " " << representative_chains.size() << "\n";
-			auxiliaries::IOUtilities().write_set(representative_chains, foutput);
+			voronota::auxiliaries::IOUtilities().write_set(representative_chains, foutput);
 		}
 	}
 }

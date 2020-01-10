@@ -6,14 +6,14 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::EnergyDescriptor EnergyDescriptor;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::EnergyDescriptor EnergyDescriptor;
 
 }
 
-void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
+void score_contacts_quality(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of atom energy descriptors");
 	pohw.describe_io("stdout", false, true, "weighted average local score");
 
@@ -31,35 +31,35 @@ void score_contacts_quality(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=auxiliaries::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
+	const std::map<CRAD, EnergyDescriptor> atom_energy_descriptors=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<CRAD, EnergyDescriptor> >(std::cin);
 	if(atom_energy_descriptors.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRAD, common::NormalDistributionParameters> means_and_sds=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, common::NormalDistributionParameters> >(mean_and_sds_file);
+	const std::map<CRAD, voronota::common::NormalDistributionParameters> means_and_sds=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, voronota::common::NormalDistributionParameters> >(mean_and_sds_file);
 
-	const std::map<CRAD, double> external_weights=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
+	const std::map<CRAD, double> external_weights=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(external_weights_file);
 
-	common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAQualityInformation parameters;
+	voronota::common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAQualityInformation parameters;
 	parameters.default_mean=default_mean;
 	parameters.default_sd=default_sd;
 	parameters.mean_shift=mean_shift;
 
-	common::ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle;
+	voronota::common::ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle;
 
-	if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_quality_information(parameters, means_and_sds, atom_energy_descriptors, bundle))
+	if(!voronota::common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_quality_information(parameters, means_and_sds, atom_energy_descriptors, bundle))
 	{
 		throw std::runtime_error("Failed to calculate quality scores.");
 	}
 
-	auxiliaries::IOUtilities().write_map_to_file(bundle.atom_quality_scores, atom_scores_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.atom_quality_scores, atom_scores_file);
 
 	if(!residue_scores_file.empty())
 	{
 		if(smoothing_windows.size()==1)
 		{
-			auxiliaries::IOUtilities().write_map_to_file(bundle.residue_quality_scores(smoothing_windows.front()), residue_scores_file);
+			voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.residue_quality_scores(smoothing_windows.front()), residue_scores_file);
 		}
 		else
 		{

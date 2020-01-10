@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../membrane_placement_for_data_manager_using_voromqa.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -103,6 +106,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

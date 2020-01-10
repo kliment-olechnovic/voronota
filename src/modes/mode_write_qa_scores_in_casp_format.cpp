@@ -27,9 +27,9 @@ double rescale_local_score(const double score)
 
 }
 
-void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& poh)
+void write_qa_scores_in_casp_format(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef common::ChainResidueAtomDescriptor CRAD;
+	typedef voronota::common::ChainResidueAtomDescriptor CRAD;
 
 	const std::string name=poh.argument<std::string>("--name");
 	const double global_score=poh.argument<double>("--global-score");
@@ -44,7 +44,7 @@ void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler& po
 		throw std::runtime_error("Invalid parameters.");
 	}
 
-	const std::map<CRAD, double> map_of_crad_scores=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(local_scores);
+	const std::map<CRAD, double> map_of_crad_scores=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(local_scores);
 
 	if(map_of_crad_scores.empty())
 	{

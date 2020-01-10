@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../command_documentation.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -112,6 +115,8 @@ private:
 	}
 	const CollectionOfCommandDocumentations* collection_of_command_documentations_ptr_;
 };
+
+}
 
 }
 

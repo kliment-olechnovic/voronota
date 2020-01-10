@@ -8,7 +8,7 @@
 namespace
 {
 
-typedef apollota::SimplePoint Point;
+typedef voronota::apollota::SimplePoint Point;
 
 double calc_rmsd(const std::vector<Point>& a, const std::vector<Point>& b)
 {
@@ -21,7 +21,7 @@ double calc_rmsd(const std::vector<Point>& a, const std::vector<Point>& b)
 	{
 		for(std::size_t i=0;i<a.size();i++)
 		{
-			sum+=apollota::squared_distance_from_point_to_point(a[i], b[i]);
+			sum+=voronota::apollota::squared_distance_from_point_to_point(a[i], b[i]);
 		}
 		sum/=static_cast<double>(a.size());
 	}
@@ -30,9 +30,9 @@ double calc_rmsd(const std::vector<Point>& a, const std::vector<Point>& b)
 
 }
 
-void vectorize_points(const auxiliaries::ProgramOptionsHandler& poh)
+void vectorize_points(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of points files");
 	pohw.describe_io("stdout", false, true, "nothing");
 
@@ -46,9 +46,9 @@ void vectorize_points(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef modescommon::VectorizationUtilities<std::string, std::string, Point> Vectorizer;
+	typedef voronota::modescommon::VectorizationUtilities<std::string, std::string, Point> Vectorizer;
 
-	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
+	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(voronota::auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
 	if(maps_of_maps.empty())
 	{
 		throw std::runtime_error("No input.");

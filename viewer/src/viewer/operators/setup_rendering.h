@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../drawer_for_data_manager.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -93,6 +96,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

@@ -6,16 +6,16 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
-typedef common::InteractionName InteractionName;
-typedef common::EnergyDescriptor EnergyDescriptor;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::InteractionName InteractionName;
+typedef voronota::common::EnergyDescriptor EnergyDescriptor;
 
 }
 
-void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
+void score_contacts_energy(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 conditions area')");
 	pohw.describe_io("stdout", false, true, "global scores");
 
@@ -30,30 +30,30 @@ void score_contacts_energy(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::map<InteractionName, double> map_of_contacts=auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
+	const std::map<InteractionName, double> map_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_map< std::map<InteractionName, double> >(std::cin);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No contacts input.");
 	}
 
-	const std::map<InteractionName, double> map_of_potential_values=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
+	const std::map<InteractionName, double> map_of_potential_values=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<InteractionName, double> >(potential_file);
 	if(map_of_potential_values.empty())
 	{
 		throw std::runtime_error("No potential values input.");
 	}
 
-	common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters;
+	voronota::common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters;
 	parameters.ignorable_max_seq_sep=ignorable_max_seq_sep;
 	parameters.depth=depth;
 
-	common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle;
+	voronota::common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle;
 
-	if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(parameters, map_of_potential_values, map_of_contacts, bundle))
+	if(!voronota::common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(parameters, map_of_potential_values, map_of_contacts, bundle))
 	{
 		throw std::runtime_error("Failed to calculate energies.");
 	}
 
-	auxiliaries::IOUtilities().write_map_to_file(bundle.inter_atom_energy_descriptors, inter_atom_scores_file);
-	auxiliaries::IOUtilities().write_map_to_file(bundle.atom_energy_descriptors, atom_scores_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.inter_atom_energy_descriptors, inter_atom_scores_file);
+	voronota::auxiliaries::IOUtilities().write_map_to_file(bundle.atom_energy_descriptors, atom_scores_file);
 	std::cout << "global " << bundle.global_energy_descriptor << "\n";
 }

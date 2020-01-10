@@ -5,6 +5,9 @@
 
 #include "construction_of_primary_structure.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -252,6 +255,8 @@ private:
 		}
 	}
 };
+
+}
 
 }
 

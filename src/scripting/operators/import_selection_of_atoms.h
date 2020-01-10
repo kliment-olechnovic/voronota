@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -116,6 +119,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

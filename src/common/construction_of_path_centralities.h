@@ -8,14 +8,17 @@
 
 #include "../common/chain_residue_atom_descriptor.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
 class ConstructionOfPathCentralities
 {
 public:
-	typedef common::ChainResidueAtomDescriptor CRAD;
-	typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+	typedef ChainResidueAtomDescriptor CRAD;
+	typedef ChainResidueAtomDescriptorsPair CRADsPair;
 	typedef double Weight;
 	typedef std::size_t ID;
 
@@ -410,6 +413,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

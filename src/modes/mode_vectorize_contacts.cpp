@@ -8,7 +8,7 @@
 namespace
 {
 
-class CRADsPair : public common::ChainResidueAtomDescriptorsPair
+class CRADsPair : public voronota::common::ChainResidueAtomDescriptorsPair
 {
 };
 
@@ -63,9 +63,9 @@ double calc_euclidean_distance_of_two_vectors(const std::vector<double>& a, cons
 
 }
 
-void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+void vectorize_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts files");
 	pohw.describe_io("stdout", false, true, "table of contacts vectors");
 
@@ -81,9 +81,9 @@ void vectorize_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	typedef modescommon::VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
+	typedef voronota::modescommon::VectorizationUtilities<std::string, CRADsPair, double> Vectorizer;
 
-	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
+	const Vectorizer::MapOfMaps maps_of_maps=Vectorizer::read_map_of_maps_from_multiple_files(voronota::auxiliaries::IOUtilities().read_lines_to_set< std::set<std::string> >(std::cin));
 	if(maps_of_maps.empty())
 	{
 		throw std::runtime_error("No input.");

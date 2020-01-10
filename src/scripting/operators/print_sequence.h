@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../../auxiliaries/residue_letters_coding.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -164,6 +167,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

@@ -5,6 +5,9 @@
 
 #include "long_name.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -93,6 +96,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

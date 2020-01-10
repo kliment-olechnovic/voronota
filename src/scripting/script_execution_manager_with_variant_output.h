@@ -4,6 +4,9 @@
 #include "script_execution_manager.h"
 #include "variant_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -140,6 +143,8 @@ private:
 
 	VariantObject output_;
 };
+
+}
 
 }
 

@@ -4,6 +4,9 @@
 #include "triangulation_queries.h"
 #include "subdivided_icosahedron.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -118,6 +121,8 @@ public:
 private:
 	SubdividedIcosahedron sih_;
 };
+
+}
 
 }
 

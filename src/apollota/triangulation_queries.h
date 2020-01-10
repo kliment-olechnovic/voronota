@@ -3,6 +3,9 @@
 
 #include "triangulation.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -124,6 +127,8 @@ typedef std::unordered_map<Triple, std::set<std::size_t>, Triple::HashFunctor> T
 		return pairs_neighbors_map;
 	}
 };
+
+}
 
 }
 

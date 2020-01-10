@@ -4,6 +4,9 @@
 #include <vector>
 #include <algorithm>
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -196,6 +199,8 @@ private:
 typedef Tuple<2> Pair;
 typedef Tuple<3> Triple;
 typedef Tuple<4> Quadruple;
+
+}
 
 }
 

@@ -8,14 +8,14 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
 
 struct PointAndScore
 {
-	apollota::SimplePoint point;
+	voronota::apollota::SimplePoint point;
 	double score;
 
-	PointAndScore(const apollota::SimplePoint& point, const double score) : point(point), score(score)
+	PointAndScore(const voronota::apollota::SimplePoint& point, const double score) : point(point), score(score)
 	{
 	}
 };
@@ -25,15 +25,15 @@ struct MembranePlacement
 	double width;
 	double width_extension;
 	double score;
-	apollota::SimplePoint position;
-	apollota::SimplePoint normal;
+	voronota::apollota::SimplePoint position;
+	voronota::apollota::SimplePoint normal;
 
 	MembranePlacement(
 			const double width,
 			const double width_extension,
 			const double score,
-			const apollota::SimplePoint& position,
-			const apollota::SimplePoint& normal) :
+			const voronota::apollota::SimplePoint& position,
+			const voronota::apollota::SimplePoint& normal) :
 				width(width),
 				width_extension(width_extension),
 				score(score),
@@ -55,7 +55,7 @@ struct ScoredShift
 
 ScoredShift estimate_best_scored_shift(
 		const std::vector<PointAndScore>& points_and_scores,
-		const apollota::SimplePoint& direction,
+		const voronota::apollota::SimplePoint& direction,
 		const double width,
 		const double width_extension,
 		std::vector< std::pair<double, double> >& buffer_for_projections)
@@ -161,8 +161,8 @@ ScoredShift estimate_best_scored_shift(
 MembranePlacement estimate_translated_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension)
 {
 	std::vector< std::pair<double, double> > buffer_for_projections(points_and_scores.size());
-	apollota::SubdividedIcosahedron sih(3);
-	sih.fit_into_sphere(apollota::SimplePoint(0, 0, 0), 1);
+	voronota::apollota::SubdividedIcosahedron sih(3);
+	sih.fit_into_sphere(voronota::apollota::SimplePoint(0, 0, 0), 1);
 	std::size_t best_id=0;
 	ScoredShift best_scored_shift;
 	double last_cycle_best_score=0.0;
@@ -189,13 +189,13 @@ MembranePlacement estimate_translated_membrane_placement(const std::vector<Point
 		}
 		number_of_cycles++;
 	}
-	const apollota::SimplePoint best_direction=sih.vertices()[best_id].unit();
+	const voronota::apollota::SimplePoint best_direction=sih.vertices()[best_id].unit();
 	return MembranePlacement(width, width_extension, best_scored_shift.score/static_cast<double>(points_and_scores.size()), best_direction*best_scored_shift.shift, best_direction);
 }
 
 MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& points_and_scores, const double width, const double width_extension, const bool optimize_width, const bool optimize_width_extension)
 {
-	apollota::SimplePoint original_center(0, 0, 0);
+	voronota::apollota::SimplePoint original_center(0, 0, 0);
 	for(std::size_t i=0;i<points_and_scores.size();i++)
 	{
 		original_center=(original_center+points_and_scores[i].point);
@@ -236,9 +236,9 @@ MembranePlacement estimate_membrane_placement(const std::vector<PointAndScore>& 
 
 }
 
-void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
+void place_membrane(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
@@ -259,14 +259,14 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Invalid membrane width.");
 	}
 
-	std::vector< std::pair<CRAD, common::BallValue> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, voronota::common::BallValue> > list_of_balls;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input balls.");
 	}
 
-	const std::map<CRAD, double> map_of_scores=auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
+	const std::map<CRAD, double> map_of_scores=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(scores_file);
 	if(map_of_scores.empty())
 	{
 		throw std::runtime_error("No input scores.");
@@ -279,7 +279,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		std::map<CRAD, double>::const_iterator it=map_of_scores.find(list_of_balls[i].first);
 		if(it!=map_of_scores.end())
 		{
-			points_and_scores.push_back(PointAndScore(apollota::SimplePoint(list_of_balls[i].second), it->second));
+			points_and_scores.push_back(PointAndScore(voronota::apollota::SimplePoint(list_of_balls[i].second), it->second));
 		}
 	}
 
@@ -304,7 +304,7 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		if(fabs((apollota::SimplePoint(list_of_balls[i].second)-membrane_placement.position)*membrane_placement.normal.unit())<(membrane_placement.width*0.5))
+		if(fabs((voronota::apollota::SimplePoint(list_of_balls[i].second)-membrane_placement.position)*membrane_placement.normal.unit())<(membrane_placement.width*0.5))
 		{
 			list_of_balls[i].second.props.update_adjuncts("membrane=1");
 		}
@@ -314,5 +314,5 @@ void place_membrane(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(list_of_balls, std::cout);
 }

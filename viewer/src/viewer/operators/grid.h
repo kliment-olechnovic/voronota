@@ -3,6 +3,9 @@
 
 #include "../operators_common.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -44,6 +47,8 @@ private:
 	uv::ViewerApplication* app_ptr_;
 	int* grid_variant_ptr_;
 };
+
+}
 
 }
 

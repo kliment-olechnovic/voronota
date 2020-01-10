@@ -6,6 +6,9 @@
 #include <vector>
 #include <algorithm>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -187,6 +190,8 @@ public:
 		return alignment;
 	}
 };
+
+}
 
 }
 

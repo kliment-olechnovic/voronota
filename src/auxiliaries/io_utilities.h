@@ -14,6 +14,9 @@
 #include <type_traits>
 #endif
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -362,6 +365,8 @@ typename std::remove_const<typename Container::value_type::first_type>::type key
 		}
 	};
 };
+
+}
 
 }
 

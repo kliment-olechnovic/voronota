@@ -5,6 +5,9 @@
 
 #include "construction_of_primary_structure.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -410,6 +413,8 @@ private:
 		return (rds[ti].hbond_accepted.first<0.0 && rds[ti].hbond_accepted.second==tj);
 	}
 };
+
+}
 
 }
 

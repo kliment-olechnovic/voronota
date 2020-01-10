@@ -3,6 +3,9 @@
 
 #include "chain_residue_atom_descriptor.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -463,6 +466,8 @@ inline std::ostream& operator<<(std::ostream& output, const ConstructionOfCADSco
 				<< " " << cadd.model_target_area_sum;
 	}
 	return output;
+}
+
 }
 
 }

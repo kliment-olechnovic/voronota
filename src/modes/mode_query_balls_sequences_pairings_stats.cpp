@@ -6,15 +6,15 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
 
 }
 
-void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler& poh)
+void query_balls_sequences_pairings_stats(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+	typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls files");
 	pohw.describe_io("stdout", false, true, "list of sequences pairings stats");
 
@@ -33,7 +33,7 @@ void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandl
 		std::string balls_file;
 		std::cin >> balls_file;
 		std::vector<CRAD> list_of_balls;
-		auxiliaries::IOUtilities().read_file_lines_to_set(balls_file, list_of_balls);
+		voronota::auxiliaries::IOUtilities().read_file_lines_to_set(balls_file, list_of_balls);
 		std::map< std::string, std::set<CRAD> > chains;
 		for(std::size_t i=0;i<list_of_balls.size();i++)
 		{

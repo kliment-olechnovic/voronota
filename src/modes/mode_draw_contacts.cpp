@@ -7,13 +7,13 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
-void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')");
 	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts graphics')");
 
@@ -21,7 +21,7 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_jmol=poh.argument<std::string>(pohw.describe_option("--drawing-for-jmol", "string", "file path to output drawing as jmol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
-	modescommon::DrawingParametersWrapper drawing_parameters_wrapper;
+	voronota::modescommon::DrawingParametersWrapper drawing_parameters_wrapper;
 	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
 	drawing_parameters_wrapper.adjunct_gradient=poh.argument<std::string>(pohw.describe_option("--adjunct-gradient", "string", "adjunct name to use for gradient-based coloring"), "");
 	drawing_parameters_wrapper.adjunct_gradient_blue=poh.argument<double>(pohw.describe_option("--adjunct-gradient-blue", "number", "blue adjunct gradient value"), 0.0);
@@ -36,10 +36,10 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	common::enabled_output_of_ContactValue_graphics()=true;
+	voronota::common::enabled_output_of_ContactValue_graphics()=true;
 
-	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	std::map<CRADsPair, voronota::common::ContactValue> map_of_contacts;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -47,13 +47,13 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
 	{
-		auxiliaries::OpenGLPrinter opengl_printer;
+		voronota::auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_parameters_wrapper.default_color);
 		opengl_printer.add_alpha(drawing_parameters_wrapper.alpha_opacity);
-		for(std::map< CRADsPair, common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map< CRADsPair, voronota::common::ContactValue >::iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			const CRADsPair& crads=it->first;
-			const common::ContactValue& value=it->second;
+			const voronota::common::ContactValue& value=it->second;
 			if(!value.graphics.empty())
 			{
 				drawing_parameters_wrapper.process(std::make_pair(crads.a, crads.b), value.props.adjuncts, opengl_printer);
@@ -89,5 +89,5 @@ void draw_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 }

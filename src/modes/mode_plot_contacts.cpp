@@ -13,8 +13,8 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 std::map< int, std::pair<int, int> > construct_map_of_chains_intervals(const std::map<CRAD, std::size_t>& axis)
 {
@@ -65,10 +65,10 @@ int get_chain_number_from_coordinate(const std::map< int, std::pair<int, int> >&
 	return 0;
 }
 
-std::set< std::pair<int, int> > collect_points(const std::map<CRAD, std::size_t>& axis, const std::map<CRADsPair, common::ContactValue>& map_of_contacts)
+std::set< std::pair<int, int> > collect_points(const std::map<CRAD, std::size_t>& axis, const std::map<CRADsPair, voronota::common::ContactValue>& map_of_contacts)
 {
 	std::set< std::pair<int, int> > points;
-	for(std::map<CRADsPair, common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	for(std::map<CRADsPair, voronota::common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 	{
 		std::map<CRAD, std::size_t>::const_iterator x_it=axis.find(it->first.a);
 		std::map<CRAD, std::size_t>::const_iterator y_it=axis.find(it->first.b);
@@ -127,9 +127,9 @@ std::map<int, CRAD> construct_reversed_axis_map(const std::map<CRAD, std::size_t
 
 }
 
-void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
+void plot_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of contacts (line format: 'annotation1 annotation2 area distance tags adjuncts')");
 
@@ -152,8 +152,8 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::map<CRADsPair, common::ContactValue> map_of_contacts;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
+	std::map<CRADsPair, voronota::common::ContactValue> map_of_contacts;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, map_of_contacts);
 	if(map_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
@@ -161,7 +161,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	std::map<CRAD, std::size_t> axis;
 	{
-		for(std::map<CRADsPair, common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+		for(std::map<CRADsPair, voronota::common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 		{
 			axis[it->first.a]=0;
 			axis[it->first.b]=0;
@@ -203,9 +203,9 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		if(output.good())
 		{
 			const std::size_t max_coordinate=(axis.rbegin()->second+1);
-			modescommon::SVGWriter svg(max_coordinate, max_coordinate);
+			voronota::modescommon::SVGWriter svg(max_coordinate, max_coordinate);
 			svg.add_rect(0, 0, max_coordinate, max_coordinate, std::string("fill:")+background_color);
-			for(std::map<CRADsPair, common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			for(std::map<CRADsPair, voronota::common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
 				const std::size_t x=axis[it->first.a];
 				const std::size_t y=axis[it->first.b];
@@ -215,7 +215,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				{
 					if(adjuncts.count(adjunct_gradient)==1)
 					{
-						color=modescommon::SVGWriter::color_from_blue_white_red_gradient(adjuncts.find(adjunct_gradient)->second, adjunct_gradient_blue, adjunct_gradient_red);
+						color=voronota::modescommon::SVGWriter::color_from_blue_white_red_gradient(adjuncts.find(adjunct_gradient)->second, adjunct_gradient_blue, adjunct_gradient_red);
 					}
 				}
 				else if(adjuncts_rgb && (adjuncts.count("r")>0 || adjuncts.count("g")>0 || adjuncts.count("b")>0))
@@ -223,7 +223,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 					const double r=(adjuncts.count("r")>0 ? adjuncts.find("r")->second : 0.0);
 					const double g=(adjuncts.count("g")>0 ? adjuncts.find("g")->second : 0.0);
 					const double b=(adjuncts.count("b")>0 ? adjuncts.find("b")->second : 0.0);
-					color=modescommon::SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
+					color=voronota::modescommon::SVGWriter::color_from_red_green_blue_components(r, g, b, 255);
 				}
 				svg.add_rect(x, y, 1, 1, std::string("fill:")+color);
 				svg.add_rect(y, x, 1, 1, std::string("fill:")+color);
@@ -234,7 +234,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 
 	if(!axis_output.empty())
 	{
-		auxiliaries::IOUtilities().write_map_to_file(axis, axis_output);
+		voronota::auxiliaries::IOUtilities().write_map_to_file(axis, axis_output);
 	}
 
 	if(!points_output.empty())
@@ -242,7 +242,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream output(points_output.c_str(), std::ios::out);
 		if(output.good())
 		{
-			for(std::map<CRADsPair, common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+			for(std::map<CRADsPair, voronota::common::ContactValue>::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
 			{
 				output << axis[it->first.a] << " " << axis[it->first.b] << "\n";
 			}
@@ -288,7 +288,7 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 				for(std::map<CRAD, std::size_t>::const_iterator col_it=axis.begin();col_it!=axis.end();++col_it)
 				{
 					double value=0;
-					std::map<CRADsPair, common::ContactValue>::const_iterator contact_it=map_of_contacts.find(CRADsPair(row_it->first, col_it->first));
+					std::map<CRADsPair, voronota::common::ContactValue>::const_iterator contact_it=map_of_contacts.find(CRADsPair(row_it->first, col_it->first));
 					if(contact_it!=map_of_contacts.end())
 					{
 						value=contact_it->second.area;
@@ -300,5 +300,5 @@ void plot_contacts(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 }

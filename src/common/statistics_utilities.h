@@ -4,6 +4,9 @@
 #include <cmath>
 #include <iostream>
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -59,6 +62,8 @@ inline std::istream& operator>>(std::istream& input, NormalDistributionParameter
 {
 	input >> v.mean >> v.sd;
 	return input;
+}
+
 }
 
 }

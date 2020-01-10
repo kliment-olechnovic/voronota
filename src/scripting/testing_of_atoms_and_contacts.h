@@ -7,6 +7,9 @@
 
 #include "basic_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -833,6 +836,8 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 	input >> std::ws;
 
 	return input;
+}
+
 }
 
 }

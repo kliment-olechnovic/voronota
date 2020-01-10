@@ -6,6 +6,9 @@
 
 #include "data_manager.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -213,6 +216,8 @@ private:
 		}
 	}
 };
+
+}
 
 }
 

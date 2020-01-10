@@ -8,15 +8,15 @@
 namespace
 {
 
-std::pair<double, double> fit_points_to_positive_canvas(const double margin, std::vector<apollota::SimplePoint>& points)
+std::pair<double, double> fit_points_to_positive_canvas(const double margin, std::vector<voronota::apollota::SimplePoint>& points)
 {
 	if(!points.empty())
 	{
-		apollota::SimplePoint p_min=points[0];
-		apollota::SimplePoint p_max=points[0];
+		voronota::apollota::SimplePoint p_min=points[0];
+		voronota::apollota::SimplePoint p_max=points[0];
 		for(std::size_t i=1;i<points.size();i++)
 		{
-			const apollota::SimplePoint& p=points[i];
+			const voronota::apollota::SimplePoint& p=points[i];
 			if(p.x<p_min.x)
 			{
 				p_min.x=p.x;
@@ -34,11 +34,11 @@ std::pair<double, double> fit_points_to_positive_canvas(const double margin, std
 				p_max.y=p.y;
 			}
 		}
-		p_min=p_min-apollota::SimplePoint(margin, margin, 0);
-		p_max=p_max+apollota::SimplePoint(margin, margin, 0);
+		p_min=p_min-voronota::apollota::SimplePoint(margin, margin, 0);
+		p_max=p_max+voronota::apollota::SimplePoint(margin, margin, 0);
 		for(std::size_t i=0;i<points.size();i++)
 		{
-			apollota::SimplePoint& p=points[i];
+			voronota::apollota::SimplePoint& p=points[i];
 			p=(p-p_min);
 		}
 		return std::pair<double, double>(p_max.x-p_min.x, p_max.y-p_min.y);
@@ -48,9 +48,9 @@ std::pair<double, double> fit_points_to_positive_canvas(const double margin, std
 
 }
 
-void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
+void demo_polygon_triangulation(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "polygon points");
 	pohw.describe_io("stdout", false, true, "picture in SVG format");
 
@@ -59,8 +59,8 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	std::vector<apollota::SimplePoint> points;
-	auxiliaries::IOUtilities().read_lines_to_set(std::cin, points);
+	std::vector<voronota::apollota::SimplePoint> points;
+	voronota::auxiliaries::IOUtilities().read_lines_to_set(std::cin, points);
 	if(points.size()<3)
 	{
 		throw std::runtime_error("Less than 3 points provided to stdin.");
@@ -68,30 +68,30 @@ void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const std::pair<double, double> dimensions=fit_points_to_positive_canvas(100.0, points);
 
-	apollota::SimplePolygonUtilities::TriangulationInfo result=apollota::SimplePolygonUtilities::triangulate_simple_polygon(points, apollota::SimplePoint(0, 0, 1));
+	voronota::apollota::SimplePolygonUtilities::TriangulationInfo result=voronota::apollota::SimplePolygonUtilities::triangulate_simple_polygon(points, voronota::apollota::SimplePoint(0, 0, 1));
 	if(result.triangulation.empty())
 	{
 		throw std::runtime_error("Failed to produce triangulation.");
 	}
 
-	modescommon::SVGWriter svg(dimensions.first, dimensions.second);
+	voronota::modescommon::SVGWriter svg(dimensions.first, dimensions.second);
 	for(std::size_t i=0;i<points.size();i++)
 	{
-		const apollota::SimplePoint& p=points[i];
+		const voronota::apollota::SimplePoint& p=points[i];
 		svg.add_circle(p.x, p.y, 10, (result.convexity_info.convexity[i]<0.0 ? "fill:rgb(255,0,0)" : "fill:rgb(0,0,255)"));
 	}
 	for(std::size_t i=0;i<points.size();i++)
 	{
-		const apollota::SimplePoint& a=points[i];
-		const apollota::SimplePoint& b=points[i+1<points.size() ? i+1 : 0];
+		const voronota::apollota::SimplePoint& a=points[i];
+		const voronota::apollota::SimplePoint& b=points[i+1<points.size() ? i+1 : 0];
 		svg.add_line(a.x, a.y, b.x, b.y, "stroke:rgb(255,255,0);stroke-width:5");
 	}
 	for(std::size_t i=0;i<result.triangulation.size();i++)
 	{
-		const apollota::Triple& t=result.triangulation[i];
-		const apollota::SimplePoint& a=points[t.get(0)];
-		const apollota::SimplePoint& b=points[t.get(1)];
-		const apollota::SimplePoint& c=points[t.get(2)];
+		const voronota::apollota::Triple& t=result.triangulation[i];
+		const voronota::apollota::SimplePoint& a=points[t.get(0)];
+		const voronota::apollota::SimplePoint& b=points[t.get(1)];
+		const voronota::apollota::SimplePoint& c=points[t.get(2)];
 		svg.add_line(a.x, a.y, b.x, b.y, "stroke:rgb(0,0,0);stroke-width:1");
 		svg.add_line(a.x, a.y, c.x, c.y, "stroke:rgb(0,0,0);stroke-width:1");
 		svg.add_line(b.x, b.y, c.x, c.y, "stroke:rgb(0,0,0);stroke-width:1");

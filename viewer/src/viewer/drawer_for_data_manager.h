@@ -8,6 +8,9 @@
 #include "../uv/drawing_with_instancing_controller.h"
 #include "../uv/drawing_id.h"
 
+namespace voronota
+{
+
 namespace viewer
 {
 
@@ -1037,6 +1040,8 @@ private:
 	WrappedDrawingController dc_figures_solid_;
 	WrappedDrawingController dc_figures_mesh_;
 };
+
+}
 
 }
 

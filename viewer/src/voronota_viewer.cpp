@@ -2,11 +2,11 @@
 
 #include "viewer/application.h"
 
-viewer::Application* viewer::Application::self_ptr=0;
+voronota::viewer::Application* voronota::viewer::Application::self_ptr=0;
 
 int main(const int argc, const char** argv)
 {
-	viewer::Application::InitializationParameters app_parameters;
+	voronota::viewer::Application::InitializationParameters app_parameters;
 	app_parameters.suggested_window_width=800;
 	app_parameters.suggested_window_height=600;
 	app_parameters.title="voronota-viewer";
@@ -74,7 +74,7 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	viewer::Application app;
+	voronota::viewer::Application app;
 
 	if(!app.init(app_parameters))
 	{
@@ -92,7 +92,7 @@ int main(const int argc, const char** argv)
 	app.add_command(raw_arguments.c_str());
 
 #ifdef FOR_WEB
-	emscripten_set_main_loop_arg(viewer::Application::render, &app, 0, 1);
+	emscripten_set_main_loop_arg(voronota::viewer::Application::render, &app, 0, 1);
 #else
 	app.run_loop();
 #endif
@@ -109,19 +109,19 @@ extern "C"
 
 EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
 {
-	viewer::Application* app=viewer::Application::self_ptr;
+	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
 	app->add_command(command);
 }
 
 EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
 {
-	viewer::Application* app=viewer::Application::self_ptr;
+	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
 	return app->execute_command(command);
 }
 
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
 {
-	viewer::Application* app=viewer::Application::self_ptr;
+	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
 	app->upload_file(name, data);
 }
 

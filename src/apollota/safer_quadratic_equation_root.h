@@ -3,6 +3,9 @@
 
 #include "safer_summation.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -50,6 +53,8 @@ inline bool solve_quadratic_equation(const double a, const double b, const doubl
 		}
 	}
 	return false;
+}
+
 }
 
 }

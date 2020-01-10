@@ -48,9 +48,9 @@ private:
 
 }
 
-void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler& poh)
+void draw_values_bitmap(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "values");
 	pohw.describe_io("stdout", false, true, "picture in PPM format");
 
@@ -63,7 +63,7 @@ void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 
 	std::vector<double> values;
-	auxiliaries::IOUtilities().read_lines_to_set(std::cin, values);
+	voronota::auxiliaries::IOUtilities().read_lines_to_set(std::cin, values);
 	if(values.size()<2)
 	{
 		throw std::runtime_error("Less than 2 points provided to stdin.");
@@ -79,7 +79,7 @@ void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler& poh)
 		const int y=i/number_of_columns;
 		const int x=i%number_of_columns;
 		unsigned char the_color[3]={0, 0, 0};
-		auxiliaries::ColorUtilities::color_to_components(auxiliaries::ColorUtilities::color_from_gradient(color_stops, values[i]), the_color, false);
+		voronota::auxiliaries::ColorUtilities::color_to_components(voronota::auxiliaries::ColorUtilities::color_from_gradient(color_stops, values[i]), the_color, false);
 		char* color=image.color(x, y);
 		for(int j=0;j<3;j++)
 		{

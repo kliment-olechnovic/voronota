@@ -7,6 +7,9 @@
 #include <map>
 #include <stdexcept>
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -110,6 +113,8 @@ private:
 		return map;
 	}
 };
+
+}
 
 }
 

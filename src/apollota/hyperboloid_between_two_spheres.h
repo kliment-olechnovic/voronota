@@ -3,6 +3,9 @@
 
 #include "basic_operations_on_points.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -112,6 +115,8 @@ private:
 		}
 	}
 };
+
+}
 
 }
 

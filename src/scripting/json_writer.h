@@ -3,6 +3,9 @@
 
 #include "variant_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -257,6 +260,8 @@ private:
 	int level_;
 	Configuration config_;
 };
+
+}
 
 }
 

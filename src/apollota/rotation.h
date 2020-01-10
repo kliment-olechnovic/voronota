@@ -3,6 +3,9 @@
 
 #include "basic_operations_on_points.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -73,6 +76,8 @@ private:
 		return Quaternion(a, p.x, p.y, p.z);
 	}
 };
+
+}
 
 }
 

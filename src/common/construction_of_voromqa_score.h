@@ -4,6 +4,9 @@
 #include "contacts_scoring_utilities.h"
 #include "statistics_utilities.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -194,6 +197,8 @@ private:
 	}
 };
 
+
+}
 
 }
 

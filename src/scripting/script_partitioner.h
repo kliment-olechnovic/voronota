@@ -5,6 +5,9 @@
 
 #include "command_input.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -358,6 +361,8 @@ private:
 	std::map<std::string, std::string> aliases_;
 	std::list<Sentence> pending_sentences_;
 };
+
+}
 
 }
 

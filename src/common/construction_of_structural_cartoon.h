@@ -8,6 +8,9 @@
 #include "construction_of_bonding_links.h"
 #include "construction_of_secondary_structure.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -785,6 +788,8 @@ private:
 		return true;
 	}
 };
+
+}
 
 }
 

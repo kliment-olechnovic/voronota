@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../scoring_of_data_manager_using_voromqa.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -79,6 +82,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

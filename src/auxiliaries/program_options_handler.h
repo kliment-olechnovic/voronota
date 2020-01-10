@@ -10,6 +10,9 @@
 #include <iomanip>
 #include <algorithm>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -448,6 +451,8 @@ private:
 	std::vector<OptionDescription> list_of_option_descriptions_;
 	std::vector<IODescription> list_of_io_descriptions_;
 };
+
+}
 
 }
 

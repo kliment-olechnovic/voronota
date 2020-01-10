@@ -5,6 +5,9 @@
 #include "../apollota/triangulation_output.h"
 #include "../apollota/spheres_boundary_construction.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -122,6 +125,8 @@ public:
 		return true;
 	}
 };
+
+}
 
 }
 

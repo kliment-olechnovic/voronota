@@ -9,6 +9,9 @@
 #include "construction_of_triangulation.h"
 #include "contact_value.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -514,6 +517,8 @@ inline std::istream& operator>>(std::istream& input, ConstructionOfContacts::Con
 {
 	input >> contact.ids[0] >> contact.ids[1] >> contact.value;
 	return input;
+}
+
 }
 
 }

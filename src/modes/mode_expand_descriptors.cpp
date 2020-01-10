@@ -5,7 +5,7 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
 
 inline std::string crad_to_expanded_str(const CRAD& crad)
 {
@@ -22,9 +22,9 @@ inline std::string crad_to_expanded_str(const CRAD& crad)
 
 }
 
-void expand_descriptors(const auxiliaries::ProgramOptionsHandler& poh)
+void expand_descriptors(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "any text containing atom descriptors");
 	pohw.describe_io("stdout", false, true, "text with each atom descriptor expanded to 'chainID resSeq iCode serial altLoc resName name'");
 

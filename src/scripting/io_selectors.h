@@ -3,6 +3,9 @@
 
 #include "virtual_file_storage.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -115,6 +118,8 @@ private:
 	std::ostringstream memory_stream_;
 	std::ofstream disk_stream_;
 };
+
+}
 
 }
 

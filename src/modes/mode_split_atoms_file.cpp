@@ -1,9 +1,9 @@
 #include "../auxiliaries/program_options_handler.h"
 #include "../auxiliaries/io_utilities.h"
 
-void split_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
+void split_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "file in PDB format");
 	pohw.describe_io("stdout", false, true, "list of result files");
 
@@ -69,5 +69,5 @@ void split_atoms_file(const auxiliaries::ProgramOptionsHandler& poh)
 		}
 	}
 
-	auxiliaries::IOUtilities().write_set(result_filenames, std::cout);
+	voronota::auxiliaries::IOUtilities().write_set(result_filenames, std::cout);
 }

@@ -6,6 +6,9 @@
 
 #include "figure.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -181,6 +184,8 @@ struct SummaryOfContacts
 		}
 	}
 };
+
+}
 
 }
 

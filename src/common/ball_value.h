@@ -3,6 +3,9 @@
 
 #include "properties_value.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -29,6 +32,8 @@ inline std::istream& operator>>(std::istream& input, BallValue& value)
 {
 	input >> value.x >> value.y >> value.z >> value.r >> value.props;
 	return input;
+}
+
 }
 
 }

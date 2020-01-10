@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../../common/construction_of_path_centralities.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -143,6 +146,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

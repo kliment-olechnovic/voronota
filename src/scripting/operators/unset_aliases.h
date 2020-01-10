@@ -5,6 +5,9 @@
 
 #include "../script_partitioner.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -63,6 +66,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

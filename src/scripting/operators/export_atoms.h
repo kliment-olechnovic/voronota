@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../../common/writing_atomic_balls_in_pdb_format.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -110,6 +113,8 @@ private:
 		return sliced_vector;
 	}
 };
+
+}
 
 }
 

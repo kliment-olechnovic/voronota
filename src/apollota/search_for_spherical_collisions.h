@@ -5,6 +5,9 @@
 
 #include "bounding_spheres_hierarchy.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -98,6 +101,8 @@ private:
 		}
 	};
 };
+
+}
 
 }
 

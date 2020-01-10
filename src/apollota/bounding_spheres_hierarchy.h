@@ -8,6 +8,9 @@
 #include "basic_operations_on_spheres.h"
 #include "splitting_of_spheres.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -340,6 +343,8 @@ private:
 	std::pair<double, double> input_radii_range_;
 	std::vector< std::vector<Cluster> > clusters_layers_;
 };
+
+}
 
 }
 

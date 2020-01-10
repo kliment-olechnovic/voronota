@@ -6,6 +6,9 @@
 
 #include "basic_operations_on_points.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -303,6 +306,8 @@ inline SimplePoint barycentric_coordinates(const SimplePoint& a, const SimplePoi
 	const double w=(d00*d21-d01*d20)/denom;
 	const double u=1.0-v-w;
 	return SimplePoint(u, v, w);
+}
+
 }
 
 }

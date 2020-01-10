@@ -7,55 +7,55 @@
 
 #include "auxiliaries/program_options_handler.h"
 
-void get_balls_from_atoms_file(const auxiliaries::ProgramOptionsHandler&);
-void calculate_vertices(const auxiliaries::ProgramOptionsHandler&);
-void calculate_vertices_in_parallel(const auxiliaries::ProgramOptionsHandler&);
-void calculate_contacts(const auxiliaries::ProgramOptionsHandler&);
-void query_balls(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts(const auxiliaries::ProgramOptionsHandler&);
-void draw_contacts(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_energy(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_quality(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_potential(const auxiliaries::ProgramOptionsHandler&);
-void compare_contacts(const auxiliaries::ProgramOptionsHandler&);
-void write_balls_to_atoms_file(const auxiliaries::ProgramOptionsHandler&);
-void query_balls_clashes(const auxiliaries::ProgramOptionsHandler&);
-void expand_descriptors(const auxiliaries::ProgramOptionsHandler&);
+void get_balls_from_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler&);
+void calculate_vertices(const voronota::auxiliaries::ProgramOptionsHandler&);
+void calculate_vertices_in_parallel(const voronota::auxiliaries::ProgramOptionsHandler&);
+void calculate_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_balls(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_energy(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_quality(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_potential(const voronota::auxiliaries::ProgramOptionsHandler&);
+void compare_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void write_balls_to_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_balls_clashes(const voronota::auxiliaries::ProgramOptionsHandler&);
+void expand_descriptors(const voronota::auxiliaries::ProgramOptionsHandler&);
 
-void query_balls_sequences_pairings_stats(const auxiliaries::ProgramOptionsHandler&);
-void draw_balls(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler&);
-void plot_contacts(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_potentials_stats(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_energy_stats(const auxiliaries::ProgramOptionsHandler&);
-void vectorize_contacts(const auxiliaries::ProgramOptionsHandler&);
-void vectorize_points(const auxiliaries::ProgramOptionsHandler&);
-void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts_simulating_unfolding(const auxiliaries::ProgramOptionsHandler&);
-void vectorize_contact_environments(const auxiliaries::ProgramOptionsHandler&);
-void write_qa_scores_in_casp_format(const auxiliaries::ProgramOptionsHandler&);
-void score_contacts_global_energy_by_cuts(const auxiliaries::ProgramOptionsHandler&);
-void simulate_potential_for_membrane_proteins(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts_solvation_values(const auxiliaries::ProgramOptionsHandler&);
-void query_contacts_interchain_exposure_values(const auxiliaries::ProgramOptionsHandler&);
-void score_scores(const auxiliaries::ProgramOptionsHandler&);
-void demo_ses(const auxiliaries::ProgramOptionsHandler&);
-void rotational_optimization_demo(const auxiliaries::ProgramOptionsHandler&);
-void place_membrane(const auxiliaries::ProgramOptionsHandler&);
-void demo_polygon_triangulation(const auxiliaries::ProgramOptionsHandler&);
-void demo_hypercut(const auxiliaries::ProgramOptionsHandler&);
-void run_script(const auxiliaries::ProgramOptionsHandler&);
-void draw_values_bitmap(const auxiliaries::ProgramOptionsHandler&);
-void reprint_hbp(const auxiliaries::ProgramOptionsHandler&);
-void compare_files_as_sets(const auxiliaries::ProgramOptionsHandler&);
-void calculate_path_centralities(const auxiliaries::ProgramOptionsHandler&);
-void query_balls_distances(const auxiliaries::ProgramOptionsHandler&);
-void split_atoms_file(const auxiliaries::ProgramOptionsHandler&);
-void demo_blank(const auxiliaries::ProgramOptionsHandler&);
+void query_balls_sequences_pairings_stats(const voronota::auxiliaries::ProgramOptionsHandler&);
+void draw_balls(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_contacts_depth_values(const voronota::auxiliaries::ProgramOptionsHandler&);
+void plot_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_potentials_stats(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_energy_stats(const voronota::auxiliaries::ProgramOptionsHandler&);
+void vectorize_contacts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void vectorize_points(const voronota::auxiliaries::ProgramOptionsHandler&);
+void calculate_mock_solvent(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_contacts_simulating_unfolding(const voronota::auxiliaries::ProgramOptionsHandler&);
+void vectorize_contact_environments(const voronota::auxiliaries::ProgramOptionsHandler&);
+void write_qa_scores_in_casp_format(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_contacts_global_energy_by_cuts(const voronota::auxiliaries::ProgramOptionsHandler&);
+void simulate_potential_for_membrane_proteins(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_contacts_solvation_values(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_contacts_interchain_exposure_values(const voronota::auxiliaries::ProgramOptionsHandler&);
+void score_scores(const voronota::auxiliaries::ProgramOptionsHandler&);
+void demo_ses(const voronota::auxiliaries::ProgramOptionsHandler&);
+void rotational_optimization_demo(const voronota::auxiliaries::ProgramOptionsHandler&);
+void place_membrane(const voronota::auxiliaries::ProgramOptionsHandler&);
+void demo_polygon_triangulation(const voronota::auxiliaries::ProgramOptionsHandler&);
+void demo_hypercut(const voronota::auxiliaries::ProgramOptionsHandler&);
+void run_script(const voronota::auxiliaries::ProgramOptionsHandler&);
+void draw_values_bitmap(const voronota::auxiliaries::ProgramOptionsHandler&);
+void reprint_hbp(const voronota::auxiliaries::ProgramOptionsHandler&);
+void compare_files_as_sets(const voronota::auxiliaries::ProgramOptionsHandler&);
+void calculate_path_centralities(const voronota::auxiliaries::ProgramOptionsHandler&);
+void query_balls_distances(const voronota::auxiliaries::ProgramOptionsHandler&);
+void split_atoms_file(const voronota::auxiliaries::ProgramOptionsHandler&);
+void demo_blank(const voronota::auxiliaries::ProgramOptionsHandler&);
 
 struct ModeDescriptor
 {
-	typedef std::pointer_to_unary_function<const auxiliaries::ProgramOptionsHandler&, void> FunctionPtr;
+	typedef std::pointer_to_unary_function<const voronota::auxiliaries::ProgramOptionsHandler&, void> FunctionPtr;
 
 	std::string name;
 	FunctionPtr func_ptr;
@@ -156,7 +156,7 @@ int main(const int argc, const char** argv)
 
 	try
 	{
-		auxiliaries::ProgramOptionsHandler poh(argc, argv);
+		voronota::auxiliaries::ProgramOptionsHandler poh(argc, argv);
 
 		const bool help=poh.contains_option("--help");
 

@@ -4,6 +4,9 @@
 #include "variant_types.h"
 #include "basic_types.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -167,6 +170,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

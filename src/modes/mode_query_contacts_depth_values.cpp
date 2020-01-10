@@ -6,8 +6,8 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 struct ResidueValuesSummary
 {
@@ -46,9 +46,9 @@ struct ResidueValuesSummary
 
 }
 
-void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
+void query_contacts_depth_values(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of contacts (line format: 'annotation1 annotation2')");
 	pohw.describe_io("stdout", false, true, "list of depth values (line format: 'annotation depth')");
 
@@ -59,15 +59,15 @@ void query_contacts_depth_values(const auxiliaries::ProgramOptionsHandler& poh)
 		return;
 	}
 
-	const std::set<CRADsPair> set_of_contacts=auxiliaries::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
+	const std::set<CRADsPair> set_of_contacts=voronota::auxiliaries::IOUtilities().read_lines_to_set< std::set<CRADsPair> >(std::cin);
 	if(set_of_contacts.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	const std::map<CRAD, int> map_crad_to_depth=common::ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
+	const std::map<CRAD, int> map_crad_to_depth=voronota::common::ChainResidueAtomDescriptorsGraphOperations::calculate_burial_depth_values(set_of_contacts);
 
-	auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
+	voronota::auxiliaries::IOUtilities().write_map(map_crad_to_depth, std::cout);
 
 	if(!map_crad_to_depth.empty() && !residue_info.empty())
 	{

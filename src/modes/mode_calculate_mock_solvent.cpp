@@ -12,9 +12,9 @@
 
 #include "modescommon/mock_solvent_utilities.h"
 
-void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
+void calculate_mock_solvent(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 	pohw.describe_io("stdout", false, true, "list of balls (line format: 'annotation x y z r tags adjuncts')");
 
@@ -30,49 +30,49 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 
 	const double probe=(solvent_radius+solvent_distance);
 
-	std::vector<apollota::SimpleSphere> input_spheres;
-	std::vector< std::pair<common::ChainResidueAtomDescriptor, common::BallValue> > ball_records;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, ball_records);
+	std::vector<voronota::apollota::SimpleSphere> input_spheres;
+	std::vector< std::pair<voronota::common::ChainResidueAtomDescriptor, voronota::common::BallValue> > ball_records;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, ball_records);
 	input_spheres.reserve(ball_records.size());
 	for(std::size_t i=0;i<ball_records.size();i++)
 	{
-		input_spheres.push_back(apollota::SimpleSphere(ball_records[i].second));
+		input_spheres.push_back(voronota::apollota::SimpleSphere(ball_records[i].second));
 	}
 	if(input_spheres.size()<4)
 	{
 		throw std::runtime_error("Less than 4 balls provided to stdin.");
 	}
 
-	std::vector<apollota::SimpleSphere> mock_solvent_spheres;
+	std::vector<voronota::apollota::SimpleSphere> mock_solvent_spheres;
 
 	if(sparse_mode)
 	{
 		int stage=0;
 		while(stage<1)
 		{
-			std::vector<apollota::SimpleSphere> spheres=input_spheres;
+			std::vector<voronota::apollota::SimpleSphere> spheres=input_spheres;
 			if(!mock_solvent_spheres.empty())
 			{
 				spheres.insert(spheres.end(), mock_solvent_spheres.begin(), mock_solvent_spheres.end());
 			}
 			const std::size_t real_spheres_count=spheres.size();
 
-			const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
+			const std::vector<voronota::apollota::SimpleSphere> artificial_boundary=voronota::apollota::construct_artificial_boundary(spheres, probe*2.0);
 			spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
-			const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
-			const apollota::Triangulation::VerticesVector vertices=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
-			const apollota::TriangulationQueries::IDsGraph ids_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), real_spheres_count);
+			const voronota::apollota::Triangulation::Result triangulation_result=voronota::apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+			const voronota::apollota::Triangulation::VerticesVector vertices=voronota::apollota::Triangulation::collect_vertices_vector_from_quadruples_map(triangulation_result.quadruples_map);
+			const voronota::apollota::TriangulationQueries::IDsGraph ids_graph=voronota::apollota::TriangulationQueries::collect_ids_graph_from_ids_map(voronota::apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map), real_spheres_count);
 
-			apollota::TriangulationQueries::TriplesMap triples_exposed;
+			voronota::apollota::TriangulationQueries::TriplesMap triples_exposed;
 			for(std::size_t i=0;i<vertices.size();i++)
 			{
 				if(vertices[i].second.r>probe)
 				{
-					const apollota::Quadruple& q=vertices[i].first;
+					const voronota::apollota::Quadruple& q=vertices[i].first;
 					for(unsigned int j=0;j<4;j++)
 					{
-						const apollota::Triple& t=q.exclude(j);
+						const voronota::apollota::Triple& t=q.exclude(j);
 						const std::size_t n=q.get(j);
 						if((stage==0 && t.get_min_max().second<real_spheres_count && t.get_min_max().first<input_spheres.size()) || stage>0)
 						{
@@ -82,12 +82,12 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 				}
 			}
 
-			std::vector<apollota::SimpleSphere> new_mock_solvent_spheres;
+			std::vector<voronota::apollota::SimpleSphere> new_mock_solvent_spheres;
 			new_mock_solvent_spheres.reserve(triples_exposed.size()*2);
-			for(apollota::TriangulationQueries::TriplesMap::const_iterator it=triples_exposed.begin();it!=triples_exposed.end();++it)
+			for(voronota::apollota::TriangulationQueries::TriplesMap::const_iterator it=triples_exposed.begin();it!=triples_exposed.end();++it)
 			{
-				const apollota::Triple& t=it->first;
-				const std::vector<apollota::SimpleSphere> tangents=apollota::TangentSphereOfThreeSpheres::calculate(spheres[t.get(0)], spheres[t.get(1)], spheres[t.get(2)], probe);
+				const voronota::apollota::Triple& t=it->first;
+				const std::vector<voronota::apollota::SimpleSphere> tangents=voronota::apollota::TangentSphereOfThreeSpheres::calculate(spheres[t.get(0)], spheres[t.get(1)], spheres[t.get(2)], probe);
 				if(!tangents.empty())
 				{
 					std::set<std::size_t> ns;
@@ -99,14 +99,14 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 						bool candidate_good=true;
 						for(std::set<std::size_t>::const_iterator jt=ns.begin();jt!=ns.end() && candidate_good;++jt)
 						{
-							if(apollota::sphere_intersects_sphere(tangents[i], spheres[*jt]))
+							if(voronota::apollota::sphere_intersects_sphere(tangents[i], spheres[*jt]))
 							{
 								candidate_good=false;
 							}
 						}
 						if(candidate_good)
 						{
-							new_mock_solvent_spheres.push_back(apollota::SimpleSphere(tangents[i], solvent_radius));
+							new_mock_solvent_spheres.push_back(voronota::apollota::SimpleSphere(tangents[i], solvent_radius));
 						}
 					}
 				}
@@ -125,29 +125,29 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else
 	{
-		std::vector<apollota::SimpleSphere> spheres=input_spheres;
-		const std::vector<apollota::SimpleSphere> artificial_boundary=apollota::construct_artificial_boundary(spheres, probe*2.0);
+		std::vector<voronota::apollota::SimpleSphere> spheres=input_spheres;
+		const std::vector<voronota::apollota::SimpleSphere> artificial_boundary=voronota::apollota::construct_artificial_boundary(spheres, probe*2.0);
 		spheres.insert(spheres.end(), artificial_boundary.begin(), artificial_boundary.end());
 
-		const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(spheres, 3.5, false, false);
-		const apollota::TriangulationQueries::IDsMap ids_map=apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
-		const apollota::TriangulationQueries::IDsGraph ids_graph=apollota::TriangulationQueries::collect_ids_graph_from_ids_map(ids_map, input_spheres.size());
+		const voronota::apollota::Triangulation::Result triangulation_result=voronota::apollota::Triangulation::construct_result(spheres, 3.5, false, false);
+		const voronota::apollota::TriangulationQueries::IDsMap ids_map=voronota::apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(triangulation_result.quadruples_map);
+		const voronota::apollota::TriangulationQueries::IDsGraph ids_graph=voronota::apollota::TriangulationQueries::collect_ids_graph_from_ids_map(ids_map, input_spheres.size());
 
-		const apollota::SubdividedIcosahedron initial_sih(sih_depth);
+		const voronota::apollota::SubdividedIcosahedron initial_sih(sih_depth);
 
 		mock_solvent_spheres.reserve(ids_graph.size()*2);
 		for(std::size_t i=0;i<ids_graph.size();i++)
 		{
-			apollota::SubdividedIcosahedron sih=initial_sih;
+			voronota::apollota::SubdividedIcosahedron sih=initial_sih;
 			sih.fit_into_sphere(spheres[i], spheres[i].r+probe);
 			for(std::size_t l=0;l<sih.vertices().size();l++)
 			{
-				apollota::SimpleSphere sphere_l(sih.vertices()[l], solvent_radius);
-				const double dist_i=apollota::minimal_distance_from_point_to_sphere(sphere_l, spheres[i]);
+				voronota::apollota::SimpleSphere sphere_l(sih.vertices()[l], solvent_radius);
+				const double dist_i=voronota::apollota::minimal_distance_from_point_to_sphere(sphere_l, spheres[i]);
 				bool good=true;
 				for(std::size_t j=0;j<ids_graph[i].size() && good;j++)
 				{
-					const double dist_j=apollota::minimal_distance_from_point_to_sphere(sphere_l, spheres[ids_graph[i][j]]);
+					const double dist_j=voronota::apollota::minimal_distance_from_point_to_sphere(sphere_l, spheres[ids_graph[i][j]]);
 					good=(dist_i<dist_j);
 				}
 				if(good)
@@ -161,12 +161,12 @@ void calculate_mock_solvent(const auxiliaries::ProgramOptionsHandler& poh)
 	ball_records.reserve(ball_records.size()+mock_solvent_spheres.size());
 	for(std::size_t i=0;i<mock_solvent_spheres.size();i++)
 	{
-		const apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
-		const common::BallValue value=apollota::custom_sphere<common::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
-		common::ChainResidueAtomDescriptor crad(modescommon::mock_solvent_name());
+		const voronota::apollota::SimpleSphere& sphere=mock_solvent_spheres[i];
+		const voronota::common::BallValue value=voronota::apollota::custom_sphere<voronota::common::BallValue>(sphere.x, sphere.y, sphere.z, sphere.r);
+		voronota::common::ChainResidueAtomDescriptor crad(voronota::modescommon::mock_solvent_name());
 		crad.resSeq=(i+1);
-		crad.resName=modescommon::mock_solvent_name();
-		crad.name=modescommon::mock_solvent_name();
+		crad.resName=voronota::modescommon::mock_solvent_name();
+		crad.name=voronota::modescommon::mock_solvent_name();
 		ball_records.push_back(std::make_pair(crad, value));
 	}
 

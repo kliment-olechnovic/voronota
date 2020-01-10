@@ -5,6 +5,9 @@
 
 #include "chain_residue_atom_descriptor.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -313,6 +316,8 @@ private:
 		}
 	};
 };
+
+}
 
 }
 

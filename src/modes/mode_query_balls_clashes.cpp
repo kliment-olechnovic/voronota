@@ -8,14 +8,14 @@
 namespace
 {
 
-typedef common::ChainResidueAtomDescriptor CRAD;
-typedef common::ChainResidueAtomDescriptorsPair CRADsPair;
+typedef voronota::common::ChainResidueAtomDescriptor CRAD;
+typedef voronota::common::ChainResidueAtomDescriptorsPair CRADsPair;
 
 }
 
-void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
+void query_balls_clashes(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 {
-	auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
+	voronota::auxiliaries::ProgramOptionsHandlerWrapper pohw(poh);
 	pohw.describe_io("stdin", true, false, "list of balls (line format: 'annotation x y z r')");
 	pohw.describe_io("stdout", false, true, "list of clashes (line format: 'annotation1 annotation2 distance min-distance-between-balls')");
 
@@ -33,32 +33,32 @@ void query_balls_clashes(const auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("Clash distance threshold is too small.");
 	}
 
-	std::vector< std::pair<CRAD, apollota::SimpleSphere> > list_of_balls;
-	auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
+	std::vector< std::pair<CRAD, voronota::apollota::SimpleSphere> > list_of_balls;
+	voronota::auxiliaries::IOUtilities().read_lines_to_map(std::cin, list_of_balls);
 	if(list_of_balls.empty())
 	{
 		throw std::runtime_error("No input.");
 	}
 
-	std::vector<apollota::SimpleSphere> spheres(list_of_balls.size());
+	std::vector<voronota::apollota::SimpleSphere> spheres(list_of_balls.size());
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		spheres[i]=apollota::SimpleSphere(list_of_balls[i].second, clash_distance*0.5);
+		spheres[i]=voronota::apollota::SimpleSphere(list_of_balls[i].second, clash_distance*0.5);
 	}
 
-	const apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
+	const voronota::apollota::BoundingSpheresHierarchy bsh(spheres, init_radius_for_BSH, 1);
 
 	std::map< CRADsPair, std::pair<double, double> > map_of_clashes;
 
 	for(std::size_t i=0;i<spheres.size();i++)
 	{
-		const std::vector<std::size_t> collisions=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, spheres[i]);
+		const std::vector<std::size_t> collisions=voronota::apollota::SearchForSphericalCollisions::find_all_collisions(bsh, spheres[i]);
 		for(std::size_t j=0;j<collisions.size();j++)
 		{
 			if(collisions[j]!=i)
 			{
-				const double distance=apollota::distance_from_point_to_point(spheres[i], spheres[collisions[j]]);
-				const double distance_between_balls=apollota::minimal_distance_from_sphere_to_sphere(list_of_balls[i].second, list_of_balls[collisions[j]].second);
+				const double distance=voronota::apollota::distance_from_point_to_point(spheres[i], spheres[collisions[j]]);
+				const double distance_between_balls=voronota::apollota::minimal_distance_from_sphere_to_sphere(list_of_balls[i].second, list_of_balls[collisions[j]].second);
 				if(distance<clash_distance)
 				{
 					const CRAD& crad_a=list_of_balls[i].first;

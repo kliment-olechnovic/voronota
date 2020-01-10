@@ -11,6 +11,9 @@
 #include <map>
 #include <cmath>
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -725,6 +728,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

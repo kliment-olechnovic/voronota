@@ -10,6 +10,9 @@
 #include "chain_residue_atom_descriptor.h"
 #include "ball_value.h"
 
+namespace voronota
+{
+
 namespace common
 {
 
@@ -124,6 +127,8 @@ inline std::istream& operator>>(std::istream& input, ConstructionOfAtomicBalls::
 {
 	input >> ball.crad >> ball.value;
 	return input;
+}
+
 }
 
 }

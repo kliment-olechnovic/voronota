@@ -1,6 +1,9 @@
 #ifndef APOLLOTA_SAFE_COMPARISON_OF_NUMBERS_H_
 #define APOLLOTA_SAFE_COMPARISON_OF_NUMBERS_H_
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -38,6 +41,8 @@ inline bool less_or_equal(const double a, const double b)
 inline bool greater_or_equal(const double a, const double b)
 {
 	return (greater(a, b) || equal(a, b));
+}
+
 }
 
 }

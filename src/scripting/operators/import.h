@@ -4,6 +4,9 @@
 #include "../operators_common.h"
 #include "../loading_of_data.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -117,6 +120,8 @@ public:
 		return result;
 	}
 };
+
+}
 
 }
 

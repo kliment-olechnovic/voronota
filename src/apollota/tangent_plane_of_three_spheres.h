@@ -9,6 +9,9 @@
 #include "safer_quadratic_equation_root.h"
 #include "safer_summation.h"
 
+namespace voronota
+{
+
 namespace apollota
 {
 
@@ -128,6 +131,8 @@ private:
 		return std::vector<SimplePoint>();
 	}
 };
+
+}
 
 }
 

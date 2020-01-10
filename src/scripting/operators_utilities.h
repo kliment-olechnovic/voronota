@@ -11,6 +11,9 @@
 #include "io_selectors.h"
 #include "command_documentation.h"
 
+namespace voronota
+{
+
 namespace scripting
 {
 
@@ -334,6 +337,8 @@ public:
 		}
 	}
 };
+
+}
 
 }
 

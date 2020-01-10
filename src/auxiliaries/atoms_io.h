@@ -9,6 +9,9 @@
 #include <map>
 #include <iomanip>
 
+namespace voronota
+{
+
 namespace auxiliaries
 {
 
@@ -689,6 +692,8 @@ private:
 		return extraction;
 	}
 };
+
+}
 
 }
 
