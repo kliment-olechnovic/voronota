@@ -32,7 +32,7 @@ public:
 		}
 	};
 
-	LoadingOfData::Parameters params;
+	LoadingOfData::Parameters loading_parameters;
 	std::string title;
 
 	Import()
@@ -41,16 +41,16 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		params=LoadingOfData::Parameters();
-		params.file=input.get_value_or_first_unused_unnamed_value("file");
-		params.format=input.get_value_or_default<std::string>("format", "");
-		params.forced_include_heteroatoms=input.is_option("include-heteroatoms");
-		params.forced_include_hydrogens=input.is_option("include-hydrogens");
-		params.forced_multimodel_chains=input.is_option("as-assembly");
-		params.include_heteroatoms=input.get_flag("include-heteroatoms");
-		params.include_hydrogens=input.get_flag("include-hydrogens");
-		params.multimodel_chains=input.get_flag("as-assembly");
-		title=(input.is_option("title") ? input.get_value<std::string>("title") : Utilities::get_basename_from_path(params.file));
+		loading_parameters=LoadingOfData::Parameters();
+		loading_parameters.file=input.get_value_or_first_unused_unnamed_value("file");
+		loading_parameters.format=input.get_value_or_default<std::string>("format", "");
+		loading_parameters.forced_include_heteroatoms=input.is_option("include-heteroatoms");
+		loading_parameters.forced_include_hydrogens=input.is_option("include-hydrogens");
+		loading_parameters.forced_multimodel_chains=input.is_option("as-assembly");
+		loading_parameters.include_heteroatoms=input.get_flag("include-heteroatoms");
+		loading_parameters.include_hydrogens=input.get_flag("include-hydrogens");
+		loading_parameters.multimodel_chains=input.get_flag("as-assembly");
+		title=(input.is_option("title") ? input.get_value<std::string>("title") : Utilities::get_basename_from_path(loading_parameters.file));
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -66,7 +66,7 @@ public:
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
 		LoadingOfData::Result loading_result;
-		LoadingOfData::construct_result(params, loading_result);
+		LoadingOfData::construct_result(loading_parameters, loading_result);
 
 		if(loading_result.atoms.size()<4)
 		{
@@ -89,6 +89,30 @@ public:
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms());
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts());
 		result.object_name=congregation_of_data_managers.get_object_attributes(object_new).name;
+
+		return result;
+	}
+
+	Result run(DataManager& data_manager) const
+	{
+		LoadingOfData::Result loading_result;
+		LoadingOfData::construct_result(loading_parameters, loading_result);
+
+		if(loading_result.atoms.size()<4)
+		{
+			throw std::runtime_error(std::string("Less than 4 atoms read."));
+		}
+
+		data_manager.reset_atoms_by_swapping(loading_result.atoms);
+		if(!loading_result.contacts.empty())
+		{
+			data_manager.reset_contacts_by_swapping(loading_result.contacts);
+		}
+
+		Result result;
+		result.atoms_summary=SummaryOfAtoms(data_manager.atoms());
+		result.contacts_summary=SummaryOfContacts(data_manager.contacts());
+		result.object_name=title;
 
 		return result;
 	}
