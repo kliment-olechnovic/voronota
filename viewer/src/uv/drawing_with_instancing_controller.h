@@ -5,6 +5,9 @@
 #include "generic_drawing_controller.h"
 #include "transformation_matrix_controller.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -753,6 +756,8 @@ private:
 	std::vector<GLfloat> buffer_for_transformations_2_;
 	std::vector<GLfloat> buffer_for_transformations_3_;
 };
+
+}
 
 }
 

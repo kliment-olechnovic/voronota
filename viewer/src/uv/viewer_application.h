@@ -10,6 +10,9 @@
 
 #include <GLFW/glfw3.h>
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -1172,6 +1175,8 @@ private:
 	TransformationMatrixController modeltransform_matrix_;
 	ModKeysStatusController modkeys_status_;
 };
+
+}
 
 }
 

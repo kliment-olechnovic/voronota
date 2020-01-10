@@ -1,6 +1,9 @@
 #ifndef UV_STOCKED_DEFAULT_SHADERS_H_
 #define UV_STOCKED_DEFAULT_SHADERS_H_
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -339,6 +342,8 @@ static const char value[]={
   0x30, 0x29, 0x3b, 0x0a, 0x20, 0x20, 0x20, 0x20, 0x7d, 0x0a, 0x7d, 0x0a, 0x00
 };
 return value;
+}
+
 }
 
 }

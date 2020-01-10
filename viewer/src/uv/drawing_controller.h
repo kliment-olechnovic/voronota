@@ -4,6 +4,9 @@
 #include "common.h"
 #include "generic_drawing_controller.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -486,6 +489,8 @@ private:
 	std::vector<GLfloat> buffer_for_adjuncts_;
 	std::vector<GLuint> buffer_for_indices_;
 };
+
+}
 
 }
 

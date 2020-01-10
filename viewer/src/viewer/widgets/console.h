@@ -1,11 +1,17 @@
-#ifndef WIDGETS_CONSOLE_H_
-#define WIDGETS_CONSOLE_H_
+#ifndef VIEWER_WIDGETS_CONSOLE_H_
+#define VIEWER_WIDGETS_CONSOLE_H_
 
 #include <string>
 #include <list>
 #include <vector>
 
-#include "../imgui/imgui_impl_glfw_gl3.h"
+#include "../../imgui/imgui_impl_glfw_gl3.h"
+
+namespace voronota
+{
+
+namespace viewer
+{
 
 namespace widgets
 {
@@ -186,4 +192,8 @@ private:
 
 }
 
-#endif /* WIDGETS_CONSOLE_H_ */
+}
+
+}
+
+#endif /* VIEWER_WIDGETS_CONSOLE_H_ */

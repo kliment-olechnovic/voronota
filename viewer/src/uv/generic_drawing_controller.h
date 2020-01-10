@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -40,6 +43,8 @@ public:
 private:
 	std::string name_;
 };
+
+}
 
 }
 

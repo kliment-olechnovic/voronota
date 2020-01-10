@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -108,6 +111,8 @@ public:
 private:
 	glm::mat4 matrix_;
 };
+
+}
 
 }
 

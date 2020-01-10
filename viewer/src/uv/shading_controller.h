@@ -4,6 +4,9 @@
 #include "common.h"
 #include "stocked_default_shaders.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -258,6 +261,8 @@ private:
 	GLuint selection_mode_enabled_id_;
 	GLuint fog_enabled_id_;
 };
+
+}
 
 }
 

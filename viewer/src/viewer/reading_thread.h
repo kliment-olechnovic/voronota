@@ -161,8 +161,8 @@ private:
 
 }
 
-#endif /* FOR_WEB */
-
 }
+
+#endif /* FOR_WEB */
 
 #endif /* VIEWER_READING_THREAD_H_ */

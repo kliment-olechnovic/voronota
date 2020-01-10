@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -71,6 +74,8 @@ private:
 	glm::vec3 low_;
 	glm::vec3 high_;
 };
+
+}
 
 }
 

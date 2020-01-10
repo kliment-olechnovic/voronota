@@ -26,6 +26,9 @@
 #include <glm/gtc/constants.hpp>
 #endif
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -131,6 +134,8 @@ private:
 	Noncopyable(const Noncopyable&);
 	const Noncopyable& operator=(const Noncopyable&);
 };
+
+}
 
 }
 

@@ -3,14 +3,13 @@
 
 #include "../uv/viewer_application.h"
 
-#include "../widgets/console.h"
-#include "../widgets/waiting_indicator.h"
-#include "../widgets/cursor_label.h"
-
 #include "../imgui/imgui_impl_glfw_gl3.h"
 
 #include "script_execution_manager.h"
 #include "reading_thread.h"
+#include "widgets/console.h"
+#include "widgets/cursor_label.h"
+#include "widgets/waiting_indicator.h"
 
 namespace voronota
 {

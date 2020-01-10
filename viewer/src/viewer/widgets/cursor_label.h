@@ -1,9 +1,15 @@
-#ifndef WIDGETS_CURSOR_LABEL_H_
-#define WIDGETS_CURSOR_LABEL_H_
+#ifndef VIEWER_WIDGETS_CURSOR_LABEL_H_
+#define VIEWER_WIDGETS_CURSOR_LABEL_H_
 
 #include <string>
 
-#include "../imgui/imgui_impl_glfw_gl3.h"
+#include "../../imgui/imgui_impl_glfw_gl3.h"
+
+namespace voronota
+{
+
+namespace viewer
+{
 
 namespace widgets
 {
@@ -52,4 +58,8 @@ private:
 
 }
 
-#endif /* WIDGETS_CURSOR_LABEL_H_ */
+}
+
+}
+
+#endif /* VIEWER_WIDGETS_CURSOR_LABEL_H_ */

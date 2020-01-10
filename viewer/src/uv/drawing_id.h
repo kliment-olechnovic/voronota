@@ -1,6 +1,9 @@
 #ifndef UV_DRAWING_ID_H_
 #define UV_DRAWING_ID_H_
 
+namespace voronota
+{
+
 namespace uv
 {
 
@@ -15,6 +18,8 @@ inline DrawingID get_free_drawing_id()
 inline bool drawing_id_valid(const DrawingID drawing_id)
 {
 	return (drawing_id>0);
+}
+
 }
 
 }

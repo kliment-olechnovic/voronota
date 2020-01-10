@@ -21,6 +21,9 @@ cat << 'EOF'
 #ifndef UV_STOCKED_DEFAULT_SHADERS_H_
 #define UV_STOCKED_DEFAULT_SHADERS_H_
 
+namespace voronota
+{
+
 namespace uv
 {
 EOF
@@ -34,6 +37,8 @@ write_resource_file default_shader_fragment_simple shader_fragment_simple.glsl
 echo
 
 cat << 'EOF'
+}
+
 }
 
 #endif /* UV_STOCKED_DEFAULT_SHADERS_H_ */
