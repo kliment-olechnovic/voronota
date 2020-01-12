@@ -2,8 +2,6 @@
 
 #include "viewer/application.h"
 
-voronota::viewer::Application* voronota::viewer::Application::self_ptr=0;
-
 int main(const int argc, const char** argv)
 {
 	voronota::viewer::Application::InitializationParameters app_parameters;
@@ -15,6 +13,7 @@ int main(const int argc, const char** argv)
 	app_parameters.shader_fragment="_shader_fragment_simple";
 
 	std::string raw_arguments;
+	bool use_duktape=false;
 
 	{
 		int i=1;
@@ -65,6 +64,10 @@ int main(const int argc, const char** argv)
 					local_input >> app_parameters.suggested_window_height;
 				}
 			}
+			else if(argv_i=="--duktape")
+			{
+				use_duktape=true;
+			}
 			else
 			{
 				raw_arguments+=argv_i;
@@ -74,7 +77,7 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	voronota::viewer::Application app;
+	voronota::viewer::Application app(use_duktape);
 
 	if(!app.init(app_parameters))
 	{
@@ -109,19 +112,19 @@ extern "C"
 
 EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
 {
-	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
+	voronota::viewer::Application* app=voronota::viewer::Application::instance();
 	app->add_command(command);
 }
 
 EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
 {
-	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
-	return app->execute_command(command);
+	voronota::viewer::ScriptExecutionManager* sem=voronota::viewer::ScriptExecutionManager::instance();
+	return sem->execute_command(command);
 }
 
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
 {
-	voronota::viewer::Application* app=voronota::viewer::Application::self_ptr;
+	voronota::viewer::Application* app=voronota::viewer::Application::instance();
 	app->upload_file(name, data);
 }
 

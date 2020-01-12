@@ -7,6 +7,7 @@
 
 #include "script_execution_manager.h"
 #include "reading_thread.h"
+#include "duktape_wrapper.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
 #include "widgets/waiting_indicator.h"
@@ -20,14 +21,13 @@ namespace viewer
 class Application : public uv::ViewerApplication
 {
 public:
-	static Application* self_ptr;
-
-	Application() :
+	Application(const bool use_duktape) :
 		script_execution_manager_(*this),
 		menu_enabled_(false),
-		info_box_enabled_(true)
+		info_box_enabled_(true),
+		use_duktape_(use_duktape)
 	{
-		self_ptr=this;
+		instance_modifiable()=this;
 		set_background_color(0xCCCCCC);
 #ifdef FOR_WEB
 		waiting_indicator_.set_enabled(true);
@@ -36,7 +36,11 @@ public:
 
 	~Application()
 	{
-		self_ptr=0;
+	}
+
+	static Application* instance()
+	{
+		return instance_modifiable();
 	}
 
 	void add_command(const std::string& command)
@@ -50,30 +54,6 @@ public:
 	void add_command(const char* str)
 	{
 		add_command(std::string(str));
-	}
-
-	const char* execute_command(const std::string& command)
-	{
-		static std::string last_output_string;
-
-		if(!command.empty())
-		{
-			script_execution_manager_.execute_script(command, false);
-			std::ostringstream raw_output;
-			scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), script_execution_manager_.last_output(), raw_output);
-			last_output_string=raw_output.str();
-		}
-		else
-		{
-			last_output_string.clear();
-		}
-
-		return last_output_string.c_str();
-	}
-
-	const char* execute_command(const char* str)
-	{
-		return execute_command(std::string(str));
 	}
 
 	void upload_file(const char* name, const char* data)
@@ -185,9 +165,18 @@ protected:
 		{
 			if(!waiting_indicator_.check_waiting())
 			{
-				script_execution_manager_.set_output_stream_mode(1);
-				script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
-				script_execution_manager_.set_output_stream_mode(0);
+				if(use_duktape_)
+				{
+					script_execution_manager_.set_output_stream_mode(2);
+					duktape::eval(ReadingThread::extract_data());
+					script_execution_manager_.set_output_stream_mode(0);
+				}
+				else
+				{
+					script_execution_manager_.set_output_stream_mode(1);
+					script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
+					script_execution_manager_.set_output_stream_mode(0);
+				}
 				waiting_indicator_.keep_waiting(false);
 			}
 		}
@@ -219,6 +208,12 @@ protected:
 	}
 
 private:
+	static Application*& instance_modifiable()
+	{
+		static Application* ptr=0;
+		return ptr;
+	}
+
 	void execute_menu()
 	{
 		if(!menu_enabled_)
@@ -378,6 +373,7 @@ private:
 	widgets::CursorLabel cursor_label_;
 	bool menu_enabled_;
 	bool info_box_enabled_;
+	bool use_duktape_;
 };
 
 }

@@ -12,11 +12,6 @@ namespace viewer
 class ReadingThread
 {
 public:
-	static bool init()
-	{
-		return false;
-	}
-
 	static bool check_data()
 	{
 		return false;
@@ -46,12 +41,6 @@ namespace viewer
 class ReadingThread
 {
 public:
-	static bool init()
-	{
-		ReadingThread* obj=ReadingThread::instance();
-		return obj->activate();
-	}
-
 	static bool check_data()
 	{
 		bool status=false;
