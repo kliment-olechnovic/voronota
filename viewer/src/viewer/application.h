@@ -36,6 +36,7 @@ public:
 
 	~Application()
 	{
+		instance_modifiable()=0;
 	}
 
 	static Application* instance()

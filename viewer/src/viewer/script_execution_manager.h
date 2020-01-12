@@ -46,6 +46,7 @@ public:
 
 	~ScriptExecutionManager()
 	{
+		instance_modifiable()=0;
 	}
 
 	static ScriptExecutionManager* instance()

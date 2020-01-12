@@ -35,34 +35,16 @@ namespace viewer
 namespace duktape
 {
 
-duk_ret_t native_print(duk_context *ctx)
-{
-	duk_push_string(ctx, " ");
-	duk_insert(ctx, 0);
-	duk_join(ctx, duk_get_top(ctx) - 1);
-	std::cout << duk_safe_to_string(ctx, -1) << std::endl;
-	return 0;
-}
-
-int native_execute_command(duk_context *ctx)
-{
-	std::string command(duk_require_string(ctx, 0));
-	std::string result;
-	{
-		ScriptExecutionManager* sem=ScriptExecutionManager::instance();
-		if(sem!=0)
-		{
-			result=sem->execute_command(command);
-		}
-	}
-    duk_push_string(ctx, result.c_str());
-    duk_json_decode(ctx, -1);
-    return 1;
-}
-
 class ContextWrapper
 {
 public:
+	static duk_context* global_context()
+	{
+		static ContextWrapper context_wrapper;
+		return context_wrapper.context();
+	}
+
+private:
 	ContextWrapper() : context_(0)
 	{
 	}
@@ -75,13 +57,37 @@ public:
 		}
 	}
 
+	static duk_ret_t native_print(duk_context *ctx)
+	{
+		duk_push_string(ctx, " ");
+		duk_insert(ctx, 0);
+		duk_join(ctx, duk_get_top(ctx) - 1);
+		std::cout << duk_safe_to_string(ctx, -1) << std::endl;
+		return 0;
+	}
+
+	static int native_execute_command(duk_context *ctx)
+	{
+		std::string command(duk_require_string(ctx, 0));
+		std::string result;
+		{
+			ScriptExecutionManager* sem=ScriptExecutionManager::instance();
+			if(sem!=0)
+			{
+				result=sem->execute_command(command);
+			}
+		}
+	    duk_push_string(ctx, result.c_str());
+	    duk_json_decode(ctx, -1);
+	    return 1;
+	}
+
 	duk_context* context()
 	{
 		ensure();
 		return context_;
 	}
 
-private:
 	void ensure()
 	{
 		if(context_==0)
@@ -99,23 +105,17 @@ private:
 	duk_context* context_;
 };
 
-inline duk_context* context()
-{
-	static ContextWrapper context_wrapper;
-	return context_wrapper.context();
-}
-
 inline void eval(const std::string& script)
 {
-	if(duk_peval_string(context(), script.c_str())!=0)
+	if(duk_peval_string(ContextWrapper::global_context(), script.c_str())!=0)
 	{
-		std::cerr << "JS error: " << duk_safe_to_string(context(), -1) << std::endl;
+		std::cerr << "JS error: " << duk_safe_to_string(ContextWrapper::global_context(), -1) << std::endl;
 	}
 	else
 	{
-		std::cerr << "JS: " << duk_safe_to_string(context(), -1) << std::endl;
+		std::cerr << "JS: " << duk_safe_to_string(ContextWrapper::global_context(), -1) << std::endl;
 	}
-	duk_pop(context());
+	duk_pop(ContextWrapper::global_context());
 }
 
 }

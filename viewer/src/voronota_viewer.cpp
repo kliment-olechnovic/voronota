@@ -113,19 +113,28 @@ extern "C"
 EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
 {
 	voronota::viewer::Application* app=voronota::viewer::Application::instance();
-	app->add_command(command);
+	if(app!=0)
+	{
+		app->add_command(command);
+	}
 }
 
 EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
 {
 	voronota::viewer::ScriptExecutionManager* sem=voronota::viewer::ScriptExecutionManager::instance();
-	return sem->execute_command(command);
+	if(sem!=0)
+	{
+		return sem->execute_command(command);
+	}
 }
 
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
 {
 	voronota::viewer::Application* app=voronota::viewer::Application::instance();
-	app->upload_file(name, data);
+	if(app!=0)
+	{
+		app->upload_file(name, data);
+	}
 }
 
 }
