@@ -79,7 +79,10 @@ private:
 
 	static int native_execute_command(duk_context *ctx)
 	{
-		std::string command(duk_require_string(ctx, 0));
+		duk_push_string(ctx, " ");
+		duk_insert(ctx, 0);
+		duk_join(ctx, duk_get_top(ctx) - 1);
+		const std::string command=duk_safe_to_string(ctx, -1);
 		std::string result;
 		if(instance().sem_!=0)
 		{
@@ -105,7 +108,7 @@ private:
 			duk_push_c_function(context_, native_print, DUK_VARARGS);
 			duk_put_global_string(context_, "print");
 
-			duk_push_c_function(context_, native_execute_command, 1);
+			duk_push_c_function(context_, native_execute_command, DUK_VARARGS);
 			duk_put_global_string(context_, "v_do");
 		}
 	}
