@@ -21,27 +21,10 @@ namespace viewer
 class Application : public uv::ViewerApplication
 {
 public:
-	Application(const bool use_duktape) :
-		script_execution_manager_(*this),
-		menu_enabled_(false),
-		info_box_enabled_(true),
-		use_duktape_(use_duktape)
+	static Application& instance()
 	{
-		instance_modifiable()=this;
-		set_background_color(0xCCCCCC);
-#ifdef FOR_WEB
-		waiting_indicator_.set_enabled(true);
-#endif
-	}
-
-	~Application()
-	{
-		instance_modifiable()=0;
-	}
-
-	static Application* instance()
-	{
-		return instance_modifiable();
+		static Application app;
+		return app;
 	}
 
 	void add_command(const std::string& command)
@@ -52,12 +35,12 @@ public:
 		}
 	}
 
-	void add_command(const char* str)
+	const std::string& execute_command(const std::string& command)
 	{
-		add_command(std::string(str));
+		return script_execution_manager_.execute_command(command);
 	}
 
-	void upload_file(const char* name, const char* data)
+	void upload_file(const std::string& name, const std::string& data)
 	{
 		std::string object_name=name;
 		if(object_name.empty())
@@ -67,6 +50,11 @@ public:
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
 		add_command(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+	}
+
+	void set_use_duktape(const bool enabled)
+	{
+		use_duktape_=enabled;
 	}
 
 protected:
@@ -169,7 +157,7 @@ protected:
 				if(use_duktape_)
 				{
 					script_execution_manager_.set_output_stream_mode(2);
-					duktape::eval(ReadingThread::extract_data());
+					duktape::eval(script_execution_manager_, ReadingThread::extract_data());
 					script_execution_manager_.set_output_stream_mode(0);
 				}
 				else
@@ -209,10 +197,20 @@ protected:
 	}
 
 private:
-	static Application*& instance_modifiable()
+	Application() :
+		script_execution_manager_(*this),
+		menu_enabled_(false),
+		info_box_enabled_(true),
+		use_duktape_(false)
 	{
-		static Application* ptr=0;
-		return ptr;
+		set_background_color(0xCCCCCC);
+#ifdef FOR_WEB
+		waiting_indicator_.set_enabled(true);
+#endif
+	}
+
+	~Application()
+	{
 	}
 
 	void execute_menu()

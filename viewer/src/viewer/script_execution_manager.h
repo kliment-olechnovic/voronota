@@ -26,8 +26,6 @@ public:
 		grid_variant_(0),
 		output_stream_mode_(0)
 	{
-		instance_modifiable()=this;
-
 		set_command_for_extra_actions("resize-window", operators::ResizeWindow(viewer_application_));
 		set_command_for_extra_actions("background", operators::Background(viewer_application_));
 		set_command_for_extra_actions("mono", operators::Mono(viewer_application_));
@@ -46,15 +44,9 @@ public:
 
 	~ScriptExecutionManager()
 	{
-		instance_modifiable()=0;
 	}
 
-	static ScriptExecutionManager* instance()
-	{
-		return instance_modifiable();
-	}
-
-	const char* execute_command(const std::string& command)
+	const std::string& execute_command(const std::string& command)
 	{
 		static std::string last_output_string;
 
@@ -70,12 +62,7 @@ public:
 			last_output_string.clear();
 		}
 
-		return last_output_string.c_str();
-	}
-
-	const char* execute_command(const char* str)
-	{
-		return execute_command(std::string(str));
+		return last_output_string;
 	}
 
 	bool generate_click_script(const uv::DrawingID drawing_id, const int button_code, const bool mod_ctrl, const bool mod_shift, std::ostringstream& output_script)
@@ -391,12 +378,6 @@ protected:
 	}
 
 private:
-	static ScriptExecutionManager*& instance_modifiable()
-	{
-		static ScriptExecutionManager* ptr=0;
-		return ptr;
-	}
-
 	void set_default_aliases()
 	{
 		script_partitioner().set_alias("click-button1-on-unmarked-atom", "pick-objects ${1} ; mark-atoms -id ${2} ; print-atoms -id ${2}");

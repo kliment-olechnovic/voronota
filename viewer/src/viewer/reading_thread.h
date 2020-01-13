@@ -44,12 +44,12 @@ public:
 	static bool check_data()
 	{
 		bool status=false;
-		ReadingThread* obj=ReadingThread::instance();
-		if(obj->activate())
+		ReadingThread& obj=ReadingThread::instance();
+		if(obj.activate())
 		{
-			obj->lock();
-			status=!(obj->data_.empty());
-			obj->unlock();
+			obj.lock();
+			status=!(obj.data_.empty());
+			obj.unlock();
 		}
 		return status;
 	}
@@ -57,13 +57,13 @@ public:
 	static std::string extract_data()
 	{
 		std::string result;
-		ReadingThread* obj=ReadingThread::instance();
-		if(obj->activate())
+		ReadingThread& obj=ReadingThread::instance();
+		if(obj.activate())
 		{
-			obj->lock();
-			result=obj->data_;
-			obj->data_.clear();
-			obj->unlock();
+			obj.lock();
+			result=obj.data_;
+			obj.data_.clear();
+			obj.unlock();
 		}
 		return result;
 	}
@@ -81,10 +81,10 @@ private:
 		}
 	}
 
-	static ReadingThread* instance()
+	static ReadingThread& instance()
 	{
 		static ReadingThread obj;
-		return &obj;
+		return obj;
 	}
 
 	static void* thread_function(void* param)

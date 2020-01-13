@@ -77,7 +77,9 @@ int main(const int argc, const char** argv)
 		}
 	}
 
-	voronota::viewer::Application app(use_duktape);
+	voronota::viewer::Application& app=voronota::viewer::Application::instance();
+
+	app.set_use_duktape(use_duktape);
 
 	if(!app.init(app_parameters))
 	{
@@ -92,7 +94,7 @@ int main(const int argc, const char** argv)
 		io.IniFilename=0;
 	}
 
-	app.add_command(raw_arguments.c_str());
+	app.add_command(raw_arguments);
 
 #ifdef FOR_WEB
 	emscripten_set_main_loop_arg(voronota::viewer::Application::render, &app, 0, 1);
@@ -112,29 +114,17 @@ extern "C"
 
 EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
 {
-	voronota::viewer::Application* app=voronota::viewer::Application::instance();
-	if(app!=0)
-	{
-		app->add_command(command);
-	}
+	voronota::viewer::Application::instance().add_command(command);
 }
 
 EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
 {
-	voronota::viewer::ScriptExecutionManager* sem=voronota::viewer::ScriptExecutionManager::instance();
-	if(sem!=0)
-	{
-		return sem->execute_command(command);
-	}
+	return voronota::viewer::Application::instance().execute_command(command).c_str();
 }
 
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
 {
-	voronota::viewer::Application* app=voronota::viewer::Application::instance();
-	if(app!=0)
-	{
-		app->upload_file(name, data);
-	}
+	voronota::viewer::Application::instance().upload_file(name, data);
 }
 
 }
