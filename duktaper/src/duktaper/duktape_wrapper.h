@@ -14,12 +14,17 @@ namespace duktaper
 class DuktapeContextWrapper
 {
 public:
-	static void eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script, std::ostream& stdout, std::ostream& stderr, const bool print_results)
+	static bool eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script, std::ostream& stdout, std::ostream& stderr, const bool print_results)
 	{
+		if(script.empty())
+		{
+			return false;
+		}
 		set_script_execution_manager(sem);
 		set_stdout(stdout);
 		set_stderr(stderr);
-		if(duk_peval_string(get_context(), script.c_str())!=0)
+		const bool success=(duk_peval_string(get_context(), script.c_str())==0);
+		if(!success)
 		{
 			stderr << "Eval error: " << duk_safe_to_string(get_context(), -1) << std::endl;
 		}
@@ -28,6 +33,7 @@ public:
 			stderr << "Eval result: " << duk_safe_to_string(get_context(), -1) << std::endl;
 		}
 		duk_pop(get_context());
+		return success;
 	}
 
 private:
