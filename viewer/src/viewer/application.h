@@ -37,7 +37,7 @@ public:
 
 	const std::string& execute_command(const std::string& command)
 	{
-		return script_execution_manager_.execute_command(command);
+		return script_execution_manager_.execute_script_and_return_last_output_string(command, false);
 	}
 
 	void upload_file(const std::string& name, const std::string& data)

@@ -11,7 +11,7 @@ namespace viewer
 namespace duktape
 {
 
-inline void eval(ScriptExecutionManager&, const std::string&)
+inline void eval(scripting::ScriptExecutionManagerWithVariantOutput&, const std::string&)
 {
 }
 
@@ -24,7 +24,7 @@ inline void eval(ScriptExecutionManager&, const std::string&)
 
 #include "../duktape/duktape.h"
 
-#include "script_execution_manager.h"
+#include "../../../src/scripting/script_execution_manager_with_variant_output.h"
 
 namespace voronota
 {
@@ -38,7 +38,7 @@ namespace duktape
 class ContextWrapper
 {
 public:
-	static void set_script_execution_manager(ScriptExecutionManager& sem)
+	static void set_script_execution_manager(scripting::ScriptExecutionManagerWithVariantOutput& sem)
 	{
 		instance().sem_=&sem;
 	}
@@ -77,16 +77,16 @@ private:
 		return 0;
 	}
 
-	static int native_execute_command(duk_context *ctx)
+	static int native_v_do(duk_context *ctx)
 	{
 		duk_push_string(ctx, " ");
 		duk_insert(ctx, 0);
 		duk_join(ctx, duk_get_top(ctx) - 1);
-		const std::string command=duk_safe_to_string(ctx, -1);
+		const std::string script=duk_safe_to_string(ctx, -1);
 		std::string result;
 		if(instance().sem_!=0)
 		{
-			result=instance().sem_->execute_command(command);
+			result=instance().sem_->execute_script_and_return_last_output_string(script, false);
 		}
 	    duk_push_string(ctx, result.c_str());
 	    duk_json_decode(ctx, -1);
@@ -108,16 +108,16 @@ private:
 			duk_push_c_function(context_, native_print, DUK_VARARGS);
 			duk_put_global_string(context_, "print");
 
-			duk_push_c_function(context_, native_execute_command, DUK_VARARGS);
+			duk_push_c_function(context_, native_v_do, DUK_VARARGS);
 			duk_put_global_string(context_, "v_do");
 		}
 	}
 
 	duk_context* context_;
-	ScriptExecutionManager* sem_;
+	scripting::ScriptExecutionManagerWithVariantOutput* sem_;
 };
 
-inline void eval(ScriptExecutionManager& sem, const std::string& script)
+inline void eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script)
 {
 	ContextWrapper::set_script_execution_manager(sem);
 	if(duk_peval_string(ContextWrapper::get_context(), script.c_str())!=0)

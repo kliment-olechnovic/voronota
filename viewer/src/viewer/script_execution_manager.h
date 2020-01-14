@@ -46,25 +46,6 @@ public:
 	{
 	}
 
-	const std::string& execute_command(const std::string& command)
-	{
-		static std::string last_output_string;
-
-		if(!command.empty())
-		{
-			execute_script(command, false);
-			std::ostringstream raw_output;
-			scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output(), raw_output);
-			last_output_string=raw_output.str();
-		}
-		else
-		{
-			last_output_string.clear();
-		}
-
-		return last_output_string;
-	}
-
 	bool generate_click_script(const uv::DrawingID drawing_id, const int button_code, const bool mod_ctrl, const bool mod_shift, std::ostringstream& output_script)
 	{
 		CongregationOfDrawersForDataManagers::DrawerElementID deid=congregation_of_drawers_.resolve_drawing_id(drawing_id);

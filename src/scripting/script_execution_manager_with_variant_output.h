@@ -3,6 +3,7 @@
 
 #include "script_execution_manager.h"
 #include "variant_types.h"
+#include "json_writer.h"
 
 namespace voronota
 {
@@ -20,7 +21,13 @@ public:
 	const VariantObject& execute_script_and_return_last_output(const std::string& script, const bool exit_on_first_failure)
 	{
 		execute_script(script, exit_on_first_failure);
-		return output_;
+		return last_output();
+	}
+
+	const std::string& execute_script_and_return_last_output_string(const std::string& script, const bool exit_on_first_failure)
+	{
+		execute_script(script, exit_on_first_failure);
+		return last_output_string();
 	}
 
 	const VariantObject& last_output() const
@@ -28,10 +35,22 @@ public:
 		return output_;
 	}
 
+	const std::string& last_output_string()
+	{
+		if(output_string_.empty())
+		{
+			std::ostringstream raw_output;
+			JSONWriter::write(JSONWriter::Configuration(0), last_output(), raw_output);
+			output_string_=raw_output.str();
+		}
+		return output_string_;
+	}
+
 protected:
 	void on_before_script(const std::string&)
 	{
 		output_=VariantObject();
+		output_string_.clear();
 	}
 
 	void on_before_any_command(const CommandInput& command_input)
@@ -142,6 +161,7 @@ private:
 	}
 
 	VariantObject output_;
+	std::string output_string_;
 };
 
 }
