@@ -1,27 +1,6 @@
 #ifndef VIEWER_DUKTAPE_WRAPPER_H_
 #define VIEWER_DUKTAPE_WRAPPER_H_
 
-#ifdef FOR_WEB
-namespace voronota
-{
-
-namespace viewer
-{
-
-namespace duktape
-{
-
-inline void eval(scripting::ScriptExecutionManagerWithVariantOutput&, const std::string&)
-{
-}
-
-}
-
-}
-
-}
-#else
-
 #include "../duktape/duktape.h"
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
@@ -29,18 +8,60 @@ inline void eval(scripting::ScriptExecutionManagerWithVariantOutput&, const std:
 namespace voronota
 {
 
-namespace viewer
+namespace duktaper
 {
 
-namespace duktape
-{
-
-class ContextWrapper
+class DuktapeContextWrapper
 {
 public:
+	static void eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script, std::ostream& stdout, std::ostream& stderr, const bool print_results)
+	{
+		set_script_execution_manager(sem);
+		set_stdout(stdout);
+		set_stderr(stderr);
+		if(duk_peval_string(get_context(), script.c_str())!=0)
+		{
+			stderr << "Eval error: " << duk_safe_to_string(get_context(), -1) << std::endl;
+		}
+		else if(print_results)
+		{
+			stderr << "Eval result: " << duk_safe_to_string(get_context(), -1) << std::endl;
+		}
+		duk_pop(get_context());
+	}
+
+private:
+	DuktapeContextWrapper() : context_(0), sem_(0), stdout_(0), stderr_(0)
+	{
+	}
+
+	~DuktapeContextWrapper()
+	{
+		if(context_!=0)
+		{
+			duk_destroy_heap(context_);
+		}
+	}
+
+	static DuktapeContextWrapper& instance()
+	{
+		static DuktapeContextWrapper context_wrapper;
+		return context_wrapper;
+	}
+
 	static void set_script_execution_manager(scripting::ScriptExecutionManagerWithVariantOutput& sem)
 	{
 		instance().sem_=&sem;
+	}
+
+	static void set_stdout(std::ostream& stdout)
+	{
+		instance().stdout_=&stdout;
+	}
+
+	static void set_stderr(std::ostream& stderr)
+	{
+		instance().stderr_=&stderr;
 	}
 
 	static duk_context* get_context()
@@ -49,31 +70,16 @@ public:
 		return instance().context_;
 	}
 
-private:
-	ContextWrapper() : context_(0), sem_(0)
-	{
-	}
-
-	~ContextWrapper()
-	{
-		if(context_!=0)
-		{
-			duk_destroy_heap(context_);
-		}
-	}
-
-	static ContextWrapper& instance()
-	{
-		static ContextWrapper context_wrapper;
-		return context_wrapper;
-	}
-
 	static duk_ret_t native_print(duk_context *ctx)
 	{
 		duk_push_string(ctx, " ");
 		duk_insert(ctx, 0);
 		duk_join(ctx, duk_get_top(ctx) - 1);
-		std::cout << duk_safe_to_string(ctx, -1) << std::endl;
+		if(instance().stdout_!=0)
+		{
+			std::ostream& stdout=(*instance().stdout_);
+			stdout << duk_safe_to_string(ctx, -1) << std::endl;
+		}
 		return 0;
 	}
 
@@ -115,28 +121,12 @@ private:
 
 	duk_context* context_;
 	scripting::ScriptExecutionManagerWithVariantOutput* sem_;
+	std::ostream* stdout_;
+	std::ostream* stderr_;
 };
 
-inline void eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script)
-{
-	ContextWrapper::set_script_execution_manager(sem);
-	if(duk_peval_string(ContextWrapper::get_context(), script.c_str())!=0)
-	{
-		std::cerr << "JS error: " << duk_safe_to_string(ContextWrapper::get_context(), -1) << std::endl;
-	}
-	else
-	{
-		std::cerr << "JS: " << duk_safe_to_string(ContextWrapper::get_context(), -1) << std::endl;
-	}
-	duk_pop(ContextWrapper::get_context());
 }
 
 }
-
-}
-
-}
-
-#endif /* FOR_WEB */
 
 #endif /* VIEWER_DUKTAPE_WRAPPER_H_ */

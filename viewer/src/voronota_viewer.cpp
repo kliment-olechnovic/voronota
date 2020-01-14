@@ -13,7 +13,6 @@ int main(const int argc, const char** argv)
 	app_parameters.shader_fragment="_shader_fragment_simple";
 
 	std::string raw_arguments;
-	bool use_duktape=false;
 
 	{
 		int i=1;
@@ -64,10 +63,6 @@ int main(const int argc, const char** argv)
 					local_input >> app_parameters.suggested_window_height;
 				}
 			}
-			else if(argv_i=="--duktape")
-			{
-				use_duktape=true;
-			}
 			else
 			{
 				raw_arguments+=argv_i;
@@ -78,8 +73,6 @@ int main(const int argc, const char** argv)
 	}
 
 	voronota::viewer::Application& app=voronota::viewer::Application::instance();
-
-	app.set_use_duktape(use_duktape);
 
 	if(!app.init(app_parameters))
 	{

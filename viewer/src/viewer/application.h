@@ -7,7 +7,6 @@
 
 #include "script_execution_manager.h"
 #include "reading_thread.h"
-#include "duktape_wrapper.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
 #include "widgets/waiting_indicator.h"
@@ -50,11 +49,6 @@ public:
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
 		add_command(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
-	}
-
-	void set_use_duktape(const bool enabled)
-	{
-		use_duktape_=enabled;
 	}
 
 protected:
@@ -154,18 +148,9 @@ protected:
 		{
 			if(!waiting_indicator_.check_waiting())
 			{
-				if(use_duktape_)
-				{
-					script_execution_manager_.set_output_stream_mode(2);
-					duktape::eval(script_execution_manager_, ReadingThread::extract_data());
-					script_execution_manager_.set_output_stream_mode(0);
-				}
-				else
-				{
-					script_execution_manager_.set_output_stream_mode(1);
-					script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
-					script_execution_manager_.set_output_stream_mode(0);
-				}
+				script_execution_manager_.set_output_stream_mode(1);
+				script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
+				script_execution_manager_.set_output_stream_mode(0);
 				waiting_indicator_.keep_waiting(false);
 			}
 		}
@@ -200,8 +185,7 @@ private:
 	Application() :
 		script_execution_manager_(*this),
 		menu_enabled_(false),
-		info_box_enabled_(true),
-		use_duktape_(false)
+		info_box_enabled_(true)
 	{
 		set_background_color(0xCCCCCC);
 #ifdef FOR_WEB
@@ -372,7 +356,6 @@ private:
 	widgets::CursorLabel cursor_label_;
 	bool menu_enabled_;
 	bool info_box_enabled_;
-	bool use_duktape_;
 };
 
 }
