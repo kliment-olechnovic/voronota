@@ -81,20 +81,63 @@ private:
 		duk_push_string(ctx, " ");
 		duk_insert(ctx, 0);
 		duk_join(ctx, duk_get_top(ctx) - 1);
+		const std::string text=duk_safe_to_string(ctx, -1);
 		if(instance().stdout_!=0)
 		{
 			std::ostream& stdout=(*instance().stdout_);
-			stdout << duk_safe_to_string(ctx, -1) << std::endl;
+			stdout << text << std::endl;
 		}
 		return 0;
 	}
 
-	static int native_v_do(duk_context *ctx)
+	static int native_raw_voronota(duk_context *ctx)
 	{
-		duk_push_string(ctx, " ");
-		duk_insert(ctx, 0);
-		duk_join(ctx, duk_get_top(ctx) - 1);
-		const std::string script=duk_safe_to_string(ctx, -1);
+		const int N=duk_get_top(ctx);
+		std::string script;
+		for(int i=0;i<N;i++)
+		{
+			std::string token=duk_safe_to_string(ctx, i);
+			if(i==0)
+			{
+				script+=token;
+			}
+			else
+			{
+				script+=" ";
+				if(token.empty())
+				{
+					script+="'";
+					script+=token;
+					script+="'";
+				}
+				else
+				{
+					if(token[0]=='-')
+					{
+						script+=token;
+					}
+					else
+					{
+						if(token.find('\'')==std::string::npos)
+						{
+							script+="'";
+							script+=token;
+							script+="'";
+						}
+						else if(token.find('"')==std::string::npos)
+						{
+							script+="\"";
+							script+=token;
+							script+="\"";
+						}
+						else
+						{
+							script+=token;
+						}
+					}
+				}
+			}
+		}
 		std::string result;
 		if(instance().sem_!=0)
 		{
@@ -120,8 +163,22 @@ private:
 			duk_push_c_function(context_, native_print, DUK_VARARGS);
 			duk_put_global_string(context_, "print");
 
-			duk_push_c_function(context_, native_v_do, DUK_VARARGS);
-			duk_put_global_string(context_, "v_do");
+			duk_push_c_function(context_, native_raw_voronota, DUK_VARARGS);
+			duk_put_global_string(context_, "raw_voronota");
+
+			std::string init_script=""
+					"raw_voronota_named=function(name, args)"
+					"{"
+					"  var fullargs=new Array(args.length+1);"
+					"  fullargs[0]=name;"
+					"  for(var i=0;i<args.length;++i)"
+					"  {"
+					"    fullargs[i+1]=args[i];"
+					"  }"
+					"  return raw_voronota.apply(null, fullargs);"
+					"}\n";
+
+			duk_peval_string_noresult(context_, init_script.c_str());
 		}
 	}
 
