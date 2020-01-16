@@ -15,7 +15,7 @@ namespace duktaper
 class DuktapeContextWrapper
 {
 public:
-	static bool eval(const std::string& script, const bool print_results)
+	static bool eval(const std::string& script)
 	{
 		if(script.empty())
 		{
@@ -29,7 +29,7 @@ public:
 			{
 				stderr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
 			}
-			else if(print_results)
+			else if(instance().eval_autoprint_)
 			{
 				stderr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
 			}
@@ -98,11 +98,16 @@ public:
 			script << "];\n";
 		}
 
-		return eval(script.str(), false);
+		return eval(script.str());
+	}
+
+	static void set_eval_autoprint(const bool enabled)
+	{
+		instance().eval_autoprint_=enabled;
 	}
 
 private:
-	DuktapeContextWrapper() : context_(0), sem_(0), stdout_(0), stderr_(0)
+	DuktapeContextWrapper() : context_(0), sem_(0), stdout_(0), stderr_(0), eval_autoprint_(false)
 	{
 	}
 
@@ -304,6 +309,7 @@ private:
 	scripting::ScriptExecutionManagerWithVariantOutput* sem_;
 	std::ostream* stdout_;
 	std::ostream* stderr_;
+	bool eval_autoprint_;
 };
 
 }

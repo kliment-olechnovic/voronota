@@ -10,14 +10,16 @@ namespace
 inline std::string read_script(std::istream& input)
 {
 	std::ostringstream output;
+	int number_of_lines=0;
 	while(input.good())
 	{
 		std::string line;
 		std::getline(input, line);
-		if(!line.empty() && line[0]!='#')
+		if(!line.empty() && (number_of_lines>0 ||  line[0]!='#'))
 		{
-			output << line;
+			output << line << "\n";
 		}
+		number_of_lines++;
 	}
 	return output.str();
 }
@@ -26,22 +28,13 @@ inline std::string read_script(std::istream& input)
 
 int main(const int argc, const char** argv)
 {
-	bool verbose=false;
 	std::vector<std::string> command_args;
-
 	{
 		int i=1;
 		while(i<argc)
 		{
 			const std::string argv_i=argv[i];
-			if(argv_i=="--verbose" && command_args.empty())
-			{
-				verbose=true;
-			}
-			else
-			{
-				command_args.push_back(argv_i);
-			}
+			command_args.push_back(argv_i);
 			i++;
 		}
 	}
@@ -55,15 +48,16 @@ int main(const int argc, const char** argv)
 	{
 		if(voronota::duktaper::TerminalUtilities::is_stdin_from_terminal())
 		{
+			voronota::duktaper::DuktapeContextWrapper::set_eval_autoprint(true);
 			bool readline_failed=false;
 			while(!readline_failed && !execution_manager.exit_requested())
 			{
-				voronota::duktaper::DuktapeContextWrapper::eval(voronota::duktaper::TerminalUtilities::read_line_from_stdin(readline_failed), true);
+				voronota::duktaper::DuktapeContextWrapper::eval(voronota::duktaper::TerminalUtilities::read_line_from_stdin(readline_failed));
 			}
 		}
 		else
 		{
-			voronota::duktaper::DuktapeContextWrapper::eval(read_script(std::cin), verbose);
+			voronota::duktaper::DuktapeContextWrapper::eval(read_script(std::cin));
 		}
 	}
 	else
@@ -74,7 +68,7 @@ int main(const int argc, const char** argv)
 			std::cerr << "Invalid file '" << file_name << "'\n";
 			return 1;
 		}
-		voronota::duktaper::DuktapeContextWrapper::eval(read_script(input), verbose);
+		voronota::duktaper::DuktapeContextWrapper::eval(read_script(input));
 	}
 
 	return 0;
