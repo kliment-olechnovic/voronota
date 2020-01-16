@@ -37,6 +37,7 @@ inline std::string read_line_from_stdin(bool& failed)
 int main(const int /*argc*/, const char** /*argv*/)
 {
 	voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
+	voronota::duktaper::DuktapeContextWrapper::setup_utility_functions(execution_manager, std::cout, std::cerr);
 	if(is_stdin_from_terminal())
 	{
 		bool readline_failed=false;

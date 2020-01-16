@@ -165,6 +165,11 @@ public:
 		SafeUtilitiesForMapOfPointers::clear(commands_for_extra_actions_);
 	}
 
+	const CollectionOfCommandDocumentations& collection_of_command_documentations() const
+	{
+		return collection_of_command_documentations_;
+	}
+
 	bool exit_requested() const
 	{
 		return exit_requested_;

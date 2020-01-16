@@ -36,6 +36,50 @@ public:
 		return success;
 	}
 
+	static bool setup_utility_functions(scripting::ScriptExecutionManagerWithVariantOutput& sem, std::ostream& stdout, std::ostream& stderr)
+	{
+		std::ostringstream script;
+
+		script << ""
+				"raw_voronota_named=function(name, args)"
+				"{"
+				"  var fullargs=new Array(args.length+1);"
+				"  fullargs[0]=name;"
+				"  for(var i=0;i<args.length;++i)"
+				"  {"
+				"    fullargs[i+1]=args[i];"
+				"  }"
+				"  return raw_voronota.apply(null, fullargs);"
+				"}"
+				"\n";
+
+		const std::string namespace_name="voronota";
+
+		script << "var " << namespace_name << "={}\n";
+
+		const std::vector<std::string> command_names=sem.collection_of_command_documentations().get_all_names();
+
+		for(std::size_t i=0;i<command_names.size();i++)
+		{
+			const std::string command_name=command_names[i];
+			if(command_name=="exit")
+			{
+				script << "exit=function(){return raw_voronota('exit');}\n";
+			}
+			std::string function_name=command_name;
+			for(std::size_t j=0;j<function_name.size();j++)
+			{
+				if(function_name[j]=='-')
+				{
+					function_name[j]='_';
+				}
+			}
+			script << namespace_name << "." << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
+		}
+
+		return eval(sem, script.str(), stdout, stderr, false);
+	}
+
 private:
 	DuktapeContextWrapper() : context_(0), sem_(0), stdout_(0), stderr_(0)
 	{
@@ -165,20 +209,6 @@ private:
 
 			duk_push_c_function(context_, native_raw_voronota, DUK_VARARGS);
 			duk_put_global_string(context_, "raw_voronota");
-
-			std::string init_script=""
-					"raw_voronota_named=function(name, args)"
-					"{"
-					"  var fullargs=new Array(args.length+1);"
-					"  fullargs[0]=name;"
-					"  for(var i=0;i<args.length;++i)"
-					"  {"
-					"    fullargs[i+1]=args[i];"
-					"  }"
-					"  return raw_voronota.apply(null, fullargs);"
-					"}\n";
-
-			duk_peval_string_noresult(context_, init_script.c_str());
 		}
 	}
 
