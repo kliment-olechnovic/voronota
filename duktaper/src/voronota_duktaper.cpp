@@ -1,49 +1,18 @@
 #include <iostream>
-#include <unistd.h>
-#include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 
+#include "duktaper/terminal_utilities.h"
 #include "duktaper/duktape_wrapper.h"
-
-namespace
-{
-
-inline bool is_stdin_from_terminal()
-{
-	return (isatty(fileno(stdin))==1);
-}
-
-inline std::string read_line_from_stdin(bool& failed)
-{
-	char* line=readline("> ");
-	failed=(line==0);
-	if(!failed)
-	{
-		std::string result;
-		if(*line)
-		{
-			add_history(line);
-			result=line;
-		}
-		free(static_cast<void*>(line));
-		return result;
-	}
-	return std::string();
-}
-
-}
 
 int main(const int /*argc*/, const char** /*argv*/)
 {
 	voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
 	voronota::duktaper::DuktapeContextWrapper::setup_utility_functions(execution_manager, std::cout, std::cerr);
-	if(is_stdin_from_terminal())
+	if(voronota::duktaper::TerminalUtilities::is_stdin_from_terminal())
 	{
 		bool readline_failed=false;
 		while(!readline_failed && !execution_manager.exit_requested())
 		{
-			voronota::duktaper::DuktapeContextWrapper::eval(execution_manager, read_line_from_stdin(readline_failed), std::cout, std::cerr, true);
+			voronota::duktaper::DuktapeContextWrapper::eval(execution_manager, voronota::duktaper::TerminalUtilities::read_line_from_stdin(readline_failed), std::cout, std::cerr, true);
 		}
 	}
 	else
