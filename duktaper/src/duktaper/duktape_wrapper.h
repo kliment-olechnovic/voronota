@@ -26,11 +26,11 @@ public:
 		const bool success=(duk_peval_string(get_context(), script.c_str())==0);
 		if(!success)
 		{
-			stderr << "Eval error: " << duk_safe_to_string(get_context(), -1) << std::endl;
+			stderr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
 		}
 		else if(print_results)
 		{
-			stderr << "Eval result: " << duk_safe_to_string(get_context(), -1) << std::endl;
+			stderr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
 		}
 		duk_pop(get_context());
 		return success;
