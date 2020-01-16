@@ -57,6 +57,8 @@ public:
 
 		script << "var " << namespace_name << "={}\n";
 
+		script << namespace_name << ".do=function(){return raw_voronota.apply(null, arguments);}\n";
+
 		const std::vector<std::string> command_names=sem.collection_of_command_documentations().get_all_names();
 
 		for(std::size_t i=0;i<command_names.size();i++)
@@ -136,11 +138,34 @@ private:
 
 	static int native_raw_voronota(duk_context *ctx)
 	{
-		const int N=duk_get_top(ctx);
-		std::string script;
-		for(int i=0;i<N;i++)
+		std::vector<std::string> tokens;
 		{
-			std::string token=duk_safe_to_string(ctx, i);
+			const int N=duk_get_top(ctx);
+			for(int i=0;i<N;i++)
+			{
+				if(duk_is_array(ctx, i)==1)
+				{
+					const int M=duk_get_length(ctx, i);
+					for(int j=0;j<M;j++)
+					{
+						duk_get_prop_index(ctx, i, j);
+						const std::string token=duk_safe_to_string(ctx, -1);
+						duk_pop(ctx);
+						tokens.push_back(token);
+					}
+				}
+				else
+				{
+					const std::string token=duk_safe_to_string(ctx, i);
+					tokens.push_back(token);
+				}
+			}
+		}
+
+		std::string script;
+		for(std::size_t i=0;i<tokens.size();i++)
+		{
+			const std::string& token=tokens[i];
 			if(i==0)
 			{
 				script+=token;
@@ -182,6 +207,7 @@ private:
 				}
 			}
 		}
+
 		std::string result;
 		if(instance().sem_!=0)
 		{
@@ -189,6 +215,7 @@ private:
 		}
 	    duk_push_string(ctx, result.c_str());
 	    duk_json_decode(ctx, -1);
+
 	    return 1;
 	}
 
