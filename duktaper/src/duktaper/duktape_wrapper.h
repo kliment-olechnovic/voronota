@@ -2,6 +2,7 @@
 #define VIEWER_DUKTAPE_WRAPPER_H_
 
 #include "../duktape/duktape.h"
+#include "../redi/pstream.h"
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
 
@@ -136,6 +137,45 @@ private:
 		return 0;
 	}
 
+	static duk_ret_t native_sh(duk_context *ctx)
+	{
+		const std::string command=duk_require_string(ctx, -1);
+		if(command.empty())
+		{
+			return 0;
+		}
+
+		redi::ipstream proc(command, redi::pstreams::pstdout|redi::pstreams::pstderr);
+
+		std::ostringstream output;
+		{
+			std::string line;
+			while(std::getline(proc.out(), line))
+			{
+				output << line << "\n";
+			}
+		}
+
+		std::ostringstream errors;
+		{
+			std::string line;
+			while(std::getline(proc.err(), line))
+			{
+				errors << line << "\n";
+			}
+		}
+
+		if(instance().stderr_!=0)
+		{
+			std::ostream& stderr=(*instance().stderr_);
+			stderr << errors.str();
+		}
+
+		duk_push_string(ctx, output.str().c_str());
+
+		return 1;
+	}
+
 	static int native_raw_voronota(duk_context *ctx)
 	{
 		std::vector<std::string> tokens;
@@ -233,6 +273,9 @@ private:
 
 			duk_push_c_function(context_, native_print, DUK_VARARGS);
 			duk_put_global_string(context_, "print");
+
+			duk_push_c_function(context_, native_sh, DUK_VARARGS);
+			duk_put_global_string(context_, "sh");
 
 			duk_push_c_function(context_, native_raw_voronota, DUK_VARARGS);
 			duk_put_global_string(context_, "raw_voronota");
