@@ -15,30 +15,35 @@ namespace duktaper
 class DuktapeContextWrapper
 {
 public:
-	static bool eval(scripting::ScriptExecutionManagerWithVariantOutput& sem, const std::string& script, std::ostream& stdout, std::ostream& stderr, const bool print_results)
+	static bool eval(const std::string& script, const bool print_results)
 	{
 		if(script.empty())
 		{
 			return false;
 		}
-		set_script_execution_manager(sem);
-		set_stdout(stdout);
-		set_stderr(stderr);
 		const bool success=(duk_peval_string(get_context(), script.c_str())==0);
-		if(!success)
+		if(instance().stderr_!=0)
 		{
-			stderr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
-		}
-		else if(print_results)
-		{
-			stderr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
+			std::ostream& stderr=(*instance().stderr_);
+			if(!success)
+			{
+				stderr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
+			}
+			else if(print_results)
+			{
+				stderr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
+			}
 		}
 		duk_pop(get_context());
 		return success;
 	}
 
-	static bool setup_utility_functions(scripting::ScriptExecutionManagerWithVariantOutput& sem, std::ostream& stdout, std::ostream& stderr)
+	static bool setup(scripting::ScriptExecutionManagerWithVariantOutput& sem, std::ostream& stdout, std::ostream& stderr, const std::vector<std::string>& script_args)
 	{
+		set_script_execution_manager(sem);
+		set_stdout(stdout);
+		set_stderr(stderr);
+
 		std::ostringstream script;
 
 		script << ""
@@ -80,7 +85,20 @@ public:
 			script << namespace_name << "." << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
 		}
 
-		return eval(sem, script.str(), stdout, stderr, false);
+		{
+			script << "var script_args=[";
+			for(std::size_t i=0;i<script_args.size();i++)
+			{
+				script << "'" << script_args[i] << "'";
+				if(i+1<script_args.size())
+				{
+					script << ", ";
+				}
+			}
+			script << "];\n";
+		}
+
+		return eval(script.str(), false);
 	}
 
 private:
