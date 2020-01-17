@@ -135,6 +135,8 @@ public:
 				"  }"
 				"}"
 				"\n"
+				"read=raw_read;"
+				"\n"
 				"fread=raw_fread;"
 				"\n"
 				"shell=raw_shell;"
@@ -239,6 +241,22 @@ private:
 			stdout << text << std::endl;
 		}
 		return 0;
+	}
+
+	static duk_ret_t native_raw_read(duk_context *ctx)
+	{
+		if(!std::cin.good())
+		{
+			duk_push_string(ctx, "Invalid standard input stream");
+			return duk_throw(ctx);
+		}
+
+		std::istreambuf_iterator<char> eos;
+		std::string output(std::istreambuf_iterator<char>(std::cin), eos);
+
+		duk_push_string(ctx, output.c_str());
+
+		return 1;
 	}
 
 	static duk_ret_t native_raw_fprint(duk_context *ctx)
@@ -439,6 +457,9 @@ private:
 
 			duk_push_c_function(context_, native_raw_print, DUK_VARARGS);
 			duk_put_global_string(context_, "raw_print");
+
+			duk_push_c_function(context_, native_raw_read, 0);
+			duk_put_global_string(context_, "raw_read");
 
 			duk_push_c_function(context_, native_raw_fprint, 2);
 			duk_put_global_string(context_, "raw_fprint");
