@@ -47,15 +47,56 @@ public:
 		std::ostringstream script;
 
 		script << ""
+				"raw_voronota_parameters_object_to_array=function(obj)"
+				"{"
+				"  var result=[];"
+				"  var obj_type=Object.prototype.toString.call(obj);"
+				"  if(obj_type==='[object Object]')"
+				"  {"
+				"    for(var key in obj)"
+				"    {"
+				"      result.push('-'+key);"
+				"      var value=obj[key];"
+				"      var value_type=Object.prototype.toString.call(value);"
+				"      if(value_type==='[object Array]')"
+				"      {"
+				"        for(var i=0;i<value.length;i++)"
+				"        {"
+				"          result.push(value[i]);"
+				"        }"
+				"      }"
+				"      else"
+				"      {"
+				"        result.push(value);"
+				"      }"
+				"    }"
+				"  }"
+				"  else if(obj_type==='[object Array]')"
+				"  {"
+				"    for(var i=0;i<obj.length;i++)"
+				"    {"
+				"      result.push(obj[i]);"
+				"    }"
+				"  }"
+				"  else"
+				"  {"
+				"    result.push(obj);"
+				"  }"
+				"  return result;"
+				"}"
+				"\n"
 				"raw_voronota_named=function(name, args)"
 				"{"
-				"  var fullargs=new Array(args.length+1);"
-				"  fullargs[0]=name;"
+				"  var all_args=[name];"
 				"  for(var i=0;i<args.length;++i)"
 				"  {"
-				"    fullargs[i+1]=args[i];"
+				"    var values=raw_voronota_parameters_object_to_array(args[i]);"
+				"    for(var j=0;j<values.length;j++)"
+				"    {"
+				"      all_args.push(values[j]);"
+				"    }"
 				"  }"
-				"  return raw_voronota.apply(null, fullargs);"
+				"  return raw_voronota.apply(null, all_args);"
 				"}"
 				"\n";
 
@@ -246,7 +287,15 @@ private:
 				{
 					if(token[0]=='-')
 					{
-						script+=token;
+						std::string option=token;
+						for(std::size_t j=0;j<option.size();j++)
+						{
+							if(option[j]=='_')
+							{
+								option[j]='-';
+							}
+						}
+						script+=option;
 					}
 					else
 					{
