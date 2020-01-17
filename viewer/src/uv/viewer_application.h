@@ -801,13 +801,16 @@ private:
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		unsigned int call_for_selection_color=0xFFFFFF;
+		int call_for_selection_happenned=0;
+
 		if(call_for_selection_>0 && mouse_cursor_inside())
 		{
 			glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			{
-				//glDisable(GL_MULTISAMPLE);
+				glDisable(GL_MULTISAMPLE);
 
 				shading_simple_.set_selection_mode_enabled(true);
 				render_scene(ShadingMode::simple);
@@ -817,15 +820,15 @@ private:
 				render_scene(ShadingMode::with_instancing);
 				shading_with_instancing_.set_selection_mode_enabled(false);
 
-				//glEnable(GL_MULTISAMPLE);
+				glEnable(GL_MULTISAMPLE);
 			}
 
 			unsigned char pixel[4]={0, 0, 0, 0};
 			glReadPixels(calc_pixel_x(mouse_cursor_x_), calc_pixel_y(static_cast<double>(window_height_)-mouse_cursor_y_), 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-			const unsigned int color=static_cast<unsigned int>(pixel[0])*256*256+static_cast<unsigned int>(pixel[1])*256+static_cast<unsigned int>(pixel[2]);
-			if(color!=0xFFFFFF)
+			call_for_selection_color=static_cast<unsigned int>(pixel[0])*256*256+static_cast<unsigned int>(pixel[1])*256+static_cast<unsigned int>(pixel[2]);
+			if(call_for_selection_color!=0xFFFFFF)
 			{
-				on_selection(color, call_for_selection_, modkeys_status_.ctrl_any(), modkeys_status_.shift_any());
+				call_for_selection_happenned=call_for_selection_;
 			}
 
 			glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
@@ -844,6 +847,11 @@ private:
 		render_overlay();
 
 		glfwSwapBuffers(window_);
+
+		if(call_for_selection_happenned>0)
+		{
+			on_selection(call_for_selection_color, call_for_selection_happenned, modkeys_status_.ctrl_any(), modkeys_status_.shift_any());
+		}
 
 		on_after_rendered_frame();
 	}
