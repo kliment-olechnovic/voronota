@@ -98,6 +98,24 @@ public:
 				"  }"
 				"  return raw_voronota.apply(null, all_args);"
 				"}"
+				"\n"
+				"print=function(obj, json_spacing)"
+				"{"
+				"  var obj_type=Object.prototype.toString.call(obj);"
+				"  if(obj_type==='[object Object]')"
+				"  {"
+				"    var spaces=0;"
+				"    if(json_spacing)"
+				"    {"
+				"      spaces=json_spacing;"
+				"    }"
+				"    raw_print(JSON.stringify(obj, null, spaces));"
+				"  }"
+				"  else"
+				"  {"
+				"    raw_print(obj);"
+				"  }"
+				"}"
 				"\n";
 
 		const std::string namespace_name="voronota";
@@ -187,7 +205,7 @@ private:
 		return instance().context_;
 	}
 
-	static duk_ret_t native_print(duk_context *ctx)
+	static duk_ret_t native_raw_print(duk_context *ctx)
 	{
 		duk_push_string(ctx, " ");
 		duk_insert(ctx, 0);
@@ -201,7 +219,7 @@ private:
 		return 0;
 	}
 
-	static duk_ret_t native_sh(duk_context *ctx)
+	static duk_ret_t native_raw_shell(duk_context *ctx)
 	{
 		const std::string command=duk_require_string(ctx, -1);
 		if(command.empty())
@@ -343,11 +361,11 @@ private:
 		{
 			context_=duk_create_heap_default();
 
-			duk_push_c_function(context_, native_print, DUK_VARARGS);
-			duk_put_global_string(context_, "print");
+			duk_push_c_function(context_, native_raw_print, DUK_VARARGS);
+			duk_put_global_string(context_, "raw_print");
 
-			duk_push_c_function(context_, native_sh, DUK_VARARGS);
-			duk_put_global_string(context_, "sh");
+			duk_push_c_function(context_, native_raw_shell, DUK_VARARGS);
+			duk_put_global_string(context_, "raw_shell");
 
 			duk_push_c_function(context_, native_raw_voronota, DUK_VARARGS);
 			duk_put_global_string(context_, "raw_voronota");
