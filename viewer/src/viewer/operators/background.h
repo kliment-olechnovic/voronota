@@ -24,7 +24,7 @@ public:
 
 	auxiliaries::ColorUtilities::ColorInteger color;
 
-	explicit Background(uv::ViewerApplication& app) : color(auxiliaries::ColorUtilities::null_color()), app_ptr_(&app)
+	Background() : color(auxiliaries::ColorUtilities::null_color())
 	{
 	}
 
@@ -45,15 +45,12 @@ public:
 			throw std::runtime_error(std::string("Invalid color."));
 		}
 
-		app_ptr_->set_background_color(color);
+		uv::ViewerApplication::instance().set_background_color(color);
 
 		Result result;
 
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

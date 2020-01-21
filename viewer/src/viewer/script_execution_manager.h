@@ -21,22 +21,21 @@ namespace viewer
 class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
 {
 public:
-	explicit ScriptExecutionManager(uv::ViewerApplication& viewer_application) :
-		viewer_application_(viewer_application),
+	ScriptExecutionManager() :
 		grid_variant_(0),
 		output_stream_mode_(0)
 	{
-		set_command_for_extra_actions("resize-window", operators::ResizeWindow(viewer_application_));
-		set_command_for_extra_actions("background", operators::Background(viewer_application_));
-		set_command_for_extra_actions("mono", operators::Mono(viewer_application_));
-		set_command_for_extra_actions("stereo", operators::Stereo(viewer_application_));
-		set_command_for_extra_actions("grid-by-object", operators::Grid(0, viewer_application_, grid_variant_));
-		set_command_for_extra_actions("grid-by-concept", operators::Grid(1, viewer_application_, grid_variant_));
-		set_command_for_extra_actions("ortho", operators::Ortho(viewer_application_));
-		set_command_for_extra_actions("perspective", operators::Perspective(viewer_application_));
-		set_command_for_extra_actions("fog", operators::Fog(viewer_application_));
-		set_command_for_extra_actions("rotate", operators::Rotate(viewer_application_));
-		set_command_for_extra_actions("screenshot", operators::Screenshot(viewer_application_));
+		set_command_for_extra_actions("resize-window", operators::ResizeWindow());
+		set_command_for_extra_actions("background", operators::Background());
+		set_command_for_extra_actions("mono", operators::Mono());
+		set_command_for_extra_actions("stereo", operators::Stereo());
+		set_command_for_extra_actions("grid-by-object", operators::Grid(0, grid_variant_));
+		set_command_for_extra_actions("grid-by-concept", operators::Grid(1, grid_variant_));
+		set_command_for_extra_actions("ortho", operators::Ortho());
+		set_command_for_extra_actions("perspective", operators::Perspective());
+		set_command_for_extra_actions("fog", operators::Fog());
+		set_command_for_extra_actions("rotate", operators::Rotate());
+		set_command_for_extra_actions("screenshot", operators::Screenshot());
 		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());
 
 		set_default_aliases();
@@ -171,16 +170,16 @@ public:
 
 	void setup_grid_parameters()
 	{
-		viewer_application_.set_grid_size(1);
-		if(viewer_application_.rendering_mode_is_grid())
+		uv::ViewerApplication::instance().set_grid_size(1);
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid())
 		{
 			if(grid_variant_==0)
 			{
-				viewer_application_.set_grid_size(static_cast<int>(congregation_of_data_managers().count_objects(false, true)));
+				uv::ViewerApplication::instance().set_grid_size(static_cast<int>(congregation_of_data_managers().count_objects(false, true)));
 			}
 			else if(grid_variant_==1)
 			{
-				viewer_application_.set_grid_size(2);
+				uv::ViewerApplication::instance().set_grid_size(2);
 			}
 		}
 	}
@@ -198,7 +197,7 @@ public:
 		query.visible=true;
 		std::vector<scripting::DataManager*> dms=congregation_of_data_managers().get_objects(query);
 
-		if(viewer_application_.rendering_mode_is_grid() && grid_variant_==0)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==0)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
@@ -210,7 +209,7 @@ public:
 				}
 			}
 		}
-		else if(viewer_application_.rendering_mode_is_grid() && grid_variant_==1)
+		else if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==1)
 		{
 			if(grid_id==0)
 			{
@@ -251,7 +250,7 @@ public:
 
 		bool generated=false;
 
-		if(viewer_application_.rendering_mode_is_grid() && grid_variant_==0)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==0)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
@@ -431,13 +430,12 @@ private:
 				uv::ZoomCalculator zoom_calculator;
 				zoom_calculator.update(box.p_min.x, box.p_min.y, box.p_min.z);
 				zoom_calculator.update(box.p_max.x, box.p_max.y, box.p_max.z);
-				viewer_application_.zoom(zoom_calculator);
+				uv::ViewerApplication::instance().zoom(zoom_calculator);
 			}
 		}
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;
-	uv::ViewerApplication& viewer_application_;
 	int grid_variant_;
 	int output_stream_mode_;
 };

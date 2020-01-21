@@ -22,7 +22,7 @@ public:
 		}
 	};
 
-	Grid(const int grid_variant_value, uv::ViewerApplication& app, int& grid_variant) : grid_variant_value_(grid_variant_value), app_ptr_(&app), grid_variant_ptr_(&grid_variant)
+	Grid(const int grid_variant_value, int& grid_variant) : grid_variant_value_(grid_variant_value), grid_variant_ptr_(&grid_variant)
 	{
 	}
 
@@ -36,7 +36,7 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_rendering_mode_to_grid();
+		uv::ViewerApplication::instance().set_rendering_mode_to_grid();
 		(*grid_variant_ptr_)=grid_variant_value_;
 		Result result;
 		return result;
@@ -44,7 +44,6 @@ public:
 
 private:
 	int grid_variant_value_;
-	uv::ViewerApplication* app_ptr_;
 	int* grid_variant_ptr_;
 };
 

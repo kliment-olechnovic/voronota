@@ -22,7 +22,7 @@ public:
 		}
 	};
 
-	explicit Mono(uv::ViewerApplication& app) : app_ptr_(&app)
+	Mono()
 	{
 	}
 
@@ -36,13 +36,10 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_rendering_mode_to_simple();
+		uv::ViewerApplication::instance().set_rendering_mode_to_simple();
 		Result result;
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

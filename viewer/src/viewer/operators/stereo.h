@@ -34,14 +34,14 @@ public:
 	float angle;
 	float offset;
 
-	explicit Stereo(uv::ViewerApplication& app) : angle(app.stereo_angle()), offset(app.stereo_offset()), app_ptr_(&app)
+	Stereo() : angle(uv::ViewerApplication::instance().stereo_angle()), offset(uv::ViewerApplication::instance().stereo_offset())
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
-		angle=input.get_value_or_default<float>("angle", app_ptr_->stereo_angle());
-		offset=input.get_value_or_default<float>("offset", app_ptr_->stereo_offset());
+		angle=input.get_value_or_default<float>("angle", uv::ViewerApplication::instance().stereo_angle());
+		offset=input.get_value_or_default<float>("offset", uv::ViewerApplication::instance().stereo_offset());
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -52,7 +52,7 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_rendering_mode_to_stereo(angle, offset);
+		uv::ViewerApplication::instance().set_rendering_mode_to_stereo(angle, offset);
 
 		Result result;
 		result.angle=angle;
@@ -60,9 +60,6 @@ public:
 
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

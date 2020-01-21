@@ -35,52 +35,14 @@ public:
 		}
 	};
 
-	ViewerApplication() :
-		good_(false),
-		window_(0),
-		window_width_(0),
-		window_height_(0),
-		framebuffer_width_(0),
-		framebuffer_height_(0),
-		zoom_value_(1.0),
-		zoom_value_step_(1.05),
-		ortho_z_near_(-2.0f),
-		ortho_z_far_(2.0f),
-		ortho_z_step_(1.05),
-		mouse_button_left_down_(false),
-		mouse_button_right_down_(false),
-		mouse_button_left_click_possible_(false),
-		mouse_button_right_click_possible_(false),
-		mouse_cursor_x_(0.0),
-		mouse_cursor_y_(0.0),
-		mouse_cursor_prev_x_(0.0),
-		mouse_cursor_prev_y_(0.0),
-		hovered_(false),
-		call_for_selection_(0),
-		stereo_angle_(0.09),
-		stereo_offset_(0.0),
-		perspective_field_of_view_(0.79f),
-		perspective_near_z_(0.1f),
-		perspective_far_z_(5000.0f),
-		grid_size_(1),
-		rendering_mode_(RenderingMode::simple),
-		projection_mode_(ProjectionMode::ortho)
+	static ViewerApplication& instance()
 	{
-		Utilities::calculate_color_from_integer(0, background_color_);
+		return (*instance_ptr());
 	}
 
-	virtual ~ViewerApplication()
+	static void render(void*)
 	{
-		if(good())
-		{
-			glfwTerminate();
-		}
-	}
-
-	static void render(void* state)
-	{
-		ViewerApplication* app=static_cast<ViewerApplication*>(state);
-		app->render();
+		instance().render();
 	}
 
 	bool init(const InitializationParameters& parameters)
@@ -449,6 +411,49 @@ public:
 	}
 
 protected:
+	ViewerApplication() :
+		good_(false),
+		window_(0),
+		window_width_(0),
+		window_height_(0),
+		framebuffer_width_(0),
+		framebuffer_height_(0),
+		zoom_value_(1.0),
+		zoom_value_step_(1.05),
+		ortho_z_near_(-2.0f),
+		ortho_z_far_(2.0f),
+		ortho_z_step_(1.05),
+		mouse_button_left_down_(false),
+		mouse_button_right_down_(false),
+		mouse_button_left_click_possible_(false),
+		mouse_button_right_click_possible_(false),
+		mouse_cursor_x_(0.0),
+		mouse_cursor_y_(0.0),
+		mouse_cursor_prev_x_(0.0),
+		mouse_cursor_prev_y_(0.0),
+		hovered_(false),
+		call_for_selection_(0),
+		stereo_angle_(0.09),
+		stereo_offset_(0.0),
+		perspective_field_of_view_(0.79f),
+		perspective_near_z_(0.1f),
+		perspective_far_z_(5000.0f),
+		grid_size_(1),
+		rendering_mode_(RenderingMode::simple),
+		projection_mode_(ProjectionMode::ortho)
+	{
+		instance_ptr()=this;
+		Utilities::calculate_color_from_integer(0, background_color_);
+	}
+
+	virtual ~ViewerApplication()
+	{
+		if(good())
+		{
+			glfwTerminate();
+		}
+	}
+
 	virtual void on_window_resized(int width, int height)
 	{
 	}
@@ -600,6 +605,12 @@ private:
 			perspective
 		};
 	};
+
+	static ViewerApplication*& instance_ptr()
+	{
+		static ViewerApplication* ptr=0;
+		return ptr;
+	}
 
 	static double calculate_stepped_value(const double value, const double value_step, const bool step_up, const bool step_down)
 	{

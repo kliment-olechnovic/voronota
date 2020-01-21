@@ -22,7 +22,7 @@ public:
 		}
 	};
 
-	explicit Ortho(uv::ViewerApplication& app) : app_ptr_(&app)
+	Ortho()
 	{
 	}
 
@@ -36,13 +36,10 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_projection_mode_to_ortho();
+		uv::ViewerApplication::instance().set_projection_mode_to_ortho();
 		Result result;
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

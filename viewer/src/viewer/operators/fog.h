@@ -24,7 +24,7 @@ public:
 
 	bool off;
 
-	explicit Fog(uv::ViewerApplication& app) : off(false), app_ptr_(&app)
+	Fog() : off(false)
 	{
 	}
 
@@ -40,13 +40,10 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_fog_enabled(!off);
+		uv::ViewerApplication::instance().set_fog_enabled(!off);
 		Result result;
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

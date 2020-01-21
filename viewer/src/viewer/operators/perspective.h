@@ -26,15 +26,15 @@ public:
 	float near_z;
 	float far_z;
 
-	explicit Perspective(uv::ViewerApplication& app) : field_of_view(app.perspective_field_of_view()), near_z(app.perspective_near_z()), far_z(app.perspective_far_z()), app_ptr_(&app)
+	Perspective() : field_of_view(uv::ViewerApplication::instance().perspective_field_of_view()), near_z(uv::ViewerApplication::instance().perspective_near_z()), far_z(uv::ViewerApplication::instance().perspective_far_z())
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
-		field_of_view=input.get_value_or_default<float>("field-of-view", app_ptr_->perspective_field_of_view());
-		near_z=input.get_value_or_default<float>("near-z", app_ptr_->perspective_near_z());
-		far_z=input.get_value_or_default<float>("far-z", app_ptr_->perspective_far_z());
+		field_of_view=input.get_value_or_default<float>("field-of-view", uv::ViewerApplication::instance().perspective_field_of_view());
+		near_z=input.get_value_or_default<float>("near-z", uv::ViewerApplication::instance().perspective_near_z());
+		far_z=input.get_value_or_default<float>("far-z", uv::ViewerApplication::instance().perspective_far_z());
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -46,13 +46,10 @@ public:
 
 	Result run(void*&) const
 	{
-		app_ptr_->set_projection_mode_to_perspective(field_of_view, near_z, far_z);
+		uv::ViewerApplication::instance().set_projection_mode_to_perspective(field_of_view, near_z, far_z);
 		Result result;
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

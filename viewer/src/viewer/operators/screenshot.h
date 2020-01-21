@@ -24,7 +24,7 @@ public:
 
 	std::string filename;
 
-	explicit Screenshot(uv::ViewerApplication& app) : app_ptr_(&app)
+	Screenshot()
 	{
 	}
 
@@ -44,7 +44,7 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
-		if(!app_ptr_->read_pixels(W, H, image_data))
+		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))
 		{
 			throw std::runtime_error(std::string("Failed to read pixels."));
 		}
@@ -70,9 +70,6 @@ public:
 
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

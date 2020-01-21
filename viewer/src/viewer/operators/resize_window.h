@@ -25,14 +25,14 @@ public:
 	int width;
 	int height;
 
-	explicit ResizeWindow(uv::ViewerApplication& app) : width(app.window_width()), height(app.window_height()), app_ptr_(&app)
+	ResizeWindow() : width(uv::ViewerApplication::instance().window_width()), height(uv::ViewerApplication::instance().window_height())
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
-		width=input.get_value_or_default<int>("width", app_ptr_->window_width());
-		height=input.get_value_or_default<int>("height", app_ptr_->window_height());
+		width=input.get_value_or_default<int>("width", uv::ViewerApplication::instance().window_width());
+		height=input.get_value_or_default<int>("height", uv::ViewerApplication::instance().window_height());
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -53,15 +53,12 @@ public:
 			throw std::runtime_error(std::string("Invalid height."));
 		}
 
-		app_ptr_->set_window_size(width, height);
+		uv::ViewerApplication::instance().set_window_size(width, height);
 
 		Result result;
 
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }

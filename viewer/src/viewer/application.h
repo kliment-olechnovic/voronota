@@ -183,7 +183,6 @@ protected:
 
 private:
 	Application() :
-		script_execution_manager_(*this),
 		menu_enabled_(false),
 		info_box_enabled_(true)
 	{

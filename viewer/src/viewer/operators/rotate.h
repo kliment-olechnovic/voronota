@@ -25,7 +25,7 @@ public:
 	double angle_in_degrees;
 	std::vector<double> axis;
 
-	explicit Rotate(uv::ViewerApplication& app) : angle_in_degrees(10.0f), axis(3, 0.0), app_ptr_(&app)
+	Rotate() : angle_in_degrees(10.0f), axis(3, 0.0)
 	{
 	}
 
@@ -57,15 +57,12 @@ public:
 
 		const double angle_in_radians=(angle_in_degrees*glm::pi<double>()/180.0);
 
-		app_ptr_->rotate(glm::vec3(axis[0], axis[1], axis[2]), angle_in_radians);
+		uv::ViewerApplication::instance().rotate(glm::vec3(axis[0], axis[1], axis[2]), angle_in_radians);
 
 		Result result;
 
 		return result;
 	}
-
-private:
-	uv::ViewerApplication* app_ptr_;
 };
 
 }
