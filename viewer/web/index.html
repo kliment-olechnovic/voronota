@@ -71,7 +71,7 @@
 						<button onclick="document.getElementById('file_input').click();">Load structure</button>
 						<button onclick="load_input_file_from_PDB()">Load structure from PDB</button>
 						<button onclick="getElementById('input_area').value=''">Clear script</button>
-						<button onclick="application_add_command(getElementById('input_area').value)">Run script</button>
+						<button onclick="application_enqueue_script(getElementById('input_area').value)">Run script</button>
 					</p>
 					<p>
 						<textarea id="input_area" rows="7" cols="100"></textarea>
@@ -126,14 +126,14 @@
 		</script>
 		
 		<script type='text/javascript'>
-			function application_add_command(command)
+			function application_enqueue_script(command)
 			{
-				Module.ccall('application_add_command', null, ['string'], [command]);
+				Module.ccall('application_enqueue_script', null, ['string'], [command]);
 			}
 			
 			function v_do(command)
 			{
-				var result=JSON.parse(Module.ccall('application_execute_command', 'string', ['string'], [command]));
+				var result=JSON.parse(Module.ccall('application_execute_script', 'string', ['string'], [command]));
 				return result;
 			}
 			

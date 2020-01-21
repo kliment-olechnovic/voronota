@@ -1,9 +1,0 @@
-v-reset-time
-v-import tests/input/complex/target.pdb
-v-import tests/input/complex/model1.pdb
-v-import tests/input/complex/model2.pdb
-v-pick-objects
-v-spectrum-atoms -by chain
-v-tmalign -t target.pdb -m model1.pdb
-v-tmalign -t target.pdb -m model2.pdb
-v-print-time

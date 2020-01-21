@@ -22,8 +22,7 @@ class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVaria
 {
 public:
 	ScriptExecutionManager() :
-		grid_variant_(0),
-		output_stream_mode_(0)
+		grid_variant_(0)
 	{
 		set_command_for_extra_actions("resize-window", operators::ResizeWindow());
 		set_command_for_extra_actions("background", operators::Background());
@@ -184,11 +183,6 @@ public:
 		}
 	}
 
-	void set_output_stream_mode(const int mode)
-	{
-		output_stream_mode_=mode;
-	}
-
 	void draw(const bool with_instancing, const int grid_id)
 	{
 		DrawerForDataManager::DrawingRequest drawing_request(true);
@@ -344,16 +338,8 @@ protected:
 		script+="\")";
 		emscripten_run_script(script.c_str());
 #else
-		if(output_stream_mode_==0)
-		{
-			scripting::JSONWriter::write(scripting::JSONWriter::Configuration(2), last_output(), std::cerr);
-			std::cerr << std::endl;
-		}
-		else if(output_stream_mode_==1)
-		{
-			scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output(), std::cout);
-			std::cout << std::endl;
-		}
+		scripting::JSONWriter::write(scripting::JSONWriter::Configuration(2), last_output(), std::cerr);
+		std::cerr << std::endl;
 #endif
 	}
 
@@ -437,7 +423,6 @@ private:
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;
 	int grid_variant_;
-	int output_stream_mode_;
 };
 
 }

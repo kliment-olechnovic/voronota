@@ -26,17 +26,17 @@ public:
 		return app;
 	}
 
-	void enqueue_script(const std::string& command)
+	void enqueue_script(const std::string& script)
 	{
-		if(!command.empty())
+		if(!script.empty())
 		{
-			pending_commands_.push_back(command);
+			job_queue_.push_back(Job(script, Job::TYPE_BASIC));
 		}
 	}
 
-	const std::string& execute_script(const std::string& command)
+	const std::string& execute_script(const std::string& script)
 	{
-		return script_execution_manager_.execute_script_and_return_last_output_string(command, false);
+		return script_execution_manager_.execute_script_and_return_last_output_string(script, false);
 	}
 
 	void upload_file(const std::string& name, const std::string& data)
@@ -131,27 +131,30 @@ protected:
 	void on_before_rendered_frame()
 	{
 		script_execution_manager_.setup_grid_parameters();
+
+		if(ReadingThread::check_data())
+		{
+			job_queue_.push_back(Job(ReadingThread::extract_data(), Job::TYPE_WRAPPED));
+		}
 	}
 
 	void on_after_rendered_frame()
 	{
-		if(!pending_commands_.empty())
+		if(!job_queue_.empty())
 		{
 			if(!waiting_indicator_.check_waiting())
 			{
-				script_execution_manager_.execute_script(pending_commands_.front(), false);
-				pending_commands_.pop_front();
-				waiting_indicator_.keep_waiting(!pending_commands_.empty());
-			}
-		}
-		else if(ReadingThread::check_data())
-		{
-			if(!waiting_indicator_.check_waiting())
-			{
-				script_execution_manager_.set_output_stream_mode(1);
-				script_execution_manager_.execute_script(ReadingThread::extract_data(), false);
-				script_execution_manager_.set_output_stream_mode(0);
-				waiting_indicator_.keep_waiting(false);
+				Job& job=job_queue_.front();
+				if(job.type==Job::TYPE_BASIC)
+				{
+					script_execution_manager_.execute_script(job.script, false);
+				}
+				else
+				{
+					script_execution_manager_.execute_script(job.script, false);
+				}
+				job_queue_.pop_front();
+				waiting_indicator_.keep_waiting(!job_queue_.empty());
 			}
 		}
 
@@ -182,6 +185,22 @@ protected:
 	}
 
 private:
+	struct Job
+	{
+		enum Type
+		{
+			TYPE_BASIC,
+			TYPE_WRAPPED
+		};
+
+		std::string script;
+		Type type;
+
+		Job(const std::string& script, const Type type) : script(script), type(TYPE_BASIC)
+		{
+		}
+	};
+
 	Application() :
 		menu_enabled_(false),
 		info_box_enabled_(true)
@@ -349,7 +368,7 @@ private:
 	}
 
 	ScriptExecutionManager script_execution_manager_;
-	std::list<std::string> pending_commands_;
+	std::list<Job> job_queue_;
 	widgets::Console console_;
 	widgets::WaitingIndicator waiting_indicator_;
 	widgets::CursorLabel cursor_label_;
