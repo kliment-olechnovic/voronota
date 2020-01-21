@@ -87,7 +87,7 @@ int main(const int argc, const char** argv)
 		io.IniFilename=0;
 	}
 
-	app.add_command(raw_arguments);
+	app.enqueue_script(raw_arguments);
 
 #ifdef FOR_WEB
 	emscripten_set_main_loop_arg(voronota::viewer::Application::render, &app, 0, 1);
@@ -105,14 +105,14 @@ int main(const int argc, const char** argv)
 extern "C"
 {
 
-EMSCRIPTEN_KEEPALIVE void application_add_command(const char* command)
+EMSCRIPTEN_KEEPALIVE void application_enqueue_script(const char* command)
 {
-	voronota::viewer::Application::instance().add_command(command);
+	voronota::viewer::Application::instance().enqueue_script(command);
 }
 
-EMSCRIPTEN_KEEPALIVE const char* application_execute_command(const char* command)
+EMSCRIPTEN_KEEPALIVE const char* application_execute_script(const char* command)
 {
-	return voronota::viewer::Application::instance().execute_command(command).c_str();
+	return voronota::viewer::Application::instance().execute_script(command).c_str();
 }
 
 EMSCRIPTEN_KEEPALIVE void application_upload_file(const char* name, const char* data)
