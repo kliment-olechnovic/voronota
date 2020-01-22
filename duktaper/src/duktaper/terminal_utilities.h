@@ -4,8 +4,8 @@
 #include <string>
 #include <unistd.h>
 #include <stdio.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+
+#include "../linenoise/linenoise.h"
 
 namespace voronota
 {
@@ -23,21 +23,38 @@ public:
 
 	static std::string read_line_from_stdin(bool& failed)
 	{
-		char* line=readline("> ");
-		failed=(line==0);
+		ManagedLineBuffer mlb(linenoise("> "));
+		failed=(mlb.line==0);
 		if(!failed)
 		{
 			std::string result;
-			if(*line)
+			if(*mlb.line)
 			{
-				add_history(line);
-				result=line;
+				linenoiseHistoryAdd(mlb.line);
+				result=mlb.line;
 			}
-			free(static_cast<void*>(line));
 			return result;
 		}
 		return std::string();
 	}
+
+private:
+	struct ManagedLineBuffer
+	{
+		char* line;
+
+		ManagedLineBuffer(char* line) : line(line)
+		{
+		}
+
+		~ManagedLineBuffer()
+		{
+			if(line!=0)
+			{
+				free(static_cast<void*>(line));
+			}
+		}
+	};
 };
 
 }
