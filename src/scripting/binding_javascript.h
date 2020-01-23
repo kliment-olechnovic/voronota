@@ -92,9 +92,7 @@ public:
 				"  return raw_voronota(full_str);"
 				"}"
 				"\n"
-				"var voronota={}"
-				"\n"
-				"voronota.do=function(str){return raw_voronota(str);}"
+				"voronota_do=function(str){return raw_voronota(str);}"
 				"\n"
 				"exit=function(){return raw_voronota('exit');}"
 				"\n";
@@ -112,7 +110,7 @@ public:
 					function_name[j]='_';
 				}
 			}
-			script << "voronota." << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
+			script << "voronota_" << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
 		}
 
 		return script.str();

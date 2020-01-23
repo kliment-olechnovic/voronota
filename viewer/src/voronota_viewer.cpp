@@ -87,6 +87,8 @@ int main(const int argc, const char** argv)
 		io.IniFilename=0;
 	}
 
+	app.setup_javascript_binding();
+
 	app.enqueue_script(raw_arguments);
 
 #ifdef FOR_WEB

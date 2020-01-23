@@ -1,6 +1,8 @@
 #ifndef VIEWER_APPLICATION_H_
 #define VIEWER_APPLICATION_H_
 
+#include "../../../src/scripting/binding_javascript.h"
+
 #include "../uv/viewer_application.h"
 
 #include "../imgui/imgui_impl_glfw_gl3.h"
@@ -49,6 +51,11 @@ public:
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
 		enqueue_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+	}
+
+	void setup_javascript_binding()
+	{
+		Environment::execute_javascript(scripting::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
 	}
 
 protected:
