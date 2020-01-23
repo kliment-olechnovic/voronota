@@ -40,9 +40,9 @@ public:
 		return (*instance_ptr());
 	}
 
-	static void render(void*)
+	static void instance_render_frame()
 	{
-		instance().render();
+		instance().render_frame();
 	}
 
 	bool init(const InitializationParameters& parameters)
@@ -128,6 +128,8 @@ public:
 
 		good_=true;
 
+		on_after_init_success();
+
 		return true;
 	}
 
@@ -135,7 +137,7 @@ public:
 	{
 		while(good() && !glfwWindowShouldClose(window_))
 		{
-			render();
+			render_frame();
 		}
 	}
 
@@ -452,6 +454,10 @@ protected:
 		{
 			glfwTerminate();
 		}
+	}
+
+	virtual void on_after_init_success()
+	{
 	}
 
 	virtual void on_window_resized(int width, int height)
@@ -797,7 +803,7 @@ private:
 		return static_cast<int>((screen_y/static_cast<double>(window_height_))*static_cast<double>(framebuffer_height_));
 	}
 
-	void render()
+	void render_frame()
 	{
 		if(!good())
 		{

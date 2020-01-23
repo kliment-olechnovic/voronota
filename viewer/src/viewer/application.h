@@ -53,12 +53,19 @@ public:
 		enqueue_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
 	}
 
-	void setup_javascript_binding()
+protected:
+	void on_after_init_success()
 	{
-		Environment::execute_javascript(scripting::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+		if(good())
+		{
+			ImGui_ImplGlfwGL3_Init(window(), false);
+			ImGuiIO& io=ImGui::GetIO();
+			io.IniFilename=0;
+
+			Environment::execute_javascript(scripting::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+		}
 	}
 
-protected:
 	bool check_mouse_button_use_intercepted(int button, int action, int mods)
 	{
 		ImGui_ImplGlfwGL3_MouseButtonCallback(window(), button, action, mods);
@@ -220,6 +227,10 @@ private:
 
 	~Application()
 	{
+		if(good())
+		{
+			ImGui_ImplGlfwGL3_Shutdown();
+		}
 	}
 
 	void execute_menu()

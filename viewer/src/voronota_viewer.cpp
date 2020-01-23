@@ -4,102 +4,58 @@
 
 int main(const int argc, const char** argv)
 {
-	voronota::viewer::Application::InitializationParameters app_parameters;
-	app_parameters.suggested_window_width=800;
-	app_parameters.suggested_window_height=600;
-	app_parameters.title="voronota-viewer";
-	app_parameters.shader_vertex="_shader_vertex_simple";
-	app_parameters.shader_vertex_with_instancing="_shader_vertex_with_instancing";
-	app_parameters.shader_fragment="_shader_fragment_simple";
-
-	std::string raw_arguments;
-
+	try
 	{
-		int i=1;
-		while(i<argc)
+		voronota::scripting::CommandInput input(argc, argv);
+
+		voronota::viewer::Application::InitializationParameters app_parameters;
+		app_parameters.suggested_window_width=input.get_value_or_default<int>("window-width", 800);
+		app_parameters.suggested_window_height=input.get_value_or_default<int>("window-height", 600);
+		app_parameters.title=input.get_value_or_default<std::string>("title", "voronota-viewer");
+		app_parameters.shader_vertex=input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
+		app_parameters.shader_vertex_with_instancing=input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
+		app_parameters.shader_fragment=input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
+		const std::string input_pdb=input.get_value_or_default<std::string>("input-pdb", "");
+		const std::string script_file=input.get_value_or_default<std::string>("script-file", "");
+
+		input.assert_nothing_unusable();
+
+		std::ostringstream starting_script;
+
+		if(!input_pdb.empty())
 		{
-			const std::string argv_i=argv[i];
-			if(argv_i=="--title" && (i+1)<argc)
-			{
-				app_parameters.title=argv[++i];
-			}
-			else if(argv_i=="--shader-vertex" && (i+1)<argc)
-			{
-				app_parameters.shader_vertex=argv[++i];
-			}
-			else if(argv_i=="--shader-vertex-with-instancing" && (i+1)<argc)
-			{
-				app_parameters.shader_vertex_with_instancing=argv[++i];
-			}
-			else if(argv_i=="--shader-fragment" && (i+1)<argc)
-			{
-				app_parameters.shader_fragment=argv[++i];
-			}
-			else if(argv_i=="--input-pdb" && (i+1)<argc)
-			{
-				raw_arguments+="import --format pdb --include-heteroatoms --file '";
-				raw_arguments+=argv[++i];
-				raw_arguments+="'\n";
-			}
-			else if(argv_i=="--script-text" && (i+1)<argc)
-			{
-				raw_arguments+=argv[++i];
-				raw_arguments+="\n";
-			}
-			else if(argv_i=="--script-file" && (i+1)<argc)
-			{
-				raw_arguments+="source '";
-				raw_arguments+=argv[++i];
-				raw_arguments+="'\n";
-			}
-			else if(argv_i=="--window-size" && (i+2)<argc)
-			{
-				{
-					std::istringstream local_input((std::string(argv[++i])));
-					local_input >> app_parameters.suggested_window_width;
-				}
-				{
-					std::istringstream local_input((std::string(argv[++i])));
-					local_input >> app_parameters.suggested_window_height;
-				}
-			}
-			else
-			{
-				raw_arguments+=argv_i;
-				raw_arguments+="\n";
-			}
-			i++;
+			starting_script << "import --format pdb --include-heteroatoms --file '" << input_pdb << "'\n";
 		}
-	}
 
-	voronota::viewer::Application& app=voronota::viewer::Application::instance();
+		if(!script_file.empty())
+		{
+			starting_script << "source '" << script_file << "'\n";
+		}
 
-	if(!app.init(app_parameters))
-	{
-		std::cerr << "Error: failed to init application." << std::endl;
-		return 1;
-	}
+		if(!voronota::viewer::Application::instance().init(app_parameters))
+		{
+			throw std::runtime_error(std::string("Failed to init application."));
+		}
 
-	ImGui_ImplGlfwGL3_Init(app.window(), false);
-
-	{
-		ImGuiIO& io=ImGui::GetIO();
-		io.IniFilename=0;
-	}
-
-	app.setup_javascript_binding();
-
-	app.enqueue_script(raw_arguments);
+		voronota::viewer::Application::instance().enqueue_script(starting_script.str());
 
 #ifdef FOR_WEB
-	emscripten_set_main_loop_arg(voronota::viewer::Application::render, &app, 0, 1);
+		emscripten_set_main_loop(voronota::viewer::Application::instance_render_frame, 0, 1);
 #else
-	app.run_loop();
+		voronota::viewer::Application::instance().run_loop();
 #endif
+		return 0;
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exception caught: " << e.what() << std::endl;
+	}
+	catch(...)
+	{
+		std::cerr << "Unknown exception caught." << std::endl;
+	}
 
-	ImGui_ImplGlfwGL3_Shutdown();
-
-	return 0;
+	return 1;
 }
 
 #ifdef FOR_WEB

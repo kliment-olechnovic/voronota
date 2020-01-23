@@ -25,69 +25,12 @@ public:
 
 	explicit CommandInput(const std::string& command_str) : initialized_(false)
 	{
-		if(command_str.empty())
-		{
-			throw std::runtime_error(std::string("Empty command string"));
-		}
+		init_from_string(command_str);
+	}
 
-		input_command_string_=command_str;
-
-		const std::string canonical_command_str=canonicalize_command_string(command_str);
-
-		if(canonical_command_str.empty())
-		{
-			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
-		}
-
-		canonical_input_command_string_=canonical_command_str;
-
-		std::istringstream input(canonical_command_str);
-		std::vector< std::pair<int, std::string> > tokens;
-		read_all_strings_considering_quotes_and_brackets(input, tokens);
-
-		if(tokens.empty())
-		{
-			throw std::runtime_error(std::string("Failed to read command string '")+canonical_command_str+"'.");
-		}
-
-		std::string current_key;
-		for(std::size_t i=0;i<tokens.size();i++)
-		{
-			const int token_wrapped=tokens[i].first;
-			const std::string& token_str=tokens[i].second;
-			if(i==0)
-			{
-				if(token_wrapped!=0 || token_str.empty())
-				{
-					throw std::runtime_error(std::string("Invalid command name in string '")+canonical_command_str+"'.");
-				}
-				else
-				{
-					command_name_=token_str;
-				}
-			}
-			else
-			{
-				if(token_wrapped==0 && token_str.size()>2 && token_str.rfind("--", 0)==0)
-				{
-					current_key=token_str.substr(2);
-					map_of_values_[current_key];
-				}
-				else
-				{
-					if(current_key.empty())
-					{
-						list_of_unnamed_values_.push_back(token_str);
-					}
-					else
-					{
-						map_of_values_[current_key].push_back(token_str);
-					}
-				}
-			}
-		}
-
-		initialized_=true;
+	explicit CommandInput(const int argc, const char** argv) : initialized_(false)
+	{
+		init_from_array(argc, argv);
 	}
 
 	static int read_string_considering_quotes_and_brackets(std::istream& input, std::string& output)
@@ -413,6 +356,120 @@ private:
 	static bool is_flag_string_false(const std::string& str)
 	{
 		return (str=="false" || str=="0");
+	}
+
+	void init_from_string(const std::string& command_str)
+	{
+		if(command_str.empty())
+		{
+			throw std::runtime_error(std::string("Empty command string."));
+		}
+
+		input_command_string_=command_str;
+
+		const std::string canonical_command_str=canonicalize_command_string(command_str);
+
+		if(canonical_command_str.empty())
+		{
+			throw std::runtime_error(std::string("No content in command string '")+command_str+"'.");
+		}
+
+		canonical_input_command_string_=canonical_command_str;
+
+		std::istringstream input(canonical_command_str);
+		std::vector< std::pair<int, std::string> > tokens;
+		read_all_strings_considering_quotes_and_brackets(input, tokens);
+
+		if(tokens.empty())
+		{
+			throw std::runtime_error(std::string("Failed to read command string '")+canonical_command_str+"'.");
+		}
+
+		std::string current_key;
+		for(std::size_t i=0;i<tokens.size();i++)
+		{
+			const int token_wrapped=tokens[i].first;
+			const std::string& token_str=tokens[i].second;
+			if(i==0)
+			{
+				if(token_wrapped!=0 || token_str.empty())
+				{
+					throw std::runtime_error(std::string("Invalid command name in string '")+canonical_command_str+"'.");
+				}
+				else
+				{
+					command_name_=token_str;
+				}
+			}
+			else
+			{
+				if(token_wrapped==0 && token_str.size()>2 && token_str.rfind("--", 0)==0)
+				{
+					current_key=token_str.substr(2);
+					map_of_values_[current_key];
+				}
+				else
+				{
+					if(current_key.empty())
+					{
+						list_of_unnamed_values_.push_back(token_str);
+					}
+					else
+					{
+						map_of_values_[current_key].push_back(token_str);
+					}
+				}
+			}
+		}
+
+		initialized_=true;
+	}
+
+	void init_from_array(const int argc, const char** argv)
+	{
+		if(argc<1)
+		{
+			throw std::runtime_error(std::string("Empty argument array."));
+		}
+
+		std::ostringstream output;
+
+		for(int i=0;i<argc;i++)
+		{
+			if(argv[i]==0)
+			{
+				throw std::runtime_error(std::string("Invalid argument array."));
+			}
+
+			std::string token=argv[i];
+
+			if(i==0)
+			{
+				output << token;
+			}
+			else
+			{
+				output << " ";
+				if(!token.empty() && token[0]=='-')
+				{
+					output << token;
+				}
+				else if(token.find('\'')==std::string::npos)
+				{
+					output << "'" << token << "'";
+				}
+				else if(token.find('"')==std::string::npos)
+				{
+					output << "\"" << token << "\"";
+				}
+				else
+				{
+					output << token;
+				}
+			}
+		}
+
+		init_from_string(output.str());
 	}
 
 	const std::vector<std::string>& get_value_vector_ref(const std::string& name)
