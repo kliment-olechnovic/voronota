@@ -23,7 +23,7 @@ public:
 #ifdef FOR_WEB
 		emscripten_run_script(script.c_str());
 #else
-		//
+		std::cerr << "Not running '" << script << "'." << std::endl;
 #endif
 	}
 

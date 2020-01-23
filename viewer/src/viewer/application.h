@@ -32,7 +32,7 @@ public:
 	{
 		if(!script.empty())
 		{
-			job_queue_.push_back(Job(script, Job::TYPE_BASIC));
+			job_queue_.push_back(Job(script, Job::TYPE_BASIC_SCRIPT));
 		}
 	}
 
@@ -148,7 +148,7 @@ protected:
 
 		if(ReadingThread::check_data())
 		{
-			job_queue_.push_back(Job(ReadingThread::extract_data(), Job::TYPE_WRAPPED));
+			job_queue_.push_back(Job(ReadingThread::extract_data(), Job::TYPE_JAVASCRIPT_SCRIPT));
 		}
 	}
 
@@ -159,13 +159,13 @@ protected:
 			if(!waiting_indicator_.check_waiting())
 			{
 				Job& job=job_queue_.front();
-				if(job.type==Job::TYPE_BASIC)
+				if(job.type==Job::TYPE_BASIC_SCRIPT)
 				{
 					script_execution_manager_.execute_script(job.script, false);
 				}
-				else
+				else if(job.type==Job::TYPE_JAVASCRIPT_SCRIPT)
 				{
-					script_execution_manager_.execute_script(job.script, false);
+					Environment::execute_javascript(job.script);
 				}
 				job_queue_.pop_front();
 				waiting_indicator_.keep_waiting(!job_queue_.empty());
@@ -203,14 +203,14 @@ private:
 	{
 		enum Type
 		{
-			TYPE_BASIC,
-			TYPE_WRAPPED
+			TYPE_BASIC_SCRIPT,
+			TYPE_JAVASCRIPT_SCRIPT
 		};
 
 		std::string script;
 		Type type;
 
-		Job(const std::string& script, const Type type) : script(script), type(TYPE_BASIC)
+		Job(const std::string& script, const Type type) : script(script), type(type)
 		{
 		}
 	};
