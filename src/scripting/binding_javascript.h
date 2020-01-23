@@ -1,0 +1,126 @@
+#ifndef SCRIPTING_BINDING_JAVASCRIPT_H_
+#define SCRIPTING_BINDING_JAVASCRIPT_H_
+
+#include <sstream>
+
+#include "command_documentation.h"
+
+namespace voronota
+{
+
+namespace scripting
+{
+
+class BindingJavascript
+{
+public:
+	static std::string generate_setup_script(const CollectionOfCommandDocumentations& cds)
+	{
+		std::ostringstream script;
+
+		script << ""
+				"raw_voronota_parameters_object_to_array=function(obj)"
+				"{"
+				"  var result=[];"
+				"  var obj_type=Object.prototype.toString.call(obj);"
+				"  if(obj_type==='[object Object]')"
+				"  {"
+				"    for(var key in obj)"
+				"    {"
+				"      result.push('-'+key.split('_').join('-'));"
+				"      var value=obj[key];"
+				"      var value_type=Object.prototype.toString.call(value);"
+				"      if(value_type==='[object Array]')"
+				"      {"
+				"        for(var i=0;i<value.length;i++)"
+				"        {"
+				"          result.push(value[i]);"
+				"        }"
+				"      }"
+				"      else"
+				"      {"
+				"        result.push(value);"
+				"      }"
+				"    }"
+				"  }"
+				"  else if(obj_type==='[object Array]')"
+				"  {"
+				"    for(var i=0;i<obj.length;i++)"
+				"    {"
+				"      result.push(obj[i]);"
+				"    }"
+				"  }"
+				"  else"
+				"  {"
+				"    result.push(obj);"
+				"  }"
+				"  return result;"
+				"}"
+				"\n"
+				"raw_voronota_named=function(name, args)"
+				"{"
+				"  var full_str=name;"
+				"  for(var i=0;i<args.length;++i)"
+				"  {"
+				"    var values=raw_voronota_parameters_object_to_array(args[i]);"
+				"    for(var j=0;j<values.length;j++)"
+				"    {"
+				"      value=''+values[j];"
+				"      full_str+=' ';"
+				"      if(value.indexOf('-')===0)"
+				"      {"
+				"        full_str+=value;"
+				"      }"
+				"      else if(value.indexOf(\"'\")===-1)"
+				"      {"
+				"        full_str+=\"'\";"
+				"        full_str+=value;"
+				"        full_str+=\"'\";"
+				"      }"
+				"      else if(value.indexOf('\"')===-1)"
+				"      {"
+				"        full_str+='\"';"
+				"        full_str+=value;"
+				"        full_str+='\"';"
+				"      }"
+				"      else"
+				"      {"
+				"        full_str+=value;"
+				"      }"
+				"    }"
+				"  }"
+				"  return raw_voronota(full_str);"
+				"}"
+				"\n"
+				"var voronota={}"
+				"\n"
+				"voronota.do=function(str){return raw_voronota(str);}"
+				"\n"
+				"exit=function(){return raw_voronota('exit');}"
+				"\n";
+
+		const std::vector<std::string> command_names=cds.get_all_names();
+
+		for(std::size_t i=0;i<command_names.size();i++)
+		{
+			const std::string& command_name=command_names[i];
+			std::string function_name=command_name;
+			for(std::size_t j=0;j<function_name.size();j++)
+			{
+				if(function_name[j]=='-')
+				{
+					function_name[j]='_';
+				}
+			}
+			script << "voronota." << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
+		}
+
+		return script.str();
+	}
+};
+
+}
+
+}
+
+#endif /* SCRIPTING_BINDING_JAVASCRIPT_H_ */

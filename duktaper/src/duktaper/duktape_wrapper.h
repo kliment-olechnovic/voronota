@@ -5,6 +5,7 @@
 #include "../redi/pstream.h"
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
+#include "../../../src/scripting/binding_javascript.h"
 
 namespace voronota
 {
@@ -46,59 +47,9 @@ public:
 
 		std::ostringstream script;
 
+		script << scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations())  << "\n";
+
 		script << ""
-				"raw_voronota_parameters_object_to_array=function(obj)"
-				"{"
-				"  var result=[];"
-				"  var obj_type=Object.prototype.toString.call(obj);"
-				"  if(obj_type==='[object Object]')"
-				"  {"
-				"    for(var key in obj)"
-				"    {"
-				"      result.push('-'+key);"
-				"      var value=obj[key];"
-				"      var value_type=Object.prototype.toString.call(value);"
-				"      if(value_type==='[object Array]')"
-				"      {"
-				"        for(var i=0;i<value.length;i++)"
-				"        {"
-				"          result.push(value[i]);"
-				"        }"
-				"      }"
-				"      else"
-				"      {"
-				"        result.push(value);"
-				"      }"
-				"    }"
-				"  }"
-				"  else if(obj_type==='[object Array]')"
-				"  {"
-				"    for(var i=0;i<obj.length;i++)"
-				"    {"
-				"      result.push(obj[i]);"
-				"    }"
-				"  }"
-				"  else"
-				"  {"
-				"    result.push(obj);"
-				"  }"
-				"  return result;"
-				"}"
-				"\n"
-				"raw_voronota_named=function(name, args)"
-				"{"
-				"  var all_args=[name];"
-				"  for(var i=0;i<args.length;++i)"
-				"  {"
-				"    var values=raw_voronota_parameters_object_to_array(args[i]);"
-				"    for(var j=0;j<values.length;j++)"
-				"    {"
-				"      all_args.push(values[j]);"
-				"    }"
-				"  }"
-				"  return raw_voronota.apply(null, all_args);"
-				"}"
-				"\n"
 				"print=function(obj, json_spacing)"
 				"{"
 				"  var obj_type=Object.prototype.toString.call(obj);"
@@ -131,7 +82,7 @@ public:
 				"  }"
 				"  else"
 				"  {"
-				"    raw_print(obj);"
+				"    raw_fprint(filename, obj);"
 				"  }"
 				"}"
 				"\n"
@@ -141,32 +92,6 @@ public:
 				"\n"
 				"shell=raw_shell;"
 				"\n";
-
-		const std::string namespace_name="voronota";
-
-		script << "var " << namespace_name << "={}\n";
-
-		script << namespace_name << ".do=function(){return raw_voronota.apply(null, arguments);}\n";
-
-		const std::vector<std::string> command_names=sem.collection_of_command_documentations().get_all_names();
-
-		for(std::size_t i=0;i<command_names.size();i++)
-		{
-			const std::string command_name=command_names[i];
-			if(command_name=="exit")
-			{
-				script << "exit=function(){return raw_voronota('exit');}\n";
-			}
-			std::string function_name=command_name;
-			for(std::size_t j=0;j<function_name.size();j++)
-			{
-				if(function_name[j]=='-')
-				{
-					function_name[j]='_';
-				}
-			}
-			script << namespace_name << "." << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
-		}
 
 		{
 			script << "var script_args=[";
@@ -354,82 +279,12 @@ private:
 
 	static int native_raw_voronota(duk_context *ctx)
 	{
-		std::vector<std::string> tokens;
-		{
-			const int N=duk_get_top(ctx);
-			for(int i=0;i<N;i++)
-			{
-				if(duk_is_array(ctx, i)==1)
-				{
-					const int M=duk_get_length(ctx, i);
-					for(int j=0;j<M;j++)
-					{
-						duk_get_prop_index(ctx, i, j);
-						const std::string token=duk_safe_to_string(ctx, -1);
-						duk_pop(ctx);
-						tokens.push_back(token);
-					}
-				}
-				else
-				{
-					const std::string token=duk_safe_to_string(ctx, i);
-					tokens.push_back(token);
-				}
-			}
-		}
+		const std::string script=duk_require_string(ctx, -1);
 
-		std::string script;
-		for(std::size_t i=0;i<tokens.size();i++)
+		if(script.empty())
 		{
-			const std::string& token=tokens[i];
-			if(i==0)
-			{
-				script+=token;
-			}
-			else
-			{
-				script+=" ";
-				if(token.empty())
-				{
-					script+="'";
-					script+=token;
-					script+="'";
-				}
-				else
-				{
-					if(token[0]=='-')
-					{
-						std::string option=token;
-						for(std::size_t j=0;j<option.size();j++)
-						{
-							if(option[j]=='_')
-							{
-								option[j]='-';
-							}
-						}
-						script+=option;
-					}
-					else
-					{
-						if(token.find('\'')==std::string::npos)
-						{
-							script+="'";
-							script+=token;
-							script+="'";
-						}
-						else if(token.find('"')==std::string::npos)
-						{
-							script+="\"";
-							script+=token;
-							script+="\"";
-						}
-						else
-						{
-							script+=token;
-						}
-					}
-				}
-			}
+			duk_push_string(ctx, "Missing Voronota script string");
+			return duk_throw(ctx);
 		}
 
 		std::string result;
@@ -470,7 +325,7 @@ private:
 			duk_push_c_function(context_, native_raw_shell, 1);
 			duk_put_global_string(context_, "raw_shell");
 
-			duk_push_c_function(context_, native_raw_voronota, DUK_VARARGS);
+			duk_push_c_function(context_, native_raw_voronota, 1);
 			duk_put_global_string(context_, "raw_voronota");
 		}
 	}
