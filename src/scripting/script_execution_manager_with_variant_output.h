@@ -39,9 +39,7 @@ public:
 	{
 		if(output_string_.empty())
 		{
-			std::ostringstream raw_output;
-			JSONWriter::write(JSONWriter::Configuration(0), last_output(), raw_output);
-			output_string_=raw_output.str();
+			output_string_=JSONWriter::write(JSONWriter::Configuration(0), last_output());
 		}
 		return output_string_;
 	}

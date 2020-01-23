@@ -126,14 +126,14 @@
 		</script>
 		
 		<script type='text/javascript'>
-			function application_enqueue_script(command)
+			function application_enqueue_script(str)
 			{
-				Module.ccall('application_enqueue_script', null, ['string'], [command]);
+				Module.ccall('application_enqueue_script', null, ['string'], [str]);
 			}
 			
-			function v_do(command)
+			function raw_voronota(str)
 			{
-				var result=JSON.parse(Module.ccall('application_execute_script', 'string', ['string'], [command]));
+				var result=JSON.parse(Module.ccall('application_execute_script', 'string', ['string'], [str]));
 				return result;
 			}
 			
@@ -142,18 +142,11 @@
 				Module.ccall('application_upload_file', null, ['string','string'], [name,data]);
 			}
 			
-			function from_application_display_output(text)
+			function set_output_area_text(text)
 			{
 				var element=document.getElementById('output_area');
-				if(text.startsWith("{"))
-				{
-				    element.value=text;
-					element.scrollTop=element.scrollHeight;
-				}
-				else
-				{
-					element.value='';
-				}
+				element.value=text;
+				element.scrollTop=element.scrollHeight;
 			}
 		</script>
 		

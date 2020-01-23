@@ -1,16 +1,11 @@
 #ifndef VIEWER_SCRIPT_EXECUTION_MANAGER_H_
 #define VIEWER_SCRIPT_EXECUTION_MANAGER_H_
 
-#ifdef FOR_WEB
-#include <emscripten.h>
-#endif
-
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
-#include "../../../src/scripting/json_writer.h"
 
 #include "congregations_of_drawers_for_data_managers.h"
-
 #include "operators_all.h"
+#include "environment.h"
 
 namespace voronota
 {
@@ -329,18 +324,7 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
-#ifdef FOR_WEB
-		std::ostringstream raw_output;
-		scripting::JSONWriter::write(scripting::JSONWriter::Configuration(6), last_output(), raw_output);
-		std::string script;
-		script+="from_application_display_output(\"";
-		script+=scripting::JSONWriter::replace_special_characters_with_escape_sequences(raw_output.str());
-		script+="\")";
-		emscripten_run_script(script.c_str());
-#else
-		scripting::JSONWriter::write(scripting::JSONWriter::Configuration(2), last_output(), std::cerr);
-		std::cerr << std::endl;
-#endif
+		Environment::print(last_output());
 	}
 
 private:

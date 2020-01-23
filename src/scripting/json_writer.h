@@ -68,6 +68,20 @@ public:
 		write(Configuration::get_default_configuration(), object, output);
 	}
 
+	static std::string write(const Configuration& configuration, const VariantObject& object)
+	{
+		std::ostringstream output;
+		write(configuration, object, output);
+		return output.str();
+	}
+
+	static std::string write(const VariantObject& object)
+	{
+		std::ostringstream output;
+		write(Configuration::get_default_configuration(), object, output);
+		return output.str();
+	}
+
 	static std::string replace_special_characters_with_escape_sequences(const std::string& input)
 	{
 		if(input.find_first_of("\"\n\r\f\t\\")==std::string::npos)
