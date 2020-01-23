@@ -1,8 +1,6 @@
 #ifndef VIEWER_APPLICATION_H_
 #define VIEWER_APPLICATION_H_
 
-#include "../../../src/scripting/binding_javascript.h"
-
 #include "../uv/viewer_application.h"
 
 #include "../imgui/imgui_impl_glfw_gl3.h"
@@ -62,7 +60,7 @@ protected:
 			ImGuiIO& io=ImGui::GetIO();
 			io.IniFilename=0;
 
-			Environment::execute_javascript(scripting::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+			Environment::setup_javascript_bindings(script_execution_manager_);
 		}
 	}
 

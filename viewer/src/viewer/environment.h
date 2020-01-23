@@ -1,12 +1,13 @@
 #ifndef VIEWER_ENVIRONMENT_H_
 #define VIEWER_ENVIRONMENT_H_
 
-#include "../../../src/scripting/json_writer.h"
+#include "../../../src/scripting/script_execution_manager_with_variant_output.h"
+#include "../../../src/scripting/binding_javascript.h"
 
 #ifdef FOR_WEB
 #include <emscripten.h>
 #else
-//
+#include "duktape_manager.h"
 #endif
 
 namespace voronota
@@ -23,7 +24,17 @@ public:
 #ifdef FOR_WEB
 		emscripten_run_script(script.c_str());
 #else
-		std::cerr << "Not running '" << script << "'." << std::endl;
+		DuktapeManager::eval(script);
+#endif
+	}
+
+	static void setup_javascript_bindings(scripting::ScriptExecutionManagerWithVariantOutput& sem)
+	{
+#ifdef FOR_WEB
+		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
+#else
+		DuktapeManager::set_script_execution_manager(sem);
+		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #endif
 	}
 
