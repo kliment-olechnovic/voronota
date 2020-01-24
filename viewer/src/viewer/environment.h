@@ -22,7 +22,11 @@ public:
 	static void execute_javascript(const std::string& script)
 	{
 #ifdef FOR_WEB
-		emscripten_run_script(script.c_str());
+		std::string wrapped_script;
+		wrapped_script+="try {\n eval(\"";
+		wrapped_script+=scripting::JSONWriter::replace_special_characters_with_escape_sequences(script);
+		wrapped_script+="\");\n}\ncatch(err) {\n console.log('Error in delegated JS script: '+err.message);\n}\n";
+		emscripten_run_script(wrapped_script.c_str());
 #else
 		DuktapeManager::eval(script);
 #endif

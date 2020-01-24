@@ -12,5 +12,6 @@
 #include "operators/screenshot.h"
 #include "operators/setup_rendering.h"
 #include "operators/stereo.h"
+#include "operators/console_mode.h"
 
 #endif /* VIEWER_OPERATORS_ALL_H_ */

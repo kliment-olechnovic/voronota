@@ -44,7 +44,7 @@ public:
 
 	void set_enabled(const bool status)
 	{
-		need_keyboard_focus_=status && !enabled_;
+		need_keyboard_focus_=status && (!enabled_ || need_keyboard_focus_);
 		enabled_=status;
 	}
 

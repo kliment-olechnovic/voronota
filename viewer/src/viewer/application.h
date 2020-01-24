@@ -87,8 +87,8 @@ protected:
 		{
 			if(key==GLFW_KEY_F4)
 			{
-				console_.set_enabled(!console_.enabled());
-				menu_enabled_=!menu_enabled_;
+				RuntimeParameters::instance().enabled_menu=!RuntimeParameters::instance().enabled_menu;
+				RuntimeParameters::instance().enabled_console=RuntimeParameters::instance().enabled_menu;
 			}
 			else if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
@@ -123,12 +123,25 @@ protected:
 
 		execute_menu();
 
-		waiting_indicator_.execute(window_width(), window_height());
+		{
+			waiting_indicator_.set_enabled(RuntimeParameters::instance().enabled_waiting_indicator);
+			waiting_indicator_.execute(window_width(), window_height());
+		}
 
 		cursor_label_.execute(mouse_x(),  mouse_y());
 
-		const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
-		enqueue_native_script(console_result);
+		{
+			console_.set_enabled(RuntimeParameters::instance().enabled_console);
+			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
+			if(RuntimeParameters::instance().console_mode_variant==RuntimeParameters::CONSOLE_MODE_VARIANT_NATIVE)
+			{
+				enqueue_job(Job(console_result, Job::TYPE_NATIVE));
+			}
+			if(RuntimeParameters::instance().console_mode_variant==RuntimeParameters::CONSOLE_MODE_VARIANT_JAVASCRIPT)
+			{
+				enqueue_job(Job(console_result, Job::TYPE_JAVASCRIPT));
+			}
+		}
 	}
 
 	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
@@ -200,12 +213,9 @@ private:
 		}
 	};
 
-	Application() :
-		menu_enabled_(false),
-		info_box_enabled_(true)
+	Application()
 	{
 		set_background_color(0xCCCCCC);
-		waiting_indicator_.set_enabled(true);
 	}
 
 	~Application()
@@ -228,7 +238,8 @@ private:
 	{
 		if(!job_queue_.empty())
 		{
-			Job& job=job_queue_.front();
+			const Job job=job_queue_.front();
+			job_queue_.pop_front();
 			if(job.type==Job::TYPE_NATIVE)
 			{
 				script_execution_manager_.execute_script(job.script, false);
@@ -237,14 +248,13 @@ private:
 			{
 				Environment::execute_javascript(job.script);
 			}
-			job_queue_.pop_front();
 		}
 		return (!job_queue_.empty());
 	}
 
 	void execute_menu()
 	{
-		if(!menu_enabled_)
+		if(!RuntimeParameters::instance().enabled_menu)
 		{
 			return;
 		}
@@ -307,25 +317,25 @@ private:
 				}
 				if(ImGui::BeginMenu("Object text description"))
 				{
-					if(ImGui::MenuItem("Disable", "", false, info_box_enabled_))
+					if(ImGui::MenuItem("Disable", "", false, RuntimeParameters::instance().enabled_info_box))
 					{
-						info_box_enabled_=false;
+						RuntimeParameters::instance().enabled_info_box=false;
 					}
-					if(ImGui::MenuItem("Enable", "", false, !info_box_enabled_))
+					if(ImGui::MenuItem("Enable", "", false, !RuntimeParameters::instance().enabled_info_box))
 					{
-						info_box_enabled_=true;
+						RuntimeParameters::instance().enabled_info_box=true;
 					}
 					ImGui::EndMenu();
 				}
 				if(ImGui::BeginMenu("Waiting indicator"))
 				{
-					if(ImGui::MenuItem("Disable", "", false, waiting_indicator_.enabled()))
+					if(ImGui::MenuItem("Disable", "", false, RuntimeParameters::instance().enabled_waiting_indicator))
 					{
-						waiting_indicator_.set_enabled(false);
+						RuntimeParameters::instance().enabled_waiting_indicator=false;
 					}
-					if(ImGui::MenuItem("Enable", "", false, !waiting_indicator_.enabled()))
+					if(ImGui::MenuItem("Enable", "", false, !RuntimeParameters::instance().enabled_waiting_indicator))
 					{
-						waiting_indicator_.set_enabled(true);
+						RuntimeParameters::instance().enabled_waiting_indicator=true;
 					}
 					ImGui::EndMenu();
 				}
@@ -337,7 +347,7 @@ private:
 
 	void execute_info_box(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
 	{
-		if(!info_box_enabled_)
+		if(!RuntimeParameters::instance().enabled_info_box)
 		{
 			return;
 		}
@@ -399,8 +409,6 @@ private:
 	widgets::Console console_;
 	widgets::WaitingIndicator waiting_indicator_;
 	widgets::CursorLabel cursor_label_;
-	bool menu_enabled_;
-	bool info_box_enabled_;
 };
 
 }
