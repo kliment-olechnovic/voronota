@@ -32,6 +32,10 @@ public:
 
 	const std::string& execute_native_script(const std::string& script)
 	{
+		while(!job_queue_.empty())
+		{
+			dequeue_job();
+		}
 		return script_execution_manager_.execute_script_and_return_last_output_string(script, false);
 	}
 
@@ -148,16 +152,7 @@ protected:
 		{
 			if(!waiting_indicator_.check_waiting())
 			{
-				Job& job=job_queue_.front();
-				if(job.type==Job::TYPE_NATIVE)
-				{
-					script_execution_manager_.execute_script(job.script, false);
-				}
-				else if(job.type==Job::TYPE_JAVASCRIPT)
-				{
-					Environment::execute_javascript(job.script);
-				}
-				job_queue_.pop_front();
+				dequeue_job();
 				waiting_indicator_.keep_waiting(!job_queue_.empty());
 			}
 		}
@@ -227,6 +222,24 @@ private:
 		{
 			job_queue_.push_back(job);
 		}
+	}
+
+	bool dequeue_job()
+	{
+		if(!job_queue_.empty())
+		{
+			Job& job=job_queue_.front();
+			if(job.type==Job::TYPE_NATIVE)
+			{
+				script_execution_manager_.execute_script(job.script, false);
+			}
+			else if(job.type==Job::TYPE_JAVASCRIPT)
+			{
+				Environment::execute_javascript(job.script);
+			}
+			job_queue_.pop_front();
+		}
+		return (!job_queue_.empty());
 	}
 
 	void execute_menu()
