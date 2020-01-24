@@ -92,9 +92,13 @@ public:
 				"  return raw_voronota(full_str);"
 				"}"
 				"\n"
+				"exit=function(){return raw_voronota('exit');}"
+				"\n"
+				"Voronota={}"
+				"\n"
 				"voronota_do=function(str){return raw_voronota(str);}"
 				"\n"
-				"exit=function(){return raw_voronota('exit');}"
+				"Voronota.do=voronota_do;"
 				"\n";
 
 		const std::vector<std::string> command_names=cds.get_all_names();
@@ -111,6 +115,7 @@ public:
 				}
 			}
 			script << "voronota_" << function_name << "=function(){return raw_voronota_named('" << command_name << "', arguments);}\n";
+			script << "Voronota." << function_name << "=" << "voronota_" << function_name << ";\n";
 		}
 
 		return script.str();
