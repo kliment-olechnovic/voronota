@@ -71,7 +71,7 @@
 						<button onclick="document.getElementById('file_input').click();">Load structure</button>
 						<button onclick="load_input_file_from_PDB()">Load structure from PDB</button>
 						<button onclick="getElementById('input_area').value=''">Clear script</button>
-						<button onclick="application_enqueue_script(getElementById('input_area').value)">Run script</button>
+						<button onclick="voronota_viewer_enqueue_native_script(getElementById('input_area').value)">Run script</button>
 					</p>
 					<p>
 						<textarea id="input_area" rows="7" cols="100"></textarea>
@@ -126,20 +126,20 @@
 		</script>
 		
 		<script type='text/javascript'>
-			function application_enqueue_script(str)
+			function voronota_viewer_enqueue_native_script(str)
 			{
-				Module.ccall('application_enqueue_script', null, ['string'], [str]);
+				Module.ccall('voronota_viewer_enqueue_native_script', null, ['string'], [str]);
 			}
 			
 			function raw_voronota(str)
 			{
-				var result=JSON.parse(Module.ccall('application_execute_script', 'string', ['string'], [str]));
+				var result=JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
 				return result;
 			}
 			
-			function application_upload_file(name, data)
+			function voronota_viewer_upload_file(name, data)
 			{
-				Module.ccall('application_upload_file', null, ['string','string'], [name,data]);
+				Module.ccall('voronota_viewer_upload_file', null, ['string','string'], [name,data]);
 			}
 			
 			function set_output_area_text(text)
@@ -192,7 +192,7 @@
 			{
 				var file=file_input.files[0];
 				var file_reader=new FileReader();
-				file_reader.onloadend=function(e){application_upload_file(file.name, file_reader.result);}
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result);}
 				file_reader.readAsText(file);	
 			});
 		</script>
@@ -203,7 +203,7 @@
 				var pdb_id=prompt('Enter PDB ID', '1T3Y');
 				var pdb_url='https://files.rcsb.org/download/'+pdb_id+'.pdb';
 				var file_reader=new FileReader();
-				file_reader.onloadend=function(e){application_upload_file(pdb_id+'.pdb', file_reader.result);}
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(pdb_id+'.pdb', file_reader.result);}
 				var xhr=new XMLHttpRequest();
 				xhr.open('GET', pdb_url);
 				xhr.responseType='blob';

@@ -324,7 +324,7 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
-		Environment::print(last_output());
+		Environment::print_log(last_output());
 	}
 
 private:

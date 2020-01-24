@@ -6,7 +6,6 @@
 #include "../imgui/imgui_impl_glfw_gl3.h"
 
 #include "script_execution_manager.h"
-#include "reading_thread.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
 #include "widgets/waiting_indicator.h"
@@ -26,15 +25,12 @@ public:
 		return app;
 	}
 
-	void enqueue_script(const std::string& script)
+	void enqueue_native_script(const std::string& script)
 	{
-		if(!script.empty())
-		{
-			job_queue_.push_back(Job(script, Job::TYPE_BASIC_SCRIPT));
-		}
+		enqueue_job(Job(script, Job::TYPE_NATIVE));
 	}
 
-	const std::string& execute_script(const std::string& script)
+	const std::string& execute_native_script(const std::string& script)
 	{
 		return script_execution_manager_.execute_script_and_return_last_output_string(script, false);
 	}
@@ -48,7 +44,7 @@ public:
 		}
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
-		enqueue_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+		enqueue_native_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
 	}
 
 protected:
@@ -127,7 +123,8 @@ protected:
 
 		cursor_label_.execute(mouse_x(),  mouse_y());
 
-		enqueue_script(console_.execute_on_bottom(window_width(), window_height(), 2));
+		const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
+		enqueue_native_script(console_result);
 	}
 
 	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
@@ -143,11 +140,6 @@ protected:
 	void on_before_rendered_frame()
 	{
 		script_execution_manager_.setup_grid_parameters();
-
-		if(ReadingThread::check_data())
-		{
-			job_queue_.push_back(Job(ReadingThread::extract_data(), Job::TYPE_JAVASCRIPT_SCRIPT));
-		}
 	}
 
 	void on_after_rendered_frame()
@@ -157,11 +149,11 @@ protected:
 			if(!waiting_indicator_.check_waiting())
 			{
 				Job& job=job_queue_.front();
-				if(job.type==Job::TYPE_BASIC_SCRIPT)
+				if(job.type==Job::TYPE_NATIVE)
 				{
 					script_execution_manager_.execute_script(job.script, false);
 				}
-				else if(job.type==Job::TYPE_JAVASCRIPT_SCRIPT)
+				else if(job.type==Job::TYPE_JAVASCRIPT)
 				{
 					Environment::execute_javascript(job.script);
 				}
@@ -190,7 +182,7 @@ protected:
 			std::ostringstream output_script;
 			if(script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl, mod_shift, output_script))
 			{
-				enqueue_script(output_script.str());
+				enqueue_native_script(output_script.str());
 			}
 		}
 		waiting_indicator_.disable_for_next_operation();
@@ -201,8 +193,8 @@ private:
 	{
 		enum Type
 		{
-			TYPE_BASIC_SCRIPT,
-			TYPE_JAVASCRIPT_SCRIPT
+			TYPE_NATIVE,
+			TYPE_JAVASCRIPT
 		};
 
 		std::string script;
@@ -218,9 +210,7 @@ private:
 		info_box_enabled_(true)
 	{
 		set_background_color(0xCCCCCC);
-#ifdef FOR_WEB
 		waiting_indicator_.set_enabled(true);
-#endif
 	}
 
 	~Application()
@@ -228,6 +218,14 @@ private:
 		if(good())
 		{
 			ImGui_ImplGlfwGL3_Shutdown();
+		}
+	}
+
+	void enqueue_job(const Job& job)
+	{
+		if(job.script.find_first_not_of(" \t\n")!=std::string::npos)
+		{
+			job_queue_.push_back(job);
 		}
 	}
 
@@ -246,15 +244,15 @@ private:
 				{
 					if(ImGui::MenuItem("White", ""))
 					{
-						enqueue_script("background white");
+						enqueue_native_script("background white");
 					}
 					if(ImGui::MenuItem("Gray", ""))
 					{
-						enqueue_script("background 0xCCCCCC");
+						enqueue_native_script("background 0xCCCCCC");
 					}
 					if(ImGui::MenuItem("Black", ""))
 					{
-						enqueue_script("background black");
+						enqueue_native_script("background black");
 					}
 					ImGui::EndMenu();
 				}
@@ -262,11 +260,11 @@ private:
 				{
 					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_grid()))
 					{
-						enqueue_script("mono");
+						enqueue_native_script("mono");
 					}
 					if(ImGui::MenuItem("Enable grid by object", "", false, !rendering_mode_is_grid()))
 					{
-						enqueue_script("grid-by-object");
+						enqueue_native_script("grid-by-object");
 					}
 					ImGui::EndMenu();
 				}
@@ -274,11 +272,11 @@ private:
 				{
 					if(ImGui::MenuItem("Orthographic", "", false, !projection_mode_is_ortho()))
 					{
-						enqueue_script("ortho");
+						enqueue_native_script("ortho");
 					}
 					if(ImGui::MenuItem("Perspective", "", false, !projection_mode_is_perspective()))
 					{
-						enqueue_script("perspective");
+						enqueue_native_script("perspective");
 					}
 					ImGui::EndMenu();
 				}
@@ -286,11 +284,11 @@ private:
 				{
 					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_stereo()))
 					{
-						enqueue_script("mono");
+						enqueue_native_script("mono");
 					}
 					if(ImGui::MenuItem("Enable", "", false, !rendering_mode_is_stereo()))
 					{
-						enqueue_script("stereo");
+						enqueue_native_script("stereo");
 					}
 					ImGui::EndMenu();
 				}

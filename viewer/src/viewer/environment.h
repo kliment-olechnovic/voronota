@@ -38,7 +38,7 @@ public:
 #endif
 	}
 
-	static void print(const std::string& text)
+	static void print_log(const std::string& text)
 	{
 #ifdef FOR_WEB
 		std::string script;
@@ -51,12 +51,12 @@ public:
 #endif
 	}
 
-	static void print(const scripting::VariantObject& obj)
+	static void print_log(const scripting::VariantObject& obj)
 	{
 #ifdef FOR_WEB
-		print(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(6), obj));
+		print_log(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(6), obj));
 #else
-		print(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(2), obj));
+		print_log(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(2), obj));
 #endif
 	}
 };
