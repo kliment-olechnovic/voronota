@@ -2,6 +2,7 @@
 #define VIEWER_OPERATORS_GRID_H_
 
 #include "../operators_common.h"
+#include "../runtime_parameters.h"
 
 namespace voronota
 {
@@ -22,7 +23,7 @@ public:
 		}
 	};
 
-	Grid(const int grid_variant_value, int& grid_variant) : grid_variant_value_(grid_variant_value), grid_variant_ptr_(&grid_variant)
+	explicit Grid(const RuntimeParameters::GridVariant grid_variant_value) : grid_variant_value_(grid_variant_value)
 	{
 	}
 
@@ -37,14 +38,13 @@ public:
 	Result run(void*&) const
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_grid();
-		(*grid_variant_ptr_)=grid_variant_value_;
+		RuntimeParameters::instance().grid_variant=grid_variant_value_;
 		Result result;
 		return result;
 	}
 
 private:
-	int grid_variant_value_;
-	int* grid_variant_ptr_;
+	RuntimeParameters::GridVariant grid_variant_value_;
 };
 
 }

@@ -6,6 +6,7 @@
 #include "congregations_of_drawers_for_data_managers.h"
 #include "operators_all.h"
 #include "environment.h"
+#include "runtime_parameters.h"
 
 namespace voronota
 {
@@ -16,15 +17,14 @@ namespace viewer
 class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
 {
 public:
-	ScriptExecutionManager() :
-		grid_variant_(0)
+	ScriptExecutionManager()
 	{
 		set_command_for_extra_actions("resize-window", operators::ResizeWindow());
 		set_command_for_extra_actions("background", operators::Background());
 		set_command_for_extra_actions("mono", operators::Mono());
 		set_command_for_extra_actions("stereo", operators::Stereo());
-		set_command_for_extra_actions("grid-by-object", operators::Grid(0, grid_variant_));
-		set_command_for_extra_actions("grid-by-concept", operators::Grid(1, grid_variant_));
+		set_command_for_extra_actions("grid-by-object", operators::Grid(RuntimeParameters::GRID_VARIANT_BY_OBJECT));
+		set_command_for_extra_actions("grid-by-concept", operators::Grid(RuntimeParameters::GRID_VARIANT_BY_CONCEPT));
 		set_command_for_extra_actions("ortho", operators::Ortho());
 		set_command_for_extra_actions("perspective", operators::Perspective());
 		set_command_for_extra_actions("fog", operators::Fog());
@@ -167,11 +167,11 @@ public:
 		uv::ViewerApplication::instance().set_grid_size(1);
 		if(uv::ViewerApplication::instance().rendering_mode_is_grid())
 		{
-			if(grid_variant_==0)
+			if(RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
 			{
 				uv::ViewerApplication::instance().set_grid_size(static_cast<int>(congregation_of_data_managers().count_objects(false, true)));
 			}
-			else if(grid_variant_==1)
+			else if(RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_CONCEPT)
 			{
 				uv::ViewerApplication::instance().set_grid_size(2);
 			}
@@ -186,7 +186,7 @@ public:
 		query.visible=true;
 		std::vector<scripting::DataManager*> dms=congregation_of_data_managers().get_objects(query);
 
-		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==0)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
@@ -198,7 +198,7 @@ public:
 				}
 			}
 		}
-		else if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==1)
+		else if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_CONCEPT)
 		{
 			if(grid_id==0)
 			{
@@ -239,7 +239,7 @@ public:
 
 		bool generated=false;
 
-		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && grid_variant_==0)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
@@ -406,7 +406,6 @@ private:
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;
-	int grid_variant_;
 };
 
 }
