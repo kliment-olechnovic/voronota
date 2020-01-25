@@ -97,7 +97,8 @@ private:
 			return duk_throw(ctx);
 		}
 
-		std::ofstream output(filename.c_str(), std::ios::out);
+		scripting::OutputSelector output_selector(filename);
+		std::ostream& output=output_selector.stream();
 
 		if(!output.good())
 		{
@@ -121,7 +122,8 @@ private:
 			return duk_throw(ctx);
 		}
 
-		std::ifstream input(filename.c_str(), std::ios::in);
+		scripting::InputSelector input_selector(filename);
+		std::istream& input=input_selector.stream();
 
 		if(!input.good())
 		{
