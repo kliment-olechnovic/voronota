@@ -6,38 +6,39 @@ int main(const int argc, const char** argv)
 {
 	try
 	{
-		voronota::scripting::CommandInput input(argc, argv);
+		voronota::scripting::CommandInput command_args_input(argc, argv);
 
-		voronota::viewer::Application::InitializationParameters app_init_parameters;
-		app_init_parameters.suggested_window_width=input.get_value_or_default<int>("window-width", 800);
-		app_init_parameters.suggested_window_height=input.get_value_or_default<int>("window-height", 600);
-		app_init_parameters.title=input.get_value_or_default<std::string>("title", "voronota-viewer");
-		app_init_parameters.shader_vertex=input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
-		app_init_parameters.shader_vertex_with_instancing=input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
-		app_init_parameters.shader_fragment=input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
-		const std::string input_pdb=input.get_value_or_default<std::string>("input-pdb", "");
-		const std::string script_file=input.get_value_or_default<std::string>("script-file", "");
+		voronota::uv::ViewerApplication::InitializationParameters app_init_parameters;
+		app_init_parameters.suggested_window_width=command_args_input.get_value_or_default<int>("window-width", 800);
+		app_init_parameters.suggested_window_height=command_args_input.get_value_or_default<int>("window-height", 600);
+		app_init_parameters.title=command_args_input.get_value_or_default<std::string>("title", "voronota-viewer");
+		app_init_parameters.shader_vertex=command_args_input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
+		app_init_parameters.shader_vertex_with_instancing=command_args_input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
+		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
+		const std::vector<std::string> input_structures=command_args_input.get_value_vector_or_default<std::string>("input-structures", std::vector<std::string>());
+		const std::string input_native_script=command_args_input.get_value_or_default<std::string>("input-native-script", "");
 
-		input.assert_nothing_unusable();
-
-		std::ostringstream starting_script;
-
-		if(!input_pdb.empty())
-		{
-			starting_script << "import --format pdb --include-heteroatoms --file '" << input_pdb << "'\n";
-		}
-
-		if(!script_file.empty())
-		{
-			starting_script << "source '" << script_file << "'\n";
-		}
+		command_args_input.assert_nothing_unusable();
 
 		if(!voronota::viewer::Application::instance().init(app_init_parameters))
 		{
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
-		voronota::viewer::Application::instance().enqueue_native_script(starting_script.str());
+		for(std::size_t i=0;i<input_structures.size();i++)
+		{
+			const std::string& input_structure=input_structures[i];
+			std::ostringstream script;
+			script << "import --include-heteroatoms --file '" << input_structure << "'\n";
+			voronota::viewer::Application::instance().enqueue_native_script(script.str());
+		}
+
+		if(!input_native_script.empty())
+		{
+			std::ostringstream script;
+			script << "source '" << input_native_script << "'\n";
+			voronota::viewer::Application::instance().enqueue_native_script(script.str());
+		}
 
 #ifdef FOR_WEB
 		emscripten_set_main_loop(voronota::viewer::Application::instance_render_frame, 0, 1);
