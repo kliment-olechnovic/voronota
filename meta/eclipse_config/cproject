@@ -99,8 +99,6 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="voronota_duktaper.cpp|duktape/duktape.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="duktaper/src"/>
-                        						
                         <entry excluding="voronota_scripting.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
                         					
                     </sourceEntries>
@@ -141,7 +139,7 @@
             			
             <storageModule moduleId="cdtBuildSystem" version="4.0.0">
                 				
-                <configuration artifactName="${ProjName}-viewer" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.config.gnu.exe.release.63711295" name="ReleaseViewer" optionalBuildProperties="" parent="cdt.managedbuild.config.gnu.exe.release" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
+                <configuration artifactName="${ProjName}-viewer" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.CWDLocator;org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.config.gnu.exe.release.63711295" name="ReleaseViewer" optionalBuildProperties="org.eclipse.cdt.docker.launcher.containerbuild.property.selectedvolumes=,org.eclipse.cdt.docker.launcher.containerbuild.property.volumes=" parent="cdt.managedbuild.config.gnu.exe.release" postannouncebuildStep="" postbuildStep="" preannouncebuildStep="" prebuildStep="">
                     					
                     <folderInfo id="cdt.managedbuild.config.gnu.exe.release.63711295." name="/" resourcePath="">
                         						
@@ -186,8 +184,6 @@
                                     <listOptionValue builtIn="false" value="GLEW"/>
                                     									
                                     <listOptionValue builtIn="false" value="glfw"/>
-                                    									
-                                    <listOptionValue builtIn="false" value="pthread"/>
                                     								
                                 </option>
                                 								
@@ -215,11 +211,9 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="voronota_duktaper.cpp|duktape/duktape.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="duktaper/src"/>
-                        						
                         <entry excluding="voronota_scripting.cpp|voronota.cpp|modes" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
                         						
-                        <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
+                        <entry excluding="linenoise/linenoise.c|voronota_duktaper.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
                         					
                     </sourceEntries>
                     				
@@ -305,6 +299,8 @@
                                 								
                                 <option id="gnu.cpp.link.option.flags.344447201" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-static-libgcc -static-libstdc++ -static" valueType="string"/>
                                 								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.link.option.libs.2146226851" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs"/>
+                                								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.2020654318" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
                                     									
                                     <additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -313,7 +309,7 @@
                                     								
                                 </inputType>
                                 								
-                                <outputType id="cdt.managedbuild.tool.gnu.cpp.linker.output.566541044" outputPrefix="../duktaper/" superClass="cdt.managedbuild.tool.gnu.cpp.linker.output"/>
+                                <outputType id="cdt.managedbuild.tool.gnu.cpp.linker.output.566541044" outputPrefix="../viewer/" superClass="cdt.managedbuild.tool.gnu.cpp.linker.output"/>
                                 							
                             </tool>
                             							
@@ -329,9 +325,9 @@
                     					
                     <sourceEntries>
                         						
-                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="duktaper/src"/>
-                        						
                         <entry excluding="voronota.cpp|modes/mode_write_qa_scores_in_casp_format.cpp|modes/mode_write_balls_to_atoms_file.cpp|modes/mode_vectorize_points.cpp|modes/mode_vectorize_contacts.cpp|modes/mode_vectorize_contact_environments.cpp|modes/mode_split_atoms_file.cpp|modes/mode_simulate_potential_for_membrane_proteins.cpp|modes/mode_score_scores.cpp|modes/mode_score_contacts_quality.cpp|modes/mode_score_contacts_potentials_stats.cpp|modes/mode_score_contacts_potential.cpp|modes/mode_score_contacts_global_energy_by_cuts.cpp|modes/mode_score_contacts_energy.cpp|modes/mode_score_contacts_energy_stats.cpp|modes/mode_run_script.cpp|modes/mode_rotational_optimization_demo.cpp|modes/mode_reprint_hbp.cpp|modes/mode_query_contacts.cpp|modes/mode_query_contacts_solvation_values.cpp|modes/mode_query_contacts_simulating_unfolding.cpp|modes/mode_query_contacts_interface_exposure_values.cpp|modes/mode_query_contacts_depth_values.cpp|modes/mode_query_balls.cpp|modes/mode_query_balls_sequences_pairings_stats.cpp|modes/mode_query_balls_distances.cpp|modes/mode_query_balls_clashes.cpp|modes/mode_plot_contacts.cpp|modes/mode_place_membrane.cpp|modes/mode_get_balls_from_atoms_file.cpp|modes/mode_expand_descriptors.cpp|modes/mode_draw_values_bitmap.cpp|modes/mode_draw_contacts.cpp|modes/mode_draw_balls.cpp|modes/mode_demo_ses.cpp|modes/mode_demo_polygon_triangulation.cpp|modes/mode_demo_hypercut.cpp|modes/mode_demo_blank.cpp|modes/mode_compare_files_as_sets.cpp|modes/mode_compare_contacts.cpp|modes/mode_calculate_vertices.cpp|modes/mode_calculate_vertices_in_parallel.cpp|modes/mode_calculate_path_centralities.cpp|modes/mode_calculate_mock_solvent.cpp|modes/mode_calculate_contacts.cpp|voronota_scripting.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        						
+                        <entry excluding="voronota_viewer.cpp|imgui/imgui.cpp|imgui/imgui_demo.cpp|imgui/imgui_impl_glfw_gl3.cpp|imgui/imgui_draw.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
                         					
                     </sourceEntries>
                     				
