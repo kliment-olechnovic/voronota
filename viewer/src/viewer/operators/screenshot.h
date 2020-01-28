@@ -2,6 +2,7 @@
 #define VIEWER_OPERATORS_SCREENSHOT_H_
 
 #include "../operators_common.h"
+#include "../widgets/waiting_indicator.h"
 
 namespace voronota
 {
@@ -44,6 +45,7 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
+		widgets::WaitingIndicator::instance().skip();
 		uv::ViewerApplication::instance_refresh_frame();
 
 		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))

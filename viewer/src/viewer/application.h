@@ -8,6 +8,7 @@
 #include "script_execution_manager.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
+#include "widgets/waiting_indicator.h"
 
 namespace voronota
 {
@@ -145,6 +146,13 @@ protected:
 
 	void on_draw_overlay_end()
 	{
+		if(!widgets::WaitingIndicator::instance().decided())
+		{
+			widgets::WaitingIndicator::instance().set_enabled(check_big_job_ahead());
+		}
+
+		widgets::WaitingIndicator::instance().execute(window_width(), window_height());
+
 		ImGui::Render();
 	}
 
@@ -155,7 +163,14 @@ protected:
 
 	void on_after_rendered_frame()
 	{
+		if(widgets::WaitingIndicator::instance().enabled() && !widgets::WaitingIndicator::instance().executed())
+		{
+			return;
+		}
+
 		dequeue_job();
+
+		widgets::WaitingIndicator::instance().reset();
 
 		if(script_execution_manager_.exit_requested())
 		{
@@ -376,6 +391,32 @@ private:
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
+	}
+
+	bool check_big_job_ahead() const
+	{
+		if(!job_queue_.empty())
+		{
+			const std::string& script=job_queue_.front().script;
+			if(script.size()>500
+					|| script.find("import")!=std::string::npos
+					|| script.find("export")!=std::string::npos
+					|| script.find("construct")!=std::string::npos
+					|| script.find("calculate")!=std::string::npos
+					|| script.find("make")!=std::string::npos
+					|| script.find("add")!=std::string::npos
+					|| script.find("restrict")!=std::string::npos
+					|| script.find("move")!=std::string::npos
+					|| script.find("copy")!=std::string::npos
+					|| script.find("setup")!=std::string::npos
+					|| script.find("source")!=std::string::npos
+					|| script.find("score")!=std::string::npos
+					|| script.find("voromqa")!=std::string::npos)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	ScriptExecutionManager script_execution_manager_;
