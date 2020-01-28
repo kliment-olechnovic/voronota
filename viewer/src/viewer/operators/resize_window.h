@@ -55,6 +55,8 @@ public:
 
 		uv::ViewerApplication::instance().set_window_size(width, height);
 
+		uv::ViewerApplication::instance_refresh_frame();
+
 		Result result;
 
 		return result;

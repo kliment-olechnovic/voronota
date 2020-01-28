@@ -33,6 +33,7 @@ public:
 		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());
 		set_command_for_extra_actions("console-mode-native", operators::ConsoleMode(RuntimeParameters::CONSOLE_MODE_VARIANT_NATIVE));
 		set_command_for_extra_actions("console-mode-js", operators::ConsoleMode(RuntimeParameters::CONSOLE_MODE_VARIANT_JAVASCRIPT));
+		set_command_for_extra_actions("sleep", operators::Sleep());
 
 		set_default_aliases();
 	}
@@ -285,6 +286,8 @@ protected:
 			congregation_of_drawers_.delete_object(*it);
 		}
 
+		bool need_to_refresh_frame=false;
+
 		{
 			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers.get_objects();
 			for(std::size_t i=0;i<data_managers.size();i++)
@@ -296,14 +299,23 @@ protected:
 					if(drawer!=0)
 					{
 						drawer->update(data_manager->change_indicator());
+						need_to_refresh_frame=true;
 					}
 				}
 			}
 		}
 
-		insert_additional_script_if_requested(cr);
+		if(zoom_if_requested(cr))
+		{
+			need_to_refresh_frame=true;
+		}
 
-		zoom_if_requested(cr);
+		if(need_to_refresh_frame)
+		{
+			uv::ViewerApplication::instance_refresh_frame();
+		}
+
+		insert_additional_script_if_requested(cr);
 	}
 
 	void on_after_command_for_data_manager(const GenericCommandRecord& cr, scripting::DataManager& data_manager)
@@ -312,16 +324,27 @@ protected:
 
 		const scripting::DataManager::ChangeIndicator ci=data_manager.change_indicator();
 
+		bool need_to_refresh_frame=false;
+
 		if(ci.changed())
 		{
 			DrawerForDataManager* drawer=congregation_of_drawers_.get_object(&data_manager);
 			if(drawer!=0)
 			{
 				drawer->update(ci);
+				need_to_refresh_frame=true;
 			}
 		}
 
-		zoom_if_requested(cr);
+		if(zoom_if_requested(cr))
+		{
+			need_to_refresh_frame=true;
+		}
+
+		if(need_to_refresh_frame)
+		{
+			uv::ViewerApplication::instance_refresh_frame();
+		}
 	}
 
 	void on_after_script_with_output(const scripting::VariantObject&)
@@ -392,7 +415,7 @@ private:
 	}
 
 	template<typename CommandRecord>
-	void zoom_if_requested(const CommandRecord& cr)
+	bool zoom_if_requested(const CommandRecord& cr)
 	{
 		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("zoomed")==1)
 		{
@@ -403,8 +426,10 @@ private:
 				zoom_calculator.update(box.p_min.x, box.p_min.y, box.p_min.z);
 				zoom_calculator.update(box.p_max.x, box.p_max.y, box.p_max.z);
 				uv::ViewerApplication::instance().zoom(zoom_calculator);
+				return true;
 			}
 		}
+		return false;
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;

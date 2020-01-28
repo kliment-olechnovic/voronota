@@ -42,7 +42,15 @@ public:
 
 	static void instance_render_frame()
 	{
-		instance().render_frame();
+		instance().render_frame_wrapped();
+	}
+
+	static void instance_refresh_frame()
+	{
+		if(instance().allowed_to_refresh_frame_)
+		{
+			instance().render_frame_raw();
+		}
 	}
 
 	bool init(const InitializationParameters& parameters)
@@ -137,7 +145,7 @@ public:
 	{
 		while(good() && !glfwWindowShouldClose(window_))
 		{
-			render_frame();
+			render_frame_wrapped();
 		}
 	}
 
@@ -415,6 +423,7 @@ public:
 protected:
 	ViewerApplication() :
 		good_(false),
+		allowed_to_refresh_frame_(false),
 		window_(0),
 		window_width_(0),
 		window_height_(0),
@@ -803,16 +812,32 @@ private:
 		return static_cast<int>((screen_y/static_cast<double>(window_height_))*static_cast<double>(framebuffer_height_));
 	}
 
-	void render_frame()
+	void render_frame_wrapped()
 	{
 		if(!good())
 		{
 			return;
 		}
 
-		on_before_rendered_frame();
+		render_frame_raw();
+
+		allowed_to_refresh_frame_=true;
+
+		on_after_rendered_frame();
+
+		allowed_to_refresh_frame_=false;
+	}
+
+	void render_frame_raw()
+	{
+		if(!good())
+		{
+			return;
+		}
 
 		glfwPollEvents();
+
+		on_before_rendered_frame();
 
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
@@ -869,8 +894,6 @@ private:
 		{
 			on_selection(call_for_selection_color, call_for_selection_happenned, modkeys_status_.ctrl_any(), modkeys_status_.shift_any());
 		}
-
-		on_after_rendered_frame();
 	}
 
 	void render_scene(const ShadingMode::Mode shading_mode)
@@ -1166,6 +1189,7 @@ private:
 	}
 
 	bool good_;
+	bool allowed_to_refresh_frame_;
 	GLFWwindow* window_;
 	int window_width_;
 	int window_height_;

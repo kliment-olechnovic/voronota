@@ -47,6 +47,7 @@ public:
 	Result run(void*&) const
 	{
 		uv::ViewerApplication::instance().set_projection_mode_to_perspective(field_of_view, near_z, far_z);
+		uv::ViewerApplication::instance_refresh_frame();
 		Result result;
 		return result;
 	}

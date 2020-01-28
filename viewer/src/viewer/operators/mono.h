@@ -37,6 +37,7 @@ public:
 	Result run(void*&) const
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_simple();
+		uv::ViewerApplication::instance_refresh_frame();
 		Result result;
 		return result;
 	}

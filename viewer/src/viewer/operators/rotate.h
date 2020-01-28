@@ -59,6 +59,8 @@ public:
 
 		uv::ViewerApplication::instance().rotate(glm::vec3(axis[0], axis[1], axis[2]), angle_in_radians);
 
+		uv::ViewerApplication::instance_refresh_frame();
+
 		Result result;
 
 		return result;

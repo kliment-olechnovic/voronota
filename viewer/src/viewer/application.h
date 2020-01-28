@@ -8,7 +8,6 @@
 #include "script_execution_manager.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
-#include "widgets/waiting_indicator.h"
 
 namespace voronota
 {
@@ -123,11 +122,6 @@ protected:
 
 		execute_menu();
 
-		{
-			waiting_indicator_.set_enabled(RuntimeParameters::instance().enabled_waiting_indicator);
-			waiting_indicator_.execute(window_width(), window_height());
-		}
-
 		cursor_label_.execute(mouse_x(),  mouse_y());
 
 		{
@@ -161,14 +155,7 @@ protected:
 
 	void on_after_rendered_frame()
 	{
-		if(!job_queue_.empty())
-		{
-			if(!waiting_indicator_.check_waiting())
-			{
-				dequeue_job();
-				waiting_indicator_.keep_waiting(!job_queue_.empty());
-			}
-		}
+		dequeue_job();
 
 		if(script_execution_manager_.exit_requested())
 		{
@@ -193,7 +180,6 @@ protected:
 				enqueue_native_script(output_script.str());
 			}
 		}
-		waiting_indicator_.disable_for_next_operation();
 	}
 
 private:
@@ -327,18 +313,6 @@ private:
 					}
 					ImGui::EndMenu();
 				}
-				if(ImGui::BeginMenu("Waiting indicator"))
-				{
-					if(ImGui::MenuItem("Disable", "", false, RuntimeParameters::instance().enabled_waiting_indicator))
-					{
-						RuntimeParameters::instance().enabled_waiting_indicator=false;
-					}
-					if(ImGui::MenuItem("Enable", "", false, !RuntimeParameters::instance().enabled_waiting_indicator))
-					{
-						RuntimeParameters::instance().enabled_waiting_indicator=true;
-					}
-					ImGui::EndMenu();
-				}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMainMenuBar();
@@ -407,7 +381,6 @@ private:
 	ScriptExecutionManager script_execution_manager_;
 	std::list<Job> job_queue_;
 	widgets::Console console_;
-	widgets::WaitingIndicator waiting_indicator_;
 	widgets::CursorLabel cursor_label_;
 };
 

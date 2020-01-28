@@ -44,6 +44,8 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
+		uv::ViewerApplication::instance_refresh_frame();
+
 		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))
 		{
 			throw std::runtime_error(std::string("Failed to read pixels."));
