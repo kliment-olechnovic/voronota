@@ -45,12 +45,24 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
-		widgets::WaitingIndicator::instance().skip();
+		const bool waiting_indicated=widgets::WaitingIndicator::instance().enabled();
+
+		if(waiting_indicated)
+		{
+			widgets::WaitingIndicator::instance().set_enabled(false);
+		}
+
 		uv::ViewerApplication::instance_refresh_frame();
 
 		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))
 		{
 			throw std::runtime_error(std::string("Failed to read pixels."));
+		}
+
+		if(waiting_indicated)
+		{
+			widgets::WaitingIndicator::instance().set_enabled(true);
+			uv::ViewerApplication::instance_refresh_frame();
 		}
 
 		std::ofstream output(filename.c_str(), std::ios::out);

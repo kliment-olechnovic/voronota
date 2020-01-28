@@ -42,19 +42,10 @@ public:
 		enabled_=enabled;
 	}
 
-	void skip()
-	{
-		if(enabled())
-		{
-			skip_=true;
-		}
-	}
-
 	void reset()
 	{
 		decided_=false;
 		enabled_=false;
-		skip_=false;
 		executed_=0;
 	}
 
@@ -62,12 +53,6 @@ public:
 	{
 		if(!enabled())
 		{
-			return;
-		}
-
-		if(skip_)
-		{
-			skip_=false;
 			return;
 		}
 
@@ -91,14 +76,12 @@ private:
 	WaitingIndicator() :
 		decided_(false),
 		enabled_(false),
-		skip_(false),
 		executed_(0)
 	{
 	}
 
 	bool decided_;
 	bool enabled_;
-	bool skip_;
 	int executed_;
 };
 
