@@ -19,12 +19,31 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
-		std::vector<VariantObject> chains;
+		std::map< std::string, std::vector< std::vector<std::size_t> > > chain_segments;
+		std::string residue_sequence;
+		std::string secondary_structure_sequence;
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
-			heterostorage.variant_object.objects_array("chains")=chains;
+			for(std::map< std::string, std::vector< std::vector<std::size_t> > >::const_iterator it=chain_segments.begin();it!=chain_segments.end();++it)
+			{
+				VariantObject chain_info;
+				chain_info.value("chain_name")=(it->first);
+				std::size_t total_length=0;
+				for(std::size_t i=0;i<it->second.size();i++)
+				{
+					total_length+=it->second[i].size();
+					chain_info.values_array("segment_lengths").push_back(VariantValue(it->second[i].size()));
+				}
+				chain_info.value("total_length")=total_length;
+				heterostorage.variant_object.objects_array("chains").push_back(chain_info);
+			}
+			heterostorage.variant_object.value("residue_sequence")=residue_sequence;
+			if(!secondary_structure_sequence.empty())
+			{
+				heterostorage.variant_object.value("secondary_structure_sequence")=secondary_structure_sequence;
+			}
 		}
 
 	};
@@ -108,18 +127,16 @@ public:
 
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);
 
+		std::ostringstream output_for_residue_sequence;
+		std::ostringstream output_for_secondary_structure_sequence;
+
 		for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=chaining.begin();it!=chaining.end();++it)
 		{
-			VariantObject chain_info;
-			chain_info.value("chain_name")=(it->first);
 			const std::vector<std::size_t>& group_ids=it->second;
 			for(std::size_t i=0;i<group_ids.size();i++)
 			{
-				std::ostringstream output_for_residue_sequence;
-				std::ostringstream output_for_secondary_structure_sequence;
-				VariantObject segment_info;
 				const std::vector<std::size_t>& group=grouping[group_ids[i]];
-				segment_info.value("length")=group.size();
+				result.chain_segments[it->first].push_back(group);
 				if(!group.empty())
 				{
 					for(std::size_t j=0;j<group.size();j++)
@@ -127,14 +144,6 @@ public:
 						{
 							const common::ConstructionOfPrimaryStructure::Residue& r=data_manager.primary_structure_info().residues[group[j]];
 							output_for_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
-							if(j==0)
-							{
-								segment_info.values_array("range").push_back(VariantValue(r.chain_residue_descriptor.resSeq));
-							}
-							if((j+1)==group.size())
-							{
-								segment_info.values_array("range").push_back(VariantValue(r.chain_residue_descriptor.resSeq));
-							}
 						}
 						if(secondary_structure)
 						{
@@ -153,15 +162,14 @@ public:
 							}
 						}
 					}
-					segment_info.value("residue_sequence")=output_for_residue_sequence.str();
-					if(secondary_structure)
-					{
-						segment_info.value("secondary_structure")=output_for_secondary_structure_sequence.str();
-					}
 				}
-				chain_info.objects_array("continuous_segments").push_back(segment_info);
 			}
-			result.chains.push_back(chain_info);
+		}
+
+		result.residue_sequence=output_for_residue_sequence.str();
+		if(secondary_structure)
+		{
+			result.secondary_structure_sequence=output_for_secondary_structure_sequence.str();
 		}
 
 		return result;

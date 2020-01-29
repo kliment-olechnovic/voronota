@@ -43,7 +43,10 @@
         "chains":[
           {
             "chain_name":"A",
-            "continuous_segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":1,"range":[66,66],"residue_sequence":"X","secondary_structure":"-"},{"length":162,"range":[68,229],"residue_sequence":"VQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI","secondary_structure":"-----S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"}]}]},
+            "segment_lengths":[63,1,162],
+            "total_length":226}],
+        "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTFXVQCFSRYPDHXKRHDFFKSAXPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIXADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHXVLLEFVTAAGI",
+        "secondary_structure_sequence":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----------S------------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSSSSS----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSSSS--------SSSSSSSSSSS--"},
       "success":true},
     {
       "line":"print-atoms [--tags het --adjuncts tf:0:10]",
@@ -105,7 +108,10 @@
         "chains":[
           {
             "chain_name":"A",
-            "continuous_segments":[{"length":63,"range":[2,64],"residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTF","secondary_structure":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH----"},{"length":10,"range":[68,77],"residue_sequence":"VQCFSRYPDH","secondary_structure":"-----S----"},{"length":9,"range":[79,87],"residue_sequence":"KRHDFFKSA","secondary_structure":"---------"},{"length":64,"range":[89,152],"residue_sequence":"PEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYI","secondary_structure":"---SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS"},{"length":64,"range":[154,217],"residue_sequence":"ADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDH","secondary_structure":"-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS-----------"},{"length":11,"range":[219,229],"residue_sequence":"VLLEFVTAAGI","secondary_structure":"-SSSSSSSS--"}]}]},
+            "segment_lengths":[63,10,9,64,64,11],
+            "total_length":221}],
+        "residue_sequence":"SKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTFVQCFSRYPDHKRHDFFKSAPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHVLLEFVTAAGI",
+        "secondary_structure_sequence":"--HHHHH---SSSSSSSSSSS--SSSSSSSSSSSS----SSSSSSSS--------HHHH---------S----------------SSSSSSSSS----SSSSSSSSSSS--SSSSSSSSSSS------------S------SSSSS-S----SSSSSSSSSSSS----SSSSSSSSSSSS-----------SSSSSSSS------------SSSSSSSS--"},
       "success":true},
     {
       "line":"construct-contacts --no-calculate-volumes",
