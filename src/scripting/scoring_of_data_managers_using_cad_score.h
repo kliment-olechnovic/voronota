@@ -19,6 +19,7 @@ public:
 	{
 		bool ignore_residue_names;
 		bool binarize;
+		int depth;
 		unsigned int smoothing_window;
 		std::string target_selection_expression;
 		std::string model_selection_expression;
@@ -34,6 +35,7 @@ public:
 		Parameters() :
 			ignore_residue_names(false),
 			binarize(false),
+			depth(0),
 			smoothing_window(0)
 		{
 		}
@@ -66,6 +68,7 @@ public:
 		common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
 		parameters_for_cad_score.binarize=params.binarize;
+		parameters_for_cad_score.depth=params.depth;
 		parameters_for_cad_score.atom_level=!(
 				params.target_adjunct_atom_scores.empty()
 				&& params.model_adjunct_atom_scores.empty()

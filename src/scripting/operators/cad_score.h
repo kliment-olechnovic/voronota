@@ -67,6 +67,7 @@ public:
 		params.model_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("m-adj-inter-atom", "");
 		params.model_adjunct_residue_scores=input.get_value_or_default<std::string>("m-adj-residue", "");
 		params.model_adjunct_inter_residue_scores=input.get_value_or_default<std::string>("m-adj-inter-residue", "");
+		params.depth=input.get_value_or_default<int>("depth", 0);
 		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		params.ignore_residue_names=input.get_flag("ignore-residue-names");
 		params.binarize=input.get_flag("binarize");
@@ -86,6 +87,7 @@ public:
 		doc.set_option_decription(CDOD("m-adj-inter-atom", CDOD::DATATYPE_STRING, "model adjunct name for inter-atom scores", ""));
 		doc.set_option_decription(CDOD("m-adj-residue", CDOD::DATATYPE_STRING, "model adjunct name for residue scores", ""));
 		doc.set_option_decription(CDOD("m-adj-inter-residue", CDOD::DATATYPE_STRING, "model adjunct name for inter-residue scores", ""));
+		doc.set_option_decription(CDOD("depth", CDOD::DATATYPE_INT, "local neighborhood depth", 0));
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
 		doc.set_option_decription(CDOD("ignore-residue-names", CDOD::DATATYPE_BOOL, "flag to ignore residue names"));
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
