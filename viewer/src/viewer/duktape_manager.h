@@ -60,11 +60,16 @@ private:
 		return instance().context_;
 	}
 
-	static duk_ret_t native_raw_print(duk_context *ctx)
+	static duk_ret_t native_raw_write(duk_context *ctx)
 	{
-		duk_push_string(ctx, " ");
-		duk_insert(ctx, 0);
-		duk_join(ctx, duk_get_top(ctx) - 1);
+		const std::string text=duk_safe_to_string(ctx, -1);
+		std::cout << text;
+		std::cout.flush();
+		return 0;
+	}
+
+	static duk_ret_t native_raw_writeln(duk_context *ctx)
+	{
 		const std::string text=duk_safe_to_string(ctx, -1);
 		std::cout << text << std::endl;
 		return 0;
@@ -86,7 +91,7 @@ private:
 		return 1;
 	}
 
-	static duk_ret_t native_raw_fprint(duk_context *ctx)
+	static duk_ret_t native_raw_fwrite(duk_context *ctx)
 	{
 		const std::string filename=duk_require_string(ctx, -2);
 		const std::string content=duk_safe_to_string(ctx, -1);
@@ -210,14 +215,17 @@ private:
 		{
 			context_=duk_create_heap_default();
 
-			duk_push_c_function(context_, native_raw_print, DUK_VARARGS);
-			duk_put_global_string(context_, "raw_print");
+			duk_push_c_function(context_, native_raw_write, 1);
+			duk_put_global_string(context_, "raw_write");
+
+			duk_push_c_function(context_, native_raw_writeln, 1);
+			duk_put_global_string(context_, "raw_writeln");
 
 			duk_push_c_function(context_, native_raw_read, 0);
 			duk_put_global_string(context_, "raw_read");
 
-			duk_push_c_function(context_, native_raw_fprint, 2);
-			duk_put_global_string(context_, "raw_fprint");
+			duk_push_c_function(context_, native_raw_fwrite, 2);
+			duk_put_global_string(context_, "raw_fwrite");
 
 			duk_push_c_function(context_, native_raw_fread, 1);
 			duk_put_global_string(context_, "raw_fread");
@@ -230,39 +238,55 @@ private:
 
 			{
 				const std::string script=""
-						"print=function(obj, json_spacing)"
+						"write=function(obj)"
 						"{"
 						"  var obj_type=Object.prototype.toString.call(obj);"
 						"  if(obj_type==='[object Object]')"
 						"  {"
-						"    var spaces=0;"
-						"    if(json_spacing)"
-						"    {"
-						"      spaces=json_spacing;"
-						"    }"
-						"    raw_print(JSON.stringify(obj, null, spaces));"
+						"    raw_write(JSON.stringify(obj));"
 						"  }"
 						"  else"
 						"  {"
-						"    raw_print(obj);"
+						"    raw_write(obj);"
 						"  }"
 						"}"
 						"\n"
-						"fprint=function(filename, obj, json_spacing)"
+						"writeln=function(obj)"
 						"{"
 						"  var obj_type=Object.prototype.toString.call(obj);"
 						"  if(obj_type==='[object Object]')"
 						"  {"
-						"    var spaces=0;"
-						"    if(json_spacing)"
-						"    {"
-						"      spaces=json_spacing;"
-						"    }"
-						"    raw_fprint(filename, JSON.stringify(obj, null, spaces));"
+						"    raw_writeln(JSON.stringify(obj));"
 						"  }"
 						"  else"
 						"  {"
-						"    raw_fprint(filename, obj);"
+						"    raw_writeln(obj);"
+						"  }"
+						"}"
+						"\n"
+						"fwrite=function(filename, obj)"
+						"{"
+						"  var obj_type=Object.prototype.toString.call(obj);"
+						"  if(obj_type==='[object Object]')"
+						"  {"
+						"    raw_fwrite(filename, JSON.stringify(obj));"
+						"  }"
+						"  else"
+						"  {"
+						"    raw_fwrite(filename, obj);"
+						"  }"
+						"}"
+						"\n"
+						"source=function(filename)"
+						"{"
+						"  var lines=raw_fread(filename).split('\\n');"
+						"  if(lines.length>0 && lines[0].indexOf('#')===0)"
+						"  {"
+						"    lines.shift();"
+						"  }"
+						"  if(lines.length>0)"
+						"  {"
+						"    eval(lines.join('\\n'));"
 						"  }"
 						"}"
 						"\n"
