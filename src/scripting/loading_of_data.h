@@ -221,6 +221,22 @@ public:
 private:
 	static std::string get_format_from_atoms_file_name(const std::string& filename)
 	{
+		static const std::multimap<std::string, std::string> map_of_format_extensions=generate_map_of_format_extensions();
+		for(std::multimap<std::string, std::string>::const_iterator it=map_of_format_extensions.begin();it!=map_of_format_extensions.end();++it)
+		{
+			const std::string& format=it->first;
+			const std::string& extension=it->second;
+			const std::size_t pos=filename.rfind(extension);
+			if(pos<filename.size() && (pos+extension.size())==filename.size())
+			{
+				return format;
+			}
+		}
+		return std::string();
+	}
+
+	static std::multimap<std::string, std::string> generate_map_of_format_extensions()
+	{
 		std::multimap<std::string, std::string> map_of_format_extensions;
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("pdb", ".pdb"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("pdb", ".PDB"));
@@ -238,17 +254,7 @@ private:
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyzr", ".XYZR"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".xyz"));
 		map_of_format_extensions.insert(std::pair<std::string, std::string>("xyz", ".XYZ"));
-		for(std::multimap<std::string, std::string>::const_iterator it=map_of_format_extensions.begin();it!=map_of_format_extensions.end();++it)
-		{
-			const std::string& format=it->first;
-			const std::string& extension=it->second;
-			const std::size_t pos=filename.find(extension);
-			if(pos<filename.size() && (pos+extension.size())==filename.size())
-			{
-				return format;
-			}
-		}
-		return std::string();
+		return map_of_format_extensions;
 	}
 
 	static void handle_reading_failure(const std::string& file, const std::string& format)
