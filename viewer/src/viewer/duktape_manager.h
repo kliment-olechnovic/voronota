@@ -157,27 +157,26 @@ private:
 
 		redi::ipstream proc(command, redi::pstreams::pstdout|redi::pstreams::pstderr);
 
-		std::ostringstream output;
+		std::string str_stdout;
+		if(proc.out().good())
 		{
-			std::string line;
-			while(std::getline(proc.out(), line))
-			{
-				output << line << "\n";
-			}
+			std::istreambuf_iterator<char> eos;
+			str_stdout=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
 		}
 
-		std::ostringstream errors;
+		std::string str_stderr;
+		if(proc.err().good())
 		{
-			std::string line;
-			while(std::getline(proc.err(), line))
-			{
-				errors << line << "\n";
-			}
+			std::istreambuf_iterator<char> eos;
+			str_stderr=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
 		}
 
-		std::cerr << errors.str() << std::endl;
+		if(!str_stderr.empty())
+		{
+			std::cerr << str_stderr << std::endl;
+		}
 
-		duk_push_string(ctx, output.str().c_str());
+		duk_push_string(ctx, str_stdout.c_str());
 
 		return 1;
 	}
@@ -241,7 +240,7 @@ private:
 						"write=function(obj)"
 						"{"
 						"  var obj_type=Object.prototype.toString.call(obj);"
-						"  if(obj_type==='[object Object]')"
+						"  if(obj_type==='[object Object]' || obj_type==='[object Array]')"
 						"  {"
 						"    raw_write(JSON.stringify(obj));"
 						"  }"
@@ -254,7 +253,7 @@ private:
 						"writeln=function(obj)"
 						"{"
 						"  var obj_type=Object.prototype.toString.call(obj);"
-						"  if(obj_type==='[object Object]')"
+						"  if(obj_type==='[object Object]' || obj_type==='[object Array]')"
 						"  {"
 						"    raw_writeln(JSON.stringify(obj));"
 						"  }"
@@ -267,7 +266,7 @@ private:
 						"fwrite=function(filename, obj)"
 						"{"
 						"  var obj_type=Object.prototype.toString.call(obj);"
-						"  if(obj_type==='[object Object]')"
+						"  if(obj_type==='[object Object]' || obj_type==='[object Array]')"
 						"  {"
 						"    raw_fwrite(filename, JSON.stringify(obj));"
 						"  }"
