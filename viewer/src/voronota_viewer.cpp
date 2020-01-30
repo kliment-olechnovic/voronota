@@ -30,14 +30,14 @@ int main(const int argc, const char** argv)
 			const std::string& input_structure=input_structures[i];
 			std::ostringstream script;
 			script << "import --include-heteroatoms --file '" << input_structure << "'\n";
-			voronota::viewer::Application::instance().enqueue_native_script(script.str());
+			voronota::viewer::Application::instance().enqueue_script(script.str());
 		}
 
 		if(!input_native_script.empty())
 		{
 			std::ostringstream script;
 			script << "source '" << input_native_script << "'\n";
-			voronota::viewer::Application::instance().enqueue_native_script(script.str());
+			voronota::viewer::Application::instance().enqueue_script(script.str());
 		}
 
 #ifdef FOR_WEB
@@ -64,9 +64,9 @@ int main(const int argc, const char** argv)
 extern "C"
 {
 
-EMSCRIPTEN_KEEPALIVE void voronota_viewer_enqueue_native_script(const char* command)
+EMSCRIPTEN_KEEPALIVE void voronota_viewer_enqueue_script(const char* command)
 {
-	voronota::viewer::Application::instance().enqueue_native_script(command);
+	voronota::viewer::Application::instance().enqueue_script(command);
 }
 
 EMSCRIPTEN_KEEPALIVE const char* voronota_viewer_execute_native_script(const char* command)

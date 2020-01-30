@@ -24,7 +24,7 @@ then
 fi
 
 emcc \
--s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_native_script','_voronota_viewer_execute_native_script','_voronota_viewer_upload_file']" \
+-s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_upload_file']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
 ../src/voronota_viewer.cpp ../src/imgui/*.cpp \
 -DFOR_WEB \

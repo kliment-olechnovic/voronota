@@ -31,8 +31,6 @@ public:
 		set_command_for_extra_actions("rotate", operators::Rotate());
 		set_command_for_extra_actions("screenshot", operators::Screenshot());
 		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());
-		set_command_for_extra_actions("console-mode-native", operators::ConsoleMode(RuntimeParameters::CONSOLE_MODE_VARIANT_NATIVE));
-		set_command_for_extra_actions("console-mode-js", operators::ConsoleMode(RuntimeParameters::CONSOLE_MODE_VARIANT_JAVASCRIPT));
 		set_command_for_extra_actions("sleep", operators::Sleep());
 
 		set_default_aliases();

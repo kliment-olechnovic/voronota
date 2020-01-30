@@ -25,9 +25,17 @@ public:
 		return app;
 	}
 
-	void enqueue_native_script(const std::string& script)
+	void enqueue_script(const std::string& script)
 	{
-		enqueue_job(Job(script, Job::TYPE_NATIVE));
+		static const std::string javascript_switch="js:";
+		if(script.rfind(javascript_switch, 0)==0)
+		{
+			enqueue_job(Job(script.substr(javascript_switch.size()), Job::TYPE_JAVASCRIPT));
+		}
+		else
+		{
+			enqueue_job(Job(script, Job::TYPE_NATIVE));
+		}
 	}
 
 	const std::string& execute_native_script(const std::string& script)
@@ -48,7 +56,7 @@ public:
 		}
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
-		enqueue_native_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+		enqueue_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
 	}
 
 protected:
@@ -128,14 +136,7 @@ protected:
 		{
 			console_.set_enabled(RuntimeParameters::instance().enabled_console);
 			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
-			if(RuntimeParameters::instance().console_mode_variant==RuntimeParameters::CONSOLE_MODE_VARIANT_NATIVE)
-			{
-				enqueue_job(Job(console_result, Job::TYPE_NATIVE));
-			}
-			if(RuntimeParameters::instance().console_mode_variant==RuntimeParameters::CONSOLE_MODE_VARIANT_JAVASCRIPT)
-			{
-				enqueue_job(Job(console_result, Job::TYPE_JAVASCRIPT));
-			}
+			enqueue_script(console_result);
 		}
 	}
 
@@ -192,7 +193,7 @@ protected:
 			std::ostringstream output_script;
 			if(script_execution_manager_.generate_click_script(drawing_id, button_code, mod_ctrl, mod_shift, output_script))
 			{
-				enqueue_native_script(output_script.str());
+				enqueue_script(output_script.str());
 			}
 		}
 	}
@@ -268,15 +269,15 @@ private:
 				{
 					if(ImGui::MenuItem("White", ""))
 					{
-						enqueue_native_script("background white");
+						enqueue_script("background white");
 					}
 					if(ImGui::MenuItem("Gray", ""))
 					{
-						enqueue_native_script("background 0xCCCCCC");
+						enqueue_script("background 0xCCCCCC");
 					}
 					if(ImGui::MenuItem("Black", ""))
 					{
-						enqueue_native_script("background black");
+						enqueue_script("background black");
 					}
 					ImGui::EndMenu();
 				}
@@ -284,11 +285,11 @@ private:
 				{
 					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_grid()))
 					{
-						enqueue_native_script("mono");
+						enqueue_script("mono");
 					}
 					if(ImGui::MenuItem("Enable grid by object", "", false, !rendering_mode_is_grid()))
 					{
-						enqueue_native_script("grid-by-object");
+						enqueue_script("grid-by-object");
 					}
 					ImGui::EndMenu();
 				}
@@ -296,11 +297,11 @@ private:
 				{
 					if(ImGui::MenuItem("Orthographic", "", false, !projection_mode_is_ortho()))
 					{
-						enqueue_native_script("ortho");
+						enqueue_script("ortho");
 					}
 					if(ImGui::MenuItem("Perspective", "", false, !projection_mode_is_perspective()))
 					{
-						enqueue_native_script("perspective");
+						enqueue_script("perspective");
 					}
 					ImGui::EndMenu();
 				}
@@ -308,11 +309,11 @@ private:
 				{
 					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_stereo()))
 					{
-						enqueue_native_script("mono");
+						enqueue_script("mono");
 					}
 					if(ImGui::MenuItem("Enable", "", false, !rendering_mode_is_stereo()))
 					{
-						enqueue_native_script("stereo");
+						enqueue_script("stereo");
 					}
 					ImGui::EndMenu();
 				}
