@@ -27,15 +27,32 @@ public:
 
 	bool enqueue_script(const std::string& script)
 	{
-		if(script.rfind(javascript_switch_prefix(), 0)==0)
+		if(script.rfind(SwitchPrefix::javascript(), 0)==0)
 		{
-			return enqueue_job(Job(script.substr(javascript_switch_prefix().size()), Job::TYPE_JAVASCRIPT));
+			return enqueue_job(Job(script.substr(SwitchPrefix::javascript().size()), Job::TYPE_JAVASCRIPT));
+		}
+		else if(script.rfind(SwitchPrefix::files(), 0)==0)
+		{
+			std::istringstream input(script.substr(SwitchPrefix::files().size()));
+			bool status=false;
+			while(input.good())
+			{
+				std::string filename;
+				input >> filename;
+				status=enqueue_file(filename) || status;
+			}
+			return status;
 		}
 		else
 		{
 			return enqueue_job(Job(script, Job::TYPE_NATIVE));
 		}
 		return false;
+	}
+
+	bool enqueue_file(const std::string& filename)
+	{
+		return enqueue_job(JobFile(filename));
 	}
 
 	const std::string& execute_native_script(const std::string& script)
@@ -139,9 +156,13 @@ protected:
 			if(!console_result.empty())
 			{
 				enqueue_script(console_result);
-				if(console_result.rfind(javascript_switch_prefix(), 0)==0)
+				if(console_result.rfind(SwitchPrefix::javascript(), 0)==0)
 				{
-					console_.set_next_prefix(javascript_switch_prefix()+" ");
+					console_.set_next_prefix(SwitchPrefix::javascript()+" ");
+				}
+				else if(console_result.rfind(SwitchPrefix::files(), 0)==0)
+				{
+					console_.set_next_prefix(SwitchPrefix::files()+" ");
 				}
 			}
 		}
@@ -206,8 +227,9 @@ protected:
 	}
 
 private:
-	struct Job
+	class Job
 	{
+	public:
 		enum Type
 		{
 			TYPE_NATIVE,
@@ -219,6 +241,71 @@ private:
 
 		Job(const std::string& script, const Type type) : script(script), type(type)
 		{
+		}
+	};
+
+	class JobFile
+	{
+	public:
+		enum Type
+		{
+			TYPE_NATIVE,
+			TYPE_JAVASCRIPT,
+			TYPE_DATA
+		};
+
+		std::string filename;
+		Type type;
+
+		JobFile(const std::string& filename, const Type type) : filename(filename), type(type)
+		{
+		}
+
+		JobFile(const std::string& filename) : filename(filename), type(get_format_from_script_file_name(filename))
+		{
+		}
+
+	private:
+		static Type get_format_from_script_file_name(const std::string& filename)
+		{
+			static const std::multimap<Type, std::string> map_of_format_extensions=generate_map_of_script_file_format_extensions();
+			for(std::multimap<Type, std::string>::const_iterator it=map_of_format_extensions.begin();it!=map_of_format_extensions.end();++it)
+			{
+				const Type format=it->first;
+				const std::string& extension=it->second;
+				const std::size_t pos=filename.rfind(extension);
+				if(pos<filename.size() && (pos+extension.size())==filename.size())
+				{
+					return format;
+				}
+			}
+			return TYPE_DATA;
+		}
+
+		static std::multimap<Type, std::string> generate_map_of_script_file_format_extensions()
+		{
+			std::multimap<Type, std::string> map_of_format_extensions;
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".vvs"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".VVS"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".js"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".JS"));
+			return map_of_format_extensions;
+		}
+	};
+
+	class SwitchPrefix
+	{
+	public:
+		static const std::string& javascript()
+		{
+			static const std::string prefix="js:";
+			return prefix;
+		}
+
+		static const std::string& files()
+		{
+			static const std::string prefix="files:";
+			return prefix;
 		}
 	};
 
@@ -235,18 +322,32 @@ private:
 		}
 	}
 
-	static const std::string& javascript_switch_prefix()
-	{
-		static const std::string prefix="js:";
-		return prefix;
-	}
-
 	bool enqueue_job(const Job& job)
 	{
 		if(job.script.find_first_not_of(" \t\n")!=std::string::npos)
 		{
 			job_queue_.push_back(job);
 			return true;
+		}
+		return false;
+	}
+
+	bool enqueue_job(const JobFile& job_file)
+	{
+		if(!job_file.filename.empty())
+		{
+			if(job_file.type==JobFile::TYPE_NATIVE)
+			{
+				return enqueue_job(Job(std::string("source '")+job_file.filename+"'", Job::TYPE_NATIVE));
+			}
+			else if(job_file.type==JobFile::TYPE_JAVASCRIPT)
+			{
+				return enqueue_job(Job(std::string("source('")+job_file.filename+"');", Job::TYPE_JAVASCRIPT));
+			}
+			else
+			{
+				return enqueue_job(Job(std::string("import --include-heteroatoms --file '")+job_file.filename+"'", Job::TYPE_NATIVE));
+			}
 		}
 		return false;
 	}

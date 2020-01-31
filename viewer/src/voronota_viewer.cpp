@@ -15,8 +15,8 @@ int main(const int argc, const char** argv)
 		app_init_parameters.shader_vertex=command_args_input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
 		app_init_parameters.shader_vertex_with_instancing=command_args_input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
 		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
-		const std::vector<std::string> input_structures=command_args_input.get_value_vector_or_default<std::string>("input-structures", std::vector<std::string>());
-		const std::string input_native_script=command_args_input.get_value_or_default<std::string>("input-native-script", "");
+		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unnamed_values("files");
+		const std::vector<std::string> scripts=command_args_input.get_value_vector_or_default<std::string>("scripts", std::vector<std::string>());
 
 		command_args_input.assert_nothing_unusable();
 
@@ -25,19 +25,14 @@ int main(const int argc, const char** argv)
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
 
-		for(std::size_t i=0;i<input_structures.size();i++)
+		for(std::size_t i=0;i<files.size();i++)
 		{
-			const std::string& input_structure=input_structures[i];
-			std::ostringstream script;
-			script << "import --include-heteroatoms --file '" << input_structure << "'\n";
-			voronota::viewer::Application::instance().enqueue_script(script.str());
+			voronota::viewer::Application::instance().enqueue_file(files[i]);
 		}
 
-		if(!input_native_script.empty())
+		for(std::size_t i=0;i<scripts.size();i++)
 		{
-			std::ostringstream script;
-			script << "source '" << input_native_script << "'\n";
-			voronota::viewer::Application::instance().enqueue_script(script.str());
+			voronota::viewer::Application::instance().enqueue_script(scripts[i]);
 		}
 
 #ifdef FOR_WEB
