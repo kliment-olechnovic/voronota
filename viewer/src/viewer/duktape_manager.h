@@ -147,13 +147,15 @@ private:
 
 	static duk_ret_t native_raw_shell(duk_context *ctx)
 	{
-		const std::string command=duk_require_string(ctx, -1);
+		const std::string command_raw=duk_require_string(ctx, -1);
 
-		if(command.empty())
+		if(command_raw.empty())
 		{
 			duk_push_string(ctx, "Missing shell command");
 			return duk_throw(ctx);
 		}
+
+		const std::string command=std::string("#!/bin/bash\n")+command_raw;
 
 		redi::ipstream proc(command, redi::pstreams::pstdout|redi::pstreams::pstderr);
 
