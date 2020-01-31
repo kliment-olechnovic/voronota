@@ -1,7 +1,8 @@
 {
-  "commands":[
+  "results":[
     {
-      "line":"import -format plain -file /tmp/tmp.randomid/balls",
+      "command_line":"import -format plain -file /tmp/tmp.randomid/balls",
+      "command_name":"import",
       "output":{
         "atoms_summary":{
           "number_total":2952,
@@ -9,7 +10,8 @@
         "object_name":"balls"},
       "success":true},
     {
-      "line":"construct-contacts",
+      "command_line":"construct-contacts",
+      "command_name":"construct-contacts",
       "data_object":"balls",
       "output":{
         "contacts_summary":{
@@ -18,11 +20,13 @@
           "area":81912.1}},
       "success":true},
     {
-      "line":"describe-exposure -probe-min 4.0 -probe-max 30.0 -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1",
+      "command_line":"describe-exposure -probe-min 4.0 -probe-max 30.0 -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1",
+      "command_name":"describe-exposure",
       "data_object":"balls",
       "success":true},
     {
-      "line":"spectrum-atoms -adjunct buriedness -only-summarize",
+      "command_line":"spectrum-atoms -adjunct buriedness -only-summarize",
+      "command_name":"spectrum-atoms",
       "data_object":"balls",
       "output":{
         "atoms_summary":{
@@ -36,7 +40,8 @@
           "sd_of_values":0.221093}},
       "success":true},
     {
-      "line":"find-connected-components -atoms-core-use [-v buriedness=0.7:1.0] -atoms-all-use [-v buriedness=0.4:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]",
+      "command_line":"find-connected-components -atoms-core-use [-v buriedness=0.7:1.0] -atoms-all-use [-v buriedness=0.4:1.0] -adj-component-number pocket_id -contacts-use [-t peripherial]",
+      "command_name":"find-connected-components",
       "data_object":"balls",
       "output":{
         "atoms_summary":{
@@ -47,7 +52,8 @@
           "component_sizes":[{"rank":1,"size":134},{"rank":2,"size":17},{"rank":3,"size":5},{"rank":4,"size":4}]}},
       "success":true},
     {
-      "line":"select-atoms -use [-v pocket_id=1:999999] -name pocket_atoms_main",
+      "command_line":"select-atoms -use [-v pocket_id=1:999999] -name pocket_atoms_main",
+      "command_name":"select-atoms",
       "data_object":"balls",
       "output":{
         "atoms_summary":{
@@ -56,7 +62,8 @@
         "selection_name":"pocket_atoms_main"},
       "success":true},
     {
-      "line":"select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius 1.4 -max-edge 999999 -name pocket_atoms_all",
+      "command_line":"select-atoms-by-triangulation-query -use [pocket_atoms_main] -expansion 0.5 -min-radius 1.4 -max-edge 999999 -name pocket_atoms_all",
+      "command_name":"select-atoms-by-triangulation-query",
       "data_object":"balls",
       "output":{
         "initial_atoms_summary":{
@@ -70,7 +77,8 @@
         "selection_name":"pocket_atoms_all"},
       "success":true},
     {
-      "line":"export-atoms -file /tmp/tmp.randomid/result_atoms",
+      "command_line":"export-atoms -file /tmp/tmp.randomid/result_atoms",
+      "command_name":"export-atoms",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_atoms",
@@ -79,7 +87,8 @@
           "volume":71979.5}},
       "success":true},
     {
-      "line":"set-adjunct-of-atoms -name pocketness -value 0",
+      "command_line":"set-adjunct-of-atoms -name pocketness -value 0",
+      "command_name":"set-adjunct-of-atoms",
       "data_object":"balls",
       "output":{
         "atoms_summary":{
@@ -87,7 +96,8 @@
           "volume":71979.5}},
       "success":true},
     {
-      "line":"set-adjunct-of-atoms -use [pocket_atoms_all] -name pocketness -value 1",
+      "command_line":"set-adjunct-of-atoms -use [pocket_atoms_all] -name pocketness -value 1",
+      "command_name":"set-adjunct-of-atoms",
       "data_object":"balls",
       "output":{
         "atoms_summary":{
@@ -95,7 +105,8 @@
           "volume":16906.1}},
       "success":true},
     {
-      "line":"export-atoms -as-pdb -pdb-b-factor pocketness -file /tmp/tmp.randomid/result_pocketness.pdb",
+      "command_line":"export-atoms -as-pdb -pdb-b-factor pocketness -file /tmp/tmp.randomid/result_pocketness.pdb",
+      "command_name":"export-atoms",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_pocketness.pdb",
@@ -104,7 +115,8 @@
           "volume":71979.5}},
       "success":true},
     {
-      "line":"export-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -file /tmp/tmp.randomid/result_vertices",
+      "command_line":"export-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -file /tmp/tmp.randomid/result_vertices",
+      "command_name":"export-triangulation",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_vertices",
@@ -120,28 +132,33 @@
         "total_relevant_tetrahedron_volume":22415.9},
       "success":true},
     {
-      "line":"add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -figure-name pocket_tetrahedrons",
+      "command_line":"add-figure-of-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -figure-name pocket_tetrahedrons",
+      "command_name":"add-figure-of-triangulation",
       "data_object":"balls",
       "success":true},
     {
-      "line":"color-figures -name pocket_tetrahedrons -col 0x00FFFF",
+      "command_line":"color-figures -name pocket_tetrahedrons -col 0x00FFFF",
+      "command_name":"color-figures",
       "data_object":"balls",
       "success":true},
     {
-      "line":"export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name 'tetrahedrons1' -file /tmp/tmp.randomid/result_draw_tetrahedrons.py",
+      "command_line":"export-figures-as-pymol-cgo -figure-name pocket_tetrahedrons -cgo-name 'tetrahedrons1' -file /tmp/tmp.randomid/result_draw_tetrahedrons.py",
+      "command_name":"export-figures-as-pymol-cgo",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_draw_tetrahedrons.py"},
       "success":true},
     {
-      "line":"export-triangulation-voxels [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -search-step-factor 1.0 -file /tmp/tmp.randomid/voxels_raw",
+      "command_line":"export-triangulation-voxels [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -search-step-factor 1.0 -file /tmp/tmp.randomid/voxels_raw",
+      "command_name":"export-triangulation-voxels",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/voxels_raw",
         "number_of_voxels":8059},
       "success":true},
     {
-      "line":"print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -only-summary",
+      "command_line":"print-triangulation [pocket_atoms_all] -strict -min-radius 1.4 -max-edge 999999 -only-summary",
+      "command_name":"print-triangulation",
       "data_object":"balls",
       "output":{
         "full_triangulation_summary":{
@@ -155,6 +172,8 @@
         "number_of_relevant_voronoi_vertices":1385,
         "total_relevant_tetrahedron_volume":22415.9},
       "success":true}],
-  "script_summary":{
-    "commands_all":17,
-    "commands_successful":17}}
+  "results_summary":{
+    "count_all":17,
+    "count_successful":17,
+    "full_success":true,
+    "partial_success":true}}

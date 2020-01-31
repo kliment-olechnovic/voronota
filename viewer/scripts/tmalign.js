@@ -28,22 +28,22 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		model_sel="(("+model_sel+") and ([-aname CA]))";
 	}
 	
-	if(voronota_list_objects(target_name).script_summary.commands_successful===0)
+	if(voronota_list_objects(target_name).results_summary.full_success!==true)
 	{
 		throw ("No target object '"+target_name+"'");
 	}
 	
-	if(voronota_list_objects(model_name).script_summary.commands_successful===0)
+	if(voronota_list_objects(model_name).results_summary.full_success!==true)
 	{
 		throw ("No model object '"+model_name+"'");
 	}
 	
-	if(voronota_select_atoms('-on-objects', target_name, '-use', target_sel).script_summary.commands_successful===0)
+	if(voronota_select_atoms('-on-objects', target_name, '-use', target_sel).results_summary.full_success!==true)
 	{
 		throw ("No target atoms for selection '"+target_sel+"'");
 	}
 	
-	if(voronota_select_atoms('-on-objects', model_name, '-use', model_sel).script_summary.commands_successful===0)
+	if(voronota_select_atoms('-on-objects', model_name, '-use', model_sel).results_summary.full_success!==true)
 	{
 		throw ("No model atoms for selection '"+model_sel+"'");
 	}
@@ -67,7 +67,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		shell("rm -r "+tmp_dir);
 		tmp_dir=undefined;
 		
-		if(voronota_move_atoms('-on-objects', model_name, '-rotate-by-matrix '+rotation, '-translate '+translation).script_summary.commands_successful===0)
+		if(voronota_move_atoms('-on-objects', model_name, '-rotate-by-matrix '+rotation, '-translate '+translation).results_summary.full_success!==true)
 		{
 			throw ("Failed to move atoms");
 		}
@@ -95,12 +95,12 @@ tmalign_all_on_one=function(target_name, target_sel, model_sel)
 	
     var result_of_list_objects=voronota_list_objects();
     
-    if(result_of_list_objects.script_summary.commands_successful===0)
+    if(result_of_list_objects.results_summary.full_success!==true)
 	{
 		throw ("No objects available");
 	}
     
-    var objects=result_of_list_objects.commands[0].output.objects;
+    var objects=result_of_list_objects.results[0].output.objects;
 	if(objects.length<2)
 	{
 		throw ("Less than two objects available");
@@ -125,12 +125,12 @@ tmalign_all_on_first_one=function(target_and_model_sel)
 {
     var result_of_list_objects=voronota_list_objects();
     
-    if(result_of_list_objects.script_summary.commands_successful===0)
+    if(result_of_list_objects.results_summary.full_success!==true)
 	{
 		throw ("No objects available");
 	}
     
-    var objects=result_of_list_objects.commands[0].output.objects;
+    var objects=result_of_list_objects.results[0].output.objects;
     
 	if(objects.length<2)
 	{

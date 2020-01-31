@@ -1,10 +1,12 @@
 {
-  "commands":[
+  "results":[
     {
-      "line":"setup-voromqa --potential '/tmp/tmp.randomid/voromqa_v1_energy_potential' --means-and-sds '/tmp/tmp.randomid/voromqa_v1_energy_means_and_sds'",
+      "command_line":"setup-voromqa --potential '/tmp/tmp.randomid/voromqa_v1_energy_potential' --means-and-sds '/tmp/tmp.randomid/voromqa_v1_energy_means_and_sds'",
+      "command_name":"setup-voromqa",
       "success":true},
     {
-      "line":"import -format plain -file /tmp/tmp.randomid/balls",
+      "command_line":"import -format plain -file /tmp/tmp.randomid/balls",
+      "command_name":"import",
       "output":{
         "atoms_summary":{
           "number_total":2893,
@@ -12,7 +14,8 @@
         "object_name":"balls"},
       "success":true},
     {
-      "line":"construct-contacts",
+      "command_line":"construct-contacts",
+      "command_name":"construct-contacts",
       "data_object":"balls",
       "output":{
         "contacts_summary":{
@@ -21,11 +24,13 @@
           "area":80151.2}},
       "success":true},
     {
-      "line":"describe-exposure -probe-min 1.4 -probe-max 30.0 -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1",
+      "command_line":"describe-exposure -probe-min 1.4 -probe-max 30.0 -adj-atom-exposure-value buriedness -weight-power 3 -expansion 0.5 -smoothing-iterations 3 -smoothing-depth 1",
+      "command_name":"describe-exposure",
       "data_object":"balls",
       "success":true},
     {
-      "line":"voromqa-global",
+      "command_line":"voromqa-global",
+      "command_name":"voromqa-global",
       "data_object":"balls",
       "output":{
         "quality_score":0.379877,
@@ -37,11 +42,13 @@
         "strange_area":0},
       "success":true},
     {
-      "line":"voromqa-frustration -adj-atom-frustration-energy-mean frustration -adj-contact-frustration-energy-mean cfem -smoothing-iterations 3 -smoothing-depth 1",
+      "command_line":"voromqa-frustration -adj-atom-frustration-energy-mean frustration -adj-contact-frustration-energy-mean cfem -smoothing-iterations 3 -smoothing-depth 1",
+      "command_name":"voromqa-frustration",
       "data_object":"balls",
       "success":true},
     {
-      "line":"voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value membraneness -membrane-width 20 -adj-atom-exposure-value buriedness",
+      "command_line":"voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value membraneness -membrane-width 20 -adj-atom-exposure-value buriedness",
+      "command_name":"voromqa-membrane-place",
       "data_object":"balls",
       "output":{
         "number_of_checks":193,
@@ -50,7 +57,8 @@
         "projection_center":-7.59596},
       "success":true},
     {
-      "line":"export-atoms -file /tmp/tmp.randomid/result_atoms",
+      "command_line":"export-atoms -file /tmp/tmp.randomid/result_atoms",
+      "command_name":"export-atoms",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_atoms",
@@ -59,7 +67,8 @@
           "volume":70377.4}},
       "success":true},
     {
-      "line":"export-atoms -as-pdb -pdb-b-factor membraneness -file /tmp/tmp.randomid/result_membraneness.pdb",
+      "command_line":"export-atoms -as-pdb -pdb-b-factor membraneness -file /tmp/tmp.randomid/result_membraneness.pdb",
+      "command_name":"export-atoms",
       "data_object":"balls",
       "output":{
         "file":"/tmp/tmp.randomid/result_membraneness.pdb",
@@ -67,6 +76,8 @@
           "number_total":2893,
           "volume":70377.4}},
       "success":true}],
-  "script_summary":{
-    "commands_all":9,
-    "commands_successful":9}}
+  "results_summary":{
+    "count_all":9,
+    "count_successful":9,
+    "full_success":true,
+    "partial_success":true}}

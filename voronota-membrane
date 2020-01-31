@@ -164,7 +164,7 @@ fi
 | voronota run-script --exit-on-first-failure --max-unfolding 5 \
 > "$TMPLDIR/result_log.txt"
 
-GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.script_summary | .commands_successful == .commands_all')"
+GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.results_summary | .count_successful == .count_all')"
 
 if [ -n "$OUTPUT_LOG" ]
 then
@@ -198,7 +198,7 @@ then
 	exit 1
 fi
 
-MEMBRANE_INFO="$(jq -c '.commands[] | select(.line | contains("voromqa-membrane-place")) | .output' < "$TMPLDIR/result_log.txt")"
+MEMBRANE_INFO="$(jq -c '.results[] | select(.command_line | contains("voromqa-membrane-place")) | .output' < "$TMPLDIR/result_log.txt")"
 
 MEMBRANE_FITTING_CORE="$(echo "$MEMBRANE_INFO" | jq -c '.best_score')"
 DIRECTION="$(echo "$MEMBRANE_INFO" | jq -c '.direction' | tail -1 | tr -d '[' | tr -d ']' | tr ',' ' ')"

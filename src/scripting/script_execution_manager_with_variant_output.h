@@ -53,7 +53,8 @@ protected:
 
 	void on_before_any_command(const CommandInput& command_input)
 	{
-		current_command_object(true).value("line")=command_input.get_input_command_string();
+		current_command_object(true).value("command_line")=command_input.get_input_command_string();
+		current_command_object().value("command_name")=command_input.get_command_name();
 	}
 
 	void on_after_command_for_script_partitioner(const GenericCommandRecord&, ScriptPartitioner&)
@@ -116,15 +117,20 @@ protected:
 
 	void on_after_script(const ScriptRecord& script_record)
 	{
-		VariantObject& summary=output_.object("script_summary");
+		VariantObject& summary=output_.object("results_summary");
 
-		summary.value("commands_all")=script_record.command_records.size();
-		summary.value("commands_successful")=script_record.count_successfull_commmand_records();
+		const std::size_t num_of_successfull_commmand_records=script_record.count_successfull_commmand_records();
+
+		summary.value("count_all")=script_record.command_records.size();
+		summary.value("count_successful")=num_of_successfull_commmand_records;
 
 		if(!script_record.termination_error.empty())
 		{
 			summary.value("termination_error")=script_record.termination_error;
 		}
+
+		summary.value("full_success")=(script_record.command_records.size()==num_of_successfull_commmand_records && script_record.termination_error.empty());
+		summary.value("partial_success")=(num_of_successfull_commmand_records>0);
 
 		on_after_script_with_output(summary);
 	}
@@ -140,7 +146,7 @@ protected:
 private:
 	VariantObject& current_command_object(const bool add)
 	{
-		std::vector<VariantObject>& command_objects=output_.objects_array("commands");
+		std::vector<VariantObject>& command_objects=output_.objects_array("results");
 		if(add || command_objects.empty())
 		{
 			command_objects.push_back(VariantObject());

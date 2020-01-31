@@ -340,7 +340,7 @@ echo "print-triangulation [pocket_atoms_all] -strict -min-radius $TANGENT_RADIUS
 | voronota run-script --exit-on-first-failure --max-unfolding 5 \
 > "$TMPLDIR/result_log.txt"
 
-GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.script_summary | .commands_successful == .commands_all')"
+GLOBAL_SUCCESS="$(cat "$TMPLDIR/result_log.txt" | jq -c '.results_summary | .count_successful == .count_all')"
 
 if [ -n "$OUTPUT_LOG" ]
 then
@@ -404,9 +404,9 @@ then
 	exit 1
 fi
 
-OBSERVED_MAX_BURIEDNESS="$(jq '.commands[] | select(.line=="spectrum-atoms -adjunct buriedness -only-summarize") | .output.spectrum_summary.max_value' < "$TMPLDIR/result_log.txt")"
+OBSERVED_MAX_BURIEDNESS="$(jq '.results[] | select(.command_line=="spectrum-atoms -adjunct buriedness -only-summarize") | .output.spectrum_summary.max_value' < "$TMPLDIR/result_log.txt")"
 
-POCKET_INFO="$(jq -c '.commands[-1].output' < "$TMPLDIR/result_log.txt")"
+POCKET_INFO="$(jq -c '.results[-1].output' < "$TMPLDIR/result_log.txt")"
 
 NUM_OF_ALL_ATOMS="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.number_input_balls')"
 NUM_OF_ALL_VERTICES="$(echo "$POCKET_INFO" | jq -c '.full_triangulation_summary.number_voronoi_vertices')"
