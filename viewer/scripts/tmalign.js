@@ -1,3 +1,13 @@
+if(typeof shell !== "function")
+{
+	throw ("No 'shell' function");
+}
+
+if(shell("command -v TMalign").trim().length<1)
+{
+	throw ("No 'TMalign' executable");
+}
+
 tmalign=function(target_name, model_name, target_sel, model_sel)
 {
 	if(target_name===undefined)
