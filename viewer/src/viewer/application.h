@@ -25,17 +25,17 @@ public:
 		return app;
 	}
 
-	void enqueue_script(const std::string& script)
+	bool enqueue_script(const std::string& script)
 	{
-		static const std::string javascript_switch="js:";
-		if(script.rfind(javascript_switch, 0)==0)
+		if(script.rfind(javascript_switch_prefix(), 0)==0)
 		{
-			enqueue_job(Job(script.substr(javascript_switch.size()), Job::TYPE_JAVASCRIPT));
+			return enqueue_job(Job(script.substr(javascript_switch_prefix().size()), Job::TYPE_JAVASCRIPT));
 		}
 		else
 		{
-			enqueue_job(Job(script, Job::TYPE_NATIVE));
+			return enqueue_job(Job(script, Job::TYPE_NATIVE));
 		}
+		return false;
 	}
 
 	const std::string& execute_native_script(const std::string& script)
@@ -136,7 +136,14 @@ protected:
 		{
 			console_.set_enabled(RuntimeParameters::instance().enabled_console);
 			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
-			enqueue_script(console_result);
+			if(!console_result.empty())
+			{
+				enqueue_script(console_result);
+				if(console_result.rfind(javascript_switch_prefix(), 0)==0)
+				{
+					console_.set_next_prefix(javascript_switch_prefix()+" ");
+				}
+			}
 		}
 	}
 
@@ -228,12 +235,20 @@ private:
 		}
 	}
 
-	void enqueue_job(const Job& job)
+	static const std::string& javascript_switch_prefix()
+	{
+		static const std::string prefix="js:";
+		return prefix;
+	}
+
+	bool enqueue_job(const Job& job)
 	{
 		if(job.script.find_first_not_of(" \t\n")!=std::string::npos)
 		{
 			job_queue_.push_back(job);
+			return true;
 		}
+		return false;
 	}
 
 	bool dequeue_job()

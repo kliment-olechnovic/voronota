@@ -53,6 +53,11 @@ public:
 		need_keyboard_focus_=status && enabled_;
 	}
 
+	void set_next_prefix(const std::string& prefix)
+	{
+		next_prefix_=prefix;
+	}
+
 	std::string execute(const int width, const int x_pos, const int y_pos)
 	{
 		std::string result;
@@ -73,7 +78,7 @@ public:
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
-			if(ImGui::InputText("", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory, &on_command_input_data_request, this))
+			if(ImGui::InputText("", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory|ImGuiInputTextFlags_CallbackAlways, &on_command_input_data_request, this))
 			{
 				result=(std::string(command_buffer_.data()));
 				update_history_of_commands(result);
@@ -170,6 +175,24 @@ private:
 				data->SelectionEnd=data->BufTextLen;
 			}
 		}
+		else if(
+				data->EventFlag==ImGuiInputTextFlags_CallbackAlways &&
+				data->BufTextLen==0 &&
+				!next_prefix_.empty() &&
+				(next_prefix_.size()+2)<static_cast<std::size_t>(data->BufSize)
+			)
+		{
+			for(size_t i=0;i<=next_prefix_.size();i++)
+			{
+				data->Buf[i]=next_prefix_.c_str()[i];
+			}
+			data->BufDirty=true;
+			data->BufTextLen=static_cast<int>(next_prefix_.size());
+			data->CursorPos=data->BufTextLen;
+			data->SelectionStart=data->BufTextLen;
+			data->SelectionEnd=data->BufTextLen;
+			next_prefix_.clear();
+		}
 		return 0;
 	}
 
@@ -185,6 +208,7 @@ private:
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::vector<char> command_buffer_;
+	std::string next_prefix_;
 	std::size_t index_of_history_of_commands_;
 	bool enabled_;
 	bool need_keyboard_focus_;
