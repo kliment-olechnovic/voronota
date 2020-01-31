@@ -27,27 +27,8 @@ public:
 
 	bool enqueue_script(const std::string& script)
 	{
-		if(script.rfind(SwitchPrefix::javascript(), 0)==0)
-		{
-			return enqueue_job(Job(script.substr(SwitchPrefix::javascript().size()), Job::TYPE_JAVASCRIPT));
-		}
-		else if(script.rfind(SwitchPrefix::files(), 0)==0)
-		{
-			std::istringstream input(script.substr(SwitchPrefix::files().size()));
-			bool status=false;
-			while(input.good())
-			{
-				std::string filename;
-				input >> filename;
-				status=enqueue_file(filename) || status;
-			}
-			return status;
-		}
-		else
-		{
-			return enqueue_job(Job(script, Job::TYPE_NATIVE));
-		}
-		return false;
+		const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(script);
+		return enqueue_script(task);
 	}
 
 	bool enqueue_file(const std::string& filename)
@@ -155,14 +136,11 @@ protected:
 			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
 			if(!console_result.empty())
 			{
-				enqueue_script(console_result);
-				if(console_result.rfind(SwitchPrefix::javascript(), 0)==0)
+				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
+				enqueue_script(task);
+				if(!task.prefix.empty())
 				{
-					console_.set_next_prefix(SwitchPrefix::javascript()+" ");
-				}
-				else if(console_result.rfind(SwitchPrefix::files(), 0)==0)
-				{
-					console_.set_next_prefix(SwitchPrefix::files()+" ");
+					console_.set_next_prefix(task.prefix+" ");
 				}
 			}
 		}
@@ -238,8 +216,13 @@ private:
 
 		std::string script;
 		Type type;
+		bool alt;
 
-		Job(const std::string& script, const Type type) : script(script), type(type)
+		Job(const std::string& script, const Type type) : script(script), type(type), alt(false)
+		{
+		}
+
+		Job(const std::string& script, const Type type, const bool alt) : script(script), type(type), alt(alt)
 		{
 		}
 	};
@@ -293,19 +276,54 @@ private:
 		}
 	};
 
-	class SwitchPrefix
+	class ScriptPrefixParsing
 	{
 	public:
-		static const std::string& javascript()
+		enum Mode
 		{
-			static const std::string prefix="js:";
-			return prefix;
+			MODE_NATIVE,
+			MODE_NATIVE_ALT,
+			MODE_JAVASCRIPT,
+			MODE_JAVASCRIPT_ALT,
+			MODE_FILES
+		};
+
+		struct Bundle
+		{
+			Mode mode;
+			std::string prefix;
+			std::string script;
+
+			Bundle(const Mode mode, const std::string& prefix, const std::string& script) : mode(mode), prefix(prefix), script(script)
+			{
+			}
+		};
+
+		static Bundle parse(const std::string& script)
+		{
+			static const std::map<Mode, std::string> map_of_mode_prefixes=generate_map_of_mode_prefixes();
+			for(std::map<Mode, std::string>::const_iterator it=map_of_mode_prefixes.begin();it!=map_of_mode_prefixes.end();++it)
+			{
+				const Mode mode=it->first;
+				const std::string& prefix=it->second;
+				if(script.rfind(prefix, 0)==0)
+				{
+					return Bundle(mode, prefix, script.substr(prefix.size()));
+				}
+			}
+			return Bundle(MODE_NATIVE, "", script);
 		}
 
-		static const std::string& files()
+	private:
+		static std::map<Mode, std::string> generate_map_of_mode_prefixes()
 		{
-			static const std::string prefix="files:";
-			return prefix;
+			std::map<Mode, std::string> map_of_mode_prefixes;
+			map_of_mode_prefixes[MODE_NATIVE]="native:";
+			map_of_mode_prefixes[MODE_NATIVE_ALT]="_native:";
+			map_of_mode_prefixes[MODE_JAVASCRIPT]="js:";
+			map_of_mode_prefixes[MODE_JAVASCRIPT_ALT]="_js:";
+			map_of_mode_prefixes[MODE_FILES]="files:";
+			return map_of_mode_prefixes;
 		}
 	};
 
@@ -320,6 +338,31 @@ private:
 		{
 			ImGui_ImplGlfwGL3_Shutdown();
 		}
+	}
+
+	bool enqueue_script(const ScriptPrefixParsing::Bundle& task)
+	{
+		if(task.mode==ScriptPrefixParsing::MODE_NATIVE || task.mode==ScriptPrefixParsing::MODE_NATIVE_ALT)
+		{
+			return enqueue_job(Job(task.script, Job::TYPE_NATIVE, task.mode==ScriptPrefixParsing::MODE_NATIVE_ALT));
+		}
+		else if(task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT || task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_ALT)
+		{
+			return enqueue_job(Job(task.script, Job::TYPE_JAVASCRIPT, task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_ALT));
+		}
+		else if(task.mode==ScriptPrefixParsing::MODE_FILES)
+		{
+			std::istringstream input(task.script);
+			bool status=false;
+			while(input.good())
+			{
+				std::string filename;
+				input >> filename;
+				status=enqueue_file(filename) || status;
+			}
+			return status;
+		}
+		return false;
 	}
 
 	bool enqueue_job(const Job& job)
@@ -514,24 +557,7 @@ private:
 	{
 		if(!job_queue_.empty())
 		{
-			const std::string& script=job_queue_.front().script;
-			if(script.size()>500
-					|| script.find("import")!=std::string::npos
-					|| script.find("export")!=std::string::npos
-					|| script.find("construct")!=std::string::npos
-					|| script.find("calculate")!=std::string::npos
-					|| script.find("make")!=std::string::npos
-					|| script.find("add")!=std::string::npos
-					|| script.find("restrict")!=std::string::npos
-					|| script.find("move")!=std::string::npos
-					|| script.find("copy")!=std::string::npos
-					|| script.find("setup")!=std::string::npos
-					|| script.find("source")!=std::string::npos
-					|| script.find("score")!=std::string::npos
-					|| script.find("voromqa")!=std::string::npos)
-			{
-				return true;
-			}
+			return (!job_queue_.front().alt);
 		}
 		return false;
 	}
