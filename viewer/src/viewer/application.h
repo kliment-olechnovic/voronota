@@ -155,7 +155,7 @@ protected:
 	{
 		if(!widgets::WaitingIndicator::instance().decided())
 		{
-			widgets::WaitingIndicator::instance().set_enabled(check_big_job_ahead());
+			widgets::WaitingIndicator::instance().set_enabled(!job_queue_.empty() && !job_queue_.front().brief);
 		}
 
 		widgets::WaitingIndicator::instance().execute(window_width(), window_height());
@@ -216,13 +216,13 @@ private:
 
 		std::string script;
 		Type type;
-		bool alt;
+		bool brief;
 
-		Job(const std::string& script, const Type type) : script(script), type(type), alt(false)
+		Job(const std::string& script, const Type type) : script(script), type(type), brief(false)
 		{
 		}
 
-		Job(const std::string& script, const Type type, const bool alt) : script(script), type(type), alt(alt)
+		Job(const std::string& script, const Type type, const bool alt) : script(script), type(type), brief(alt)
 		{
 		}
 	};
@@ -282,9 +282,9 @@ private:
 		enum Mode
 		{
 			MODE_NATIVE,
-			MODE_NATIVE_ALT,
+			MODE_NATIVE_BRIEF,
 			MODE_JAVASCRIPT,
-			MODE_JAVASCRIPT_ALT,
+			MODE_JAVASCRIPT_BRIEF,
 			MODE_FILES
 		};
 
@@ -318,10 +318,10 @@ private:
 		static std::map<Mode, std::string> generate_map_of_mode_prefixes()
 		{
 			std::map<Mode, std::string> map_of_mode_prefixes;
-			map_of_mode_prefixes[MODE_NATIVE]="native:";
-			map_of_mode_prefixes[MODE_NATIVE_ALT]="_native:";
+			map_of_mode_prefixes[MODE_NATIVE]="vs:";
+			map_of_mode_prefixes[MODE_NATIVE_BRIEF]="vsb:";
 			map_of_mode_prefixes[MODE_JAVASCRIPT]="js:";
-			map_of_mode_prefixes[MODE_JAVASCRIPT_ALT]="_js:";
+			map_of_mode_prefixes[MODE_JAVASCRIPT_BRIEF]="jsb:";
 			map_of_mode_prefixes[MODE_FILES]="files:";
 			return map_of_mode_prefixes;
 		}
@@ -342,13 +342,13 @@ private:
 
 	bool enqueue_script(const ScriptPrefixParsing::Bundle& task)
 	{
-		if(task.mode==ScriptPrefixParsing::MODE_NATIVE || task.mode==ScriptPrefixParsing::MODE_NATIVE_ALT)
+		if(task.mode==ScriptPrefixParsing::MODE_NATIVE || task.mode==ScriptPrefixParsing::MODE_NATIVE_BRIEF)
 		{
-			return enqueue_job(Job(task.script, Job::TYPE_NATIVE, task.mode==ScriptPrefixParsing::MODE_NATIVE_ALT));
+			return enqueue_job(Job(task.script, Job::TYPE_NATIVE, task.mode==ScriptPrefixParsing::MODE_NATIVE_BRIEF));
 		}
-		else if(task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT || task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_ALT)
+		else if(task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT || task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_BRIEF)
 		{
-			return enqueue_job(Job(task.script, Job::TYPE_JAVASCRIPT, task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_ALT));
+			return enqueue_job(Job(task.script, Job::TYPE_JAVASCRIPT, task.mode==ScriptPrefixParsing::MODE_JAVASCRIPT_BRIEF));
 		}
 		else if(task.mode==ScriptPrefixParsing::MODE_FILES)
 		{
@@ -551,15 +551,6 @@ private:
 			ImGui::PopStyleColor();
 			ImGui::End();
 		}
-	}
-
-	bool check_big_job_ahead() const
-	{
-		if(!job_queue_.empty())
-		{
-			return (!job_queue_.front().alt);
-		}
-		return false;
 	}
 
 	ScriptExecutionManager script_execution_manager_;
