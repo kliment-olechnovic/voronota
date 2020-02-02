@@ -268,8 +268,8 @@ private:
 		static std::multimap<Type, std::string> generate_map_of_script_file_format_extensions()
 		{
 			std::multimap<Type, std::string> map_of_format_extensions;
-			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".vvs"));
-			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".VVS"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".vs"));
+			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_NATIVE, ".VS"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".js"));
 			map_of_format_extensions.insert(std::pair<Type, std::string>(TYPE_JAVASCRIPT, ".JS"));
 			return map_of_format_extensions;

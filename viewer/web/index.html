@@ -108,7 +108,7 @@
 			var Module = {
 				preRun: [],
 				postRun: [],
-				arguments: ['--window-width', '900', '--window-height', '700', '--input-native-script', 'startup_script.vvs'],
+				arguments: ['--window-width', '800', '--window-height', '600'],
 				print: (function()
 				{
 					return function(text)
@@ -148,30 +148,6 @@
 				element.value=text;
 				element.scrollTop=element.scrollHeight;
 			}
-		</script>
-		
-		<script type='text/javascript'>
-			var script = document.createElement('script');
-			script.src = "startup_script.js";
-			document.body.appendChild(script);
-		</script>
-		
-		<script type='text/javascript'>
-			var script = document.createElement('script');
-			script.src = "radii.js";
-			document.body.appendChild(script);
-		</script>
-		
-		<script type='text/javascript'>
-			var script = document.createElement('script');
-			script.src = "voromqa_v1_energy_means_and_sds.js";
-			document.body.appendChild(script);
-		</script>
-		
-		<script type='text/javascript'>
-			var script = document.createElement('script');
-			script.src = "voromqa_v1_energy_potential.js";
-			document.body.appendChild(script);
 		</script>
 		
 		<script type='text/javascript'>

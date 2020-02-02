@@ -22,9 +22,5 @@ function package_data_file
 	fi
 }
 
-package_data_file ./startup_script.vvs
-package_data_file ../../resources/radii
-package_data_file ../../resources/voromqa_v1_energy_means_and_sds
-package_data_file ../../resources/voromqa_v1_energy_potential
 package_data_file ./2zsk.pdb
 

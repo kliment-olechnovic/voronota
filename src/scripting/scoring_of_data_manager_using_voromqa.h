@@ -4,6 +4,7 @@
 #include "../common/construction_of_voromqa_score.h"
 #include "../common/conversion_of_descriptors.h"
 
+#include "virtual_file_storage.h"
 #include "data_manager.h"
 
 namespace voronota
@@ -38,15 +39,19 @@ public:
 				return false;
 			}
 
+			InputSelector potential_file_input_selector(potential_file);
+
 			std::map<common::InteractionName, double> potential_values=
-					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<common::InteractionName, double> >(potential_file);
+					auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_file_input_selector.stream());
 			if(potential_values.empty())
 			{
 				return false;
 			}
 
+			InputSelector mean_and_sds_file_input_selector(mean_and_sds_file);
+
 			std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds=
-					auxiliaries::IOUtilities().read_file_lines_to_map< std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> >(mean_and_sds_file);
+					auxiliaries::IOUtilities().read_lines_to_map< std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> >(mean_and_sds_file_input_selector.stream());
 			if(means_and_sds.empty())
 			{
 				return false;

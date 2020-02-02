@@ -1,6 +1,31 @@
 #include <memory>
 
 #include "viewer/application.h"
+#include "viewer/stocked_data_resources.h"
+
+namespace
+{
+
+inline std::string generate_startup_script()
+{
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::viewer::resources::data_radii());
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::viewer::resources::data_voromqa_v1_energy_means_and_sds());
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::viewer::resources::data_voromqa_v1_energy_potential());
+
+	std::ostringstream output;
+	output << "setup-loading --radii-file _virtual/radii" << "\n";
+	output << "setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds" << "\n";
+	output << "delete-virtual-files _virtual/radii" << "\n";
+	output << "delete-virtual-files _virtual/voromqa_v1_energy_potential" << "\n";
+	output << "delete-virtual-files _virtual/voromqa_v1_energy_means_and_sds" << "\n";
+
+	const std::string result_filename="_virtual/startup.vs";
+	voronota::scripting::VirtualFileStorage::set_file(result_filename, output.str());
+
+	return result_filename;
+}
+
+}
 
 int main(const int argc, const char** argv)
 {
@@ -24,6 +49,8 @@ int main(const int argc, const char** argv)
 		{
 			throw std::runtime_error(std::string("Failed to init application."));
 		}
+
+		voronota::viewer::Application::instance().enqueue_file(generate_startup_script());
 
 		for(std::size_t i=0;i<files.size();i++)
 		{
