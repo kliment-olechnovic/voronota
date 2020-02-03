@@ -15,9 +15,7 @@ inline std::string generate_startup_script()
 	std::ostringstream output;
 	output << "setup-loading --radii-file _virtual/radii" << "\n";
 	output << "setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds" << "\n";
-	output << "delete-virtual-files _virtual/radii" << "\n";
-	output << "delete-virtual-files _virtual/voromqa_v1_energy_potential" << "\n";
-	output << "delete-virtual-files _virtual/voromqa_v1_energy_means_and_sds" << "\n";
+	output << "delete-virtual-files" << "\n";
 
 	const std::string result_filename="_virtual/startup.vs";
 	voronota::scripting::VirtualFileStorage::set_file(result_filename, output.str());
