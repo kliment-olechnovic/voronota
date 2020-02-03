@@ -64,6 +64,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 	}
 	
 	var tmp_dir=undefined;
+	var terminal_error=undefined;
 	var tmscore=undefined;
 	
 	try
@@ -82,7 +83,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		
 		shell("TMalign "+tmp_dir+"/model.pdb "+tmp_dir+"/target.pdb -m "+tmp_dir+"/matrix > "+tmp_dir+"/tmalign.out");
 		
-		var tmscore=shell("cat "+tmp_dir+"/tmalign.out | egrep '^TM-score= ' | grep 'Chain_2' | sed 's/^TM-score=\\s*\\(\\S*\\)\\s*.*/\\1/'").stdout.trim();
+		tmscore=shell("cat "+tmp_dir+"/tmalign.out | egrep '^TM-score= ' | grep 'Chain_2' | sed 's/^TM-score=\\s*\\(\\S*\\)\\s*.*/\\1/'").stdout.trim();
 		
 		if(tmscore.length<1)
 		{
@@ -97,9 +98,6 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 			throw ("Invalid TMalign matrix output");
 		}
 		
-		shell("rm -r "+tmp_dir);
-		tmp_dir=undefined;
-		
 		if(voronota_move_atoms('-on-objects', model_name, '-rotate-by-matrix '+rotation, '-translate '+translation).results_summary.full_success!==true)
 		{
 			throw ("Failed to move atoms");
@@ -109,11 +107,17 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 	}
 	catch(err)
 	{
-		if(tmp_dir!==undefined)
-		{
-			shell("rm -r "+tmp_dir);
-		}
-		throw ("Failed to use TMalign: "+err);
+		terminal_error=err;
+	}
+	
+	if(tmp_dir!==undefined)
+	{
+		shell("rm -r "+tmp_dir);
+	}
+	
+	if(terminal_error!==undefined)
+	{
+		throw terminal_error;
 	}
 	
 	return tmscore;

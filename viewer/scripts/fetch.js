@@ -38,7 +38,7 @@ fetch_url=function(file_url, destination_name, as_assembly)
 	}
 	
 	var tmp_dir=undefined;
-	var success=false;
+	var terminal_error=undefined;
 	
 	try
 	{
@@ -62,22 +62,23 @@ fetch_url=function(file_url, destination_name, as_assembly)
 		{
 			throw ("Failed to import PDB file");
 		}
-		
-		success=true;
-		
-		shell("rm -r "+tmp_dir);
-		tmp_dir=undefined;
 	}
 	catch(err)
 	{
-		if(tmp_dir!==undefined)
-		{
-			shell("rm -r "+tmp_dir);
-		}
-		throw ("Failed to use download file: "+err);
+		terminal_error=err;
 	}
 	
-	return success;
+	if(tmp_dir!==undefined)
+	{
+		shell("rm -r "+tmp_dir);
+	}
+	
+	if(terminal_error!==undefined)
+	{
+		throw terminal_error;
+	}
+	
+	return true;
 }
 
 fetch_pdb=function(pdb_id)

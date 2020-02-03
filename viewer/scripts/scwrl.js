@@ -41,7 +41,7 @@ scwrl=function(source_name, destination_name)
 	}
 	
 	var tmp_dir=undefined;
-	var success=false;
+	var terminal_error=undefined;
 	
 	try
 	{
@@ -58,21 +58,22 @@ scwrl=function(source_name, destination_name)
 		{
 			throw ("Invalid generated PDB file");
 		}
-		
-		success=true;
-		
-		shell("rm -r "+tmp_dir);
-		tmp_dir=undefined;
 	}
 	catch(err)
 	{
-		if(tmp_dir!==undefined)
-		{
-			shell("rm -r "+tmp_dir);
-		}
-		throw ("Failed to use Scwrl4: "+err);
+		terminal_error=err;
 	}
 	
-	return success;
+	if(tmp_dir!==undefined)
+	{
+		shell("rm -r "+tmp_dir);
+	}
+	
+	if(terminal_error!==undefined)
+	{
+		throw terminal_error;
+	}
+	
+	return true;
 }
 
