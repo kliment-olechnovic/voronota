@@ -3,7 +3,7 @@ if(typeof shell !== "function")
 	throw ("No 'shell' function");
 }
 
-if(shell("command -v Scwrl4").trim().length<1)
+if(shell("command -v Scwrl4").stdout.trim().length<1)
 {
 	throw ("No 'Scwrl4' executable");
 }
@@ -35,7 +35,7 @@ scwrl=function(source_name, destination_name)
 		throw ("No protein backbone atoms in source object '"+source_name+"'");
 	}
 	
-	if(shell("command -v Scwrl4").trim().length<1)
+	if(shell("command -v Scwrl4").stdout.trim().length<1)
 	{
 		throw ("No 'Scwrl4' executable");
 	}
@@ -45,7 +45,7 @@ scwrl=function(source_name, destination_name)
 	
 	try
 	{
-		tmp_dir=shell("mktemp -d").trim();
+		tmp_dir=shell("mktemp -d").stdout.trim();
 		
 		if(voronota_export_atoms('-on-objects', source_name, '-use', '[-aname CA,C,N,O,OXT]', '-as-pdb', '-file', tmp_dir+'/source.pdb').results_summary.full_success!==true)
 		{

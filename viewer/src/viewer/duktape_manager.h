@@ -159,26 +159,35 @@ private:
 
 		redi::ipstream proc(command, redi::pstreams::pstdout|redi::pstreams::pstderr);
 
-		std::string str_stdout;
+		scripting::VariantObject result_object;
+
 		if(proc.out().good())
 		{
 			std::istreambuf_iterator<char> eos;
-			str_stdout=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
+			result_object.value("stdout")=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
 		}
 
-		std::string str_stderr;
 		if(proc.err().good())
 		{
 			std::istreambuf_iterator<char> eos;
-			str_stderr=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
+			result_object.value("stderr")=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
 		}
 
-		if(!str_stderr.empty())
+		proc.close();
+
+		if(proc.rdbuf()->exited())
 		{
-			std::cerr << str_stderr << std::endl;
+			result_object.value("exit_status")=proc.rdbuf()->status();
+		}
+		else
+		{
+			result_object.value("exit_status")=0;
 		}
 
-		duk_push_string(ctx, str_stdout.c_str());
+		const std::string result=scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), result_object);
+
+	    duk_push_string(ctx, result.c_str());
+	    duk_json_decode(ctx, -1);
 
 		return 1;
 	}

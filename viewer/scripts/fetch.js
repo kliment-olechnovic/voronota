@@ -3,7 +3,7 @@ if(typeof shell !== "function")
 	throw ("No 'shell' function");
 }
 
-if(shell("command -v curl").trim().length<1)
+if(shell("command -v curl").stdout.trim().length<1)
 {
 	throw ("No 'curl' executable");
 }
@@ -25,14 +25,14 @@ fetch_url=function(file_url, destination_name, as_assembly)
 		as_assembly=false;
 	}
 	
-	if(shell("command -v curl").trim().length<1)
+	if(shell("command -v curl").stdout.trim().length<1)
 	{
 		throw ("No 'curl' executable");
 	}
 	
 	var need_to_uzip=RegExp('.*\.gz$').test(file_url);
 	
-	if(need_to_uzip===true && shell("command -v zcat").trim().length<1)
+	if(need_to_uzip===true && shell("command -v zcat").stdout.trim().length<1)
 	{
 		throw ("No 'zcat' executable");
 	}
@@ -42,7 +42,7 @@ fetch_url=function(file_url, destination_name, as_assembly)
 	
 	try
 	{
-		tmp_dir=shell("mktemp -d").trim();
+		tmp_dir=shell("mktemp -d").stdout.trim();
 		
 		if(need_to_uzip===true)
 		{
@@ -53,9 +53,9 @@ fetch_url=function(file_url, destination_name, as_assembly)
 			shell("curl '"+file_url+"' 2> /dev/null > "+tmp_dir+"/destination.pdb");
 		}
 		
-		if(shell('if [ ! -s "'+tmp_dir+'/destination.pdb" ] ; then echo "nofile" ; fi').trim()=="nofile")
+		if(shell('[ -s "'+tmp_dir+'/destination.pdb" ]').exit_status!==0)
 		{
-			throw ("Invalid URL '"+file_url+"'");
+			throw ("No file from URL '"+file_url+"'");
 		}
 		
 		if(voronota_import('-file', tmp_dir+'/destination.pdb', '-title', destination_name, '-as-assembly', as_assembly).results_summary.partial_success!==true)

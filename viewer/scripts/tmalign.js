@@ -3,7 +3,7 @@ if(typeof shell !== "function")
 	throw ("No 'shell' function");
 }
 
-if(shell("command -v TMalign").trim().length<1)
+if(shell("command -v TMalign").stdout.trim().length<1)
 {
 	throw ("No 'TMalign' executable");
 }
@@ -58,7 +58,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		throw ("No model atoms for selection '"+model_sel+"'");
 	}
 	
-	if(shell("command -v TMalign").trim().length<1)
+	if(shell("command -v TMalign").stdout.trim().length<1)
 	{
 		throw ("No 'TMalign' executable");
 	}
@@ -68,7 +68,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 	
 	try
 	{
-		tmp_dir=shell("mktemp -d").trim();
+		tmp_dir=shell("mktemp -d").stdout.trim();
 		
 		if(voronota_export_atoms('-on-objects', target_name, '-use', target_sel, '-as-pdb', '-file', tmp_dir+'/target.pdb').results_summary.full_success!==true)
 		{
@@ -82,15 +82,15 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		
 		shell("TMalign "+tmp_dir+"/model.pdb "+tmp_dir+"/target.pdb -m "+tmp_dir+"/matrix > "+tmp_dir+"/tmalign.out");
 		
-		var tmscore=shell("cat "+tmp_dir+"/tmalign.out | egrep '^TM-score= ' | grep 'Chain_2' | sed 's/^TM-score=\\s*\\(\\S*\\)\\s*.*/\\1/'").trim();
+		var tmscore=shell("cat "+tmp_dir+"/tmalign.out | egrep '^TM-score= ' | grep 'Chain_2' | sed 's/^TM-score=\\s*\\(\\S*\\)\\s*.*/\\1/'").stdout.trim();
 		
 		if(tmscore.length<1)
 		{
 			throw ("Invalid TMalign output");
 		}
 		
-		var translation=shell("cat "+tmp_dir+"/matrix | head -5 | tail -3 | awk '{print $2}' | tr '\n' ' '").trim();
-		var rotation=shell("cat "+tmp_dir+"/matrix | head -5 | tail -3 | awk '{print $3 \" \" $4 \" \" $5}' | tr '\n' ' '").trim();
+		var translation=shell("cat "+tmp_dir+"/matrix | head -5 | tail -3 | awk '{print $2}' | tr '\n' ' '").stdout.trim();
+		var rotation=shell("cat "+tmp_dir+"/matrix | head -5 | tail -3 | awk '{print $3 \" \" $4 \" \" $5}' | tr '\n' ' '").stdout.trim();
 		
 		if(translation.length<1 || rotation.length<1)
 		{
