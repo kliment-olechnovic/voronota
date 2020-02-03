@@ -70,8 +70,15 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 	{
 		tmp_dir=shell("mktemp -d").trim();
 		
-		voronota_export_atoms('-on-objects', target_name, '-use', target_sel, '-as-pdb', '-file', tmp_dir+'/target.pdb');
-		voronota_export_atoms('-on-objects', model_name, '-use', model_sel, '-as-pdb', '-file', tmp_dir+'/model.pdb');
+		if(voronota_export_atoms('-on-objects', target_name, '-use', target_sel, '-as-pdb', '-file', tmp_dir+'/target.pdb').results_summary.full_success!==true)
+		{
+			throw ("Failed to export target atoms");
+		}
+		
+		if(voronota_export_atoms('-on-objects', model_name, '-use', model_sel, '-as-pdb', '-file', tmp_dir+'/model.pdb').results_summary.full_success!==true)
+		{
+			throw ("Failed to export model atoms");
+		}
 		
 		shell("TMalign "+tmp_dir+"/model.pdb "+tmp_dir+"/target.pdb -m "+tmp_dir+"/matrix > "+tmp_dir+"/tmalign.out");
 		
@@ -98,10 +105,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 			throw ("Failed to move atoms");
 		}
 		
-		if(typeof voronota_zoom_by_atoms === "function")
-		{
-			voronota_zoom_by_atoms('-on-objects', target_name, '-use', target_sel);
-		}
+		voronota_zoom_by_atoms('-on-objects', target_name, '-use', target_sel);
 	}
 	catch(err)
 	{
@@ -109,7 +113,7 @@ tmalign=function(target_name, model_name, target_sel, model_sel)
 		{
 			shell("rm -r "+tmp_dir);
 		}
-		throw ("Failed to use TMalign: "+err.message);
+		throw ("Failed to use TMalign: "+err);
 	}
 	
 	return tmscore;
