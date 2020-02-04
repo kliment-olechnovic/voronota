@@ -22,7 +22,6 @@ public:
 	Console() :
 		command_buffer_(1024, 0),
 		index_of_history_of_commands_(0),
-		enabled_(false),
 		need_keyboard_focus_(false)
 	{
 	}
@@ -32,25 +31,14 @@ public:
 		return 30;
 	}
 
-	bool enabled() const
-	{
-		return enabled_;
-	}
-
 	bool focused() const
 	{
 		return need_keyboard_focus_;
 	}
 
-	void set_enabled(const bool status)
-	{
-		need_keyboard_focus_=status && (!enabled_ || need_keyboard_focus_);
-		enabled_=status;
-	}
-
 	void set_focused(const bool status)
 	{
-		need_keyboard_focus_=status && enabled_;
+		need_keyboard_focus_=status;
 	}
 
 	void set_next_prefix(const std::string& prefix)
@@ -62,15 +50,10 @@ public:
 	{
 		std::string result;
 
-		if(!enabled_)
-		{
-			return result;
-		}
-
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 		ImGui::SetNextWindowSize(ImVec2(width, height()));
 
-		ImGui::Begin("Console input", &enabled_, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("Console input", 0, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 		{
 			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -210,7 +193,6 @@ private:
 	std::vector<char> command_buffer_;
 	std::string next_prefix_;
 	std::size_t index_of_history_of_commands_;
-	bool enabled_;
 	bool need_keyboard_focus_;
 };
 

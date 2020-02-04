@@ -15,43 +15,44 @@ namespace widgets
 class WaitingIndicator
 {
 public:
-	static WaitingIndicator& instance()
+	WaitingIndicator() :
+		decided_(false),
+		activated_(false),
+		executed_(0)
 	{
-		static WaitingIndicator obj;
-		return obj;
 	}
 
 	bool decided() const
 	{
-		return decided_;
+		return (decided_);
 	}
 
-	bool enabled() const
+	bool activated() const
 	{
-		return (decided_ && enabled_);
+		return (decided_ && activated_);
 	}
 
 	bool executed() const
 	{
-		return (decided_ && enabled_ && executed_>1);
+		return (decided_ && activated_ && executed_>1);
 	}
 
-	void set_enabled(const bool enabled)
+	void set_activated(const bool activated)
 	{
 		decided_=true;
-		enabled_=enabled;
+		activated_=activated;
 	}
 
 	void reset()
 	{
 		decided_=false;
-		enabled_=false;
+		activated_=false;
 		executed_=0;
 	}
 
 	void execute(const int window_width, const int window_height)
 	{
-		if(!enabled())
+		if(!activated_)
 		{
 			return;
 		}
@@ -61,11 +62,9 @@ public:
 		const int label_x_pos=(window_width/2)-(label_width/2);
 		const int label_y_pos=(window_height/2)-(label_height/2);
 
-		static bool open=false;
-
 		ImGui::SetNextWindowPos(ImVec2(label_x_pos, label_y_pos));
 		ImGui::SetNextWindowSize(ImVec2(label_width, label_height));
-		ImGui::Begin("Waiting", &open, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("Waiting", 0, ImVec2(0, 0), 0.75f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 		ImGui::Text("Please wait ...");
 		ImGui::End();
 
@@ -73,15 +72,8 @@ public:
 	}
 
 private:
-	WaitingIndicator() :
-		decided_(false),
-		enabled_(false),
-		executed_(0)
-	{
-	}
-
 	bool decided_;
-	bool enabled_;
+	bool activated_;
 	int executed_;
 };
 
