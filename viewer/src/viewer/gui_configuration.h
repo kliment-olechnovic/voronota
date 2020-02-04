@@ -1,5 +1,5 @@
-#ifndef VIEWER_RUNTIME_PARAMETERS_H_
-#define VIEWER_RUNTIME_PARAMETERS_H_
+#ifndef VIEWER_GUI_CONFIGURATION_H_
+#define VIEWER_GUI_CONFIGURATION_H_
 
 #include <vector>
 
@@ -9,7 +9,7 @@ namespace voronota
 namespace viewer
 {
 
-class RuntimeParameters
+class GUIConfiguration
 {
 public:
 	enum GridVariant
@@ -25,9 +25,9 @@ public:
 	bool enabled_info_box;
 	bool enabled_waiting_indicator;
 
-	static RuntimeParameters& instance()
+	static GUIConfiguration& instance()
 	{
-		static RuntimeParameters rp;
+		static GUIConfiguration rp;
 		return rp;
 	}
 
@@ -52,15 +52,15 @@ public:
 		return (enabled_menu || enabled_console || enabled_waiting_indicator);
 	}
 
-	void disable_widgets()
+	void set_enabled_widgets(const bool status)
 	{
-		enabled_waiting_indicator=false;
-		enabled_console=false;
-		enabled_menu=false;
+		enabled_waiting_indicator=status;
+		enabled_console=status;
+		enabled_menu=status;
 	}
 
 private:
-	RuntimeParameters() :
+	GUIConfiguration() :
 		grid_variant(GRID_VARIANT_BY_OBJECT),
 		enabled_menu(false),
 		enabled_cursor_label(true),
@@ -70,9 +70,9 @@ private:
 	{
 	}
 
-	static std::vector<RuntimeParameters>& stack()
+	static std::vector<GUIConfiguration>& stack()
 	{
-		static std::vector<RuntimeParameters> obj;
+		static std::vector<GUIConfiguration> obj;
 		return obj;
 	}
 };
@@ -81,4 +81,4 @@ private:
 
 }
 
-#endif /* VIEWER_RUNTIME_PARAMETERS_H_ */
+#endif /* VIEWER_GUI_CONFIGURATION_H_ */

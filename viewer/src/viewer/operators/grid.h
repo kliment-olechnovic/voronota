@@ -1,8 +1,8 @@
 #ifndef VIEWER_OPERATORS_GRID_H_
 #define VIEWER_OPERATORS_GRID_H_
 
+#include "../gui_configuration.h"
 #include "../operators_common.h"
-#include "../runtime_parameters.h"
 
 namespace voronota
 {
@@ -23,7 +23,7 @@ public:
 		}
 	};
 
-	explicit Grid(const RuntimeParameters::GridVariant grid_variant_value) : grid_variant_value_(grid_variant_value)
+	explicit Grid(const GUIConfiguration::GridVariant grid_variant_value) : grid_variant_value_(grid_variant_value)
 	{
 	}
 
@@ -38,14 +38,14 @@ public:
 	Result run(void*&) const
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_grid();
-		RuntimeParameters::instance().grid_variant=grid_variant_value_;
+		GUIConfiguration::instance().grid_variant=grid_variant_value_;
 		uv::ViewerApplication::instance_refresh_frame();
 		Result result;
 		return result;
 	}
 
 private:
-	RuntimeParameters::GridVariant grid_variant_value_;
+	GUIConfiguration::GridVariant grid_variant_value_;
 };
 
 }

@@ -2,7 +2,7 @@
 #define VIEWER_OPERATORS_SCREENSHOT_H_
 
 #include "../operators_common.h"
-#include "../runtime_parameters.h"
+#include "../gui_configuration.h"
 
 namespace voronota
 {
@@ -45,11 +45,11 @@ public:
 		int H=0;
 		std::vector<char> image_data;
 
-		RuntimeParameters::push();
+		GUIConfiguration::push();
 
-		if(RuntimeParameters::instance().enabled_widgets())
+		if(GUIConfiguration::instance().enabled_widgets())
 		{
-			RuntimeParameters::instance().disable_widgets();
+			GUIConfiguration::instance().set_enabled_widgets(false);
 			uv::ViewerApplication::instance_refresh_frame();
 		}
 
@@ -58,7 +58,7 @@ public:
 			throw std::runtime_error(std::string("Failed to read pixels."));
 		}
 
-		RuntimeParameters::pop();
+		GUIConfiguration::pop();
 
 		std::ofstream output(filename.c_str(), std::ios::out);
 

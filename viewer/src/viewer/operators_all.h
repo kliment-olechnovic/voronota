@@ -13,5 +13,6 @@
 #include "operators/setup_rendering.h"
 #include "operators/stereo.h"
 #include "operators/sleep.h"
+#include "operators/configure_gui.h"
 
 #endif /* VIEWER_OPERATORS_ALL_H_ */

@@ -48,11 +48,16 @@ gif_rock=function(filename, params)
 	params.frames=params.frames-(params.frames%2);
 	
 	var tmp_dir=undefined;
+	var pending_gui=false;
 	var terminal_error=undefined;
 	
 	try
 	{
 		tmp_dir=shell("mktemp -d").stdout.trim();
+		
+		voronota_configure_gui_push();
+		pending_gui=true;
+		voronota_configure_gui_disable_widgets();
 		
 		var screenfiles=[];
 		
@@ -102,6 +107,9 @@ gif_rock=function(filename, params)
 			voronota_rotate('-axis 0 1 0', '-angle', 0-params.angle);
 		}
 		
+		voronota_configure_gui_pop();
+		pending_gui=false;
+		
 		var convert_script="convert -delay "+params.delay+" "+screenfiles.join(" ")+" -loop 0 "+filename;
 		
 		var convert_result=shell(convert_script);
@@ -114,6 +122,11 @@ gif_rock=function(filename, params)
 	catch(err)
 	{
 		terminal_error=err;
+	}
+	
+	if(pending_gui)
+	{
+		voronota_configure_gui_pop();
 	}
 	
 	if(tmp_dir!==undefined)
@@ -152,6 +165,7 @@ gif_spin=function(filename, angle, delay)
 	}
 	
 	var tmp_dir=undefined;
+	var pending_gui=false;
 	var terminal_error=undefined;
 	
 	try
@@ -160,6 +174,11 @@ gif_spin=function(filename, angle, delay)
 		
 		var screenfiles=[];
 		
+		voronota_configure_gui_push();
+		pending_gui=true;
+		
+		voronota_configure_gui_disable_widgets();
+		
 		for(var a=0;a<360;a+=angle)
 		{
 			var screenfile=(tmp_dir+'/screen'+a+'.ppm');
@@ -167,6 +186,9 @@ gif_spin=function(filename, angle, delay)
 			voronota_screenshot(screenfile);
 			voronota_rotate('-axis 0 1 0', '-angle', angle);
 		}
+		
+		voronota_configure_gui_pop();
+		pending_gui=false;
 		
 		var convert_script="convert -delay "+delay+" "+screenfiles.join(" ")+" -loop 0 "+filename;
 		
@@ -180,6 +202,11 @@ gif_spin=function(filename, angle, delay)
 	catch(err)
 	{
 		terminal_error=err;
+	}
+	
+	if(pending_gui)
+	{
+		voronota_configure_gui_pop();
 	}
 	
 	if(tmp_dir!==undefined)

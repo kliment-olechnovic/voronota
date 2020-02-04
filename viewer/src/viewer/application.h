@@ -93,16 +93,16 @@ protected:
 		{
 			if(key==GLFW_KEY_F4)
 			{
-				RuntimeParameters::instance().enabled_menu=!RuntimeParameters::instance().enabled_menu;
-				RuntimeParameters::instance().enabled_console=RuntimeParameters::instance().enabled_menu;
-				if(RuntimeParameters::instance().enabled_console)
+				GUIConfiguration::instance().enabled_menu=!GUIConfiguration::instance().enabled_menu;
+				GUIConfiguration::instance().enabled_console=GUIConfiguration::instance().enabled_menu;
+				if(GUIConfiguration::instance().enabled_console)
 				{
 					console_.set_focused(true);
 				}
 			}
 			else if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
-				if(hovered() && RuntimeParameters::instance().enabled_console)
+				if(hovered() && GUIConfiguration::instance().enabled_console)
 				{
 					console_.set_focused(true);
 				}
@@ -131,17 +131,17 @@ protected:
 	{
 		ImGui_ImplGlfwGL3_NewFrame();
 
-		if(RuntimeParameters::instance().enabled_menu)
+		if(GUIConfiguration::instance().enabled_menu)
 		{
 			execute_menu();
 		}
 
-		if(RuntimeParameters::instance().enabled_cursor_label)
+		if(GUIConfiguration::instance().enabled_cursor_label)
 		{
 			cursor_label_.execute(mouse_x(),  mouse_y());
 		}
 
-		if(RuntimeParameters::instance().enabled_console)
+		if(GUIConfiguration::instance().enabled_console)
 		{
 			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
 			if(!console_result.empty())
@@ -158,7 +158,7 @@ protected:
 
 	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
 	{
-		if(RuntimeParameters::instance().enabled_info_box)
+		if(GUIConfiguration::instance().enabled_info_box)
 		{
 			execute_info_box(box_x, box_y, box_w, box_h, stereo, grid, id);
 		}
@@ -166,7 +166,7 @@ protected:
 
 	void on_draw_overlay_end()
 	{
-		if(RuntimeParameters::instance().enabled_waiting_indicator)
+		if(GUIConfiguration::instance().enabled_waiting_indicator)
 		{
 			if(!waiting_indicator_.decided())
 			{
@@ -185,7 +185,7 @@ protected:
 
 	void on_after_rendered_frame()
 	{
-		if(RuntimeParameters::instance().enabled_waiting_indicator)
+		if(GUIConfiguration::instance().enabled_waiting_indicator)
 		{
 			if(waiting_indicator_.activated() && !waiting_indicator_.executed())
 			{
@@ -491,13 +491,13 @@ private:
 				}
 				if(ImGui::BeginMenu("Object text description"))
 				{
-					if(ImGui::MenuItem("Disable", "", false, RuntimeParameters::instance().enabled_info_box))
+					if(ImGui::MenuItem("Disable", "", false, GUIConfiguration::instance().enabled_info_box))
 					{
-						RuntimeParameters::instance().enabled_info_box=false;
+						GUIConfiguration::instance().enabled_info_box=false;
 					}
-					if(ImGui::MenuItem("Enable", "", false, !RuntimeParameters::instance().enabled_info_box))
+					if(ImGui::MenuItem("Enable", "", false, !GUIConfiguration::instance().enabled_info_box))
 					{
-						RuntimeParameters::instance().enabled_info_box=true;
+						GUIConfiguration::instance().enabled_info_box=true;
 					}
 					ImGui::EndMenu();
 				}

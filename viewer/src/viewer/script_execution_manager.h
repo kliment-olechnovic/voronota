@@ -6,7 +6,7 @@
 #include "congregations_of_drawers_for_data_managers.h"
 #include "operators_all.h"
 #include "environment.h"
-#include "runtime_parameters.h"
+#include "gui_configuration.h"
 
 namespace voronota
 {
@@ -23,8 +23,8 @@ public:
 		set_command_for_extra_actions("background", operators::Background());
 		set_command_for_extra_actions("mono", operators::Mono());
 		set_command_for_extra_actions("stereo", operators::Stereo());
-		set_command_for_extra_actions("grid-by-object", operators::Grid(RuntimeParameters::GRID_VARIANT_BY_OBJECT));
-		set_command_for_extra_actions("grid-by-concept", operators::Grid(RuntimeParameters::GRID_VARIANT_BY_CONCEPT));
+		set_command_for_extra_actions("grid-by-object", operators::Grid(GUIConfiguration::GRID_VARIANT_BY_OBJECT));
+		set_command_for_extra_actions("grid-by-concept", operators::Grid(GUIConfiguration::GRID_VARIANT_BY_CONCEPT));
 		set_command_for_extra_actions("ortho", operators::Ortho());
 		set_command_for_extra_actions("perspective", operators::Perspective());
 		set_command_for_extra_actions("fog", operators::Fog());
@@ -32,6 +32,10 @@ public:
 		set_command_for_extra_actions("screenshot", operators::Screenshot());
 		set_command_for_extra_actions("setup-rendering", operators::SetupRendering());
 		set_command_for_extra_actions("sleep", operators::Sleep());
+		set_command_for_extra_actions("configure-gui-push", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_PUSH));
+		set_command_for_extra_actions("configure-gui-pop", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_POP));
+		set_command_for_extra_actions("configure-gui-disable-widgets", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_WIDGETS));
+		set_command_for_extra_actions("configure-gui-enable-widgets", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_WIDGETS));
 
 		set_default_aliases();
 	}
@@ -168,11 +172,11 @@ public:
 		uv::ViewerApplication::instance().set_grid_size(1);
 		if(uv::ViewerApplication::instance().rendering_mode_is_grid())
 		{
-			if(RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
+			if(GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_OBJECT)
 			{
 				uv::ViewerApplication::instance().set_grid_size(static_cast<int>(congregation_of_data_managers().count_objects(false, true)));
 			}
-			else if(RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_CONCEPT)
+			else if(GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_CONCEPT)
 			{
 				uv::ViewerApplication::instance().set_grid_size(2);
 			}
@@ -187,7 +191,7 @@ public:
 		query.visible=true;
 		std::vector<scripting::DataManager*> dms=congregation_of_data_managers().get_objects(query);
 
-		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_OBJECT)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
@@ -199,7 +203,7 @@ public:
 				}
 			}
 		}
-		else if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_CONCEPT)
+		else if(uv::ViewerApplication::instance().rendering_mode_is_grid() && GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_CONCEPT)
 		{
 			if(grid_id==0)
 			{
@@ -240,7 +244,7 @@ public:
 
 		bool generated=false;
 
-		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && RuntimeParameters::instance().grid_variant==RuntimeParameters::GRID_VARIANT_BY_OBJECT)
+		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_OBJECT)
 		{
 			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
 			if(grid_uid<dms.size())
