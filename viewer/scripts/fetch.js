@@ -58,7 +58,7 @@ fetch_url=function(file_url, destination_name, as_assembly)
 			throw ("No file from URL '"+file_url+"'");
 		}
 		
-		if(voronota_import('-file', tmp_dir+'/destination.pdb', '-title', destination_name, '-as-assembly', as_assembly).results_summary.partial_success!==true)
+		if(voronota_import('-file', tmp_dir+'/destination.pdb', '-title', destination_name, '-as-assembly', as_assembly, '-include-heteroatoms').results_summary.partial_success!==true)
 		{
 			throw ("Failed to import PDB file");
 		}
@@ -97,7 +97,7 @@ fetch_pdb=function(pdb_id)
 	
 	var file_url="https://files.rcsb.org/download/"+pdb_id+".pdb.gz";
 	
-	return fetch_url(file_url, pdb_id);
+	return fetch_url(file_url, pdb_id, false);
 }
 
 fetch_pdb_assembly=function(pdb_id, assembly_number)
