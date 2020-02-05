@@ -6,7 +6,7 @@
 #include <map>
 #include <algorithm>
 
-#include "../common/chain_residue_atom_descriptor.h"
+#include "chain_residue_atom_descriptor.h"
 
 namespace voronota
 {
