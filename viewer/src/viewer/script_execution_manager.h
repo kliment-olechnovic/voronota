@@ -36,6 +36,8 @@ public:
 		set_command_for_extra_actions("configure-gui-pop", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_POP));
 		set_command_for_extra_actions("configure-gui-disable-widgets", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_WIDGETS));
 		set_command_for_extra_actions("configure-gui-enable-widgets", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_WIDGETS));
+		set_command_for_extra_actions("configure-gui-disable-waiting-indicator", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_WAITING_INDICATOR));
+		set_command_for_extra_actions("configure-gui-enable-waiting-indicator", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_WAITING_INDICATOR));
 
 		set_default_aliases();
 	}
