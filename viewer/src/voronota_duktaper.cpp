@@ -9,6 +9,17 @@
 namespace
 {
 
+inline std::string generate_command_args_init_script(const std::vector<std::string>& command_args)
+{
+	std::ostringstream output;
+	output << "CommandArgs=[];\n";
+	for(std::size_t i=0;i<command_args.size();i++)
+	{
+		output << "CommandArgs.push('" << command_args[i] << "');\n";
+	}
+	return output.str();
+}
+
 inline std::string read_script(std::istream& input)
 {
 	std::ostringstream output;
@@ -77,21 +88,20 @@ int main(const int argc, const char** argv)
 	try
 	{
 		std::vector<std::string> command_args;
+		for(int i=1;i<argc;i++)
 		{
-			int i=1;
-			while(i<argc)
-			{
-				const std::string argv_i=argv[i];
-				command_args.push_back(argv_i);
-				i++;
-			}
+			command_args.push_back(argv[i]);
 		}
+		if(command_args.empty())
+		{
+			command_args.push_back("-");
+		}
+		const std::string file_name=command_args[0];
 
 		voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
 		voronota::viewer::DuktapeManager::set_script_execution_manager(execution_manager);
 		voronota::viewer::DuktapeManager::eval(voronota::scripting::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
-
-		const std::string file_name=(command_args.empty() ? std::string("-") : std::string(command_args[0]));
+		voronota::viewer::DuktapeManager::eval(generate_command_args_init_script(command_args));
 
 		if(file_name=="-")
 		{
