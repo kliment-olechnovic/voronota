@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 rm -rf src module
 
 cp -r ../../src ./
-cp ../voronota_scripting.i ./src
+cp ../voronota_scripting.i ../voronota_scripting.h ../voronota_scripting.cpp ./src
 
 cd ./src
 
