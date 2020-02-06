@@ -92,6 +92,7 @@ public:
 		set_command_for_data_manager("export-triangulation", operators::ExportTriangulation(), false);
 		set_command_for_data_manager("export-triangulation-voxels", operators::ExportTriangulationVoxels(), false);
 		set_command_for_data_manager("find-connected-components", operators::FindConnectedComponents(), true);
+		set_command_for_data_manager("generate-residue-voromqa-energy-profile", operators::GenerateResidueVoroMQAEnergyProfile(), true);
 		set_command_for_data_manager("hide-atoms", operators::HideAtoms(), true);
 		set_command_for_data_manager("hide-contacts", operators::HideContacts(), true);
 		set_command_for_data_manager("hide-figures", operators::HideFigures(), true);

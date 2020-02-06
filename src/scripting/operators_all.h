@@ -40,6 +40,7 @@
 #include "operators/export_triangulation.h"
 #include "operators/export_triangulation_voxels.h"
 #include "operators/find_connected_components.h"
+#include "operators/generate_residue_voromqa_energy_profile.h"
 #include "operators/import_adjuncts_of_atoms.h"
 #include "operators/import_contacts.h"
 #include "operators/import.h"
