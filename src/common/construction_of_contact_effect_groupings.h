@@ -319,12 +319,12 @@ public:
 
 		static int number_of_seq_sep_groups()
 		{
-			return 6;
+			return 7;
 		}
 
 		static int calc_seq_sep_group(const CRADsPair& crads_pair)
 		{
-			for(int seq_sep_group=(number_of_seq_sep_groups()-1);seq_sep_group>=0;seq_sep_group++)
+			for(int seq_sep_group=(number_of_seq_sep_groups()-1);seq_sep_group>=0;seq_sep_group--)
 			{
 				int seq_sep=(1+seq_sep_group);
 				if(CRAD::match_with_sequence_separation_interval(crads_pair.a, crads_pair.b, seq_sep, CRAD::null_num(), true))

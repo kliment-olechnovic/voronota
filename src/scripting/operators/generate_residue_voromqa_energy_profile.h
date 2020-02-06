@@ -96,12 +96,15 @@ public:
 				{
 					output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_sum;
 					output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_sum;
-					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum.size();j++)
+				}
+				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
+				{
+					const std::size_t num_of_splits=std::min(
+							cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum.size(),
+							cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum.size());
+					for(std::size_t j=0;j<num_of_splits;j++)
 					{
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j];
-					}
-					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum.size();j++)
-					{
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j];
 					}
 				}
