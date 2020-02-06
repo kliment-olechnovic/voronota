@@ -22,24 +22,42 @@ public:
 		std::vector< std::set<CRADsPair> > related_crads_pairs;
 		std::set<CRADsPair> collapsed_related_crads_pairs;
 
-		void init(const std::size_t number_of_levels_of_crads, const CRAD& crad, const CRADsPair& crads_pair)
+		void init(const std::size_t number_of_layers_of_crads, const CRAD& related_crad, const CRADsPair& related_crads_pair)
 		{
-			if(number_of_levels_of_crads<1)
+			if(number_of_layers_of_crads<1)
 			{
 				return;
 			}
-			if(related_crads.size()!=number_of_levels_of_crads)
+			if(related_crads.size()!=number_of_layers_of_crads)
 			{
-				related_crads.resize(number_of_levels_of_crads);
+				related_crads.resize(number_of_layers_of_crads);
 			}
-			if(related_crads_pairs.size()!=(number_of_levels_of_crads*2))
+			if(related_crads_pairs.size()!=(number_of_layers_of_crads*2))
 			{
-				related_crads_pairs.resize(number_of_levels_of_crads*2);
+				related_crads_pairs.resize(number_of_layers_of_crads*2);
 			}
-			related_crads[0].insert(crad);
-			collapsed_related_crads.insert(crad);
-			related_crads_pairs[0].insert(crads_pair);
-			collapsed_related_crads_pairs.insert(crads_pair);
+			related_crads[0].insert(related_crad);
+			collapsed_related_crads.insert(related_crad);
+			related_crads_pairs[0].insert(related_crads_pair);
+			collapsed_related_crads_pairs.insert(related_crads_pair);
+		}
+
+		void update_related_crads(const std::size_t layer_id, const CRAD& related_crad)
+		{
+			if(layer_id<related_crads.size() && collapsed_related_crads.count(related_crad)<1)
+			{
+				related_crads[layer_id].insert(related_crad);
+				collapsed_related_crads.insert(related_crad);
+			}
+		}
+
+		void update_related_crads_pairs(const std::set<CRADsPair>& valid_crads_pairs, const std::size_t layer_id, const CRADsPair& related_crads_pair)
+		{
+			if(layer_id<related_crads_pairs.size() && collapsed_related_crads_pairs.count(related_crads_pair)<1 && valid_crads_pairs.count(related_crads_pair)>0)
+			{
+				related_crads_pairs[layer_id].insert(related_crads_pair);
+				collapsed_related_crads_pairs.insert(related_crads_pair);
+			}
 		}
 	};
 
@@ -55,14 +73,12 @@ public:
 
 		for(std::set<CRADsPair>::const_iterator it=raw_all_crads_pairs.begin();it!=raw_all_crads_pairs.end();++it)
 		{
-			const CRAD crad_a=it->a.without_atom();
-			const CRAD crad_b=it->b.without_atom();
-			if(crad_a!=CRAD::solvent() && crad_b!=CRAD::solvent() && CRAD::match_with_sequence_separation_interval(crad_a, crad_b, 1, CRAD::null_num(), true))
+			const CRADsPair crads_pair(it->a.without_atom(), it->b.without_atom());
+			if(crads_pair.a!=CRAD::solvent() && crads_pair.b!=CRAD::solvent() && CRAD::match_with_sequence_separation_interval(crads_pair.a, crads_pair.b, 1, CRAD::null_num(), true))
 			{
-				const CRADsPair crads_pair(crad_a, crad_b);
 				all_crads_pairs.insert(crads_pair);
-				crad_effect_groupings[crad_a].init(number_of_layers_of_crads, crad_b, crads_pair);
-				crad_effect_groupings[crad_b].init(number_of_layers_of_crads, crad_a, crads_pair);
+				crad_effect_groupings[crads_pair.a].init(number_of_layers_of_crads, crads_pair.b, crads_pair);
+				crad_effect_groupings[crads_pair.b].init(number_of_layers_of_crads, crads_pair.a, crads_pair);
 			}
 		}
 
@@ -77,11 +93,7 @@ public:
 					const std::set<CRAD>& candidate_crads=crad_effect_groupings[*it].related_crads[0];
 					for(std::set<CRAD>::const_iterator jt=candidate_crads.begin();jt!=candidate_crads.end();++jt)
 					{
-						if(ceg.collapsed_related_crads.count(*jt)<1)
-						{
-							ceg.related_crads[top_layer_id].insert(*jt);
-							ceg.collapsed_related_crads.insert(*jt);
-						}
+						ceg.update_related_crads(top_layer_id, *jt);
 					}
 				}
 			}
@@ -99,24 +111,14 @@ public:
 						++jt;
 						for(;jt!=ceg.related_crads[layer_id].end();++jt)
 						{
-							const CRADsPair candidate(*it, *jt);
-							if(ceg.collapsed_related_crads_pairs.count(candidate)<1 && all_crads_pairs.count(candidate)>0)
-							{
-								ceg.related_crads_pairs[layer_id*2+1].insert(candidate);
-								ceg.collapsed_related_crads_pairs.insert(candidate);
-							}
+							ceg.update_related_crads_pairs(all_crads_pairs, (layer_id*2+1), CRADsPair(*it, *jt));
 						}
 					}
 					if((layer_id+1)<number_of_layers_of_crads)
 					{
 						for(std::set<CRAD>::const_iterator jt=ceg.related_crads[layer_id+1].begin();jt!=ceg.related_crads[layer_id+1].end();++jt)
 						{
-							const CRADsPair candidate(*it, *jt);
-							if(ceg.collapsed_related_crads_pairs.count(candidate)<1 && all_crads_pairs.count(candidate)>0)
-							{
-								ceg.related_crads_pairs[layer_id*2+2].insert(candidate);
-								ceg.collapsed_related_crads_pairs.insert(candidate);
-							}
+							ceg.update_related_crads_pairs(all_crads_pairs, (layer_id*2+2), CRADsPair(*it, *jt));
 						}
 					}
 				}
