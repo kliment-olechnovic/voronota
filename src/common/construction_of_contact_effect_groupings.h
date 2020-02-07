@@ -213,14 +213,10 @@ public:
 
 		struct InterResidueAttributes
 		{
-			double inter_atom_contact_area_sum;
-			double inter_atom_contact_energy_sum;
 			std::vector<double> inter_atom_contact_area_split_sum;
 			std::vector<double> inter_atom_contact_energy_split_sum;
 
 			InterResidueAttributes() :
-				inter_atom_contact_area_sum(0.0),
-				inter_atom_contact_energy_sum(0.0),
 				inter_atom_contact_area_split_sum(number_of_seq_sep_groups(), 0.0),
 				inter_atom_contact_energy_split_sum(number_of_seq_sep_groups(), 0.0)
 			{
@@ -284,17 +280,14 @@ public:
 					for(std::set<CRADsPair>::const_iterator related_crads_pairs_it=ceg.related_crads_pairs[layer_id].begin();related_crads_pairs_it!=ceg.related_crads_pairs[layer_id].end();++related_crads_pairs_it)
 					{
 						const int seq_sep_group=calc_seq_sep_group(*related_crads_pairs_it);
-						const std::set<std::size_t>& contact_ids=bundle_of_cegs.map_of_inter_atom_contact_ids[*related_crads_pairs_it];
-						for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+						if(seq_sep_group>=0 && seq_sep_group<static_cast<int>(iras.inter_atom_contact_area_split_sum.size()))
 						{
-							const Contact& contact=contacts[*it];
-							const double contact_energy=get_map_value_safely(contact.value.props.adjuncts, adjunct_inter_atom_energy_scores_raw, 0.0);
-							iras.inter_atom_contact_area_sum+=contact.value.area;
-							iras.inter_atom_contact_energy_sum+=contact_energy;
-							if(seq_sep_group>=0 && seq_sep_group<static_cast<int>(iras.inter_atom_contact_area_split_sum.size()))
+							const std::set<std::size_t>& contact_ids=bundle_of_cegs.map_of_inter_atom_contact_ids[*related_crads_pairs_it];
+							for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 							{
+								const Contact& contact=contacts[*it];
 								iras.inter_atom_contact_area_split_sum[seq_sep_group]+=contact.value.area;
-								iras.inter_atom_contact_energy_split_sum[seq_sep_group]+=contact_energy;
+								iras.inter_atom_contact_energy_split_sum[seq_sep_group]+=get_map_value_safely(contact.value.props.adjuncts, adjunct_inter_atom_energy_scores_raw, 0.0);
 							}
 						}
 					}
