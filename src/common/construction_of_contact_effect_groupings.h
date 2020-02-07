@@ -221,15 +221,26 @@ public:
 				inter_atom_contact_energy_split_sum(number_of_seq_sep_groups(), 0.0)
 			{
 			}
+
+			std::size_t length() const
+			{
+				return std::min(inter_atom_contact_area_split_sum.size(), inter_atom_contact_energy_split_sum.size());
+			}
 		};
 
 		std::vector<ResidueAttributes> layered_residue_attributes;
 		std::vector<InterResidueAttributes> layered_inter_residue_attributes;
+		bool propagated;
+
+		ContactEffectGroupingEnergyProfile() : propagated(false)
+		{
+		}
 
 		static std::map<CRAD, ContactEffectGroupingEnergyProfile> construct_map_of_contact_effect_grouping_energy_profiles(
 				const std::vector<Atom>& atoms,
 				const std::vector<Contact>& contacts,
 				const std::size_t number_of_residue_layers,
+				const bool propagate,
 				const std::string& adjunct_atom_volumes,
 				const std::string& adjunct_atom_quality_scores,
 				const std::string& adjunct_inter_atom_energy_scores_raw)
@@ -293,10 +304,57 @@ public:
 					}
 				}
 
+				if(propagate)
+				{
+					cegep.propagate();
+				}
+
 				map_of_contact_effect_grouping_energy_profiles[central_crad]=cegep;
 			}
 
 			return map_of_contact_effect_grouping_energy_profiles;
+		}
+
+		void propagate()
+		{
+			if(propagated)
+			{
+				return;
+			}
+
+			for(std::size_t i=1;i<layered_residue_attributes.size();i++)
+			{
+				const ResidueAttributes& a=layered_residue_attributes[i-1];
+				ResidueAttributes& b=layered_residue_attributes[i];
+				b.atom_count_sum+=a.atom_count_sum;
+				b.atom_volume_sum+=a.atom_volume_sum;
+				b.atom_quality_score_sum+=a.atom_quality_score_sum;
+				b.solvent_contact_area_sum+=a.solvent_contact_area_sum;
+				b.solvent_contact_energy_sum+=a.solvent_contact_energy_sum;
+			}
+
+			for(std::size_t i=0;i<layered_inter_residue_attributes.size();i++)
+			{
+				const int n=static_cast<int>(layered_inter_residue_attributes[i].length());
+				for(int j=(n-2);j>=0;j--)
+				{
+					layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j]+=layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j+1];
+					layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j]+=layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j+1];
+				}
+			}
+
+			for(std::size_t i=1;i<layered_inter_residue_attributes.size();i++)
+			{
+				const InterResidueAttributes& a=layered_inter_residue_attributes[i-1];
+				InterResidueAttributes& b=layered_inter_residue_attributes[i];
+				for(std::size_t j=0;j<b.length();j++)
+				{
+					b.inter_atom_contact_area_split_sum[j]+=a.inter_atom_contact_area_split_sum[j];
+					b.inter_atom_contact_energy_split_sum[j]+=a.inter_atom_contact_energy_split_sum[j];
+				}
+			}
+
+			propagated=true;
 		}
 
 	private:

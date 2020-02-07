@@ -71,7 +71,7 @@ public:
 
 		std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile> map_of_residue_energy_profiles=
 				CCEG::ContactEffectGroupingEnergyProfile::construct_map_of_contact_effect_grouping_energy_profiles(
-						data_manager.atoms(), data_manager.contacts(), 4, adjunct_atom_volumes, adjunct_atom_quality_scores, adjunct_inter_atom_energy_scores_raw);
+						data_manager.atoms(), data_manager.contacts(), 4, false, adjunct_atom_volumes, adjunct_atom_quality_scores, adjunct_inter_atom_energy_scores_raw);
 
 		OutputSelector output_selector(file);
 
@@ -97,10 +97,7 @@ public:
 				}
 				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
 				{
-					const std::size_t num_of_splits=std::min(
-							cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum.size(),
-							cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum.size());
-					for(std::size_t j=0;j<num_of_splits;j++)
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].length();j++)
 					{
 						output << " irl" << i << "_ss" << j << "_iacas";
 						output << " irl" << i << "_ss" << j << "_iaces";
@@ -143,11 +140,7 @@ public:
 
 				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
 				{
-					const std::size_t num_of_splits=std::min(
-							cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum.size(),
-							cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum.size());
-
-					for(std::size_t j=0;j<num_of_splits;j++)
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].length();j++)
 					{
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j];
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j];
