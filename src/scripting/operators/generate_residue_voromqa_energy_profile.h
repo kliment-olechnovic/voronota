@@ -71,7 +71,7 @@ public:
 
 		std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile> map_of_residue_energy_profiles=
 				CCEG::ContactEffectGroupingEnergyProfile::construct_map_of_contact_effect_grouping_energy_profiles(
-						data_manager.atoms(), data_manager.contacts(), 4, false, adjunct_atom_volumes, adjunct_atom_quality_scores, adjunct_inter_atom_energy_scores_raw);
+						data_manager.atoms(), data_manager.contacts(), 4, true, adjunct_atom_volumes, adjunct_atom_quality_scores, adjunct_inter_atom_energy_scores_raw);
 
 		OutputSelector output_selector(file);
 

@@ -354,6 +354,19 @@ public:
 				}
 			}
 
+			for(std::size_t i=0;i<layered_inter_residue_attributes.size();i++)
+			{
+				const std::size_t residue_layer_id=(i/2);
+				if(residue_layer_id<layered_inter_residue_attributes.size())
+				{
+					for(std::size_t j=0;j<layered_inter_residue_attributes[i].length();j++)
+					{
+						layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_area_sum;
+						layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_energy_sum;
+					}
+				}
+			}
+
 			propagated=true;
 		}
 
