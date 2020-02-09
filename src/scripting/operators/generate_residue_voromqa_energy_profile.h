@@ -81,7 +81,7 @@ public:
 
 			if(!map_of_residue_energy_profiles.empty())
 			{
-				output << "pos ncat";
+				output << "pos catn";
 				for(int i=0;i<20;i++)
 				{
 					output << " nf" << i;
@@ -94,13 +94,25 @@ public:
 					output << " rl" << i << "_aqs";
 					output << " rl" << i << "_sca";
 					output << " rl" << i << "_sce";
+					output << " rl" << i << "_aqs_n";
+					output << " rl" << i << "_sce_n";
 				}
 				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
 				{
 					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].length();j++)
 					{
-						output << " irl" << i << "_ss" << j << "_iacas";
-						output << " irl" << i << "_ss" << j << "_iaces";
+						output << " irl" << i << "_ss" << j << "_iaca";
+						output << " irl" << i << "_ss" << j << "_iace";
+						output << " irl" << i << "_ss" << j << "_iace_n";
+					}
+				}
+				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes_with_solvent.size();i++)
+				{
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes_with_solvent[i].length();j++)
+					{
+						output << " irlws" << i << "_ss" << j << "_iaca";
+						output << " irlws" << i << "_ss" << j << "_iace";
+						output << " irlws" << i << "_ss" << j << "_iace_n";
 					}
 				}
 				output << "\n";
@@ -136,6 +148,8 @@ public:
 					output << " " << cegep.layered_residue_attributes[i].atom_quality_score_sum;
 					output << " " << cegep.layered_residue_attributes[i].solvent_contact_area_sum;
 					output << " " << cegep.layered_residue_attributes[i].solvent_contact_energy_sum;
+					output << " " << safe_ratio(cegep.layered_residue_attributes[i].atom_quality_score_sum, cegep.layered_residue_attributes[i].atom_count_sum, 0.0);
+					output << " " << safe_ratio(cegep.layered_residue_attributes[i].solvent_contact_energy_sum, cegep.layered_residue_attributes[i].solvent_contact_area_sum, 0.0);
 				}
 
 				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
@@ -144,6 +158,17 @@ public:
 					{
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j];
 						output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j];
+						output << " " << safe_ratio(cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j], 0.0);
+					}
+				}
+
+				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes_with_solvent.size();i++)
+				{
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes_with_solvent[i].length();j++)
+					{
+						output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j];
+						output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j];
+						output << " " << safe_ratio(cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j], 0.0);
 					}
 				}
 
@@ -162,6 +187,11 @@ public:
 	}
 
 private:
+	static double safe_ratio(const double a, const double b, const double nan_replacement)
+	{
+		return (b>0.0 ? (a/b) : nan_replacement);
+	}
+
 	static int convert_residue_name_to_number(const std::string& name)
 	{
 		static const std::map<std::string, int> m=create_map_of_residue_names_to_numbers();

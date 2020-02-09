@@ -230,6 +230,7 @@ public:
 
 		std::vector<ResidueAttributes> layered_residue_attributes;
 		std::vector<InterResidueAttributes> layered_inter_residue_attributes;
+		std::vector<InterResidueAttributes> layered_inter_residue_attributes_with_solvent;
 		bool propagated;
 
 		ContactEffectGroupingEnergyProfile() : propagated(false)
@@ -354,15 +355,17 @@ public:
 				}
 			}
 
-			for(std::size_t i=0;i<layered_inter_residue_attributes.size();i++)
+			layered_inter_residue_attributes_with_solvent=layered_inter_residue_attributes;
+
+			for(std::size_t i=0;i<layered_inter_residue_attributes_with_solvent.size();i++)
 			{
 				const std::size_t residue_layer_id=(i/2);
-				if(residue_layer_id<layered_inter_residue_attributes.size())
+				if(residue_layer_id<layered_inter_residue_attributes_with_solvent.size())
 				{
-					for(std::size_t j=0;j<layered_inter_residue_attributes[i].length();j++)
+					for(std::size_t j=0;j<layered_inter_residue_attributes_with_solvent[i].length();j++)
 					{
-						layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_area_sum;
-						layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_energy_sum;
+						layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_area_sum;
+						layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j]+=layered_residue_attributes[residue_layer_id].solvent_contact_energy_sum;
 					}
 				}
 			}
