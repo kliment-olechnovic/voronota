@@ -1026,6 +1026,9 @@
             "name":"find-connected-components",
             "short_description":""},
           {
+            "name":"generate-residue-voromqa-energy-profile",
+            "short_description":""},
+          {
             "name":"hide-atoms",
             "short_description":""},
           {
