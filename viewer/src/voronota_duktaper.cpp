@@ -110,7 +110,7 @@ int main(const int argc, const char** argv)
 				bool readline_failed=false;
 				while(!readline_failed && !execution_manager.exit_requested())
 				{
-					voronota::viewer::DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed));
+					voronota::viewer::DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
 				}
 			}
 			else

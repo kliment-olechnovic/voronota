@@ -15,7 +15,7 @@ namespace viewer
 class DuktapeManager
 {
 public:
-	static bool eval(const std::string& script)
+	static bool eval(const std::string& script, const bool print_result=false)
 	{
 		if(script.empty())
 		{
@@ -25,6 +25,10 @@ public:
 		if(!success)
 		{
 			std::cerr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
+		}
+		else if(print_result)
+		{
+			std::cerr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
 		}
 		duk_pop(get_context());
 		return success;
