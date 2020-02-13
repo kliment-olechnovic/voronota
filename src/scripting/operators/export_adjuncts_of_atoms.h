@@ -125,17 +125,32 @@ public:
 		}
 		output << "\n";
 
+		std::map< common::ChainResidueAtomDescriptor, std::vector<double> > map_of_output;
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
 			const Atom& atom=data_manager.atoms()[*it];
-			output << atom.crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
+			std::vector<double>& output_values=map_of_output[atom.crad.without_some_info(no_serial, no_name, no_resSeq, no_resName)];
+			output_values.resize(adjuncts_filled.size(), std::numeric_limits<double>::max());
 			for(std::size_t i=0;i<adjuncts_filled.size();i++)
 			{
-				output << " ";
 				std::map<std::string, double>::const_iterator jt=atom.value.props.adjuncts.find(adjuncts_filled[i]);
 				if(jt!=atom.value.props.adjuncts.end())
 				{
-					output << jt->second;
+					output_values[i]=jt->second;
+				}
+			}
+		}
+
+		for(std::map< common::ChainResidueAtomDescriptor, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
+		{
+			output << it->first;
+			const std::vector<double>& output_values=it->second;
+			for(std::size_t i=0;i<output_values.size();i++)
+			{
+				output << " ";
+				if(output_values[i]!=std::numeric_limits<double>::max())
+				{
+					output << output_values[i];
 				}
 				else
 				{

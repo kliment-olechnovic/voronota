@@ -81,7 +81,7 @@ public:
 
 			if(!map_of_residue_energy_profiles.empty())
 			{
-				output << "pos catn";
+				output << "ID catn";
 				for(int i=0;i<20;i++)
 				{
 					output << " nf" << i;
@@ -123,11 +123,7 @@ public:
 				{
 					const CCEG::CRAD& crad=it->first;
 
-					output << crad.chainID << "_" << crad.resSeq << "_" << crad.resName;
-					if(!crad.iCode.empty())
-					{
-						output << "_i" << crad.iCode;
-					}
+					output << crad;
 
 					const int res_name_number=convert_residue_name_to_number(crad.resName);
 

@@ -5,6 +5,7 @@
 
 #include "../../src/scripting/binding_javascript.h"
 #include "viewer/duktape_manager.h"
+#include "viewer/stocked_data_resources.h"
 
 namespace
 {
@@ -102,6 +103,13 @@ int main(const int argc, const char** argv)
 		voronota::viewer::DuktapeManager::set_script_execution_manager(execution_manager);
 		voronota::viewer::DuktapeManager::eval(voronota::scripting::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
 		voronota::viewer::DuktapeManager::eval(generate_command_args_init_script(command_args));
+
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::viewer::resources::data_radii());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::viewer::resources::data_voromqa_v1_energy_means_and_sds());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::viewer::resources::data_voromqa_v1_energy_potential());
+		voronota::viewer::DuktapeManager::eval("voronota_do('setup-loading --radii-file _virtual/radii')");
+		voronota::viewer::DuktapeManager::eval("voronota_do('setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds')");
+		voronota::scripting::VirtualFileStorage::clear();
 
 		if(file_name=="-")
 		{
