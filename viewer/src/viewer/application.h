@@ -3,7 +3,7 @@
 
 #include "../uv/viewer_application.h"
 
-#include "../imgui/imgui_impl_glfw_gl3.h"
+#include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
 #include "script_execution_manager.h"
 #include "widgets/console.h"

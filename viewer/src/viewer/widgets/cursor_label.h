@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../../imgui/imgui_impl_glfw_gl3.h"
+#include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
 namespace voronota
 {

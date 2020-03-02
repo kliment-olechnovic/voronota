@@ -1,8 +1,8 @@
 #ifndef VIEWER_DUKTAPE_MANAGER_H_
 #define VIEWER_DUKTAPE_MANAGER_H_
 
-#include "../duktape/duktape.h"
-#include "../redi/pstream.h"
+#include "../dependencies/duktape/duktape.h"
+#include "../dependencies/redi/pstream.h"
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
 

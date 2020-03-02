@@ -1,7 +1,7 @@
 #ifndef VIEWER_WIDGETS_WAITING_INDICATOR_H_
 #define VIEWER_WIDGETS_WAITING_INDICATOR_H_
 
-#include "../../imgui/imgui_impl_glfw_gl3.h"
+#include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
 namespace voronota
 {

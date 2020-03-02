@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "linenoise/linenoise.h"
+#include "dependencies/linenoise/linenoise.h"
 
 #include "../../src/scripting/binding_javascript.h"
 #include "viewer/duktape_manager.h"
