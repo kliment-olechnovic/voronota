@@ -196,6 +196,57 @@ private:
 		return 1;
 	}
 
+	static duk_ret_t native_raw_spipe(duk_context *ctx)
+	{
+		const std::string input_data=duk_require_string(ctx, -2);
+		const std::string command_raw=duk_require_string(ctx, -1);
+
+		if(command_raw.empty())
+		{
+			duk_push_string(ctx, "Missing shell command");
+			return duk_throw(ctx);
+		}
+
+		const std::string command=std::string("#!/bin/bash\n")+command_raw;
+
+		redi::pstream proc(command, redi::pstreams::pstdin|redi::pstreams::pstdout|redi::pstreams::pstderr);
+
+		proc << input_data;
+		proc.rdbuf()->peof();
+
+		scripting::VariantObject result_object;
+
+		if(proc.out().good())
+		{
+			std::istreambuf_iterator<char> eos;
+			result_object.value("stdout")=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
+		}
+
+		if(proc.err().good())
+		{
+			std::istreambuf_iterator<char> eos;
+			result_object.value("stderr")=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
+		}
+
+		proc.close();
+
+		if(proc.rdbuf()->exited())
+		{
+			result_object.value("exit_status")=proc.rdbuf()->status();
+		}
+		else
+		{
+			result_object.value("exit_status")=0;
+		}
+
+		const std::string result=scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), result_object);
+
+	    duk_push_string(ctx, result.c_str());
+	    duk_json_decode(ctx, -1);
+
+		return 1;
+	}
+
 	static int native_raw_voronota(duk_context *ctx)
 	{
 		const std::string script=duk_require_string(ctx, -1);
@@ -246,6 +297,9 @@ private:
 
 			duk_push_c_function(context_, native_raw_shell, 1);
 			duk_put_global_string(context_, "raw_shell");
+
+			duk_push_c_function(context_, native_raw_spipe, 2);
+			duk_put_global_string(context_, "raw_spipe");
 
 			duk_push_c_function(context_, native_raw_voronota, 1);
 			duk_put_global_string(context_, "raw_voronota");
@@ -309,6 +363,8 @@ private:
 						"fread=raw_fread;"
 						"\n"
 						"shell=raw_shell;"
+						"\n"
+						"spipe=raw_spipe;"
 						"\n";
 
 				const bool success=(duk_peval_string(context_, script.c_str())==0);
