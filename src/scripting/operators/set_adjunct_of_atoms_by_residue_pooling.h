@@ -32,8 +32,9 @@ public:
 	std::string source_name;
 	std::string destination_name;
 	std::string pooling_mode;
+	unsigned int smoothing_window;
 
-	SetAdjunctOfAtomsByResiduePooling()
+	SetAdjunctOfAtomsByResiduePooling() : smoothing_window(0)
 	{
 	}
 
@@ -44,6 +45,7 @@ public:
 		source_name=input.get_value<std::string>("source-name");
 		destination_name=input.get_value<std::string>("destination-name");
 		pooling_mode=input.get_value<std::string>("pooling-mode");
+		smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		assert_adjunct_name_input(source_name, false);
 		assert_adjunct_name_input(destination_name, false);
 	}
@@ -55,6 +57,7 @@ public:
 		doc.set_option_decription(CDOD("source-name", CDOD::DATATYPE_STRING, "source adjunct name"));
 		doc.set_option_decription(CDOD("destination-name", CDOD::DATATYPE_STRING, "destination adjunct name"));
 		doc.set_option_decription(CDOD("pooling-mode", CDOD::DATATYPE_STRING, "pooling mode, possible values: mean, sum, product, min, max"));
+		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -138,6 +141,22 @@ public:
 				{
 					throw std::runtime_error(std::string("Invalid pooling mode."));
 				}
+			}
+		}
+
+		if(smoothing_window>0)
+		{
+			std::map<common::ChainResidueAtomDescriptor, double> raw_scores;
+			for(std::map<std::size_t, double>::const_iterator it=residue_pooled_values.begin();it!=residue_pooled_values.end();++it)
+			{
+				const common::ChainResidueAtomDescriptor& crad=data_manager.primary_structure_info().residues[it->first].chain_residue_descriptor;
+				raw_scores[crad]=it->second;
+			}
+			std::map<common::ChainResidueAtomDescriptor, double> smoothed_scores=common::ChainResidueAtomDescriptorsSequenceOperations::smooth_residue_scores_along_sequence(raw_scores, smoothing_window);
+			for(std::map<std::size_t, double>::iterator it=residue_pooled_values.begin();it!=residue_pooled_values.end();++it)
+			{
+				const common::ChainResidueAtomDescriptor& crad=data_manager.primary_structure_info().residues[it->first].chain_residue_descriptor;
+				it->second=smoothed_scores[crad];
 			}
 		}
 
