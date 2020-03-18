@@ -213,7 +213,7 @@
                         						
                         <entry excluding="voronota_scripting.cpp|voronota.cpp|modes" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
                         						
-                        <entry excluding="linenoise/linenoise.c|voronota_duktaper.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
+                        <entry excluding="dependencies/linenoise/linenoise.c|linenoise/linenoise.c|voronota_duktaper.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
                         					
                     </sourceEntries>
                     				
@@ -327,7 +327,7 @@
                         						
                         <entry excluding="voronota.cpp|modes/mode_write_qa_scores_in_casp_format.cpp|modes/mode_write_balls_to_atoms_file.cpp|modes/mode_vectorize_points.cpp|modes/mode_vectorize_contacts.cpp|modes/mode_vectorize_contact_environments.cpp|modes/mode_split_atoms_file.cpp|modes/mode_simulate_potential_for_membrane_proteins.cpp|modes/mode_score_scores.cpp|modes/mode_score_contacts_quality.cpp|modes/mode_score_contacts_potentials_stats.cpp|modes/mode_score_contacts_potential.cpp|modes/mode_score_contacts_global_energy_by_cuts.cpp|modes/mode_score_contacts_energy.cpp|modes/mode_score_contacts_energy_stats.cpp|modes/mode_run_script.cpp|modes/mode_rotational_optimization_demo.cpp|modes/mode_reprint_hbp.cpp|modes/mode_query_contacts.cpp|modes/mode_query_contacts_solvation_values.cpp|modes/mode_query_contacts_simulating_unfolding.cpp|modes/mode_query_contacts_interface_exposure_values.cpp|modes/mode_query_contacts_depth_values.cpp|modes/mode_query_balls.cpp|modes/mode_query_balls_sequences_pairings_stats.cpp|modes/mode_query_balls_distances.cpp|modes/mode_query_balls_clashes.cpp|modes/mode_plot_contacts.cpp|modes/mode_place_membrane.cpp|modes/mode_get_balls_from_atoms_file.cpp|modes/mode_expand_descriptors.cpp|modes/mode_draw_values_bitmap.cpp|modes/mode_draw_contacts.cpp|modes/mode_draw_balls.cpp|modes/mode_demo_ses.cpp|modes/mode_demo_polygon_triangulation.cpp|modes/mode_demo_hypercut.cpp|modes/mode_demo_blank.cpp|modes/mode_compare_files_as_sets.cpp|modes/mode_compare_contacts.cpp|modes/mode_calculate_vertices.cpp|modes/mode_calculate_vertices_in_parallel.cpp|modes/mode_calculate_path_centralities.cpp|modes/mode_calculate_mock_solvent.cpp|modes/mode_calculate_contacts.cpp|voronota_scripting.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
                         						
-                        <entry excluding="voronota_viewer.cpp|imgui/imgui.cpp|imgui/imgui_demo.cpp|imgui/imgui_impl_glfw_gl3.cpp|imgui/imgui_draw.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
+                        <entry excluding="dependencies/imgui/imgui.cpp|dependencies/imgui/imgui_impl_glfw_gl3.cpp|dependencies/imgui/imgui_draw.cpp|dependencies/imgui/imgui_demo.cpp|voronota_viewer.cpp|imgui/imgui.cpp|imgui/imgui_demo.cpp|imgui/imgui_impl_glfw_gl3.cpp|imgui/imgui_draw.cpp" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="viewer/src"/>
                         					
                     </sourceEntries>
                     				
