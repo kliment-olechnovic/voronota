@@ -79,6 +79,7 @@ public:
 		set_command_for_data_manager("delete-tags-of-atoms", operators::DeleteTagsOfAtoms(), true);
 		set_command_for_data_manager("delete-tags-of-contacts", operators::DeleteTagsOfContacts(), true);
 		set_command_for_data_manager("describe-exposure", operators::DescribeExposure(), true);
+		set_command_for_data_manager("export-adjuncts-of-atoms-as-casp-qa-line", operators::ExportAdjunctsOfAtomsAsCASPQALine(), false);
 		set_command_for_data_manager("export-adjuncts-of-atoms", operators::ExportAdjunctsOfAtoms(), false);
 		set_command_for_data_manager("export-atoms-and-contacts", operators::ExportAtomsAndContacts(), false);
 		set_command_for_data_manager("export-atoms-as-pymol-cgo", operators::ExportAtomsAsPymolCGO(), false);
@@ -123,6 +124,7 @@ public:
 		set_command_for_data_manager("select-contacts", operators::SelectContacts(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-adjuncts", operators::SetAdjunctOfAtomsByContactAdjuncts(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-areas", operators::SetAdjunctOfAtomsByContactAreas(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-expression", operators::SetAdjunctOfAtomsByExpression(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-residue-pooling", operators::SetAdjunctOfAtomsByResiduePooling(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-sequence-alignment", operators::SetAdjunctOfAtomsBySequenceAlignment(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);

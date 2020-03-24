@@ -990,6 +990,9 @@
             "name":"export-adjuncts-of-atoms",
             "short_description":""},
           {
+            "name":"export-adjuncts-of-atoms-as-casp-qa-line",
+            "short_description":""},
+          {
             "name":"export-atoms",
             "short_description":""},
           {
@@ -1153,6 +1156,9 @@
             "short_description":""},
           {
             "name":"set-adjunct-of-atoms-by-contact-areas",
+            "short_description":""},
+          {
+            "name":"set-adjunct-of-atoms-by-expression",
             "short_description":""},
           {
             "name":"set-adjunct-of-atoms-by-residue-pooling",
