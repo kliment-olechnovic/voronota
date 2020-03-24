@@ -116,6 +116,7 @@ public:
 		set_command_for_data_manager("print-triangulation", operators::PrintTriangulation(), true);
 		set_command_for_data_manager("rename-selection-of-atoms", operators::RenameSelectionOfAtoms(), true);
 		set_command_for_data_manager("rename-selection-of-contacts", operators::RenameSelectionOfContacts(), true);
+		set_command_for_data_manager("restrict-atoms-and-renumber-residues-by-adjunct", operators::RestrictAtomsAndRenumberResiduesByAdjunct(), true);
 		set_command_for_data_manager("restrict-atoms", operators::RestrictAtoms(), true);
 		set_command_for_data_manager("select-atoms-by-triangulation-query", operators::SelectAtomsByTriangulationQuery(), true);
 		set_command_for_data_manager("select-atoms", operators::SelectAtoms(), true);
@@ -123,6 +124,7 @@ public:
 		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-adjuncts", operators::SetAdjunctOfAtomsByContactAdjuncts(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-contact-areas", operators::SetAdjunctOfAtomsByContactAreas(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-residue-pooling", operators::SetAdjunctOfAtomsByResiduePooling(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-sequence-alignment", operators::SetAdjunctOfAtomsBySequenceAlignment(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);

@@ -1134,6 +1134,9 @@
             "name":"restrict-atoms",
             "short_description":""},
           {
+            "name":"restrict-atoms-and-renumber-residues-by-adjunct",
+            "short_description":""},
+          {
             "name":"select-atoms",
             "short_description":""},
           {
@@ -1153,6 +1156,9 @@
             "short_description":""},
           {
             "name":"set-adjunct-of-atoms-by-residue-pooling",
+            "short_description":""},
+          {
+            "name":"set-adjunct-of-atoms-by-sequence-alignment",
             "short_description":""},
           {
             "name":"set-adjunct-of-contacts",

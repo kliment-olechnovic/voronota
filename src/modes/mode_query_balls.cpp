@@ -7,8 +7,7 @@
 
 #include "../common/ball_value.h"
 #include "../common/matching_utilities.h"
-
-#include "modescommon/sequence_utilities.h"
+#include "../common/sequence_utilities.h"
 
 namespace
 {
@@ -271,8 +270,8 @@ void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	{
 		const std::map<CRAD, double> map_of_external_adjunct_values=voronota::auxiliaries::IOUtilities().read_file_lines_to_map< std::map<CRAD, double> >(set_external_adjuncts);
 		const std::map<CRAD, DSSPRecord> map_of_dssp_records=init_map_of_dssp_records(set_dssp_info);
-		const std::string reference_sequence=voronota::modescommon::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
-		const std::map<CRAD, int> sequence_mapping=voronota::modescommon::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
+		const std::string reference_sequence=voronota::common::SequenceUtilities::read_sequence_from_file(set_ref_seq_num_adjunct);
+		const std::map<CRAD, int> sequence_mapping=voronota::common::SequenceUtilities::construct_sequence_mapping(residue_sequence_vector, reference_sequence, ref_seq_alignment);
 
 		for(std::set<std::size_t>::const_iterator it=selected_set_of_ball_ids.begin();it!=selected_set_of_ball_ids.end();++it)
 		{
@@ -356,7 +355,7 @@ void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 		std::ofstream foutput(seq_output.c_str(), std::ios::out);
 		if(foutput.good())
 		{
-			foutput << voronota::modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
+			foutput << voronota::common::SequenceUtilities::convert_residue_sequence_container_to_string(residue_sequence_vector) << "\n";
 		}
 	}
 
@@ -373,7 +372,7 @@ void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 			std::map<std::string, std::string> map_of_chains_sequences;
 			for(std::map< std::string, std::vector<CRAD> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
 			{
-				map_of_chains_sequences[it->first]=voronota::modescommon::SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
+				map_of_chains_sequences[it->first]=voronota::common::SequenceUtilities::convert_residue_sequence_container_to_string(it->second);
 			}
 			std::set<std::string> representative_chains;
 			std::set<std::string> repeated_chains;
@@ -386,7 +385,7 @@ void query_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 					++it2;
 					for(;it2!=map_of_chains_sequences.end();++it2)
 					{
-						if(voronota::modescommon::SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=chains_seq_identity)
+						if(voronota::common::SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=chains_seq_identity)
 						{
 							repeated_chains.insert(it2->first);
 						}

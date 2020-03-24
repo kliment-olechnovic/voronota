@@ -962,6 +962,27 @@ public:
 		reset_data_dependent_on_atoms();
 	}
 
+	void restrict_atoms_and_renumber_residues_by_adjunct(const std::string& name)
+	{
+		std::set<std::size_t> ids;
+		for(std::size_t i=0;i<atoms_.size();i++)
+		{
+			std::map<std::string, double>::const_iterator it=atoms_[i].value.props.adjuncts.find(name);
+			if(it!=atoms_[i].value.props.adjuncts.end())
+			{
+				atoms_[i].crad.resSeq=static_cast<int>(it->second);
+				ids.insert(i);
+			}
+		}
+
+		if(ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms with adjunct '")+name+"'.");
+		}
+
+		restrict_atoms(ids);
+	}
+
 	void transform_coordinates_of_atoms(
 			const std::set<std::size_t>& ids,
 			const std::vector<double>& pre_translation_vector,
