@@ -29,7 +29,7 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 	std::string name;
-	std::string sequence;
+	std::string sequence_file;
 	std::string alignment_file;
 
 	SetAdjunctOfAtomsBySequenceAlignment()
@@ -40,7 +40,7 @@ public:
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		name=input.get_value<std::string>("name");
-		sequence=input.get_value<std::string>("sequence");
+		sequence_file=input.get_value<std::string>("sequence-file");
 		alignment_file=input.get_value_or_default<std::string>("alignment-file", "");
 	}
 
@@ -48,7 +48,7 @@ public:
 	{
 		Utilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
-		doc.set_option_decription(CDOD("sequence", CDOD::DATATYPE_STRING, "sequence"));
+		doc.set_option_decription(CDOD("sequence-file", CDOD::DATATYPE_STRING, "sequence input file"));
 		doc.set_option_decription(CDOD("alignment-file", CDOD::DATATYPE_STRING, "sequence alignment output file", ""));
 	}
 
@@ -58,9 +58,11 @@ public:
 
 		assert_adjunct_name_input(name, false);
 
+		const std::string sequence=common::SequenceUtilities::read_sequence_from_file(sequence_file);
+
 		if(sequence.find_first_not_of(" \n\t")!=std::string::npos)
 		{
-			throw std::runtime_error(std::string("Provided sequence does not contain symbols."));
+			throw std::runtime_error(std::string("No sequence from file '")+sequence_file+"'");
 		}
 
 		std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
