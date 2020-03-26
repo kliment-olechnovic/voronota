@@ -89,7 +89,7 @@ nnport_voromqa_dark=function(nnport_data_directory)
 	return true;
 }
 
-nnport_voromqa_dark_for_casp=function(nnport_data_directory, target_sequence_file, model_file, output_prefix)
+nnport_voromqa_dark_for_casp=function(nnport_data_directory, target_sequence_file, model_file, output_prefix, output_scores_as_pdb)
 {
 	if(nnport_data_directory===undefined)
 	{
@@ -163,14 +163,28 @@ nnport_voromqa_dark_for_casp=function(nnport_data_directory, target_sequence_fil
 		throw ("Failed to compute global score");
 	}
 	
-	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 2");
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 3");
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
 	
-	voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.2 0.5 0.2 3 -output-adjunct vd1sd");
+	voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.09 0.5 0.2 3.0 -output-adjunct vd1sd");
 	voronota_assert_full_success("Failed to transform adjuncts");
 	
-	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"casp_qa_line", "-adjunct", "vd1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
+	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"vd_casp_qa_line", "-adjunct", "vd1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
 	voronota_assert_full_success("Failed to output CASP QA line");
+	
+	if(output_scores_as_pdb!==true)
+	{
+		return true;
+	}
+	
+	voronota_export_atoms("-file", output_prefix+"vd_raw.pdb", "-pdb-b-factor", "vd1", "-as-pdb");
+	voronota_assert_full_success("Failed to export atoms");
+	
+	voronota_export_atoms("-file", output_prefix+"vd_smoothed.pdb", "-pdb-b-factor", "vd1s", "-as-pdb");
+	voronota_assert_full_success("Failed to export atoms");
+	
+	voronota_export_atoms("-file", output_prefix+"vd_smoothed_distances.pdb", "-pdb-b-factor", "vd1sd", "-as-pdb");
+	voronota_assert_full_success("Failed to export atoms");
 	
 	return true;
 }
