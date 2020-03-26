@@ -79,6 +79,21 @@ private:
 		return 0;
 	}
 
+	static duk_ret_t native_raw_log(duk_context *ctx)
+	{
+		const std::string text=duk_safe_to_string(ctx, -1);
+		std::cerr << text;
+		if(text.size()>0 && text[text.size()-1]=='\n')
+		{
+			std::cerr.flush();
+		}
+		else
+		{
+			std::cerr << std::endl;
+		}
+		return 0;
+	}
+
 	static duk_ret_t native_raw_read(duk_context *ctx)
 	{
 		if(!std::cin.good())
@@ -268,6 +283,20 @@ private:
 	    return 1;
 	}
 
+	static int native_raw_voronota_last_output(duk_context *ctx)
+	{
+		if(instance().sem_==0 || instance().sem_->last_output_string().empty())
+		{
+			duk_push_string(ctx, "No last output");
+			return duk_throw(ctx);
+		}
+
+	    duk_push_string(ctx, instance().sem_->last_output_string().c_str());
+	    duk_json_decode(ctx, -1);
+
+	    return 1;
+	}
+
 	duk_context* context()
 	{
 		ensure();
@@ -286,6 +315,9 @@ private:
 			duk_push_c_function(context_, native_raw_writeln, 1);
 			duk_put_global_string(context_, "raw_writeln");
 
+			duk_push_c_function(context_, native_raw_log, 1);
+			duk_put_global_string(context_, "raw_log");
+
 			duk_push_c_function(context_, native_raw_read, 0);
 			duk_put_global_string(context_, "raw_read");
 
@@ -303,6 +335,9 @@ private:
 
 			duk_push_c_function(context_, native_raw_voronota, 1);
 			duk_put_global_string(context_, "raw_voronota");
+
+			duk_push_c_function(context_, native_raw_voronota_last_output, 0);
+			duk_put_global_string(context_, "raw_voronota_last_output");
 
 			{
 				const std::string script=""
@@ -329,6 +364,19 @@ private:
 						"  else"
 						"  {"
 						"    raw_writeln(obj);"
+						"  }"
+						"}"
+						"\n"
+						"log=function(obj)"
+						"{"
+						"  var obj_type=Object.prototype.toString.call(obj);"
+						"  if(obj_type==='[object Object]' || obj_type==='[object Array]')"
+						"  {"
+						"    raw_log(JSON.stringify(obj));"
+						"  }"
+						"  else"
+						"  {"
+						"    raw_log(obj);"
 						"  }"
 						"}"
 						"\n"
