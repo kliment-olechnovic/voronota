@@ -97,3 +97,110 @@ nnport_voromqa_dark=function(nnport_data_directory)
 	return true;
 }
 
+nnport_voromqa_dark_for_casp=function(nnport_data_directory, target_sequence_file, model_file, output_prefix)
+{
+	if(nnport_data_directory===undefined)
+	{
+		throw ("No nnport data directory");
+	}
+	
+	if(target_sequence_file===undefined)
+	{
+		throw ("No target sequence file");
+	}
+	
+	if(model_file===undefined)
+	{
+		throw ("No model file");
+	}
+	
+	if(output_prefix===undefined)
+	{
+		throw ("No output prefix");
+	}
+	
+	if(shell('[ -d "'+nnport_data_directory+'" ]').exit_status!==0)
+	{
+		throw ("No nnport data directory '"+nnport_data_directory+"'");
+	}
+	
+	if(shell('[ -s "'+target_sequence_file+'" ]').exit_status!==0)
+	{
+		throw ("No target sequence file '"+target_sequence_file+"'");
+	}
+	
+	if(shell('[ -s "'+model_file+'" ]').exit_status!==0)
+	{
+		throw ("No model file '"+model_file+"'");
+	}
+	
+	shell('mkdir -p "$(dirname '+output_prefix+'_mock)"');
+	
+	lastres=voronota_import("-file", model_file, "-format", "pdb");
+	if(lastres.results_summary.partial_success!==true)
+	{
+		throw ("Failed to import PDB file");
+	}
+	
+	lastres=voronota_list_objects("-picked");
+	if(lastres.results_summary.full_success!==true || lastres.results[0].output.objects.length!==1)
+	{
+		throw ("Not one object picked");
+	}
+	
+	model_name=lastres.results[0].output.objects[0].name;
+	
+	lastres=voronota_set_adjunct_of_atoms_by_sequence_alignment("-name", "refseq", "-sequence-file", target_sequence_file, "-alignment-file", output_prefix+"sequence_alignment");
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to set residue sequence number adjunct");
+	}
+	
+	target_sequence_length=lastres.results[0].output.sequence_length;
+	if(target_sequence_length===undefined)
+	{
+		throw ("Failed to determine target sequence length");
+	}
+	
+	lastres=voronota_restrict_atoms_and_renumber_residues_by_adjunct("-name", "refseq");
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to renumber residues by adjunct");
+	}
+	
+	nnport_voromqa_dark(nnport_data_directory);
+	
+	lastres=voronota_spectrum_atoms("-use [-aname CA] -adjunct vd1 -only-summarize");
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to summarize adjuncts");
+	}
+	
+	global_score=lastres.results[0].output.spectrum_summary.mean_of_values;
+	if(global_score===undefined)
+	{
+		throw ("Failed to compute global score");
+	}
+	
+	lastres=voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 2");
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to pool and smooth residue adjuncts");
+	}
+	
+	lastres=voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.2 0.5 0.2 3 -output-adjunct vd1sd");
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to transform adjuncts");
+	}
+	
+	lastres=voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"casp_qa_line", "-adjunct", "vd1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
+	
+	if(lastres.results_summary.full_success!==true)
+	{
+		throw ("Failed to output CASP QA line");
+	}
+	
+	return true;
+}
+

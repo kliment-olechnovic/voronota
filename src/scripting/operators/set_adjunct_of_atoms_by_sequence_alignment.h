@@ -20,10 +20,13 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
+		std::string sequence;
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.value("sequence")=sequence;
+			heterostorage.variant_object.value("sequence_length")=sequence.size();
 		}
 	};
 
@@ -60,7 +63,7 @@ public:
 
 		const std::string sequence=common::SequenceUtilities::read_sequence_from_file(sequence_file);
 
-		if(sequence.find_first_not_of(" \n\t")!=std::string::npos)
+		if(sequence.empty())
 		{
 			throw std::runtime_error(std::string("No sequence from file '")+sequence_file+"'");
 		}
@@ -101,6 +104,7 @@ public:
 
 		Result result;
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), atom_ids);
+		result.sequence=sequence;
 
 		return result;
 	}

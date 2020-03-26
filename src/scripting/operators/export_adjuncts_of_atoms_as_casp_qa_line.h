@@ -43,7 +43,7 @@ public:
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
-		adjunct=input.get_value<std::string>("name");
+		adjunct=input.get_value<std::string>("adjunct");
 		title=input.get_value<std::string>("title");
 		global_score=input.get_value<double>("global-score");
 		sequence_length=input.get_value<int>("sequence-length");
