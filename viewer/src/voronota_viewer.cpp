@@ -1,16 +1,16 @@
 #include <memory>
 
 #include "viewer/application.h"
-#include "viewer/stocked_data_resources.h"
+#include "duktaper/stocked_data_resources.h"
 
 namespace
 {
 
 inline std::string generate_startup_script()
 {
-	voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::viewer::resources::data_radii());
-	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::viewer::resources::data_voromqa_v1_energy_means_and_sds());
-	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::viewer::resources::data_voromqa_v1_energy_potential());
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::duktaper::resources::data_radii());
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::duktaper::resources::data_voromqa_v1_energy_means_and_sds());
+	voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::duktaper::resources::data_voromqa_v1_energy_potential());
 
 	std::ostringstream output;
 	output << "setup-loading --radii-file _virtual/radii" << "\n";

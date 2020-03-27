@@ -18,13 +18,13 @@ function write_resource_file
 {
 
 cat << 'EOF'
-#ifndef VIEWER_STOCKED_DATA_RESOURCES_H_
-#define VIEWER_STOCKED_DATA_RESOURCES_H_
+#ifndef DUKTAPER_STOCKED_DATA_RESOURCES_H_
+#define DUKTAPER_STOCKED_DATA_RESOURCES_H_
 
 namespace voronota
 {
 
-namespace viewer
+namespace duktaper
 {
 
 namespace resources
@@ -46,8 +46,8 @@ cat << 'EOF'
 
 }
 
-#endif /* VIEWER_STOCKED_DATA_RESOURCES_H_ */
+#endif /* DUKTAPER_STOCKED_DATA_RESOURCES_H_ */
 EOF
 
-} > ./src/viewer/stocked_data_resources.h
+} > ./src/duktaper/stocked_data_resources.h
 

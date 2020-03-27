@@ -4,8 +4,8 @@
 #include "dependencies/linenoise/linenoise.h"
 
 #include "../../src/scripting/binding_javascript.h"
-#include "viewer/duktape_manager.h"
-#include "viewer/stocked_data_resources.h"
+#include "duktaper/duktape_manager.h"
+#include "duktaper/stocked_data_resources.h"
 
 namespace
 {
@@ -100,15 +100,15 @@ int main(const int argc, const char** argv)
 		const std::string file_name=command_args[0];
 
 		voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
-		voronota::viewer::DuktapeManager::set_script_execution_manager(execution_manager);
-		voronota::viewer::DuktapeManager::eval(voronota::scripting::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
-		voronota::viewer::DuktapeManager::eval(generate_command_args_init_script(command_args));
+		voronota::duktaper::DuktapeManager::set_script_execution_manager(execution_manager);
+		voronota::duktaper::DuktapeManager::eval(voronota::scripting::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
+		voronota::duktaper::DuktapeManager::eval(generate_command_args_init_script(command_args));
 
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::viewer::resources::data_radii());
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::viewer::resources::data_voromqa_v1_energy_means_and_sds());
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::viewer::resources::data_voromqa_v1_energy_potential());
-		voronota::viewer::DuktapeManager::eval("voronota_do('setup-loading --radii-file _virtual/radii')");
-		voronota::viewer::DuktapeManager::eval("voronota_do('setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds')");
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::duktaper::resources::data_radii());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::duktaper::resources::data_voromqa_v1_energy_means_and_sds());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::duktaper::resources::data_voromqa_v1_energy_potential());
+		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-loading --radii-file _virtual/radii')");
+		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds')");
 		voronota::scripting::VirtualFileStorage::clear();
 
 		if(file_name=="-")
@@ -118,12 +118,12 @@ int main(const int argc, const char** argv)
 				bool readline_failed=false;
 				while(!readline_failed && !execution_manager.exit_requested())
 				{
-					voronota::viewer::DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
+					voronota::duktaper::DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
 				}
 			}
 			else
 			{
-				voronota::viewer::DuktapeManager::eval(read_script(std::cin));
+				voronota::duktaper::DuktapeManager::eval(read_script(std::cin));
 			}
 		}
 		else
@@ -133,7 +133,7 @@ int main(const int argc, const char** argv)
 			{
 				throw std::runtime_error(std::string("Invalid file '")+file_name+"'\n");
 			}
-			voronota::viewer::DuktapeManager::eval(read_script(input));
+			voronota::duktaper::DuktapeManager::eval(read_script(input));
 		}
 
 		return 0;

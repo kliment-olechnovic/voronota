@@ -7,7 +7,7 @@
 #ifdef FOR_WEB
 #include <emscripten.h>
 #else
-#include "duktape_manager.h"
+#include "../duktaper/duktape_manager.h"
 #endif
 
 namespace voronota
@@ -28,7 +28,7 @@ public:
 		wrapped_script+="\");\n f();\n}\ncatch(err) {\n console.log('Error in delegated JS script: '+err.message);\n}\n";
 		emscripten_run_script(wrapped_script.c_str());
 #else
-		DuktapeManager::eval(script);
+		duktaper::DuktapeManager::eval(script);
 #endif
 	}
 
@@ -37,7 +37,7 @@ public:
 #ifdef FOR_WEB
 		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #else
-		DuktapeManager::set_script_execution_manager(sem);
+		duktaper::DuktapeManager::set_script_execution_manager(sem);
 		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #endif
 	}
