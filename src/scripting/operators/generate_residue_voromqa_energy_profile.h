@@ -88,54 +88,6 @@ public:
 
 		return result;
 	}
-
-private:
-	static double safe_ratio(const double a, const double b, const double nan_replacement)
-	{
-		return (b>0.0 ? (a/b) : nan_replacement);
-	}
-
-	static int convert_residue_name_to_number(const std::string& name)
-	{
-		static const std::map<std::string, int> m=create_map_of_residue_names_to_numbers();
-		const std::map<std::string, int>::const_iterator it=m.find(name);
-		return (it==m.end() ? -1 : it->second);
-	}
-
-	static std::map<std::string, int> create_map_of_residue_names_to_numbers()
-	{
-		std::map<std::string, int> m;
-
-		m["LEU"]=-1;
-		m["VAL"]=-1;
-		m["ILE"]=-1;
-		m["ALA"]=-1;
-		m["PHE"]=-1;
-		m["TRP"]=-1;
-		m["MET"]=-1;
-		m["PRO"]=-1;
-		m["ASP"]=-1;
-		m["GLU"]=-1;
-		m["LYS"]=-1;
-		m["ARG"]=-1;
-		m["HIS"]=-1;
-		m["CYS"]=-1;
-		m["SER"]=-1;
-		m["THR"]=-1;
-		m["TYR"]=-1;
-		m["ASN"]=-1;
-		m["GLN"]=-1;
-		m["GLY"]=-1;
-
-		int id=0;
-		for(std::map<std::string, int>::iterator it=m.begin();it!=m.end();++it)
-		{
-			it->second=id;
-			id++;
-		}
-
-		return m;
-	}
 };
 
 }
