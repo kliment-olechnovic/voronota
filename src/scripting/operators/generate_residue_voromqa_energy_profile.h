@@ -69,115 +69,15 @@ public:
 
 		typedef common::ConstructionOfContactEffectGroupings CCEG;
 
-		std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile> map_of_residue_energy_profiles=
+		const std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile> map_of_residue_energy_profiles=
 				CCEG::ContactEffectGroupingEnergyProfile::construct_map_of_contact_effect_grouping_energy_profiles(
 						data_manager.atoms(), data_manager.contacts(), 4, true, adjunct_atom_volumes, adjunct_atom_quality_scores, adjunct_inter_atom_energy_scores_raw);
 
 		OutputSelector output_selector(file);
+		std::ostream& output=output_selector.stream();
+		assert_io_stream(file, output);
 
-		{
-			std::ostream& output=output_selector.stream();
-			assert_io_stream(file, output);
-
-			std::string header;
-			std::ostringstream content_output;
-
-			for(std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile>::const_iterator it=map_of_residue_energy_profiles.begin();it!=map_of_residue_energy_profiles.end();++it)
-			{
-				std::ostringstream header_output;
-
-				{
-					const CCEG::CRAD& crad=it->first;
-
-					header_output << "ID";
-					content_output << crad;
-
-					const int res_name_number=convert_residue_name_to_number(crad.resName);
-
-					header_output << " category";
-					content_output << " " << res_name_number;
-
-					for(int i=0;i<20;i++)
-					{
-						header_output << " nf" << i;
-						content_output << " " << (i==res_name_number ? 1 : 0);
-					}
-				}
-
-				const CCEG::ContactEffectGroupingEnergyProfile& cegep=it->second;
-
-				for(std::size_t i=0;i<cegep.layered_residue_attributes.size();i++)
-				{
-					header_output << " rl" << i << "_ac";
-					content_output << " " << cegep.layered_residue_attributes[i].atom_count_sum;
-
-					header_output << " rl" << i << "_av";
-					content_output << " " << cegep.layered_residue_attributes[i].atom_volume_sum;
-
-					header_output << " rl" << i << "_aqs";
-					content_output << " " << cegep.layered_residue_attributes[i].atom_quality_score_sum;
-
-					header_output << " rl" << i << "_sca";
-					content_output << " " << cegep.layered_residue_attributes[i].solvent_contact_area_sum;
-
-					header_output << " rl" << i << "_sce";
-					content_output << " " << cegep.layered_residue_attributes[i].solvent_contact_energy_sum;
-
-					header_output << " rl" << i << "_aqs_n";
-					content_output << " " << safe_ratio(cegep.layered_residue_attributes[i].atom_quality_score_sum, cegep.layered_residue_attributes[i].atom_count_sum, 0.0);
-
-					header_output << " rl" << i << "_sce_n";
-					content_output << " " << safe_ratio(cegep.layered_residue_attributes[i].solvent_contact_energy_sum, cegep.layered_residue_attributes[i].solvent_contact_area_sum, 0.0);
-				}
-
-				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
-				{
-					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].length();j++)
-					{
-						header_output << " irl" << i << "_ss" << j << "_iaca";
-						content_output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j];
-
-						header_output << " irl" << i << "_ss" << j << "_iace";
-						content_output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j];
-
-						header_output << " irl" << i << "_ss" << j << "_iace_n";
-						content_output << " " << safe_ratio(cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j], 0.0);
-					}
-				}
-
-				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes_with_solvent.size();i++)
-				{
-					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes_with_solvent[i].length();j++)
-					{
-						header_output << " irlws" << i << "_ss" << j << "_iaca";
-						content_output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j];
-
-						header_output << " irlws" << i << "_ss" << j << "_iace";
-						content_output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j];
-
-						header_output << " irlws" << i << "_ss" << j << "_iace_n";
-						content_output << " " << safe_ratio(cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j], 0.0);
-					}
-				}
-
-				content_output << "\n";
-
-				if(header.empty())
-				{
-					header=header_output.str();
-				}
-				else
-				{
-					if(header!=header_output.str())
-					{
-						throw std::runtime_error(std::string("Inconsistent table"));
-					}
-				}
-			}
-
-			output << header << "\n";
-			output << content_output.str();
-		}
+		CCEG::ContactEffectGroupingEnergyProfile::write_map_of_contact_effect_grouping_energy_profiles(map_of_residue_energy_profiles, output);
 
 		Result result;
 		result.file=file;

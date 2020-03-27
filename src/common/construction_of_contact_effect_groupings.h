@@ -316,6 +316,184 @@ public:
 			return map_of_contact_effect_grouping_energy_profiles;
 		}
 
+		static void write_map_of_contact_effect_grouping_energy_profiles(const std::map<CRAD, ContactEffectGroupingEnergyProfile>& map_of_residue_energy_profiles, std::ostream& output)
+		{
+			std::string header;
+			std::ostringstream content_output;
+
+			for(std::map<CRAD, ContactEffectGroupingEnergyProfile>::const_iterator it=map_of_residue_energy_profiles.begin();it!=map_of_residue_energy_profiles.end();++it)
+			{
+				std::ostringstream header_output;
+
+				{
+					const CRAD& crad=it->first;
+
+					header_output << "ID";
+					content_output << crad;
+
+					const int res_name_number=convert_residue_name_to_number(crad.resName);
+
+					header_output << " category";
+					content_output << " " << res_name_number;
+
+					for(int i=0;i<20;i++)
+					{
+						header_output << " nf" << i;
+						content_output << " " << (i==res_name_number ? 1 : 0);
+					}
+				}
+
+				const ContactEffectGroupingEnergyProfile& cegep=it->second;
+
+				for(std::size_t i=0;i<cegep.layered_residue_attributes.size();i++)
+				{
+					header_output << " rl" << i << "_ac";
+					content_output << " " << cegep.layered_residue_attributes[i].atom_count_sum;
+
+					header_output << " rl" << i << "_av";
+					content_output << " " << cegep.layered_residue_attributes[i].atom_volume_sum;
+
+					header_output << " rl" << i << "_aqs";
+					content_output << " " << cegep.layered_residue_attributes[i].atom_quality_score_sum;
+
+					header_output << " rl" << i << "_sca";
+					content_output << " " << cegep.layered_residue_attributes[i].solvent_contact_area_sum;
+
+					header_output << " rl" << i << "_sce";
+					content_output << " " << cegep.layered_residue_attributes[i].solvent_contact_energy_sum;
+
+					header_output << " rl" << i << "_aqs_n";
+					content_output << " " << safe_ratio(cegep.layered_residue_attributes[i].atom_quality_score_sum, cegep.layered_residue_attributes[i].atom_count_sum, 0.0);
+
+					header_output << " rl" << i << "_sce_n";
+					content_output << " " << safe_ratio(cegep.layered_residue_attributes[i].solvent_contact_energy_sum, cegep.layered_residue_attributes[i].solvent_contact_area_sum, 0.0);
+				}
+
+				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes.size();i++)
+				{
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes[i].length();j++)
+					{
+						header_output << " irl" << i << "_ss" << j << "_iaca";
+						content_output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j];
+
+						header_output << " irl" << i << "_ss" << j << "_iace";
+						content_output << " " << cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j];
+
+						header_output << " irl" << i << "_ss" << j << "_iace_n";
+						content_output << " " << safe_ratio(cegep.layered_inter_residue_attributes[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes[i].inter_atom_contact_area_split_sum[j], 0.0);
+					}
+				}
+
+				for(std::size_t i=0;i<cegep.layered_inter_residue_attributes_with_solvent.size();i++)
+				{
+					for(std::size_t j=0;j<cegep.layered_inter_residue_attributes_with_solvent[i].length();j++)
+					{
+						header_output << " irlws" << i << "_ss" << j << "_iaca";
+						content_output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j];
+
+						header_output << " irlws" << i << "_ss" << j << "_iace";
+						content_output << " " << cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j];
+
+						header_output << " irlws" << i << "_ss" << j << "_iace_n";
+						content_output << " " << safe_ratio(cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_energy_split_sum[j], cegep.layered_inter_residue_attributes_with_solvent[i].inter_atom_contact_area_split_sum[j], 0.0);
+					}
+				}
+
+				content_output << "\n";
+
+				if(header.empty())
+				{
+					header=header_output.str();
+				}
+				else
+				{
+					if(header!=header_output.str())
+					{
+						throw std::runtime_error(std::string("Inconsistent table"));
+					}
+				}
+			}
+
+			output << header << "\n";
+			output << content_output.str();
+		}
+
+	private:
+		static double get_map_value_safely(const std::map<std::string, double>& map, const std::string& key, const double default_value)
+		{
+			std::map<std::string, double>::const_iterator it=map.find(key);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+			return default_value;
+		}
+
+		static int number_of_seq_sep_groups()
+		{
+			return 7;
+		}
+
+		static int calc_seq_sep_group(const CRADsPair& crads_pair)
+		{
+			for(int seq_sep_group=(number_of_seq_sep_groups()-1);seq_sep_group>=0;seq_sep_group--)
+			{
+				int seq_sep=(1+seq_sep_group);
+				if(CRAD::match_with_sequence_separation_interval(crads_pair.a, crads_pair.b, seq_sep, CRAD::null_num(), true))
+				{
+					return seq_sep_group;
+				}
+			}
+			return -1;
+		}
+
+		static double safe_ratio(const double a, const double b, const double nan_replacement)
+		{
+			return (b>0.0 ? (a/b) : nan_replacement);
+		}
+
+		static int convert_residue_name_to_number(const std::string& name)
+		{
+			static const std::map<std::string, int> m=create_map_of_residue_names_to_numbers();
+			const std::map<std::string, int>::const_iterator it=m.find(name);
+			return (it==m.end() ? -1 : it->second);
+		}
+
+		static std::map<std::string, int> create_map_of_residue_names_to_numbers()
+		{
+			std::map<std::string, int> m;
+
+			m["LEU"]=-1;
+			m["VAL"]=-1;
+			m["ILE"]=-1;
+			m["ALA"]=-1;
+			m["PHE"]=-1;
+			m["TRP"]=-1;
+			m["MET"]=-1;
+			m["PRO"]=-1;
+			m["ASP"]=-1;
+			m["GLU"]=-1;
+			m["LYS"]=-1;
+			m["ARG"]=-1;
+			m["HIS"]=-1;
+			m["CYS"]=-1;
+			m["SER"]=-1;
+			m["THR"]=-1;
+			m["TYR"]=-1;
+			m["ASN"]=-1;
+			m["GLN"]=-1;
+			m["GLY"]=-1;
+
+			int id=0;
+			for(std::map<std::string, int>::iterator it=m.begin();it!=m.end();++it)
+			{
+				it->second=id;
+				id++;
+			}
+
+			return m;
+		}
+
 		void propagate()
 		{
 			if(propagated)
@@ -371,35 +549,6 @@ public:
 			}
 
 			propagated=true;
-		}
-
-	private:
-		static double get_map_value_safely(const std::map<std::string, double>& map, const std::string& key, const double default_value)
-		{
-			std::map<std::string, double>::const_iterator it=map.find(key);
-			if(it!=map.end())
-			{
-				return it->second;
-			}
-			return default_value;
-		}
-
-		static int number_of_seq_sep_groups()
-		{
-			return 7;
-		}
-
-		static int calc_seq_sep_group(const CRADsPair& crads_pair)
-		{
-			for(int seq_sep_group=(number_of_seq_sep_groups()-1);seq_sep_group>=0;seq_sep_group--)
-			{
-				int seq_sep=(1+seq_sep_group);
-				if(CRAD::match_with_sequence_separation_interval(crads_pair.a, crads_pair.b, seq_sep, CRAD::null_num(), true))
-				{
-					return seq_sep_group;
-				}
-			}
-			return -1;
 		}
 	};
 };
