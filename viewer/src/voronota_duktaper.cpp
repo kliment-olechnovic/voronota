@@ -3,7 +3,7 @@
 
 #include "dependencies/linenoise/linenoise.h"
 
-#include "../../src/scripting/binding_javascript.h"
+#include "duktaper/binding_javascript.h"
 #include "duktaper/duktape_manager.h"
 #include "duktaper/stocked_data_resources.h"
 
@@ -101,7 +101,7 @@ int main(const int argc, const char** argv)
 
 		voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
 		voronota::duktaper::DuktapeManager::set_script_execution_manager(execution_manager);
-		voronota::duktaper::DuktapeManager::eval(voronota::scripting::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
+		voronota::duktaper::DuktapeManager::eval(voronota::duktaper::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
 		voronota::duktaper::DuktapeManager::eval(generate_command_args_init_script(command_args));
 
 		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::duktaper::resources::data_radii());

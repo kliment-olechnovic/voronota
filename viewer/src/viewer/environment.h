@@ -2,7 +2,7 @@
 #define VIEWER_ENVIRONMENT_H_
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
-#include "../../../src/scripting/binding_javascript.h"
+#include "../duktaper/binding_javascript.h"
 
 #ifdef FOR_WEB
 #include <emscripten.h>
@@ -38,7 +38,7 @@ public:
 		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #else
 		duktaper::DuktapeManager::set_script_execution_manager(sem);
-		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
+		execute_javascript(duktaper::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #endif
 	}
 

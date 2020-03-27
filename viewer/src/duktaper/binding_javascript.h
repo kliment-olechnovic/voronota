@@ -1,20 +1,20 @@
-#ifndef SCRIPTING_BINDING_JAVASCRIPT_H_
-#define SCRIPTING_BINDING_JAVASCRIPT_H_
+#ifndef DUKTAPER_BINDING_JAVASCRIPT_H_
+#define DUKTAPER_BINDING_JAVASCRIPT_H_
 
 #include <sstream>
 
-#include "command_documentation.h"
+#include "../../../src/scripting/command_documentation.h"
 
 namespace voronota
 {
 
-namespace scripting
+namespace duktaper
 {
 
 class BindingJavascript
 {
 public:
-	static std::string generate_setup_script(const CollectionOfCommandDocumentations& cds)
+	static std::string generate_setup_script(const scripting::CollectionOfCommandDocumentations& cds)
 	{
 		std::ostringstream script;
 
@@ -154,4 +154,4 @@ public:
 
 }
 
-#endif /* SCRIPTING_BINDING_JAVASCRIPT_H_ */
+#endif /* DUKTAPER_BINDING_JAVASCRIPT_H_ */
