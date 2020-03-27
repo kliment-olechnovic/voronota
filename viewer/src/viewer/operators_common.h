@@ -1,7 +1,7 @@
 #ifndef VIEWER_OPERATORS_COMMON_H_
 #define VIEWER_OPERATORS_COMMON_H_
 
-#include "../../../src/scripting/operators_common.h"
+#include "../duktaper/operators_common.h"
 
 #include "../uv/viewer_application.h"
 

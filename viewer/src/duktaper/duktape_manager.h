@@ -4,7 +4,7 @@
 #include "../dependencies/duktape/duktape.h"
 #include "../dependencies/redi/pstream.h"
 
-#include "../../../src/scripting/script_execution_manager_with_variant_output.h"
+#include "script_execution_manager.h"
 
 namespace voronota
 {

@@ -1,7 +1,7 @@
 #ifndef VIEWER_SCRIPT_EXECUTION_MANAGER_H_
 #define VIEWER_SCRIPT_EXECUTION_MANAGER_H_
 
-#include "../../../src/scripting/script_execution_manager_with_variant_output.h"
+#include "../duktaper/script_execution_manager.h"
 
 #include "congregations_of_drawers_for_data_managers.h"
 #include "operators_all.h"
@@ -14,7 +14,7 @@ namespace voronota
 namespace viewer
 {
 
-class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVariantOutput
+class ScriptExecutionManager : public duktaper::ScriptExecutionManager
 {
 public:
 	ScriptExecutionManager()

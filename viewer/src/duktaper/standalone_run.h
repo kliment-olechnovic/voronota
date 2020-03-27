@@ -28,7 +28,7 @@ public:
 
 		const std::string file_name=command_args[0];
 
-		voronota::scripting::ScriptExecutionManagerWithVariantOutput execution_manager;
+		voronota::duktaper::ScriptExecutionManager execution_manager;
 		voronota::duktaper::DuktapeManager::set_script_execution_manager(execution_manager);
 		voronota::duktaper::DuktapeManager::eval(voronota::duktaper::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
 		voronota::duktaper::DuktapeManager::eval(generate_command_args_init_script(command_args));
