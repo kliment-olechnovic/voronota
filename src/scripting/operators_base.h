@@ -35,7 +35,8 @@ public:
 
 	Operator& init(const std::string& args)
 	{
-		return init(CommandInput(std::string("noname ")+args));
+		CommandInput input(std::string("noname ")+args);
+		return init(input);
 	}
 
 	CommandDocumentation documentation() const

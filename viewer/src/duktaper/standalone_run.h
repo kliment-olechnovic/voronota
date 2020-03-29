@@ -36,9 +36,12 @@ public:
 		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::duktaper::resources::data_radii());
 		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::duktaper::resources::data_voromqa_v1_energy_means_and_sds());
 		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::duktaper::resources::data_voromqa_v1_energy_potential());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_dark_nnport_input_header", voronota::duktaper::resources::data_voromqa_dark_nnport_input_header());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_dark_nnport_input_statistics", voronota::duktaper::resources::data_voromqa_dark_nnport_input_statistics());
+		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_dark_nnport_input_fdeep_model_json", voronota::duktaper::resources::data_voromqa_dark_nnport_input_fdeep_model_json());
 		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-loading --radii-file _virtual/radii')");
 		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds')");
-		voronota::scripting::VirtualFileStorage::clear();
+		//voronota::scripting::VirtualFileStorage::clear();
 
 		if(file_name=="-")
 		{

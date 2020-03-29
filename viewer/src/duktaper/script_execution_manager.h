@@ -17,6 +17,8 @@ public:
 	ScriptExecutionManager()
 	{
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
+
+		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 	}
 };
 

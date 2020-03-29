@@ -119,7 +119,7 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to read input column names file '")+input_value_column_names_file+"'.");
 			}
-			while(!finput.good())
+			while(finput.good())
 			{
 				std::string token;
 				finput >> token;
