@@ -33,7 +33,7 @@ public:
 	};
 
 	std::string input_label_column_name;
-	std::vector<std::string> input_value_column_names;
+	std::string input_value_column_names_file;
 	std::string input_statistics_file;
 	std::vector<std::string> input_model_files;
 	std::string output_label_column_name;
@@ -47,11 +47,11 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		input_label_column_name=input.get_value<std::string>("input-label-column-name");
-		input_value_column_names=input.get_value_vector<std::string>("input-value-column-names");
+		input_label_column_name=input.get_value_or_default<std::string>("input-label-column-name", "ID");
+		input_value_column_names_file=input.get_value<std::string>("input-value-column-names-file");
 		input_statistics_file=input.get_value<std::string>("input-statistics-file");
 		input_model_files=input.get_value_vector<std::string>("input-model-files");
-		output_label_column_name=input.get_value<std::string>("output-label-column-name");
+		output_label_column_name=input.get_value_or_default<std::string>("output-label-column-name", "ID");
 		output_value_column_names=input.get_value_vector<std::string>("output-value-column-names");
 		input_data_file=input.get_value<std::string>("input-data-file");
 		output_data_file=input.get_value<std::string>("output-data-file");
@@ -59,11 +59,11 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("input-label-column-name", scripting::CDOD::DATATYPE_STRING, "input label column name"));
-		doc.set_option_decription(scripting::CDOD("input-value-column-names", scripting::CDOD::DATATYPE_STRING_ARRAY, "input value column names"));
+		doc.set_option_decription(scripting::CDOD("input-label-column-name", scripting::CDOD::DATATYPE_STRING, "input label column name", "ID"));
+		doc.set_option_decription(scripting::CDOD("input-value-column-names-file", scripting::CDOD::DATATYPE_STRING, "input value column names file"));
 		doc.set_option_decription(scripting::CDOD("input-statistics-file", scripting::CDOD::DATATYPE_STRING, "input statistics file"));
 		doc.set_option_decription(scripting::CDOD("input-model-files", scripting::CDOD::DATATYPE_STRING_ARRAY, "input model files"));
-		doc.set_option_decription(scripting::CDOD("output-label-column-name", scripting::CDOD::DATATYPE_STRING, "output label column name"));
+		doc.set_option_decription(scripting::CDOD("output-label-column-name", scripting::CDOD::DATATYPE_STRING, "output label column name", "ID"));
 		doc.set_option_decription(scripting::CDOD("output-value-column-names", scripting::CDOD::DATATYPE_STRING_ARRAY, "output value column names"));
 		doc.set_option_decription(scripting::CDOD("input-data-file", scripting::CDOD::DATATYPE_STRING, "input data file"));
 		doc.set_option_decription(scripting::CDOD("output-data-file", scripting::CDOD::DATATYPE_STRING, "output data file"));
@@ -71,6 +71,70 @@ public:
 
 	Result run(void*&) const
 	{
+		if(input_label_column_name.empty())
+		{
+			throw std::runtime_error(std::string("No input label column name"));
+		}
+
+		if(input_value_column_names_file.empty())
+		{
+			throw std::runtime_error(std::string("No input value column names file"));
+		}
+
+		if(input_statistics_file.empty())
+		{
+			throw std::runtime_error(std::string("No input statistics file"));
+		}
+
+		if(input_model_files.empty())
+		{
+			throw std::runtime_error(std::string("No input model files"));
+		}
+
+		if(output_label_column_name.empty())
+		{
+			throw std::runtime_error(std::string("No output label column name"));
+		}
+
+		if(output_value_column_names.empty())
+		{
+			throw std::runtime_error(std::string("No output value column names"));
+		}
+
+		if(input_data_file.empty())
+		{
+			throw std::runtime_error(std::string("No input data file"));
+		}
+
+		if(output_data_file.empty())
+		{
+			throw std::runtime_error(std::string("No output data file"));
+		}
+
+		std::vector<std::string> input_value_column_names;
+		{
+			scripting::InputSelector finput_selector(input_value_column_names_file);
+			std::istream& finput=finput_selector.stream();
+			if(!finput.good())
+			{
+				throw std::runtime_error(std::string("Failed to read input column names file '")+input_value_column_names_file+"'.");
+			}
+			while(!finput.good())
+			{
+				std::string token;
+				finput >> token;
+				if(!token.empty())
+				{
+					input_value_column_names.push_back(token);
+				}
+			}
+		}
+
+		if(input_value_column_names.empty())
+		{
+			throw std::runtime_error(std::string("No input value column names"));
+		}
+
 		nnport::StatisticsMap statistics_map;
 		{
 			scripting::InputSelector finput_selector(input_statistics_file);
