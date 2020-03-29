@@ -16,6 +16,7 @@ class ScriptExecutionManager : public scripting::ScriptExecutionManagerWithVaria
 public:
 	ScriptExecutionManager()
 	{
+		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 	}
 };
 
