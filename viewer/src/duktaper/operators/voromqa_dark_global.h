@@ -3,6 +3,8 @@
 
 #include "../../../src/scripting/operators_all.h"
 
+#include "../stocked_data_resources.h"
+
 #include "nnport_predict.h"
 
 namespace voronota
@@ -55,10 +57,28 @@ public:
 		}
 
 		{
+			const std::string filename_for_voromqa_dark_nnport_input_header=scripting::VirtualFileStorage::validate_filename("voromqa_dark_nnport_input_header");
+			if(!scripting::VirtualFileStorage::file_exists(filename_for_voromqa_dark_nnport_input_header))
+			{
+				voronota::scripting::VirtualFileStorage::set_file(filename_for_voromqa_dark_nnport_input_header, resources::data_voromqa_dark_nnport_input_header(), true);
+			}
+
+			const std::string filename_for_voromqa_dark_nnport_input_statistics=scripting::VirtualFileStorage::validate_filename("voromqa_dark_nnport_input_statistics");
+			if(!scripting::VirtualFileStorage::file_exists(filename_for_voromqa_dark_nnport_input_statistics))
+			{
+				voronota::scripting::VirtualFileStorage::set_file(filename_for_voromqa_dark_nnport_input_statistics, resources::data_voromqa_dark_nnport_input_statistics(), true);
+			}
+
+			const std::string filename_for_voromqa_dark_nnport_input_fdeep_model_json=scripting::VirtualFileStorage::validate_filename("voromqa_dark_nnport_input_fdeep_model_json");
+			if(!scripting::VirtualFileStorage::file_exists(filename_for_voromqa_dark_nnport_input_fdeep_model_json))
+			{
+				voronota::scripting::VirtualFileStorage::set_file(filename_for_voromqa_dark_nnport_input_fdeep_model_json, resources::data_voromqa_dark_nnport_input_fdeep_model_json(), true);
+			}
+
 			std::ostringstream args;
-			args << "-input-value-column-names-file _virtual/voromqa_dark_nnport_input_header ";
-			args << "-input-statistics-file _virtual/voromqa_dark_nnport_input_statistics ";
-			args << "-input-model-files _virtual/voromqa_dark_nnport_input_fdeep_model_json ";
+			args << "-input-value-column-names-file " << filename_for_voromqa_dark_nnport_input_header << " ";
+			args << "-input-statistics-file " << filename_for_voromqa_dark_nnport_input_statistics << " ";
+			args << "-input-model-files " << filename_for_voromqa_dark_nnport_input_fdeep_model_json << " ";
 			args << "-output-value-column-names vd1 vd2 vd3 vd4 vd5 vd6 ";
 			args << "-input-data-file " << tmp_profile.filename() << " ";
 			args << "-output-data-file " << tmp_scores.filename() << " ";

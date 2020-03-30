@@ -67,6 +67,15 @@ public:
 		return str;
 	}
 
+	static std::string validate_filename(const std::string& filename)
+	{
+		if(filename_is_valid(filename))
+		{
+			return filename;
+		}
+		return (prefix()+filename);
+	}
+
 	static bool filename_is_valid(const std::string& filename)
 	{
 		return (filename.rfind(prefix(), 0)==0);
