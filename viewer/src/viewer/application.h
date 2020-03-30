@@ -45,6 +45,11 @@ public:
 		return script_execution_manager_.execute_script_and_return_last_output_string(script, false);
 	}
 
+	const std::string& get_last_script_output()
+	{
+		return script_execution_manager_.last_output_string();
+	}
+
 	void upload_file(const std::string& name, const std::string& data)
 	{
 		std::string object_name=name;

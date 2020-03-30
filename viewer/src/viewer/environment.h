@@ -35,7 +35,7 @@ public:
 	static void setup_javascript_bindings(scripting::ScriptExecutionManagerWithVariantOutput& sem)
 	{
 #ifdef FOR_WEB
-		execute_javascript(scripting::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
+		execute_javascript(duktaper::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));
 #else
 		duktaper::DuktapeManager::set_script_execution_manager(sem);
 		execute_javascript(duktaper::BindingJavascript::generate_setup_script(sem.collection_of_command_documentations()));

@@ -23,11 +23,12 @@ then
 	exit 1
 fi
 
-emcc \
--s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_upload_file']" \
+emcc --std=c++14 \
+-s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-../src/voronota_viewer.cpp ../src/imgui/*.cpp \
+../src/voronota_viewer.cpp ../src/dependencies/imgui/*.cpp \
 -DFOR_WEB \
+-I "../src/dependencies/" \
 -I "/usr/include/glm/" \
 -I "${EMSDK}/upstream/emscripten/system/include/emscripten/" \
 -s USE_GLFW=3 \

@@ -137,6 +137,12 @@
 				return result;
 			}
 			
+			function raw_voronota_last_output()
+			{
+				var result=JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));
+				return result;
+			}
+			
 			function voronota_viewer_upload_file(name, data)
 			{
 				Module.ccall('voronota_viewer_upload_file', null, ['string','string'], [name,data]);
