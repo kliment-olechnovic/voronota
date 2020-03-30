@@ -42,7 +42,7 @@ public:
 		doc.set_option_decription(CDOD("means-and-sds", CDOD::DATATYPE_STRING, "path to file with means and sds"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file))
 		{

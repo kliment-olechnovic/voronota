@@ -69,7 +69,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("output-data-file", scripting::CDOD::DATATYPE_STRING, "output data file"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(input_label_column_name.empty())
 		{

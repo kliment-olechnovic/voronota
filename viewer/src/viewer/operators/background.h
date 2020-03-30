@@ -38,7 +38,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("col", scripting::CDOD::DATATYPE_STRING, "color string"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(!auxiliaries::ColorUtilities::color_valid(color))
 		{

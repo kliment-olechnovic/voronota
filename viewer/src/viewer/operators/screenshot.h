@@ -39,7 +39,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("file", scripting::CDOD::DATATYPE_STRING, "path to file"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		int W=0;
 		int H=0;

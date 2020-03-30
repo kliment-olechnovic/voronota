@@ -38,7 +38,7 @@ public:
 		doc.set_option_decription(CDOD("filenames", CDOD::DATATYPE_STRING_ARRAY, "file names", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(filenames.empty())
 		{

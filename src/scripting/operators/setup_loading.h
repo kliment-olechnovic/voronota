@@ -53,7 +53,7 @@ public:
 		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_BOOL, "flag to use default radius for all atoms"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		LoadingOfData::Configuration config_filled=config;
 

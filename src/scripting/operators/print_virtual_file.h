@@ -63,7 +63,7 @@ public:
 		doc.set_option_decription(CDOD("line-by-line", CDOD::DATATYPE_BOOL, "flag to output file lines separately"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		Result result;
 		result.name=filename;

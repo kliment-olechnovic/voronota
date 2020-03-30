@@ -57,7 +57,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("cartoon-style", scripting::CDOD::DATATYPE_INT, "cartoon style identifier", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(rendering_parameters.ball_sphere_quality>4)
 		{

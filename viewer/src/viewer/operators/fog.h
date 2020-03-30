@@ -38,7 +38,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("off", scripting::CDOD::DATATYPE_BOOL, "flag to turn fog off"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		uv::ViewerApplication::instance().set_fog_enabled(!off);
 		uv::ViewerApplication::instance_refresh_frame();

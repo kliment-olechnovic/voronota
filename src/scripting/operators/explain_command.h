@@ -42,7 +42,7 @@ public:
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of a command"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(collection_of_command_documentations_ptr_->map_of_documentations().count(name)==0)
 		{

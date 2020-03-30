@@ -39,7 +39,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("milliseconds", scripting::CDOD::DATATYPE_FLOAT, "milliseconds", 40.0));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(milliseconds>0.0)
 		{

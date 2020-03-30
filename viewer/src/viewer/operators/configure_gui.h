@@ -46,7 +46,7 @@ public:
 	{
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		bool need_refresh=true;
 

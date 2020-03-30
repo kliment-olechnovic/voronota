@@ -50,7 +50,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("offset", scripting::CDOD::DATATYPE_FLOAT, "stereo offset", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_stereo(angle, offset);
 

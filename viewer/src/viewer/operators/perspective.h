@@ -44,7 +44,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("far-z", scripting::CDOD::DATATYPE_FLOAT, "camera far Z coordinate", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		uv::ViewerApplication::instance().set_projection_mode_to_perspective(field_of_view, near_z, far_z);
 		uv::ViewerApplication::instance_refresh_frame();

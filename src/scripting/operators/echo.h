@@ -44,7 +44,7 @@ public:
 		doc.set_option_decription(CDOD("strings", CDOD::DATATYPE_STRING_ARRAY, "strings to output", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		Result result;
 		result.strings=strings;

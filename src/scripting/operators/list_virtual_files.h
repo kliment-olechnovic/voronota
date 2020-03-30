@@ -51,7 +51,7 @@ public:
 	{
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		Result result;
 		for(std::map<std::string, std::string>::const_iterator it=VirtualFileStorage::files().begin();it!=VirtualFileStorage::files().end();++it)

@@ -41,7 +41,7 @@ public:
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to real file"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		VirtualFileStorage::assert_filename_is_valid(name);
 

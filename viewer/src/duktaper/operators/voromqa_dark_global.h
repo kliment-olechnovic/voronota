@@ -82,8 +82,7 @@ public:
 			args << "-output-value-column-names vd1 vd2 vd3 vd4 vd5 vd6 ";
 			args << "-input-data-file " << tmp_profile.filename() << " ";
 			args << "-output-data-file " << tmp_scores.filename() << " ";
-			void* void_subject=0;
-			operators::NNPortPredict().init(args.str()).run(void_subject);
+			operators::NNPortPredict().init(args.str()).run(0);
 		}
 
 		{

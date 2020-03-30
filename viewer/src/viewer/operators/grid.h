@@ -35,7 +35,7 @@ public:
 	{
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		uv::ViewerApplication::instance().set_rendering_mode_to_grid();
 		GUIConfiguration::instance().grid_variant=grid_variant_value_;

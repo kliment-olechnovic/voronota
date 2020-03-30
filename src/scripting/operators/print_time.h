@@ -46,7 +46,7 @@ public:
 		doc.set_option_decription(CDOD("reset", CDOD::DATATYPE_BOOL, "flag to reset time afterwards"));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		Result result;
 		result.elapsed_miliseconds=elapsed_processor_time_ptr_->elapsed_miliseconds();

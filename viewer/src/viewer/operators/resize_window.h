@@ -41,7 +41,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("height", scripting::CDOD::DATATYPE_INT, "window height", ""));
 	}
 
-	Result run(void*&) const
+	Result run(void*) const
 	{
 		if(width<1 || width>9999)
 		{
