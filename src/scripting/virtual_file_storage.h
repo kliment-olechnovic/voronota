@@ -17,6 +17,32 @@ namespace scripting
 class VirtualFileStorage
 {
 public:
+	class TemporaryFile
+	{
+	public:
+		TemporaryFile() : filename_(VirtualFileStorage::get_unused_filename())
+		{
+		}
+
+		TemporaryFile(const std::string& data) : filename_(VirtualFileStorage::get_unused_filename())
+		{
+			VirtualFileStorage::set_file(filename_, data);
+		}
+
+		~TemporaryFile()
+		{
+			VirtualFileStorage::delete_file(filename_);
+		}
+
+		const std::string filename() const
+		{
+			return filename_;
+		}
+
+	private:
+		std::string filename_;
+	};
+
 	static bool writable()
 	{
 		return writable_mutable();
@@ -35,9 +61,15 @@ public:
 		}
 	}
 
+	static const std::string& prefix()
+	{
+		static std::string str="_virtual";
+		return str;
+	}
+
 	static bool filename_is_valid(const std::string& filename)
 	{
-		return (filename.rfind("_virtual", 0)==0);
+		return (filename.rfind(prefix(), 0)==0);
 	}
 
 	static void assert_filename_is_valid(const std::string& filename)
@@ -157,6 +189,24 @@ public:
 			sum+=it->second.size();
 		}
 		return sum;
+	}
+
+	static std::string get_unused_filename()
+	{
+		static long id=1000000;
+		std::string result;
+		while(result.empty())
+		{
+			++id;
+			std::ostringstream output;
+			output << prefix() << "_file_" << id;
+			std::string candidate=output.str();
+			if(!file_exists(candidate))
+			{
+				result=candidate;
+			}
+		}
+		return result;
 	}
 
 private:

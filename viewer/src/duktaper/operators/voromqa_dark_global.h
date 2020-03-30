@@ -45,20 +45,32 @@ public:
 
 	Result run(scripting::DataManager& data_manager) const
 	{
-		scripting::operators::GenerateResidueVoroMQAEnergyProfile().init("-file _virtual/tmp/residue_voromqa_energy_profile").run(data_manager);
+		scripting::VirtualFileStorage::TemporaryFile tmp_profile;
+		scripting::VirtualFileStorage::TemporaryFile tmp_scores;
 
 		{
-			void* void_subject=0;
-			operators::NNPortPredict().init(""
-					"-input-value-column-names-file _virtual/voromqa_dark_nnport_input_header "
-					"-input-statistics-file _virtual/voromqa_dark_nnport_input_statistics "
-					"-input-model-files _virtual/voromqa_dark_nnport_input_fdeep_model_json "
-					"-output-value-column-names vd1 vd2 vd3 vd4 vd5 vd6 "
-					"-input-data-file _virtual/tmp/residue_voromqa_energy_profile "
-					"-output-data-file _virtual/tmp/voromqa_dark_scores").run(void_subject);
+			std::ostringstream args;
+			args << "-file " << tmp_profile.filename();
+			scripting::operators::GenerateResidueVoroMQAEnergyProfile().init(args.str()).run(data_manager);
 		}
 
-		scripting::operators::ImportAdjunctsOfAtoms().init("-file _virtual/tmp/voromqa_dark_scores").run(data_manager);
+		{
+			std::ostringstream args;
+			args << "-input-value-column-names-file _virtual/voromqa_dark_nnport_input_header ";
+			args << "-input-statistics-file _virtual/voromqa_dark_nnport_input_statistics ";
+			args << "-input-model-files _virtual/voromqa_dark_nnport_input_fdeep_model_json ";
+			args << "-output-value-column-names vd1 vd2 vd3 vd4 vd5 vd6 ";
+			args << "-input-data-file " << tmp_profile.filename() << " ";
+			args << "-output-data-file " << tmp_scores.filename() << " ";
+			void* void_subject=0;
+			operators::NNPortPredict().init(args.str()).run(void_subject);
+		}
+
+		{
+			std::ostringstream args;
+			args << "-file " << tmp_scores.filename();
+			scripting::operators::ImportAdjunctsOfAtoms().init(args.str()).run(data_manager);
+		}
 
 		Result result;
 
