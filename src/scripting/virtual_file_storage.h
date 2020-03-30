@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <map>
+#include <set>
 #include <stdexcept>
 
 namespace voronota
@@ -52,9 +53,19 @@ public:
 		return files_mutable();
 	}
 
+	static const std::set<std::string>& locks()
+	{
+		return locks_mutable();
+	}
+
 	static bool file_exists(const std::string& filename)
 	{
 		return (VirtualFileStorage::files().count(filename)>0);
+	}
+
+	static bool file_locked(const std::string& filename)
+	{
+		return (VirtualFileStorage::locks().count(filename)>0);
 	}
 
 	static void assert_file_exists(const std::string& filename)
@@ -65,23 +76,71 @@ public:
 		}
 	}
 
+	static void assert_file_not_locked(const std::string& filename)
+	{
+		if(file_locked(filename))
+		{
+			throw std::runtime_error(std::string("Locked virtual file '")+filename+"'.");
+		}
+	}
+
 	static void clear()
 	{
 		assert_writable();
 		files_mutable().clear();
+		locks_mutable().clear();
+	}
+
+	static void clear_not_locked()
+	{
+		assert_writable();
+		std::map<std::string, std::string>::iterator it=files_mutable().begin();
+		while(it!=files_mutable().end())
+		{
+			if(file_locked(it->first))
+			{
+				++it;
+			}
+			else
+			{
+				files_mutable().erase(it++);
+			}
+		}
 	}
 
 	static void delete_file(const std::string& filename)
 	{
 		assert_writable();
+		assert_file_not_locked(filename);
 		files_mutable().erase(filename);
 	}
 
 	static void set_file(const std::string& filename, const std::string& data)
 	{
 		assert_writable();
+		assert_file_not_locked(filename);
 		assert_filename_is_valid(filename);
 		files_mutable()[filename]=data;
+	}
+
+	static void set_file(const std::string& filename, const std::string& data, const bool locked)
+	{
+		set_file(filename, data);
+		set_lock(filename, locked);
+	}
+
+	static void set_lock(const std::string& filename, const bool locked)
+	{
+		assert_writable();
+		if(locked)
+		{
+			assert_file_exists(filename);
+			locks_mutable().insert(filename);
+		}
+		else
+		{
+			locks_mutable().erase(filename);
+		}
 	}
 
 	static const std::string& get_file(const std::string& filename)
@@ -111,6 +170,12 @@ private:
 	{
 		static std::map<std::string, std::string> map;
 		return map;
+	}
+
+	static std::set<std::string>& locks_mutable()
+	{
+		static std::set<std::string> set;
+		return set;
 	}
 };
 
