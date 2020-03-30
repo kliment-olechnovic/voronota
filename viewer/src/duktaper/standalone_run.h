@@ -26,19 +26,14 @@ public:
 			throw std::runtime_error(std::string("No command arguments"));
 		}
 
+		operators::SetupDefaults().run(0);
+
+		ScriptExecutionManager execution_manager;
+		DuktapeManager::set_script_execution_manager(execution_manager);
+		DuktapeManager::eval(BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
+		DuktapeManager::eval(generate_command_args_init_script(command_args));
+
 		const std::string file_name=command_args[0];
-
-		voronota::duktaper::ScriptExecutionManager execution_manager;
-		voronota::duktaper::DuktapeManager::set_script_execution_manager(execution_manager);
-		voronota::duktaper::DuktapeManager::eval(voronota::duktaper::BindingJavascript::generate_setup_script(execution_manager.collection_of_command_documentations()));
-		voronota::duktaper::DuktapeManager::eval(generate_command_args_init_script(command_args));
-
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/radii", voronota::duktaper::resources::data_radii());
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_means_and_sds", voronota::duktaper::resources::data_voromqa_v1_energy_means_and_sds());
-		voronota::scripting::VirtualFileStorage::set_file("_virtual/voromqa_v1_energy_potential", voronota::duktaper::resources::data_voromqa_v1_energy_potential());
-		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-loading --radii-file _virtual/radii')");
-		voronota::duktaper::DuktapeManager::eval("voronota_do('setup-voromqa --potential _virtual/voromqa_v1_energy_potential --means-and-sds _virtual/voromqa_v1_energy_means_and_sds')");
-		voronota::scripting::VirtualFileStorage::clear_not_locked();
 
 		if(file_name=="-")
 		{
@@ -47,12 +42,12 @@ public:
 				bool readline_failed=false;
 				while(!readline_failed && !execution_manager.exit_requested())
 				{
-					voronota::duktaper::DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
+					DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
 				}
 			}
 			else
 			{
-				voronota::duktaper::DuktapeManager::eval(read_script(std::cin));
+				DuktapeManager::eval(read_script(std::cin));
 			}
 		}
 		else
@@ -62,7 +57,7 @@ public:
 			{
 				throw std::runtime_error(std::string("Invalid file '")+file_name+"'\n");
 			}
-			voronota::duktaper::DuktapeManager::eval(read_script(input));
+			DuktapeManager::eval(read_script(input));
 		}
 	}
 
