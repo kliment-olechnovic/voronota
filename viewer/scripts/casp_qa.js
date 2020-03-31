@@ -66,7 +66,7 @@ casp_qa_init=function(target_sequence_file, model_file, output_prefix, rebuild_s
 	return model_name;
 }
 
-casp_qa_voromqa_dark=function(target_sequence_file, model_file, output_prefix, rebuild_side_chains, output_scores_as_pdb)
+casp_qa_voromqa_dark=function(target_sequence_file, model_file, output_prefix, rebuild_side_chains)
 {
 	model_name=casp_qa_init(target_sequence_file, model_file, output_prefix, rebuild_side_chains);
 	
@@ -90,27 +90,16 @@ casp_qa_voromqa_dark=function(target_sequence_file, model_file, output_prefix, r
 	voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.45 0.1 0.5 0.2 3.0 -output-adjunct vd1sd");
 	voronota_assert_full_success("Failed to transform adjuncts");
 	
-	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"vd_casp_qa_line", "-adjunct", "vd1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
+	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"casp_qa_line", "-adjunct", "vd1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
 	voronota_assert_full_success("Failed to output CASP QA line");
 	
-	if(output_scores_as_pdb!==true)
-	{
-		return true;
-	}
-	
-	voronota_export_atoms("-file", output_prefix+"vd1.pdb", "-pdb-b-factor", "vd1", "-as-pdb");
-	voronota_assert_full_success("Failed to export atoms");
-	
-	voronota_export_atoms("-file", output_prefix+"vd1s.pdb", "-pdb-b-factor", "vd1s", "-as-pdb");
-	voronota_assert_full_success("Failed to export atoms");
-	
-	voronota_export_atoms("-file", output_prefix+"vd1sd.pdb", "-pdb-b-factor", "vd1sd", "-as-pdb");
+	voronota_export_atoms("-file", output_prefix+"scores.pdb", "-pdb-b-factor", "vd1s", "-as-pdb");
 	voronota_assert_full_success("Failed to export atoms");
 	
 	return true;
 }
 
-casp_qa_voromqa_light=function(target_sequence_file, model_file, output_prefix, rebuild_side_chains, output_scores_as_pdb)
+casp_qa_voromqa_light=function(target_sequence_file, model_file, output_prefix, rebuild_side_chains)
 {
 	model_name=casp_qa_init(target_sequence_file, model_file, output_prefix, rebuild_side_chains);
 	
@@ -128,18 +117,10 @@ casp_qa_voromqa_light=function(target_sequence_file, model_file, output_prefix, 
 	voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vl1s -parameters 0.3 0.1 0.5 0.2 3.0 -output-adjunct vl1sd");
 	voronota_assert_full_success("Failed to transform adjuncts");
 	
-	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"vl_casp_qa_line", "-adjunct", "vl1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
+	voronota_export_adjuncts_of_atoms_as_casp_qa_line("-file", output_prefix+"casp_qa_line", "-adjunct", "vl1sd", "-title", model_name, "-global-score", global_score, "-sequence-length", target_sequence_length, "-scale-by-completeness", 0.85, "-wrap", 20);
 	voronota_assert_full_success("Failed to output CASP QA line");
 	
-	if(output_scores_as_pdb!==true)
-	{
-		return true;
-	}
-	
-	voronota_export_atoms("-file", output_prefix+"vl1s.pdb", "-pdb-b-factor", "vl1s", "-as-pdb");
-	voronota_assert_full_success("Failed to export atoms");
-	
-	voronota_export_atoms("-file", output_prefix+"vl1sd.pdb", "-pdb-b-factor", "vl1sd", "-as-pdb");
+	voronota_export_atoms("-file", output_prefix+"scores.pdb", "-pdb-b-factor", "vl1s", "-as-pdb");
 	voronota_assert_full_success("Failed to export atoms");
 	
 	return true;
