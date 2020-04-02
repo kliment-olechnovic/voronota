@@ -236,7 +236,8 @@ void print_help(bool h_opt=false)
 
     if (h_opt) print_extra_help();
 
-    exit(EXIT_SUCCESS);
+    //exit(EXIT_SUCCESS);
+    throw std::runtime_error(std::string("TMalign exit after printing help"));
 }
 
 
@@ -246,7 +247,8 @@ void print_help(bool h_opt=false)
 void PrintErrorAndQuit(const string sErrorString)
 {
     cout << sErrorString << endl;
-    exit(1);
+    //exit(1);
+    throw std::runtime_error(std::string("TMalign exit on error: ")+sErrorString);
 }
 
 template <typename T> inline T getmin(const T &a, const T &b)
@@ -4911,7 +4913,8 @@ int main_of_tmalign(int argc, const char** argv)
         if (v_opt)
         {
             print_version();
-            exit(EXIT_FAILURE);
+            //exit(EXIT_FAILURE);
+            throw std::runtime_error(std::string("TMalign exit on error"));
         }
         if (xname.size()==0)
             PrintErrorAndQuit("Please provide input structures");
