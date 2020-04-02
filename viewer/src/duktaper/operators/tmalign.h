@@ -90,13 +90,13 @@ public:
 
 		{
 			std::ostringstream args;
-			args << "-on-objects " << target_name << " -use " << target_use << " -as-pdb -file " << tmp_target_pdb.filename();
+			args << " -use " << target_use << " -as-pdb -file " << tmp_target_pdb.filename();
 			scripting::operators::ExportAtoms().init(args.str()).run(*target_object);
 		}
 
 		{
 			std::ostringstream args;
-			args << "-on-objects " << model_name << " -use " << model_use << " -as-pdb -file " << tmp_model_pdb.filename();
+			args << " -use " << model_use << " -as-pdb -file " << tmp_model_pdb.filename();
 			scripting::operators::ExportAtoms().init(args.str()).run(*model_object);
 		}
 
@@ -107,6 +107,42 @@ public:
 		result.tmalign_stdout=tmalign_result.stdout;
 		result.tmalign_stderr=tmalign_result.stderr;
 		result.tmalign_matrix_file=scripting::VirtualFileStorage::get_file(tmp_matrix.filename());
+
+		if(!result.tmalign_matrix_file.empty())
+		{
+			std::ostringstream translation_output;
+			std::ostringstream rotation_output;
+			{
+				std::istringstream file_input(result.tmalign_matrix_file);
+				for(int i=0;i<5 && file_input.good();i++)
+				{
+					std::string line;
+					std::getline(file_input, line);
+					if(i>1)
+					{
+						std::istringstream line_input(line);
+						for(int j=0;j<5 && line_input.good();j++)
+						{
+							std::string token;
+							line_input >> token;
+							if(j==1)
+							{
+								translation_output << " " << token;
+							}
+							else if(j>1 && j<5)
+							{
+								rotation_output << " " << token;
+							}
+						}
+					}
+				}
+			}
+			{
+				std::ostringstream args;
+				args << "-rotate-by-matrix " << rotation_output.str() << " -translate " << translation_output.str();
+				scripting::operators::MoveAtoms().init(args.str()).run(*model_object);
+			}
+		}
 
 		return result;
 	}
