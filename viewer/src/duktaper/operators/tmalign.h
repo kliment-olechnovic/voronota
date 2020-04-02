@@ -23,6 +23,11 @@ public:
 		std::string tmalign_stdout;
 		std::string tmalign_stderr;
 		std::string tmalign_matrix_file;
+		double tmalign_score;
+
+		Result() : tmalign_exit_code(0), tmalign_score(0.0)
+		{
+		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
@@ -30,6 +35,7 @@ public:
 			heterostorage.variant_object.value("tmalign_stdout")=tmalign_stdout;
 			heterostorage.variant_object.value("tmalign_stderr")=tmalign_stderr;
 			heterostorage.variant_object.value("tmalign_matrix_file")=tmalign_matrix_file;
+			heterostorage.variant_object.value("tmalign_score")=tmalign_score;
 		}
 	};
 
@@ -141,6 +147,29 @@ public:
 				std::ostringstream args;
 				args << "-rotate-by-matrix " << rotation_output.str() << " -translate " << translation_output.str();
 				scripting::operators::MoveAtoms().init(args.str()).run(*model_object);
+			}
+		}
+
+		if(!result.tmalign_stdout.empty())
+		{
+			const std::string score_line_start="TM-score=";
+			const std::string score_line_middle="(if normalized by length of Chain_2";
+			std::istringstream file_input(result.tmalign_stdout);
+			bool finish=false;
+			while(file_input.good() && !finish)
+			{
+				std::string line;
+				std::getline(file_input, line);
+				if(line.find(score_line_start)==0)
+				{
+					const std::size_t middle_pos=line.find(score_line_middle);
+					if(middle_pos!=std::string::npos)
+					{
+						std::istringstream score_input(line.substr(score_line_start.size(), score_line_middle.size()-score_line_start.size()));
+						score_input >> result.tmalign_score;
+						finish=true;
+					}
+				}
 			}
 		}
 
