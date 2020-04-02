@@ -3718,68 +3718,109 @@ void output_results(
     const int mirror_opt,
     const vector<string>&resi_vec1, const vector<string>&resi_vec2)
 {
+	char printf_buffer[5000];
     if (outfmt_opt<=0)
     {
-        printf("\nName of Chain_1: %s%s (to be superimposed onto Chain_2)\n",
-            xname.c_str(), chainID1);
-        printf("Name of Chain_2: %s%s\n", yname.c_str(), chainID2);
-        printf("Length of Chain_1: %d residues\n", xlen);
-        printf("Length of Chain_2: %d residues\n\n", ylen);
+        sprintf(printf_buffer, "\nName of Chain_1: %s%s (to be superimposed onto Chain_2)\n", xname.c_str(), chainID1);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "Name of Chain_2: %s%s\n", yname.c_str(), chainID2);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "Length of Chain_1: %d residues\n", xlen);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "Length of Chain_2: %d residues\n\n", ylen);
+        std::cout << std::string(printf_buffer);
 
         if (i_opt)
-            printf("User-specified initial alignment: TM/Lali/rmsd = %7.5lf, %4d, %6.3lf\n", TM_ali, L_ali, rmsd_ali);
+        {
+        	sprintf(printf_buffer, "User-specified initial alignment: TM/Lali/rmsd = %7.5lf, %4d, %6.3lf\n", TM_ali, L_ali, rmsd_ali);
+            std::cout << std::string(printf_buffer);
+        }
 
-        printf("Aligned length= %d, RMSD= %6.2f, Seq_ID=n_identical/n_aligned= %4.3f\n", n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
-        printf("TM-score= %6.5f (if normalized by length of Chain_1, i.e., LN=%d, d0=%.2f)\n", TM2, xlen, d0B);
-        printf("TM-score= %6.5f (if normalized by length of Chain_2, i.e., LN=%d, d0=%.2f)\n", TM1, ylen, d0A);
+        sprintf(printf_buffer, "Aligned length= %d, RMSD= %6.2f, Seq_ID=n_identical/n_aligned= %4.3f\n", n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "TM-score= %6.5f (if normalized by length of Chain_1, i.e., LN=%d, d0=%.2f)\n", TM2, xlen, d0B);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "TM-score= %6.5f (if normalized by length of Chain_2, i.e., LN=%d, d0=%.2f)\n", TM1, ylen, d0A);
+        std::cout << std::string(printf_buffer);
 
         if (a_opt==1)
-            printf("TM-score= %6.5f (if normalized by average length of two structures, i.e., LN= %.1f, d0= %.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
+        {
+        	sprintf(printf_buffer, "TM-score= %6.5f (if normalized by average length of two structures, i.e., LN= %.1f, d0= %.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
+            std::cout << std::string(printf_buffer);
+        }
         if (u_opt)
-            printf("TM-score= %6.5f (if normalized by user-specified LN=%.2f and d0=%.2f)\n", TM4, Lnorm_ass, d0u);
+        {
+        	sprintf(printf_buffer, "TM-score= %6.5f (if normalized by user-specified LN=%.2f and d0=%.2f)\n", TM4, Lnorm_ass, d0u);
+            std::cout << std::string(printf_buffer);
+        }
         if (d_opt)
-            printf("TM-score= %6.5f (if scaled by user-specified d0= %.2f, and LN= %d)\n", TM5, d0_scale, ylen);
-        printf("(You should use TM-score normalized by length of the reference structure)\n");
+        {
+        	sprintf(printf_buffer, "TM-score= %6.5f (if scaled by user-specified d0= %.2f, and LN= %d)\n", TM5, d0_scale, ylen);
+            std::cout << std::string(printf_buffer);
+        }
+        sprintf(printf_buffer, "(You should use TM-score normalized by length of the reference structure)\n");
+        std::cout << std::string(printf_buffer);
     
         //output alignment
-        printf("\n(\":\" denotes residue pairs of d < %4.1f Angstrom, ", d0_out);
-        printf("\".\" denotes other aligned residues)\n");
-        printf("%s\n", seqxA);
-        printf("%s\n", seqM);
-        printf("%s\n", seqyA);
+        sprintf(printf_buffer, "\n(\":\" denotes residue pairs of d < %4.1f Angstrom, ", d0_out);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "\".\" denotes other aligned residues)\n");
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "%s\n", seqxA);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "%s\n", seqM);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "%s\n", seqyA);
+        std::cout << std::string(printf_buffer);
     }
     else if (outfmt_opt==1)
     {
-        printf(">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n",
-            xname.c_str(), chainID1, xlen, d0B, Liden/xlen, TM2);
-        printf("%s\n", seqxA);
-        printf(">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n",
-            yname.c_str(), chainID2, ylen, d0A, Liden/ylen, TM1);
-        printf("%s\n", seqyA);
+    	sprintf(printf_buffer, ">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n", xname.c_str(), chainID1, xlen, d0B, Liden/xlen, TM2);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "%s\n", seqxA);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, ">%s%s\tL=%d\td0=%.2f\tseqID=%.3f\tTM-score=%.5f\n", yname.c_str(), chainID2, ylen, d0A, Liden/ylen, TM1);
+        std::cout << std::string(printf_buffer);
+        sprintf(printf_buffer, "%s\n", seqyA);
+        std::cout << std::string(printf_buffer);
 
-        printf("# Lali=%d\tRMSD=%.2f\tseqID_ali=%.3f\n",
-            n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
+        sprintf(printf_buffer, "# Lali=%d\tRMSD=%.2f\tseqID_ali=%.3f\n", n_ali8, rmsd, (n_ali8>0)?Liden/n_ali8:0);
+        std::cout << std::string(printf_buffer);
 
         if (i_opt)
-            printf("# User-specified initial alignment: TM=%.5lf\tLali=%4d\trmsd=%.3lf\n", TM_ali, L_ali, rmsd_ali);
+        {
+        	sprintf(printf_buffer, "# User-specified initial alignment: TM=%.5lf\tLali=%4d\trmsd=%.3lf\n", TM_ali, L_ali, rmsd_ali);
+            std::cout << std::string(printf_buffer);
+        }
 
         if(a_opt)
-            printf("# TM-score=%.5f (normalized by average length of two structures: L=%.1f\td0=%.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
+        {
+        	sprintf(printf_buffer, "# TM-score=%.5f (normalized by average length of two structures: L=%.1f\td0=%.2f)\n", TM3, (xlen+ylen)*0.5, d0a);
+            std::cout << std::string(printf_buffer);
+        }
 
         if(u_opt)
-            printf("# TM-score=%.5f (normalized by user-specified L=%.2f\td0=%.2f)\n", TM4, Lnorm_ass, d0u);
+        {
+        	sprintf(printf_buffer, "# TM-score=%.5f (normalized by user-specified L=%.2f\td0=%.2f)\n", TM4, Lnorm_ass, d0u);
+            std::cout << std::string(printf_buffer);
+        }
 
         if(d_opt)
-            printf("# TM-score=%.5f (scaled by user-specified d0=%.2f\tL=%d)\n", TM5, d0_scale, ylen);
+        {
+        	sprintf(printf_buffer, "# TM-score=%.5f (scaled by user-specified d0=%.2f\tL=%d)\n", TM5, d0_scale, ylen);
+            std::cout << std::string(printf_buffer);
+        }
 
-        printf("$$$$\n");
+        sprintf(printf_buffer, "$$$$\n");
+        std::cout << std::string(printf_buffer);
     }
     else if (outfmt_opt==2)
     {
-        printf("%s%s\t%s%s\t%.4f\t%.4f\t%.2f\t%4.3f\t%4.3f\t%4.3f\t%d\t%d\t%d",
+    	sprintf(printf_buffer, "%s%s\t%s%s\t%.4f\t%.4f\t%.2f\t%4.3f\t%4.3f\t%4.3f\t%d\t%d\t%d",
             xname.c_str(), chainID1, yname.c_str(), chainID2, TM2, TM1, rmsd,
             Liden/xlen, Liden/ylen, (n_ali8>0)?Liden/n_ali8:0,
             xlen, ylen, n_ali8);
+        std::cout << std::string(printf_buffer);
     }
     cout << endl;
 
@@ -5144,6 +5185,10 @@ int main_of_tmalign(int argc, const char** argv)
 
     t2 = clock();
     float diff = ((float)t2 - (float)t1)/CLOCKS_PER_SEC;
-    printf("Total CPU time is %5.2f seconds\n", diff);
+    {
+    char printf_buffer[1000];
+    sprintf(printf_buffer, "Total CPU time is %5.2f seconds\n", diff);
+    std::cout << std::string(printf_buffer);
+    }
     return 0;
 }
