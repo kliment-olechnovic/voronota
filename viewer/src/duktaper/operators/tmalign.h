@@ -60,8 +60,8 @@ public:
 	{
 		doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object"));
 		doc.set_option_decription(scripting::CDOD("model", scripting::CDOD::DATATYPE_STRING, "name of model object"));
-		doc.set_option_decription(scripting::CDOD("target-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for target object"));
-		doc.set_option_decription(scripting::CDOD("model-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for model object"));
+		doc.set_option_decription(scripting::CDOD("target-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
+		doc.set_option_decription(scripting::CDOD("model-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
