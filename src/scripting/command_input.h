@@ -313,7 +313,7 @@ public:
 		return get_value_or_default<std::string>(name, default_value);
 	}
 
-	std::vector<std::string> get_value_vector_or_all_unnamed_values(const std::string& name)
+	std::vector<std::string> get_value_vector_or_all_unused_unnamed_values(const std::string& name)
 	{
 		if(is_option(name))
 		{
@@ -321,8 +321,15 @@ public:
 		}
 		else
 		{
-			std::vector<std::string> result=get_list_of_unnamed_values();
-			mark_all_unnamed_values_as_used();
+			std::vector<std::string> result;
+			for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+			{
+				if(!is_unnamed_value_used(i))
+				{
+					mark_unnamed_value_as_used(i);
+					result.push_back(list_of_unnamed_values_[i]);
+				}
+			}
 			return result;
 		}
 	}

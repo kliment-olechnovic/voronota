@@ -110,7 +110,7 @@ public:
 		query.visible=input.get_flag("visible");
 		query.not_visible=input.get_flag("not-visible");
 
-		const std::vector<std::string> names=input.get_value_vector_or_all_unnamed_values("names");
+		const std::vector<std::string> names=input.get_value_vector_or_all_unused_unnamed_values("names");
 		query.names.insert(names.begin(), names.end());
 
 		return query;

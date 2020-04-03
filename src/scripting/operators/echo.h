@@ -36,7 +36,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		strings=input.get_value_vector_or_all_unnamed_values("strings");
+		strings=input.get_value_vector_or_all_unused_unnamed_values("strings");
 	}
 
 	void document(CommandDocumentation& doc) const

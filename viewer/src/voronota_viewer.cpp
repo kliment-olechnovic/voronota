@@ -16,7 +16,7 @@ int main(const int argc, const char** argv)
 		app_init_parameters.shader_vertex=command_args_input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
 		app_init_parameters.shader_vertex_with_instancing=command_args_input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
 		app_init_parameters.shader_fragment=command_args_input.get_value_or_default<std::string>("shader-fragment", "_shader_fragment_simple");
-		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unnamed_values("files");
+		const std::vector<std::string> files=command_args_input.get_value_vector_or_all_unused_unnamed_values("files");
 		const std::vector<std::string> scripts=command_args_input.get_value_vector_or_default<std::string>("scripts", std::vector<std::string>());
 
 		command_args_input.assert_nothing_unusable();

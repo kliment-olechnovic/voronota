@@ -30,7 +30,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		filenames=input.get_value_vector_or_all_unnamed_values("filenames");
+		filenames=input.get_value_vector_or_all_unused_unnamed_values("filenames");
 	}
 
 	void document(CommandDocumentation& doc) const
