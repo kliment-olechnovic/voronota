@@ -110,8 +110,8 @@ public:
 
 		Result result;
 		result.tmalign_exit_code=tmalign_result.exit_code;
-		result.tmalign_stdout=tmalign_result.stdout;
-		result.tmalign_stderr=tmalign_result.stderr;
+		result.tmalign_stdout=tmalign_result.stdout_str;
+		result.tmalign_stderr=tmalign_result.stderr_str;
 		result.tmalign_matrix_file=scripting::VirtualFileStorage::get_file(tmp_matrix.filename());
 
 		if(!result.tmalign_matrix_file.empty())

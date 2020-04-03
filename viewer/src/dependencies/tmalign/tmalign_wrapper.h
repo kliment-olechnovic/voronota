@@ -12,8 +12,8 @@ public:
 	struct ResultBundle
 	{
 		int exit_code;
-		std::string stdout;
-		std::string stderr;
+		std::string stdout_str;
+		std::string stderr_str;
 	};
 
 	static ResultBundle run_tmalign(const std::string& input_target_file, const std::string& input_model_file, const std::string& output_matrix_file)
@@ -35,8 +35,8 @@ public:
 
 		ResultBundle result;
 		result.exit_code=main_of_tmalign(static_cast<int>(argv.size()), argv.data());
-		result.stdout=sor.cout_output();
-		result.stderr=sor.cerr_output();
+		result.stdout_str=sor.cout_output();
+		result.stderr_str=sor.cerr_output();
 
 		return result;
 	}
