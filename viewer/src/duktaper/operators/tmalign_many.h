@@ -1,5 +1,5 @@
-#ifndef DUKTAPER_OPERATORS_TMALIGN_ALL_H_
-#define DUKTAPER_OPERATORS_TMALIGN_ALL_H_
+#ifndef DUKTAPER_OPERATORS_TMALIGN_MANY_H_
+#define DUKTAPER_OPERATORS_TMALIGN_MANY_H_
 
 #include "tmalign.h"
 
@@ -12,13 +12,21 @@ namespace duktaper
 namespace operators
 {
 
-class TMalignAll : public scripting::operators::OperatorBase<TMalign>
+class TMalignMany : public scripting::operators::OperatorBase<TMalign>
 {
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
-		void store(scripting::HeterogeneousStorage&) const
+		std::vector<TMalign::Result> tmalign_results;
+
+		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
+			for(std::size_t i=0;i<tmalign_results.size();i++)
+			{
+				std::vector<scripting::VariantObject>& voa=heterostorage.variant_object.objects_array("tmalign_results");
+				voa.push_back(scripting::VariantObject());
+				tmalign_results[i].store(voa.back());
+			}
 		}
 	};
 
@@ -27,7 +35,7 @@ public:
 	std::string target_selection;
 	std::string model_selection;
 
-	TMalignAll()
+	TMalignMany()
 	{
 	}
 
@@ -67,6 +75,8 @@ public:
 
 		congregation_of_data_managers.assert_object_availability(target_name_to_use);
 
+		Result result;
+
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			const scripting::CongregationOfDataManagers::ObjectAttributes attributes=congregation_of_data_managers.get_object_attributes(objects[i]);
@@ -82,11 +92,9 @@ public:
 				{
 					args << " -model-sel " << model_selection;
 				}
-				TMalign().init(args.str()).run(congregation_of_data_managers);
+				result.tmalign_results.push_back(TMalign().init(args.str()).run(congregation_of_data_managers));
 			}
 		}
-
-		Result result;
 
 		return result;
 	}
@@ -98,4 +106,4 @@ public:
 
 }
 
-#endif /* DUKTAPER_OPERATORS_TMALIGN_ALL_H_ */
+#endif /* DUKTAPER_OPERATORS_TMALIGN_MANY_H_ */

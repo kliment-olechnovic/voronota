@@ -19,6 +19,8 @@ class TMalign : public scripting::operators::OperatorBase<TMalign>
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
+		std::string target_name;
+		std::string model_name;
 		int tmalign_exit_code;
 		std::string tmalign_stdout;
 		std::string tmalign_stderr;
@@ -29,13 +31,20 @@ public:
 		{
 		}
 
+		void store(scripting::VariantObject& variant_object) const
+		{
+			variant_object.value("target_name")=target_name;
+			variant_object.value("model_name")=model_name;
+			variant_object.value("tmalign_exit_code")=tmalign_exit_code;
+			variant_object.value("tmalign_stdout")=tmalign_stdout;
+			variant_object.value("tmalign_stderr")=tmalign_stderr;
+			variant_object.value("tmalign_matrix_file")=tmalign_matrix_file;
+			variant_object.value("tmalign_score")=tmalign_score;
+		}
+
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.value("tmalign_exit_code")=tmalign_exit_code;
-			heterostorage.variant_object.value("tmalign_stdout")=tmalign_stdout;
-			heterostorage.variant_object.value("tmalign_stderr")=tmalign_stderr;
-			heterostorage.variant_object.value("tmalign_matrix_file")=tmalign_matrix_file;
-			heterostorage.variant_object.value("tmalign_score")=tmalign_score;
+			store(heterostorage.variant_object);
 		}
 	};
 
@@ -109,6 +118,8 @@ public:
 		const TMAlignWrapper::ResultBundle tmalign_result=TMAlignWrapper().run_tmalign(tmp_target_pdb.filename(), tmp_model_pdb.filename(), tmp_matrix.filename());
 
 		Result result;
+		result.target_name=target_name;
+		result.model_name=model_name;
 		result.tmalign_exit_code=tmalign_result.exit_code;
 		result.tmalign_stdout=tmalign_result.stdout_str;
 		result.tmalign_stderr=tmalign_result.stderr_str;

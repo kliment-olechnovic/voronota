@@ -22,7 +22,7 @@ public:
 		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 
 		set_command_for_congregation_of_data_managers("tmalign", operators::TMalign());
-		set_command_for_congregation_of_data_managers("tmalign-all", operators::TMalignAll());
+		set_command_for_congregation_of_data_managers("tmalign-many", operators::TMalignMany());
 	}
 };
 
