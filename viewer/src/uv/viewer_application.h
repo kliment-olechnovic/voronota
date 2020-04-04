@@ -111,6 +111,7 @@ public:
 			std::cerr << "Version: " << version << std::endl;
 		}
 
+		glEnable(GL_SCISSOR_TEST);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
 
@@ -228,6 +229,11 @@ public:
 		return &background_color_[0];
 	}
 
+	const float* margin_color() const
+	{
+		return &margin_color_[0];
+	}
+
 	bool rendering_mode_is_simple() const
 	{
 		return (rendering_mode_==RenderingMode::simple);
@@ -326,6 +332,11 @@ public:
 	void set_background_color(unsigned int rgb)
 	{
 		Utilities::calculate_color_from_integer(rgb, background_color_);
+	}
+
+	void set_margin_color(unsigned int rgb)
+	{
+		Utilities::calculate_color_from_integer(rgb, margin_color_);
 	}
 
 	void set_rendering_mode_to_simple()
@@ -512,6 +523,7 @@ protected:
 	{
 		instance_ptr()=this;
 		Utilities::calculate_color_from_integer(0, background_color_);
+		Utilities::calculate_color_from_integer(0, margin_color_);
 	}
 
 	virtual ~ViewerApplication()
@@ -912,9 +924,14 @@ private:
 
 		on_before_rendered_frame();
 
+		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
-		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
+		glClearColor(margin_color_[0], margin_color_[1], margin_color_[2], 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glScissor(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
 		glViewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
+		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		unsigned int call_for_selection_color=0xFFFFFF;
@@ -958,6 +975,7 @@ private:
 		shading_with_instancing_.enable();
 		render_scene(ShadingMode::with_instancing);
 
+		glScissor(0, 0, framebuffer_width_, framebuffer_height_);
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glUseProgram(0);
 		render_overlay();
@@ -1297,6 +1315,7 @@ private:
 	RenderingMode::Mode rendering_mode_;
 	ProjectionMode::Mode projection_mode_;
 	float background_color_[3];
+	float margin_color_[3];
 	ShadingController shading_simple_;
 	ShadingController shading_with_instancing_;
 	TransformationMatrixController modeltransform_matrix_;
