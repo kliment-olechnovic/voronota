@@ -179,6 +179,35 @@ public:
 		return framebuffer_height_;
 	}
 
+	double framebuffer_and_window_ratio() const
+	{
+		if(window_width_<=0 || framebuffer_width_<=0 || window_width_==framebuffer_width_)
+		{
+			return 1.0;
+		}
+		return (static_cast<double>(framebuffer_width_)/static_cast<double>(window_width_));
+	}
+
+	int rendering_window_width() const
+	{
+		return adjust_length_with_margin(window_width_, margin_right_ratio_, margin_right_fixed_);
+	}
+
+	int rendering_window_height() const
+	{
+		return adjust_length_with_margin(window_height_, margin_top_ratio_, margin_top_fixed_);
+	}
+
+	int rendering_framebuffer_width() const
+	{
+		return adjust_length_with_margin(framebuffer_width_, margin_right_ratio_, static_cast<int>(margin_right_fixed_*framebuffer_and_window_ratio()));
+	}
+
+	int rendering_framebuffer_height() const
+	{
+		return adjust_length_with_margin(framebuffer_height_, margin_top_ratio_, static_cast<int>(margin_top_fixed_*framebuffer_and_window_ratio()));
+	}
+
 	float mouse_x() const
 	{
 		return static_cast<float>(mouse_cursor_x_);
@@ -404,10 +433,34 @@ public:
 		grid_size_=(grid_size>=1 ? grid_size : 1);
 	}
 
+	void set_margin_right_ratio(const double margin_right_ratio)
+	{
+		margin_right_ratio_=margin_right_ratio;
+		margin_right_fixed_=0;
+	}
+
+	void set_margin_top_ratio(const double margin_top_ratio)
+	{
+		margin_top_ratio_=margin_top_ratio;
+		margin_top_fixed_=0;
+	}
+
+	void set_margin_right_fixed(const int margin_right_size)
+	{
+		margin_right_ratio_=0.0;
+		margin_right_fixed_=margin_right_size;
+	}
+
+	void set_margin_top_fixed(const int margin_top_size)
+	{
+		margin_top_ratio_=0.0;
+		margin_top_fixed_=margin_top_size;
+	}
+
 	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
 	{
-		image_width=framebuffer_width_;
-		image_height=framebuffer_height_;
+		image_width=rendering_framebuffer_width();
+		image_height=rendering_framebuffer_height();
 		image_data.clear();
 		image_data.resize(image_width*image_height*3);
 
@@ -429,6 +482,10 @@ protected:
 		window_height_(0),
 		framebuffer_width_(0),
 		framebuffer_height_(0),
+		margin_right_ratio_(0.0),
+		margin_top_ratio_(0.0),
+		margin_right_fixed_(0),
+		margin_top_fixed_(0),
 		zoom_value_(1.0),
 		zoom_value_step_(1.05),
 		ortho_z_near_(-2.0f),
@@ -515,7 +572,7 @@ protected:
 	{
 	}
 
-	virtual void on_draw_overlay_start()
+	virtual void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
 	}
 
@@ -523,7 +580,7 @@ protected:
 	{
 	}
 
-	virtual void on_draw_overlay_end()
+	virtual void on_draw_overlay_end(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
 	}
 
@@ -634,6 +691,22 @@ private:
 		{
 			return new_value;
 		}
+		return value;
+	}
+
+	static int adjust_length_with_margin(const int length, const double margin_ratio, const int margin_fixed)
+	{
+		int value=length;
+		if(margin_ratio>0.0)
+		{
+			value=static_cast<int>(length*(1.0-margin_ratio));
+		}
+		else if(margin_fixed>0)
+		{
+			value=(length-margin_fixed);
+		}
+		value=std::max(value, 1);
+		value=std::min(value, length);
 		return value;
 	}
 
@@ -799,17 +872,17 @@ private:
 	{
 		const int x=static_cast<int>(mouse_cursor_x_);
 		const int y=window_height_-static_cast<int>(mouse_cursor_y_);
-		return (x>0 && x<window_width_ && y>0 && y<window_height_);
+		return (x>0 && x<rendering_window_width() && y>0 && y<rendering_window_height());
 	}
 
 	int calc_pixel_x(const double screen_x) const
 	{
-		return static_cast<int>((screen_x/static_cast<double>(window_width_))*static_cast<double>(framebuffer_width_));
+		return static_cast<int>((screen_x/static_cast<double>(rendering_window_width()))*static_cast<double>(rendering_framebuffer_width()));
 	}
 
 	int calc_pixel_y(const double screen_y) const
 	{
-		return static_cast<int>((screen_y/static_cast<double>(window_height_))*static_cast<double>(framebuffer_height_));
+		return static_cast<int>((screen_y/static_cast<double>(rendering_window_height()))*static_cast<double>(rendering_framebuffer_height()));
 	}
 
 	void render_frame_wrapped()
@@ -841,6 +914,7 @@ private:
 
 		glViewport(0, 0, framebuffer_width_, framebuffer_height_);
 		glClearColor(background_color_[0], background_color_[1], background_color_[2], 1.0f);
+		glViewport(0, 0, rendering_framebuffer_width(), rendering_framebuffer_height());
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		unsigned int call_for_selection_color=0xFFFFFF;
@@ -900,9 +974,9 @@ private:
 	{
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=framebuffer_width_/2;
+			const int width=rendering_framebuffer_width()/2;
 			{
-				refresh_shading_projection(width, framebuffer_height_, shading_mode);
+				refresh_shading_projection(width, rendering_framebuffer_height(), shading_mode);
 			}
 			for(int i=0;i<2;i++)
 			{
@@ -915,7 +989,7 @@ private:
 					refresh_shading_viewtransform(TransformationMatrixController::create_viewtransform_simple_stereo(zoom_value_, stereo_angle_, stereo_offset_, i), shading_mode);
 				}
 				const int xpos=(width*i);
-				glViewport(xpos, 0, width, framebuffer_height_);
+				glViewport(xpos, 0, width, rendering_framebuffer_height());
 				draw_scene(shading_mode, 0);
 			}
 			refresh_shading_viewtransform(shading_mode);
@@ -925,9 +999,9 @@ private:
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, framebuffer_width_, framebuffer_height_, n_rows, n_columns);
-			const int width=framebuffer_width_/n_columns;
-			const int height=framebuffer_height_/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, rendering_framebuffer_width(), rendering_framebuffer_height(), n_rows, n_columns);
+			const int width=rendering_framebuffer_width()/n_columns;
+			const int height=rendering_framebuffer_height()/n_rows;
 			{
 				refresh_shading_projection(width, height, shading_mode);
 			}
@@ -965,27 +1039,27 @@ private:
 
 	void render_overlay()
 	{
-		on_draw_overlay_start();
+		on_draw_overlay_start(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height());
 		if(rendering_mode_==RenderingMode::stereo)
 		{
-			const int width=framebuffer_width_/2;
+			const int width=rendering_window_width()/2;
 			for(int i=0;i<2;i++)
 			{
 				const int xpos=(width*i);
-				on_draw_overlay_middle(xpos, 0, width, framebuffer_height_, true, false, i);
+				on_draw_overlay_middle(xpos, 0, width, rendering_window_height(), true, false, i);
 			}
 		}
 		else if(rendering_mode_==RenderingMode::grid && grid_size_>1)
 		{
 			int n_rows=1;
 			int n_columns=1;
-			Utilities::calculate_grid_dimensions(grid_size_, framebuffer_width_, framebuffer_height_, n_rows, n_columns);
-			const int width=framebuffer_width_/n_columns;
-			const int height=framebuffer_height_/n_rows;
+			Utilities::calculate_grid_dimensions(grid_size_, rendering_window_width(), rendering_window_height(), n_rows, n_columns);
+			const int width=rendering_window_width()/n_columns;
+			const int height=rendering_window_height()/n_rows;
 			int grid_id=0;
 			for(int i=0;(i<n_rows) && (grid_id<grid_size_);i++)
 			{
-				const int ypos=(height*i);
+				const int ypos=(window_height_-rendering_window_height())+(height*i);
 				for(int j=0;(j<n_columns) && (grid_id<grid_size_);j++)
 				{
 					const int xpos=(width*j);
@@ -996,9 +1070,9 @@ private:
 		}
 		else
 		{
-			on_draw_overlay_middle(0, 0, framebuffer_width_, framebuffer_height_, false, false, 0);
+			on_draw_overlay_middle(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height(), false, false, 0);
 		}
-		on_draw_overlay_end();
+		on_draw_overlay_end(0, (window_height_-rendering_window_height()), rendering_window_width(), rendering_window_height());
 	}
 
 	void refresh_shading_projection(const TransformationMatrixController& projection_matrix, const ShadingMode::Mode shading_mode)
@@ -1027,7 +1101,7 @@ private:
 
 	void refresh_shading_projection(const ShadingMode::Mode shading_mode)
 	{
-		refresh_shading_projection(framebuffer_width_, framebuffer_height_, shading_mode);
+		refresh_shading_projection(rendering_framebuffer_width(), rendering_framebuffer_height(), shading_mode);
 	}
 
 	void refresh_shading_projection()
@@ -1115,8 +1189,8 @@ private:
 		const double cursor_prev_x=(mouse_cursor_prev_x_);
 		const double cursor_prev_y=(static_cast<double>(window_height_)-mouse_cursor_prev_y_);
 
-		const double area_width=static_cast<double>(window_width_);
-		const double area_height=static_cast<double>(window_height_);
+		const double area_width=static_cast<double>(rendering_window_width());
+		const double area_height=static_cast<double>(rendering_window_height());
 		const double trackball_size=std::min(area_width, area_height);
 		const double area_width_in_trackball_size=area_width/trackball_size;
 		const double area_height_in_trackball_size=area_height/trackball_size;
@@ -1195,6 +1269,10 @@ private:
 	int window_height_;
 	int framebuffer_width_;
 	int framebuffer_height_;
+	double margin_right_ratio_;
+	double margin_top_ratio_;
+	int margin_right_fixed_;
+	int margin_top_fixed_;
 	double zoom_value_;
 	double zoom_value_step_;
 	double ortho_z_near_;

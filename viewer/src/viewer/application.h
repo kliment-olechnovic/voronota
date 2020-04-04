@@ -132,7 +132,7 @@ protected:
 		script_execution_manager_.draw(true, grid_id);
 	}
 
-	void on_draw_overlay_start()
+	void on_draw_overlay_start(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
 		ImGui_ImplGlfwGL3_NewFrame();
 
@@ -169,7 +169,7 @@ protected:
 		}
 	}
 
-	void on_draw_overlay_end()
+	void on_draw_overlay_end(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
 		if(GUIConfiguration::instance().enabled_waiting_indicator)
 		{
@@ -177,7 +177,7 @@ protected:
 			{
 				waiting_indicator_.set_activated(!job_queue_.empty() && !job_queue_.front().brief);
 			}
-			waiting_indicator_.execute(window_width(), window_height());
+			waiting_indicator_.execute(box_x, box_y, box_w, box_h);
 		}
 
 		ImGui::Render();

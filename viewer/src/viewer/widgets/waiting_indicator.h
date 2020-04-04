@@ -50,7 +50,7 @@ public:
 		executed_=0;
 	}
 
-	void execute(const int window_width, const int window_height)
+	void execute(const int box_x, const int box_y, const int box_w, const int box_h)
 	{
 		if(!activated_)
 		{
@@ -59,8 +59,8 @@ public:
 
 		const int label_width=150;
 		const int label_height=30;
-		const int label_x_pos=(window_width/2)-(label_width/2);
-		const int label_y_pos=(window_height/2)-(label_height/2);
+		const int label_x_pos=box_x+(box_w/2)-(label_width/2);
+		const int label_y_pos=box_y+(box_h/2)-(label_height/2);
 
 		ImGui::SetNextWindowPos(ImVec2(label_x_pos, label_y_pos));
 		ImGui::SetNextWindowSize(ImVec2(label_width, label_height));
