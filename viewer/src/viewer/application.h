@@ -68,8 +68,13 @@ protected:
 		if(good())
 		{
 			ImGui_ImplGlfwGL3_Init(window(), false);
-			ImGuiIO& io=ImGui::GetIO();
-			io.IniFilename=0;
+
+			ImGui::GetIO().IniFilename=0;
+
+			ImGui::GetStyle().WindowRounding = 0.0f;
+			ImGui::GetStyle().FrameRounding = 0.0f;
+			ImGui::GetStyle().GrabRounding = 0.0f;
+			ImGui::GetStyle().ScrollbarRounding = 0.0f;
 
 			Environment::setup_javascript_bindings(script_execution_manager_);
 		}
@@ -102,18 +107,9 @@ protected:
 	{
 		if(action==GLFW_PRESS)
 		{
-			if(key==GLFW_KEY_F4)
+			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
-				GUIConfiguration::instance().enabled_menu=!GUIConfiguration::instance().enabled_menu;
-				GUIConfiguration::instance().enabled_console=GUIConfiguration::instance().enabled_menu;
-				if(GUIConfiguration::instance().enabled_console)
-				{
-					console_.set_focused(true);
-				}
-			}
-			else if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
-			{
-				if(hovered() && GUIConfiguration::instance().enabled_console)
+				if(hovered())
 				{
 					console_.set_focused(true);
 				}
@@ -142,19 +138,13 @@ protected:
 	{
 		ImGui_ImplGlfwGL3_NewFrame();
 
-		if(GUIConfiguration::instance().enabled_menu)
-		{
-			execute_menu();
-		}
-
 		if(GUIConfiguration::instance().enabled_cursor_label)
 		{
 			cursor_label_.execute(mouse_x(),  mouse_y());
 		}
 
-		if(GUIConfiguration::instance().enabled_console)
 		{
-			const std::string console_result=console_.execute_on_bottom(window_width(), window_height(), 2);
+			const std::string console_result=console_.execute(0, 0, window_width(), window_height()-rendering_window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
@@ -359,6 +349,8 @@ private:
 	Application()
 	{
 		set_background_color(0xCCCCCC);
+		set_margin_color(0xFFFFFF);
+		set_margin_top_fixed(200);
 	}
 
 	~Application()
@@ -442,82 +434,6 @@ private:
 		return (!job_queue_.empty());
 	}
 
-	void execute_menu()
-	{
-		if(ImGui::BeginMainMenuBar())
-		{
-			if(ImGui::BeginMenu("Settings"))
-			{
-				if(ImGui::BeginMenu("Background color"))
-				{
-					if(ImGui::MenuItem("White", ""))
-					{
-						enqueue_script("background white");
-					}
-					if(ImGui::MenuItem("Gray", ""))
-					{
-						enqueue_script("background 0xCCCCCC");
-					}
-					if(ImGui::MenuItem("Black", ""))
-					{
-						enqueue_script("background black");
-					}
-					ImGui::EndMenu();
-				}
-				if(ImGui::BeginMenu("Grid mode"))
-				{
-					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_grid()))
-					{
-						enqueue_script("mono");
-					}
-					if(ImGui::MenuItem("Enable grid by object", "", false, !rendering_mode_is_grid()))
-					{
-						enqueue_script("grid-by-object");
-					}
-					ImGui::EndMenu();
-				}
-				if(ImGui::BeginMenu("Projection mode"))
-				{
-					if(ImGui::MenuItem("Orthographic", "", false, !projection_mode_is_ortho()))
-					{
-						enqueue_script("ortho");
-					}
-					if(ImGui::MenuItem("Perspective", "", false, !projection_mode_is_perspective()))
-					{
-						enqueue_script("perspective");
-					}
-					ImGui::EndMenu();
-				}
-				if(ImGui::BeginMenu("Stereo"))
-				{
-					if(ImGui::MenuItem("Disable", "", false, rendering_mode_is_stereo()))
-					{
-						enqueue_script("mono");
-					}
-					if(ImGui::MenuItem("Enable", "", false, !rendering_mode_is_stereo()))
-					{
-						enqueue_script("stereo");
-					}
-					ImGui::EndMenu();
-				}
-				if(ImGui::BeginMenu("Object text description"))
-				{
-					if(ImGui::MenuItem("Disable", "", false, GUIConfiguration::instance().enabled_info_box))
-					{
-						GUIConfiguration::instance().enabled_info_box=false;
-					}
-					if(ImGui::MenuItem("Enable", "", false, !GUIConfiguration::instance().enabled_info_box))
-					{
-						GUIConfiguration::instance().enabled_info_box=true;
-					}
-					ImGui::EndMenu();
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMainMenuBar();
-		}
-	}
-
 	void execute_info_box(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
 	{
 		std::ostringstream output_text;
@@ -561,7 +477,7 @@ private:
 				text_width=std::max(text_width, line_width);
 			}
 
-			ImGui::SetNextWindowPos(ImVec2(box_x+5, box_y+35), 0);
+			ImGui::SetNextWindowPos(ImVec2(box_x+5, box_y+5), 0);
 			ImGui::SetNextWindowSize(ImVec2(3+(text_width*8), 15+(text_height*15)));
 			ImVec4 color_text=ImVec4(0.5f, 0.0f, 1.0f, 1.0f);
 			ImGui::Begin(window_name.str().c_str(), 0, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);

@@ -24,11 +24,8 @@ public:
 		index_of_history_of_commands_(0),
 		need_keyboard_focus_(false)
 	{
-	}
-
-	static int height()
-	{
-		return 30;
+		outputs_.push_back("This is a console window.");
+		outputs_.push_back("Input commands into the black field below.");
 	}
 
 	bool focused() const
@@ -46,22 +43,50 @@ public:
 		next_prefix_=prefix;
 	}
 
-	std::string execute(const int width, const int x_pos, const int y_pos)
+	std::string execute(const int x_pos, const int y_pos, const int width, const int height)
 	{
 		std::string result;
 
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
-		ImGui::SetNextWindowSize(ImVec2(width, height()));
+		ImGui::SetNextWindowSize(ImVec2(width, height));
 
-		ImGui::Begin("Console input", 0, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("ConsoleWindow", 0, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+
+	    static ImGuiTextBuffer log1;
+	    static int lines1=0;
+	    static ImGuiTextBuffer log2;
+	    static int lines2=0;
+	    while(lines1<100)
+	    {
+	    	log1.append("%i The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog\n", lines1);
+	    	lines1++;
+	    }
+	    while(lines2<3)
+	    {
+	    	log2.append("%i The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog\n", lines2);
+	    	lines2++;
+	    }
+
+		{
+			ImGui::BeginChild("ScrollingRegion", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
+			ImGui::PushItemWidth(-1);
+			ImGui::PushTextWrapPos();
+			for(std::size_t i=0;i<outputs_.size();i++)
+			{
+				ImGui::TextUnformatted(outputs_[i].c_str());
+			}
+			ImGui::PopTextWrapPos();
+			ImGui::PopItemWidth();
+			ImGui::EndChild();
+		}
 
 		{
 			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 0.75f);
+			ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
-			if(ImGui::InputText("", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory|ImGuiInputTextFlags_CallbackAlways, &on_command_input_data_request, this))
+			if(ImGui::InputText("ConsoleInput", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory|ImGuiInputTextFlags_CallbackAlways, &on_command_input_data_request, this))
 			{
 				result=(std::string(command_buffer_.data()));
 				update_history_of_commands(result);
@@ -82,14 +107,6 @@ public:
 		ImGui::End();
 
 		return result;
-	}
-
-	std::string execute_on_bottom(const int window_width, const int window_height, const int padding)
-	{
-		const int x_pos=padding;
-		const int y_pos=std::max(padding, window_height-(height()+padding));
-		const int width=window_width-padding*2;
-		return execute(width, x_pos, y_pos);
 	}
 
 private:
@@ -188,6 +205,7 @@ private:
 		dynamic_history_of_commands_.clear();
 	}
 
+	std::vector<std::string> outputs_;
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::vector<char> command_buffer_;

@@ -353,7 +353,18 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
-		Environment::print_log(last_output());
+		if(last_output().objects_arrays().count("results")>0)
+		{
+			const std::vector<scripting::VariantObject>& results=last_output().objects_arrays().find("results")->second;
+			for(std::size_t i=0;i<results.size();i++)
+			{
+				Environment::print_log(results[i]);
+			}
+		}
+		else
+		{
+			Environment::print_log(last_output());
+		}
 	}
 
 private:
