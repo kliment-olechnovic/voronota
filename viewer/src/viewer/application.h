@@ -75,6 +75,12 @@ protected:
 		}
 	}
 
+	bool check_window_scroll_intercepted(double xoffset, double yoffset)
+	{
+		ImGui_ImplGlfwGL3_ScrollCallback(window(), xoffset, yoffset);
+		return (ImGui::IsMouseHoveringAnyWindow());
+	}
+
 	bool check_mouse_button_use_intercepted(int button, int action, int mods)
 	{
 		ImGui_ImplGlfwGL3_MouseButtonCallback(window(), button, action, mods);

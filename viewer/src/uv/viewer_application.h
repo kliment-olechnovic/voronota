@@ -546,6 +546,11 @@ protected:
 	{
 	}
 
+	virtual bool check_window_scroll_intercepted(double xoffset, double yoffset)
+	{
+		return false;
+	}
+
 	virtual void on_window_scrolled(double xoffset, double yoffset)
 	{
 	}
@@ -787,6 +792,10 @@ private:
 
 	void callback_on_window_scrolled(double xoffset, double yoffset)
 	{
+		if(check_window_scroll_intercepted(xoffset, yoffset))
+		{
+			return;
+		}
 		const bool step_up=(yoffset<-0.1);
 		const bool step_down=(yoffset>0.1);
 		zoom_value_=calculate_stepped_value(zoom_value_, zoom_value_step_, step_up, step_down);
