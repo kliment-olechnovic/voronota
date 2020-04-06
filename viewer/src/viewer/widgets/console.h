@@ -73,14 +73,14 @@ public:
 		add_output(false, false, str);
 	}
 
-	std::string execute(const int x_pos, const int y_pos, const int width, const int height)
+	std::string execute(const int x_pos, const int y_pos, const int width, const int recommended_height, const int max_height)
 	{
 		std::string result;
 
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
-		ImGui::SetNextWindowSizeConstraints(ImVec2(width, 100), ImVec2(width, 400));
+		ImGui::SetNextWindowSizeConstraints(ImVec2(width, 100), ImVec2(width, max_height));
 
-		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, height), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 	    static ImGuiTextBuffer log1;
 	    static int lines1=0;
@@ -154,7 +154,7 @@ public:
 
 		{
 			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			ImVec4 color_background=ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+			ImVec4 color_background=ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);

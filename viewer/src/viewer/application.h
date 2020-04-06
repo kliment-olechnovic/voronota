@@ -148,7 +148,7 @@ protected:
 		}
 
 		{
-			const std::string console_result=widgets::Console::instance().execute(0, 0, window_width(), window_height()-rendering_window_height());
+			const std::string console_result=widgets::Console::instance().execute(0, 0, window_width(), window_height()-rendering_window_height(), window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
@@ -185,9 +185,13 @@ protected:
 
 	void on_before_rendered_frame()
 	{
-		if(widgets::Console::instance().current_heigth()>0)
+		if(widgets::Console::instance().current_heigth()>0 && widgets::Console::instance().current_heigth()<(window_height()-1))
 		{
 			set_margin_top_fixed(widgets::Console::instance().current_heigth());
+		}
+		else
+		{
+			set_margin_top_fixed(0);
 		}
 		script_execution_manager_.setup_grid_parameters();
 	}
