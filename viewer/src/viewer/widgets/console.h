@@ -103,23 +103,33 @@ public:
 			ImGui::PushTextWrapPos();
 			for(std::size_t i=0;i<outputs_.size();i++)
 			{
-				float col[4]={1.0f, 1.0f, 1.0f, 1.0f};
-				if(outputs_[i].success_possible)
+				if(outputs_[i].content=="---")
 				{
-					if(outputs_[i].success_achieved)
-					{
-						col[0]=0.5f;
-					}
-					else
-					{
-						col[1]=0.5f;
-						col[2]=0.5f;
-					}
+					ImGui::Separator();
 				}
-				ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
-				ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-				ImGui::TextUnformatted(outputs_[i].content.c_str());
-				ImGui::PopStyleColor();
+				else
+				{
+					float col[4]={1.0f, 1.0f, 1.0f, 1.0f};
+					if(outputs_[i].success_possible)
+					{
+						if(outputs_[i].success_achieved)
+						{
+							col[0]=0.5f;
+							col[1]=1.0f;
+							col[2]=1.0f;
+						}
+						else
+						{
+							col[0]=1.0f;
+							col[1]=0.5f;
+							col[2]=0.5f;
+						}
+					}
+					ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
+					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+					ImGui::TextUnformatted(outputs_[i].content.c_str());
+					ImGui::PopStyleColor();
+				}
 			}
 			ImGui::PopTextWrapPos();
 			ImGui::PopItemWidth();
