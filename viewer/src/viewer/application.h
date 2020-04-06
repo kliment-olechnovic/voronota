@@ -5,6 +5,8 @@
 
 #include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
+#include "../duktaper/binding_javascript.h"
+
 #include "script_execution_manager.h"
 #include "widgets/console.h"
 #include "widgets/cursor_label.h"
@@ -80,7 +82,9 @@ protected:
 			ImGui::GetStyle().GrabRounding = 0.0f;
 			ImGui::GetStyle().ScrollbarRounding = 0.0f;
 
-			Environment::setup_javascript_bindings(script_execution_manager_);
+			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());
+			duktaper::DuktapeManager::set_script_execution_manager(script_execution_manager_);
+			Environment::execute_javascript(duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
 		}
 	}
 
@@ -355,6 +359,35 @@ private:
 			map_of_mode_prefixes[MODE_JAVASCRIPT_BRIEF]="jsb:";
 			map_of_mode_prefixes[MODE_FILES]="files:";
 			return map_of_mode_prefixes;
+		}
+	};
+
+	class DuktaperOutputDirector : public duktaper::DuktapeManager::OutputDirector
+	{
+	public:
+		DuktaperOutputDirector()
+		{
+		}
+
+		static const DuktaperOutputDirector& instance()
+		{
+			static DuktaperOutputDirector output_director;
+			return output_director;
+		}
+
+		void write_text(const std::string& str) const
+		{
+			widgets::Console::instance().add_output(str, 1.0f, 1.0f, 1.0f);
+		}
+
+		void write_error(const std::string& str) const
+		{
+			widgets::Console::instance().add_output(str, 1.0f, 0.5f, 0.5f);
+		}
+
+		void write_log(const std::string& str) const
+		{
+			widgets::Console::instance().add_output(str, 1.0f, 1.0f, 0.5f);
 		}
 	};
 

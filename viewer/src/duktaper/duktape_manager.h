@@ -15,6 +15,42 @@ namespace duktaper
 class DuktapeManager
 {
 public:
+	class OutputDirector
+	{
+	public:
+		OutputDirector()
+		{
+		}
+
+		virtual ~OutputDirector()
+		{
+		}
+
+		static const OutputDirector& instance()
+		{
+			static OutputDirector output_director;
+			return output_director;
+		}
+
+		virtual void write_text(const std::string& str) const
+		{
+			std::cout << str;
+			std::cout.flush();
+		}
+
+		virtual void write_error(const std::string& str) const
+		{
+			std::cerr << str;
+			std::cerr.flush();
+		}
+
+		virtual void write_log(const std::string& str) const
+		{
+			std::cerr << str;
+			std::cerr.flush();
+		}
+	};
+
 	static bool eval(const std::string& script, const bool print_result=false)
 	{
 		if(script.empty())
@@ -24,11 +60,11 @@ public:
 		const bool success=(duk_peval_string(get_context(), script.c_str())==0);
 		if(!success)
 		{
-			std::cerr << "error= " << duk_safe_to_string(get_context(), -1) << std::endl;
+			instance().write_error(std::string("error= ")+std::string(duk_safe_to_string(get_context(), -1))+std::string("\n"));
 		}
 		else if(print_result)
 		{
-			std::cerr << "= " << duk_safe_to_string(get_context(), -1) << std::endl;
+			instance().write_log(std::string("= ")+std::string(duk_safe_to_string(get_context(), -1))+std::string("\n"));
 		}
 		duk_pop(get_context());
 		return success;
@@ -39,8 +75,13 @@ public:
 		instance().sem_=&sem;
 	}
 
+	static void set_output_director(const OutputDirector& output_director)
+	{
+		instance().output_director_=&output_director;
+	}
+
 private:
-	DuktapeManager() : context_(0), sem_(0)
+	DuktapeManager() : context_(0), sem_(0), output_director_(&OutputDirector::instance())
 	{
 	}
 
@@ -67,29 +108,27 @@ private:
 	static duk_ret_t native_raw_write(duk_context *ctx)
 	{
 		const std::string text=duk_safe_to_string(ctx, -1);
-		std::cout << text;
-		std::cout.flush();
+		instance().write_text(text);
 		return 0;
 	}
 
 	static duk_ret_t native_raw_writeln(duk_context *ctx)
 	{
 		const std::string text=duk_safe_to_string(ctx, -1);
-		std::cout << text << std::endl;
+		instance().write_text(text+"\n");
 		return 0;
 	}
 
 	static duk_ret_t native_raw_log(duk_context *ctx)
 	{
 		const std::string text=duk_safe_to_string(ctx, -1);
-		std::cerr << text;
 		if(text.size()>0 && text[text.size()-1]=='\n')
 		{
-			std::cerr.flush();
+			instance().write_error(text);
 		}
 		else
 		{
-			std::cerr << std::endl;
+			instance().write_error(text+"\n");
 		}
 		return 0;
 	}
@@ -418,15 +457,40 @@ private:
 				const bool success=(duk_peval_string(context_, script.c_str())==0);
 				if(!success)
 				{
-					std::cerr << duk_safe_to_string(context_, -1) << std::endl;
+					write_error(std::string(duk_safe_to_string(context_, -1))+"\n");
 				}
 				duk_pop(context_);
 			}
 		}
 	}
 
+	void write_text(const std::string& str)
+	{
+		if(output_director_!=0)
+		{
+			output_director_->write_text(str);
+		}
+	}
+
+	void write_error(const std::string& str)
+	{
+		if(output_director_!=0)
+		{
+			output_director_->write_error(str);
+		}
+	}
+
+	void write_log(const std::string& str)
+	{
+		if(output_director_!=0)
+		{
+			output_director_->write_log(str);
+		}
+	}
+
 	duk_context* context_;
 	scripting::ScriptExecutionManagerWithVariantOutput* sem_;
+	const OutputDirector* output_director_;
 };
 
 }
