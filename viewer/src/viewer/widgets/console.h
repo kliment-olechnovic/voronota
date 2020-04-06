@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <deque>
 
 #include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
@@ -19,13 +20,22 @@ namespace widgets
 class Console
 {
 public:
-	Console() :
-		command_buffer_(1024, 0),
-		index_of_history_of_commands_(0),
-		need_keyboard_focus_(false)
+	struct OutputToken
 	{
-		outputs_.push_back("This is a console window.");
-		outputs_.push_back("Input commands into the black field below.");
+		bool success_possible;
+		bool success_achieved;
+		std::string content;
+
+		OutputToken(const bool success_possible, const bool success_achieved, const std::string& content) :
+			success_possible(success_possible), success_achieved(success_achieved), content(content)
+		{
+		}
+	};
+
+	static Console& instance()
+	{
+		static Console console;
+		return console;
 	}
 
 	bool focused() const
@@ -41,6 +51,26 @@ public:
 	void set_next_prefix(const std::string& prefix)
 	{
 		next_prefix_=prefix;
+	}
+
+	void add_output(const bool success_possible, const bool success_achieved, const std::string& content)
+	{
+		outputs_.push_back(OutputToken(success_possible, success_achieved, content));
+		if(outputs_.size()>50)
+		{
+			outputs_.pop_front();
+		}
+		scroll_output_=true;
+	}
+
+	void add_output(const std::string& str, const bool success_achieved)
+	{
+		add_output(true, success_achieved, str);
+	}
+
+	void add_output(const std::string& str)
+	{
+		add_output(false, false, str);
 	}
 
 	std::string execute(const int x_pos, const int y_pos, const int width, const int height)
@@ -73,10 +103,31 @@ public:
 			ImGui::PushTextWrapPos();
 			for(std::size_t i=0;i<outputs_.size();i++)
 			{
-				ImGui::TextUnformatted(outputs_[i].c_str());
+				float col[4]={1.0f, 1.0f, 1.0f, 1.0f};
+				if(outputs_[i].success_possible)
+				{
+					if(outputs_[i].success_achieved)
+					{
+						col[0]=0.5f;
+					}
+					else
+					{
+						col[1]=0.5f;
+						col[2]=0.5f;
+					}
+				}
+				ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
+				ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+				ImGui::TextUnformatted(outputs_[i].content.c_str());
+				ImGui::PopStyleColor();
 			}
 			ImGui::PopTextWrapPos();
 			ImGui::PopItemWidth();
+			if(scroll_output_)
+			{
+				ImGui::SetScrollHere();
+			}
+			scroll_output_=false;
 			ImGui::EndChild();
 		}
 
@@ -110,6 +161,14 @@ public:
 	}
 
 private:
+	Console() :
+		command_buffer_(1024, 0),
+		index_of_history_of_commands_(0),
+		scroll_output_(false),
+		need_keyboard_focus_(false)
+	{
+	}
+
 	static int on_command_input_data_request(ImGuiTextEditCallbackData* data)
 	{
 		Console* obj=static_cast<Console*>(data->UserData);
@@ -205,12 +264,13 @@ private:
 		dynamic_history_of_commands_.clear();
 	}
 
-	std::vector<std::string> outputs_;
+	std::deque<OutputToken> outputs_;
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::vector<char> command_buffer_;
 	std::string next_prefix_;
 	std::size_t index_of_history_of_commands_;
+	bool scroll_output_;
 	bool need_keyboard_focus_;
 };
 

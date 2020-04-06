@@ -8,6 +8,8 @@
 #include "environment.h"
 #include "gui_configuration.h"
 
+#include "widgets/console.h"
+
 namespace voronota
 {
 
@@ -358,12 +360,23 @@ protected:
 			const std::vector<scripting::VariantObject>& results=last_output().objects_arrays().find("results")->second;
 			for(std::size_t i=0;i<results.size();i++)
 			{
-				Environment::print_log(results[i]);
+				if(results[i].values().count("command_name")>0)
+				{
+					scripting::VariantObject result=results[i];
+					const bool success=result.value("success").value_as_string()=="true";
+					result.erase("command_name");
+					result.erase("success");
+					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), result), success);
+				}
+				else
+				{
+					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), results[i]));
+				}
 			}
 		}
 		else
 		{
-			Environment::print_log(last_output());
+			widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output()));
 		}
 	}
 

@@ -111,7 +111,7 @@ protected:
 			{
 				if(hovered())
 				{
-					console_.set_focused(true);
+					widgets::Console::instance().set_focused(true);
 				}
 			}
 		}
@@ -144,14 +144,14 @@ protected:
 		}
 
 		{
-			const std::string console_result=console_.execute(0, 0, window_width(), window_height()-rendering_window_height());
+			const std::string console_result=widgets::Console::instance().execute(0, 0, window_width(), window_height()-rendering_window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
 				enqueue_script(task);
 				if(!task.prefix.empty())
 				{
-					console_.set_next_prefix(task.prefix+" ");
+					widgets::Console::instance().set_next_prefix(task.prefix+" ");
 				}
 			}
 		}
@@ -490,7 +490,6 @@ private:
 
 	ScriptExecutionManager script_execution_manager_;
 	std::list<Job> job_queue_;
-	widgets::Console console_;
 	widgets::CursorLabel cursor_label_;
 	widgets::WaitingIndicator waiting_indicator_;
 };
