@@ -366,19 +366,26 @@ protected:
 					const bool success=result.value("success").value_as_string()=="true";
 					result.erase("command_name");
 					result.erase("success");
-					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(4), result), success);
+					if(success)
+					{
+						widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(4), result), 0.5f, 1.0f, 1.0f);
+					}
+					else
+					{
+						widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(4), result), 1.0f, 0.5f, 0.5f);
+					}
 				}
 				else
 				{
-					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), results[i]));
+					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), results[i]), 1.0f, 1.0f, 0.0f);
 				}
 			}
 		}
 		else
 		{
-			widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output()));
+			widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output()), 1.0f, 1.0f, 1.0f);
 		}
-		widgets::Console::instance().add_output("---");
+		widgets::Console::instance().add_output("---", 0.0f, 0.0f, 0.0f);
 	}
 
 private:

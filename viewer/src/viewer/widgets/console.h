@@ -22,12 +22,12 @@ class Console
 public:
 	struct OutputToken
 	{
-		bool success_possible;
-		bool success_achieved;
 		std::string content;
+		float r;
+		float g;
+		float b;
 
-		OutputToken(const bool success_possible, const bool success_achieved, const std::string& content) :
-			success_possible(success_possible), success_achieved(success_achieved), content(content)
+		OutputToken(const std::string& content, const float r, const float g, const float b) : content(content), r(r), g(g), b(b)
 		{
 		}
 	};
@@ -53,9 +53,9 @@ public:
 		next_prefix_=prefix;
 	}
 
-	void add_output(const bool success_possible, const bool success_achieved, const std::string& content)
+	void add_output(const std::string& content, const float r, const float g, const float b)
 	{
-		outputs_.push_back(OutputToken(success_possible, success_achieved, content));
+		outputs_.push_back(OutputToken(content, r, g, b));
 		if(outputs_.size()>50)
 		{
 			outputs_.pop_front();
@@ -63,22 +63,12 @@ public:
 		scroll_output_=true;
 	}
 
-	void add_output(const std::string& str, const bool success_achieved)
-	{
-		add_output(true, success_achieved, str);
-	}
-
-	void add_output(const std::string& str)
-	{
-		add_output(false, false, str);
-	}
-
-	std::string execute(const int x_pos, const int y_pos, const int width, const int recommended_height, const int max_height)
+	std::string execute(const int x_pos, const int y_pos, const int width, const int recommended_height, const int min_height, const int max_height)
 	{
 		std::string result;
 
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
-		ImGui::SetNextWindowSizeConstraints(ImVec2(width, 100), ImVec2(width, max_height));
+		ImGui::SetNextWindowSizeConstraints(ImVec2(width, min_height), ImVec2(width, max_height));
 
 		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
@@ -103,41 +93,27 @@ public:
 			ImGui::PushTextWrapPos();
 			for(std::size_t i=0;i<outputs_.size();i++)
 			{
-				if(outputs_[i].content=="---")
+				const OutputToken& ot=outputs_[i];
+				if(ot.content=="---")
 				{
 					ImGui::Separator();
 				}
 				else
 				{
-					float col[4]={1.0f, 1.0f, 1.0f, 1.0f};
-					if(outputs_[i].success_possible)
-					{
-						if(outputs_[i].success_achieved)
-						{
-							col[0]=0.5f;
-							col[1]=1.0f;
-							col[2]=1.0f;
-						}
-						else
-						{
-							col[0]=1.0f;
-							col[1]=0.5f;
-							col[2]=0.5f;
-						}
-					}
+					float col[4]={ot.r, ot.g, ot.b, 1.0f};
 					ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					if(outputs_[i].content.size()<10000)
+					if(ot.content.size()<10000)
 					{
-						ImGui::TextUnformatted(outputs_[i].content.c_str());
+						ImGui::TextUnformatted(ot.content.c_str());
 					}
 					else
 					{
-						ImGui::TextUnformatted(outputs_[i].content.c_str(), &(outputs_[i].content.c_str()[4000]));
+						ImGui::TextUnformatted(ot.content.c_str(), &(ot.content.c_str()[4000]));
 						ImGui::TextUnformatted("------------------------------");
 						ImGui::TextUnformatted("------------ skip ------------");
 						ImGui::TextUnformatted("------------------------------");
-						ImGui::TextUnformatted(&(outputs_[i].content.c_str()[outputs_[i].content.size()-4000]), &(outputs_[i].content.c_str()[outputs_[i].content.size()-1]));
+						ImGui::TextUnformatted(&(ot.content.c_str()[ot.content.size()-4000]), &(ot.content.c_str()[ot.content.size()-1]));
 					}
 					ImGui::PopStyleColor();
 				}
