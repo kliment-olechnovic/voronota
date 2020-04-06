@@ -67,6 +67,10 @@ protected:
 	{
 		if(good())
 		{
+			set_background_color(0xCCCCCC);
+			set_margin_color(0xFFFFFF);
+			set_margin_top_fixed(200);
+
 			ImGui_ImplGlfwGL3_Init(window(), false);
 
 			ImGui::GetIO().IniFilename=0;
@@ -181,6 +185,10 @@ protected:
 
 	void on_before_rendered_frame()
 	{
+		if(widgets::Console::instance().current_heigth()>0)
+		{
+			set_margin_top_fixed(widgets::Console::instance().current_heigth());
+		}
 		script_execution_manager_.setup_grid_parameters();
 	}
 
@@ -348,9 +356,6 @@ private:
 
 	Application()
 	{
-		set_background_color(0xCCCCCC);
-		set_margin_color(0xFFFFFF);
-		set_margin_top_fixed(200);
 	}
 
 	~Application()

@@ -78,9 +78,9 @@ public:
 		std::string result;
 
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
-		ImGui::SetNextWindowSize(ImVec2(width, height));
+		ImGui::SetNextWindowSizeConstraints(ImVec2(width, 100), ImVec2(width, 400));
 
-		ImGui::Begin("ConsoleWindow", 0, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, height), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 	    static ImGuiTextBuffer log1;
 	    static int lines1=0;
@@ -134,7 +134,9 @@ public:
 					else
 					{
 						ImGui::TextUnformatted(outputs_[i].content.c_str(), &(outputs_[i].content.c_str()[4000]));
+						ImGui::TextUnformatted("------------------------------");
 						ImGui::TextUnformatted("------------ skip ------------");
+						ImGui::TextUnformatted("------------------------------");
 						ImGui::TextUnformatted(&(outputs_[i].content.c_str()[outputs_[i].content.size()-4000]), &(outputs_[i].content.c_str()[outputs_[i].content.size()-1]));
 					}
 					ImGui::PopStyleColor();
@@ -174,9 +176,16 @@ public:
 			need_keyboard_focus_=false;
 		}
 
+		current_heigth_=ImGui::GetWindowHeight();
+
 		ImGui::End();
 
 		return result;
+	}
+
+	int current_heigth() const
+	{
+		return static_cast<int>(current_heigth_);
 	}
 
 private:
@@ -184,7 +193,8 @@ private:
 		command_buffer_(1024, 0),
 		index_of_history_of_commands_(0),
 		scroll_output_(false),
-		need_keyboard_focus_(false)
+		need_keyboard_focus_(false),
+		current_heigth_(0.0f)
 	{
 	}
 
@@ -291,6 +301,7 @@ private:
 	std::size_t index_of_history_of_commands_;
 	bool scroll_output_;
 	bool need_keyboard_focus_;
+	float current_heigth_;
 };
 
 }

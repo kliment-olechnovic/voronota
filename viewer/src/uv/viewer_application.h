@@ -448,24 +448,28 @@ public:
 	{
 		margin_right_ratio_=margin_right_ratio;
 		margin_right_fixed_=0;
+		refresh_shading_projection();
 	}
 
 	void set_margin_top_ratio(const double margin_top_ratio)
 	{
 		margin_top_ratio_=margin_top_ratio;
 		margin_top_fixed_=0;
+		refresh_shading_projection();
 	}
 
 	void set_margin_right_fixed(const int margin_right_size)
 	{
 		margin_right_ratio_=0.0;
 		margin_right_fixed_=margin_right_size;
+		refresh_shading_projection();
 	}
 
 	void set_margin_top_fixed(const int margin_top_size)
 	{
 		margin_top_ratio_=0.0;
 		margin_top_fixed_=margin_top_size;
+		refresh_shading_projection();
 	}
 
 	bool read_pixels(int& image_width, int& image_height, std::vector<char>& image_data)
@@ -779,6 +783,7 @@ private:
 	{
 		window_width_=width;
 		window_height_=height;
+		refresh_shading_projection();
 		on_window_resized(width, height);
 	}
 
