@@ -127,7 +127,16 @@ public:
 					}
 					ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-					ImGui::TextUnformatted(outputs_[i].content.c_str());
+					if(outputs_[i].content.size()<10000)
+					{
+						ImGui::TextUnformatted(outputs_[i].content.c_str());
+					}
+					else
+					{
+						ImGui::TextUnformatted(outputs_[i].content.c_str(), &(outputs_[i].content.c_str()[4000]));
+						ImGui::TextUnformatted("------------ skip ------------");
+						ImGui::TextUnformatted(&(outputs_[i].content.c_str()[outputs_[i].content.size()-4000]), &(outputs_[i].content.c_str()[outputs_[i].content.size()-1]));
+					}
 					ImGui::PopStyleColor();
 				}
 			}
