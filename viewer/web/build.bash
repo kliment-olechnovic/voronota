@@ -26,7 +26,7 @@ fi
 emcc --std=c++14 \
 -s "EXPORTED_FUNCTIONS=['_main','_voronota_viewer_enqueue_script','_voronota_viewer_execute_native_script','_voronota_viewer_get_last_script_output','_voronota_viewer_upload_file']" \
 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall']" \
-../src/voronota_viewer.cpp ../src/dependencies/imgui/*.cpp ../src/dependencies/tmalign/TMalign.cpp \
+../src/voronota_viewer.cpp ../src/dependencies/imgui/*.cpp ../src/dependencies/duktape/duktape.cpp ../src/dependencies/tmalign/TMalign.cpp \
 -DFOR_WEB \
 -I "../src/dependencies/" \
 -I "/usr/include/glm/" \

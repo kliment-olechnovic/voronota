@@ -51,7 +51,7 @@ public:
 		}
 	};
 
-	static bool eval(const std::string& script, const bool print_result=false)
+	static bool eval(const std::string& script)
 	{
 		if(script.empty())
 		{
@@ -62,12 +62,18 @@ public:
 		{
 			instance().write_error(std::string("error= ")+std::string(duk_safe_to_string(get_context(), -1))+std::string("\n"));
 		}
-		else if(print_result)
+		else if(flag_to_print_result_on_eval())
 		{
 			instance().write_log(std::string("= ")+std::string(duk_safe_to_string(get_context(), -1))+std::string("\n"));
 		}
 		duk_pop(get_context());
 		return success;
+	}
+
+	static bool& flag_to_print_result_on_eval()
+	{
+		static bool flag=false;
+		return flag;
 	}
 
 	static void set_script_execution_manager(scripting::ScriptExecutionManagerWithVariantOutput& sem)

@@ -5,7 +5,6 @@
 
 #include "congregations_of_drawers_for_data_managers.h"
 #include "operators_all.h"
-#include "environment.h"
 #include "gui_configuration.h"
 
 #include "widgets/console.h"

@@ -39,10 +39,11 @@ public:
 		{
 			if(is_stdin_from_terminal())
 			{
+				DuktapeManager::flag_to_print_result_on_eval()=true;
 				bool readline_failed=false;
 				while(!readline_failed && !execution_manager.exit_requested())
 				{
-					DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed), true);
+					DuktapeManager::eval(LineReading::read_line_from_stdin(readline_failed));
 				}
 			}
 			else

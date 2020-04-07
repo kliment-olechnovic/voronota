@@ -1,7 +1,7 @@
 #include <memory>
 
 #include "viewer/application.h"
-#include "duktaper/stocked_data_resources.h"
+#include "viewer/emscripten_utilities.h"
 
 int main(const int argc, const char** argv)
 {

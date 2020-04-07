@@ -6,6 +6,7 @@
 #include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
 
 #include "../duktaper/binding_javascript.h"
+#include "../duktaper/duktape_manager.h"
 
 #include "script_execution_manager.h"
 #include "widgets/console.h"
@@ -84,7 +85,9 @@ protected:
 
 			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());
 			duktaper::DuktapeManager::set_script_execution_manager(script_execution_manager_);
-			Environment::execute_javascript(duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+			duktaper::DuktapeManager::flag_to_print_result_on_eval()=false;
+			duktaper::DuktapeManager::eval(duktaper::BindingJavascript::generate_setup_script(script_execution_manager_.collection_of_command_documentations()));
+			duktaper::DuktapeManager::flag_to_print_result_on_eval()=true;
 		}
 	}
 
@@ -470,7 +473,7 @@ private:
 			}
 			else if(job.type==Job::TYPE_JAVASCRIPT)
 			{
-				Environment::execute_javascript(job.script);
+				duktaper::DuktapeManager::eval(job.script);
 			}
 		}
 		return (!job_queue_.empty());
