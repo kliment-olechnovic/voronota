@@ -24,7 +24,8 @@ public:
 		ACTION_DISABLE_WIDGETS,
 		ACTION_ENABLE_WIDGETS,
 		ACTION_DISABLE_WAITING_INDICATOR,
-		ACTION_ENABLE_WAITING_INDICATOR
+		ACTION_ENABLE_WAITING_INDICATOR,
+		ACTION_SET_JSON_WRITING_LEVEL
 	};
 
 	struct Result : public scripting::operators::OperatorResultBase<Result>
@@ -34,8 +35,14 @@ public:
 		}
 	};
 
-	explicit ConfigureGUI(const Action action) : action_(action)
+	explicit ConfigureGUI(const Action action) : action_(action), value_of_json_writing_level_(2)
 	{
+	}
+
+	ConfigureGUI& set_value_of_json_writing_level(const int value_of_json_writing_level)
+	{
+		value_of_json_writing_level_=value_of_json_writing_level;
+		return (*this);
 	}
 
 	void initialize(scripting::CommandInput&)
@@ -75,6 +82,10 @@ public:
 		{
 			GUIConfiguration::instance().enabled_waiting_indicator=true;
 		}
+		else if(action_==ACTION_SET_JSON_WRITING_LEVEL)
+		{
+			GUIConfiguration::instance().json_writing_level=value_of_json_writing_level_;
+		}
 
 		if(need_refresh)
 		{
@@ -87,6 +98,7 @@ public:
 
 private:
 	Action action_;
+	int value_of_json_writing_level_;
 };
 
 }

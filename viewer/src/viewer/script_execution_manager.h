@@ -39,6 +39,13 @@ public:
 		set_command_for_extra_actions("configure-gui-enable-widgets", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_WIDGETS));
 		set_command_for_extra_actions("configure-gui-disable-waiting-indicator", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_DISABLE_WAITING_INDICATOR));
 		set_command_for_extra_actions("configure-gui-enable-waiting-indicator", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_ENABLE_WAITING_INDICATOR));
+		set_command_for_extra_actions("configure-gui-json-write-level-0", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(0));
+		set_command_for_extra_actions("configure-gui-json-write-level-1", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(1));
+		set_command_for_extra_actions("configure-gui-json-write-level-2", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(2));
+		set_command_for_extra_actions("configure-gui-json-write-level-3", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(3));
+		set_command_for_extra_actions("configure-gui-json-write-level-4", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(4));
+		set_command_for_extra_actions("configure-gui-json-write-level-5", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(5));
+		set_command_for_extra_actions("configure-gui-json-write-level-6", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(6));
 
 		set_default_aliases();
 	}
@@ -354,6 +361,7 @@ protected:
 
 	void on_after_script_with_output(const scripting::VariantObject&)
 	{
+		scripting::JSONWriter::Configuration json_writing_configuration(GUIConfiguration::instance().json_writing_level);
 		if(last_output().objects_arrays().count("results")>0)
 		{
 			const std::vector<scripting::VariantObject>& results=last_output().objects_arrays().find("results")->second;
@@ -367,22 +375,22 @@ protected:
 					result.erase("success");
 					if(success)
 					{
-						widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(4), result), 0.5f, 1.0f, 1.0f);
+						widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
 					}
 					else
 					{
-						widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(4), result), 1.0f, 0.5f, 0.5f);
+						widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
 					}
 				}
 				else
 				{
-					widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), results[i]), 1.0f, 1.0f, 0.0f);
+					widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, results[i]), 1.0f, 1.0f, 0.0f);
 				}
 			}
 		}
 		else
 		{
-			widgets::Console::instance().add_output(scripting::JSONWriter::write(scripting::JSONWriter::Configuration(0), last_output()), 1.0f, 1.0f, 1.0f);
+			widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
 		}
 		widgets::Console::instance().add_output("---", 0.0f, 0.0f, 0.0f);
 	}

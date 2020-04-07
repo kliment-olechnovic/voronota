@@ -22,6 +22,7 @@ public:
 	bool enabled_cursor_label;
 	bool enabled_info_box;
 	bool enabled_waiting_indicator;
+	int json_writing_level;
 
 	static GUIConfiguration& instance()
 	{
@@ -60,7 +61,8 @@ private:
 		grid_variant(GRID_VARIANT_BY_OBJECT),
 		enabled_cursor_label(true),
 		enabled_info_box(true),
-		enabled_waiting_indicator(true)
+		enabled_waiting_indicator(true),
+		json_writing_level(1)
 	{
 	}
 
