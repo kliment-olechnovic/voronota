@@ -82,6 +82,9 @@ protected:
 			ImGui::GetStyle().FrameRounding = 0.0f;
 			ImGui::GetStyle().GrabRounding = 0.0f;
 			ImGui::GetStyle().ScrollbarRounding = 0.0f;
+			ImGui::GetStyle().Colors[ImGuiCol_TitleBg]=ImVec4(0.00f, 0.00f, 0.00f, 0.5f);
+			ImGui::GetStyle().Colors[ImGuiCol_TitleBgActive]=ImVec4(0.00f, 0.00f, 0.00f, 0.5f);
+			ImGui::GetStyle().Colors[ImGuiCol_TitleBgCollapsed]=ImVec4(0.00f, 0.00f, 0.00f, 0.5f);
 
 			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());
 			duktaper::DuktapeManager::set_script_execution_manager(script_execution_manager_);
