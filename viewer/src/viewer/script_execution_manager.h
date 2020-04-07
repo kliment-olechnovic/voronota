@@ -440,12 +440,6 @@ private:
 
 		script_partitioner().set_alias("click-button1-on-figure", "print-figures -on-objects ${1} -id ${2}");
 		script_partitioner().set_alias("click-button2-on-figure", "print-figures -on-objects ${1} -id ${2}");
-
-		script_partitioner().set_alias("modify-just-loaded-object", "set-tag-of-atoms-by-secondary-structure");
-		script_partitioner().set_alias("zoom-just-loaded-object", "zoom-by-atoms");
-		script_partitioner().set_alias("show-just-loaded-object", "hide-atoms ; hide-contacts ; show-atoms [-t! het] -rep cartoon ; show-atoms [-t het] -rep sticks");
-		script_partitioner().set_alias("color-just-loaded-object", "color-atoms [-t! het] -next-random-color ; color-atoms [-t het] -next-random-color");
-		script_partitioner().set_alias("process-just-loaded-object", "modify-just-loaded-object ; zoom-just-loaded-object ; show-just-loaded-object ; color-just-loaded-object");
 	}
 
 	template<typename CommandRecord>
@@ -453,7 +447,40 @@ private:
 	{
 		if(cr.successful && cr.heterostorage.summaries_of_atoms.count("loaded")==1)
 		{
-			script_partitioner().add_pending_sentences_from_string_to_front("process-just-loaded-object");
+			scripting::CongregationOfDataManagers::ObjectQuery object_query;
+			object_query.picked=true;
+			const std::vector<scripting::DataManager*> objects=congregation_of_data_managers().get_objects(object_query);
+			if(!objects.empty())
+			{
+				bool available_contacts=false;
+				bool available_tags_het=false;
+				{
+					bool checked=false;
+					for(std::size_t i=0;i<objects.size() && !checked;i++)
+					{
+						const scripting::DataManager& object=(*objects[i]);
+						available_contacts=available_contacts || (!object.contacts().empty());
+						available_tags_het=available_tags_het || (object.is_any_atom_with_tag("het"));
+						checked=available_contacts || available_tags_het;
+					}
+				}
+				std::ostringstream script_output;
+				script_output << "set-tag-of-atoms-by-secondary-structure\n";
+				script_output << "zoom-by-atoms\n";
+				script_output << "hide-atoms\n";
+				if(available_contacts)
+				{
+					script_output << "hide-contacts\n";
+				}
+				script_output << "show-atoms [-t! het] -rep cartoon\n";
+				script_output << "color-atoms [-t! het] -next-random-color\n";
+				if(available_tags_het)
+				{
+					script_output << "show-atoms [-t het] -rep sticks\n";
+					script_output << "color-atoms [-t het] -next-random-color\n";
+				}
+				script_partitioner().add_pending_sentences_from_string_to_front(script_output.str());
+			}
 		}
 	}
 

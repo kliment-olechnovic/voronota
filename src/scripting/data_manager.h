@@ -602,6 +602,18 @@ public:
 		return false;
 	}
 
+	bool is_any_atom_with_tag(const std::string& tag) const
+	{
+		for(std::size_t i=0;i<atoms_.size();i++)
+		{
+			if(atoms_[i].value.props.tags.count(tag)>0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool is_any_contact_visible() const
 	{
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
