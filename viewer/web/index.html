@@ -49,6 +49,8 @@
 				<div class="emscripten_border">
 					<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 				</div>
+			</div>
+			<div class="layout-column-right">
 				<div>
 					<p>
 						<input type="file" id="file_input" style="display: none;"/>
@@ -78,15 +80,13 @@
 					</p>
 				</div>
 			</div>
-			<div class="layout-column-right">
-			</div>
 		</div>
 		
 		<script type='text/javascript'>
 			var Module = {
 				preRun: [],
 				postRun: [],
-				arguments: ['--window-width', '800', '--window-height', '600'],
+				arguments: ['--window-width', '1000', '--window-height', '800'],
 				print: (function()
 				{
 					return function(text)
