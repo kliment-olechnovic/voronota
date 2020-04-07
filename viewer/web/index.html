@@ -31,22 +31,6 @@
 			.layout-column-right
 			{
 			}
-
-			#output_area
-			{
-				margin: 0 auto;
-				margin-left: 10px;
-				border-left: 0px;
-				border-right: 0px;
-				padding-left: 0px;
-				padding-right: 0px;
-				display: block;
-				background-color: white;
-				color: black;
-				font-family: 'Lucida Console', Monaco, monospace;
-				font-size: 11px;
-				outline: none;
-			}
 			
 			#input_area
 			{
@@ -95,14 +79,8 @@
 				</div>
 			</div>
 			<div class="layout-column-right">
-				<textarea id="output_area" rows="50" cols="80"></textarea>
 			</div>
 		</div>
-		
-		<script type='text/javascript'>
-			document.getElementById('output_area').value='';
-			document.getElementById('output_area').readOnly=true;
-		</script>
 		
 		<script type='text/javascript'>
 			var Module = {
@@ -146,13 +124,6 @@
 			function voronota_viewer_upload_file(name, data)
 			{
 				Module.ccall('voronota_viewer_upload_file', null, ['string','string'], [name,data]);
-			}
-			
-			function set_output_area_text(text)
-			{
-				var element=document.getElementById('output_area');
-				element.value=text;
-				element.scrollTop=element.scrollHeight;
 			}
 		</script>
 		

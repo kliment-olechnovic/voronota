@@ -70,7 +70,7 @@ public:
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 		ImGui::SetNextWindowSizeConstraints(ImVec2(width, min_height), ImVec2(width, max_height));
 
-		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		ImGui::Begin("ConsoleWindow", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
 
 	    static ImGuiTextBuffer log1;
 	    static int lines1=0;
