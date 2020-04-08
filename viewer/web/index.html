@@ -24,43 +24,27 @@
 				display: flex;
 			}
 			
-			.layout-column-left
+			#controls
 			{
-			}
-			
-			.layout-column-right
-			{
-			}
-			
-			#input_area
-			{
-				background-color: white;
-				color: black;
-				font-family: 'Lucida Console', Monaco, monospace;
-				font-size: 11px;
+				bottom: 0;
+				left: 0;
+				position: absolute;
+				margin: 0;
+				padding: none;
+				width: 20em;
 			}
 		</style>
 	</head>
 	
 	<body>
 
-		<div class="layout-row">
-			<div class="layout-column-left">
-				<div class="emscripten_border">
-					<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-				</div>
-			</div>
-			<div class="layout-column-right">
-				<div>
-					<p>
-						<input type="file" id="file_input" style="display: none;"/>
-						<button onclick="document.getElementById('file_input').click();">File</button>
-					</p>
-					<p>
-						<button onclick="load_input_file_from_PDB()">PDB</button>
-					</p>
-				</div>
-			</div>
+		<div>
+			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+			<p id="controls">
+				<input type="file" id="file_input" style="display: none;"/>
+				<button onclick="document.getElementById('file_input').click();">Import file</button>
+				<button onclick="load_input_file_from_PDB()">Fetch from PDB</button>
+			</p>
 		</div>
 		
 		<script type='text/javascript'>
@@ -87,12 +71,12 @@
 		<script type='text/javascript'>
 			function on_update_window_size()
 			{
-				var new_width=window.innerWidth-100;
+				var new_width=window.innerWidth;
 				if(new_width<500)
 				{
 					new_width=500;
 				}
-				var new_heigth=window.innerHeight-20;
+				var new_heigth=window.innerHeight-40;
 				if(new_heigth<500)
 				{
 					new_heigth=500;
