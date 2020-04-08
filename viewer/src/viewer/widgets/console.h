@@ -280,7 +280,7 @@ private:
 		static std::vector< std::pair<std::string, std::string> > collection;
 		if(collection.empty())
 		{
-			std::istringstream input(std::string(duktaper::resources::data_script_examples()));
+			std::istringstream input(duktaper::resources::data_script_examples());
 			while(input.good())
 			{
 				std::string line;

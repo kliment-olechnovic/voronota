@@ -54,29 +54,10 @@
 				<div>
 					<p>
 						<input type="file" id="file_input" style="display: none;"/>
-						<button onclick="document.getElementById('file_input').click();">Load structure</button>
-						<button onclick="load_input_file_from_PDB()">Load structure from PDB</button>
-						<button onclick="getElementById('input_area').value=''">Clear script</button>
-						<button onclick="voronota_viewer_enqueue_script(getElementById('input_area').value)">Run script</button>
+						<button onclick="document.getElementById('file_input').click();">File</button>
 					</p>
 					<p>
-						<textarea id="input_area" rows="7" cols="80"></textarea>
-					</p>
-					<p>
-						Select example script:
-						<select id="examples_menu" onchange="fill_input_area_with_example(document.getElementById('examples_menu').options[document.getElementById('examples_menu').selectedIndex].value)">
-							<option value="nothing">Nothing</option>
-							<option value="loadpreloaded">Load pre-loaded dimeric structure</option>
-							<option value="iface">Draw and show inter-chain interface contacts</option>
-							<option value="background">Change background</option>
-							<option value="resizedisplay">Resize display</option>
-							<option value="listall">List objects and selections</option>
-							<option value="voromqaglobal">Calculate VoroMQA scores</option>
-							<option value="voromqafrustration">Calculate VoroMQA surface frustration</option>
-							<option value="voromqahydrophobicbelt">Calculate VoroMQA hydrophobic belt</option>
-							<option value="ligandcontacts">Draw and show HETATM ligand contacts</option>
-							<option value="exposure">Calculate exposure</option>
-						</select>
+						<button onclick="load_input_file_from_PDB()">PDB</button>
 					</p>
 				</div>
 			</div>
@@ -106,12 +87,12 @@
 		<script type='text/javascript'>
 			function on_update_window_size()
 			{
-				var new_width=window.innerWidth-700;
+				var new_width=window.innerWidth-100;
 				if(new_width<500)
 				{
 					new_width=500;
 				}
-				var new_heigth=window.innerHeight-50;
+				var new_heigth=window.innerHeight-20;
 				if(new_heigth<500)
 				{
 					new_heigth=500;
@@ -190,147 +171,6 @@
 				}
 				xhr.send();
 			}
-		</script>
-		
-		<script type='text/javascript'>
-			function fill_input_area_with_example(name)
-			{
-				var example_input_script='';
-				if(name==='nothing')
-				{
-example_input_script=
-`#Enter script here or select and example from the menu below`;
-				}
-				else if(name==='loadpreloaded')
-				{
-example_input_script=
-`#Example script: load pre-loaded dimeric structure
-import 2zsk.pdb`;
-				}
-				else if(name==='iface')
-				{
-example_input_script=
-`#Example script: draw and show interface contacts
-spectrum-atoms -by chain
-construct-contacts
-select-contacts [-inter-chain] -name iface
-make-drawable-contacts [iface]
-show-contacts
-color-contacts -col yellow
-select-atoms ([-sel-of-contacts iface] and [c<A>]) -full-residues -name iface_atoms_A
-select-atoms ([-sel-of-contacts iface] and [c<B>]) -full-residues -name iface_atoms_B
-unmark-atoms
-show-atoms [iface_atoms_A] -rep sticks
-show-atoms [iface_atoms_B] -rep sticks
-color-atoms [iface_atoms_A] 0xFF7700 -rep sticks
-color-atoms [iface_atoms_B] 0x0077FF -rep sticks
-list-selections-of-contacts
-list-selections-of-atoms
-select-contacts [-a1 [iface_atoms_A] -solvent] -name iface_atoms_A_sas
-make-drawable-contacts [iface_atoms_A_sas]
-show-contacts [iface_atoms_A_sas]
-color-contacts [iface_atoms_A_sas] -col 0x77FFFF`;
-				}
-				else if(name==='background')
-				{
-example_input_script=
-`#Example script: change background color
-background black
-#background white
-#background 0xCCCCCC`;
-				}
-				else if(name==='resizedisplay')
-				{
-example_input_script=
-`#Example script: resize display
-resize-window -width 700 -height 400`;
-				}
-				else if(name==='listall')
-				{
-example_input_script=
-`#Example script: list objects and selections
-list-objects
-list-selections-of-atoms
-list-selections-of-contacts`;
-				}
-				else if(name==='voromqaglobal')
-				{
-example_input_script=
-`#Example script: calculate VoroMQA global and local scores
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75`;
-				}
-				else if(name==='voromqafrustration')
-				{
-example_input_script=
-`#Example script: calculate VoroMQA surface frustration scores
-#restrict-atoms [c<A>]
-restrict-atoms [-t! het]
-construct-contacts
-voromqa-global
-voromqa-frustration -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy-mean cfem -smoothing-iterations 1 -smoothing-depth 3
-hide-atoms
-show-atoms -rep balls
-color-atoms 0x555555
-spectrum-atoms -adjunct afem -scheme bwr`;
-				}
-				else if(name==='voromqahydrophobicbelt')
-				{
-example_input_script=
-`#Example script: calculate VoroMQA hydrophobic belt
-construct-contacts
-voromqa-global
-voromqa-frustration -adj-atom-frustration-energy-mean afem -adj-contact-frustration-energy-mean cfem -smoothing-iterations 1 -smoothing-depth 3
-voromqa-membrane-place -adj-contact-frustration-value cfem -adj-atom-membrane-place-value aopv -membrane-width 30 -membrane-width-extended 30
-hide-atoms
-show-atoms -rep balls
-color-atoms 0x555555
-spectrum-atoms -adjunct aopv -scheme bwr`;
-				}
-				else if(name==='ligandcontacts')
-				{
-example_input_script=
-`#Example script: draw and show protein-ligand interface contacts
-hide-atoms
-show-atoms -rep sticks
-color-atoms 0xAAAAAA
-select-atoms [-t het] -name ligand
-color-atoms [ligand] 0x0011BB
-construct-contacts
-select-contacts [-a1[ligand]] -name iface
-make-drawable-contacts [iface]
-show-contacts
-color-contacts [iface] -col yellow
-color-contacts ([iface] and [-solvent]) -col cyan
-select-atoms ([-sel-of-contacts iface] and (not [ligand])) -name prot_to_lig
-color-atoms [prot_to_lig] -full-residues -col 0x00AA00
-color-atoms [prot_to_lig] -col 0xFF2200
-hide-atoms -rep sticks
-show-atoms ([prot_to_lig] or [ligand]) -full-residues -rep sticks
-show-atoms -rep cartoon`;
-				}
-				else if(name==='exposure')
-				{
-example_input_script=
-`#Example script: calculate exposure
-restrict-atoms [-t! het]
-construct-contacts
-delete-adjuncts-of-atoms -adjuncts ev
-describe-exposure -adj-atom-exposure-value ev -probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 2 -smoothing-depth 1
-hide-atoms
-show-atoms
-color-atoms 0x555555
-spectrum-atoms -adjunct ev -scheme bwr # -min-val 0.1 -max-val 0.5`;
-				}
-				document.getElementById('input_area').value=example_input_script;
-			}
-		</script>
-		
-		<script type='text/javascript'>
-			document.getElementById('examples_menu').selectedIndex=0;
-			fill_input_area_with_example('nothing');
 		</script>
 
 	</body>
