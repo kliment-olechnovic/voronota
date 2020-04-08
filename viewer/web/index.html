@@ -60,7 +60,7 @@
 						<button onclick="voronota_viewer_enqueue_script(getElementById('input_area').value)">Run script</button>
 					</p>
 					<p>
-						<textarea id="input_area" rows="7" cols="100"></textarea>
+						<textarea id="input_area" rows="7" cols="80"></textarea>
 					</p>
 					<p>
 						Select example script:
@@ -85,8 +85,8 @@
 		<script type='text/javascript'>
 			var Module = {
 				preRun: [],
-				postRun: [],
-				arguments: ['--window-width', '1000', '--window-height', '800'],
+				postRun: [(function(){on_update_window_size();})],
+				arguments: ['--window-width', '500', '--window-height', '500'],
 				print: (function()
 				{
 					return function(text)
@@ -104,18 +104,37 @@
 		</script>
 		
 		<script type='text/javascript'>
+			function on_update_window_size()
+			{
+				var new_width=window.innerWidth-700;
+				if(new_width<500)
+				{
+					new_width=500;
+				}
+				var new_heigth=window.innerHeight-50;
+				if(new_heigth<500)
+				{
+					new_heigth=500;
+				}
+				voronota_viewer_resize_window(new_width, new_heigth);
+			}
+			
+			window.addEventListener('resize', function(event){on_update_window_size()});
+		</script>
+		
+		<script type='text/javascript'>
 			function voronota_viewer_enqueue_script(str)
 			{
 				Module.ccall('voronota_viewer_enqueue_script', null, ['string'], [str]);
 			}
 			
-			function raw_voronota(str)
+			function voronota_viewer_execute_native_script(str)
 			{
 				var result=JSON.parse(Module.ccall('voronota_viewer_execute_native_script', 'string', ['string'], [str]));
 				return result;
 			}
 			
-			function raw_voronota_last_output()
+			function voronota_viewer_get_last_script_output()
 			{
 				var result=JSON.parse(Module.ccall('voronota_viewer_get_last_script_output', 'string'));
 				return result;
@@ -124,6 +143,11 @@
 			function voronota_viewer_upload_file(name, data)
 			{
 				Module.ccall('voronota_viewer_upload_file', null, ['string','string'], [name,data]);
+			}
+			
+			function voronota_viewer_resize_window(width, height)
+			{
+				Module.ccall('voronota_viewer_resize_window', null, ['int','int'], [width,height]);
 			}
 		</script>
 		
