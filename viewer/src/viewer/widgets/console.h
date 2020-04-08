@@ -176,6 +176,10 @@ public:
 			}
 
 			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
+			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+			ImVec4 color_background=ImVec4(0.25f, 0.25f, 0.25f, 0.4f);
+			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
 			ImGui::InputTextMultiline("##script_editor_input", multiline_command_buffer_.data(), multiline_command_buffer_.size(), ImVec2(-1,-1), ImGuiInputTextFlags_AllowTabInput);
 			if(focus_in_script_editor)
@@ -183,6 +187,8 @@ public:
 				ImGui::SetKeyboardFocusHere(-1);
 			}
 			ImGui::PopItemWidth();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 			ImGui::EndChild();
 
 			if(ImGui::Button("Run and close", ImVec2(100,0)))

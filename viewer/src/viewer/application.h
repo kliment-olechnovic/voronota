@@ -71,7 +71,7 @@ protected:
 		if(good())
 		{
 			set_background_color(0xCCCCCC);
-			set_margin_color(0xFFFFFF);
+			set_margin_color(0x999999);
 			set_margin_top_fixed(200);
 
 			ImGui_ImplGlfwGL3_Init(window(), false);
@@ -82,13 +82,6 @@ protected:
 			ImGui::GetStyle().FrameRounding = 0.0f;
 			ImGui::GetStyle().GrabRounding = 0.0f;
 			ImGui::GetStyle().ScrollbarRounding = 0.0f;
-//			ImGui::GetStyle().Colors[ImGuiCol_TitleBg]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_TitleBgActive]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_TitleBgCollapsed]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_Button]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
-//			ImGui::GetStyle().Colors[ImGuiCol_ButtonActive]=ImVec4(0.20f, 0.20f, 0.20f, 1.0f);
 
 			duktaper::DuktapeManager::set_output_director(DuktaperOutputDirector::instance());
 			duktaper::DuktapeManager::set_script_execution_manager(script_execution_manager_);
