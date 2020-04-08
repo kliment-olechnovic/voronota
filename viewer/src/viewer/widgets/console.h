@@ -7,6 +7,7 @@
 #include <deque>
 
 #include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
+#include "../../duktaper/stocked_data_resources.h"
 
 namespace voronota
 {
@@ -179,9 +180,14 @@ public:
 			{
 				if(ImGui::BeginMenu("Examples"))
 				{
-					if(ImGui::MenuItem("Import structure"))
+					for(std::size_t i=0;i<example_scripts().size();i++)
 					{
-						write_string_to_vector("import 2zsk.pdb", multiline_command_buffer_);
+						const std::string& script_name=example_scripts()[i].first;
+						const std::string& script_body=example_scripts()[i].second;
+						if(ImGui::MenuItem(script_name.c_str()))
+						{
+							write_string_to_vector(script_body, multiline_command_buffer_);
+						}
 					}
 					ImGui::EndMenu();
 				}
@@ -267,6 +273,31 @@ private:
 			v[i]=str[i];
 			v[i+1]=0;
 		}
+	}
+
+	static const std::vector< std::pair<std::string, std::string> >& example_scripts()
+	{
+		static std::vector< std::pair<std::string, std::string> > collection;
+		if(collection.empty())
+		{
+			std::istringstream input(std::string(duktaper::resources::data_script_examples()));
+			while(input.good())
+			{
+				std::string line;
+				std::getline(input, line);
+				if(line.size()>4 && line.rfind("### ", 0)==0)
+				{
+					collection.push_back(std::make_pair(line.substr(4), line));
+					collection.back().second+="\n";
+				}
+				else if(!collection.empty())
+				{
+					collection.back().second+=line;
+					collection.back().second+="\n";
+				}
+			}
+		}
+		return collection;
 	}
 
 	int handle_command_input_data_request(ImGuiTextEditCallbackData* data)
