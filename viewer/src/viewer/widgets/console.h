@@ -86,7 +86,7 @@ public:
 
         if(ImGui::BeginMenuBar())
         {
-            if(ImGui::BeginMenu("More"))
+            if(ImGui::BeginMenu("Windows"))
             {
 				if(ImGui::MenuItem("Script editor"))
 				{
@@ -169,10 +169,28 @@ public:
 
 		if(open_script_editor_)
 		{
-			if(!ImGui::Begin("Script editor", &open_script_editor_, ImVec2(600, 400), 0.8f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoCollapse))
+			if(!ImGui::Begin("Script editor", &open_script_editor_, ImVec2(600, 400), 0.8f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_MenuBar))
 			{
 				ImGui::End();
 				return result;
+			}
+
+			if(ImGui::BeginMenuBar())
+			{
+				if(ImGui::BeginMenu("Examples"))
+				{
+					if(ImGui::MenuItem("Import structure"))
+					{
+						const std::string script="import 2zsk.pdb";
+						for(std::size_t i=0;i<script.size() && (i+1)<multiline_command_buffer_.size();i++)
+						{
+							multiline_command_buffer_[i]=script[i];
+							multiline_command_buffer_[i+1]=0;
+						}
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenuBar();
 			}
 
 			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
@@ -202,6 +220,13 @@ public:
 			if(ImGui::Button("Run", ImVec2(100,0)))
 			{
 				result=(std::string(multiline_command_buffer_.data()));
+			}
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("Clear", ImVec2(100,0)))
+			{
+				multiline_command_buffer_[0]=0;
 			}
 
 			ImGui::SameLine();
