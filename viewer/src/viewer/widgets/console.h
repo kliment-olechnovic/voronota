@@ -43,6 +43,11 @@ public:
 		return need_keyboard_focus_;
 	}
 
+	bool open_script_editor() const
+	{
+		return open_script_editor_;
+	}
+
 	void set_focused(const bool status)
 	{
 		need_keyboard_focus_=status;
@@ -70,25 +75,31 @@ public:
 		ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 		ImGui::SetNextWindowSizeConstraints(ImVec2(width, min_height), ImVec2(width, max_height));
 
-		ImGui::Begin("Console", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
+		if(!ImGui::Begin("Console", 0, ImVec2(width, recommended_height), 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_MenuBar))
+		{
+			current_heigth_=ImGui::GetWindowHeight();
+			ImGui::End();
+			return result;
+		}
 
-	    static ImGuiTextBuffer log1;
-	    static int lines1=0;
-	    static ImGuiTextBuffer log2;
-	    static int lines2=0;
-	    while(lines1<100)
-	    {
-	    	log1.append("%i The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog\n", lines1);
-	    	lines1++;
-	    }
-	    while(lines2<3)
-	    {
-	    	log2.append("%i The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog.The.quick.brown.fox.jumps.over.the.lazy.dog\n", lines2);
-	    	lines2++;
-	    }
+		bool focus_in_script_editor=false;
+
+        if(ImGui::BeginMenuBar())
+        {
+            if(ImGui::BeginMenu("More"))
+            {
+				if(ImGui::MenuItem("Script editor"))
+				{
+					open_script_editor_=true;
+					focus_in_script_editor=true;
+				}
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
 
 		{
-			ImGui::BeginChild("ScrollingRegion", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
+			ImGui::BeginChild("##console_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
 			ImGui::PushItemWidth(-1);
 			ImGui::PushTextWrapPos();
 			for(std::size_t i=0;i<outputs_.size();i++)
@@ -134,7 +145,7 @@ public:
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
-			if(ImGui::InputText("ConsoleInput", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory|ImGuiInputTextFlags_CallbackAlways, &on_command_input_data_request, this))
+			if(ImGui::InputText("##console_input", command_buffer_.data(), command_buffer_.size(), ImGuiInputTextFlags_EnterReturnsTrue|ImGuiInputTextFlags_CallbackHistory|ImGuiInputTextFlags_CallbackAlways, &on_command_input_data_request, this))
 			{
 				result=(std::string(command_buffer_.data()));
 				update_history_of_commands(result);
@@ -156,6 +167,47 @@ public:
 
 		ImGui::End();
 
+		if(open_script_editor_)
+		{
+			if(!ImGui::Begin("Script editor", &open_script_editor_, ImVec2(600, 400), 0.8f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoCollapse))
+			{
+				ImGui::End();
+				return result;
+			}
+
+			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0,-ImGui::GetItemsLineHeightWithSpacing()));
+			ImGui::PushItemWidth(-1);
+			ImGui::InputTextMultiline("##script_editor_input", multiline_command_buffer_.data(), multiline_command_buffer_.size(), ImVec2(-1,-1), ImGuiInputTextFlags_AllowTabInput);
+			if(focus_in_script_editor)
+			{
+				ImGui::SetKeyboardFocusHere(-1);
+			}
+			ImGui::PopItemWidth();
+			ImGui::EndChild();
+
+			if(ImGui::Button("Run and close", ImVec2(100,0)))
+			{
+				result=(std::string(multiline_command_buffer_.data()));
+				open_script_editor_=false;
+			}
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("Run", ImVec2(100,0)))
+			{
+				result=(std::string(multiline_command_buffer_.data()));
+			}
+
+			ImGui::SameLine();
+
+			if(ImGui::Button("Close", ImVec2(100,0)))
+			{
+				open_script_editor_=false;
+			}
+
+			ImGui::End();
+		}
+
 		return result;
 	}
 
@@ -167,10 +219,12 @@ public:
 private:
 	Console() :
 		command_buffer_(1024, 0),
+		multiline_command_buffer_(16384, 0),
 		index_of_history_of_commands_(0),
 		scroll_output_(false),
 		need_keyboard_focus_(false),
-		current_heigth_(0.0f)
+		current_heigth_(0.0f),
+		open_script_editor_(false)
 	{
 	}
 
@@ -273,11 +327,13 @@ private:
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::vector<char> command_buffer_;
+	std::vector<char> multiline_command_buffer_;
 	std::string next_prefix_;
 	std::size_t index_of_history_of_commands_;
 	bool scroll_output_;
 	bool need_keyboard_focus_;
 	float current_heigth_;
+	bool open_script_editor_;
 };
 
 }
