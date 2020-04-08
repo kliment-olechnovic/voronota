@@ -181,12 +181,7 @@ public:
 				{
 					if(ImGui::MenuItem("Import structure"))
 					{
-						const std::string script="import 2zsk.pdb";
-						for(std::size_t i=0;i<script.size() && (i+1)<multiline_command_buffer_.size();i++)
-						{
-							multiline_command_buffer_[i]=script[i];
-							multiline_command_buffer_[i+1]=0;
-						}
+						write_string_to_vector("import 2zsk.pdb", multiline_command_buffer_);
 					}
 					ImGui::EndMenu();
 				}
@@ -263,6 +258,15 @@ private:
 	{
 		Console* obj=static_cast<Console*>(data->UserData);
 		return obj->handle_command_input_data_request(data);
+	}
+
+	static void write_string_to_vector(const std::string& str, std::vector<char>& v)
+	{
+		for(std::size_t i=0;i<str.size() && (i+1)<v.size();i++)
+		{
+			v[i]=str[i];
+			v[i+1]=0;
+		}
 	}
 
 	int handle_command_input_data_request(ImGuiTextEditCallbackData* data)
