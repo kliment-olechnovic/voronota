@@ -328,6 +328,26 @@ protected:
 		}
 
 		insert_additional_script_if_requested(cr);
+
+		if(ci.changed())
+		{
+			std::vector<widgets::Console::ObjectState> object_states;
+			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers.get_objects();
+			object_states.reserve(data_managers.size());
+			for(std::size_t i=0;i<data_managers.size();i++)
+			{
+				const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers.get_object_attributes(data_managers[i]);
+				if(object_attributes.valid)
+				{
+					widgets::Console::ObjectState object_state;
+					object_state.name=object_attributes.name;
+					object_state.picked=object_attributes.picked;
+					object_state.visible=object_attributes.visible;
+					object_states.push_back(object_state);
+				}
+			}
+			widgets::Console::instance().set_object_states(object_states);
+		}
 	}
 
 	void on_after_command_for_data_manager(const GenericCommandRecord& cr, scripting::DataManager& data_manager)

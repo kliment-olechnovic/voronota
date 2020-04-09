@@ -33,6 +33,13 @@ public:
 		}
 	};
 
+	struct ObjectState
+	{
+		std::string name;
+		bool picked;
+		bool visible;
+	};
+
 	static Console& instance()
 	{
 		static Console console;
@@ -47,6 +54,11 @@ public:
 	void set_next_prefix(const std::string& prefix)
 	{
 		next_prefix_=prefix;
+	}
+
+	void set_object_states(const std::vector<ObjectState>& object_states)
+	{
+		object_states_=object_states;
 	}
 
 	void add_output(const std::string& content, const float r, const float g, const float b)
@@ -107,8 +119,7 @@ public:
 					}
 					else
 					{
-						float col[4]={ot.r, ot.g, ot.b, 1.0f};
-						ImVec4 color_text=ImVec4(col[0], col[1], col[2], col[3]);
+						ImVec4 color_text=ImVec4(ot.r, ot.g, ot.b, 1.0f);
 						ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 						if(ot.content.size()<10000)
 						{
@@ -177,16 +188,108 @@ public:
 				return result;
 			}
 
-			if(ImGui::Button("Pick all", ImVec2(80,0)))
 			{
-				result="pick-objects";
+				ObjectState summary;
+				summary.picked=false;
+				summary.visible=false;
+				for(std::size_t i=0;i<object_states_.size();i++)
+				{
+					const ObjectState& os=object_states_[i];
+					summary.picked=(summary.picked || os.picked);
+					summary.visible=(summary.visible || os.visible);
+				}
+				{
+					const std::string checkbox_id=std::string("##checkbox_pick");
+					bool picked=summary.picked;
+					if(ImGui::Checkbox(checkbox_id.c_str(), &picked))
+					{
+						if(picked)
+						{
+							result="pick-objects";
+						}
+						else
+						{
+							result="unpick-objects";
+						}
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string checkbox_id=std::string("##checkbox_show");
+					bool visible=summary.visible;
+					if(ImGui::Checkbox(checkbox_id.c_str(), &visible))
+					{
+						if(visible)
+						{
+							result="show-objects";
+						}
+						else
+						{
+							result="hide-objects";
+						}
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("z##button_zoom");
+					if(ImGui::Button(button_id.c_str(), ImVec2(20,0)))
+					{
+						result="zoom-by-objects";
+					}
+				}
 			}
 
-			ImGui::SameLine();
+			ImGui::Separator();
 
-			if(ImGui::Button("Zoom all", ImVec2(80,0)))
+			for(std::size_t i=0;i<object_states_.size();i++)
 			{
-				result="zoom-by-objects";
+				const ObjectState& os=object_states_[i];
+				{
+					const std::string checkbox_id=std::string("##checkbox_pick_")+os.name;
+					bool picked=os.picked;
+					if(ImGui::Checkbox(checkbox_id.c_str(), &picked))
+					{
+						if(picked)
+						{
+							result=std::string("pick-more-objects -names ")+os.name;
+						}
+						else
+						{
+							result=std::string("unpick-objects -names ")+os.name;
+						}
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string checkbox_id=std::string("##checkbox_show_")+os.name;
+					bool visible=os.visible;
+					if(ImGui::Checkbox(checkbox_id.c_str(), &visible))
+					{
+						if(visible)
+						{
+							result=std::string("show-objects -names ")+os.name;
+						}
+						else
+						{
+							result=std::string("hide-objects -names ")+os.name;
+						}
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("z##button_zoom_")+os.name;
+					if(ImGui::Button(button_id.c_str(), ImVec2(20,0)))
+					{
+						result=std::string("zoom-by-objects -names ")+os.name;
+					}
+				}
+				ImGui::SameLine();
+				{
+					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+					ImGui::TextUnformatted(os.name.c_str());
+					ImGui::PopStyleColor();
+				}
 			}
 
 			ImGui::End();
@@ -422,6 +525,7 @@ private:
 	}
 
 	std::deque<OutputToken> outputs_;
+	std::vector<ObjectState> object_states_;
 	std::vector<std::string> history_of_commands_;
 	std::vector<std::string> dynamic_history_of_commands_;
 	std::vector<char> command_buffer_;
