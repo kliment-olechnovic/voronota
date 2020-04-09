@@ -120,9 +120,9 @@ protected:
 		{
 			if(key==GLFW_KEY_ENTER || key==GLFW_KEY_SPACE || key==GLFW_KEY_UP || key==GLFW_KEY_DOWN)
 			{
-				if(hovered() && !widgets::Console::instance().open_script_editor())
+				if(hovered())
 				{
-					widgets::Console::instance().set_focused(true);
+					widgets::Console::instance().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
 		}
