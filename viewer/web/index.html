@@ -11,17 +11,13 @@
 				font-family: arial;
 				margin: 0;
 				padding: none;
+				background-color: #AAAAAA;
 			}
 	
 			canvas.emscripten
 			{
 				border: 0px none;
 				background-color: black;
-			}
-			
-			.layout-row
-			{
-				display: flex;
 			}
 			
 			#controls
@@ -32,6 +28,27 @@
 				margin: 0;
 				padding: none;
 				width: 20em;
+				height: 30px;
+			}
+			
+			.button
+			{
+				background-color: #777777;
+				border: none;
+				color: white;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				padding-top: 5px;
+				padding-bottom: 5px;
+				padding-left: 10px;
+				padding-right: 10px;
+				margin-top: 0px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 5px;
+				height: 30px;
+				font-size: 12px;
 			}
 		</style>
 	</head>
@@ -42,8 +59,8 @@
 			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 			<p id="controls">
 				<input type="file" id="file_input" style="display: none;"/>
-				<button onclick="document.getElementById('file_input').click();">Import file</button>
-				<button onclick="load_input_file_from_PDB()">Fetch from PDB</button>
+				<button class="button" onclick="document.getElementById('file_input').click();">Import file</button>
+				<button class="button" onclick="load_input_file_from_PDB()">Fetch from PDB</button>
 			</p>
 		</div>
 		
@@ -76,7 +93,7 @@
 				{
 					new_width=500;
 				}
-				var new_heigth=window.innerHeight-40;
+				var new_heigth=window.innerHeight-30;
 				if(new_heigth<500)
 				{
 					new_heigth=500;
