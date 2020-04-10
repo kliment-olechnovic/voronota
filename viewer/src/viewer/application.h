@@ -180,11 +180,11 @@ protected:
 	{
 		if(GUIConfiguration::instance().enabled_waiting_indicator)
 		{
-			if(!waiting_indicator_.decided())
+			if(!widgets::WaitingIndicator::instance().decided())
 			{
-				waiting_indicator_.set_activated(!job_queue_.empty() && !job_queue_.front().brief);
+				widgets::WaitingIndicator::instance().set_activated(!job_queue_.empty() && !job_queue_.front().brief);
 			}
-			waiting_indicator_.execute(box_x, box_y, box_w, box_h);
+			widgets::WaitingIndicator::instance().execute(box_x, box_y, box_w, box_h);
 		}
 
 		ImGui::Render();
@@ -217,7 +217,7 @@ protected:
 	{
 		if(GUIConfiguration::instance().enabled_waiting_indicator)
 		{
-			if(waiting_indicator_.activated() && !waiting_indicator_.executed())
+			if(widgets::WaitingIndicator::instance().activated() && !widgets::WaitingIndicator::instance().executed())
 			{
 				return;
 			}
@@ -225,7 +225,7 @@ protected:
 
 		dequeue_job();
 
-		waiting_indicator_.reset();
+		widgets::WaitingIndicator::instance().reset();
 
 		if(script_execution_manager_.exit_requested())
 		{
@@ -546,7 +546,6 @@ private:
 	ScriptExecutionManager script_execution_manager_;
 	std::list<Job> job_queue_;
 	widgets::CursorLabel cursor_label_;
-	widgets::WaitingIndicator waiting_indicator_;
 };
 
 }

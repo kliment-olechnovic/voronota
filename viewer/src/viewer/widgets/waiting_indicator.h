@@ -15,11 +15,10 @@ namespace widgets
 class WaitingIndicator
 {
 public:
-	WaitingIndicator() :
-		decided_(false),
-		activated_(false),
-		executed_(0)
+	static WaitingIndicator& instance()
 	{
+		static WaitingIndicator obj;
+		return obj;
 	}
 
 	bool decided() const
@@ -72,6 +71,13 @@ public:
 	}
 
 private:
+	WaitingIndicator() :
+		decided_(false),
+		activated_(false),
+		executed_(0)
+	{
+	}
+
 	bool decided_;
 	bool activated_;
 	int executed_;
