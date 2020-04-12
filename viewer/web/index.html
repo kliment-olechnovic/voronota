@@ -58,8 +58,8 @@
 		<div>
 			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 			<p id="controls">
-				<input type="file" id="file_input" style="display: none;"/>
-				<button class="button" onclick="document.getElementById('file_input').click();">Import file</button>
+				<input type="file" id="file_input" style="display: none;" multiple>
+				<button class="button" onclick="document.getElementById('file_input').click();">Import files</button>
 				<button class="button" onclick="load_input_file_from_PDB()">Fetch from PDB</button>
 			</p>
 		</div>
@@ -146,13 +146,19 @@
 		</script>
 		
 		<script type='text/javascript'>
-			var file_input=document.getElementById('file_input');
-			file_input.addEventListener('change', function(e)
+			function setupFileReader(file)
 			{
-				var file=file_input.files[0];
 				var file_reader=new FileReader();
 				file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result);}
 				file_reader.readAsText(file);	
+			}
+			var file_input=document.getElementById('file_input');
+			file_input.addEventListener('change', function(e)
+			{
+				for(var i=0;i<file_input.files.length;i++)
+				{
+					setupFileReader(file_input.files[i]);
+				}
 			});
 		</script>
 		
