@@ -33,16 +33,20 @@ public:
 		}
 	};
 
+	std::string global_adj_prefix;
+
 	VoroMQADarkGlobal()
 	{
 	}
 
-	void initialize(scripting::CommandInput&)
+	void initialize(scripting::CommandInput& input)
 	{
+		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "voromqa_dark_global");
 	}
 
-	void document(scripting::CommandDocumentation&) const
+	void document(scripting::CommandDocumentation& doc) const
 	{
+		doc.set_option_decription(scripting::CDOD("global-adj-prefix", scripting::CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_global"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
@@ -91,9 +95,15 @@ public:
 			scripting::operators::ImportAdjunctsOfAtoms().init(args.str()).run(data_manager);
 		}
 
-		Result result;
+		const double global_score=scripting::operators::SpectrumAtoms().init("-use [-aname CA] -adjunct vd1 -only-summarize").run(data_manager).mean_of_values;
 
-		result.global_score=scripting::operators::SpectrumAtoms().init("-use [-aname CA] -adjunct vd1 -only-summarize").run(data_manager).mean_of_values;
+		if(!global_adj_prefix.empty())
+		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=global_score;
+		}
+
+		Result result;
+		result.global_score=global_score;
 
 		return result;
 	}
