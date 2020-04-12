@@ -46,6 +46,10 @@ public:
 		set_command_for_extra_actions("configure-gui-json-write-level-4", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(4));
 		set_command_for_extra_actions("configure-gui-json-write-level-5", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(5));
 		set_command_for_extra_actions("configure-gui-json-write-level-6", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(6));
+		set_command_for_extra_actions("clear", scripting::operators::Echo());
+		set_command_for_extra_actions("clear-last", scripting::operators::Echo());
+		set_command_for_extra_actions("history", scripting::operators::Echo());
+		set_command_for_extra_actions("history-all", scripting::operators::Echo());
 
 		set_default_aliases();
 	}
@@ -353,16 +357,36 @@ protected:
 				if(results[i].values().count("command_name")>0)
 				{
 					scripting::VariantObject result=results[i];
-					const bool success=result.value("success").value_as_string()=="true";
-					result.erase("command_name");
-					result.erase("success");
-					if(success)
+					const std::string command_name=result.value("command_name").value_as_string();
+					if(command_name=="clear")
 					{
-						widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
+						widgets::Console::instance().clear_outputs();
+					}
+					else if(command_name=="clear-last")
+					{
+						widgets::Console::instance().clear_last_output();
+					}
+					else if(command_name=="history")
+					{
+						widgets::Console::instance().add_history_output(20);
+					}
+					else if(command_name=="history-all")
+					{
+						widgets::Console::instance().add_history_output(0);
 					}
 					else
 					{
-						widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
+						const bool success=result.value("success").value_as_string()=="true";
+						result.erase("command_name");
+						result.erase("success");
+						if(success)
+						{
+							widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
+						}
+						else
+						{
+							widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
+						}
 					}
 				}
 				else
@@ -375,7 +399,7 @@ protected:
 		{
 			widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
 		}
-		widgets::Console::instance().add_output("---", 0.0f, 0.0f, 0.0f);
+		widgets::Console::instance().add_output_separator();
 	}
 
 private:

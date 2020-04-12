@@ -27,6 +27,7 @@ int main(const int argc, const char** argv)
 		}
 
 		voronota::viewer::Application::instance().enqueue_script("setup-defaults");
+		voronota::viewer::Application::instance().enqueue_script("clear-last");
 
 		for(std::size_t i=0;i<files.size();i++)
 		{
@@ -36,6 +37,7 @@ int main(const int argc, const char** argv)
 		if(!files.empty())
 		{
 			voronota::viewer::Application::instance().enqueue_script("pick-objects");
+			voronota::viewer::Application::instance().enqueue_script("clear-last");
 		}
 
 		for(std::size_t i=0;i<scripts.size();i++)

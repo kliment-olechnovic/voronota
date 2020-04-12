@@ -71,6 +71,47 @@ public:
 		scroll_output_=true;
 	}
 
+	void add_output_separator()
+	{
+		if(!outputs_.empty() && outputs_.back().content!=separator_string())
+		{
+			add_output(separator_string(), 0.0f, 0.0f, 0.0f);
+		}
+	}
+
+	void add_history_output(const std::size_t n)
+	{
+		if(!history_of_commands_.empty())
+		{
+			const std::size_t first_i=((n>0 && n<history_of_commands_.size()) ? (history_of_commands_.size()-n) : 0);
+			std::ostringstream output;
+			for(std::size_t i=first_i;i<history_of_commands_.size();i++)
+			{
+				output << history_of_commands_[i] << "\n";
+			}
+			add_output(output.str(), 0.75f, 0.50f, 0.0f);
+		}
+	}
+
+	void clear_outputs()
+	{
+		outputs_.clear();
+		scroll_output_=true;
+	}
+
+	void clear_last_output()
+	{
+		if(!outputs_.empty() && outputs_.back().content==separator_string())
+		{
+			outputs_.pop_back();
+		}
+		if(!outputs_.empty())
+		{
+			outputs_.pop_back();
+		}
+		scroll_output_=true;
+	}
+
 	std::string execute(
 			const int x_pos, const int y_pos,
 			const int recommended_width,
@@ -113,7 +154,7 @@ public:
 				for(std::size_t i=0;i<outputs_.size();i++)
 				{
 					const OutputToken& ot=outputs_[i];
-					if(ot.content=="---")
+					if(ot.content==separator_string())
 					{
 						ImGui::Separator();
 					}
@@ -399,6 +440,12 @@ private:
 	{
 		Console* obj=static_cast<Console*>(data->UserData);
 		return obj->handle_command_input_data_request(data);
+	}
+
+	static const std::string& separator_string()
+	{
+		static std::string str="---";
+		return str;
 	}
 
 	static void write_string_to_vector(const std::string& str, std::vector<char>& v)
