@@ -33,6 +33,11 @@ int main(const int argc, const char** argv)
 			voronota::viewer::Application::instance().enqueue_file(files[i]);
 		}
 
+		if(!files.empty())
+		{
+			voronota::viewer::Application::instance().enqueue_script("pick-objects");
+		}
+
 		for(std::size_t i=0;i<scripts.size();i++)
 		{
 			voronota::viewer::Application::instance().enqueue_script(scripts[i]);

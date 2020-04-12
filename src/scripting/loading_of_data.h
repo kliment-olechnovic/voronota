@@ -91,6 +91,7 @@ public:
 		bool multimodel_chains;
 		std::string file;
 		std::string format;
+		std::string format_fallback;
 
 		Parameters() :
 			forced_include_heteroatoms(false),
@@ -125,7 +126,14 @@ public:
 			params.format=get_format_from_atoms_file_name(params.file);
 			if(params.format.empty())
 			{
-				throw std::runtime_error(std::string("Failed to deduce format from file name '")+params.file+"'.");
+				if(!params.format_fallback.empty())
+				{
+					params.format=params.format_fallback;
+				}
+				else
+				{
+					throw std::runtime_error(std::string("Failed to deduce format from file name '")+params.file+"'.");
+				}
 			}
 		}
 

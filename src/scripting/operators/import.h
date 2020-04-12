@@ -47,6 +47,7 @@ public:
 		loading_parameters=LoadingOfData::Parameters();
 		loading_parameters.file=input.get_value_or_first_unused_unnamed_value("file");
 		loading_parameters.format=input.get_value_or_default<std::string>("format", "");
+		loading_parameters.format_fallback=input.get_value_or_default<std::string>("format-fallback", "pdb");
 		loading_parameters.forced_include_heteroatoms=input.is_option("include-heteroatoms");
 		loading_parameters.forced_include_hydrogens=input.is_option("include-hydrogens");
 		loading_parameters.forced_multimodel_chains=input.is_option("as-assembly");
@@ -60,6 +61,7 @@ public:
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
 		doc.set_option_decription(CDOD("format", CDOD::DATATYPE_STRING, "input file format", ""));
+		doc.set_option_decription(CDOD("format-fallback", CDOD::DATATYPE_STRING, "input file format fallback", ""));
 		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
 		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
 		doc.set_option_decription(CDOD("as-assembly", CDOD::DATATYPE_BOOL, "flag import as a biological assembly"));
