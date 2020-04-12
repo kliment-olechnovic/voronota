@@ -396,6 +396,7 @@ public:
 		atoms_=dm.atoms_;
 		contacts_=dm.contacts_;
 		figures_=dm.figures_;
+		global_numeric_adjuncts_=dm.global_numeric_adjuncts_;
 		atoms_display_states_=dm.atoms_display_states_;
 		contacts_display_states_=dm.contacts_display_states_;
 		figures_display_states_=dm.figures_display_states_;
@@ -405,7 +406,6 @@ public:
 		triangulation_info_=dm.triangulation_info_;
 		selection_manager_=dm.selection_manager_.make_adjusted_copy(atoms_, contacts_);
 		history_of_actions_on_contacts_=dm.history_of_actions_on_contacts_;
-		text_description_=dm.text_description_;
 		return (*this);
 	}
 
@@ -422,6 +422,11 @@ public:
 	const std::vector<Figure>& figures() const
 	{
 		return figures_;
+	}
+
+	const std::map<std::string, double>& global_numeric_adjuncts() const
+	{
+		return global_numeric_adjuncts_;
 	}
 
 	const std::vector<DisplayState>& atoms_display_states() const
@@ -472,11 +477,6 @@ public:
 	const RepresentationsDescriptor& figures_representation_descriptor() const
 	{
 		return figures_representations_descriptor_;
-	}
-
-	const std::string& text_description() const
-	{
-		return text_description_;
 	}
 
 	const ChangeIndicator& change_indicator() const
@@ -721,6 +721,11 @@ public:
 		return contacts_[id].value.props.adjuncts;
 	}
 
+	std::map<std::string, double>& global_numeric_adjuncts_mutable()
+	{
+		return global_numeric_adjuncts_;
+	}
+
 	bool add_atoms_representation(const std::string& name, const bool implemented_always)
 	{
 		if(add_names_to_representations(std::vector<std::string>(1, name), atoms_representations_descriptor_.names))
@@ -897,12 +902,6 @@ public:
 		{
 			change_indicator_.set_changed_figures_display_states(true);
 		}
-	}
-
-	bool set_text_description(const std::string& text)
-	{
-		text_description_=text;
-		return true;
 	}
 
 	void reset_change_indicator()
@@ -1760,6 +1759,7 @@ private:
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
 	std::vector<Figure> figures_;
+	std::map<std::string, double> global_numeric_adjuncts_;
 	std::vector<DisplayState> atoms_display_states_;
 	std::vector<DisplayState> contacts_display_states_;
 	std::vector<DisplayState> figures_display_states_;
@@ -1769,7 +1769,6 @@ private:
 	common::ConstructionOfTriangulation::BundleOfTriangulationInformation triangulation_info_;
 	SelectionManager selection_manager_;
 	HistoryOfActionsOnContacts history_of_actions_on_contacts_;
-	std::string text_description_;
 	ChangeIndicator change_indicator_;
 };
 

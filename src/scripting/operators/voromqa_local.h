@@ -36,6 +36,7 @@ public:
 	std::string adjunct_inter_atom_energy_scores_raw;
 	std::string adjunct_atom_depth_weights;
 	std::string adjunct_atom_quality_scores;
+	std::string global_adj_prefix;
 
 	VoroMQALocal() : provided_selection_expresion_for_contacts(false)
 	{
@@ -49,6 +50,7 @@ public:
 		adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 		adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
+		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "voromqa_local");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -58,6 +60,7 @@ public:
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of input adjunct with contact energy values", "voromqa_energy"));
 		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of input adjunct with atom values", "voromqa_depth"));
 		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of input adjunct with atom quality scores", "voromqa_score_a"));
+		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_local"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -110,6 +113,12 @@ public:
 
 			const double quality_score=(sum_of_atom_weights>0.0 ? (sum_of_atom_weighted_scores/sum_of_atom_weights) : 0.0);
 
+			if(!global_adj_prefix.empty())
+			{
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_count"]=atom_ids_with_adjuncts.size();
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_quality_score"]=quality_score;
+			}
+
 			result.atoms_result.value("atoms_selected").set_value_int(atom_ids.size());
 			result.atoms_result.value("atoms_relevant").set_value_int(atom_ids_with_adjuncts.size());
 			result.atoms_result.value("quality_score")=quality_score;
@@ -135,6 +144,21 @@ public:
 				const double energy=data_manager.contacts()[id].value.props.adjuncts.find(adjunct_inter_atom_energy_scores_raw)->second;
 				sum_of_areas+=area;
 				sum_of_energies+=energy;
+			}
+
+			if(!global_adj_prefix.empty())
+			{
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_contacts_count"]=contact_ids_with_adjuncts.size();
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_contacts_area"]=sum_of_areas;
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_contacts_pseudo_energy"]=sum_of_energies;
+				if(sum_of_areas>0.0)
+				{
+					data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_contacts_pseudo_energy_norm"]=sum_of_energies/sum_of_areas;
+				}
+				else
+				{
+					data_manager.global_numeric_adjuncts_mutable().erase(global_adj_prefix+"_contacts_pseudo_energy_norm");
+				}
 			}
 
 			result.contacts_result.value("contacts_selected").set_value_int(contact_ids.size());

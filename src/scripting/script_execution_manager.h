@@ -112,8 +112,8 @@ public:
 		set_command_for_data_manager("print-atoms", operators::PrintAtoms(), true);
 		set_command_for_data_manager("print-contacts", operators::PrintContacts(), true);
 		set_command_for_data_manager("print-figures", operators::PrintFigures(), true);
+		set_command_for_data_manager("print-global-adjuncts", operators::PrintGlobalAdjuncts(), true);
 		set_command_for_data_manager("print-sequence", operators::PrintSequence(), true);
-		set_command_for_data_manager("print-text-description", operators::PrintTextDescription(), true);
 		set_command_for_data_manager("print-triangulation", operators::PrintTriangulation(), true);
 		set_command_for_data_manager("rename-selection-of-atoms", operators::RenameSelectionOfAtoms(), true);
 		set_command_for_data_manager("rename-selection-of-contacts", operators::RenameSelectionOfContacts(), true);
@@ -132,7 +132,6 @@ public:
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);
 		set_command_for_data_manager("set-tag-of-atoms", operators::SetTagOfAtoms(), true);
 		set_command_for_data_manager("set-tag-of-contacts", operators::SetTagOfContacts(), true);
-		set_command_for_data_manager("set-text-description", operators::SetTextDescription(), true);
 		set_command_for_data_manager("show-atoms", operators::ShowAtoms(), true);
 		set_command_for_data_manager("show-contacts", operators::ShowContacts(), true);
 		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);

@@ -27,6 +27,7 @@ public:
 	};
 
 	ScoringOfDataManagerUsingVoroMQA::Parameters parameters_to_score_using_voromqa;
+	std::string global_adj_prefix;
 
 	VoroMQAGlobal()
 	{
@@ -42,6 +43,7 @@ public:
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_smoothed=input.get_value_or_default<std::string>("adj-residue-quality", "voromqa_score_r");
 		parameters_to_score_using_voromqa.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", parameters_to_score_using_voromqa.smoothing_window);
+		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "voromqa_global");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -54,6 +56,7 @@ public:
 		doc.set_option_decription(CDOD("adj-residue-quality-raw", CDOD::DATATYPE_STRING, "name of output adjunct for raw residue quality scores", ""));
 		doc.set_option_decription(CDOD("adj-residue-quality", CDOD::DATATYPE_STRING, "name of output adjunct for smoothed residue quality scores", "voromqa_score_r"));
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", params.smoothing_window));
+		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_global"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -69,6 +72,25 @@ public:
 
 		ScoringOfDataManagerUsingVoroMQA::Result voromqa_result;
 		ScoringOfDataManagerUsingVoroMQA::construct_result(parameters_to_score_using_voromqa, data_manager, voromqa_result);
+
+		if(!global_adj_prefix.empty())
+		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=voromqa_result.global_quality_score;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_count"]=voromqa_result.bundle_of_quality.atom_quality_scores.size();
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_count"]=voromqa_result.bundle_of_quality.raw_residue_quality_scores.size();
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_contacts_count"]=voromqa_result.bundle_of_energy.global_energy_descriptor.contacts_count;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_total_area"]=voromqa_result.bundle_of_energy.global_energy_descriptor.total_area;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_strange_area"]=voromqa_result.bundle_of_energy.global_energy_descriptor.strange_area;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_pseudo_energy"]=voromqa_result.bundle_of_energy.global_energy_descriptor.energy;
+			if(voromqa_result.bundle_of_energy.global_energy_descriptor.total_area>0.0)
+			{
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_pseudo_energy_norm"]=voromqa_result.bundle_of_energy.global_energy_descriptor.energy/voromqa_result.bundle_of_energy.global_energy_descriptor.total_area;
+			}
+			else
+			{
+				data_manager.global_numeric_adjuncts_mutable().erase(global_adj_prefix+"_pseudo_energy_norm");
+			}
+		}
 
 		Result result;
 		result.voromqa_result.value("quality_score")=voromqa_result.global_quality_score;

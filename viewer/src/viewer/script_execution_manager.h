@@ -246,43 +246,6 @@ public:
 		}
 	}
 
-	bool generate_text_description(const int grid_id, std::ostringstream& output_text)
-	{
-		scripting::CongregationOfDataManagers::ObjectQuery query;
-		query.visible=true;
-		std::vector<scripting::DataManager*> dms=congregation_of_data_managers().get_objects(query);
-
-		bool generated=false;
-
-		if(uv::ViewerApplication::instance().rendering_mode_is_grid() && GUIConfiguration::instance().grid_variant==GUIConfiguration::GRID_VARIANT_BY_OBJECT)
-		{
-			const std::size_t grid_uid=static_cast<std::size_t>(grid_id);
-			if(grid_uid<dms.size())
-			{
-				if(!dms[grid_uid]->text_description().empty())
-				{
-					output_text << congregation_of_data_managers().get_object_attributes(dms[grid_uid]).name << ": ";
-					output_text << dms[grid_uid]->text_description();
-					generated=true;
-				}
-			}
-		}
-		else
-		{
-			for(std::size_t i=0;i<dms.size();i++)
-			{
-				if(!dms[i]->text_description().empty())
-				{
-					output_text << congregation_of_data_managers().get_object_attributes(dms[i]).name << ": ";
-					output_text << dms[i]->text_description() << ((i+1<dms.size()) ? "\n" : "");
-					generated=true;
-				}
-			}
-		}
-
-		return generated;
-	}
-
 protected:
 	void on_after_command_for_congregation_of_data_managers(const GenericCommandRecord& cr, scripting::CongregationOfDataManagers& congregation_of_data_managers)
 	{

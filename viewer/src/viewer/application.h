@@ -170,10 +170,6 @@ protected:
 
 	void on_draw_overlay_middle(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
 	{
-		if(GUIConfiguration::instance().enabled_info_box)
-		{
-			execute_info_box(box_x, box_y, box_w, box_h, stereo, grid, id);
-		}
 	}
 
 	void on_draw_overlay_end(const int box_x, const int box_y, const int box_w, const int box_h)
@@ -487,60 +483,6 @@ private:
 			}
 		}
 		return (!job_queue_.empty());
-	}
-
-	void execute_info_box(const int box_x, const int box_y, const int box_w, const int box_h, const bool stereo, const bool grid, const int id)
-	{
-		std::ostringstream output_text;
-		if(!script_execution_manager_.generate_text_description(id, output_text))
-		{
-			return;
-		}
-
-		std::ostringstream window_name;
-		{
-			window_name << "text_description_";
-			if(stereo)
-			{
-				window_name << "stereo_" << id;
-			}
-			if(grid)
-			{
-				window_name << "grid_" << id;
-			}
-		}
-
-		{
-			std::string raw_text=output_text.str();
-			int text_height=1;
-			int text_width=0;
-			{
-				int line_width=0;
-				for(std::size_t i=0;i<raw_text.size();i++)
-				{
-					if(raw_text[i]=='\n')
-					{
-						text_height++;
-						text_width=std::max(text_width, line_width);
-						line_width=0;
-					}
-					else
-					{
-						line_width++;
-					}
-				}
-				text_width=std::max(text_width, line_width);
-			}
-
-			ImGui::SetNextWindowPos(ImVec2(box_x+5, box_y+5), 0);
-			ImGui::SetNextWindowSize(ImVec2(3+(text_width*8), 15+(text_height*15)));
-			ImVec4 color_text=ImVec4(0.5f, 0.0f, 1.0f, 1.0f);
-			ImGui::Begin(window_name.str().c_str(), 0, ImVec2(0, 0), 0.0f, ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings);
-			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-			ImGui::Text("%s", raw_text.c_str());
-			ImGui::PopStyleColor();
-			ImGui::End();
-		}
 	}
 
 	ScriptExecutionManager script_execution_manager_;

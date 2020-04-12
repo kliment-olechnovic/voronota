@@ -47,6 +47,8 @@ public:
 	std::string target_name;
 	std::string model_name;
 	ScoringOfDataManagersUsingCADScore::Parameters params;
+	std::string target_global_adj_prefix;
+	std::string model_global_adj_prefix;
 
 	CADScore()
 	{
@@ -71,6 +73,8 @@ public:
 		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		params.ignore_residue_names=input.get_flag("ignore-residue-names");
 		params.binarize=input.get_flag("binarize");
+		target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
+		model_global_adj_prefix=input.get_value_or_default<std::string>("m-global-adj-prefix", "");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -91,6 +95,8 @@ public:
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
 		doc.set_option_decription(CDOD("ignore-residue-names", CDOD::DATATYPE_BOOL, "flag to ignore residue names"));
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
+		doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));
+		doc.set_option_decription(CDOD("m-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of model", ""));
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
@@ -117,6 +123,30 @@ public:
 
 		ScoringOfDataManagersUsingCADScore::Result cadscore_result;
 		ScoringOfDataManagersUsingCADScore::construct_result(params, target_dm, model_dm, cadscore_result);
+
+		if(!target_global_adj_prefix.empty())
+		{
+			if(cadscore_result.bundle.parameters_of_construction.atom_level)
+			{
+				target_dm.global_numeric_adjuncts_mutable()[target_global_adj_prefix+"_atom_level_cad_score"]=cadscore_result.bundle.atom_level_global_descriptor.score();
+			}
+			if(cadscore_result.bundle.parameters_of_construction.residue_level)
+			{
+				target_dm.global_numeric_adjuncts_mutable()[target_global_adj_prefix+"_residue_level_cad_score"]=cadscore_result.bundle.residue_level_global_descriptor.score();
+			}
+		}
+
+		if(!model_global_adj_prefix.empty())
+		{
+			if(cadscore_result.bundle.parameters_of_construction.atom_level)
+			{
+				model_dm.global_numeric_adjuncts_mutable()[model_global_adj_prefix+"_atom_level_cad_score"]=cadscore_result.bundle.atom_level_global_descriptor.score();
+			}
+			if(cadscore_result.bundle.parameters_of_construction.residue_level)
+			{
+				model_dm.global_numeric_adjuncts_mutable()[model_global_adj_prefix+"_residue_level_cad_score"]=cadscore_result.bundle.residue_level_global_descriptor.score();
+			}
+		}
 
 		Result result;
 
