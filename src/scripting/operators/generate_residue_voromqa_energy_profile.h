@@ -67,6 +67,10 @@ public:
 		assert_adjunct_name_input(adjunct_atom_quality_scores, false);
 		assert_adjunct_name_input(adjunct_atom_volumes, false);
 
+		data_manager.assert_contacts_adjunct_availability(adjunct_inter_atom_energy_scores_raw);
+		data_manager.assert_atoms_adjunct_availability(adjunct_atom_quality_scores);
+		data_manager.assert_atoms_adjunct_availability(adjunct_atom_volumes);
+
 		typedef common::ConstructionOfContactEffectGroupings CCEG;
 
 		const std::map<CCEG::CRAD, CCEG::ContactEffectGroupingEnergyProfile> map_of_residue_energy_profiles=

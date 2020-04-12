@@ -76,6 +76,10 @@ public:
 		assert_adjunct_name_input(adjunct_atom_depth_weights, false);
 		assert_adjunct_name_input(adjunct_atom_quality_scores, false);
 
+		data_manager.assert_contacts_adjunct_availability(adjunct_inter_atom_energy_scores_raw);
+		data_manager.assert_atoms_adjunct_availability(adjunct_atom_depth_weights);
+		data_manager.assert_atoms_adjunct_availability(adjunct_atom_quality_scores);
+
 		std::set<std::size_t> atom_ids;
 		std::set<std::size_t> contact_ids;
 

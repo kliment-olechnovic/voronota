@@ -519,6 +519,22 @@ public:
 		}
 	}
 
+	void assert_atoms_tag_availability(const std::string& tag) const
+	{
+		if(!is_any_atom_with_tag(tag))
+		{
+			throw std::runtime_error(std::string("No atoms with tag '")+tag+"'.");
+		}
+	}
+
+	void assert_atoms_adjunct_availability(const std::string& adjunct) const
+	{
+		if(!is_any_atom_with_adjunct(adjunct))
+		{
+			throw std::runtime_error(std::string("No atoms with adjunct '")+adjunct+"'.");
+		}
+	}
+
 	void assert_triangulation_info_availability() const
 	{
 		if(triangulation_info_.quadruples_map.empty())
@@ -559,6 +575,22 @@ public:
 			{
 				throw std::runtime_error(std::string("Invalid contacts selection name '")+names[i]+"'.");
 			}
+		}
+	}
+
+	void assert_contacts_tag_availability(const std::string& tag) const
+	{
+		if(!is_any_contact_with_tag(tag))
+		{
+			throw std::runtime_error(std::string("No contacts with tag '")+tag+"'.");
+		}
+	}
+
+	void assert_contacts_adjunct_availability(const std::string& adjunct) const
+	{
+		if(!is_any_contact_with_adjunct(adjunct))
+		{
+			throw std::runtime_error(std::string("No contacts with adjunct '")+adjunct+"'.");
 		}
 	}
 
@@ -614,6 +646,18 @@ public:
 		return false;
 	}
 
+	bool is_any_atom_with_adjunct(const std::string& adjunct) const
+	{
+		for(std::size_t i=0;i<atoms_.size();i++)
+		{
+			if(atoms_[i].value.props.adjuncts.count(adjunct)>0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	bool is_any_contact_visible() const
 	{
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
@@ -631,6 +675,30 @@ public:
 		for(std::size_t i=0;i<contacts_display_states_.size();i++)
 		{
 			if(contacts_display_states_[i].marked)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_with_tag(const std::string& tag) const
+	{
+		for(std::size_t i=0;i<contacts_.size();i++)
+		{
+			if(contacts_[i].value.props.tags.count(tag)>0)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool is_any_contact_with_adjunct(const std::string& adjunct) const
+	{
+		for(std::size_t i=0;i<contacts_.size();i++)
+		{
+			if(contacts_[i].value.props.adjuncts.count(adjunct)>0)
 			{
 				return true;
 			}
