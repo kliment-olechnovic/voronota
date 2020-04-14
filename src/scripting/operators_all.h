@@ -36,6 +36,7 @@
 #include "operators/export_contacts_as_pymol_cgo.h"
 #include "operators/export_contacts.h"
 #include "operators/export_figures_as_pymol_cgo.h"
+#include "operators/export_global_adjuncts.h"
 #include "operators/export_selection_of_atoms.h"
 #include "operators/export_selection_of_contacts.h"
 #include "operators/export_triangulation.h"

@@ -60,6 +60,7 @@ public:
 		set_command_for_congregation_of_data_managers("hide-objects", operators::HideObjects());
 		set_command_for_congregation_of_data_managers("zoom-by-objects", operators::ZoomByObjects());
 		set_command_for_congregation_of_data_managers("cad-score", operators::CADScore());
+		set_command_for_congregation_of_data_managers("export-global-adjuncts", operators::ExportGlobalAdjuncts());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
