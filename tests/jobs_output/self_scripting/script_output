@@ -927,6 +927,9 @@
             "name":"center-atoms",
             "short_description":""},
           {
+            "name":"clash-score",
+            "short_description":""},
+          {
             "name":"color-atoms",
             "short_description":""},
           {
@@ -1012,6 +1015,9 @@
             "short_description":""},
           {
             "name":"export-figures-as-pymol-cgo",
+            "short_description":""},
+          {
+            "name":"export-global-adjuncts",
             "short_description":""},
           {
             "name":"export-selection-of-atoms",
@@ -1107,10 +1113,10 @@
             "name":"print-figures",
             "short_description":""},
           {
-            "name":"print-sequence",
+            "name":"print-global-adjuncts",
             "short_description":""},
           {
-            "name":"print-text-description",
+            "name":"print-sequence",
             "short_description":""},
           {
             "name":"print-time",
@@ -1182,9 +1188,6 @@
             "name":"set-tag-of-contacts",
             "short_description":""},
           {
-            "name":"set-text-description",
-            "short_description":""},
-          {
             "name":"setup-loading",
             "short_description":""},
           {
@@ -1231,6 +1234,9 @@
             "short_description":""},
           {
             "name":"voromqa-global",
+            "short_description":""},
+          {
+            "name":"voromqa-interface-frustration",
             "short_description":""},
           {
             "name":"voromqa-local",
