@@ -9,7 +9,6 @@
 #include "../duktaper/duktape_manager.h"
 
 #include "script_execution_manager.h"
-#include "widgets/console.h"
 #include "widgets/cursor_label.h"
 #include "widgets/waiting_indicator.h"
 
@@ -122,7 +121,7 @@ protected:
 			{
 				if(hovered())
 				{
-					widgets::Console::instance().set_need_keyboard_focus_in_command_input(true);
+					Console::instance().set_need_keyboard_focus_in_command_input(true);
 				}
 			}
 		}
@@ -155,14 +154,14 @@ protected:
 		}
 
 		{
-			const std::string console_result=widgets::Console::instance().execute(0, 0, window_width()-200, 200, window_width()/3*2, window_width(), 100, window_height());
+			const std::string console_result=Console::instance().execute(0, 0, window_width()-200, 200, window_width()/3*2, window_width(), 100, window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);
 				enqueue_script(task);
 				if(!task.prefix.empty())
 				{
-					widgets::Console::instance().set_next_prefix(task.prefix+" ");
+					Console::instance().set_next_prefix(task.prefix+" ");
 				}
 			}
 		}
@@ -188,18 +187,18 @@ protected:
 
 	void on_before_rendered_frame()
 	{
-		if(widgets::Console::instance().current_heigth()>0 && widgets::Console::instance().current_heigth()<(window_height()-1))
+		if(Console::instance().current_heigth()>0 && Console::instance().current_heigth()<(window_height()-1))
 		{
-			set_margin_top_fixed(widgets::Console::instance().current_heigth());
+			set_margin_top_fixed(Console::instance().current_heigth());
 		}
 		else
 		{
 			set_margin_top_fixed(0);
 		}
 
-		if(widgets::Console::instance().current_width()<window_width())
+		if(Console::instance().current_width()<window_width())
 		{
-			set_margin_right_fixed(window_width()-widgets::Console::instance().current_width());
+			set_margin_right_fixed(window_width()-Console::instance().current_width());
 		}
 		else
 		{
@@ -386,17 +385,17 @@ private:
 
 		void write_text(const std::string& str) const
 		{
-			widgets::Console::instance().add_output(str, 1.0f, 1.0f, 1.0f);
+			Console::instance().add_output(str, 1.0f, 1.0f, 1.0f);
 		}
 
 		void write_error(const std::string& str) const
 		{
-			widgets::Console::instance().add_output(str, 1.0f, 0.5f, 0.5f);
+			Console::instance().add_output(str, 1.0f, 0.5f, 0.5f);
 		}
 
 		void write_log(const std::string& str) const
 		{
-			widgets::Console::instance().add_output(str, 1.0f, 1.0f, 0.5f);
+			Console::instance().add_output(str, 1.0f, 1.0f, 0.5f);
 		}
 	};
 

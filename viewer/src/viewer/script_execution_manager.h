@@ -6,8 +6,7 @@
 #include "congregations_of_drawers_for_data_managers.h"
 #include "operators_all.h"
 #include "gui_configuration.h"
-
-#include "widgets/console.h"
+#include "console.h"
 
 namespace voronota
 {
@@ -300,7 +299,7 @@ protected:
 
 		if(ci.changed())
 		{
-			std::vector<widgets::Console::ObjectState> object_states;
+			std::vector<Console::ObjectState> object_states;
 			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers.get_objects();
 			object_states.reserve(data_managers.size());
 			for(std::size_t i=0;i<data_managers.size();i++)
@@ -308,14 +307,14 @@ protected:
 				const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers.get_object_attributes(data_managers[i]);
 				if(object_attributes.valid)
 				{
-					widgets::Console::ObjectState object_state;
+					Console::ObjectState object_state;
 					object_state.name=object_attributes.name;
 					object_state.picked=object_attributes.picked;
 					object_state.visible=object_attributes.visible;
 					object_states.push_back(object_state);
 				}
 			}
-			widgets::Console::instance().set_object_states(object_states);
+			Console::instance().set_object_states(object_states);
 		}
 	}
 
@@ -362,19 +361,19 @@ protected:
 					const std::string command_name=result.value("command_name").value_as_string();
 					if(command_name=="clear")
 					{
-						widgets::Console::instance().clear_outputs();
+						Console::instance().clear_outputs();
 					}
 					else if(command_name=="clear-last")
 					{
-						widgets::Console::instance().clear_last_output();
+						Console::instance().clear_last_output();
 					}
 					else if(command_name=="history")
 					{
-						widgets::Console::instance().add_history_output(20);
+						Console::instance().add_history_output(20);
 					}
 					else if(command_name=="history-all")
 					{
-						widgets::Console::instance().add_history_output(0);
+						Console::instance().add_history_output(0);
 					}
 					else
 					{
@@ -383,25 +382,25 @@ protected:
 						result.erase("success");
 						if(success)
 						{
-							widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
+							Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 0.5f, 1.0f, 1.0f);
 						}
 						else
 						{
-							widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
+							Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, result), 1.0f, 0.5f, 0.5f);
 						}
 					}
 				}
 				else
 				{
-					widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, results[i]), 1.0f, 1.0f, 0.0f);
+					Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, results[i]), 1.0f, 1.0f, 0.0f);
 				}
 			}
 		}
 		else
 		{
-			widgets::Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
+			Console::instance().add_output(scripting::JSONWriter::write(json_writing_configuration, last_output()), 1.0f, 1.0f, 1.0f);
 		}
-		widgets::Console::instance().add_output_separator();
+		Console::instance().add_output_separator();
 	}
 
 private:
@@ -558,7 +557,7 @@ private:
 			output << "\n";
 		}
 
-		widgets::Console::instance().set_documentation_text(output.str());
+		Console::instance().set_documentation_text(output.str());
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;

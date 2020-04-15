@@ -1,21 +1,18 @@
-#ifndef VIEWER_WIDGETS_CONSOLE_H_
-#define VIEWER_WIDGETS_CONSOLE_H_
+#ifndef VIEWER_CONSOLE_H_
+#define VIEWER_CONSOLE_H_
 
 #include <string>
 #include <list>
 #include <vector>
 #include <deque>
 
-#include "../../dependencies/imgui/imgui_impl_glfw_gl3.h"
-#include "../../duktaper/stocked_data_resources.h"
+#include "../dependencies/imgui/imgui_impl_glfw_gl3.h"
+#include "../duktaper/stocked_data_resources.h"
 
 namespace voronota
 {
 
 namespace viewer
-{
-
-namespace widgets
 {
 
 class Console
@@ -690,6 +687,4 @@ private:
 
 }
 
-}
-
-#endif /* VIEWER_WIDGETS_CONSOLE_H_ */
+#endif /* VIEWER_CONSOLE_H_ */
