@@ -67,7 +67,7 @@ public:
 				VariantObject obj;
 				obj.value("name")=od.name;
 				obj.value("required")=od.required;
-				obj.value("type")=data_type_string(od.data_type);
+				obj.value("type")=od.data_type_string();
 				obj.value("description")=od.description;
 				if(!od.default_value.empty())
 				{
@@ -81,38 +81,6 @@ public:
 	}
 
 private:
-	static std::string data_type_string(const CommandDocumentation::OptionDescription::DataType data_type)
-	{
-		if(data_type==CDOD::DATATYPE_BOOL)
-		{
-			return std::string("bool");
-		}
-		else if(data_type==CDOD::DATATYPE_INT)
-		{
-			return std::string("int");
-		}
-		else if(data_type==CDOD::DATATYPE_INT_ARRAY)
-		{
-			return std::string("ints");
-		}
-		else if(data_type==CDOD::DATATYPE_FLOAT)
-		{
-			return std::string("float");
-		}
-		else if(data_type==CDOD::DATATYPE_FLOAT_ARRAY)
-		{
-			return std::string("floats");
-		}
-		else if(data_type==CDOD::DATATYPE_STRING)
-		{
-			return std::string("string");
-		}
-		else if(data_type==CDOD::DATATYPE_STRING_ARRAY)
-		{
-			return std::string("strings");
-		}
-		return std::string("undefined");
-	}
 	const CollectionOfCommandDocumentations* collection_of_command_documentations_ptr_;
 };
 

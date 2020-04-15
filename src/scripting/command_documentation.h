@@ -72,6 +72,39 @@ public:
 		{
 			return (name==input_name);
 		}
+
+		std::string data_type_string() const
+		{
+			if(data_type==DATATYPE_BOOL)
+			{
+				return std::string("bool");
+			}
+			else if(data_type==DATATYPE_INT)
+			{
+				return std::string("int");
+			}
+			else if(data_type==DATATYPE_INT_ARRAY)
+			{
+				return std::string("ints");
+			}
+			else if(data_type==DATATYPE_FLOAT)
+			{
+				return std::string("float");
+			}
+			else if(data_type==DATATYPE_FLOAT_ARRAY)
+			{
+				return std::string("floats");
+			}
+			else if(data_type==DATATYPE_STRING)
+			{
+				return std::string("string");
+			}
+			else if(data_type==DATATYPE_STRING_ARRAY)
+			{
+				return std::string("strings");
+			}
+			return std::string("undefined");
+		}
 	};
 
 	CommandDocumentation()
