@@ -109,9 +109,9 @@ public:
 		core_state_.scroll_output_=true;
 	}
 
-	void set_documentation_text(const std::string& text)
+	void set_documentation(const std::map<std::string, std::string>& documentation)
 	{
-		documentation_viewer_state_.set_text_buffer(text);
+		documentation_viewer_state_.documentation=documentation;
 	}
 
 	std::string execute(
@@ -579,21 +579,14 @@ private:
 
 	struct DocumentationViewerState
 	{
-		std::vector<char> text_buffer;
+		std::map<std::string, std::string> documentation;
 		bool opened;
 		bool need_focus;
 
 		DocumentationViewerState() :
-			text_buffer(2, 0),
 			opened(false),
 			need_focus(false)
 		{
-		}
-
-		void set_text_buffer(const std::string& text)
-		{
-			text_buffer.resize(text.size()+2, 0);
-			write_string_to_vector(text, text_buffer);
 		}
 
 		void execute()
@@ -609,20 +602,22 @@ private:
 				return;
 			}
 
-			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			ImVec4 color_background=ImVec4(0.25f, 0.25f, 0.25f, 0.4f);
-			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
-			ImGui::PushItemWidth(-1);
-			ImGui::InputTextMultiline("##documentation_viewer_output", text_buffer.data(), text_buffer.size(), ImVec2(-1,-1), ImGuiInputTextFlags_ReadOnly);
+			for(std::map<std::string, std::string>::const_iterator it=documentation.begin();it!=documentation.end();++it)
+			{
+				const std::string& title=it->first;
+				const std::string& content=it->second;
+				if(ImGui::CollapsingHeader(title.c_str()))
+				{
+					ImGui::TextUnformatted(title.c_str());
+					ImGui::TextUnformatted(content.c_str());
+				}
+			}
+
 			if(need_focus)
 			{
 				ImGui::SetKeyboardFocusHere(-1);
 				need_focus=false;
 			}
-			ImGui::PopItemWidth();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
 
 			ImGui::End();
 		}

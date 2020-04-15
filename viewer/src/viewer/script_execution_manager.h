@@ -52,7 +52,7 @@ public:
 
 		set_default_aliases();
 
-		generate_documentation_text();
+		forward_documentation();
 	}
 
 	~ScriptExecutionManager()
@@ -510,16 +510,19 @@ private:
 		return false;
 	}
 
-	void generate_documentation_text() const
+	void forward_documentation() const
 	{
+		std::map<std::string, std::string> reference;
+
 		const std::vector<std::string> names=collection_of_command_documentations().get_all_names();
 
-		std::size_t max_option_name_length=1;
-		std::size_t max_option_data_type_length=1;
-		std::size_t max_option_description_length=1;
 		for(std::size_t i=0;i<names.size();i++)
 		{
 			const scripting::CommandDocumentation doc=collection_of_command_documentations().get_documentation(names[i]);
+
+			std::size_t max_option_name_length=1;
+			std::size_t max_option_data_type_length=1;
+			std::size_t max_option_description_length=1;
 			for(std::size_t j=0;j<doc.get_option_descriptions().size();j++)
 			{
 				const scripting::CommandDocumentation::OptionDescription& od=doc.get_option_descriptions()[j];
@@ -527,37 +530,33 @@ private:
 				max_option_data_type_length=std::max(max_option_data_type_length, od.data_type_string().size());
 				max_option_description_length=std::max(max_option_description_length, od.description.size());
 			}
-		}
-		max_option_name_length+=4;
-		max_option_data_type_length+=4;
-		max_option_description_length+=4;
+			max_option_name_length+=4;
+			max_option_data_type_length+=4;
+			max_option_description_length+=4;
 
-		std::ostringstream output;
-		for(std::size_t i=0;i<names.size();i++)
-		{
-			output << names[i] << "\n";
-			const scripting::CommandDocumentation doc=collection_of_command_documentations().get_documentation(names[i]);
+			std::ostringstream output;
 			for(std::size_t j=0;j<doc.get_option_descriptions().size();j++)
 			{
 				const scripting::CommandDocumentation::OptionDescription& od=doc.get_option_descriptions()[j];
-				output << "    ";
+				output << "    --";
 				output << od.name;
 				output << std::string(max_option_name_length-od.name.size(), ' ');
 				output << (od.required ? " * " : "   ");
 				output << od.data_type_string();
 				output << std::string(max_option_data_type_length-od.data_type_string().size(), ' ');
 				output << od.description;
-				output << std::string(max_option_description_length-od.description.size(), ' ');
 				if(!od.default_value.empty())
 				{
+					output << std::string(max_option_description_length-od.description.size(), ' ');
 					output << od.default_value;
 				}
 				output << "\n";
 			}
-			output << "\n";
+
+			reference[names[i]]=output.str();
 		}
 
-		Console::instance().set_documentation_text(output.str());
+		Console::instance().set_documentation(reference);
 	}
 
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;
