@@ -102,6 +102,7 @@
 #include "operators/upload_virtual_file.h"
 #include "operators/voromqa_frustration.h"
 #include "operators/voromqa_global.h"
+#include "operators/voromqa_interface_frustration.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
 #include "operators/zoom_by_atoms.h"

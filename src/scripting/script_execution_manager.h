@@ -143,6 +143,7 @@ public:
 		set_command_for_data_manager("unmark-contacts", operators::UnmarkContacts(), true);
 		set_command_for_data_manager("voromqa-frustration", operators::VoroMQAFrustration(), true);
 		set_command_for_data_manager("voromqa-global", operators::VoroMQAGlobal(), true);
+		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
