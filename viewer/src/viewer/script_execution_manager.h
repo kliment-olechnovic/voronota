@@ -45,10 +45,10 @@ public:
 		set_command_for_extra_actions("configure-gui-json-write-level-4", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(4));
 		set_command_for_extra_actions("configure-gui-json-write-level-5", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(5));
 		set_command_for_extra_actions("configure-gui-json-write-level-6", operators::ConfigureGUI(operators::ConfigureGUI::ACTION_SET_JSON_WRITING_LEVEL).set_value_of_json_writing_level(6));
-		set_command_for_extra_actions("clear", scripting::operators::Echo());
-		set_command_for_extra_actions("clear-last", scripting::operators::Echo());
-		set_command_for_extra_actions("history", scripting::operators::Echo());
-		set_command_for_extra_actions("history-all", scripting::operators::Echo());
+		set_command_for_extra_actions("clear", scripting::operators::Mock());
+		set_command_for_extra_actions("clear-last", scripting::operators::Mock());
+		set_command_for_extra_actions("history", scripting::operators::Mock());
+		set_command_for_extra_actions("history-all", scripting::operators::Mock());
 
 		set_default_aliases();
 

@@ -59,6 +59,7 @@
 #include "operators/make_undrawable_contacts.h"
 #include "operators/mark_atoms.h"
 #include "operators/mark_contacts.h"
+#include "operators/mock.h"
 #include "operators/move_atoms.h"
 #include "operators/pick_objects.h"
 #include "operators/print_atoms.h"
