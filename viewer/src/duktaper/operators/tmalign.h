@@ -57,20 +57,44 @@ public:
 	{
 	}
 
-	void initialize(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input, const bool managed)
 	{
-		target_name=input.get_value_or_first_unused_unnamed_value("target");
-		model_name=input.get_value_or_first_unused_unnamed_value("model");
+		if(managed)
+		{
+			target_name=input.get_value_or_first_unused_unnamed_value_or_default("target", "");
+		}
+		else
+		{
+			target_name=input.get_value_or_first_unused_unnamed_value("target");
+			model_name=input.get_value_or_first_unused_unnamed_value("model");
+		}
 		target_selection=input.get_value_or_default<std::string>("target-sel", "");
 		model_selection=input.get_value_or_default<std::string>("model-sel", "");
 	}
 
-	void document(scripting::CommandDocumentation& doc) const
+	void initialize(scripting::CommandInput& input)
 	{
-		doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object"));
-		doc.set_option_decription(scripting::CDOD("model", scripting::CDOD::DATATYPE_STRING, "name of model object"));
+		initialize(input, false);
+	}
+
+	void document(scripting::CommandDocumentation& doc, const bool managed) const
+	{
+		if(managed)
+		{
+			doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object", ""));
+		}
+		else
+		{
+			doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object"));
+			doc.set_option_decription(scripting::CDOD("model", scripting::CDOD::DATATYPE_STRING, "name of model object"));
+		}
 		doc.set_option_decription(scripting::CDOD("target-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
 		doc.set_option_decription(scripting::CDOD("model-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
+	}
+
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		document(doc, false);
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const

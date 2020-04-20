@@ -30,10 +30,8 @@ public:
 		}
 	};
 
-	std::string target_name;
 	scripting::CongregationOfDataManagers::ObjectQuery query;
-	std::string target_selection;
-	std::string model_selection;
+	TMalign tmalign_operator;
 
 	TMalignMany()
 	{
@@ -41,18 +39,14 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		target_name=input.get_value_or_first_unused_unnamed_value_or_default("target", "");
 		query=scripting::operators::Utilities::read_congregation_of_data_managers_object_query(input);
-		target_selection=input.get_value_or_default<std::string>("target-sel", "");
-		model_selection=input.get_value_or_default<std::string>("model-sel", "");
+		tmalign_operator.initialize(input, true);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object", ""));
 		scripting::operators::Utilities::document_read_congregation_of_data_managers_object_query(doc);
-		doc.set_option_decription(scripting::CDOD("target-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
-		doc.set_option_decription(scripting::CDOD("model-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
+		tmalign_operator.document(doc, true);
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
@@ -71,28 +65,21 @@ public:
 			throw std::runtime_error(std::string("No objects selected."));
 		}
 
-		const std::string target_name_to_use=(target_name.empty() ? congregation_of_data_managers.get_object_attributes(all_objects[0]).name : target_name);
+		TMalign tmalign_operator_to_use=tmalign_operator;
 
-		congregation_of_data_managers.assert_object_availability(target_name_to_use);
+		tmalign_operator_to_use.target_name=(tmalign_operator.target_name.empty() ? congregation_of_data_managers.get_object_attributes(all_objects[0]).name : tmalign_operator.target_name);
+
+		congregation_of_data_managers.assert_object_availability(tmalign_operator_to_use.target_name);
 
 		Result result;
 
 		for(std::size_t i=0;i<objects.size();i++)
 		{
 			const scripting::CongregationOfDataManagers::ObjectAttributes attributes=congregation_of_data_managers.get_object_attributes(objects[i]);
-			if(attributes.name!=target_name_to_use)
+			if(attributes.name!=tmalign_operator_to_use.target_name)
 			{
-				std::ostringstream args;
-				args << "-target " << target_name_to_use << " -model " << attributes.name;
-				if(!target_selection.empty())
-				{
-					args << " -target-sel " << target_selection;
-				}
-				if(!model_selection.empty())
-				{
-					args << " -model-sel " << model_selection;
-				}
-				result.tmalign_results.push_back(TMalign().init(args.str()).run(congregation_of_data_managers));
+				tmalign_operator_to_use.model_name=attributes.name;
+				result.tmalign_results.push_back(tmalign_operator_to_use.run(congregation_of_data_managers));
 			}
 		}
 
