@@ -918,6 +918,9 @@
             "name":"cad-score",
             "short_description":""},
           {
+            "name":"cad-score-many",
+            "short_description":""},
+          {
             "name":"calculate-betweenness",
             "short_description":""},
           {

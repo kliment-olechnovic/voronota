@@ -83,6 +83,11 @@ public:
 			}
 		}
 
+		if(result.tmalign_results.empty())
+		{
+			throw std::runtime_error(std::string("No valid pairs of objects."));
+		}
+
 		return result;
 	}
 };

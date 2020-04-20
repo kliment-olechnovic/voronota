@@ -3,6 +3,7 @@
 
 #include "operators/add_figure.h"
 #include "operators/add_figure_of_triangulation.h"
+#include "operators/cad_score_many.h"
 #include "operators/cad_score.h"
 #include "operators/calculate_betweenness.h"
 #include "operators/calculate_burial_depth.h"

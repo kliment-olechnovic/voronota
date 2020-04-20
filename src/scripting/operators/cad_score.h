@@ -18,18 +18,27 @@ class CADScore : public OperatorBase<CADScore>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
+		std::string target_name;
+		std::string model_name;
 		common::ConstructionOfCADScore::CADDescriptor atom_level_result;
 		common::ConstructionOfCADScore::CADDescriptor residue_level_result;
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
+			store(heterostorage.variant_object);
+		}
+
+		void store(VariantObject& variant_object) const
+		{
+			variant_object.value("target_name")=target_name;
+			variant_object.value("model_name")=model_name;
 			if(atom_level_result.target_area_sum>0.0)
 			{
-				write_cad_descriptor(atom_level_result, heterostorage.variant_object.object("atom_level_result"));
+				write_cad_descriptor(atom_level_result, variant_object.object("atom_level_result"));
 			}
 			if(residue_level_result.target_area_sum>0.0)
 			{
-				write_cad_descriptor(residue_level_result, heterostorage.variant_object.object("residue_level_result"));
+				write_cad_descriptor(residue_level_result, variant_object.object("residue_level_result"));
 			}
 		}
 
@@ -54,10 +63,13 @@ public:
 	{
 	}
 
-	void initialize(CommandInput& input)
+	void initialize(CommandInput& input, const bool managed)
 	{
 		target_name=input.get_value<std::string>("target");
-		model_name=input.get_value<std::string>("model");
+		if(!managed)
+		{
+			model_name=input.get_value<std::string>("model");
+		}
 		params=ScoringOfDataManagersUsingCADScore::Parameters();
 		params.target_selection_expression=input.get_value_or_default<std::string>("t-sel", "[--no-solvent --min-seq-sep 1]");
 		params.model_selection_expression=input.get_value_or_default<std::string>("m-sel", params.target_selection_expression);
@@ -77,10 +89,18 @@ public:
 		model_global_adj_prefix=input.get_value_or_default<std::string>("m-global-adj-prefix", "");
 	}
 
-	void document(CommandDocumentation& doc) const
+	void initialize(scripting::CommandInput& input)
+	{
+		initialize(input, false);
+	}
+
+	void document(CommandDocumentation& doc, const bool managed) const
 	{
 		doc.set_option_decription(CDOD("target", CDOD::DATATYPE_STRING, "target object name"));
-		doc.set_option_decription(CDOD("model", CDOD::DATATYPE_STRING, "model object name"));
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("model", CDOD::DATATYPE_STRING, "model object name"));
+		}
 		doc.set_option_decription(CDOD("t-sel", CDOD::DATATYPE_STRING, "target selection expression", "[--no-solvent --min-seq-sep 1]"));
 		doc.set_option_decription(CDOD("m-sel", CDOD::DATATYPE_STRING, "model selection expression", "[--no-solvent --min-seq-sep 1]"));
 		doc.set_option_decription(CDOD("t-adj-atom", CDOD::DATATYPE_STRING, "target adjunct name for atom scores", ""));
@@ -99,8 +119,23 @@ public:
 		doc.set_option_decription(CDOD("m-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of model", ""));
 	}
 
+	void document(scripting::CommandDocumentation& doc) const
+	{
+		document(doc, false);
+	}
+
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
 	{
+		if(target_name.empty())
+		{
+			throw std::runtime_error(std::string("No target object name provided."));
+		}
+
+		if(model_name.empty())
+		{
+			throw std::runtime_error(std::string("No model object name provided."));
+		}
+
 		if(target_name==model_name)
 		{
 			throw std::runtime_error(std::string("Target and model are the same."));
@@ -150,6 +185,9 @@ public:
 
 		Result result;
 
+		result.target_name=target_name;
+		result.model_name=model_name;
+
 		if(cadscore_result.bundle.parameters_of_construction.atom_level)
 		{
 			result.atom_level_result=cadscore_result.bundle.atom_level_global_descriptor;
@@ -167,9 +205,6 @@ public:
 }
 
 }
-
-
-
 
 }
 
