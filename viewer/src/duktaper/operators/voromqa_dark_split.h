@@ -30,7 +30,7 @@ public:
 			for(std::map<std::string, VoroMQADarkGlobal::Result>::const_iterator it=split_results.begin();it!=split_results.end();++it)
 			{
 				scripting::VariantObject o;
-				o.value("chain")=it->first;
+				o.value("chain_group")=it->first;
 				o.value("global_score")=it->second.global_score;
 				o.value("number_of_residues")=it->second.number_of_residues;
 				heterostorage.variant_object.objects_array("split_results").push_back(o);
@@ -60,6 +60,7 @@ public:
 		}
 	};
 
+	std::vector<std::string> chain_groups;
 	std::string global_adj_prefix;
 
 	VoroMQADarkSplit()
@@ -68,11 +69,13 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
+		chain_groups=input.get_value_vector_or_default<std::string>("chain-groups", std::vector<std::string>());
 		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "voromqa_dark_split");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
+		doc.set_option_decription(scripting::CDOD("adjuncts", scripting::CDOD::DATATYPE_STRING_ARRAY, "chain groups", ""));
 		doc.set_option_decription(scripting::CDOD("global-adj-prefix", scripting::CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_split"));
 	}
 
@@ -83,31 +86,53 @@ public:
 			throw std::runtime_error(std::string("Less than two chains available."));
 		}
 
+		std::map< std::string, std::set<std::string> > map_of_chain_groups;
+		if(!chain_groups.empty())
+		{
+			for(std::size_t i=0;i<chain_groups.size();i++)
+			{
+				const std::string& group=chain_groups[i];
+				for(std::size_t j=0;j<group.size();j++)
+				{
+					map_of_chain_groups[group].insert(std::string(1, group[j]));
+				}
+			}
+		}
+		else
+		{
+			for(std::size_t i=0;i<data_manager.primary_structure_info().chains.size();i++)
+			{
+				const std::string& chain_name=data_manager.primary_structure_info().chains[i].name;
+				map_of_chain_groups[chain_name].insert(chain_name);
+			}
+		}
+
 		Result result;
 
-		for(std::size_t i=0;i<data_manager.primary_structure_info().chains.size();i++)
+		for(std::map< std::string, std::set<std::string> >::const_iterator chain_group_it=map_of_chain_groups.begin();chain_group_it!=map_of_chain_groups.end();++chain_group_it)
 		{
-			const std::string& chain_name=data_manager.primary_structure_info().chains[i].name;
-			std::vector<scripting::Atom> chain_atoms;
+			const std::string& chain_group=chain_group_it->first;
+			const std::set<std::string>& chain_names=chain_group_it->second;
+			std::vector<scripting::Atom> chain_group_atoms;
 			for(std::size_t j=0;j<data_manager.atoms().size();j++)
 			{
 				const scripting::Atom& atom=data_manager.atoms()[j];
-				if(atom.crad.chainID==chain_name)
+				if(chain_names.count(atom.crad.chainID)>0)
 				{
-					chain_atoms.push_back(atom);
+					chain_group_atoms.push_back(atom);
 				}
 			}
-			if(chain_atoms.empty())
+			if(chain_group_atoms.empty())
 			{
-				throw std::runtime_error(std::string("No atoms in chain '")+chain_name+"'.");
+				throw std::runtime_error(std::string("No atoms for chain group '")+chain_group+"'.");
 			}
-			scripting::DataManager chain_data_manager;
-			chain_data_manager.reset_atoms_by_swapping(chain_atoms);
-			chain_data_manager.add_atoms_representation("atoms", true);
-			scripting::operators::ConstructContacts().init("").run(chain_data_manager);
-			scripting::operators::VoroMQAGlobal().init("").run(chain_data_manager);
-			VoroMQADarkGlobal::Result chain_result=VoroMQADarkGlobal().init("").run(chain_data_manager);
-			result.split_results[chain_name]=chain_result;
+			scripting::DataManager chain_group_data_manager;
+			chain_group_data_manager.reset_atoms_by_swapping(chain_group_atoms);
+			chain_group_data_manager.add_atoms_representation("atoms", true);
+			scripting::operators::ConstructContacts().init("").run(chain_group_data_manager);
+			scripting::operators::VoroMQAGlobal().init("").run(chain_group_data_manager);
+			VoroMQADarkGlobal::Result chain_group_result=VoroMQADarkGlobal().init("").run(chain_group_data_manager);
+			result.split_results[chain_group]=chain_group_result;
 		}
 
 		result.summarize();
