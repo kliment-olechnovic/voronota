@@ -4,6 +4,7 @@
 #include "operators/setup_defaults.h"
 #include "operators/nnport_predict.h"
 #include "operators/voromqa_dark_global.h"
+#include "operators/voromqa_dark_split.h"
 #include "operators/tmalign.h"
 #include "operators/tmalign_many.h"
 

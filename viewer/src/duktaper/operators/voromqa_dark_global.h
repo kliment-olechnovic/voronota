@@ -22,14 +22,16 @@ public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		double global_score;
+		int number_of_residues;
 
-		Result() : global_score(0.0)
+		Result() : global_score(0.0), number_of_residues(0)
 		{
 		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("global_score")=global_score;
+			heterostorage.variant_object.value("number_of_residues")=number_of_residues;
 		}
 	};
 
@@ -95,15 +97,16 @@ public:
 			scripting::operators::ImportAdjunctsOfAtoms().init(args.str()).run(data_manager);
 		}
 
-		const double global_score=scripting::operators::SpectrumAtoms().init("-use [-aname CA] -adjunct vd1 -only-summarize").run(data_manager).mean_of_values;
+		const scripting::operators::SpectrumAtoms::Result spectrum_result=scripting::operators::SpectrumAtoms().init("-use [-aname CA] -adjunct vd1 -only-summarize").run(data_manager);
+
+		Result result;
+		result.global_score=spectrum_result.mean_of_values;
+		result.number_of_residues=spectrum_result.number_of_values;
 
 		if(!global_adj_prefix.empty())
 		{
-			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=global_score;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=result.global_score;
 		}
-
-		Result result;
-		result.global_score=global_score;
 
 		return result;
 	}
