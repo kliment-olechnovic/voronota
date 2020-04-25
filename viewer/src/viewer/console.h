@@ -127,7 +127,7 @@ public:
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, min_height), ImVec2(max_width, max_height));
 
-			if(!ImGui::Begin("Console", 0, ImVec2(recommended_width, recommended_height), 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings))
+			if(!ImGui::Begin("Console", 0, ImVec2(recommended_width, recommended_height), 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings))
 			{
 				current_width_=max_width;
 				current_heigth_=ImGui::GetWindowHeight();
@@ -149,7 +149,7 @@ public:
 			ImVec2 panel_size(max_width-current_width_, max_height);
 			ImGui::SetNextWindowSizeConstraints(panel_size, panel_size);
 
-			if(!ImGui::Begin("Panel", 0, panel_size, 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
+			if(!ImGui::Begin("Panel", 0, panel_size, 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
 			{
 				ImGui::End();
 				return result;
@@ -264,7 +264,7 @@ private:
 
 			{
 				ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-				ImVec4 color_background=ImVec4(0.25f, 0.25f, 0.25f, 1.0f);
+				ImVec4 color_background=ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 				ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 				ImGui::PushItemWidth(-1);
@@ -435,7 +435,7 @@ private:
 
 			ImGui::BeginChild("##script_editor_scrolling_region", ImVec2(0, 300));
 			ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-			ImVec4 color_background=ImVec4(0.25f, 0.25f, 0.25f, 0.4f);
+			ImVec4 color_background=ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 			ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, color_background);
 			ImGui::PushItemWidth(-1);
