@@ -141,6 +141,27 @@ private:
 		return output.str();
 	}
 
+	static std::string remove_line_breaks_from_script(const std::string& script)
+	{
+		static const std::string line_break_str=" \\\n";
+
+		if(script.find(line_break_str, 0)==std::string::npos)
+		{
+			return script;
+		}
+
+		std::string fixed_script=script;
+
+		std::size_t pos=fixed_script.find(line_break_str, 0);
+		while(pos!=std::string::npos)
+		{
+			fixed_script.replace(pos, line_break_str.size(), " ");
+			pos=fixed_script.find(line_break_str, pos);
+		}
+
+		return fixed_script;
+	}
+
 	static std::vector<Sentence> split_script_into_sentences(const std::string& script)
 	{
 		std::vector<Sentence> sentences;
@@ -350,7 +371,7 @@ private:
 
 	std::vector<Sentence> partition_script(const std::string& script) const
 	{
-		return translate_sentences_fully(split_script_into_sentences(remove_comments_from_script(script)));
+		return translate_sentences_fully(split_script_into_sentences(remove_line_breaks_from_script(remove_comments_from_script(script))));
 	}
 
 	std::vector<Sentence> partition_sentence(const Sentence& sentence) const
