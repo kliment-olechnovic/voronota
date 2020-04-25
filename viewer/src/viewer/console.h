@@ -475,6 +475,15 @@ private:
 
 		void execute(std::string& result) const
 		{
+			if(object_states_.empty())
+			{
+				ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+				ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+				ImGui::TextUnformatted("No objects loaded yet.");
+				ImGui::PopStyleColor();
+				return;
+			}
+
 			{
 				ObjectState summary;
 				summary.picked=false;
