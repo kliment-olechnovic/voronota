@@ -149,13 +149,25 @@ public:
 			ImVec2 panel_size(max_width-current_width_, max_height);
 			ImGui::SetNextWindowSizeConstraints(panel_size, panel_size);
 
-			if(!ImGui::Begin("Panel", 0, panel_size, 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize))
+			if(!ImGui::Begin("Panel", 0, panel_size, 0.5f, ImGuiWindowFlags_ShowBorders|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_MenuBar))
 			{
 				ImGui::End();
 				return result;
 			}
 
-			if(ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
+			if(ImGui::BeginMenuBar())
+			{
+				if(ImGui::BeginMenu("Panels"))
+				{
+					ImGui::Checkbox("Script editor", &script_editor_state_.visible);
+					ImGui::Checkbox("Commands reference", &documentation_viewer_state_.visible);
+					ImGui::Checkbox("Objects", &object_list_viewer_state_.visible);
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenuBar();
+			}
+
+			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
 			{
 				script_editor_state_.execute(result);
 			}
@@ -164,12 +176,12 @@ public:
 				script_editor_state_.focused=false;
 			}
 
-			if(ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
+			if(documentation_viewer_state_.visible && ImGui::CollapsingHeader("Commands reference##header_for_list_of_documentation"))
 			{
 				documentation_viewer_state_.execute();
 			}
 
-			if(ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
+			if(object_list_viewer_state_.visible && ImGui::CollapsingHeader("Objects##header_for_list_of_objects", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				object_list_viewer_state_.execute(result);
 			}
@@ -378,9 +390,11 @@ private:
 	class ScriptEditorState
 	{
 	public:
+		bool visible;
 		bool focused;
 
 		ScriptEditorState() :
+			visible(true),
 			focused(false),
 			multiline_command_buffer_(16384, 0)
 		{
@@ -474,9 +488,11 @@ private:
 	class DocumentationViewerState
 	{
 	public:
+		bool visible;
 		std::map<std::string, std::string> documentation;
 
-		DocumentationViewerState()
+		DocumentationViewerState() :
+			visible(false)
 		{
 		}
 
@@ -509,9 +525,11 @@ private:
 	class ObjectListViewerState
 	{
 	public:
+		bool visible;
 		std::vector<ObjectState> object_states;
 
-		ObjectListViewerState()
+		ObjectListViewerState() :
+			visible(true)
 		{
 		}
 
