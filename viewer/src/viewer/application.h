@@ -236,7 +236,7 @@ protected:
 			set_margin_top_fixed(0);
 		}
 
-		if(Console::instance().current_width()<window_width())
+		if(Console::instance().current_width()>0 && Console::instance().current_width()<(window_width()-1))
 		{
 			set_margin_right_fixed(window_width()-Console::instance().current_width());
 		}
