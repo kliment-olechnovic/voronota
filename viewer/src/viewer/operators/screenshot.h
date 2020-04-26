@@ -51,6 +51,7 @@ public:
 		{
 			GUIConfiguration::instance().set_enabled_widgets(false);
 			uv::ViewerApplication::instance_refresh_frame();
+			uv::ViewerApplication::instance_refresh_frame();
 		}
 
 		if(!uv::ViewerApplication::instance().read_pixels(W, H, image_data))
