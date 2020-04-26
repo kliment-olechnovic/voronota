@@ -587,10 +587,21 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("z##button_zoom");
-					if(ImGui::Button(button_id.c_str(), ImVec2(20,0)))
+					const std::string button_id=std::string("A##button_actions");
+					const std::string menu_id=std::string("Actions##menu_actions");
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						result="zoom-by-objects";
+						if(ImGui::Selectable("Zoom"))
+						{
+							result="zoom-by-objects";
+						}
+						ImGui::Separator();
+						if(ImGui::Selectable("Delete"))
+						{
+							result="delete-objects";
+						}
+						ImGui::EndPopup();
 					}
 				}
 			}
@@ -633,10 +644,25 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("z##button_zoom_")+os.name;
-					if(ImGui::Button(button_id.c_str(), ImVec2(20,0)))
+					const std::string button_id=std::string("A##button_actions_")+os.name;
+					const std::string menu_id=std::string("Actions##menu_actions_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						result=std::string("zoom-by-objects -names ")+os.name;
+						if(ImGui::Selectable("Zoom"))
+						{
+							result=std::string("zoom-by-objects -names '")+os.name+"'";
+						}
+						if(object_states.size()>1 && ImGui::Selectable("Align all"))
+						{
+							result=std::string("tmalign-many -target '")+os.name+"'";
+						}
+						ImGui::Separator();
+						if(ImGui::Selectable("Delete"))
+						{
+							result=std::string("delete-objects -names '")+os.name+"'";
+						}
+						ImGui::EndPopup();
 					}
 				}
 				ImGui::SameLine();
