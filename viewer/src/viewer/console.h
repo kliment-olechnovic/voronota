@@ -219,7 +219,7 @@ public:
 				ImGui::EndMenuBar();
 			}
 
-			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor"))
+			if(script_editor_state_.visible && ImGui::CollapsingHeader("Script editor##header_for_script_editor", ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				script_editor_state_.execute(result);
 			}

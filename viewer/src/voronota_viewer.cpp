@@ -84,9 +84,9 @@ EMSCRIPTEN_KEEPALIVE const char* voronota_viewer_get_last_script_output()
 	return voronota::viewer::Application::instance().get_last_script_output().c_str();
 }
 
-EMSCRIPTEN_KEEPALIVE void voronota_viewer_upload_file(const char* name, const char* data)
+EMSCRIPTEN_KEEPALIVE void voronota_viewer_upload_file(const char* name, const char* data, const char* parameters)
 {
-	voronota::viewer::Application::instance().upload_file(name, data);
+	voronota::viewer::Application::instance().upload_file(name, data, parameters);
 }
 
 EMSCRIPTEN_KEEPALIVE void voronota_viewer_resize_window(const int width, const int height)

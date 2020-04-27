@@ -122,9 +122,9 @@
 				return result;
 			}
 			
-			function voronota_viewer_upload_file(name, data)
+			function voronota_viewer_upload_file(name, data, parameters)
 			{
-				Module.ccall('voronota_viewer_upload_file', null, ['string','string'], [name,data]);
+				Module.ccall('voronota_viewer_upload_file', null, ['string','string','string'], [name,data,parameters]);
 			}
 			
 			function voronota_viewer_resize_window(width, height)
@@ -149,7 +149,7 @@
 			function setupFileReader(file)
 			{
 				var file_reader=new FileReader();
-				file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result);}
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(file.name, file_reader.result, '--include-heteroatoms');}
 				file_reader.readAsText(file);	
 			}
 			var file_input=document.getElementById('file_input');
@@ -165,10 +165,14 @@
 		<script type='text/javascript'>
 			function load_input_file_from_PDB()
 			{
-				var pdb_id=prompt('Enter PDB ID', '1T3Y');
+				var pdb_id=prompt('Enter PDB ID', '2ZSK');
+				if(pdb_id===null)
+				{
+					return;
+				}
 				var pdb_url='https://files.rcsb.org/download/'+pdb_id+'.pdb';
 				var file_reader=new FileReader();
-				file_reader.onloadend=function(e){voronota_viewer_upload_file(pdb_id+'.pdb', file_reader.result);}
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(pdb_id+'.pdb', file_reader.result, '--include-heteroatoms');}
 				var xhr=new XMLHttpRequest();
 				xhr.open('GET', pdb_url);
 				xhr.responseType='blob';

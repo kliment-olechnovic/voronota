@@ -52,7 +52,7 @@ public:
 		return script_execution_manager_.last_output_string();
 	}
 
-	void upload_file(const std::string& name, const std::string& data)
+	void upload_file(const std::string& name, const std::string& data, const std::string& parameters)
 	{
 		std::string object_name=name;
 		if(object_name.empty())
@@ -61,7 +61,7 @@ public:
 		}
 		std::string virtual_file_name=std::string("_virtual/")+object_name;
 		scripting::VirtualFileStorage::set_file(virtual_file_name, data);
-		enqueue_script(std::string("import --include-heteroatoms --file ")+virtual_file_name+" ; delete-virtual-files "+virtual_file_name);
+		enqueue_script(std::string("import --file ")+virtual_file_name+" "+parameters+" ; delete-virtual-files "+virtual_file_name);
 	}
 
 protected:
