@@ -27,9 +27,6 @@ background black
 #background white
 #background 0xCCCCCC
 
-### Resize display
-resize-window -width 700 -height 400
-
 ### List objects and selections
 list-objects
 list-selections-of-atoms
@@ -40,6 +37,14 @@ restrict-atoms [-t! het]
 construct-contacts
 voromqa-global
 spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0.25 -max-val 0.75
+
+### Calculate VoroMQA-dark global and local scores
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+voromqa-dark-global
+set-adjunct-of-atoms-by-residue-pooling -source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 4
+spectrum-atoms -adjunct vd1s -scheme rwb -min-val 0.25 -max-val 0.75
 
 ### Calculate VoroMQA surface frustration scores
 #restrict-atoms [c<A>]
