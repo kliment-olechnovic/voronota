@@ -164,6 +164,58 @@ public:
 					ImGui::Checkbox("Objects", &object_list_viewer_state_.visible);
 					ImGui::EndMenu();
 				}
+
+				if(ImGui::BeginMenu("Display"))
+				{
+					if(ImGui::BeginMenu("Set background"))
+					{
+						if(ImGui::MenuItem("white"))
+						{
+							result="background white";
+						}
+						if(ImGui::MenuItem("black"))
+						{
+							result="background black";
+						}
+						if(ImGui::MenuItem("gray"))
+						{
+							result="background 0xCCCCCC";
+						}
+						ImGui::EndMenu();
+					}
+
+					if(ImGui::BeginMenu("Set projection mode"))
+					{
+						if(ImGui::MenuItem("perspective"))
+						{
+							result="perspective";
+						}
+						if(ImGui::MenuItem("orthographic"))
+						{
+							result="ortho";
+						}
+						ImGui::EndMenu();
+					}
+
+					if(ImGui::BeginMenu("Set grid mode"))
+					{
+						if(ImGui::MenuItem("by object"))
+						{
+							result="grid-by-object";
+						}
+						if(ImGui::MenuItem("stereo"))
+						{
+							result="stereo";
+						}
+						if(ImGui::MenuItem("mono"))
+						{
+							result="mono";
+						}
+						ImGui::EndMenu();
+					}
+
+					ImGui::EndMenu();
+				}
 				ImGui::EndMenuBar();
 			}
 
