@@ -250,6 +250,7 @@ private:
 							ImGui::TextUnformatted(&(ot.content.c_str()[ot.content.size()-4000]), &(ot.content.c_str()[ot.content.size()-1]));
 						}
 						ImGui::PopStyleColor();
+						execute_copy_menu(i, ot.content);
 					}
 				}
 				ImGui::PopTextWrapPos();
@@ -287,6 +288,21 @@ private:
 		}
 
 	private:
+		static void execute_copy_menu(const std::size_t index, const std::string& content)
+		{
+			std::ostringstream menu_id_output;
+			menu_id_output << "Copy text##copy_output_" << index;
+			const std::string menu_id=menu_id_output.str();
+			if(ImGui::BeginPopupContextItem(menu_id.c_str(), 1))
+			{
+				if(ImGui::Selectable("Copy to clipboard"))
+				{
+					ImGui::SetClipboardText(content.c_str());
+				}
+				ImGui::EndPopup();
+			}
+		}
+
 		static int on_command_input_data_request(ImGuiTextEditCallbackData* data)
 		{
 			CommandLineInterfaceState* obj=static_cast<CommandLineInterfaceState*>(data->UserData);
