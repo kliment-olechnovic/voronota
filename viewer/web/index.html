@@ -27,7 +27,6 @@
 				position: absolute;
 				margin: 0;
 				padding: none;
-				width: 20em;
 				height: 30px;
 			}
 			
@@ -60,7 +59,8 @@
 			<p id="controls">
 				<input type="file" id="file_input" style="display: none;" multiple>
 				<button class="button" onclick="document.getElementById('file_input').click();">Import files</button>
-				<button class="button" onclick="load_input_file_from_PDB()">Fetch from PDB</button>
+				<button class="button" onclick="fetch_from_URL()">Fetch from URL</button>
+				<button class="button" onclick="fetch_from_PDB()">Fetch from PDB</button>
 			</p>
 		</div>
 		
@@ -163,24 +163,43 @@
 		</script>
 		
 		<script type='text/javascript'>
-			function load_input_file_from_PDB()
+			function load_input_file_by_url(file_url)
 			{
-				var pdb_id=prompt('Enter PDB ID', '2ZSK');
-				if(pdb_id===null)
+				if(file_url===null)
 				{
 					return;
 				}
-				var pdb_url='https://files.rcsb.org/download/'+pdb_id+'.pdb';
+				var file_base=file_url.split('/').pop();
 				var file_reader=new FileReader();
-				file_reader.onloadend=function(e){voronota_viewer_upload_file(pdb_id+'.pdb', file_reader.result, '--include-heteroatoms');}
+				file_reader.onloadend=function(e){voronota_viewer_upload_file(file_base, file_reader.result, '--include-heteroatoms');}
 				var xhr=new XMLHttpRequest();
-				xhr.open('GET', pdb_url);
+				xhr.open('GET', file_url);
 				xhr.responseType='blob';
 				xhr.onload=function()
 				{
 					file_reader.readAsText(xhr.response);
 				}
 				xhr.send();
+			}
+
+			function fetch_from_URL()
+			{
+				var file_url=prompt('Enter URL', 'http://predictioncenter.org/caspcommons/MODELS/C1906/C1906TS156_1');
+				if(file_url===null)
+				{
+					return;
+				}
+				load_input_file_by_url('https://cors-anywhere.herokuapp.com/'+file_url);
+			}
+
+			function fetch_from_PDB()
+			{
+				var pdb_id=prompt('Enter PDB ID', '2ZSK');
+				if(pdb_id===null)
+				{
+					return;
+				}
+				load_input_file_by_url('https://files.rcsb.org/download/'+pdb_id+'.pdb');
 			}
 		</script>
 
