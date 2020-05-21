@@ -71,6 +71,7 @@
 #include "operators/print_time.h"
 #include "operators/print_triangulation.h"
 #include "operators/print_virtual_file.h"
+#include "operators/rename_global_adjunct.h"
 #include "operators/rename_object.h"
 #include "operators/rename_selection_of_atoms.h"
 #include "operators/rename_selection_of_contacts.h"

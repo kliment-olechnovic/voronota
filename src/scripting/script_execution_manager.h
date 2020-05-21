@@ -118,6 +118,7 @@ public:
 		set_command_for_data_manager("print-global-adjuncts", operators::PrintGlobalAdjuncts(), true);
 		set_command_for_data_manager("print-sequence", operators::PrintSequence(), true);
 		set_command_for_data_manager("print-triangulation", operators::PrintTriangulation(), true);
+		set_command_for_data_manager("rename-global-adjunct", operators::RenameGlobalAdjunct(), true);
 		set_command_for_data_manager("rename-selection-of-atoms", operators::RenameSelectionOfAtoms(), true);
 		set_command_for_data_manager("rename-selection-of-contacts", operators::RenameSelectionOfContacts(), true);
 		set_command_for_data_manager("restrict-atoms-and-renumber-residues-by-adjunct", operators::RestrictAtomsAndRenumberResiduesByAdjunct(), true);
