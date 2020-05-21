@@ -41,7 +41,7 @@ cameo_qa_voromqa_dark=function(model_file, output_file)
 		throw ("Failed to compute global score");
 	}
 	
-	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 3");
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name vd1 -destination-name vd1s -pooling-mode min -smoothing-window 4");
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
 	
 	voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.1 0.5 0.2 3.0 -output-adjunct vd1sd");
