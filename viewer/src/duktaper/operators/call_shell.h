@@ -36,8 +36,9 @@ public:
 	};
 
 	std::string command_string;
-	std::string input_data_file;
-	std::string input_data_string;
+	std::string input_file;
+	std::string input_string;
+	std::string output_file;
 
 	CallShell()
 	{
@@ -46,15 +47,17 @@ public:
 	void initialize(scripting::CommandInput& input)
 	{
 		command_string=input.get_value_or_first_unused_unnamed_value("command-string");
-		input_data_file=input.get_value_or_default<std::string>("input-data-file", "");
-		input_data_string=input.get_value_or_default<std::string>("input-data-string", "");
+		input_file=input.get_value_or_default<std::string>("input-file", "");
+		input_string=input.get_value_or_default<std::string>("input-string", "");
+		output_file=input.get_value_or_default<std::string>("output-file", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(scripting::CDOD("command-string", scripting::CDOD::DATATYPE_STRING, "command string"));
-		doc.set_option_decription(scripting::CDOD("input-data-file", scripting::CDOD::DATATYPE_STRING, "path to input data file", ""));
-		doc.set_option_decription(scripting::CDOD("input-data-string", scripting::CDOD::DATATYPE_STRING, "input data string", ""));
+		doc.set_option_decription(scripting::CDOD("input-file", scripting::CDOD::DATATYPE_STRING, "path to input data file", ""));
+		doc.set_option_decription(scripting::CDOD("input-string", scripting::CDOD::DATATYPE_STRING, "input data string", ""));
+		doc.set_option_decription(scripting::CDOD("output-file", scripting::CDOD::DATATYPE_STRING, "path to output data file", ""));
 	}
 
 	Result run(void*) const
@@ -64,31 +67,27 @@ public:
 			throw std::runtime_error(std::string("Mo command string provided."));
 		}
 
-		if(!input_data_file.empty() && !input_data_string.empty())
+		if(!input_file.empty() && !input_string.empty())
 		{
 			throw std::runtime_error(std::string("More than one input data source provided."));
 		}
 
 		std::string input_data;
 
-		if(!input_data_file.empty())
+		if(!input_file.empty())
 		{
-			scripting::InputSelector finput_selector(input_data_file);
+			scripting::InputSelector finput_selector(input_file);
 			std::istream& finput=finput_selector.stream();
-
-			if(!finput.good())
-			{
-				throw std::runtime_error(std::string("Failed to read file '")+input_data_file+"'.");
-			}
+			scripting::assert_io_stream(input_file, finput);
 
 			std::istreambuf_iterator<char> eos;
 			std::string data(std::istreambuf_iterator<char>(finput), eos);
 
 			input_data.swap(data);
 		}
-		else if(!input_data_string.empty())
+		else if(!input_string.empty())
 		{
-			input_data=input_data_string;
+			input_data=input_string;
 		}
 
 		const std::string command=std::string("#!/bin/bash\n")+command_string;
@@ -124,6 +123,16 @@ public:
 		else
 		{
 			result.exit_status=0;
+		}
+
+		if(!output_file.empty())
+		{
+			scripting::OutputSelector output_selector(output_file);
+			std::ostream& foutput=output_selector.stream();
+			scripting::assert_io_stream(output_file, foutput);
+
+			foutput << result.stdout;
+			result.stdout.clear();
 		}
 
 		return result;
