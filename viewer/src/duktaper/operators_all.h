@@ -7,5 +7,6 @@
 #include "operators/voromqa_dark_split.h"
 #include "operators/tmalign.h"
 #include "operators/tmalign_many.h"
+#include "operators/checksum.h"
 
 #endif /* DUKTAPER_OPERATORS_ALL_H_ */
