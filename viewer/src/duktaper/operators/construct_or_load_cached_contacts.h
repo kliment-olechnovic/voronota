@@ -5,8 +5,7 @@
 
 #include "../stocked_data_resources.h"
 
-#include "checksum.h"
-#include "call_shell.h"
+#include "../cache_file.h"
 
 namespace voronota
 {
@@ -23,14 +22,12 @@ public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		scripting::SummaryOfContacts contacts_summary;
-		std::string created_cache_file;
-		std::string loaded_cache_file;
+		std::string cache_file_path;
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			scripting::VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
-			heterostorage.variant_object.value("created_cache_file")=created_cache_file;
-			heterostorage.variant_object.value("used_cache_file")=loaded_cache_file;
+			heterostorage.variant_object.value("cache_file_path")=cache_file_path;
 		}
 	};
 
@@ -62,72 +59,42 @@ public:
 
 		data_manager.assert_atoms_availability();
 
-		std::string checksum;
+		CacheFile cache_file;
 
 		{
-			std::ostringstream summary_output;
-
+			std::ostringstream data_for_checksum;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
 			{
 				const scripting::Atom& a=data_manager.atoms()[i];
-				summary_output << a.crad << " " << a.value.x << " " << a.value.y << " " << a.value.z << " " << a.value.r << "\n";
+				data_for_checksum << a.crad << " " << a.value.x << " " << a.value.y << " " << a.value.z << " " << a.value.r << "\n";
 			}
-
-			summary_output << "construct_contacts_parameters";
-			summary_output << "_" << construct_contacts_operator.parameters_to_construct_contacts.probe;
-			summary_output << "_" << construct_contacts_operator.parameters_to_construct_contacts.step;
-			summary_output << "_" << construct_contacts_operator.parameters_to_construct_contacts.projections;
-			summary_output << "_" << construct_contacts_operator.parameters_to_construct_contacts.sih_depth;
-			summary_output << "_" << construct_contacts_operator.parameters_to_enhance_contacts.tag_centrality;
-			summary_output << "_" << construct_contacts_operator.parameters_to_enhance_contacts.tag_peripherial;
-			summary_output << "_" << construct_contacts_operator.parameters_to_enhance_contacts.adjunct_solvent_direction;
-
-			scripting::VirtualFileStorage::TemporaryFile tmp_file_for_checksum;
-			scripting::VirtualFileStorage::set_file(tmp_file_for_checksum.filename(), summary_output.str());
-
-			std::ostringstream args;
-			args << " -data-file " << tmp_file_for_checksum.filename();
-			checksum=Checksum().init(args.str()).run(0).checksum;
-		}
-
-		if(checksum.empty())
-		{
-			throw std::runtime_error(std::string("Failed to compute checksum."));
-		}
-
-		const std::string cache_file=cache_dir+"/"+checksum+".pac";
-
-		bool cache_file_available=false;
-
-		{
-			std::ostringstream args;
-			args << " -command-string \"test \\-s '" << cache_file << "'\"";
-			cache_file_available=CallShell().init(args.str()).run(0).exit_status==0;
+			data_for_checksum << "construct_contacts_parameters";
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.probe;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.step;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.projections;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.sih_depth;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.tag_centrality;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.tag_peripherial;
+			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.adjunct_solvent_direction;
+			cache_file=CacheFile(cache_dir, data_for_checksum.str(), ".pac");
 		}
 
 		Result result;
 
-		if(!cache_file_available || construct_contacts_operator.force)
+		result.cache_file_path=cache_file.file_path();
+
+		if(!cache_file.file_available() || construct_contacts_operator.force)
 		{
 			construct_contacts_operator.run(data_manager);
-			{
-				std::ostringstream args;
-				args << " -command-string \"mkdir \\-p '" << cache_dir << "'\"";
-				CallShell().init(args.str()).run(0);
-			}
-			{
-				std::ostringstream args;
-				args << " -file " << cache_file;
-				scripting::operators::ExportAtomsAndContacts().init(args.str()).run(data_manager);
-			}
-			result.created_cache_file=cache_file;
+			std::ostringstream args;
+			args << " -file '" << cache_file.file_path() << "'";
+			scripting::operators::ExportAtomsAndContacts().init(args.str()).run(data_manager);
 		}
 		else
 		{
 			std::ostringstream args;
-			args << " -file " << cache_file;
+			args << " -file '" << cache_file.file_path() << "'";
 			scripting::operators::Import().init(args.str()).run(data_manager);
-			result.loaded_cache_file=cache_file;
 		}
 
 		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
