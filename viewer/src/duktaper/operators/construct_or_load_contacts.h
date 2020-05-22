@@ -1,5 +1,5 @@
-#ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_
-#define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_
+#ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
+#define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
 
 #include "../../../../src/scripting/operators_all.h"
 
@@ -16,7 +16,7 @@ namespace duktaper
 namespace operators
 {
 
-class ConstructOrLoadCachedContacts : public scripting::operators::OperatorBase<ConstructOrLoadCachedContacts>
+class ConstructOrLoadContacts : public scripting::operators::OperatorBase<ConstructOrLoadContacts>
 {
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
@@ -34,33 +34,29 @@ public:
 	scripting::operators::ConstructContacts construct_contacts_operator;
 	std::string cache_dir;
 
-	ConstructOrLoadCachedContacts()
+	ConstructOrLoadContacts()
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		construct_contacts_operator.initialize(input);
-		cache_dir=input.get_value<std::string>("cache-dir");
+		cache_dir=input.get_value_or_default<std::string>("cache-dir", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		construct_contacts_operator.document(doc);
-		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory"));
+		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
 	{
-		if(cache_dir.empty())
-		{
-			throw std::runtime_error(std::string("No cache directory provided."));
-		}
-
 		data_manager.assert_atoms_availability();
 
 		CacheFile cache_file;
 
+		if(!cache_dir.empty())
 		{
 			std::ostringstream data_for_checksum;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
@@ -79,24 +75,25 @@ public:
 			cache_file=CacheFile(cache_dir, data_for_checksum.str(), ".pac");
 		}
 
-		Result result;
-
-		result.cache_file_path=cache_file.file_path();
-
-		if(!cache_file.file_available() || construct_contacts_operator.force)
-		{
-			construct_contacts_operator.run(data_manager);
-			std::ostringstream args;
-			args << " -file '" << cache_file.file_path() << "'";
-			scripting::operators::ExportAtomsAndContacts().init(args.str()).run(data_manager);
-		}
-		else
+		if(cache_file.file_available() && !construct_contacts_operator.force)
 		{
 			std::ostringstream args;
 			args << " -file '" << cache_file.file_path() << "'";
 			scripting::operators::Import().init(args.str()).run(data_manager);
 		}
+		else
+		{
+			construct_contacts_operator.run(data_manager);
+			if(!cache_file.file_path().empty())
+			{
+				std::ostringstream args;
+				args << " -file '" << cache_file.file_path() << "'";
+				scripting::operators::ExportAtomsAndContacts().init(args.str()).run(data_manager);
+			}
+		}
 
+		Result result;
+		result.cache_file_path=cache_file.file_path();
 		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
 
 		return result;
@@ -109,4 +106,4 @@ public:
 
 }
 
-#endif /* DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_ */
+#endif /* DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_ */
