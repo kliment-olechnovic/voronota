@@ -1,9 +1,11 @@
-#ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
-#define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
+#ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_QUALITY_SCORES_H_
+#define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_QUALITY_SCORES_H_
 
 #include "../../../../src/scripting/operators_all.h"
 
 #include "../cache_file.h"
+
+#include "voromqa_dark_global.h"
 
 namespace voronota
 {
@@ -14,37 +16,32 @@ namespace duktaper
 namespace operators
 {
 
-class ConstructOrLoadContacts : public scripting::operators::OperatorBase<ConstructOrLoadContacts>
+class ConstructOrLoadQualityScores : public scripting::operators::OperatorBase<ConstructOrLoadQualityScores>
 {
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
-		scripting::SummaryOfContacts contacts_summary;
 		std::string cache_file_path;
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			scripting::VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			heterostorage.variant_object.value("cache_file_path")=cache_file_path;
 		}
 	};
 
-	scripting::operators::ConstructContacts construct_contacts_operator;
 	std::string cache_dir;
 
-	ConstructOrLoadContacts()
+	ConstructOrLoadQualityScores()
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
-		construct_contacts_operator.initialize(input);
 		cache_dir=input.get_value_or_default<std::string>("cache-dir", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		construct_contacts_operator.document(doc);
 		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory", ""));
 	}
 
@@ -62,18 +59,11 @@ public:
 				const scripting::Atom& a=data_manager.atoms()[i];
 				data_for_checksum << a.crad << " " << a.value.x << " " << a.value.y << " " << a.value.z << " " << a.value.r << "\n";
 			}
-			data_for_checksum << "construct_contacts_parameters";
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.probe;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.step;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.projections;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_construct_contacts.sih_depth;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.tag_centrality;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.tag_peripherial;
-			data_for_checksum << " " << construct_contacts_operator.parameters_to_enhance_contacts.adjunct_solvent_direction;
+			data_for_checksum << "quality_scores";
 			cache_file=CacheFile(cache_dir, data_for_checksum.str(), ".pac");
 		}
 
-		if(cache_file.file_available() && !construct_contacts_operator.force)
+		if(cache_file.file_available())
 		{
 			std::ostringstream args;
 			args << " -file '" << cache_file.file_path() << "'";
@@ -81,7 +71,11 @@ public:
 		}
 		else
 		{
-			construct_contacts_operator.run(data_manager);
+			{
+				scripting::operators::ConstructContacts().init(std::string()).run(data_manager);
+				scripting::operators::VoroMQAGlobal().init(std::string()).run(data_manager);
+				operators::VoroMQADarkGlobal().init(std::string()).run(data_manager);
+			}
 			if(!cache_file.file_path().empty())
 			{
 				std::ostringstream args;
@@ -92,7 +86,6 @@ public:
 
 		Result result;
 		result.cache_file_path=cache_file.file_path();
-		result.contacts_summary=scripting::SummaryOfContacts(data_manager.contacts());
 
 		return result;
 	}
@@ -104,4 +97,4 @@ public:
 
 }
 
-#endif /* DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_ */
+#endif /* DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_QUALITY_SCORES_H_ */
