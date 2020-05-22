@@ -1,5 +1,5 @@
-#ifndef DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_WITH_CACHE_H_
-#define DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_WITH_CACHE_H_
+#ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_
+#define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_
 
 #include "../../../../src/scripting/operators_all.h"
 
@@ -17,7 +17,7 @@ namespace duktaper
 namespace operators
 {
 
-class ConstructContactsWithCache : public scripting::operators::OperatorBase<ConstructContactsWithCache>
+class ConstructOrLoadCachedContacts : public scripting::operators::OperatorBase<ConstructOrLoadCachedContacts>
 {
 public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
@@ -37,29 +37,27 @@ public:
 	scripting::operators::ConstructContacts construct_contacts_operator;
 	std::string cache_dir;
 
-	ConstructContactsWithCache()
+	ConstructOrLoadCachedContacts()
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		construct_contacts_operator.initialize(input);
-		cache_dir=input.get_value_or_default<std::string>("cache-dir", "");
+		cache_dir=input.get_value<std::string>("cache-dir");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		construct_contacts_operator.document(doc);
-		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory", ""));
+		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const
 	{
 		if(cache_dir.empty())
 		{
-			Result result;
-			result.contacts_summary=construct_contacts_operator.run(data_manager).contacts_summary;
-			return result;
+			throw std::runtime_error(std::string("No cache directory provided."));
 		}
 
 		data_manager.assert_atoms_availability();
@@ -144,4 +142,4 @@ public:
 
 }
 
-#endif /* DUKTAPER_OPERATORS_CONSTRUCT_CONTACTS_WITH_CACHE_H_ */
+#endif /* DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CACHED_CONTACTS_H_ */

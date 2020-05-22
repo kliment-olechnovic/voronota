@@ -3,7 +3,7 @@
 
 #include "operators/call_shell.h"
 #include "operators/checksum.h"
-#include "operators/construct_contacts_with_cache.h"
+#include "operators/construct_or_load_cached_contacts.h"
 #include "operators/nnport_predict.h"
 #include "operators/setup_defaults.h"
 #include "operators/tmalign_many.h"
