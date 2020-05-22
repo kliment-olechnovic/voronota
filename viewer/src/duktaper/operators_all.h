@@ -9,6 +9,7 @@
 #include "operators/tmalign_many.h"
 #include "operators/tmalign.h"
 #include "operators/voromqa_dark_global.h"
+#include "operators/voromqa_dark_local.h"
 #include "operators/voromqa_dark_split.h"
 
 #endif /* DUKTAPER_OPERATORS_ALL_H_ */
