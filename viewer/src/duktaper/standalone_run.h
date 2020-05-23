@@ -51,6 +51,10 @@ public:
 				DuktapeManager::eval(read_script(std::cin));
 			}
 		}
+		else if(file_name.rfind(inline_script_prefix())==0)
+		{
+			DuktapeManager::eval(file_name.substr(inline_script_prefix().size())+"\n");
+		}
 		else
 		{
 			std::ifstream input(file_name.c_str(), std::ios::in);
@@ -102,13 +106,39 @@ private:
 		};
 	};
 
+	static const std::string& inline_script_prefix()
+	{
+		static const std::string prefix="js:";
+		return prefix;
+	}
+
 	static std::string generate_command_args_init_script(const std::vector<std::string>& command_args)
 	{
 		std::ostringstream output;
 		output << "CommandArgs=[];\n";
 		for(std::size_t i=0;i<command_args.size();i++)
 		{
-			output << "CommandArgs.push('" << command_args[i] << "');\n";
+			if(i==0 && command_args[i].rfind(inline_script_prefix())==0)
+			{
+				output << "CommandArgs.push('inline_script');\n";
+			}
+			else if(command_args[i].find('\'')!=std::string::npos)
+			{
+				std::string fixed_str;
+				for(std::size_t j=0;j<command_args[i].size();j++)
+				{
+					if(command_args[i][j]=='\'')
+					{
+						fixed_str.push_back('\\');
+					}
+					fixed_str.push_back(command_args[i][j]);
+				}
+				output << "CommandArgs.push('" << fixed_str << "');\n";
+			}
+			else
+			{
+				output << "CommandArgs.push('" << command_args[i] << "');\n";
+			}
 		}
 		return output.str();
 	}
