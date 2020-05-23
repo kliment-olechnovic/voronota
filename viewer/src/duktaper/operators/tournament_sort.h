@@ -33,6 +33,7 @@ public:
 	std::vector<std::string> columns;
 	std::vector<double> multipliers;
 	std::vector<double> tolerances;
+	std::string add_win_score_column;
 
 	void initialize(scripting::CommandInput& input)
 	{
@@ -41,6 +42,7 @@ public:
 		columns=input.get_value_vector<std::string>("columns");
 		multipliers=input.get_value_vector_or_default<double>("multipliers", std::vector<double>());
 		tolerances=input.get_value_vector_or_default<double>("tolerances", std::vector<double>());
+		add_win_score_column=input.get_value_or_default<std::string>("add-win-score-column", "");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -50,6 +52,7 @@ public:
 		doc.set_option_decription(scripting::CDOD("columns", scripting::CDOD::DATATYPE_STRING_ARRAY, "column names"));
 		doc.set_option_decription(scripting::CDOD("multipliers", scripting::CDOD::DATATYPE_FLOAT_ARRAY, "multipliers for column values", ""));
 		doc.set_option_decription(scripting::CDOD("tolerances", scripting::CDOD::DATATYPE_FLOAT_ARRAY, "tolerances for column values", ""));
+		doc.set_option_decription(scripting::CDOD("add-win-score-column", scripting::CDOD::DATATYPE_STRING, "new column name for win scores", ""));
 	}
 
 	Result run(void*) const
@@ -230,10 +233,22 @@ public:
 		std::sort(sortable_ids.begin(), sortable_ids.end());
 		std::reverse(sortable_ids.begin(), sortable_ids.end());
 
-		foutput << table_header_line << "\n";
-		for(std::size_t a=0;a<N;a++)
+		if(add_win_score_column.empty())
 		{
-			foutput << table_row_lines[sortable_ids[a].second] << "\n";
+			foutput << table_header_line << "\n";
+			for(std::size_t a=0;a<N;a++)
+			{
+				foutput << table_row_lines[sortable_ids[a].second] << "\n";
+			}
+		}
+		else
+		{
+			foutput << table_header_line << " " << add_win_score_column << "\n";
+			for(std::size_t a=0;a<N;a++)
+			{
+				foutput << table_row_lines[sortable_ids[a].second] << " ";
+				foutput << sortable_ids[a].first.first << "." << sortable_ids[a].first.second << "\n";
+			}
 		}
 
 		Result result;
