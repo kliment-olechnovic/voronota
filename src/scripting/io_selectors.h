@@ -1,6 +1,8 @@
 #ifndef SCRIPTING_IO_SELECTORS_H_
 #define SCRIPTING_IO_SELECTORS_H_
 
+#include <iostream>
+
 #include "virtual_file_storage.h"
 
 namespace voronota
@@ -15,12 +17,17 @@ public:
 	enum LocationType
 	{
 		VIRTUAL_FILE_STORAGE,
-		DISK
+		DISK,
+		STDIN
 	};
 
 	explicit InputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE)
 	{
-		if(VirtualFileStorage::file_exists(filename))
+		if(filename=="_stdin")
+		{
+			location_type_=STDIN;
+		}
+		else if(VirtualFileStorage::file_exists(filename))
 		{
 			memory_stream_.str(VirtualFileStorage::get_file(filename));
 		}
@@ -42,6 +49,10 @@ public:
 		{
 			return disk_stream_;
 		}
+		if(location_type_==STDIN)
+		{
+			return std::cin;
+		}
 		return memory_stream_;
 	}
 
@@ -58,7 +69,8 @@ public:
 	{
 		VIRTUAL_FILE_STORAGE,
 		DISK,
-		TEMPORARY_MEMORY
+		TEMPORARY_MEMORY,
+		STDOUT
 	};
 
 	explicit OutputSelector(const std::string& filename) : location_type_(VIRTUAL_FILE_STORAGE), filename_(filename)
@@ -66,6 +78,10 @@ public:
 		if(filename=="_dump")
 		{
 			location_type_=TEMPORARY_MEMORY;
+		}
+		else if(filename=="_stdout")
+		{
+			location_type_=STDOUT;
 		}
 		else if(!VirtualFileStorage::filename_is_valid(filename))
 		{
@@ -104,6 +120,10 @@ public:
 		if(location_type_==DISK)
 		{
 			return disk_stream_;
+		}
+		if(location_type_==STDOUT)
+		{
+			return std::cout;
 		}
 		if(location_type_==VIRTUAL_FILE_STORAGE)
 		{
