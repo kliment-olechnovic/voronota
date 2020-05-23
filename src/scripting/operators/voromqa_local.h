@@ -120,6 +120,7 @@ public:
 			if(!global_adj_prefix.empty())
 			{
 				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_count"]=atom_ids_with_adjuncts.size();
+				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_count"]=data_manager.count_residues_by_atom_ids(atom_ids_with_adjuncts);
 				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_quality_score"]=quality_score;
 			}
 

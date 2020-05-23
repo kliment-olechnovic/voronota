@@ -94,6 +94,7 @@ public:
 
 		if(!global_adj_prefix.empty())
 		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_count"]=residue_scores.size();
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=result.global_score;
 		}
 

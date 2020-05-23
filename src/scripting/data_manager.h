@@ -730,6 +730,16 @@ public:
 		return false;
 	}
 
+	std::size_t count_residues_by_atom_ids(const std::set<std::size_t>& atom_ids) const
+	{
+		std::set<std::size_t> residue_ids;
+		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+		{
+			residue_ids.insert(primary_structure_info().map_of_atoms_to_residues.at(*it));
+		}
+		return residue_ids.size();
+	}
+
 	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
 	{
 		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
