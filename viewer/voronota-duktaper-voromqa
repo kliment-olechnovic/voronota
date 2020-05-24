@@ -2,7 +2,7 @@
 
 function print_help_and_exit
 {
-cat >&2 << EOF
+cat >&2 << 'EOF'
 
 'voronota-duktaper-voromqa' script provides an interface to VoroMQA dark and light methods.
 
@@ -22,6 +22,26 @@ Basic options:
 
 Standard output:
     space-separated table of scores
+    
+Examples:
+
+    voronota-duktaper-voromqa --input model.pdb
+    
+    voronota-duktaper-voromqa --cache-dir ./cache --input model.pdb
+    
+    ls *.pdb | voronota-duktaper-voromqa --cache-dir ./cache --input _list
+    
+    ls *.pdb | voronota-duktaper-voromqa --cache-dir ./cache --input _list | column -t
+    
+    ls *.pdb | voronota-duktaper-voromqa --cache-dir ./cache --input _list \
+      --processors 8 \
+      --inter-chain \
+      --tour-sort _hetero
+      
+    ls *.pdb | voronota-duktaper-voromqa --cache-dir ./cache --input _list \
+      --processors 8 \
+      --select-contacts '[-a1 [-chain A -rnum 1:500] -a2 [-chain B -rnum 1:500]]' \
+      --tour-sort '-columns full_dark_score sel_energy -multipliers 1 -1 -tolerances 0.02 0.0'
 
 EOF
 exit 1
@@ -46,7 +66,7 @@ OUTPUT_TABLE_FILE="_stdout"
 OUTPUT_DARK_SCORES=""
 OUTPUT_LIGHT_SCORES=""
 CACHE_DIR=""
-TOUR_SORT_MODE="mono"
+TOUR_SORT_MODE="_mono"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -262,15 +282,15 @@ voronota_assert_full_success("Failed to compute clash score");
 
 voronota_rename_global_adjunct("voromqa_dark_full_quality_score", "full_dark_score");
 voronota_rename_global_adjunct("voromqa_light_full_atoms_quality_score", "full_light_score");
-voronota_rename_global_adjunct("voromqa_dark_full_residues_count", "full_residues_count");
-voronota_rename_global_adjunct("voromqa_light_full_atoms_count", "full_atoms_count");
+voronota_rename_global_adjunct("voromqa_dark_full_residues_count", "full_residues");
+voronota_rename_global_adjunct("voromqa_light_full_atoms_count", "full_atoms");
 voronota_rename_global_adjunct("voromqa_dark_selected_quality_score", "sel_dark_score");
 voronota_rename_global_adjunct("voromqa_light_selected_atoms_quality_score", "sel_light_score");
 voronota_rename_global_adjunct("voromqa_light_selected_contacts_pseudo_energy", "sel_energy");
 voronota_rename_global_adjunct("voromqa_light_selected_contacts_pseudo_energy_norm", "sel_energy_norm");
-voronota_rename_global_adjunct("voromqa_light_selected_residues_count", "sel_residues_count");
-voronota_rename_global_adjunct("voromqa_light_selected_atoms_count", "sel_atoms_count");
-voronota_rename_global_adjunct("voromqa_light_selected_contacts_count", "sel_contacts_count");
+voronota_rename_global_adjunct("voromqa_light_selected_residues_count", "sel_residues");
+voronota_rename_global_adjunct("voromqa_light_selected_atoms_count", "sel_atoms");
+voronota_rename_global_adjunct("voromqa_light_selected_contacts_count", "sel_contacts");
 voronota_rename_global_adjunct("voromqa_light_selected_contacts_area", "sel_contacts_area");
 voronota_rename_global_adjunct("clash_score", "sel_clash_score");
 
@@ -280,9 +300,9 @@ if(params.output_table_file!=="_stdout")
 }
 
 voronota_export_global_adjuncts("-file", params.output_table_file, "-adjuncts",
-  ["full_dark_score", "full_light_score", "full_residues_count", "full_atoms_count",
-   "sel_dark_score", "sel_light_score", "sel_energy", "sel_energy_norm", "sel_residues_count", "sel_atoms_count",
-   "sel_contacts_count", "sel_contacts_area", "sel_clash_score"]);
+  ["full_dark_score", "full_light_score", "full_residues", "full_atoms",
+   "sel_dark_score", "sel_light_score", "sel_energy", "sel_energy_norm", "sel_residues", "sel_atoms",
+   "sel_contacts", "sel_contacts_area", "sel_clash_score"]);
 voronota_assert_full_success("Failed to export scores");
 
 if(params.output_dark_scores!=="")
