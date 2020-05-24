@@ -15,6 +15,7 @@ Basic options:
     --output-dark-scores           string      output PDB file with dark scores as B-factors
     --output-light-scores          string      output PDB file with light scores as B-factors
     --cache-dir                    string      path to cache directory
+    --tour-sort                    string      tournament sorting mode ('_none', '_mono', '_homo', '_hetero' or custom), default is '_mono'
     --processors                   number      maximum number of processors to use, default is 1
     --as-assembly                              flag to treat input file as biological assembly
     --help | -h                                flag to display help message and exit
@@ -45,6 +46,7 @@ OUTPUT_TABLE_FILE="_stdout"
 OUTPUT_DARK_SCORES=""
 OUTPUT_LIGHT_SCORES=""
 CACHE_DIR=""
+TOUR_SORT_MODE="mono"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -84,6 +86,10 @@ do
 		;;
 	--cache-dir)
 		CACHE_DIR="$OPTARG"
+		shift
+		;;
+	--tour-sort)
+		TOUR_SORT_MODE="$OPTARG"
 		shift
 		;;
 	--processors)
@@ -138,7 +144,28 @@ then
 	| awk '{if(NR==1 || NR%2==0) print $0}' \
 	> "$TMPLDIR/table"
 	
-	cat "$TMPLDIR/table"
+	if [ "$TOUR_SORT_MODE" != "_none" ]
+	then
+		if [ "$TOUR_SORT_MODE" == "_mono" ]
+		then
+			TOUR_SORT_MODE="-columns full_dark_score"
+		fi
+		
+		if [ "$TOUR_SORT_MODE" == "_homo" ]
+		then
+			TOUR_SORT_MODE="-columns full_dark_score sel_energy -multipliers 1 -1 -tolerances 0.01 0.0"
+		fi
+		
+		if [ "$TOUR_SORT_MODE" == "_hetero" ]
+		then
+			TOUR_SORT_MODE="-columns full_dark_score sel_energy -multipliers 1 -1 -tolerances 0.02 0.0"
+		fi
+		
+		cat "$TMPLDIR/table" \
+		| voronota-duktaper "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -add-win-score-column tour_score ${TOUR_SORT_MODE}');"
+	else
+		cat "$TMPLDIR/table"
+	fi
 	
 	exit 0
 fi
