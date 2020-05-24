@@ -6,19 +6,20 @@ cat >&2 << 'EOF'
 
 'voronota-duktaper-voromqa' script provides an interface to VoroMQA dark and light methods.
 
-Basic options:
-    --input | -i                   string      input file path or '_list' to read file paths from stdin
-    --restrict-input               string      query to restrict input atoms, default is '[]'
-    --select-contacts              string      query to select contacts, default is '[-min-seq-sep 2]'
-    --inter-chain                  string      set query to select contacts to '[-inter-chain]'
-    --output-table-file            string      output table file path, default is '_stdout' to print to stdout
-    --output-dark-scores           string      output PDB file with dark scores as B-factors
-    --output-light-scores          string      output PDB file with light scores as B-factors
-    --cache-dir                    string      path to cache directory
-    --tour-sort                    string      tournament sorting mode ('_none', '_mono', '_homo', '_hetero' or custom), default is '_mono'
-    --processors                   number      maximum number of processors to use, default is 1
-    --as-assembly                              flag to treat input file as biological assembly
-    --help | -h                                flag to display help message and exit
+Options:
+    --input | -i              string  *  input file path or '_list' to read file paths from stdin
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --select-contacts         string     query to select contacts, default is '[-min-seq-sep 2]'
+    --inter-chain             string     set query to select contacts to '[-inter-chain]'
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --output-dark-scores      string     output PDB file with dark scores as B-factors
+    --output-light-scores     string     output PDB file with light scores as B-factors
+    --cache-dir               string     path to cache directory
+    --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
+    --smoothing-window        number     residue scores smoothing window size, default is 0
+    --processors              number     maximum number of processors to use, default is 1
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
 
 Standard output:
     space-separated table of scores
@@ -67,6 +68,7 @@ OUTPUT_DARK_SCORES=""
 OUTPUT_LIGHT_SCORES=""
 CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
+SMOOTHING_WINDOW="0"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -110,6 +112,10 @@ do
 		;;
 	--tour-sort)
 		TOUR_SORT_MODE="$OPTARG"
+		shift
+		;;
+	--smoothing-window)
+		SMOOTHING_WINDOW="$OPTARG"
 		shift
 		;;
 	--processors)
@@ -203,6 +209,7 @@ params.input_as_assembly='$AS_ASSEMBLY';
 params.output_table_file='$OUTPUT_TABLE_FILE';
 params.output_dark_scores='$OUTPUT_DARK_SCORES';
 params.output_light_scores='$OUTPUT_LIGHT_SCORES';
+params.smoothing_window='$SMOOTHING_WINDOW';
 
 EOF
 
@@ -235,7 +242,7 @@ if(params.input_as_assembly===undefined || params.input_as_assembly==="")
 
 if(params.smoothing_window===undefined || params.smoothing_window==="")
 {
-	params.smoothing_window=4;
+	params.smoothing_window=0;
 }
 
 if(params.output_table_file===undefined || params.output_table_file==="")
