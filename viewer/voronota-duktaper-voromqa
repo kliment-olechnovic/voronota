@@ -1,0 +1,295 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << EOF
+
+'voronota-duktaper-voromqa' script provides an interface to VoroMQA dark and light methods.
+
+Basic options:
+    --input | -i                   string      input file path or '_list' to read file paths from stdin
+    --restrict-input               string      query to restrict input atoms, default is '[]'
+    --select-contacts              string      query to select contacts, default is '[-min-seq-sep 2]'
+    --inter-chain                  string      set query to select contacts to '[-inter-chain]'
+    --output-table-file            string      output table file path, default is '_stdout' to print to stdout
+    --output-dark-scores           string      output PDB file with dark scores as B-factors
+    --output-light-scores          string      output PDB file with light scores as B-factors
+    --cache-dir                    string      path to cache directory
+    --processors                   number      maximum number of processors to use, default is 1
+    --as-assembly                              flag to treat input file as biological assembly
+    --help | -h                                flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-duktaper &> /dev/null || { echo >&2 "Error: 'voronota-duktaper' executable not in binaries path"; exit 1; }
+
+INFILE=""
+RESTRICT_INPUT="[]"
+SELECT_CONTACTS="[-min-seq-sep 2]"
+OUTPUT_TABLE_FILE="_stdout"
+OUTPUT_DARK_SCORES=""
+OUTPUT_LIGHT_SCORES=""
+CACHE_DIR=""
+MAX_PROCESSORS="1"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--select-contacts)
+		SELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--inter-chain)
+		SELECT_CONTACTS="[-inter-chain]"
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--output-dark-scores)
+		OUTPUT_DARK_SCORES="$OPTARG"
+		shift
+		;;
+	--output-light-scores)
+		OUTPUT_LIGHT_SCORES="$OPTARG"
+		shift
+		;;
+	--cache-dir)
+		CACHE_DIR="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY=true
+		;;
+	-h|--help)
+		HELP_MODE=true
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ "$INFILE" != "_list" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ] && [ -t 0 ]
+then
+	echo >&2 "Error: no stdin data"
+	exit 1
+fi
+
+if [ "$INFILE" == "_list" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	cat \
+	| egrep . | sort | uniq \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	> "$TMPLDIR/table"
+	
+	cat "$TMPLDIR/table"
+	
+	exit 0
+fi
+
+{
+cat << EOF
+
+params={}
+
+params.input_file='$INFILE';
+params.cache_dir='$CACHE_DIR';
+params.restrict_input_atoms='$RESTRICT_INPUT';
+params.contacts_selection='$SELECT_CONTACTS';
+params.input_as_assembly='$AS_ASSEMBLY';
+params.output_table_file='$OUTPUT_TABLE_FILE';
+params.output_dark_scores='$OUTPUT_DARK_SCORES';
+params.output_light_scores='$OUTPUT_LIGHT_SCORES';
+
+EOF
+
+cat << 'EOF'
+
+if(params.input_file===undefined || params.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.cache_dir===undefined)
+{
+	params.cache_dir='';
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.contacts_selection===undefined || params.contacts_selection==="")
+{
+	params.contacts_selection='[-min-seq-sep 2]';
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.smoothing_window===undefined || params.smoothing_window==="")
+{
+	params.smoothing_window=4;
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+if(params.output_dark_scores===undefined)
+{
+	params.output_dark_scores="";
+}
+
+if(params.output_light_scores===undefined)
+{
+	params.output_light_scores="";
+}
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms");
+
+voronota_construct_or_load_quality_scores("-cache-dir", params.cache_dir);
+voronota_assert_full_success("Failed to compute or load quality scores");
+
+voronota_select_contacts("-use", params.contacts_selection, "-name", "relevant_contacts")
+voronota_assert_full_success("Failed to select requested contacts");
+
+voronota_voromqa_local("-global-adj-prefix", "voromqa_light_full");
+voronota_assert_full_success("Failed to compute quality scores");
+
+voronota_voromqa_local("-contacts", "[relevant_contacts]", "-global-adj-prefix", "voromqa_light_selected");
+voronota_assert_full_success("Failed to compute quality scores");
+
+voronota_voromqa_dark_local("-global-adj-prefix", "voromqa_dark_full");
+voronota_assert_full_success("Failed to compute quality scores");
+
+voronota_voromqa_dark_local("-atoms", "[-sel-of-contacts relevant_contacts]", "-global-adj-prefix", "voromqa_dark_selected");
+voronota_assert_full_success("Failed to compute quality scores");
+
+voronota_clash_score("-use", "[relevant_contacts]", "-global-adj-prefix", "clash");
+voronota_assert_full_success("Failed to compute clash score");
+
+voronota_rename_global_adjunct("voromqa_dark_full_quality_score", "full_dark_score");
+voronota_rename_global_adjunct("voromqa_light_full_atoms_quality_score", "full_light_score");
+voronota_rename_global_adjunct("voromqa_dark_full_residues_count", "full_residues_count");
+voronota_rename_global_adjunct("voromqa_light_full_atoms_count", "full_atoms_count");
+voronota_rename_global_adjunct("voromqa_dark_selected_quality_score", "sel_dark_score");
+voronota_rename_global_adjunct("voromqa_light_selected_atoms_quality_score", "sel_light_score");
+voronota_rename_global_adjunct("voromqa_light_selected_contacts_pseudo_energy", "sel_energy");
+voronota_rename_global_adjunct("voromqa_light_selected_contacts_pseudo_energy_norm", "sel_energy_norm");
+voronota_rename_global_adjunct("voromqa_light_selected_residues_count", "sel_residues_count");
+voronota_rename_global_adjunct("voromqa_light_selected_atoms_count", "sel_atoms_count");
+voronota_rename_global_adjunct("voromqa_light_selected_contacts_count", "sel_contacts_count");
+voronota_rename_global_adjunct("voromqa_light_selected_contacts_area", "sel_contacts_area");
+voronota_rename_global_adjunct("clash_score", "sel_clash_score");
+
+if(params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
+}
+
+voronota_export_global_adjuncts("-file", params.output_table_file, "-adjuncts",
+  ["full_dark_score", "full_light_score", "full_residues_count", "full_atoms_count",
+   "sel_dark_score", "sel_light_score", "sel_energy", "sel_energy_norm", "sel_residues_count", "sel_atoms_count",
+   "sel_contacts_count", "sel_contacts_area", "sel_clash_score"]);
+voronota_assert_full_success("Failed to export scores");
+
+if(params.output_dark_scores!=="")
+{
+	if(params.output_dark_scores!=="_stdout")
+	{
+		shell('mkdir -p "$(dirname '+params.output_dark_scores+')"');
+	}
+	
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "vd1", "-destination-name", "vd1s", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
+	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
+	
+	voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1s");
+	voronota_assert_full_success("Failed to export pdb file");
+}
+
+if(params.output_light_scores!=="")
+{
+	if(params.output_light_scores!=="_stdout")
+	{
+		shell('mkdir -p "$(dirname '+params.output_light_scores+')"');
+	}
+	
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "voromqa_score_r", "-destination-name", "voromqa_score_rs", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
+	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
+	
+	voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs");
+	voronota_assert_full_success("Failed to export pdb file");
+}
+EOF
+
+} \
+| voronota-duktaper
+
+
+
+
