@@ -12,7 +12,7 @@ if(params===undefined)
 	throw ("Failed to parse json input: "+params_str);
 }
 
-if(params.input_file===undefined)
+if(params.input_file===undefined || params.input_file==="")
 {
 	throw ("No input file");
 }
@@ -22,24 +22,39 @@ if(params.cache_dir===undefined)
 	params.cache_dir='';
 }
 
-if(params.restrict_input_atoms===undefined)
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
 {
 	params.restrict_input_atoms='[]';
 }
 
-if(params.contacts_selection===undefined)
+if(params.contacts_selection===undefined || params.contacts_selection==="")
 {
 	params.contacts_selection='[-min-seq-sep 2]';
 }
 
-if(params.input_as_assembly===undefined)
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
 {
 	params.input_as_assembly="false";
 }
 
-if(params.smoothing_window===undefined)
+if(params.smoothing_window===undefined || params.smoothing_window==="")
 {
 	params.smoothing_window=4;
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+if(params.output_dark_scores===undefined)
+{
+	params.output_dark_scores="";
+}
+
+if(params.output_light_scores===undefined)
+{
+	params.output_light_scores="";
 }
 
 voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
@@ -83,15 +98,23 @@ voronota_rename_global_adjunct("voromqa_light_selected_contacts_count", "sel_con
 voronota_rename_global_adjunct("voromqa_light_selected_contacts_area", "sel_contacts_area");
 voronota_rename_global_adjunct("clash_score", "sel_clash_score");
 
-voronota_export_global_adjuncts("-file", "_stdout", "-adjuncts",
+if(params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
+}
+
+voronota_export_global_adjuncts("-file", params.output_table_file, "-adjuncts",
   ["full_dark_score", "full_light_score", "full_residues_count", "full_atoms_count",
    "sel_dark_score", "sel_light_score", "sel_energy", "sel_energy_norm", "sel_residues_count", "sel_atoms_count",
    "sel_contacts_count", "sel_contacts_area", "sel_clash_score"]);
 voronota_assert_full_success("Failed to export scores");
 
-if(params.output_dark_scores!==undefined && params.output_dark_scores!=="")
+if(params.output_dark_scores!=="")
 {
-	shell('mkdir -p "$(dirname '+params.output_dark_scores+')"');
+	if(params.output_dark_scores!=="_stdout")
+	{
+		shell('mkdir -p "$(dirname '+params.output_dark_scores+')"');
+	}
 	
 	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "vd1", "-destination-name", "vd1s", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
@@ -100,9 +123,12 @@ if(params.output_dark_scores!==undefined && params.output_dark_scores!=="")
 	voronota_assert_full_success("Failed to export pdb file");
 }
 
-if(params.output_light_scores!==undefined && params.output_light_scores!=="")
+if(params.output_light_scores!=="")
 {
-	shell('mkdir -p "$(dirname '+params.output_light_scores+')"');
+	if(params.output_light_scores!=="_stdout")
+	{
+		shell('mkdir -p "$(dirname '+params.output_light_scores+')"');
+	}
 	
 	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "voromqa_score_r", "-destination-name", "voromqa_score_rs", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
