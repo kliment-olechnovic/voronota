@@ -29,10 +29,20 @@ if(params.restrict_input_atoms===undefined)
 
 if(params.contacts_selection===undefined)
 {
-	params.contacts_selection='[-min-seq-sep 1]';
+	params.contacts_selection='[-min-seq-sep 2]';
 }
 
-voronota_import("-file", params.input_file);
+if(params.input_as_assembly===undefined)
+{
+	params.input_as_assembly="false";
+}
+
+if(params.smoothing_window===undefined)
+{
+	params.smoothing_window=4;
+}
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
 voronota_assert_partial_success("Failed to import file");
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
@@ -79,4 +89,25 @@ voronota_export_global_adjuncts("-file", "_stdout", "-adjuncts",
    "sel_contacts_count", "sel_contacts_area", "sel_clash_score"]);
 voronota_assert_full_success("Failed to export scores");
 
+if(params.output_dark_scores!==undefined && params.output_dark_scores!=="")
+{
+	shell('mkdir -p "$(dirname '+params.output_dark_scores+')"');
+	
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "vd1", "-destination-name", "vd1s", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
+	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
+	
+	voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1s");
+	voronota_assert_full_success("Failed to export pdb file");
+}
+
+if(params.output_light_scores!==undefined && params.output_light_scores!=="")
+{
+	shell('mkdir -p "$(dirname '+params.output_light_scores+')"');
+	
+	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "voromqa_score_r", "-destination-name", "voromqa_score_rs", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
+	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
+	
+	voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs");
+	voronota_assert_full_success("Failed to export pdb file");
+}
 
