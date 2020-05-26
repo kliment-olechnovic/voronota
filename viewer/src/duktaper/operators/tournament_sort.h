@@ -209,24 +209,27 @@ public:
 				{
 					win_a=(win_a && ((column_values[i][a]+usable_tolerances[i])>column_values[i][b]));
 				}
+
 				bool win_b=true;
 				for(std::size_t i=0;i<column_values.size() && win_b;i++)
 				{
 					win_b=(win_b && ((column_values[i][b]+usable_tolerances[i])>column_values[i][a]));
 				}
-				if(win_a)
-				{
-					sortable_ids[a].first.first++;
-				}
-				if(win_b)
-				{
-					sortable_ids[b].first.first++;
-				}
+
 				if(win_a==win_b)
 				{
 					sortable_ids[a].first.second++;
 					sortable_ids[b].first.second++;
 				}
+				else if(win_a)
+				{
+					sortable_ids[a].first.first++;
+				}
+				else if(win_b)
+				{
+					sortable_ids[b].first.first++;
+				}
+
 			}
 		}
 
