@@ -56,11 +56,7 @@ public:
 		scripting::VirtualFileStorage::TemporaryFile tmp_profile;
 		scripting::VirtualFileStorage::TemporaryFile tmp_scores;
 
-		{
-			std::ostringstream args;
-			args << "-file " << tmp_profile.filename();
-			scripting::operators::GenerateResidueVoroMQAEnergyProfile().init(args.str()).run(data_manager);
-		}
+		scripting::operators::GenerateResidueVoroMQAEnergyProfile().init(CMDIN().set("file", tmp_profile.filename())).run(data_manager);
 
 		{
 			const std::string filename_for_voromqa_dark_nnport_input_header=scripting::VirtualFileStorage::validate_filename("voromqa_dark_nnport_input_header");
@@ -81,23 +77,26 @@ public:
 				voronota::scripting::VirtualFileStorage::set_file(filename_for_voromqa_dark_nnport_input_fdeep_model_json, resources::data_voromqa_dark_nnport_input_fdeep_model_json(), true);
 			}
 
-			std::ostringstream args;
-			args << "-input-value-column-names-file " << filename_for_voromqa_dark_nnport_input_header << " ";
-			args << "-input-statistics-file " << filename_for_voromqa_dark_nnport_input_statistics << " ";
-			args << "-input-model-files " << filename_for_voromqa_dark_nnport_input_fdeep_model_json << " ";
-			args << "-output-value-column-names vd1 vd2 vd3 vd4 vd5 vd6 ";
-			args << "-input-data-file " << tmp_profile.filename() << " ";
-			args << "-output-data-file " << tmp_scores.filename() << " ";
-			operators::NNPortPredict().init(args.str()).run(0);
+			operators::NNPortPredict().init(CMDIN()
+					.set("input-value-column-names-file", filename_for_voromqa_dark_nnport_input_header)
+					.set("input-statistics-file", filename_for_voromqa_dark_nnport_input_statistics)
+					.set("input-model-files", filename_for_voromqa_dark_nnport_input_fdeep_model_json)
+					.set("input-data-file", tmp_profile.filename())
+					.set("output-data-file", tmp_scores.filename())
+					.add("output-value-column-names", "vd1")
+					.add("output-value-column-names", "vd2")
+					.add("output-value-column-names", "vd3")
+					.add("output-value-column-names", "vd4")
+					.add("output-value-column-names", "vd5")
+					.add("output-value-column-names", "vd6")).run(0);
 		}
 
-		{
-			std::ostringstream args;
-			args << "-file " << tmp_scores.filename();
-			scripting::operators::ImportAdjunctsOfAtoms().init(args.str()).run(data_manager);
-		}
+		scripting::operators::ImportAdjunctsOfAtoms().init(CMDIN().set("file", tmp_scores.filename())).run(data_manager);
 
-		const scripting::operators::SpectrumAtoms::Result spectrum_result=scripting::operators::SpectrumAtoms().init("-use [-aname CA] -adjunct vd1 -only-summarize").run(data_manager);
+		const scripting::operators::SpectrumAtoms::Result spectrum_result=scripting::operators::SpectrumAtoms().init(CMDIN()
+				.set("use", "[--aname CA]")
+				.set("adjunct", "vd1")
+				.set("only-summarize", true)).run(data_manager);
 
 		Result result;
 		result.global_score=spectrum_result.mean_of_values;

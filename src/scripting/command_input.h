@@ -354,6 +354,87 @@ public:
 		}
 	}
 
+	CommandInput& unset(const std::string& name)
+	{
+		if(name.empty())
+		{
+			list_of_unnamed_values_.clear();
+		}
+		else
+		{
+			map_of_values_.erase(name);
+		}
+		return (*this);
+	}
+
+	template<typename T>
+	CommandInput& set(const std::string& name, const T& value, const bool add)
+	{
+		std::ostringstream output;
+		output << value;
+		if(name.empty())
+		{
+			if(add)
+			{
+				list_of_unnamed_values_.push_back(output.str());
+			}
+			else
+			{
+				list_of_unnamed_values_=std::vector<std::string>(1, output.str());
+			}
+		}
+		else
+		{
+			if(add)
+			{
+				map_of_values_[name].push_back(output.str());
+			}
+			else
+			{
+				map_of_values_[name]=std::vector<std::string>(1, output.str());
+			}
+		}
+		return (*this);
+	}
+
+	template<typename T>
+	CommandInput& set(const std::string& name, const T& value)
+	{
+		return set(name, value, false);
+	}
+
+	template<typename T>
+	CommandInput& add(const std::string& name, const T& value)
+	{
+		return set(name, value, true);
+	}
+
+	template<typename T>
+	CommandInput& setv(const std::string& name, const T& values, const bool add)
+	{
+		if(!add)
+		{
+			unset(name);
+		}
+		for(typename T::const_iterator it=values.begin();it!=values.end();++it)
+		{
+			set(name, (*it), true);
+		}
+		return (*this);
+	}
+
+	template<typename T>
+	CommandInput& setv(const std::string& name, const T& value)
+	{
+		return setv(name, value, false);
+	}
+
+	template<typename T>
+	CommandInput& addv(const std::string& name, const T& value)
+	{
+		return setv(name, value, true);
+	}
+
 private:
 	static bool is_flag_string_true(const std::string& str)
 	{

@@ -120,24 +120,22 @@ public:
 		scripting::DataManager* target_object=congregation_of_data_managers.get_object(target_name);
 		scripting::DataManager* model_object=congregation_of_data_managers.get_object(model_name);
 
-		const std::string target_use=target_selection.empty() ? std::string("[-aname CA]") : (std::string("((")+target_selection+") and ([-aname CA]))");
-		const std::string model_use=model_selection.empty() ? std::string("[-aname CA]") : (std::string("((")+model_selection+") and ([-aname CA]))");
+		const std::string target_use=target_selection.empty() ? std::string("[--aname CA]") : (std::string("((")+target_selection+") and ([--aname CA]))");
+		const std::string model_use=model_selection.empty() ? std::string("[--aname CA]") : (std::string("((")+model_selection+") and ([--aname CA]))");
 
 		scripting::VirtualFileStorage::TemporaryFile tmp_target_pdb;
 		scripting::VirtualFileStorage::TemporaryFile tmp_model_pdb;
 		scripting::VirtualFileStorage::TemporaryFile tmp_matrix;
 
-		{
-			std::ostringstream args;
-			args << " -use " << target_use << " -as-pdb -file " << tmp_target_pdb.filename();
-			scripting::operators::ExportAtoms().init(args.str()).run(*target_object);
-		}
+		scripting::operators::ExportAtoms().init(CMDIN()
+				.set("use", target_use)
+				.set("as-pdb", true)
+				.set("file", tmp_target_pdb.filename())).run(*target_object);
 
-		{
-			std::ostringstream args;
-			args << " -use " << model_use << " -as-pdb -file " << tmp_model_pdb.filename();
-			scripting::operators::ExportAtoms().init(args.str()).run(*model_object);
-		}
+		scripting::operators::ExportAtoms().init(CMDIN()
+				.set("use", model_use)
+				.set("as-pdb", true)
+				.set("file", tmp_model_pdb.filename())).run(*model_object);
 
 		const TMAlignWrapper::ResultBundle tmalign_result=TMAlignWrapper().run_tmalign(tmp_target_pdb.filename(), tmp_model_pdb.filename(), tmp_matrix.filename());
 
@@ -151,8 +149,8 @@ public:
 
 		if(!result.tmalign_matrix_file.empty())
 		{
-			std::ostringstream translation_output;
-			std::ostringstream rotation_output;
+			std::vector<std::string> translation_output;
+			std::vector<std::string> rotation_output;
 			{
 				std::istringstream file_input(result.tmalign_matrix_file);
 				for(int i=0;i<5 && file_input.good();i++)
@@ -168,21 +166,19 @@ public:
 							line_input >> token;
 							if(j==1)
 							{
-								translation_output << " " << token;
+								translation_output.push_back(token);
 							}
 							else if(j>1 && j<5)
 							{
-								rotation_output << " " << token;
+								rotation_output.push_back(token);
 							}
 						}
 					}
 				}
 			}
-			{
-				std::ostringstream args;
-				args << "-rotate-by-matrix " << rotation_output.str() << " -translate " << translation_output.str();
-				scripting::operators::MoveAtoms().init(args.str()).run(*model_object);
-			}
+			scripting::operators::MoveAtoms().init(CMDIN()
+					.setv("rotate-by-matrix", rotation_output)
+					.setv("translate", translation_output)).run(*model_object);
 		}
 
 		if(!result.tmalign_stdout.empty())

@@ -17,7 +17,7 @@ public:
 	public:
 		TemporaryDirectory()
 		{
-			operators::CallShell::Result r=operators::CallShell().init("-command-string 'mktemp \\-d'").run(0);
+			operators::CallShell::Result r=operators::CallShell().init(CMDIN().set("command-string", "mktemp -d")).run(0);
 			if(r.exit_status!=0 || r.stdout.empty())
 			{
 				throw std::runtime_error(std::string("Failed to create temporary directory"));
@@ -29,9 +29,9 @@ public:
 		{
 			if(!dir_path_.empty())
 			{
-				std::ostringstream args;
-				args << " -command-string \"rm \\-r '" << dir_path_ << "'\"";
-				operators::CallShell().init(args.str()).run(0);
+				std::ostringstream command_output;
+				command_output << "rm -r '" << dir_path_ << "'";
+				operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
 			}
 		}
 
@@ -46,23 +46,23 @@ public:
 
 	static bool test_if_file_not_empty(const std::string& file_path)
 	{
-		std::ostringstream args;
-		args << " -command-string \"test \\-s '" << file_path << "'\"";
-		return (operators::CallShell().init(args.str()).run(0).exit_status==0);
+		std::ostringstream command_output;
+		command_output << "test -s '" << file_path << "'";
+		return (operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0).exit_status==0);
 	}
 
 	static bool create_directory(const std::string& dir_path)
 	{
-		std::ostringstream args;
-		args << " -command-string \"mkdir \\-p '" << dir_path << "'\"";
-		return (operators::CallShell().init(args.str()).run(0).exit_status==0);
+		std::ostringstream command_output;
+		command_output << "mkdir -p '" << dir_path << "'";
+		return (operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0).exit_status==0);
 	}
 
 	static bool test_if_shell_command_available(const std::string& shell_command)
 	{
-		std::ostringstream args;
-		args << " -command-string \"command \\-v '" << shell_command << "'\"";
-		return (operators::CallShell().init(args.str()).run(0).exit_status==0);
+		std::ostringstream command_output;
+		command_output << "command -v '" << shell_command << "'";
+		return (operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0).exit_status==0);
 	}
 };
 

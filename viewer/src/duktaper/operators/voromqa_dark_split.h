@@ -129,9 +129,9 @@ public:
 			scripting::DataManager chain_group_data_manager;
 			chain_group_data_manager.reset_atoms_by_swapping(chain_group_atoms);
 			chain_group_data_manager.add_atoms_representation("atoms", true);
-			scripting::operators::ConstructContacts().init("").run(chain_group_data_manager);
-			scripting::operators::VoroMQAGlobal().init("").run(chain_group_data_manager);
-			VoroMQADarkGlobal::Result chain_group_result=VoroMQADarkGlobal().init("").run(chain_group_data_manager);
+			scripting::operators::ConstructContacts().init().run(chain_group_data_manager);
+			scripting::operators::VoroMQAGlobal().init().run(chain_group_data_manager);
+			VoroMQADarkGlobal::Result chain_group_result=VoroMQADarkGlobal().init().run(chain_group_data_manager);
 			result.split_results[chain_group]=chain_group_result;
 		}
 

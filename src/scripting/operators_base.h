@@ -33,9 +33,9 @@ public:
 		return underlying();
 	}
 
-	Operator& init(const std::string& args)
+	Operator& init()
 	{
-		CommandInput input(std::string("noname ")+args);
+		CommandInput input;
 		return init(input);
 	}
 

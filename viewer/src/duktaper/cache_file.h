@@ -37,9 +37,7 @@ public:
 			scripting::VirtualFileStorage::TemporaryFile tmp_file_for_checksum;
 			scripting::VirtualFileStorage::set_file(tmp_file_for_checksum.filename(), data_string_for_checksum);
 
-			std::ostringstream args;
-			args << " -data-file " << tmp_file_for_checksum.filename();
-			checksum_=operators::Checksum().init(args.str()).run(0).checksum;
+			checksum_=operators::Checksum().init(CMDIN().set("data-file", tmp_file_for_checksum.filename())).run(0).checksum;
 		}
 
 		if(checksum_.empty())

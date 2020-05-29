@@ -75,18 +75,14 @@ public:
 
 		if(cache_file.file_available() && !construct_contacts_operator.force)
 		{
-			std::ostringstream args;
-			args << " -file '" << cache_file.file_path() << "'";
-			scripting::operators::Import().init(args.str()).run(data_manager);
+			scripting::operators::Import().init(CMDIN().set("file", cache_file.file_path())).run(data_manager);
 		}
 		else
 		{
 			construct_contacts_operator.run(data_manager);
 			if(!cache_file.file_path().empty())
 			{
-				std::ostringstream args;
-				args << " -file '" << cache_file.file_path() << "'";
-				scripting::operators::ExportAtomsAndContacts().init(args.str()).run(data_manager);
+				scripting::operators::ExportAtomsAndContacts().init(CMDIN().set("file", cache_file.file_path())).run(data_manager);
 			}
 		}
 

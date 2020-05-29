@@ -15,6 +15,7 @@ namespace voronota
 {
 
 typedef scripting::CommandDocumentation::OptionDescription CDOD;
+typedef scripting::CommandInput CMDIN;
 
 namespace scripting
 {
