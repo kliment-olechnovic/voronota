@@ -48,7 +48,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("global-adj-prefix", scripting::CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_global"));
+		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_global"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const

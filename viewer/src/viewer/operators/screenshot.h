@@ -36,7 +36,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("file", scripting::CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
 	}
 
 	Result run(void*) const

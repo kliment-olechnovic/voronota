@@ -39,9 +39,9 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("field-of-view", scripting::CDOD::DATATYPE_FLOAT, "camera field of view", ""));
-		doc.set_option_decription(scripting::CDOD("near-z", scripting::CDOD::DATATYPE_FLOAT, "camera near Z coordinate", ""));
-		doc.set_option_decription(scripting::CDOD("far-z", scripting::CDOD::DATATYPE_FLOAT, "camera far Z coordinate", ""));
+		doc.set_option_decription(CDOD("field-of-view", CDOD::DATATYPE_FLOAT, "camera field of view", ""));
+		doc.set_option_decription(CDOD("near-z", CDOD::DATATYPE_FLOAT, "camera near Z coordinate", ""));
+		doc.set_option_decription(CDOD("far-z", CDOD::DATATYPE_FLOAT, "camera far Z coordinate", ""));
 	}
 
 	Result run(void*) const

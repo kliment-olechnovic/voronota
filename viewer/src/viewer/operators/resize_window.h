@@ -37,8 +37,8 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("width", scripting::CDOD::DATATYPE_INT, "window width", ""));
-		doc.set_option_decription(scripting::CDOD("height", scripting::CDOD::DATATYPE_INT, "window height", ""));
+		doc.set_option_decription(CDOD("width", CDOD::DATATYPE_INT, "window width", ""));
+		doc.set_option_decription(CDOD("height", CDOD::DATATYPE_INT, "window height", ""));
 	}
 
 	Result run(void*) const

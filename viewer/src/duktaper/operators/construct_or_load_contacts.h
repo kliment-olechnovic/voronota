@@ -45,7 +45,7 @@ public:
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		construct_contacts_operator.document(doc);
-		doc.set_option_decription(scripting::CDOD("cache-dir", scripting::CDOD::DATATYPE_STRING, "path to cache directory", ""));
+		doc.set_option_decription(CDOD("cache-dir", CDOD::DATATYPE_STRING, "path to cache directory", ""));
 	}
 
 	Result run(scripting::DataManager& data_manager) const

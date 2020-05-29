@@ -46,8 +46,8 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("angle", scripting::CDOD::DATATYPE_FLOAT, "stereo angle", ""));
-		doc.set_option_decription(scripting::CDOD("offset", scripting::CDOD::DATATYPE_FLOAT, "stereo offset", ""));
+		doc.set_option_decription(CDOD("angle", CDOD::DATATYPE_FLOAT, "stereo angle", ""));
+		doc.set_option_decription(CDOD("offset", CDOD::DATATYPE_FLOAT, "stereo offset", ""));
 	}
 
 	Result run(void*) const

@@ -36,7 +36,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("milliseconds", scripting::CDOD::DATATYPE_FLOAT, "milliseconds", 40.0));
+		doc.set_option_decription(CDOD("milliseconds", CDOD::DATATYPE_FLOAT, "milliseconds", 40.0));
 	}
 
 	Result run(void*) const

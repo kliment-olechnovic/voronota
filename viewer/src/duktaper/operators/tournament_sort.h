@@ -47,12 +47,12 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("input-file", scripting::CDOD::DATATYPE_STRING, "path to input file"));
-		doc.set_option_decription(scripting::CDOD("output-file", scripting::CDOD::DATATYPE_STRING, "path to output file"));
-		doc.set_option_decription(scripting::CDOD("columns", scripting::CDOD::DATATYPE_STRING_ARRAY, "column names"));
-		doc.set_option_decription(scripting::CDOD("multipliers", scripting::CDOD::DATATYPE_FLOAT_ARRAY, "multipliers for column values", ""));
-		doc.set_option_decription(scripting::CDOD("tolerances", scripting::CDOD::DATATYPE_FLOAT_ARRAY, "tolerances for column values", ""));
-		doc.set_option_decription(scripting::CDOD("add-win-score-column", scripting::CDOD::DATATYPE_STRING, "new column name for win scores", ""));
+		doc.set_option_decription(CDOD("input-file", CDOD::DATATYPE_STRING, "path to input file"));
+		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
+		doc.set_option_decription(CDOD("columns", CDOD::DATATYPE_STRING_ARRAY, "column names"));
+		doc.set_option_decription(CDOD("multipliers", CDOD::DATATYPE_FLOAT_ARRAY, "multipliers for column values", ""));
+		doc.set_option_decription(CDOD("tolerances", CDOD::DATATYPE_FLOAT_ARRAY, "tolerances for column values", ""));
+		doc.set_option_decription(CDOD("add-win-score-column", CDOD::DATATYPE_STRING, "new column name for win scores", ""));
 	}
 
 	Result run(void*) const

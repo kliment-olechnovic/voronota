@@ -42,8 +42,8 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("data-file", scripting::CDOD::DATATYPE_STRING, "path to data file", ""));
-		doc.set_option_decription(scripting::CDOD("data-string", scripting::CDOD::DATATYPE_STRING, "data string", ""));
+		doc.set_option_decription(CDOD("data-file", CDOD::DATATYPE_STRING, "path to data file", ""));
+		doc.set_option_decription(CDOD("data-string", CDOD::DATATYPE_STRING, "data string", ""));
 	}
 
 	Result run(void*) const

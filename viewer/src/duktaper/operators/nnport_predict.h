@@ -59,14 +59,14 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("input-label-column-name", scripting::CDOD::DATATYPE_STRING, "input label column name", "ID"));
-		doc.set_option_decription(scripting::CDOD("input-value-column-names-file", scripting::CDOD::DATATYPE_STRING, "input value column names file"));
-		doc.set_option_decription(scripting::CDOD("input-statistics-file", scripting::CDOD::DATATYPE_STRING, "input statistics file"));
-		doc.set_option_decription(scripting::CDOD("input-model-files", scripting::CDOD::DATATYPE_STRING_ARRAY, "input model files"));
-		doc.set_option_decription(scripting::CDOD("output-label-column-name", scripting::CDOD::DATATYPE_STRING, "output label column name", "ID"));
-		doc.set_option_decription(scripting::CDOD("output-value-column-names", scripting::CDOD::DATATYPE_STRING_ARRAY, "output value column names"));
-		doc.set_option_decription(scripting::CDOD("input-data-file", scripting::CDOD::DATATYPE_STRING, "input data file"));
-		doc.set_option_decription(scripting::CDOD("output-data-file", scripting::CDOD::DATATYPE_STRING, "output data file"));
+		doc.set_option_decription(CDOD("input-label-column-name", CDOD::DATATYPE_STRING, "input label column name", "ID"));
+		doc.set_option_decription(CDOD("input-value-column-names-file", CDOD::DATATYPE_STRING, "input value column names file"));
+		doc.set_option_decription(CDOD("input-statistics-file", CDOD::DATATYPE_STRING, "input statistics file"));
+		doc.set_option_decription(CDOD("input-model-files", CDOD::DATATYPE_STRING_ARRAY, "input model files"));
+		doc.set_option_decription(CDOD("output-label-column-name", CDOD::DATATYPE_STRING, "output label column name", "ID"));
+		doc.set_option_decription(CDOD("output-value-column-names", CDOD::DATATYPE_STRING_ARRAY, "output value column names"));
+		doc.set_option_decription(CDOD("input-data-file", CDOD::DATATYPE_STRING, "input data file"));
+		doc.set_option_decription(CDOD("output-data-file", CDOD::DATATYPE_STRING, "output data file"));
 	}
 
 	Result run(void*) const

@@ -54,10 +54,10 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("command-string", scripting::CDOD::DATATYPE_STRING, "command string"));
-		doc.set_option_decription(scripting::CDOD("input-file", scripting::CDOD::DATATYPE_STRING, "path to input data file", ""));
-		doc.set_option_decription(scripting::CDOD("input-string", scripting::CDOD::DATATYPE_STRING, "input data string", ""));
-		doc.set_option_decription(scripting::CDOD("output-file", scripting::CDOD::DATATYPE_STRING, "path to output data file", ""));
+		doc.set_option_decription(CDOD("command-string", CDOD::DATATYPE_STRING, "command string"));
+		doc.set_option_decription(CDOD("input-file", CDOD::DATATYPE_STRING, "path to input data file", ""));
+		doc.set_option_decription(CDOD("input-string", CDOD::DATATYPE_STRING, "input data string", ""));
+		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output data file", ""));
 	}
 
 	Result run(void*) const

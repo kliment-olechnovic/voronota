@@ -48,9 +48,9 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("atoms", scripting::CDOD::DATATYPE_STRING, "selection expression for atoms", "[]"));
-		doc.set_option_decription(scripting::CDOD("adj-atom-quality", scripting::CDOD::DATATYPE_STRING, "name of input adjunct with atom quality scores", "vd1"));
-		doc.set_option_decription(scripting::CDOD("global-adj-prefix", scripting::CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_local"));
+		doc.set_option_decription(CDOD("atoms", CDOD::DATATYPE_STRING, "selection expression for atoms", "[]"));
+		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of input adjunct with atom quality scores", "vd1"));
+		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_dark_local"));
 	}
 
 	Result run(scripting::DataManager& data_manager) const

@@ -14,6 +14,8 @@
 namespace voronota
 {
 
+typedef scripting::CommandDocumentation::OptionDescription CDOD;
+
 namespace scripting
 {
 

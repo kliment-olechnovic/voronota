@@ -35,7 +35,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("col", scripting::CDOD::DATATYPE_STRING, "color string"));
+		doc.set_option_decription(CDOD("col", CDOD::DATATYPE_STRING, "color string"));
 	}
 
 	Result run(void*) const

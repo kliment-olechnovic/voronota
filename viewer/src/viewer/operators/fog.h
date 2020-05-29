@@ -35,7 +35,7 @@ public:
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(scripting::CDOD("off", scripting::CDOD::DATATYPE_BOOL, "flag to turn fog off"));
+		doc.set_option_decription(CDOD("off", CDOD::DATATYPE_BOOL, "flag to turn fog off"));
 	}
 
 	Result run(void*) const

@@ -228,8 +228,6 @@ private:
 	std::map<std::string, CommandDocumentation> map_of_documentations_;
 };
 
-typedef CommandDocumentation::OptionDescription CDOD;
-
 }
 
 }

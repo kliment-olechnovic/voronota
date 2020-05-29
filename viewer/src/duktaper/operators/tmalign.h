@@ -81,15 +81,15 @@ public:
 	{
 		if(managed)
 		{
-			doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object", ""));
+			doc.set_option_decription(CDOD("target", CDOD::DATATYPE_STRING, "name of target object", ""));
 		}
 		else
 		{
-			doc.set_option_decription(scripting::CDOD("target", scripting::CDOD::DATATYPE_STRING, "name of target object"));
-			doc.set_option_decription(scripting::CDOD("model", scripting::CDOD::DATATYPE_STRING, "name of model object"));
+			doc.set_option_decription(CDOD("target", CDOD::DATATYPE_STRING, "name of target object"));
+			doc.set_option_decription(CDOD("model", CDOD::DATATYPE_STRING, "name of model object"));
 		}
-		doc.set_option_decription(scripting::CDOD("target-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
-		doc.set_option_decription(scripting::CDOD("model-sel", scripting::CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
+		doc.set_option_decription(CDOD("target-sel", CDOD::DATATYPE_STRING, "selection of atoms for target object", ""));
+		doc.set_option_decription(CDOD("model-sel", CDOD::DATATYPE_STRING, "selection of atoms for model object", ""));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
