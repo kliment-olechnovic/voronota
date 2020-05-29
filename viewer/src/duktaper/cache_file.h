@@ -2,7 +2,7 @@
 #define DUKTAPER_CACHE_FILE_H_
 
 #include "operators/checksum.h"
-#include "operators/call_shell.h"
+#include "call_shell_utilities.h"
 
 namespace voronota
 {
@@ -48,19 +48,11 @@ public:
 		}
 
 		file_path_=cache_dir+"/"+checksum_+extension;
-
-		{
-			std::ostringstream args;
-			args << " -command-string \"test \\-s '" << file_path_ << "'\"";
-			file_available_=operators::CallShell().init(args.str()).run(0).exit_status==0;
-		}
+		file_available_=CallShellUtilities::test_if_file_not_empty(file_path_);
 
 		if(!file_available_)
 		{
-			std::ostringstream args;
-			args << " -command-string \"mkdir \\-p '" << cache_dir << "'\"";
-			const int status=operators::CallShell().init(args.str()).run(0).exit_status;
-			if(status!=0)
+			if(!CallShellUtilities::create_directory(cache_dir))
 			{
 				throw std::runtime_error(std::string("Failed to find or cache create directory '")+cache_dir+"'");
 			}
