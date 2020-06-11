@@ -9,11 +9,13 @@ cat >&2 << 'EOF'
 Options:
     --input | -i              string  *  input file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
+    --sequence-file           string     input sequence file
     --select-contacts         string     query to select contacts, default is '[-min-seq-sep 2]'
     --inter-chain             string     set query to select contacts to '[-inter-chain]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --output-dark-scores      string     output PDB file with dark scores as B-factors
     --output-light-scores     string     output PDB file with light scores as B-factors
+    --output-alignment        string     output alignment sequence alignment file
     --cache-dir               string     path to cache directory
     --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
     --smoothing-window        number     residue scores smoothing window size, default is 0
@@ -62,10 +64,12 @@ command -v voronota-duktaper &> /dev/null || { echo >&2 "Error: 'voronota-duktap
 
 INFILE=""
 RESTRICT_INPUT="[]"
+SEQUENCE_FILE=""
 SELECT_CONTACTS="[-min-seq-sep 2]"
 OUTPUT_TABLE_FILE="_stdout"
 OUTPUT_DARK_SCORES=""
 OUTPUT_LIGHT_SCORES=""
+OUTPUT_ALIGNMENT=""
 CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
 SMOOTHING_WINDOW="0"
@@ -87,6 +91,10 @@ do
 		RESTRICT_INPUT="$OPTARG"
 		shift
 		;;
+	--sequence-file)
+		SEQUENCE_FILE="$OPTARG"
+		shift
+		;;
 	--select-contacts)
 		SELECT_CONTACTS="$OPTARG"
 		shift
@@ -104,6 +112,10 @@ do
 		;;
 	--output-light-scores)
 		OUTPUT_LIGHT_SCORES="$OPTARG"
+		shift
+		;;
+	--output-alignment)
+		OUTPUT_ALIGNMENT="$OPTARG"
 		shift
 		;;
 	--cache-dir)
@@ -210,6 +222,8 @@ params.output_table_file='$OUTPUT_TABLE_FILE';
 params.output_dark_scores='$OUTPUT_DARK_SCORES';
 params.output_light_scores='$OUTPUT_LIGHT_SCORES';
 params.smoothing_window='$SMOOTHING_WINDOW';
+params.sequence_file='$SEQUENCE_FILE';
+params.output_alignment='$OUTPUT_ALIGNMENT';
 
 EOF
 
@@ -265,6 +279,22 @@ voronota_assert_partial_success("Failed to import file");
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms");
+
+if(params.sequence_file!=="")
+{
+	if(params.output_alignment!=="")
+	{
+		voronota_set_adjunct_of_atoms_by_sequence_alignment("-name", "refseq", "-sequence-file", params.sequence_file, "-alignment-file", params.output_alignment);
+	}
+	else
+	{
+		voronota_set_adjunct_of_atoms_by_sequence_alignment("-name", "refseq", "-sequence-file", params.sequence_file);
+	}
+	voronota_assert_full_success("Failed to set residue sequence number adjunct");
+	
+	voronota_restrict_atoms_and_renumber_residues_by_adjunct("-name", "refseq");
+	voronota_assert_full_success("Failed to renumber residues by adjunct");
+}
 
 voronota_construct_or_load_quality_scores("-cache-dir", params.cache_dir);
 voronota_assert_full_success("Failed to compute or load quality scores");
