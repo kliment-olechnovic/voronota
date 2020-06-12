@@ -20,6 +20,7 @@ Options:
     --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
     --smoothing-window        number     residue scores smoothing window size, default is 0
     --processors              number     maximum number of processors to use, default is 1
+    --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
     --guess-chain-names                  flag to guess chain names based on sequence nubmering
     --as-assembly                        flag to treat input file as biological assembly
     --help | -h                          flag to display help message and exit
@@ -75,6 +76,7 @@ CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
 SMOOTHING_WINDOW="0"
 MAX_PROCESSORS="1"
+USE_SCWRL="false"
 GUESS_CHAIN_NAMES="false"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -135,6 +137,9 @@ do
 	--processors)
 		MAX_PROCESSORS="$OPTARG"
 		shift
+		;;
+	--use-scwrl)
+		USE_SCWRL="true"
 		;;
 	--guess-chain-names)
 		GUESS_CHAIN_NAMES="true"
@@ -230,6 +235,7 @@ params.smoothing_window='$SMOOTHING_WINDOW';
 params.sequence_file='$SEQUENCE_FILE';
 params.output_alignment='$OUTPUT_ALIGNMENT';
 params.guess_chain_names='$GUESS_CHAIN_NAMES';
+params.use_scwrl='$USE_SCWRL';
 
 EOF
 
@@ -287,6 +293,12 @@ if(params.guess_chain_names==="true")
 {
 	voronota_set_chain_names_by_guessing();
 	voronota_assert_full_success("Failed to set chain names by guessing");
+}
+
+if(params.use_scwrl==="true")
+{
+	voronota_scwrl();
+	voronota_assert_full_success("Failed to use Scwrl4");
 }
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
