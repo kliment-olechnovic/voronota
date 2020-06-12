@@ -20,6 +20,7 @@ Options:
     --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
     --smoothing-window        number     residue scores smoothing window size, default is 0
     --processors              number     maximum number of processors to use, default is 1
+    --guess-chain-names                  flag to guess chain names based on sequence nubmering
     --as-assembly                        flag to treat input file as biological assembly
     --help | -h                          flag to display help message and exit
 
@@ -74,6 +75,7 @@ CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
 SMOOTHING_WINDOW="0"
 MAX_PROCESSORS="1"
+GUESS_CHAIN_NAMES="false"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
 
@@ -134,11 +136,14 @@ do
 		MAX_PROCESSORS="$OPTARG"
 		shift
 		;;
+	--guess-chain-names)
+		GUESS_CHAIN_NAMES="true"
+		;;
 	--as-assembly)
-		AS_ASSEMBLY=true
+		AS_ASSEMBLY="true"
 		;;
 	-h|--help)
-		HELP_MODE=true
+		HELP_MODE="true"
 		;;
 	*)
 		echo >&2 "Error: invalid command line option '$OPTION'"
@@ -224,6 +229,7 @@ params.output_light_scores='$OUTPUT_LIGHT_SCORES';
 params.smoothing_window='$SMOOTHING_WINDOW';
 params.sequence_file='$SEQUENCE_FILE';
 params.output_alignment='$OUTPUT_ALIGNMENT';
+params.guess_chain_names='$GUESS_CHAIN_NAMES';
 
 EOF
 
@@ -276,6 +282,12 @@ if(params.output_light_scores===undefined)
 
 voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
 voronota_assert_partial_success("Failed to import file");
+
+if(params.guess_chain_names==="true")
+{
+	voronota_set_chain_names_by_guessing();
+	voronota_assert_full_success("Failed to set chain names by guessing");
+}
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms");
