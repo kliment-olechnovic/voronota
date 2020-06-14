@@ -52,6 +52,15 @@ EOF
 exit 1
 }
 
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
 readonly ZEROARG=$0
 ALLARGS=("$@")
 
@@ -217,6 +226,13 @@ then
 	
 	exit 0
 fi
+
+CACHE_DIR="$(substitute_id_in_filename "$INFILE" "$CACHE_DIR")"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE" "$OUTPUT_TABLE_FILE")"
+OUTPUT_DARK_SCORES="$(substitute_id_in_filename "$INFILE" "$OUTPUT_DARK_SCORES")"
+OUTPUT_LIGHT_SCORES="$(substitute_id_in_filename "$INFILE" "$OUTPUT_LIGHT_SCORES")"
+SEQUENCE_FILE="$(substitute_id_in_filename "$INFILE" "$SEQUENCE_FILE")"
+OUTPUT_ALIGNMENT="$(substitute_id_in_filename "$INFILE" "$OUTPUT_ALIGNMENT")"
 
 {
 cat << EOF
