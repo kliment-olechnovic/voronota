@@ -187,11 +187,18 @@ if [ "$INFILE" == "_list" ]
 then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
+	
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
 
 	mkdir -p "$TMPLDIR/children_tables"
 	
-	cat \
-	| egrep . | sort | uniq \
+	cat "$TMPLDIR/input_list" \
 	| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
 	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
 	
