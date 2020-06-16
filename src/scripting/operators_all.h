@@ -8,6 +8,7 @@
 #include "operators/calculate_betweenness.h"
 #include "operators/calculate_burial_depth.h"
 #include "operators/center_atoms.h"
+#include "operators/check_distance_constraint.h"
 #include "operators/clash_score.h"
 #include "operators/color_atoms.h"
 #include "operators/color_contacts.h"

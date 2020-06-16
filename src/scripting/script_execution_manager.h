@@ -68,6 +68,7 @@ public:
 		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);
 		set_command_for_data_manager("calculate-burial-depth", operators::CalculateBurialDepth(), true);
 		set_command_for_data_manager("center-atoms", operators::CenterAtoms(), true);
+		set_command_for_data_manager("check-distance-constraint", operators::CheckDistanceConstraint(), true);
 		set_command_for_data_manager("clash-score", operators::ClashScore(), true);
 		set_command_for_data_manager("color-atoms", operators::ColorAtoms(), true);
 		set_command_for_data_manager("color-contacts", operators::ColorContacts(), true);
