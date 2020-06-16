@@ -20,6 +20,7 @@ Options:
     --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
     --smoothing-window        number     residue scores smoothing window size, default is 0
     --processors              number     maximum number of processors to use, default is 1
+    --casp-b-factors                     flag to write CASP-required B-factors in output PDB files
     --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
     --guess-chain-names                  flag to guess chain names based on sequence nubmering
     --as-assembly                        flag to treat input file as biological assembly
@@ -85,6 +86,7 @@ CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
 SMOOTHING_WINDOW="0"
 MAX_PROCESSORS="1"
+CASP_B_FACTORS="false"
 USE_SCWRL="false"
 GUESS_CHAIN_NAMES="false"
 AS_ASSEMBLY="false"
@@ -146,6 +148,9 @@ do
 	--processors)
 		MAX_PROCESSORS="$OPTARG"
 		shift
+		;;
+	--casp-b-factors)
+		CASP_B_FACTORS="true"
 		;;
 	--use-scwrl)
 		USE_SCWRL="true"
@@ -259,6 +264,7 @@ params.sequence_file='$SEQUENCE_FILE';
 params.output_alignment='$OUTPUT_ALIGNMENT';
 params.guess_chain_names='$GUESS_CHAIN_NAMES';
 params.use_scwrl='$USE_SCWRL';
+params.casp_b_factors='$CASP_B_FACTORS';
 
 EOF
 
@@ -399,8 +405,19 @@ if(params.output_dark_scores!=="")
 	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "vd1", "-destination-name", "vd1s", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
 	
-	voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1s");
-	voronota_assert_full_success("Failed to export pdb file");
+	if(params.casp_b_factors==="true")
+	{
+		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.1 0.5 0.2 5.0 -output-adjunct vd1sd");
+		voronota_assert_full_success("Failed to transform adjuncts");
+		
+		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1sd");
+		voronota_assert_full_success("Failed to export pdb file");
+	}
+	else
+	{
+		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1s");
+		voronota_assert_full_success("Failed to export pdb file");
+	}
 }
 
 if(params.output_light_scores!=="")
@@ -413,8 +430,19 @@ if(params.output_light_scores!=="")
 	voronota_set_adjunct_of_atoms_by_residue_pooling("-source-name", "voromqa_score_r", "-destination-name", "voromqa_score_rs", "-pooling-mode min", "-smoothing-window", params.smoothing_window);
 	voronota_assert_full_success("Failed to pool and smooth residue adjuncts");
 	
-	voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs");
-	voronota_assert_full_success("Failed to export pdb file");
+	if(params.casp_b_factors==="true")
+	{
+		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts voromqa_score_rs -parameters 0.3 0.1 0.5 0.2 3.0 -output-adjunct voromqa_score_rsd");
+		voronota_assert_full_success("Failed to transform adjuncts");
+		
+		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rsd");
+		voronota_assert_full_success("Failed to export pdb file");
+	}
+	else
+	{
+		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs");
+		voronota_assert_full_success("Failed to export pdb file");
+	}
 }
 EOF
 
