@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "../dependencies/linenoise/linenoise.h"
-
 #include "binding_javascript.h"
 #include "duktape_manager.h"
 #include "stocked_data_resources.h"
@@ -72,38 +70,15 @@ private:
 	public:
 		static std::string read_line_from_stdin(bool& failed)
 		{
-			ManagedLineBuffer mlb(linenoise("> "));
-			failed=(mlb.line==0);
-			if(!failed)
+			std::string result;
+			std::getline(std::cin, result);
+			failed=std::cin.fail();
+			if(failed)
 			{
-				std::string result;
-				if(*mlb.line)
-				{
-					linenoiseHistoryAdd(mlb.line);
-					result=mlb.line;
-				}
-				return result;
+				return std::string();
 			}
-			return std::string();
+			return result;
 		}
-
-	private:
-		struct ManagedLineBuffer
-		{
-			char* line;
-
-			ManagedLineBuffer(char* line) : line(line)
-			{
-			}
-
-			~ManagedLineBuffer()
-			{
-				if(line!=0)
-				{
-					free(static_cast<void*>(line));
-				}
-			}
-		};
 	};
 
 	static const std::string& inline_script_prefix()
