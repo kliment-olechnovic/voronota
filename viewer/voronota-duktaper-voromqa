@@ -12,6 +12,7 @@ Options:
     --sequence-file           string     input sequence file
     --select-contacts         string     query to select contacts, default is '[-min-seq-sep 2]'
     --inter-chain             string     set query to select contacts to '[-inter-chain]'
+    --constraints-file        string     input distance constraints file
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --output-dark-scores      string     output PDB file with dark scores as B-factors
     --output-light-scores     string     output PDB file with light scores as B-factors
@@ -78,6 +79,7 @@ INFILE=""
 RESTRICT_INPUT="[]"
 SEQUENCE_FILE=""
 SELECT_CONTACTS="[-min-seq-sep 2]"
+CONSTRAINTS_FILE=""
 OUTPUT_TABLE_FILE="_stdout"
 OUTPUT_DARK_SCORES=""
 OUTPUT_LIGHT_SCORES=""
@@ -116,6 +118,10 @@ do
 		;;
 	--inter-chain)
 		SELECT_CONTACTS="[-inter-chain]"
+		;;
+	--constraints-file)
+		CONSTRAINTS_FILE="$OPTARG"
+		shift
 		;;
 	--output-table-file)
 		OUTPUT_TABLE_FILE="$OPTARG"
@@ -348,6 +354,23 @@ if(params.sequence_file!=="")
 	voronota_restrict_atoms_and_renumber_residues_by_adjunct("-name", "refseq");
 	voronota_assert_full_success("Failed to renumber residues by adjunct");
 }
+
+EOF
+
+if [ -n "$CONSTRAINTS_FILE" ] && [ -s "$CONSTRAINTS_FILE" ]
+then
+	cat "$CONSTRAINTS_FILE" \
+	| while read CONSTRAINT_LINE
+	do
+		if [ -n "$CONSTRAINT_LINE" ]
+		then
+			echo "voronota_check_distance_constraint('${CONSTRAINT_LINE}');"
+			echo "voronota_assert_full_success('Failed distance constraint');"
+		fi
+	done
+fi
+
+cat << 'EOF'
 
 voronota_construct_or_load_quality_scores("-cache-dir", params.cache_dir);
 voronota_assert_full_success("Failed to compute or load quality scores");
