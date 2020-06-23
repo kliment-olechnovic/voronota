@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
