@@ -461,12 +461,12 @@ if(params.output_dark_scores!=="")
 		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.1 0.5 0.2 5.0 -output-adjunct vd1sd");
 		voronota_assert_full_success("Failed to transform adjuncts");
 		
-		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1sd");
+		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-ter", "-pdb-b-factor", "vd1sd");
 		voronota_assert_full_success("Failed to export pdb file");
 	}
 	else
 	{
-		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-b-factor", "vd1s");
+		voronota_export_atoms("-file", params.output_dark_scores, "-as-pdb", "-pdb-ter", "-pdb-b-factor", "vd1s");
 		voronota_assert_full_success("Failed to export pdb file");
 	}
 }
@@ -486,12 +486,12 @@ if(params.output_light_scores!=="")
 		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts voromqa_score_rs -parameters 0.3 0.1 0.5 0.2 3.0 -output-adjunct voromqa_score_rsd");
 		voronota_assert_full_success("Failed to transform adjuncts");
 		
-		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rsd");
+		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-ter", "-pdb-b-factor", "voromqa_score_rsd");
 		voronota_assert_full_success("Failed to export pdb file");
 	}
 	else
 	{
-		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-b-factor", "voromqa_score_rs");
+		voronota_export_atoms("-file", params.output_light_scores, "-as-pdb", "-pdb-ter", "-pdb-b-factor", "voromqa_score_rs");
 		voronota_assert_full_success("Failed to export pdb file");
 	}
 }
