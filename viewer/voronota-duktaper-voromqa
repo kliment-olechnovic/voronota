@@ -20,6 +20,7 @@ Options:
     --cache-dir               string     path to cache directory
     --tour-sort               string     tournament sorting mode, default is '_mono', options are '_homo', '_hetero' or custom
     --sbatch-parameters       string     parameters to run Slurm sbatch if input is '_list'
+    --split-models-prefix     string     name prefix for splitting input PDB file by models
     --smoothing-window        number     residue scores smoothing window size, default is 0
     --processors              number     maximum number of processors to use, default is 1
     --casp-b-factors                     flag to write CASP-required B-factors in output PDB files
@@ -88,6 +89,7 @@ OUTPUT_ALIGNMENT=""
 CACHE_DIR=""
 TOUR_SORT_MODE="_mono"
 SBATCH_PARAMETERS=""
+SPLIT_MODELS_PREFIX=""
 SMOOTHING_WINDOW="0"
 MAX_PROCESSORS="1"
 CASP_B_FACTORS="false"
@@ -151,6 +153,10 @@ do
 		;;
 	--sbatch-parameters)
 		SBATCH_PARAMETERS="$OPTARG"
+		shift
+		;;
+	--split-models-prefix)
+		SPLIT_MODELS_PREFIX="$OPTARG"
 		shift
 		;;
 	--smoothing-window)
@@ -269,6 +275,23 @@ then
 	else
 		cat "$TMPLDIR/table"
 	fi
+	
+	exit 0
+fi
+
+if [ -n "$SPLIT_MODELS_PREFIX" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	mkdir -p "$TMPLDIR/splits"
+
+	{
+		echo "voronota_split_pdb_file('-input-file', '$INFILE', '-output-file', '_stdout', '-prefix', '$TMPLDIR/splits/$SPLIT_MODELS_PREFIX', '-postfix', '.pdb');"
+		echo "voronota_assert_full_success('Failed to split pdb file');"
+	} \
+	| voronota-duktaper \
+	| "$ZEROARG" "${ALLARGS[@]}" --input _list --split-models-prefix ""
 	
 	exit 0
 fi
