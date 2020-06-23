@@ -1,5 +1,5 @@
-#ifndef DUKTAPER_OPERATORS_TOURNAMENT_SORT_H_
-#define DUKTAPER_OPERATORS_TOURNAMENT_SORT_H_
+#ifndef SCRIPTING_OPERATORS_TOURNAMENT_SORT_H_
+#define SCRIPTING_OPERATORS_TOURNAMENT_SORT_H_
 
 #include <algorithm>
 
@@ -8,18 +8,18 @@
 namespace voronota
 {
 
-namespace duktaper
+namespace scripting
 {
 
 namespace operators
 {
 
-class TournamentSort : public scripting::operators::OperatorBase<TournamentSort>
+class TournamentSort : public operators::OperatorBase<TournamentSort>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public operators::OperatorResultBase<Result>
 	{
-		void store(scripting::HeterogeneousStorage&) const
+		void store(HeterogeneousStorage&) const
 		{
 		}
 	};
@@ -35,7 +35,7 @@ public:
 	std::vector<double> tolerances;
 	std::string add_win_score_column;
 
-	void initialize(scripting::CommandInput& input)
+	void initialize(CommandInput& input)
 	{
 		input_file=input.get_value<std::string>("input-file");
 		output_file=input.get_value<std::string>("output-file");
@@ -45,7 +45,7 @@ public:
 		add_win_score_column=input.get_value_or_default<std::string>("add-win-score-column", "");
 	}
 
-	void document(scripting::CommandDocumentation& doc) const
+	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("input-file", CDOD::DATATYPE_STRING, "path to input file"));
 		doc.set_option_decription(CDOD("output-file", CDOD::DATATYPE_STRING, "path to output file"));
@@ -57,8 +57,8 @@ public:
 
 	Result run(void*) const
 	{
-		scripting::assert_file_name_input(input_file, false);
-		scripting::assert_file_name_input(output_file, false);
+		assert_file_name_input(input_file, false);
+		assert_file_name_input(output_file, false);
 
 		if(columns.empty())
 		{
@@ -94,13 +94,13 @@ public:
 			throw std::runtime_error(std::string("Number of tolerances does not equal number of columns."));
 		}
 
-		scripting::InputSelector finput_selector(input_file);
+		InputSelector finput_selector(input_file);
 		std::istream& finput=finput_selector.stream();
-		scripting::assert_io_stream(input_file, finput);
+		assert_io_stream(input_file, finput);
 
-		scripting::OutputSelector foutput_selector(output_file);
+		OutputSelector foutput_selector(output_file);
 		std::ostream& foutput=foutput_selector.stream();
-		scripting::assert_io_stream(output_file, foutput);
+		assert_io_stream(output_file, foutput);
 
 		std::string table_header_line;
 		std::vector<std::string> table_header_split;
@@ -265,4 +265,4 @@ public:
 
 }
 
-#endif /* DUKTAPER_OPERATORS_TOURNAMENT_SORT_H_ */
+#endif /* SCRIPTING_OPERATORS_TOURNAMENT_SORT_H_ */

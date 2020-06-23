@@ -20,7 +20,6 @@ public:
 		set_command_for_extra_actions("checksum", operators::Checksum());
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 		set_command_for_extra_actions("setup-defaults", operators::SetupDefaults());
-		set_command_for_extra_actions("tournament-sort", operators::TournamentSort());
 
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);

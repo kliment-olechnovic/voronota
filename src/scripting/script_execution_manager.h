@@ -166,6 +166,7 @@ public:
 		set_command_for_extra_actions("setup-voromqa", operators::SetupVoroMQA());
 		set_command_for_extra_actions("explain-command", operators::ExplainCommand(collection_of_command_documentations_));
 		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));
+		set_command_for_extra_actions("tournament-sort", operators::TournamentSort());
 	}
 
 	virtual ~ScriptExecutionManager()
