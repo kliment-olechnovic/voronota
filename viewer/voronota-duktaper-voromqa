@@ -233,6 +233,8 @@ then
 			sleep 5
 			REMAINING_SLURM_JOBS="$(squeue | grep -f "$TMPLDIR/slurm_job_ids" | wc -l)"
 		done
+		
+		find "$TMPLDIR/slurm_logs/" -type f -not -empty | xargs -L 1 cat >&2
 	else
 		cat "$TMPLDIR/input_list" \
 		| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
