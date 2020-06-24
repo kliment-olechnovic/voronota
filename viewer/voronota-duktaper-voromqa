@@ -194,16 +194,28 @@ then
 	print_help_and_exit
 fi
 
-if [ "$INFILE" != "_list" ] && [ ! -s "$INFILE" ]
+if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
 then
 	echo >&2 "Error: input file '$INFILE' does not exist"
 	exit 1
 fi
 
-if [ "$INFILE" == "_list" ] && [ -t 0 ]
+if [ "$INFILE" == "_stream" ]
 then
-	echo >&2 "Error: no stdin data"
-	exit 1
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat > "$TMPLDIR/input_stream"
+	
+	if [ ! -s "$TMPLDIR/input_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/input_stream"
+	
+	exit 0
 fi
 
 if [ "$INFILE" == "_list" ]
