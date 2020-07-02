@@ -672,6 +672,176 @@ private:
 						ImGui::EndPopup();
 					}
 				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("S##button_show_hide");
+					const std::string menu_id=std::string("Show##menu_show_hide");
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Show cartoon"))
+						{
+							result="show-atoms -rep cartoon";
+						}
+						if(ImGui::Selectable("Show trace"))
+						{
+							result="show-atoms -rep trace";
+						}
+						if(ImGui::Selectable("Show sticks"))
+						{
+							result="show-atoms -rep sticks";
+						}
+						if(ImGui::Selectable("Show balls"))
+						{
+							result="show-atoms -rep balls";
+						}
+						ImGui::Separator();
+						if(ImGui::Selectable("Hide all"))
+						{
+							result="hide-atoms";
+						}
+						if(ImGui::Selectable("Hide cartoon"))
+						{
+							result="hide-atoms -rep cartoon";
+						}
+						if(ImGui::Selectable("Hide trace"))
+						{
+							result="hide-atoms -rep trace";
+						}
+						if(ImGui::Selectable("Hide sticks"))
+						{
+							result="hide-atoms -rep sticks";
+						}
+						if(ImGui::Selectable("Hide balls"))
+						{
+							result="hide-atoms -rep balls";
+						}
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("C##button_color");
+					const std::string menu_id=std::string("Color##menu_color");
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Random"))
+						{
+							result="color-atoms -next-random-color";
+						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Spectrum by residue number"))
+						{
+							result="spectrum-atoms";
+						}
+
+						if(ImGui::Selectable("Spectrum by residue ID"))
+						{
+							result="spectrum-atoms -by residue-id";
+						}
+
+						if(ImGui::Selectable("Spectrum by chain"))
+						{
+							result="spectrum-atoms -by chain";
+						}
+
+						ImGui::Separator();
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Red"))
+							{
+								result="color-atoms -col 0xFF0000";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Yellow"))
+							{
+								result="color-atoms -col 0xFFFF00";
+							}
+							ImGui::PopStyleColor();
+						}
+						{
+							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Green"))
+							{
+								result="color-atoms -col 0x00FF00";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Cyan"))
+							{
+								result="color-atoms -col 0x00FFFF";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Blue"))
+							{
+								result="color-atoms -col 0x0000FF";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Magenta"))
+							{
+								result="color-atoms -col 0xFF00FF";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("White"))
+							{
+								result="color-atoms -col white";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Light gray"))
+							{
+								result="color-atoms -col 0xAAAAAA";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Dark gray"))
+							{
+								result="color-atoms -col 0x555555";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						ImGui::EndPopup();
+					}
+				}
 			}
 
 			ImGui::Separator();
@@ -735,7 +905,182 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+					const std::string button_id=std::string("S##button_show_hide_")+os.name;
+					const std::string menu_id=std::string("Show##menu_show_hide_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Show cartoon"))
+						{
+							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Show trace"))
+						{
+							result=std::string("show-atoms -rep trace -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Show sticks"))
+						{
+							result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Show balls"))
+						{
+							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"'";
+						}
+						ImGui::Separator();
+						if(ImGui::Selectable("Hide all"))
+						{
+							result=std::string("hide-atoms -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Hide cartoon"))
+						{
+							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Hide trace"))
+						{
+							result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Hide sticks"))
+						{
+							result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"'";
+						}
+						if(ImGui::Selectable("Hide balls"))
+						{
+							result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"'";
+						}
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("C##button_color_")+os.name;
+					const std::string menu_id=std::string("Color##menu_color_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
+						if(ImGui::Selectable("Random"))
+						{
+							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"'";
+						}
+
+						ImGui::Separator();
+
+						if(ImGui::Selectable("Spectrum by residue number"))
+						{
+							result=std::string("spectrum-atoms -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("Spectrum by residue ID"))
+						{
+							result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("Spectrum by chain"))
+						{
+							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"'";
+						}
+
+						ImGui::Separator();
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Red"))
+							{
+								result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Yellow"))
+							{
+								result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+						{
+							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Green"))
+							{
+								result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Cyan"))
+							{
+								result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Blue"))
+							{
+								result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Magenta"))
+							{
+								result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("White"))
+							{
+								result=std::string("color-atoms -col white -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Light gray"))
+							{
+								result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						{
+							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
+							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
+							if(ImGui::Selectable("Dark gray"))
+							{
+								result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"'";
+							}
+							ImGui::PopStyleColor();
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					float lightness=1.0f;
+					if(!os.picked)
+					{
+						lightness=0.5f;
+					}
+					ImVec4 color_text=ImVec4(lightness, lightness, lightness, 1.0f);
 					ImGui::PushStyleColor(ImGuiCol_Text, color_text);
 					ImGui::TextUnformatted(os.name.c_str());
 					ImGui::PopStyleColor();
