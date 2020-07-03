@@ -63,6 +63,7 @@
 #include "operators/mark_contacts.h"
 #include "operators/mock.h"
 #include "operators/move_atoms.h"
+#include "operators/order_atoms_by_residue_id.h"
 #include "operators/pick_objects.h"
 #include "operators/print_atoms.h"
 #include "operators/print_contacts.h"

@@ -113,6 +113,7 @@ public:
 		set_command_for_data_manager("mark-atoms", operators::MarkAtoms(), true);
 		set_command_for_data_manager("mark-contacts", operators::MarkContacts(), true);
 		set_command_for_data_manager("move-atoms", operators::MoveAtoms(), true);
+		set_command_for_data_manager("order-atoms-by-residue-id", operators::OrderAtomsByResidueID(), true);
 		set_command_for_data_manager("print-atoms", operators::PrintAtoms(), true);
 		set_command_for_data_manager("print-contacts", operators::PrintContacts(), true);
 		set_command_for_data_manager("print-figures", operators::PrintFigures(), true);
