@@ -135,6 +135,7 @@ public:
 		set_command_for_data_manager("set-adjunct-of-atoms-by-sequence-alignment", operators::SetAdjunctOfAtomsBySequenceAlignment(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
+		set_command_for_data_manager("set-atom-serials", operators::SetAtomSerials(), true);
 		set_command_for_data_manager("set-chain-name", operators::SetChainName(), true);
 		set_command_for_data_manager("set-chain-names-by-guessing", operators::SetChainNamesByGuessing(), true);
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);

@@ -91,6 +91,7 @@
 #include "operators/set_adjunct_of_atoms.h"
 #include "operators/set_adjunct_of_contacts.h"
 #include "operators/set_alias.h"
+#include "operators/set_atom_serials.h"
 #include "operators/set_chain_name.h"
 #include "operators/set_chain_names_by_guessing.h"
 #include "operators/set_tag_of_atoms_by_secondary_structure.h"
