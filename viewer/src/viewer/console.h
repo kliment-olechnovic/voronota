@@ -674,8 +674,8 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("S##button_show_hide");
-					const std::string menu_id=std::string("Show##menu_show_hide");
+					const std::string button_id=std::string("S##button_show");
+					const std::string menu_id=std::string("Show##menu_show");
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
@@ -695,7 +695,16 @@ private:
 						{
 							result="show-atoms -rep balls";
 						}
-						ImGui::Separator();
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("H##button_hide");
+					const std::string menu_id=std::string("Hide##menu_hide");
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
 						if(ImGui::Selectable("Hide all"))
 						{
 							result="hide-atoms";
@@ -905,8 +914,8 @@ private:
 				}
 				ImGui::SameLine();
 				{
-					const std::string button_id=std::string("S##button_show_hide_")+os.name;
-					const std::string menu_id=std::string("Show##menu_show_hide_")+os.name;
+					const std::string button_id=std::string("S##button_show_")+os.name;
+					const std::string menu_id=std::string("Show##menu_show_")+os.name;
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
@@ -926,7 +935,16 @@ private:
 						{
 							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"'";
 						}
-						ImGui::Separator();
+						ImGui::EndPopup();
+					}
+				}
+				ImGui::SameLine();
+				{
+					const std::string button_id=std::string("H##button_hide_")+os.name;
+					const std::string menu_id=std::string("Hide##menu_hide_")+os.name;
+					ImGui::Button(button_id.c_str(), ImVec2(20,0));
+					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
+					{
 						if(ImGui::Selectable("Hide all"))
 						{
 							result=std::string("hide-atoms -on-objects '")+os.name+"'";
