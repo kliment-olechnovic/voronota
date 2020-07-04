@@ -675,6 +675,19 @@ private:
 						on_after_any_command(cr);
 					}
 				}
+				else if(script_command_record.command_input.check_for_any_value_with_string("${objectname}"))
+				{
+					for(std::size_t i=0;i<picked_data_managers.size();i++)
+					{
+						CommandInput adjusted_command_input=script_command_record.command_input;
+						adjusted_command_input.replace_string_in_values("${objectname}", congregation_of_data_managers_.get_object_attributes(picked_data_managers[i]).name);
+						on_before_any_command(adjusted_command_input);
+						GenericCommandRecord cr(adjusted_command_input);
+						script_command_record.successful=commands_for_data_manager_[command_name]->execute(cr, *picked_data_managers[i]);
+						on_after_command_for_data_manager(cr, *picked_data_managers[i]);
+						on_after_any_command(cr);
+					}
+				}
 				else
 				{
 					on_before_any_command(script_command_record.command_input);

@@ -435,6 +435,47 @@ public:
 		return setv(name, value, true);
 	}
 
+	bool check_for_any_value_with_string(const std::string& str_mark) const
+	{
+		for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+		{
+			if(list_of_unnamed_values_[i].find(str_mark)!=std::string::npos)
+			{
+				return true;
+			}
+		}
+		for(MapOfValues::const_iterator it=map_of_values_.begin();it!=map_of_values_.end();++it)
+		{
+			const std::vector<std::string>& values=it->second;
+			for(std::size_t i=0;i<values.size();i++)
+			{
+				if(values[i].find(str_mark)!=std::string::npos)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	int replace_string_in_values(const std::string& str_mark, const std::string& str_replacement)
+	{
+		int replaced=0;
+		for(std::size_t i=0;i<list_of_unnamed_values_.size();i++)
+		{
+			replaced+=replace_all(list_of_unnamed_values_[i], str_mark, str_replacement);
+		}
+		for(MapOfValues::iterator it=map_of_values_.begin();it!=map_of_values_.end();++it)
+		{
+			std::vector<std::string>& values=it->second;
+			for(std::size_t i=0;i<values.size();i++)
+			{
+				replaced+=replace_all(values[i], str_mark, str_replacement);
+			}
+		}
+		return replaced;
+	}
+
 private:
 	static bool is_flag_string_true(const std::string& str)
 	{
@@ -444,6 +485,20 @@ private:
 	static bool is_flag_string_false(const std::string& str)
 	{
 		return (str=="false" || str=="0");
+	}
+
+	static int replace_all(std::string& content, const std::string& str_mark, const std::string& str_replacement)
+	{
+		int replaced=0;
+		std::size_t pos=content.find(str_mark);
+		while(pos<content.size())
+		{
+			content.replace(pos, str_mark.size(), str_replacement);
+			replaced++;
+			pos+=str_replacement.size();
+			pos=content.find(str_mark, pos);
+		}
+		return replaced;
 	}
 
 	void init_from_string(const std::string& command_str)
