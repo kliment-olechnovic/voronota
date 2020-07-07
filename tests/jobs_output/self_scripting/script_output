@@ -930,6 +930,9 @@
             "name":"center-atoms",
             "short_description":""},
           {
+            "name":"check-distance-constraint",
+            "short_description":""},
+          {
             "name":"clash-score",
             "short_description":""},
           {
@@ -1101,6 +1104,9 @@
             "name":"move-atoms",
             "short_description":""},
           {
+            "name":"order-atoms-by-residue-id",
+            "short_description":""},
+          {
             "name":"pick-more-objects",
             "short_description":""},
           {
@@ -1129,6 +1135,9 @@
             "short_description":""},
           {
             "name":"print-virtual-file",
+            "short_description":""},
+          {
+            "name":"rename-global-adjunct",
             "short_description":""},
           {
             "name":"rename-object",
@@ -1182,6 +1191,15 @@
             "name":"set-alias",
             "short_description":""},
           {
+            "name":"set-atom-serials",
+            "short_description":""},
+          {
+            "name":"set-chain-name",
+            "short_description":""},
+          {
+            "name":"set-chain-names-by-guessing",
+            "short_description":""},
+          {
             "name":"set-tag-of-atoms",
             "short_description":""},
           {
@@ -1216,6 +1234,12 @@
             "short_description":""},
           {
             "name":"spectrum-contacts",
+            "short_description":""},
+          {
+            "name":"split-pdb-file",
+            "short_description":""},
+          {
+            "name":"tournament-sort",
             "short_description":""},
           {
             "name":"unmark-atoms",
