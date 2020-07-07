@@ -91,7 +91,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id")
+		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id" && by!="secondary-structure")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -187,6 +187,41 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				map_of_ids_values[*it]=residue_ids_to_values[data_manager.atoms()[*it].crad.without_atom()];
+			}
+		}
+		else if(by=="secondary-structure")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t atom_id=(*it);
+				double value=0.0;
+				if(atom_id<data_manager.primary_structure_info().map_of_atoms_to_residues.size())
+				{
+					const std::size_t residue_id=data_manager.primary_structure_info().map_of_atoms_to_residues[atom_id];
+					if(data_manager.primary_structure_info().residues[residue_id].residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
+					{
+						if(residue_id<data_manager.secondary_structure_info().residue_descriptors.size())
+						{
+							if(data_manager.secondary_structure_info().residue_descriptors[residue_id].secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_ALPHA_HELIX)
+							{
+								value=1.0;
+							}
+							else if(data_manager.secondary_structure_info().residue_descriptors[residue_id].secondary_structure_type==common::ConstructionOfSecondaryStructure::SECONDARY_STRUCTURE_TYPE_BETA_STRAND)
+							{
+								value=2.0;
+							}
+						}
+					}
+					else if(data_manager.primary_structure_info().residues[residue_id].residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_NUCLEOTIDE)
+					{
+						value=3.0;
+					}
+					else
+					{
+						value=4.0;
+					}
+				}
+				map_of_ids_values[*it]=value;
 			}
 		}
 
