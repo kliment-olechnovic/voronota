@@ -45,6 +45,7 @@ public:
 	std::string adjunct;
 	std::string by;
 	std::string scheme;
+	bool scheme_present;
 	bool as_z_scores;
 	bool min_val_present;
 	double min_val;
@@ -52,7 +53,7 @@ public:
 	double max_val;
 	bool only_summarize;
 
-	SpectrumAtoms() : as_z_scores(false), min_val_present(false), min_val(0.0), max_val_present(false), max_val(1.0), only_summarize(false)
+	SpectrumAtoms() : scheme_present(false), as_z_scores(false), min_val_present(false), min_val(0.0), max_val_present(false), max_val(1.0), only_summarize(false)
 	{
 	}
 
@@ -62,6 +63,7 @@ public:
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		adjunct=input.get_value_or_default<std::string>("adjunct", "");
 		by=adjunct.empty() ? input.get_value_or_default<std::string>("by", "residue-number") : std::string("adjunct");
+		scheme_present=input.is_option("scheme");
 		scheme=input.get_value_or_default<std::string>("scheme", "reverse-rainbow");
 		as_z_scores=input.get_flag("as-z-scores");
 		min_val_present=input.is_option("min-val");
@@ -125,6 +127,12 @@ public:
 		{
 			throw std::runtime_error(std::string("No drawable atoms selected."));
 		}
+
+		bool usable_min_val_present=min_val_present;
+		double usable_min_val=min_val;
+		bool usable_max_val_present=max_val_present;
+		double usable_max_val=max_val;
+		std::string usable_scheme=scheme;
 
 		std::map<std::size_t, double> map_of_ids_values;
 
@@ -223,6 +231,20 @@ public:
 				}
 				map_of_ids_values[*it]=value;
 			}
+			if(!min_val_present)
+			{
+				usable_min_val_present=true;
+				usable_min_val=0.0;
+			}
+			if(!max_val_present)
+			{
+				usable_max_val_present=true;
+				usable_max_val=4.0;
+			}
+			if(!scheme_present)
+			{
+				usable_scheme="grycb";
+			}
 		}
 
 		if(map_of_ids_values.empty())
@@ -238,10 +260,10 @@ public:
 
 		Utilities::calculate_spectrum_info(
 				as_z_scores,
-				min_val_present,
-				min_val,
-				max_val_present,
-				max_val,
+				usable_min_val_present,
+				usable_min_val,
+				usable_max_val_present,
+				usable_max_val,
 				min_val_actual,
 				max_val_actual,
 				num_of_vals,
@@ -253,7 +275,7 @@ public:
 		{
 			DataManager::DisplayStateUpdater dsu;
 			dsu.visual_ids=representation_ids;
-			if(scheme=="random")
+			if(usable_scheme=="random")
 			{
 				std::map<double, auxiliaries::ColorUtilities::ColorInteger> map_of_values_colors;
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
@@ -274,7 +296,7 @@ public:
 			{
 				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
 				{
-					dsu.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					dsu.color=auxiliaries::ColorUtilities::color_from_gradient(usable_scheme, it->second);
 					data_manager.update_atoms_display_state(dsu, it->first);
 				}
 			}

@@ -759,7 +759,7 @@ private:
 
 						if(ImGui::Selectable("Spectrum by secondary structure"))
 						{
-							result="spectrum-atoms -by secondary-structure -scheme grycb -min-val 0 -max-val 4";
+							result="spectrum-atoms -by secondary-structure";
 						}
 
 						ImGui::Separator();
@@ -1004,7 +1004,7 @@ private:
 
 						if(ImGui::Selectable("Spectrum by secondary structure"))
 						{
-							result=std::string("spectrum-atoms -by secondary-structure -scheme grycb -min-val 0 -max-val 4 -on-objects '")+os.name+"'";
+							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"'";
 						}
 
 						ImGui::Separator();
