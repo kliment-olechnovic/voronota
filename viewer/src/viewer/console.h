@@ -679,19 +679,21 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Show cartoon"))
+						ImGui::Selectable("Show:");
+
+						if(ImGui::Selectable("  cartoon"))
 						{
 							result="show-atoms -rep cartoon";
 						}
-						if(ImGui::Selectable("Show trace"))
+						if(ImGui::Selectable("  trace"))
 						{
 							result="show-atoms -rep trace";
 						}
-						if(ImGui::Selectable("Show sticks"))
+						if(ImGui::Selectable("  sticks"))
 						{
 							result="show-atoms -rep sticks";
 						}
-						if(ImGui::Selectable("Show balls"))
+						if(ImGui::Selectable("  balls"))
 						{
 							result="show-atoms -rep balls";
 						}
@@ -705,23 +707,25 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Hide all"))
+						ImGui::Selectable("Hide:");
+
+						if(ImGui::Selectable("  all"))
 						{
 							result="hide-atoms";
 						}
-						if(ImGui::Selectable("Hide cartoon"))
+						if(ImGui::Selectable("  cartoon"))
 						{
 							result="hide-atoms -rep cartoon";
 						}
-						if(ImGui::Selectable("Hide trace"))
+						if(ImGui::Selectable("  trace"))
 						{
 							result="hide-atoms -rep trace";
 						}
-						if(ImGui::Selectable("Hide sticks"))
+						if(ImGui::Selectable("  sticks"))
 						{
 							result="hide-atoms -rep sticks";
 						}
-						if(ImGui::Selectable("Hide balls"))
+						if(ImGui::Selectable("  balls"))
 						{
 							result="hide-atoms -rep balls";
 						}
@@ -735,44 +739,56 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Random"))
-						{
-							result="color-atoms -next-random-color";
-						}
+						ImGui::Selectable("Spectrum:");
 
-						ImGui::Separator();
-
-						if(ImGui::Selectable("Spectrum by residue number"))
+						if(ImGui::Selectable("  by residue number"))
 						{
 							result="spectrum-atoms";
 						}
 
-						if(ImGui::Selectable("Spectrum by residue ID"))
+						if(ImGui::Selectable("  by residue ID"))
 						{
 							result="spectrum-atoms -by residue-id";
 						}
 
-						if(ImGui::Selectable("Spectrum by chain"))
+						if(ImGui::Selectable("  by chain"))
 						{
 							result="spectrum-atoms -by chain";
 						}
 
-						if(ImGui::Selectable("Spectrum by secondary structure"))
+						if(ImGui::Selectable("  by secondary structure"))
 						{
 							result="spectrum-atoms -by secondary-structure";
 						}
 
-						if(ImGui::Selectable("Spectrum by hydropathy"))
+						if(ImGui::Selectable("  by hydropathy"))
 						{
 							result="spectrum-atoms -by hydropathy";
 						}
 
+						if(ImGui::Selectable("  by B-factor, blue-white-red"))
+						{
+							result="spectrum-atoms -adjunct tf -scheme bwr";
+						}
+
+						if(ImGui::Selectable("  by B-factor, red-white-blue"))
+						{
+							result="spectrum-atoms -adjunct tf -scheme rwb";
+						}
+
 						ImGui::Separator();
+
+						ImGui::Selectable("Color:");
+
+						if(ImGui::Selectable("  random"))
+						{
+							result="color-atoms -next-random-color";
+						}
 
 						{
 							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Red"))
+							if(ImGui::Selectable("  red"))
 							{
 								result="color-atoms -col 0xFF0000";
 							}
@@ -782,7 +798,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Yellow"))
+							if(ImGui::Selectable("  yellow"))
 							{
 								result="color-atoms -col 0xFFFF00";
 							}
@@ -791,7 +807,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Green"))
+							if(ImGui::Selectable("  green"))
 							{
 								result="color-atoms -col 0x00FF00";
 							}
@@ -801,7 +817,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Cyan"))
+							if(ImGui::Selectable("  cyan"))
 							{
 								result="color-atoms -col 0x00FFFF";
 							}
@@ -811,7 +827,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Blue"))
+							if(ImGui::Selectable("  blue"))
 							{
 								result="color-atoms -col 0x0000FF";
 							}
@@ -821,7 +837,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Magenta"))
+							if(ImGui::Selectable("  magenta"))
 							{
 								result="color-atoms -col 0xFF00FF";
 							}
@@ -831,7 +847,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("White"))
+							if(ImGui::Selectable("  white"))
 							{
 								result="color-atoms -col white";
 							}
@@ -841,7 +857,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Light gray"))
+							if(ImGui::Selectable("  light gray"))
 							{
 								result="color-atoms -col 0xAAAAAA";
 							}
@@ -851,7 +867,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Dark gray"))
+							if(ImGui::Selectable("  dark gray"))
 							{
 								result="color-atoms -col 0x555555";
 							}
@@ -929,19 +945,21 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Show cartoon"))
+						ImGui::Selectable("Show:");
+
+						if(ImGui::Selectable("  cartoon"))
 						{
 							result=std::string("show-atoms -rep cartoon -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Show trace"))
+						if(ImGui::Selectable("  trace"))
 						{
 							result=std::string("show-atoms -rep trace -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Show sticks"))
+						if(ImGui::Selectable("  sticks"))
 						{
 							result=std::string("show-atoms -rep sticks -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Show balls"))
+						if(ImGui::Selectable("  balls"))
 						{
 							result=std::string("show-atoms -rep balls -on-objects '")+os.name+"'";
 						}
@@ -955,23 +973,25 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Hide all"))
+						ImGui::Selectable("Hide:");
+
+						if(ImGui::Selectable("  all"))
 						{
 							result=std::string("hide-atoms -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Hide cartoon"))
+						if(ImGui::Selectable("  cartoon"))
 						{
 							result=std::string("hide-atoms -rep cartoon -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Hide trace"))
+						if(ImGui::Selectable("  trace"))
 						{
 							result=std::string("hide-atoms -rep trace -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Hide sticks"))
+						if(ImGui::Selectable("  sticks"))
 						{
 							result=std::string("hide-atoms -rep sticks -on-objects '")+os.name+"'";
 						}
-						if(ImGui::Selectable("Hide balls"))
+						if(ImGui::Selectable("  balls"))
 						{
 							result=std::string("hide-atoms -rep balls -on-objects '")+os.name+"'";
 						}
@@ -985,44 +1005,56 @@ private:
 					ImGui::Button(button_id.c_str(), ImVec2(20,0));
 					if(ImGui::BeginPopupContextItem(menu_id.c_str(), 0))
 					{
-						if(ImGui::Selectable("Random"))
-						{
-							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"'";
-						}
+						ImGui::Selectable("Spectrum:");
 
-						ImGui::Separator();
-
-						if(ImGui::Selectable("Spectrum by residue number"))
+						if(ImGui::Selectable("  by residue number"))
 						{
 							result=std::string("spectrum-atoms -on-objects '")+os.name+"'";
 						}
 
-						if(ImGui::Selectable("Spectrum by residue ID"))
+						if(ImGui::Selectable("  by residue ID"))
 						{
 							result=std::string("spectrum-atoms -by residue-id -on-objects '")+os.name+"'";
 						}
 
-						if(ImGui::Selectable("Spectrum by chain"))
+						if(ImGui::Selectable("  by chain"))
 						{
 							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"'";
 						}
 
-						if(ImGui::Selectable("Spectrum by secondary structure"))
+						if(ImGui::Selectable("  by secondary structure"))
 						{
 							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"'";
 						}
 
-						if(ImGui::Selectable("Spectrum by hydropathy"))
+						if(ImGui::Selectable("  by hydropathy"))
 						{
 							result=std::string("spectrum-atoms -by hydropathy -on-objects '")+os.name+"'";
 						}
 
+						if(ImGui::Selectable("  by B-factor, blue-white-red"))
+						{
+							result=std::string("spectrum-atoms -adjunct tf -scheme bwr -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("  by B-factor, red-white-blue"))
+						{
+							result=std::string("spectrum-atoms -adjunct tf -scheme rwb -on-objects '")+os.name+"'";
+						}
+
 						ImGui::Separator();
+
+						ImGui::Selectable("Color:");
+
+						if(ImGui::Selectable("  random"))
+						{
+							result=std::string("color-atoms -next-random-color -on-objects '")+os.name+"'";
+						}
 
 						{
 							ImVec4 color_text=ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Red"))
+							if(ImGui::Selectable("  red"))
 							{
 								result=std::string("color-atoms -col 0xFF0000 -on-objects '")+os.name+"'";
 							}
@@ -1032,7 +1064,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Yellow"))
+							if(ImGui::Selectable("  yellow"))
 							{
 								result=std::string("color-atoms -col 0xFFFF00 -on-objects '")+os.name+"'";
 							}
@@ -1041,7 +1073,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Green"))
+							if(ImGui::Selectable("  green"))
 							{
 								result=std::string("color-atoms -col 0x00FF00 -on-objects '")+os.name+"'";
 							}
@@ -1051,7 +1083,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 1.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Cyan"))
+							if(ImGui::Selectable("  cyan"))
 							{
 								result=std::string("color-atoms -col 0x00FFFF -on-objects '")+os.name+"'";
 							}
@@ -1061,7 +1093,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.0f, 0.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Blue"))
+							if(ImGui::Selectable("  blue"))
 							{
 								result=std::string("color-atoms -col 0x0000FF -on-objects '")+os.name+"'";
 							}
@@ -1071,7 +1103,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Magenta"))
+							if(ImGui::Selectable("  magenta"))
 							{
 								result=std::string("color-atoms -col 0xFF00FF -on-objects '")+os.name+"'";
 							}
@@ -1081,7 +1113,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("White"))
+							if(ImGui::Selectable("  white"))
 							{
 								result=std::string("color-atoms -col white -on-objects '")+os.name+"'";
 							}
@@ -1091,7 +1123,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.66f, 0.66f, 0.66f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Light gray"))
+							if(ImGui::Selectable("  light gray"))
 							{
 								result=std::string("color-atoms -col 0xAAAAAA -on-objects '")+os.name+"'";
 							}
@@ -1101,7 +1133,7 @@ private:
 						{
 							ImVec4 color_text=ImVec4(0.33f, 0.33f, 0.33f, 1.0f);
 							ImGui::PushStyleColor(ImGuiCol_Text, color_text);
-							if(ImGui::Selectable("Dark gray"))
+							if(ImGui::Selectable("  dark gray"))
 							{
 								result=std::string("color-atoms -col 0x555555 -on-objects '")+os.name+"'";
 							}
