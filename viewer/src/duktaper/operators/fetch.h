@@ -31,16 +31,18 @@ public:
 	};
 
 	std::string pdb_id;
+	bool assembly_provided;
 	int assembly;
 	bool no_heteroatoms;
 
-	Fetch() : assembly(1), no_heteroatoms(false)
+	Fetch() : assembly_provided(false), assembly(1), no_heteroatoms(false)
 	{
 	}
 
 	void initialize(scripting::CommandInput& input)
 	{
 		pdb_id=input.get_value_or_first_unused_unnamed_value("pdb-id");
+		assembly_provided=input.is_option("assembly");
 		assembly=input.get_value_or_default<int>("assembly", 1);
 		no_heteroatoms=input.get_flag("no-heteroatoms");
 	}
@@ -84,35 +86,60 @@ public:
 
 		scripting::VirtualFileStorage::TemporaryFile tmpfile;
 
+		int used_assembly=assembly;
+
 		{
-			std::ostringstream command_output;
-			if(assembly==0)
+			bool finished=false;
+			bool downloaded=false;
+
+			for(int stage=1;stage<=2 && !finished;stage++)
 			{
-				command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb.gz' | zcat";
+				std::ostringstream command_output;
+				if(used_assembly==0)
+				{
+					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb.gz' | zcat";
+				}
+				else
+				{
+					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb" << used_assembly << ".gz' | zcat";
+				}
+				operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
+				if(download_result.exit_status!=0 || download_result.stdout.empty())
+				{
+					if(assembly_provided || used_assembly==0)
+					{
+						finished=true;
+					}
+					else
+					{
+						used_assembly=0;
+					}
+				}
+				else
+				{
+					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout);
+					finished=true;
+					downloaded=stage;
+				}
 			}
-			else
-			{
-				command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb" << assembly << ".gz' | zcat";
-			}
-			operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
-			if(download_result.exit_status!=0 || download_result.stdout.empty())
+
+			if(!downloaded)
 			{
 				throw std::runtime_error(std::string("No data downloaded."));
 			}
-			scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout);
 		}
 
 		std::ostringstream title_output;
 		title_output << pdb_id;
-		if(assembly!=0)
+		if(used_assembly!=0)
 		{
-			title_output << "_as_" << assembly;
+			title_output << "_as_" << used_assembly;
 		}
 
 		scripting::operators::Import::Result import_result=scripting::operators::Import().init(CMDIN()
 				.set("file", tmpfile.filename())
 				.set("format", "pdb")
-				.set("as-assembly", (assembly!=0))
+				.set("as-assembly", (used_assembly!=0))
 				.set("include-heteroatoms", !no_heteroatoms)
 				.set("title", title_output.str())).run(congregation_of_data_managers);
 
