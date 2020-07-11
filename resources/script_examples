@@ -61,45 +61,45 @@ voromqa-global
 voromqa-dark-global
 set-adjunct-of-atoms-by-residue-pooling \
   -source-name vd1 -destination-name vd1s \
-  -pooling-mode min -smoothing-window 4
+  -pooling-mode min -smoothing-window 0
 spectrum-atoms -adjunct vd1s \
-  -scheme rwb -min-val 0.35 -max-val 0.65
+  -scheme rwb -min-val 0.45 -max-val 0.75
 
 ### Color atoms by VoroMQA-dark local scores, level 1
 set-adjunct-of-atoms-by-residue-pooling \
   -source-name vd1 \
   -destination-name vd1s \
   -pooling-mode min \
-  -smoothing-window 4
+  -smoothing-window 0
 spectrum-atoms \
   -adjunct vd1s \
   -scheme rwb \
-  -min-val 0.35 \
-  -max-val 0.65
+  -min-val 0.45 \
+  -max-val 0.75
 
 ### Color atoms by VoroMQA-dark local scores, level 2
 set-adjunct-of-atoms-by-residue-pooling \
   -source-name vd2 \
   -destination-name vd2s \
   -pooling-mode min \
-  -smoothing-window 4
+  -smoothing-window 0
 spectrum-atoms \
   -adjunct vd2s \
   -scheme rwb \
-  -min-val 0.35 \
-  -max-val 0.65
+  -min-val 0.45 \
+  -max-val 0.75
 
 ### Color atoms by VoroMQA-dark local scores, level 3
 set-adjunct-of-atoms-by-residue-pooling \
   -source-name vd3 \
   -destination-name vd3s \
   -pooling-mode min \
-  -smoothing-window 4
+  -smoothing-window 0
 spectrum-atoms \
   -adjunct vd3s \
   -scheme rwb \
-  -min-val 0.35 \
-  -max-val 0.65
+  -min-val 0.45 \
+  -max-val 0.75
 
 ### Calculate VoroMQA surface frustration scores
 #restrict-atoms [c<A>]
