@@ -161,3 +161,15 @@ show-atoms
 color-atoms 0x555555
 spectrum-atoms -adjunct ev -scheme bwr # -min-val 0.1 -max-val 0.5
 
+### Calculate VoroMQA interface frustration scores
+restrict-atoms [-t! het]
+construct-contacts
+make-drawable-contacts [-inter-chain]
+voromqa-global
+voromqa-interface-frustration [-inter-chain] \
+  -adj-contact-interface-frustration-energy-mean cifem \
+  -smoothing-iterations 2
+hide-contacts
+spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
+show-contacts [-inter-chain]
+

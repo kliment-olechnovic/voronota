@@ -27,7 +27,7 @@ public:
 	std::string adjunct_contact_interface_frustration_energy_mean;
 	unsigned int smoothing_iterations;
 
-	VoroMQAInterfaceFrustration() : smoothing_iterations(3)
+	VoroMQAInterfaceFrustration() : smoothing_iterations(2)
 	{
 	}
 
@@ -36,7 +36,7 @@ public:
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		adjunct_contact_energy=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		adjunct_contact_interface_frustration_energy_mean=input.get_value_or_default<std::string>("adj-contact-interface-frustration-energy-mean", "interface_frustration_energy_mean");
-		smoothing_iterations=input.get_value_or_default<unsigned int>("smoothing-iterations", 1);
+		smoothing_iterations=input.get_value_or_default<unsigned int>("smoothing-iterations", 2);
 	}
 
 	void document(CommandDocumentation& doc) const
