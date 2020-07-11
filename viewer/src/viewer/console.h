@@ -756,6 +756,11 @@ private:
 							result="spectrum-atoms -by chain";
 						}
 
+						if(ImGui::Selectable("  by chain randomly"))
+						{
+							result="spectrum-atoms -by chain -scheme random";
+						}
+
 						if(ImGui::Selectable("  by secondary structure"))
 						{
 							result="spectrum-atoms -by secondary-structure";
@@ -931,6 +936,11 @@ private:
 							result=std::string("tmalign-many -target '")+os.name+"'";
 						}
 						ImGui::Separator();
+						if(ImGui::Selectable("Copy name to clipboard"))
+						{
+							ImGui::SetClipboardText(os.name.c_str());
+						}
+						ImGui::Separator();
 						if(ImGui::Selectable("Delete"))
 						{
 							result=std::string("delete-objects -names '")+os.name+"'";
@@ -1020,6 +1030,11 @@ private:
 						if(ImGui::Selectable("  by chain"))
 						{
 							result=std::string("spectrum-atoms -by chain -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("  by chain randomly"))
+						{
+							result=std::string("spectrum-atoms -by chain -scheme random -on-objects '")+os.name+"'";
 						}
 
 						if(ImGui::Selectable("  by secondary structure"))
