@@ -107,6 +107,7 @@
 #include "operators/spectrum_atoms.h"
 #include "operators/spectrum_contacts.h"
 #include "operators/split_pdb_file.h"
+#include "operators/summarize_linear_structure.h"
 #include "operators/tournament_sort.h"
 #include "operators/unset_aliases.h"
 #include "operators/upload_virtual_file.h"

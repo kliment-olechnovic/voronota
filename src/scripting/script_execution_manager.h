@@ -146,6 +146,7 @@ public:
 		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);
 		set_command_for_data_manager("spectrum-atoms", operators::SpectrumAtoms(), true);
 		set_command_for_data_manager("spectrum-contacts", operators::SpectrumContacts(), true);
+		set_command_for_data_manager("summarize-linear-structure", operators::SummarizeLinearStructure(), true);
 		set_command_for_data_manager("unmark-atoms", operators::UnmarkAtoms(), true);
 		set_command_for_data_manager("unmark-contacts", operators::UnmarkContacts(), true);
 		set_command_for_data_manager("voromqa-frustration", operators::VoroMQAFrustration(), true);
