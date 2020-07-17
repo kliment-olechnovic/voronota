@@ -596,6 +596,22 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 				input >> raw_value;
 				tester.special_match_crad_map["atom-name"]=std::string("A<")+raw_value+">";
 			}
+			else if(token=="--protein")
+			{
+				tester.special_match_crad_map["protein"]=std::string("R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE,SEC>");
+			}
+			else if(token=="--nucleic")
+			{
+				tester.special_match_crad_map["nucleic"]=std::string("R<DA,DC,DG,DT,DI,A,C,G,U,I>");
+			}
+			else if(token=="--nucleic-dna")
+			{
+				tester.special_match_crad_map["nucleic-dna"]=std::string("R<DA,DC,DG,DT,DI>");
+			}
+			else if(token=="--nucleic-rna")
+			{
+				tester.special_match_crad_map["nucleic-rna"]=std::string("R<A,C,G,T,I>");
+			}
 			else if(token_index==0
 					&& token.rfind("-", 0)!=0
 					&& token.find('<')!=std::string::npos
