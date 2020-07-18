@@ -27,6 +27,7 @@
 #include "operators/delete_tags_of_contacts.h"
 #include "operators/delete_virtual_files.h"
 #include "operators/describe_exposure.h"
+#include "operators/distance.h"
 #include "operators/download_virtual_file.h"
 #include "operators/echo.h"
 #include "operators/exit.h"
