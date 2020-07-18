@@ -172,6 +172,7 @@ public:
 		set_command_for_extra_actions("list-commands", operators::ListCommands(collection_of_command_documentations_));
 		set_command_for_extra_actions("tournament-sort", operators::TournamentSort());
 		set_command_for_extra_actions("split-pdb-file", operators::SplitPDBFile());
+		set_command_for_extra_actions("cat-files", operators::CatFiles());
 	}
 
 	virtual ~ScriptExecutionManager()
