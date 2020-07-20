@@ -84,6 +84,7 @@ public:
 		set_command_for_data_manager("delete-tags-of-contacts", operators::DeleteTagsOfContacts(), true);
 		set_command_for_data_manager("describe-exposure", operators::DescribeExposure(), true);
 		set_command_for_data_manager("distance", operators::Distance(), true);
+		set_command_for_data_manager("estimate-axis", operators::EstimateAxis(), true);
 		set_command_for_data_manager("export-adjuncts-of-atoms-as-casp-qa-line", operators::ExportAdjunctsOfAtomsAsCASPQALine(), false);
 		set_command_for_data_manager("export-adjuncts-of-atoms", operators::ExportAdjunctsOfAtoms(), false);
 		set_command_for_data_manager("export-atoms-and-contacts", operators::ExportAtomsAndContacts(), false);

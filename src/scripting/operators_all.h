@@ -30,6 +30,7 @@
 #include "operators/distance.h"
 #include "operators/download_virtual_file.h"
 #include "operators/echo.h"
+#include "operators/estimate_axis.h"
 #include "operators/exit.h"
 #include "operators/explain_command.h"
 #include "operators/export_adjuncts_of_atoms_as_casp_qa_line.h"
