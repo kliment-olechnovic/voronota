@@ -61,7 +61,7 @@ public:
 	{
 		selection_expresion_for_atoms_a=input.get_value<std::string>("atoms-first");
 		selection_expresion_for_atoms_b=input.get_value<std::string>("atoms-second");
-		align_on_z=input.get_flag("rotate-to-z");
+		align_on_z=input.get_flag("align-on-z");
 	}
 
 	void document(CommandDocumentation& doc) const
