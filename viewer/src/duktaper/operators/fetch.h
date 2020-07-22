@@ -119,7 +119,7 @@ public:
 				{
 					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout);
 					finished=true;
-					downloaded=stage;
+					downloaded=true;
 				}
 			}
 
