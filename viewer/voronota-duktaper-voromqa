@@ -513,6 +513,7 @@ if(params.output_dark_scores!=="")
 	
 	if(params.casp_b_factors==="true")
 	{
+		voronota_set_adjunct_of_atoms("-name oc -value 1.0");
 		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts vd1s -parameters 0.5 0.1 0.5 0.2 5.0 -output-adjunct vd1sd");
 		voronota_assert_full_success("Failed to transform adjuncts");
 		
@@ -538,6 +539,7 @@ if(params.output_light_scores!=="")
 	
 	if(params.casp_b_factors==="true")
 	{
+		voronota_set_adjunct_of_atoms("-name oc -value 1.0");
 		voronota_set_adjunct_of_atoms_by_expression("-expression _reverse_s -input-adjuncts voromqa_score_rs -parameters 0.3 0.1 0.5 0.2 3.0 -output-adjunct voromqa_score_rsd");
 		voronota_assert_full_success("Failed to transform adjuncts");
 		
