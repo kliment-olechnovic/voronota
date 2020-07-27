@@ -52,8 +52,9 @@ public:
 	std::string selection_expresion_for_atoms_a;
 	std::string selection_expresion_for_atoms_b;
 	bool align_on_z;
+	bool move_to_origin;
 
-	EstimateAxis() : align_on_z(false)
+	EstimateAxis() : align_on_z(false), move_to_origin(false)
 	{
 	}
 
@@ -62,6 +63,7 @@ public:
 		selection_expresion_for_atoms_a=input.get_value<std::string>("atoms-first");
 		selection_expresion_for_atoms_b=input.get_value<std::string>("atoms-second");
 		align_on_z=input.get_flag("align-on-z");
+		move_to_origin=input.get_flag("move-to-origin");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -69,6 +71,7 @@ public:
 		doc.set_option_decription(CDOD("atoms-first", CDOD::DATATYPE_STRING, "selection expression for the first group of atoms"));
 		doc.set_option_decription(CDOD("atoms-second", CDOD::DATATYPE_STRING, "selection expression for the second group of atoms"));
 		doc.set_option_decription(CDOD("align-on-z", CDOD::DATATYPE_BOOL, "flag to align on Z axis"));
+		doc.set_option_decription(CDOD("move-to-origin", CDOD::DATATYPE_BOOL, "flag to move to origin when aligning on Z axis"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -120,13 +123,18 @@ public:
 			rotation_axis_and_angle[2]=result.z_rotation_axis.z;
 			rotation_axis_and_angle[3]=result.z_rotation_angle;
 
+			std::vector<double> post_translation_vector(3, 0.0);
+			post_translation_vector[0]=result.p1.x;
+			post_translation_vector[1]=result.p1.y;
+			post_translation_vector[2]=result.p1.z;
+
 			std::set<std::size_t> ids;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
 			{
 				ids.insert(ids.end(), i);
 			}
 
-			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, std::vector<double>());
+			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, (move_to_origin ? std::vector<double>() : post_translation_vector));
 		}
 
 		return result;
