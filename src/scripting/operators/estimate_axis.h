@@ -53,8 +53,9 @@ public:
 	std::string selection_expresion_for_atoms_b;
 	bool align_on_z;
 	bool move_to_origin;
+	bool use_min_angle;
 
-	EstimateAxis() : align_on_z(false), move_to_origin(false)
+	EstimateAxis() : align_on_z(false), move_to_origin(false), use_min_angle(false)
 	{
 	}
 
@@ -64,6 +65,7 @@ public:
 		selection_expresion_for_atoms_b=input.get_value<std::string>("atoms-second");
 		align_on_z=input.get_flag("align-on-z");
 		move_to_origin=input.get_flag("move-to-origin");
+		use_min_angle=input.get_flag("use-min-angle");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -72,6 +74,7 @@ public:
 		doc.set_option_decription(CDOD("atoms-second", CDOD::DATATYPE_STRING, "selection expression for the second group of atoms"));
 		doc.set_option_decription(CDOD("align-on-z", CDOD::DATATYPE_BOOL, "flag to align on Z axis"));
 		doc.set_option_decription(CDOD("move-to-origin", CDOD::DATATYPE_BOOL, "flag to move to origin when aligning on Z axis"));
+		doc.set_option_decription(CDOD("use-min-angle", CDOD::DATATYPE_BOOL, "flag to report and use minimal angle"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -109,6 +112,11 @@ public:
 		result.axis=(result.p2-result.p1).unit();
 		result.z_rotation_axis=(result.axis & apollota::SimplePoint(0.0, 0.0, 1.0)).unit();
 		result.z_rotation_angle=apollota::directed_angle(apollota::SimplePoint(0.0, 0.0, 0.0), result.axis, apollota::SimplePoint(0.0, 0.0, 1.0), result.z_rotation_axis)*180.0/apollota::pi_value();
+
+		if(use_min_angle && result.z_rotation_angle>90.0)
+		{
+			result.z_rotation_angle-=180.0;
+		}
 
 		if(align_on_z)
 		{
