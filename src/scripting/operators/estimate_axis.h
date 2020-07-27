@@ -51,11 +51,12 @@ public:
 
 	std::string selection_expresion_for_atoms_a;
 	std::string selection_expresion_for_atoms_b;
-	bool align_on_z;
+	bool align_along_z;
 	bool move_to_origin;
+	bool move_on_z;
 	bool use_min_angle;
 
-	EstimateAxis() : align_on_z(false), move_to_origin(false), use_min_angle(false)
+	EstimateAxis() : align_along_z(false), move_to_origin(false), move_on_z(false), use_min_angle(false)
 	{
 	}
 
@@ -63,8 +64,9 @@ public:
 	{
 		selection_expresion_for_atoms_a=input.get_value<std::string>("atoms-first");
 		selection_expresion_for_atoms_b=input.get_value<std::string>("atoms-second");
-		align_on_z=input.get_flag("align-on-z");
+		align_along_z=input.get_flag("align-along-z");
 		move_to_origin=input.get_flag("move-to-origin");
+		move_on_z=input.get_flag("move-on-z");
 		use_min_angle=input.get_flag("use-min-angle");
 	}
 
@@ -72,8 +74,9 @@ public:
 	{
 		doc.set_option_decription(CDOD("atoms-first", CDOD::DATATYPE_STRING, "selection expression for the first group of atoms"));
 		doc.set_option_decription(CDOD("atoms-second", CDOD::DATATYPE_STRING, "selection expression for the second group of atoms"));
-		doc.set_option_decription(CDOD("align-on-z", CDOD::DATATYPE_BOOL, "flag to align on Z axis"));
-		doc.set_option_decription(CDOD("move-to-origin", CDOD::DATATYPE_BOOL, "flag to move to origin when aligning on Z axis"));
+		doc.set_option_decription(CDOD("align-along-z", CDOD::DATATYPE_BOOL, "flag to align along Z axis"));
+		doc.set_option_decription(CDOD("move-to-origin", CDOD::DATATYPE_BOOL, "flag to move to origin after aligning along Z axis"));
+		doc.set_option_decription(CDOD("move-on-z", CDOD::DATATYPE_BOOL, "flag to move on Z axis after aligning along Z axis"));
 		doc.set_option_decription(CDOD("use-min-angle", CDOD::DATATYPE_BOOL, "flag to report and use minimal angle"));
 	}
 
@@ -118,7 +121,7 @@ public:
 			result.z_rotation_angle-=180.0;
 		}
 
-		if(align_on_z)
+		if(align_along_z)
 		{
 			std::vector<double> pre_translation_vector(3, 0.0);
 			pre_translation_vector[0]=(0.0-result.p1.x);
@@ -131,10 +134,23 @@ public:
 			rotation_axis_and_angle[2]=result.z_rotation_axis.z;
 			rotation_axis_and_angle[3]=result.z_rotation_angle;
 
-			std::vector<double> post_translation_vector(3, 0.0);
-			post_translation_vector[0]=result.p1.x;
-			post_translation_vector[1]=result.p1.y;
-			post_translation_vector[2]=result.p1.z;
+			std::vector<double> post_translation_vector;
+			if(!move_to_origin)
+			{
+				post_translation_vector.resize(3, 0.0);
+				if(move_on_z)
+				{
+					post_translation_vector[0]=0.0;
+					post_translation_vector[1]=0.0;
+					post_translation_vector[2]=result.p1.z;
+				}
+				else
+				{
+					post_translation_vector[0]=result.p1.x;
+					post_translation_vector[1]=result.p1.y;
+					post_translation_vector[2]=result.p1.z;
+				}
+			}
 
 			std::set<std::size_t> ids;
 			for(std::size_t i=0;i<data_manager.atoms().size();i++)
@@ -142,7 +158,7 @@ public:
 				ids.insert(ids.end(), i);
 			}
 
-			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, (move_to_origin ? std::vector<double>() : post_translation_vector));
+			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, post_translation_vector);
 		}
 
 		return result;
