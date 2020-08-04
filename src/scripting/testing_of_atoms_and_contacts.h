@@ -72,7 +72,8 @@ public:
 					match_tags.empty() &&
 					match_tags_not.empty() &&
 					match_adjuncts.empty() &&
-					match_adjuncts_not.empty());
+					match_adjuncts_not.empty() &&
+					special_match_crad_map.empty());
 		}
 
 		bool operator()(const std::size_t id) const

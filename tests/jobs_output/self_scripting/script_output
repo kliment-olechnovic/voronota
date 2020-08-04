@@ -927,6 +927,9 @@
             "name":"calculate-burial-depth",
             "short_description":""},
           {
+            "name":"cat-files",
+            "short_description":""},
+          {
             "name":"center-atoms",
             "short_description":""},
           {
@@ -984,10 +987,16 @@
             "name":"describe-exposure",
             "short_description":""},
           {
+            "name":"distance",
+            "short_description":""},
+          {
             "name":"download-virtual-file",
             "short_description":""},
           {
             "name":"echo",
+            "short_description":""},
+          {
+            "name":"estimate-axis",
             "short_description":""},
           {
             "name":"exit",
@@ -1237,6 +1246,9 @@
             "short_description":""},
           {
             "name":"split-pdb-file",
+            "short_description":""},
+          {
+            "name":"summarize-linear-structure",
             "short_description":""},
           {
             "name":"tournament-sort",
