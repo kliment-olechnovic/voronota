@@ -547,6 +547,11 @@ private:
 		if(!data_manager_.contacts().empty())
 		{
 			common::ConstructionOfContacts::BundleOfContactsMeshInformation bundle;
+//			if(common::ConstructionOfContacts::construct_bundle_of_contacts_scaled_mesh_information(
+//					data_manager_.contacts(),
+//					common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(data_manager_.atoms()),
+//					0.25f,
+//					bundle))
 			if(common::ConstructionOfContacts::construct_bundle_of_contacts_mesh_information(data_manager_.contacts(), bundle))
 			{
 				const std::size_t number_of_contacts=data_manager_.contacts().size();

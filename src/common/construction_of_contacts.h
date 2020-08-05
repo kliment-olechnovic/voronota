@@ -505,6 +505,70 @@ public:
 
 		return (!bundle.global_buffer_of_indices.empty());
 	}
+
+	static bool construct_bundle_of_contacts_scaled_mesh_information(const std::vector<Contact>& contacts, const std::vector<apollota::SimpleSphere>& centers, const float scale_factor, BundleOfContactsMeshInformation& bundle)
+	{
+		bundle.clear();
+
+		if(contacts.empty())
+		{
+			return false;
+		}
+
+		bundle.mapped_indices.resize(contacts.size());
+
+		{
+			std::vector<float> buffer_of_vertices_raw;
+			std::vector<float> buffer_of_vertices;
+			std::vector<float> buffer_of_normals;
+			std::vector<unsigned int> buffer_of_indices_raw;
+			std::vector<unsigned int> buffer_of_indices;
+
+			for(std::size_t id=0;id<contacts.size();id++)
+			{
+				const Contact& contact=contacts[id];
+				if(!contact.value.graphics.empty())
+				{
+					auxiliaries::OpenGLPrinter opengl_printer;
+					opengl_printer.add(contact.value.graphics);
+					if(opengl_printer.write_to_low_level_triangle_buffers(buffer_of_vertices_raw, buffer_of_normals, buffer_of_indices_raw, true))
+					{
+						for(int e=0;e<(contact.solvent() ? 1 : 2);e++)
+						{
+							if(contact.ids[e]<centers.size())
+							{
+								const apollota::SimpleSphere& center=centers[contact.ids[e]];
+								buffer_of_vertices=buffer_of_vertices_raw;
+								for(std::size_t j=0;j<buffer_of_vertices.size();j+=3)
+								{
+									buffer_of_vertices[j]-=static_cast<float>(center.x);
+									buffer_of_vertices[j+1]-=static_cast<float>(center.y);
+									buffer_of_vertices[j+2]-=static_cast<float>(center.z);
+									buffer_of_vertices[j]*=scale_factor;
+									buffer_of_vertices[j+1]*=scale_factor;
+									buffer_of_vertices[j+2]*=scale_factor;
+									buffer_of_vertices[j]+=static_cast<float>(center.x);
+									buffer_of_vertices[j+1]+=static_cast<float>(center.y);
+									buffer_of_vertices[j+2]+=static_cast<float>(center.z);
+								}
+								buffer_of_indices=buffer_of_indices_raw;
+								for(std::size_t j=0;j<buffer_of_indices.size();j++)
+								{
+									buffer_of_indices[j]+=bundle.global_buffer_of_vertices.size()/3;
+								}
+								bundle.global_buffer_of_vertices.insert(bundle.global_buffer_of_vertices.end(), buffer_of_vertices.begin(), buffer_of_vertices.end());
+								bundle.global_buffer_of_normals.insert(bundle.global_buffer_of_normals.end(), buffer_of_normals.begin(), buffer_of_normals.end());
+								bundle.global_buffer_of_indices.insert(bundle.global_buffer_of_indices.end(), buffer_of_indices.begin(), buffer_of_indices.end());
+								bundle.mapped_indices[id].insert(bundle.mapped_indices[id].end(), buffer_of_indices.begin(), buffer_of_indices.end());
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return (!bundle.global_buffer_of_indices.empty());
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& output, const ConstructionOfContacts::Contact& contact)
