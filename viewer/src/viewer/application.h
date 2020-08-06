@@ -194,7 +194,7 @@ protected:
 		}
 
 		{
-			const std::string console_result=Console::instance().execute(0, 0, window_width()/2, 200, window_width()/2, window_width(), 100, window_height());
+			const std::string console_result=Console::instance().execute(0, 0, window_width()/5*3, 200, window_width()/2, window_width(), 100, window_height());
 			if(!console_result.empty())
 			{
 				const ScriptPrefixParsing::Bundle task=ScriptPrefixParsing::parse(console_result);

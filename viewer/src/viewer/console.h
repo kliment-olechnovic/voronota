@@ -126,11 +126,13 @@ public:
 		{
 			ImGui::SetNextWindowPos(ImVec2(x_pos, y_pos));
 			ImGui::SetNextWindowSizeConstraints(ImVec2(min_width, min_height), ImVec2(max_width, max_height));
-
-			if(!ImGui::Begin("Console", 0, ImVec2(recommended_width, recommended_height), 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings))
+			if(current_width_>0.0f && current_max_width_>0.0f && current_heigth_>0.0f)
 			{
-				current_width_=max_width;
-				current_heigth_=ImGui::GetWindowHeight();
+				ImGui::SetNextWindowSize(ImVec2(current_width_+(max_width-current_max_width_), ((current_heigth_!=current_max_heigth_) ? current_heigth_ : current_max_heigth_)));
+			}
+
+			if(!ImGui::Begin("Console", 0, ImVec2(recommended_width, recommended_height), 0.5f, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoTitleBar|ImGuiWindowFlags_NoCollapse))
+			{
 				ImGui::End();
 				return result;
 			}
@@ -139,6 +141,8 @@ public:
 
 			current_width_=ImGui::GetWindowWidth();
 			current_heigth_=ImGui::GetWindowHeight();
+			current_max_width_=max_width;
+			current_max_heigth_=max_height;
 
 			ImGui::End();
 		}
@@ -1176,7 +1180,9 @@ private:
 
 	Console() :
 		current_width_(0.0f),
-		current_heigth_(0.0f)
+		current_heigth_(0.0f),
+		current_max_width_(0.0f),
+		current_max_heigth_(0.0f)
 	{
 	}
 
@@ -1188,6 +1194,8 @@ private:
 
 	float current_width_;
 	float current_heigth_;
+	float current_max_width_;
+	float current_max_heigth_;
 	CommandLineInterfaceState command_line_interface_state_;
 	ScriptEditorState script_editor_state_;
 	DocumentationViewerState documentation_viewer_state_;

@@ -10,8 +10,8 @@ int main(const int argc, const char** argv)
 		voronota::scripting::CommandInput command_args_input(argc, argv);
 
 		voronota::uv::ViewerApplication::InitializationParameters app_init_parameters;
-		app_init_parameters.suggested_window_width=command_args_input.get_value_or_default<int>("window-width", 800);
-		app_init_parameters.suggested_window_height=command_args_input.get_value_or_default<int>("window-height", 600);
+		app_init_parameters.suggested_window_width=command_args_input.get_value_or_default<int>("window-width", 1024);
+		app_init_parameters.suggested_window_height=command_args_input.get_value_or_default<int>("window-height", 768);
 		app_init_parameters.title=command_args_input.get_value_or_default<std::string>("title", "voronota-viewer");
 		app_init_parameters.shader_vertex=command_args_input.get_value_or_default<std::string>("shader-vertex", "_shader_vertex_simple");
 		app_init_parameters.shader_vertex_with_instancing=command_args_input.get_value_or_default<std::string>("shader-vertex-with-instancing", "_shader_vertex_with_instancing");
