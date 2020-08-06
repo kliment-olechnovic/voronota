@@ -119,6 +119,11 @@ public:
 
 				result.total_count++;
 
+				if(result.histogram_values.size()==1)
+				{
+					result.histogram_values[0]++;
+				}
+				else
 				{
 					bool found_bin=false;
 					for(std::size_t i=0;i<result.histogram_values.size() && !found_bin;i++)
