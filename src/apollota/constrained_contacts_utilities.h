@@ -210,7 +210,17 @@ bool draw_solvent_alt_contact(
 							const SimplePoint pc=(center+((c-center).unit()*probe));
 							const SimplePoint pm_ab=(pa+pb)*(1.0/2.0);
 							const SimplePoint pm_ac=(pa+pc)*(1.0/2.0);
-							const SimplePoint pm_abc=(pa+pb+pc)*(1.0/3.0);
+							const SimplePoint pm_bc=(pb+pc)*(1.0/2.0);
+							double angle_a=min_angle(pa, pb, pc);
+							double angle_b=min_angle(pb, pa, pc);
+							double angle_c=min_angle(pc, pa, pb);
+							angle_a*=angle_a;
+							angle_b*=angle_b;
+							angle_c*=angle_c;
+							const double w_pm_ab=1.0-((angle_a+angle_b)/(angle_a+angle_b+angle_c));
+							const double w_pm_ac=1.0-((angle_a+angle_c)/(angle_a+angle_b+angle_c));
+							const double w_pm_bc=1.0-((angle_b+angle_c)/(angle_a+angle_b+angle_c));
+							const SimplePoint pm_abc=((pm_ab*w_pm_ab)+(pm_ac*w_pm_ac)+(pm_bc*w_pm_bc))*(1.0/(w_pm_ab+w_pm_ac+w_pm_bc));
 							vertices.clear();
 							normals.clear();
 							vertices.reserve(4);
