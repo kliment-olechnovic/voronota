@@ -138,9 +138,14 @@ void calculate_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 					}
 					if(draw)
 					{
-						value.graphics=(a_id==b_id ?
-								voronota::apollota::draw_solvent_contact<voronota::auxiliaries::OpenGLPrinter>(spheres, vertices_vector, ids_vertices, a_id, probe, sih) :
-								voronota::apollota::draw_inter_atom_contact<voronota::auxiliaries::OpenGLPrinter>(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections, false));
+						if(a_id==b_id)
+						{
+							voronota::apollota::draw_solvent_contact<voronota::auxiliaries::OpenGLPrinter>(spheres, vertices_vector, ids_vertices, a_id, probe, sih, value.graphics);
+						}
+						else
+						{
+							voronota::apollota::draw_inter_atom_contact<voronota::auxiliaries::OpenGLPrinter>(spheres, vertices_vector, pairs_vertices, a_id, b_id, probe, step, projections, false, value.graphics);
+						}
 					}
 					if(tag_centrality && crad_a!=voronota::common::ChainResidueAtomDescriptor::solvent() && crad_b!=voronota::common::ChainResidueAtomDescriptor::solvent() && voronota::apollota::check_inter_atom_contact_centrality(spheres, pairs_neighbors, a_id, b_id))
 					{

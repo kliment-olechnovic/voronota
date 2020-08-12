@@ -40,6 +40,7 @@ public:
 		parameters_to_draw_contacts.projections=input.get_value_or_default<int>("projections", parameters_to_draw_contacts.projections);
 		parameters_to_draw_contacts.simplify=input.get_flag("simplify");
 		parameters_to_draw_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_draw_contacts.sih_depth);
+		parameters_to_draw_contacts.enable_alt=input.get_flag("enable-alt");
 		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
 	}
 
@@ -51,6 +52,7 @@ public:
 		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
 		doc.set_option_decription(CDOD("simplify", CDOD::DATATYPE_BOOL, "flag to simplify graphics"));
 		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
+		doc.set_option_decription(CDOD("enable-alt", CDOD::DATATYPE_BOOL, "flag to enable alternative graphics"));
 		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
 	}
 

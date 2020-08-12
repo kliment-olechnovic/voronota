@@ -372,13 +372,17 @@ public:
 		int projections;
 		bool simplify;
 		int sih_depth;
+		bool enable_alt;
+		double circular_angle_step;
 
 		ParametersToDrawContacts() :
 			probe(1.4),
 			step(0.2),
 			projections(5),
 			simplify(false),
-			sih_depth(3)
+			sih_depth(3),
+			enable_alt(false),
+			circular_angle_step(0.1)
 		{
 		}
 
@@ -388,7 +392,9 @@ public:
 					&& step==b.step
 					&& projections==b.projections
 					&& simplify==b.simplify
-					&& sih_depth==b.sih_depth);
+					&& sih_depth==b.sih_depth
+					&& enable_alt==b.enable_alt
+					&& circular_angle_step==b.circular_angle_step);
 		}
 	};
 
@@ -428,20 +434,71 @@ public:
 		}
 
 		apollota::Triangulation::VerticesVector vertices_vector;
-		apollota::TriangulationQueries::PairsMap pairs_vertices;
 
 		if(!draw_solvent_ids.empty())
 		{
-			if(vertices_vector.empty())
 			{
-				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+				if(vertices_vector.empty())
+				{
+					vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+				}
+				const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
+				const apollota::SubdividedIcosahedron sih(parameters.sih_depth);
+				for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
+				{
+					Contact& contact=contacts[*it];
+					if(parameters.enable_alt)
+					{
+						contact.value.graphics_alt.resize(2);
+						apollota::draw_solvent_contact_in_two_scales<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], parameters.probe, sih, contact.value.graphics, contact.value.graphics_alt[0]);
+					}
+					else
+					{
+						apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], parameters.probe, sih, contact.value.graphics);
+					}
+				}
 			}
-			const apollota::TriangulationQueries::IDsMap ids_vertices=apollota::TriangulationQueries::collect_vertices_map_from_vertices_vector(vertices_vector);
-			const apollota::SubdividedIcosahedron sih(parameters.sih_depth);
-			for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
+
+			if(parameters.enable_alt)
 			{
-				Contact& contact=contacts[*it];
-				contact.value.graphics=apollota::draw_solvent_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, ids_vertices, contact.ids[0], parameters.probe, sih);
+				voronota::apollota::TriangulationQueries::IDsMap singles_map=voronota::apollota::TriangulationQueries::collect_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+				const voronota::apollota::TriangulationQueries::PairsMap pairs_map=voronota::apollota::TriangulationQueries::collect_pairs_neighbors_map_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
+				std::map< std::size_t, std::vector<std::size_t> > map_of_rolling_descriptors;
+				for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
+				{
+					map_of_rolling_descriptors[contacts[*it].ids[0]].reserve(3);
+				}
+				std::vector<voronota::apollota::RollingTopology::RollingDescriptor> rolling_descriptors;
+				for(voronota::apollota::TriangulationQueries::PairsMap::const_iterator pairs_map_it=pairs_map.begin();pairs_map_it!=pairs_map.end();++pairs_map_it)
+				{
+					const voronota::apollota::Pair& pair=pairs_map_it->first;
+					std::map< std::size_t, std::vector<std::size_t> >::iterator need_it0=map_of_rolling_descriptors.find(pair.get(0));
+					std::map< std::size_t, std::vector<std::size_t> >::iterator need_it1=map_of_rolling_descriptors.find(pair.get(1));
+					if(need_it0!=map_of_rolling_descriptors.end() || need_it1!=map_of_rolling_descriptors.end())
+					{
+						const std::set<std::size_t>& neighbor_ids=pairs_map_it->second;
+						const voronota::apollota::RollingTopology::RollingDescriptor rolling_descriptor=
+								voronota::apollota::RollingTopology::calculate_rolling_descriptor(bundle_of_triangulation_information.spheres, pair.get(0), pair.get(1), neighbor_ids, singles_map[pair.get(0)], singles_map[pair.get(1)], parameters.probe);
+						if(rolling_descriptor.possible && (!rolling_descriptor.strips.empty() || rolling_descriptor.detached))
+						{
+							if(need_it0!=map_of_rolling_descriptors.end())
+							{
+								need_it0->second.push_back(rolling_descriptors.size());
+							}
+							if(need_it1!=map_of_rolling_descriptors.end())
+							{
+								need_it1->second.push_back(rolling_descriptors.size());
+							}
+							rolling_descriptors.push_back(rolling_descriptor);
+						}
+					}
+				}
+				for(typename std::vector<std::size_t>::const_iterator it=draw_solvent_ids.begin();it!=draw_solvent_ids.end();++it)
+				{
+					Contact& contact=contacts[*it];
+					contact.value.graphics_alt.resize(2);
+					apollota::draw_solvent_alt_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, rolling_descriptors, contact.ids[0], map_of_rolling_descriptors[contact.ids[0]], parameters.probe, parameters.circular_angle_step, contact.value.graphics_alt[1]);
+				}
 			}
 		}
 
@@ -451,21 +508,18 @@ public:
 			{
 				vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(bundle_of_triangulation_information.quadruples_map);
 			}
-			if(pairs_vertices.empty())
-			{
-				pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-			}
+			const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
 			for(typename std::vector<std::size_t>::const_iterator it=draw_nonsolvent_ids.begin();it!=draw_nonsolvent_ids.end();++it)
 			{
 				Contact& contact=contacts[*it];
-				contact.value.graphics=apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections, parameters.simplify);
+				apollota::draw_inter_atom_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, vertices_vector, pairs_vertices, contact.ids[0], contact.ids[1], parameters.probe, parameters.step, parameters.projections, parameters.simplify, contact.value.graphics);
 			}
 		}
 
 		return true;
 	}
 
-	static bool construct_bundle_of_contacts_mesh_information(const std::vector<Contact>& contacts, BundleOfContactsMeshInformation& bundle)
+	static bool construct_bundle_of_contacts_mesh_information(const std::vector<Contact>& contacts, const bool use_graphics_alt, BundleOfContactsMeshInformation& bundle)
 	{
 		bundle.clear();
 
@@ -483,11 +537,27 @@ public:
 
 			for(std::size_t id=0;id<contacts.size();id++)
 			{
-				const ContactValue& value=contacts[id].value;
-				if(!value.graphics.empty())
+				const Contact& contact=contacts[id];
+				if((!use_graphics_alt && !contact.value.graphics.empty()) || (use_graphics_alt && !contact.value.graphics_alt.empty()))
 				{
 					auxiliaries::OpenGLPrinter opengl_printer;
-					opengl_printer.add(value.graphics);
+					if(use_graphics_alt)
+					{
+						for(std::size_t i=0;i<contact.value.graphics_alt.size();i++)
+						{
+							if(!contact.value.graphics_alt[i].empty())
+							{
+								opengl_printer.add(contact.value.graphics_alt[i]);
+							}
+						}
+					}
+					else
+					{
+						if(!contact.value.graphics.empty())
+						{
+							opengl_printer.add(contact.value.graphics);
+						}
+					}
 					if(opengl_printer.write_to_low_level_triangle_buffers(buffer_of_vertices, buffer_of_normals, buffer_of_indices, true))
 					{
 						for(std::size_t j=0;j<buffer_of_indices.size();j++)
@@ -498,70 +568,6 @@ public:
 						bundle.global_buffer_of_normals.insert(bundle.global_buffer_of_normals.end(), buffer_of_normals.begin(), buffer_of_normals.end());
 						bundle.global_buffer_of_indices.insert(bundle.global_buffer_of_indices.end(), buffer_of_indices.begin(), buffer_of_indices.end());
 						bundle.mapped_indices[id]=buffer_of_indices;
-					}
-				}
-			}
-		}
-
-		return (!bundle.global_buffer_of_indices.empty());
-	}
-
-	static bool construct_bundle_of_contacts_scaled_mesh_information(const std::vector<Contact>& contacts, const std::vector<apollota::SimpleSphere>& centers, const float scale_factor, BundleOfContactsMeshInformation& bundle)
-	{
-		bundle.clear();
-
-		if(contacts.empty())
-		{
-			return false;
-		}
-
-		bundle.mapped_indices.resize(contacts.size());
-
-		{
-			std::vector<float> buffer_of_vertices_raw;
-			std::vector<float> buffer_of_vertices;
-			std::vector<float> buffer_of_normals;
-			std::vector<unsigned int> buffer_of_indices_raw;
-			std::vector<unsigned int> buffer_of_indices;
-
-			for(std::size_t id=0;id<contacts.size();id++)
-			{
-				const Contact& contact=contacts[id];
-				if(!contact.value.graphics.empty())
-				{
-					auxiliaries::OpenGLPrinter opengl_printer;
-					opengl_printer.add(contact.value.graphics);
-					if(opengl_printer.write_to_low_level_triangle_buffers(buffer_of_vertices_raw, buffer_of_normals, buffer_of_indices_raw, true))
-					{
-						for(int e=0;e<(contact.solvent() ? 1 : 2);e++)
-						{
-							if(contact.ids[e]<centers.size())
-							{
-								const apollota::SimpleSphere& center=centers[contact.ids[e]];
-								buffer_of_vertices=buffer_of_vertices_raw;
-								for(std::size_t j=0;j<buffer_of_vertices.size();j+=3)
-								{
-									buffer_of_vertices[j]-=static_cast<float>(center.x);
-									buffer_of_vertices[j+1]-=static_cast<float>(center.y);
-									buffer_of_vertices[j+2]-=static_cast<float>(center.z);
-									buffer_of_vertices[j]*=scale_factor;
-									buffer_of_vertices[j+1]*=scale_factor;
-									buffer_of_vertices[j+2]*=scale_factor;
-									buffer_of_vertices[j]+=static_cast<float>(center.x);
-									buffer_of_vertices[j+1]+=static_cast<float>(center.y);
-									buffer_of_vertices[j+2]+=static_cast<float>(center.z);
-								}
-								buffer_of_indices=buffer_of_indices_raw;
-								for(std::size_t j=0;j<buffer_of_indices.size();j++)
-								{
-									buffer_of_indices[j]+=bundle.global_buffer_of_vertices.size()/3;
-								}
-								bundle.global_buffer_of_vertices.insert(bundle.global_buffer_of_vertices.end(), buffer_of_vertices.begin(), buffer_of_vertices.end());
-								bundle.global_buffer_of_normals.insert(bundle.global_buffer_of_normals.end(), buffer_of_normals.begin(), buffer_of_normals.end());
-								bundle.global_buffer_of_indices.insert(bundle.global_buffer_of_indices.end(), buffer_of_indices.begin(), buffer_of_indices.end());
-								bundle.mapped_indices[id].insert(bundle.mapped_indices[id].end(), buffer_of_indices.begin(), buffer_of_indices.end());
-							}
-						}
 					}
 				}
 			}

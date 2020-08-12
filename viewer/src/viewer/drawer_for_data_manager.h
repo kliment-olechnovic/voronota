@@ -62,6 +62,7 @@ public:
 		bool contacts_faces;
 		bool contacts_sasmesh;
 		bool contacts_edges;
+		bool contacts_skinshape;
 		bool figures_solid;
 		bool figures_mesh;
 
@@ -73,6 +74,7 @@ public:
 			contacts_faces(status),
 			contacts_sasmesh(status),
 			contacts_edges(status),
+			contacts_skinshape(status),
 			figures_solid(status),
 			figures_mesh(status)
 		{
@@ -86,6 +88,7 @@ public:
 			contacts_faces(contacts_status),
 			contacts_sasmesh(contacts_status),
 			contacts_edges(contacts_status),
+			contacts_skinshape(contacts_status),
 			figures_solid(figures_status),
 			figures_mesh(figures_status)
 		{
@@ -130,6 +133,7 @@ public:
 		dc_contacts_faces_(0),
 		dc_contacts_sasmesh_(1),
 		dc_contacts_edges_(2),
+		dc_contacts_skinshape_(3),
 		dc_figures_solid_(0),
 		dc_figures_mesh_(1)
 	{
@@ -141,6 +145,7 @@ public:
 		data_manager_.add_contacts_representation("faces");
 		data_manager_.add_contacts_representation("sas-mesh");
 		data_manager_.add_contacts_representation("edges");
+		data_manager_.add_contacts_representation("skin-shape");
 
 		data_manager_.add_figures_representation("solid");
 		data_manager_.add_figures_representation("mesh");
@@ -197,6 +202,10 @@ public:
 			if(drawing_request.contacts_edges)
 			{
 				dc_contacts_edges_.draw();
+			}
+			if(drawing_request.contacts_skinshape)
+			{
+				dc_contacts_skinshape_.draw();
 			}
 			if(drawing_request.figures_solid)
 			{
@@ -544,15 +553,11 @@ private:
 		dc_contacts_faces_.unset();
 		dc_contacts_sasmesh_.unset();
 		dc_contacts_edges_.unset();
+		dc_contacts_skinshape_.unset();
 		if(!data_manager_.contacts().empty())
 		{
 			common::ConstructionOfContacts::BundleOfContactsMeshInformation bundle;
-//			if(common::ConstructionOfContacts::construct_bundle_of_contacts_scaled_mesh_information(
-//					data_manager_.contacts(),
-//					common::ConstructionOfAtomicBalls::collect_plain_balls_from_atomic_balls<apollota::SimpleSphere>(data_manager_.atoms()),
-//					0.25f,
-//					bundle))
-			if(common::ConstructionOfContacts::construct_bundle_of_contacts_mesh_information(data_manager_.contacts(), bundle))
+			if(common::ConstructionOfContacts::construct_bundle_of_contacts_mesh_information(data_manager_.contacts(), false, bundle))
 			{
 				const std::size_t number_of_contacts=data_manager_.contacts().size();
 				dc_contacts_faces_.reset(number_of_contacts);
@@ -608,6 +613,31 @@ private:
 					data_manager_.set_contacts_representation_implemented(dc_contacts_edges_.representation_id, drawing_statuses);
 					dc_contacts_edges_.controller_ptr->set_wire_mode(true);
 					dc_contacts_edges_.controller_ptr->set_wire_mode_outline(true);
+				}
+			}
+		}
+		if(!data_manager_.contacts().empty())
+		{
+			common::ConstructionOfContacts::BundleOfContactsMeshInformation bundle;
+			if(common::ConstructionOfContacts::construct_bundle_of_contacts_mesh_information(data_manager_.contacts(), true, bundle))
+			{
+				const std::size_t number_of_contacts=data_manager_.contacts().size();
+				dc_contacts_skinshape_.reset(number_of_contacts);
+				if(dc_contacts_skinshape_.controller_ptr->init(bundle.global_buffer_of_vertices, bundle.global_buffer_of_normals, bundle.global_buffer_of_indices))
+				{
+					std::vector<bool> drawing_statuses(number_of_contacts, false);
+					for(std::size_t i=0;i<number_of_contacts;i++)
+					{
+						if(!bundle.mapped_indices[i].empty())
+						{
+							const uv::DrawingID drawing_id=uv::get_free_drawing_id();
+							dc_contacts_skinshape_.drawing_ids[i]=drawing_id;
+							dc_contacts_skinshape_.map_of_drawing_ids[drawing_id]=i;
+							dc_contacts_skinshape_.controller_ptr->object_register(drawing_id, bundle.mapped_indices[i]);
+							drawing_statuses[i]=true;
+						}
+					}
+					data_manager_.set_contacts_representation_implemented(dc_contacts_skinshape_.representation_id, drawing_statuses);
 				}
 			}
 		}
@@ -825,7 +855,7 @@ private:
 						const std::size_t rep_id=dc_contacts_sasmesh_.representation_id;
 						dc_contacts_sasmesh_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
 						dc_contacts_sasmesh_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
-						dc_contacts_faces_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+						dc_contacts_sasmesh_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
 
@@ -838,6 +868,18 @@ private:
 						dc_contacts_edges_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
 						dc_contacts_edges_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
 						dc_contacts_edges_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
+					}
+				}
+
+				if(dc_contacts_skinshape_.valid() && ds.visuals[dc_contacts_skinshape_.representation_id].implemented)
+				{
+					const uv::DrawingID drawing_id=dc_contacts_skinshape_.drawing_ids[i];
+					if(drawing_id>0)
+					{
+						const std::size_t rep_id=dc_contacts_skinshape_.representation_id;
+						dc_contacts_skinshape_.controller_ptr->object_set_visible(drawing_id, ds.visuals[rep_id].visible);
+						dc_contacts_skinshape_.controller_ptr->object_set_color(drawing_id, ds.visuals[rep_id].color);
+						dc_contacts_skinshape_.controller_ptr->object_set_adjunct(drawing_id, ds.marked ? 1.0 : 0.0, 0.0, 0.0);
 					}
 				}
 			}
@@ -1002,6 +1044,15 @@ private:
 			}
 		}
 
+		{
+			const Map& map=dc_contacts_skinshape_.map_of_drawing_ids;
+			Iterator it=map.find(drawing_id);
+			if(it!=map.end())
+			{
+				return it->second;
+			}
+		}
+
 		return data_manager_.contacts().size();
 	}
 
@@ -1042,6 +1093,7 @@ private:
 	WrappedDrawingController dc_contacts_faces_;
 	WrappedDrawingController dc_contacts_sasmesh_;
 	WrappedDrawingController dc_contacts_edges_;
+	WrappedDrawingController dc_contacts_skinshape_;
 	WrappedDrawingController dc_figures_solid_;
 	WrappedDrawingController dc_figures_mesh_;
 };

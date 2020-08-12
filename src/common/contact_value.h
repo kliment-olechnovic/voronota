@@ -16,6 +16,7 @@ struct ContactValue
 	bool accumulated;
 	PropertiesValue props;
 	std::string graphics;
+	std::vector<std::string> graphics_alt;
 
 	ContactValue() : area(0.0), dist(0.0), accumulated(false)
 	{
