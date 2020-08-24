@@ -161,6 +161,7 @@ bool draw_solvent_alt_contact(
 		const std::vector<std::size_t>& ids_of_rolling_descriptors,
 		const double probe,
 		const double angle_step,
+		const double offset_step,
 		std::string& output_graphics)
 {
 	output_graphics.clear();
@@ -182,80 +183,98 @@ bool draw_solvent_alt_contact(
 					{
 						{
 							const std::vector<SimplePoint> points=RollingTopology::construct_rolling_strip_approximation(rolling_descriptor, (*strip_it), angle_step);
-							vertices.clear();
-							normals.clear();
-							vertices.reserve(points.size()*2);
-							normals.reserve(points.size()*2);
-							for(std::size_t i=0;i<points.size();i++)
+							for(double offset=offset_step;offset<0.51;offset+=offset_step)
 							{
-								const SimplePoint& center=points[i];
-								const SimplePoint pa=(center+((a-center).unit()*probe));
-								const SimplePoint pb=((center+((b-center).unit()*probe))+pa)*0.5;
-								vertices.push_back(pa);
-								vertices.push_back(pb);
-								const SimplePoint n=plane_normal_from_three_points<SimplePoint>(pa, pb, pa+plane_normal_from_three_points<SimplePoint>(pa, pb, center));
-								normals.push_back(n);
-								normals.push_back(n);
-
+								vertices.clear();
+								normals.clear();
+								vertices.reserve(points.size()*2);
+								normals.reserve(points.size()*2);
+								for(std::size_t i=0;i<points.size();i++)
+								{
+									const SimplePoint& center=points[i];
+									const SimplePoint ops[2]={(center+((a-center).unit()*probe)), (center+((b-center).unit()*probe))};
+									SimplePoint ps[2]={ops[0]+((ops[1]-ops[0])*(offset-offset_step)), ops[0]+((ops[1]-ops[0])*offset)};
+									for(int e=0;e<2;e++)
+									{
+										double displacement=std::max(probe-distance_from_point_to_point(ps[e], center), 0.0);
+										displacement=std::min(displacement, distance_from_point_to_line(ps[e], a, b)*0.9);
+										ps[e]=ps[e]+((ps[e]-center).unit()*displacement);
+										vertices.push_back(ps[e]);
+										normals.push_back((center-ps[e]).unit());
+									}
+								}
+								opengl_printer.add_triangle_strip(vertices, normals);
 							}
-							opengl_printer.add_triangle_strip(vertices, normals);
 						}
 
 						for(int i=0;i<2;i++)
 						{
 							const SimplePoint center(i==0 ? strip_it->start.tangent : strip_it->end.tangent);
 							const SimplePoint c(spheres[i==0 ? strip_it->start.generator : strip_it->end.generator]);
-							const SimplePoint pa=(center+((a-center).unit()*probe));
-							const SimplePoint pb=(center+((b-center).unit()*probe));
-							const SimplePoint pc=(center+((c-center).unit()*probe));
-							const SimplePoint pm_ab=(pa+pb)*(1.0/2.0);
-							const SimplePoint pm_ac=(pa+pc)*(1.0/2.0);
-							const SimplePoint pm_bc=(pb+pc)*(1.0/2.0);
-							double angle_a=min_angle(pa, pb, pc);
-							double angle_b=min_angle(pb, pa, pc);
-							double angle_c=min_angle(pc, pa, pb);
-							angle_a*=angle_a;
-							angle_b*=angle_b;
-							angle_c*=angle_c;
-							const double w_pm_ab=1.0-((angle_a+angle_b)/(angle_a+angle_b+angle_c));
-							const double w_pm_ac=1.0-((angle_a+angle_c)/(angle_a+angle_b+angle_c));
-							const double w_pm_bc=1.0-((angle_b+angle_c)/(angle_a+angle_b+angle_c));
-							const SimplePoint pm_abc=((pm_ab*w_pm_ab)+(pm_ac*w_pm_ac)+(pm_bc*w_pm_bc))*(1.0/(w_pm_ab+w_pm_ac+w_pm_bc));
+							const SimplePoint ops[3]={(center+((a-center).unit()*probe)), (center+((b-center).unit()*probe)), (center+((c-center).unit()*probe))};
+							SimplePoint mps[3]={(ops[0]+ops[1])*0.5, (ops[0]+ops[2])*0.5, (ops[1]+ops[2])*0.5};
+							double mps_angle_coefs[3]={min_angle(ops[0], ops[1], ops[2]), min_angle(ops[1], ops[0], ops[2]), min_angle(ops[2], ops[0], ops[1])};
+							for(int e=0;e<3;e++)
+							{
+								mps_angle_coefs[e]*=mps_angle_coefs[e];
+							}
+							double mps_weights[3]={(mps_angle_coefs[0]+mps_angle_coefs[1]), (mps_angle_coefs[0]+mps_angle_coefs[2]), (mps_angle_coefs[1]+mps_angle_coefs[2])};
+							for(int e=0;e<3;e++)
+							{
+								mps_weights[e]=(1.0-(mps_weights[e]/(mps_angle_coefs[0]+mps_angle_coefs[1]+mps_angle_coefs[2])));
+							}
+							SimplePoint join_point=((mps[0]*mps_weights[0])+(mps[1]*mps_weights[1])+(mps[2]*mps_weights[2]))*(1.0/(mps_weights[0]+mps_weights[1]+mps_weights[2]));
+							{
+								const double displacement_constraint=std::min((distance_from_point_to_line(mps[0], a, b)*0.9), std::min((distance_from_point_to_line(mps[1], a, c)*0.9), (distance_from_point_to_line(mps[2], b, c)*0.9)));
+								double displacement=std::max(probe-distance_from_point_to_point(join_point, center), 0.0);
+								displacement=std::min(displacement, displacement_constraint);
+								join_point=join_point+((join_point-center).unit()*displacement);
+							}
 							vertices.clear();
 							normals.clear();
-							vertices.reserve(4);
-							normals.reserve(4);
-							vertices.push_back(pa);
-							vertices.push_back(pm_ab);
-							vertices.push_back(pm_abc);
-							vertices.push_back(pm_ac);
+							vertices.push_back(join_point);
+							vertices.push_back(ops[0]);
+							for(double offset=offset_step;offset<0.51;offset+=offset_step)
+							{
+								SimplePoint p=(ops[0]+((ops[1]-ops[0])*offset));
+								double displacement=std::max(probe-distance_from_point_to_point(p, center), 0.0);
+								displacement=std::min(displacement, distance_from_point_to_line(p, a, b)*0.9);
+								p=p+((p-center).unit()*displacement);
+								vertices.push_back(p);
+							}
 							for(std::size_t j=0;j<vertices.size();j++)
 							{
-								normals.push_back(plane_normal_from_three_points<SimplePoint>(pa, pb, pc));
+								normals.push_back((center-vertices[j]).unit());
 							}
-							opengl_printer.add_triangle_strip(vertices, normals);
+							opengl_printer.add_triangle_fan(vertices, normals);
 						}
 					}
 				}
 				else if(rolling_descriptor.detached)
 				{
 					const std::vector<SimplePoint> points=RollingTopology::construct_rolling_circle_approximation(rolling_descriptor, angle_step);
-					vertices.clear();
-					normals.clear();
-					vertices.reserve(points.size()*2);
-					normals.reserve(points.size()*2);
-					for(std::size_t i=0;i<points.size();i++)
+					for(double offset=offset_step;offset<0.51;offset+=offset_step)
 					{
-						const SimplePoint& center=points[i];
-						const SimplePoint pa=center+((a-center).unit()*probe);
-						const SimplePoint pb=((center+((b-center).unit()*probe))+pa)*0.5;
-						vertices.push_back(pa);
-						vertices.push_back(pb);
-						const SimplePoint n=plane_normal_from_three_points<SimplePoint>(pa, pb, pa+plane_normal_from_three_points<SimplePoint>(pa, pb, center));
-						normals.push_back(n);
-						normals.push_back(n);
+						vertices.clear();
+						normals.clear();
+						vertices.reserve(points.size()*2);
+						normals.reserve(points.size()*2);
+						for(std::size_t i=0;i<points.size();i++)
+						{
+							const SimplePoint& center=points[i];
+							const SimplePoint ops[2]={(center+((a-center).unit()*probe)), (center+((b-center).unit()*probe))};
+							SimplePoint ps[2]={ops[0]+((ops[1]-ops[0])*(offset-offset_step)), ops[0]+((ops[1]-ops[0])*offset)};
+							for(int e=0;e<2;e++)
+							{
+								double displacement=std::max(probe-distance_from_point_to_point(ps[e], center), 0.0);
+								displacement=std::min(displacement, distance_from_point_to_line(ps[e], a, b)*0.9);
+								ps[e]=ps[e]+((ps[e]-center).unit()*displacement);
+								vertices.push_back(ps[e]);
+								normals.push_back((center-ps[e]).unit());
+							}
+						}
+						opengl_printer.add_triangle_strip(vertices, normals);
 					}
-					opengl_printer.add_triangle_strip(vertices, normals);
 				}
 			}
 		}

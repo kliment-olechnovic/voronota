@@ -497,7 +497,7 @@ public:
 				{
 					Contact& contact=contacts[*it];
 					contact.value.graphics_alt.resize(2);
-					apollota::draw_solvent_alt_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, rolling_descriptors, contact.ids[0], map_of_rolling_descriptors[contact.ids[0]], parameters.probe, parameters.circular_angle_step, contact.value.graphics_alt[1]);
+					apollota::draw_solvent_alt_contact<auxiliaries::OpenGLPrinter>(bundle_of_triangulation_information.spheres, rolling_descriptors, contact.ids[0], map_of_rolling_descriptors[contact.ids[0]], parameters.probe, parameters.circular_angle_step, 0.5/4.0, contact.value.graphics_alt[1]);
 				}
 			}
 		}
