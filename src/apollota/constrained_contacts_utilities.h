@@ -223,13 +223,26 @@ bool draw_solvent_alt_contact(
 							{
 								mps_weights[e]=(1.0-(mps_weights[e]/(mps_angle_coefs[0]+mps_angle_coefs[1]+mps_angle_coefs[2])));
 							}
-							SimplePoint join_point=((mps[0]*mps_weights[0])+(mps[1]*mps_weights[1])+(mps[2]*mps_weights[2]))*(1.0/(mps_weights[0]+mps_weights[1]+mps_weights[2]));
+							for(int e=0;e<3;e++)
 							{
-								const double displacement_constraint=std::min((distance_from_point_to_line(mps[0], a, b)*0.9), std::min((distance_from_point_to_line(mps[1], a, c)*0.9), (distance_from_point_to_line(mps[2], b, c)*0.9)));
-								double displacement=std::max(probe-distance_from_point_to_point(join_point, center), 0.0);
-								displacement=std::min(displacement, displacement_constraint);
-								join_point=join_point+((join_point-center).unit()*displacement);
+								double displacement=std::max(probe-distance_from_point_to_point(mps[e], center), 0.0);
+								double displacement_constraint=0.0;
+								if(e==0)
+								{
+									displacement_constraint=distance_from_point_to_line(mps[e], a, b);
+								}
+								else if(e==1)
+								{
+									displacement_constraint=distance_from_point_to_line(mps[e], a, c);
+								}
+								else if(e==2)
+								{
+									displacement_constraint=distance_from_point_to_line(mps[e], b, c);
+								}
+								displacement=std::min(displacement, displacement_constraint*0.9);
+								mps[e]=mps[e]+((mps[e]-center).unit()*displacement);
 							}
+							const SimplePoint join_point=((mps[0]*mps_weights[0])+(mps[1]*mps_weights[1])+(mps[2]*mps_weights[2]))*(1.0/(mps_weights[0]+mps_weights[1]+mps_weights[2]));
 							vertices.clear();
 							normals.clear();
 							vertices.push_back(join_point);
