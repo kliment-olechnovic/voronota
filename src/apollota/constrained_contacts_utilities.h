@@ -153,6 +153,28 @@ bool draw_solvent_contact_in_two_scales(
 	return false;
 }
 
+void displace_rolling_point(
+		const SimplePoint& a,
+		const SimplePoint& b,
+		const SimplePoint& center,
+		const double probe,
+		const double displacement_scaling,
+		SimplePoint& p)
+{
+	double displacement=std::max(probe-distance_from_point_to_point(p, center), 0.0);
+	if(displacement>0.0)
+	{
+		const double p_angle=min_angle(p, center, p+(b-a));
+		if(p_angle>0.0)
+		{
+			const double p_dist=distance_from_point_to_line(p, a, b);
+			const double max_displacement=p_dist/sin(p_angle);
+			displacement=std::min(displacement, max_displacement);
+		}
+		p=p+((p-center).unit()*displacement*displacement_scaling);
+	}
+}
+
 template<typename OpenGLPrinter>
 bool draw_solvent_alt_contact(
 		const std::vector<SimpleSphere>& spheres,
@@ -198,18 +220,7 @@ bool draw_solvent_alt_contact(
 									SimplePoint ps[2]={ops[0]+((ops[1]-ops[0])*prev_offset), ops[0]+((ops[1]-ops[0])*offset)};
 									for(int e=0;e<2;e++)
 									{
-										double displacement=std::max(probe-distance_from_point_to_point(ps[e], center), 0.0);
-										if(displacement>0.0)
-										{
-											const double p_angle=min_angle(ps[e], center, ps[e]+(b-a));
-											if(p_angle>0.0)
-											{
-												const double p_dist=distance_from_point_to_line(ps[e], a, b);
-												const double max_displacement=p_dist/sin(p_angle);
-												displacement=std::min(displacement, max_displacement);
-											}
-											ps[e]=ps[e]+((ps[e]-center).unit()*displacement*displacement_scaling);
-										}
+										displace_rolling_point(a, b, center, probe, displacement_scaling, ps[e]);
 										vertices.push_back(ps[e]);
 										normals.push_back((center-ps[e]).unit());
 									}
@@ -236,33 +247,7 @@ bool draw_solvent_alt_contact(
 							}
 							for(int e=0;e<3;e++)
 							{
-								double displacement=std::max(probe-distance_from_point_to_point(mps[e], center), 0.0);
-								if(displacement>0.0)
-								{
-									double p_angle=0.0;
-									double p_dist=0.0;
-									if(e==0)
-									{
-										p_angle=min_angle(mps[e], center, mps[e]+(b-a));
-										p_dist=distance_from_point_to_line(mps[e], a, b);
-									}
-									else if(e==1)
-									{
-										p_angle=min_angle(mps[e], center, mps[e]+(c-a));
-										p_dist=distance_from_point_to_line(mps[e], a, c);
-									}
-									else if(e==2)
-									{
-										p_angle=min_angle(mps[e], center, mps[e]+(c-b));
-										p_dist=distance_from_point_to_line(mps[e], b, c);
-									}
-									if(p_angle>0.0)
-									{
-										const double max_displacement=p_dist/sin(p_angle);
-										displacement=std::min(displacement, max_displacement);
-									}
-								}
-								mps[e]=mps[e]+((mps[e]-center).unit()*displacement*displacement_scaling);
+								displace_rolling_point(((e==0 || e==1) ? a : b), ((e==0) ? b : c), center, probe, displacement_scaling, mps[e]);
 							}
 							const SimplePoint join_point=((mps[0]*mps_weights[0])+(mps[1]*mps_weights[1])+(mps[2]*mps_weights[2]))*(1.0/(mps_weights[0]+mps_weights[1]+mps_weights[2]));
 							vertices.clear();
@@ -272,18 +257,7 @@ bool draw_solvent_alt_contact(
 							for(double offset=offset_step;offset<0.51;offset+=offset_step)
 							{
 								SimplePoint p=(ops[0]+((ops[1]-ops[0])*offset));
-								double displacement=std::max(probe-distance_from_point_to_point(p, center), 0.0);
-								if(displacement>0.0)
-								{
-									const double p_angle=min_angle(p, center, p+(b-a));
-									if(p_angle>0.0)
-									{
-										const double p_dist=distance_from_point_to_line(p, a, b);
-										const double max_displacement=p_dist/sin(p_angle);
-										displacement=std::min(displacement, max_displacement);
-									}
-									p=p+((p-center).unit()*displacement*displacement_scaling);
-								}
+								displace_rolling_point(a, b, center, probe, displacement_scaling, p);
 								vertices.push_back(p);
 							}
 							for(std::size_t j=0;j<vertices.size();j++)
@@ -307,21 +281,11 @@ bool draw_solvent_alt_contact(
 						{
 							const SimplePoint& center=points[i];
 							const SimplePoint ops[2]={(center+((a-center).unit()*probe)), (center+((b-center).unit()*probe))};
-							SimplePoint ps[2]={ops[0]+((ops[1]-ops[0])*(offset-offset_step)), ops[0]+((ops[1]-ops[0])*offset)};
+							const double prev_offset=(offset>0.0 ? (offset-offset_step) : (offset-0.01));
+							SimplePoint ps[2]={ops[0]+((ops[1]-ops[0])*prev_offset), ops[0]+((ops[1]-ops[0])*offset)};
 							for(int e=0;e<2;e++)
 							{
-								double displacement=std::max(probe-distance_from_point_to_point(ps[e], center), 0.0);
-								if(displacement>0.0)
-								{
-									const double p_angle=min_angle(ps[e], center, ps[e]+(b-a));
-									if(p_angle>0.0)
-									{
-										const double p_dist=distance_from_point_to_line(ps[e], a, b);
-										const double max_displacement=p_dist/sin(p_angle);
-										displacement=std::min(displacement, max_displacement);
-									}
-									ps[e]=ps[e]+((ps[e]-center).unit()*displacement*displacement_scaling);
-								}
+								displace_rolling_point(a, b, center, probe, displacement_scaling, ps[e]);
 								vertices.push_back(ps[e]);
 								normals.push_back((center-ps[e]).unit());
 							}
