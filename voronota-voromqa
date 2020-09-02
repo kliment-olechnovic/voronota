@@ -696,6 +696,14 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
+voronota-resources radii > "$TMPLDIR/radii"
+
+if [ ! -s "$TMPLDIR/radii" ]
+then
+	echo >&2 "Error: failed to get the predefined atomic radii"
+	exit 1
+fi
+
 if [ -n "$REFERENCE_SEQUENCE" ] && [ ! -s "$REFERENCE_SEQUENCE" ]
 then
 	if [ "$REFERENCE_SEQUENCE" == "$(echo $REFERENCE_SEQUENCE | tr -dc '[:alpha:]')" ]
@@ -917,7 +925,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 | voronota get-balls-from-atoms-file \
   --input-format detect \
   --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
-  --radii-file <(voronota-resources radii) \
+  --radii-file $TMPLDIR/radii \
   --include-heteroatoms \
 | voronota query-balls \
   --match 'R<LEU,ALA,GLY,VAL,GLU,SER,LYS,ILE,ASP,THR,ARG,PRO,ASN,PHE,GLN,TYR,HIS,MET,TRP,CYS,MSE>' \
@@ -982,7 +990,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		cat $TMPLDIR/atoms_rebuilt.pdb \
 		| voronota get-balls-from-atoms-file \
 		  --annotated \
-		  --radii-file <(voronota-resources radii) \
+		  --radii-file $TMPLDIR/radii \
 		| voronota query-balls \
 		  --drop-adjuncts
 	else
@@ -1006,7 +1014,7 @@ cat $INFILE_CONTENTS_EXTRACTED \
 		cat $TMPLDIR/atoms_heavy_and_hydrogens.pdb \
 		| voronota get-balls-from-atoms-file \
 		  --annotated $MULTIPLE_MODELS_CHAINS_OPTION \
-		  --radii-file <(voronota-resources radii) \
+		  --radii-file $TMPLDIR/radii \
 		  --include-heteroatoms \
 		  --include-hydrogens \
 		| voronota query-balls \
