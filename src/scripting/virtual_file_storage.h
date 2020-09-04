@@ -24,7 +24,7 @@ public:
 		{
 		}
 
-		TemporaryFile(const std::string& data) : filename_(VirtualFileStorage::get_unused_filename())
+		explicit TemporaryFile(const std::string& data) : filename_(VirtualFileStorage::get_unused_filename())
 		{
 			VirtualFileStorage::set_file(filename_, data);
 		}

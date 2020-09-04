@@ -340,7 +340,7 @@ private:
 	class GenericCommandForSubject
 	{
 	public:
-		GenericCommandForSubject(const Operator& op) : op_(op),  on_multiple_(true)
+		explicit GenericCommandForSubject(const Operator& op) : op_(op),  on_multiple_(true)
 		{
 		}
 

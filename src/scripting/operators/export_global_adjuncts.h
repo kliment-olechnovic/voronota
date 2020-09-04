@@ -195,7 +195,7 @@ private:
 		double sort_value;
 		std::vector<std::string> values;
 
-		ContentRow(const std::size_t index) : original_row_number(index), sort_value(std::numeric_limits<double>::max())
+		explicit ContentRow(const std::size_t index) : original_row_number(index), sort_value(std::numeric_limits<double>::max())
 		{
 		}
 
