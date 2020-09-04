@@ -110,6 +110,14 @@ fi
 readonly TMPLDIR=$(mktemp -d)
 trap "rm -r $TMPLDIR" EXIT
 
+voronota-resources radii > "$TMPLDIR/radii"
+
+if [ ! -s "$TMPLDIR/radii" ]
+then
+	echo >&2 "Error: failed to get the predefined atomic radii"
+	exit 1
+fi
+
 {
 	if [[ "$INFILE" == *".gz" ]]
 	then
@@ -121,7 +129,7 @@ trap "rm -r $TMPLDIR" EXIT
 | voronota get-balls-from-atoms-file \
   --annotated \
   --input-format detect \
-  --radii-file <(voronota-resources radii) \
+  --radii-file $TMPLDIR/radii \
 | voronota query-balls \
   --drop-altloc-indicators \
 | voronota query-balls $INPUT_FILTER_QUERY \
