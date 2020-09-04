@@ -153,7 +153,7 @@ bool draw_solvent_contact_in_two_scales(
 	return false;
 }
 
-void displace_rolling_point(
+inline void displace_rolling_point(
 		const SimplePoint& a,
 		const SimplePoint& b,
 		const SimplePoint& center,
