@@ -173,3 +173,10 @@ hide-contacts
 spectrum-contacts [-inter-chain] -adjunct cifem -scheme bwr -min-val -2 -max-val 1
 show-contacts [-inter-chain]
 
+### Draw skin-shape surface
+construct-contacts
+make-drawable-contacts [-solvent] -enable-alt
+hide-atoms
+show-contacts -rep skin-shape
+color-contacts -col cyan
+
