@@ -1,6 +1,6 @@
 % VORONOTA(1)
 % Kliment Olechnovic
-% December, 2019
+% September, 2020
 
 # NAME
 

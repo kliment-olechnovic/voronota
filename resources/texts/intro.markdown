@@ -25,12 +25,14 @@ Download the latest archive from the official downloads page:
 
 The archive contains ready-to-use statically compiled 'voronota' program for
 64 bit Linux systems. This executable can be rebuilt from the provided
-source code to work on any modern Linux, Mac OS X or Windows operating systems.
+source code to work on any modern Linux, macOS or Windows operating systems.
 
 On Ubuntu 18.04 and newer it is possible to install Voronota using 'apt' command:
 
     sudo apt install voronota
 
+On Windows 10 operating system the easiest way to run Voronota is to use
+Windows Subsystem for Linux (WSL).
 
 # Building from source code
 
