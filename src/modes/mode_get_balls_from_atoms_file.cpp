@@ -93,6 +93,10 @@ void get_balls_from_atoms_file(const voronota::auxiliaries::ProgramOptionsHandle
 		else
 		{
 			std::ifstream radii_file_stream(radii_file.c_str(), std::ios::in);
+			if(!radii_file_stream.good())
+			{
+				throw std::runtime_error(std::string("No radii file '")+radii_file+"'");
+			}
 			voronota::auxiliaries::IOUtilities().read_lines_to_container(radii_file_stream, voronota::auxiliaries::AtomRadiusAssigner::add_descriptor_and_radius_from_stream_to_atom_radius_assigner, atom_radius_assigner);
 		}
 	}
