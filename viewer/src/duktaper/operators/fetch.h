@@ -104,7 +104,7 @@ public:
 					command_output << "curl 'https://files.rcsb.org/download/" << pdb_id << ".pdb" << used_assembly << ".gz' | zcat";
 				}
 				operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
-				if(download_result.exit_status!=0 || download_result.stdout.empty())
+				if(download_result.exit_status!=0 || download_result.stdout_str.empty())
 				{
 					if(assembly_provided || used_assembly==0)
 					{
@@ -117,7 +117,7 @@ public:
 				}
 				else
 				{
-					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout);
+					scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout_str);
 					finished=true;
 					downloaded=true;
 				}

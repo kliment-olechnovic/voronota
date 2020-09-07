@@ -18,11 +18,11 @@ public:
 		TemporaryDirectory()
 		{
 			operators::CallShell::Result r=operators::CallShell().init(CMDIN().set("command-string", "mktemp -d")).run(0);
-			if(r.exit_status!=0 || r.stdout.empty())
+			if(r.exit_status!=0 || r.stdout_str.empty())
 			{
 				throw std::runtime_error(std::string("Failed to create temporary directory."));
 			}
-			dir_path_=r.stdout;
+			dir_path_=r.stdout_str;
 			while(!dir_path_.empty() && dir_path_[dir_path_.size()-1]<=' ')
 			{
 				dir_path_.pop_back();

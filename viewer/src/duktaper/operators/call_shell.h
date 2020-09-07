@@ -20,8 +20,8 @@ public:
 	struct Result : public scripting::operators::OperatorResultBase<Result>
 	{
 		int exit_status;
-		std::string stdout;
-		std::string stderr;
+		std::string stdout_str;
+		std::string stderr_str;
 
 		Result() : exit_status(1)
 		{
@@ -30,8 +30,8 @@ public:
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("exit_status")=exit_status;
-			heterostorage.variant_object.value("stdout")=stdout;
-			heterostorage.variant_object.value("stderr")=stderr;
+			heterostorage.variant_object.value("stdout")=stdout_str;
+			heterostorage.variant_object.value("stderr")=stderr_str;
 		}
 	};
 
@@ -105,13 +105,13 @@ public:
 		if(proc.out().good())
 		{
 			std::istreambuf_iterator<char> eos;
-			result.stdout=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
+			result.stdout_str=std::string(std::istreambuf_iterator<char>(proc.out()), eos);
 		}
 
 		if(proc.err().good())
 		{
 			std::istreambuf_iterator<char> eos;
-			result.stderr=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
+			result.stderr_str=std::string(std::istreambuf_iterator<char>(proc.err()), eos);
 		}
 
 		proc.close();
@@ -131,8 +131,8 @@ public:
 			std::ostream& foutput=output_selector.stream();
 			scripting::assert_io_stream(output_file, foutput);
 
-			foutput << result.stdout;
-			result.stdout.clear();
+			foutput << result.stdout_str;
+			result.stdout_str.clear();
 		}
 
 		return result;
