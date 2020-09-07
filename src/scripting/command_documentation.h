@@ -44,9 +44,11 @@ public:
 					name(name),
 					data_type(data_type),
 					description(description),
-					required(false),
-					default_value(static_cast<std::ostringstream&>(std::ostringstream() << raw_default_value).str())
+					required(false)
 		{
+			std::ostringstream output;
+			output << raw_default_value;
+			default_value=output.str();
 		}
 
 		OptionDescription(
