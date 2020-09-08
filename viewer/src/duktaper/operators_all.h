@@ -6,6 +6,7 @@
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
 #include "operators/fetch.h"
+#include "operators/import_url.h"
 #include "operators/nnport_predict.h"
 #include "operators/scwrl.h"
 #include "operators/setup_defaults.h"

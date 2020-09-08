@@ -42,10 +42,13 @@ public:
 	{
 	}
 
-	void initialize(CommandInput& input)
+	void initialize(CommandInput& input, const bool managed)
 	{
 		loading_parameters=LoadingOfData::Parameters();
-		loading_parameters.file=input.get_value_or_first_unused_unnamed_value("file");
+		if(!managed)
+		{
+			loading_parameters.file=input.get_value_or_first_unused_unnamed_value("file");
+		}
 		loading_parameters.format=input.get_value_or_default<std::string>("format", "");
 		loading_parameters.format_fallback=input.get_value_or_default<std::string>("format-fallback", "pdb");
 		loading_parameters.forced_include_heteroatoms=input.is_option("include-heteroatoms");
@@ -57,15 +60,28 @@ public:
 		title=(input.is_option("title") ? input.get_value<std::string>("title") : Utilities::get_basename_from_path(loading_parameters.file));
 	}
 
-	void document(CommandDocumentation& doc) const
+	void initialize(CommandInput& input)
 	{
-		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		initialize(input, false);
+	}
+
+	void document(CommandDocumentation& doc, const bool managed) const
+	{
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		}
 		doc.set_option_decription(CDOD("format", CDOD::DATATYPE_STRING, "input file format", ""));
 		doc.set_option_decription(CDOD("format-fallback", CDOD::DATATYPE_STRING, "input file format fallback", ""));
 		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
 		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
 		doc.set_option_decription(CDOD("as-assembly", CDOD::DATATYPE_BOOL, "flag import as a biological assembly"));
 		doc.set_option_decription(CDOD("title", CDOD::DATATYPE_STRING, "new object title", ""));
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		document(doc, false);
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
