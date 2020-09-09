@@ -115,12 +115,15 @@ color-atoms 0x555555
 spectrum-atoms -adjunct afem -scheme bwr
 
 ### Calculate VoroMQA hydrophobic belt
+restrict-atoms [-t! het]
 construct-contacts
 voromqa-global
-voromqa-frustration -adj-atom-frustration-energy-mean afem \
-  -adj-contact-frustration-energy-mean cfem \
-  -smoothing-iterations 1 -smoothing-depth 3
-voromqa-membrane-place -adj-contact-frustration-value cfem \
+voromqa-frustration \
+  -smoothing-iterations 3 -smoothing-depth 1
+describe-exposure \
+  -probe-min 2.0 -probe-max 30 -expansion 1 \
+  -smoothing-iterations 3 -smoothing-depth 1
+voromqa-membrane-place \
   -adj-atom-membrane-place-value aopv \
   -membrane-width 30 -membrane-width-extended 30
 hide-atoms
