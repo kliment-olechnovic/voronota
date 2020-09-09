@@ -1,6 +1,8 @@
 #ifndef SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
 #define SCRIPTING_TESTING_OF_ATOMS_AND_CONTACTS_H_
 
+#include <cmath>
+
 #include "../common/construction_of_atomic_balls.h"
 #include "../common/construction_of_contacts.h"
 #include "../common/matching_utilities.h"
@@ -52,6 +54,7 @@ public:
 		std::string match_adjuncts;
 		std::string match_adjuncts_not;
 		std::map<std::string, std::string> special_match_crad_map;
+		std::map< std::string, std::vector<double> > geometric_constraints_map;
 
 		explicit TesterOfAtom(const std::vector<Atom>* atoms_ptr=0) :
 			atoms_ptr(atoms_ptr)
@@ -73,7 +76,8 @@ public:
 					match_tags_not.empty() &&
 					match_adjuncts.empty() &&
 					match_adjuncts_not.empty() &&
-					special_match_crad_map.empty());
+					special_match_crad_map.empty() &&
+					geometric_constraints_map.empty());
 		}
 
 		bool operator()(const std::size_t id) const
@@ -103,6 +107,7 @@ public:
 			if(
 					common::MatchingUtilities::match_crad(atom.crad, match_crad, match_crad_not) &&
 					check_crad_with_special_match_crad_map(atom.crad) &&
+					check_ball_with_geometric_constraints_map(atom.value) &&
 					common::MatchingUtilities::match_set_of_tags(atom.value.props.tags, match_tags, match_tags_not) &&
 					common::MatchingUtilities::match_map_of_adjuncts(atom.value.props.adjuncts, match_adjuncts, match_adjuncts_not)
 			)
@@ -137,6 +142,50 @@ public:
 					if(!common::MatchingUtilities::match_crad(crad, it->second, ""))
 					{
 						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		bool check_ball_with_geometric_constraints_map(const common::BallValue& ball) const
+		{
+			if(!geometric_constraints_map.empty())
+			{
+				for(std::map< std::string, std::vector<double> >::const_iterator it=geometric_constraints_map.begin();it!=geometric_constraints_map.end();++it)
+				{
+					const std::string& name=it->first;
+					const std::vector<double>& values=it->second;
+					if(name=="xmin" && values.size()>=1 && ball.x<values[0])
+					{
+						return false;
+					}
+					else if(name=="xmax" && values.size()>=1 && ball.x>values[0])
+					{
+						return false;
+					}
+					else if(name=="ymin" && values.size()>=1 && ball.y<values[0])
+					{
+						return false;
+					}
+					else if(name=="ymax" && values.size()>=1 && ball.y>values[0])
+					{
+						return false;
+					}
+					else if(name=="zmin" && values.size()>=1 && ball.z<values[0])
+					{
+						return false;
+					}
+					else if(name=="zmax" && values.size()>=1 && ball.z>values[0])
+					{
+						return false;
+					}
+					else if(name=="dist" && values.size()>=4)
+					{
+						if(std::sqrt((ball.x-values[0])*(ball.x-values[0])+(ball.y-values[1])*(ball.y-values[1])+(ball.z-values[2])*(ball.z-values[2]))>values[3])
+						{
+							return false;
+						}
 					}
 				}
 			}
@@ -612,6 +661,18 @@ inline std::istream& operator>>(std::istream& input, TestingOfAtomsAndContacts::
 			else if(token=="--nucleic-rna")
 			{
 				tester.special_match_crad_map["nucleic-rna"]=std::string("R<A,C,G,T,I>");
+			}
+			else if(token=="--xmin" || token=="--xmax" || token=="--ymin" || token=="--ymax" || token=="--zmin" || token=="--zmax")
+			{
+				std::vector<double>& gc_values=tester.geometric_constraints_map[token.substr(2)];
+				gc_values.resize(1);
+				input >> gc_values[0];
+			}
+			else if(token=="--dist")
+			{
+				std::vector<double>& gc_values=tester.geometric_constraints_map[token.substr(2)];
+				gc_values.resize(4);
+				input >> gc_values[0] >> gc_values[1] >> gc_values[2] >> gc_values[3];
 			}
 			else if(token_index==0
 					&& token.rfind("-", 0)!=0
