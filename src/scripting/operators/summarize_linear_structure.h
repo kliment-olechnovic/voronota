@@ -18,6 +18,11 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
+		int chains_protein;
+		int chains_nucleic;
+		int chains_other;
+		int unique_chains_protein;
+		int unique_chains_nucleic;
 		int residues_protein;
 		int residues_nucleic;
 		int residues_other;
@@ -26,6 +31,11 @@ public:
 		int ss_loop;
 
 		Result() :
+			chains_protein(0),
+			chains_nucleic(0),
+			chains_other(0),
+			unique_chains_protein(0),
+			unique_chains_nucleic(0),
 			residues_protein(0),
 			residues_nucleic(0),
 			residues_other(0),
@@ -38,6 +48,11 @@ public:
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.value("chains_protein")=chains_protein;
+			heterostorage.variant_object.value("chains_nucleic")=chains_nucleic;
+			heterostorage.variant_object.value("chains_other")=chains_other;
+			heterostorage.variant_object.value("unique_chains_protein")=unique_chains_protein;
+			heterostorage.variant_object.value("unique_chains_nucleic")=unique_chains_nucleic;
 			heterostorage.variant_object.value("residues_protein")=residues_protein;
 			heterostorage.variant_object.value("residues_nucleic")=residues_nucleic;
 			heterostorage.variant_object.value("residues_other")=residues_other;
@@ -49,8 +64,9 @@ public:
 
 	SelectionManager::Query parameters_for_selecting;
 	std::string global_adj_prefix;
+	double min_seq_identity;
 
-	SummarizeLinearStructure()
+	SummarizeLinearStructure() : min_seq_identity(1.0)
 	{
 	}
 
@@ -58,12 +74,14 @@ public:
 	{
 		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
 		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "");
+		min_seq_identity=input.get_value_or_default<double>("min-seq-identity", 1.0);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		Utilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("ss-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", ""));
+		doc.set_option_decription(CDOD("min-seq-identity", CDOD::DATATYPE_FLOAT, "minimum sequence identity threshold", 1.0));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -82,9 +100,77 @@ public:
 			residue_ids.insert(data_manager.primary_structure_info().map_of_atoms_to_residues[*it]);
 		}
 
+		std::set<std::size_t> chain_ids;
+		for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
+		{
+			chain_ids.insert(data_manager.primary_structure_info().map_of_residues_to_chains[*it]);
+		}
+
 		Result result;
 
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), atom_ids);
+
+		for(std::set<std::size_t>::const_iterator it=chain_ids.begin();it!=chain_ids.end();++it)
+		{
+			const common::ConstructionOfPrimaryStructure::Chain& ps_chain=data_manager.primary_structure_info().chains[*it];
+			if(ps_chain.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
+			{
+				result.chains_protein++;
+			}
+			else if(ps_chain.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_NUCLEOTIDE)
+			{
+				result.chains_nucleic++;
+			}
+			else
+			{
+				result.chains_other++;
+			}
+		}
+
+		{
+			std::map<std::size_t, std::string> map_of_chains_sequences;
+			for(std::set<std::size_t>::const_iterator chain_ids_it=chain_ids.begin();chain_ids_it!=chain_ids.end();++chain_ids_it)
+			{
+				const common::ConstructionOfPrimaryStructure::Chain& ps_chain=data_manager.primary_structure_info().chains[*chain_ids_it];
+				std::ostringstream output_for_residue_sequence;
+				for(std::vector<std::size_t>::const_iterator residue_ids_it=ps_chain.residue_ids.begin();residue_ids_it!=ps_chain.residue_ids.end();++residue_ids_it)
+				{
+					const common::ConstructionOfPrimaryStructure::Residue& r=data_manager.primary_structure_info().residues[*residue_ids_it];
+					output_for_residue_sequence << auxiliaries::ResidueLettersCoding::convert_residue_code_big_to_small(r.chain_residue_descriptor.resName);
+				}
+				map_of_chains_sequences[*chain_ids_it]=output_for_residue_sequence.str();
+			}
+			std::set<std::size_t> representative_chains_protein;
+			std::set<std::size_t> representative_chains_nucleic;
+			std::set<std::size_t> repeated_chains;
+			for(std::map<std::size_t, std::string>::const_iterator it1=map_of_chains_sequences.begin();it1!=map_of_chains_sequences.end();++it1)
+			{
+				if(repeated_chains.count(it1->first)==0)
+				{
+					const common::ConstructionOfPrimaryStructure::Chain& ps_chain1=data_manager.primary_structure_info().chains[it1->first];
+					if(ps_chain1.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
+					{
+						representative_chains_protein.insert(it1->first);
+					}
+					else if(ps_chain1.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_NUCLEOTIDE)
+					{
+						representative_chains_nucleic.insert(it1->first);
+					}
+					std::map<std::size_t, std::string>::const_iterator it2=it1;
+					++it2;
+					for(;it2!=map_of_chains_sequences.end();++it2)
+					{
+						const common::ConstructionOfPrimaryStructure::Chain& ps_chain2=data_manager.primary_structure_info().chains[it2->first];
+						if(ps_chain1.prevalent_residue_type==ps_chain2.prevalent_residue_type && voronota::common::SequenceUtilities::calculate_sequence_identity(it1->second, it2->second)>=min_seq_identity)
+						{
+							repeated_chains.insert(it2->first);
+						}
+					}
+				}
+			}
+			result.unique_chains_protein=static_cast<int>(representative_chains_protein.size());
+			result.unique_chains_nucleic=static_cast<int>(representative_chains_nucleic.size());
+		}
 
 		for(std::set<std::size_t>::const_iterator it=residue_ids.begin();it!=residue_ids.end();++it)
 		{
@@ -118,6 +204,11 @@ public:
 
 		if(!global_adj_prefix.empty())
 		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_protein"]=result.chains_protein;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_nucleic"]=result.chains_nucleic;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_other"]=result.chains_other;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_unique_chains_protein"]=result.unique_chains_protein;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_unique_chains_nucleic"]=result.unique_chains_nucleic;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_protein"]=result.residues_protein;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_nucleic"]=result.residues_nucleic;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_residues_other"]=result.residues_other;

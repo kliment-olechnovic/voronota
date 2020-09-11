@@ -55,7 +55,7 @@ public:
 
 	struct Chain
 	{
-		ResidueType residue_type;
+		ResidueType prevalent_residue_type;
 		std::string name;
 		std::vector<std::size_t> residue_ids;
 	};
@@ -153,15 +153,38 @@ public:
 
 			bundle.chains.reserve(map_of_chains.size());
 
-			bundle.map_of_residues_to_chains.resize(bundle.residues.size());
-
 			for(std::map< std::string, std::vector<std::size_t> >::const_iterator it=map_of_chains.begin();it!=map_of_chains.end();++it)
 			{
 				Chain chain;
 				chain.name=it->first;
 				chain.residue_ids=it->second;
-				chain.residue_type=bundle.residues[chain.residue_ids.front()].residue_type;
+				chain.prevalent_residue_type=RESIDUE_TYPE_OTHER;
 				bundle.chains.push_back(chain);
+			}
+
+			bundle.map_of_residues_to_chains.resize(bundle.residues.size());
+
+			for(std::size_t i=0;i<bundle.chains.size();i++)
+			{
+				Chain& chain=bundle.chains[i];
+				if(!chain.residue_ids.empty())
+				{
+					std::map<ResidueType, int> map_of_residue_type_counts;
+					for(std::size_t j=0;j<chain.residue_ids.size();j++)
+					{
+						bundle.map_of_residues_to_chains[chain.residue_ids[j]]=i;
+						map_of_residue_type_counts[bundle.residues[chain.residue_ids[j]].residue_type]++;
+					}
+					int selected_count=0;
+					for(std::map<ResidueType, int>::const_iterator it=map_of_residue_type_counts.begin();it!=map_of_residue_type_counts.end();++it)
+					{
+						if((it->second)>selected_count)
+						{
+							chain.prevalent_residue_type=it->first;
+							selected_count=it->second;
+						}
+					}
+				}
 			}
 		}
 

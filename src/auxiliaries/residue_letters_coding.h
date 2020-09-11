@@ -58,6 +58,10 @@ private:
 		m["G"]="g";
 		m["T"]="t";
 		m["U"]="u";
+		m["DA"]="a";
+		m["DC"]="c";
+		m["DG"]="g";
+		m["DT"]="t";
 		m["XAA"]="X";
 		return m;
 	}
@@ -68,7 +72,15 @@ private:
 		std::map<std::string, std::string> m;
 		for(std::map<std::string, std::string>::const_iterator it=m_big_to_small.begin();it!=m_big_to_small.end();++it)
 		{
-			m[it->second]=it->first;
+			std::map<std::string, std::string>::iterator m_it=m.find(it->second);
+			if(m_it==m.end())
+			{
+				m[it->second]=it->first;
+			}
+			else if((it->first.size())<(m_it->second.size()) || (it->first)<(m_it->second))
+			{
+				m_it->second=it->first;
+			}
 		}
 		return m;
 	}
