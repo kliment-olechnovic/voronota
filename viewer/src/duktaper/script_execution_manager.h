@@ -3,7 +3,20 @@
 
 #include "../../../src/scripting/script_execution_manager_with_variant_output.h"
 
-#include "operators_all.h"
+#include "operators/call_shell.h"
+#include "operators/checksum.h"
+#include "operators/construct_or_load_contacts.h"
+#include "operators/construct_or_load_quality_scores.h"
+#include "operators/fetch.h"
+#include "operators/import_url.h"
+#include "operators/nnport_predict.h"
+#include "operators/scwrl.h"
+#include "operators/setup_defaults.h"
+#include "operators/tmalign_many.h"
+#include "operators/tmalign.h"
+#include "operators/voromqa_dark_global.h"
+#include "operators/voromqa_dark_local.h"
+#include "operators/voromqa_dark_split.h"
 
 namespace voronota
 {

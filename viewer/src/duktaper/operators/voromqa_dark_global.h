@@ -1,7 +1,7 @@
 #ifndef VIEWER_OPERATORS_VOROMQA_DARK_GLOBAL_H_
 #define VIEWER_OPERATORS_VOROMQA_DARK_GLOBAL_H_
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/virtual_file_storage.h"
 
 #include "../stocked_data_resources.h"
 

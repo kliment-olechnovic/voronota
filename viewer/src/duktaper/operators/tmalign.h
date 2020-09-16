@@ -3,7 +3,8 @@
 
 #include "../../dependencies/tmalign/tmalign_wrapper.h"
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/operators/export_atoms.h"
+#include "../../../../src/scripting/operators/move_atoms.h"
 
 namespace voronota
 {

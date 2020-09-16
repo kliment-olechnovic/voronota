@@ -1,7 +1,8 @@
 #ifndef DUKTAPER_OPERATORS_SETUP_DEFAULTS_H_
 #define DUKTAPER_OPERATORS_SETUP_DEFAULTS_H_
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/operators/setup_loading.h"
+#include "../../../../src/scripting/operators/setup_voromqa.h"
 
 #include "../stocked_data_resources.h"
 

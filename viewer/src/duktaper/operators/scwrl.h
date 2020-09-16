@@ -1,7 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_SCWRL_H_
 #define DUKTAPER_OPERATORS_SCWRL_H_
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/operators/import.h"
 
 #include "../call_shell_utilities.h"
 

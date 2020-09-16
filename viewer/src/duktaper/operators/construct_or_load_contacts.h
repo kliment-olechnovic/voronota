@@ -1,7 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
 #define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_CONTACTS_H_
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/operators/export_atoms_and_contacts.h"
 
 #include "../cache_file.h"
 

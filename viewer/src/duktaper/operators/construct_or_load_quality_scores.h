@@ -1,7 +1,9 @@
 #ifndef DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_QUALITY_SCORES_H_
 #define DUKTAPER_OPERATORS_CONSTRUCT_OR_LOAD_QUALITY_SCORES_H_
 
-#include "../../../../src/scripting/operators_all.h"
+#include "../../../../src/scripting/operators/construct_contacts.h"
+#include "../../../../src/scripting/operators/voromqa_global.h"
+#include "../../../../src/scripting/operators/export_atoms_and_contacts.h"
 
 #include "../cache_file.h"
 
