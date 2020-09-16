@@ -14,10 +14,10 @@ namespace scripting
 namespace operators
 {
 
-class TournamentSort : public operators::OperatorBase<TournamentSort>
+class TournamentSort : public OperatorBase<TournamentSort>
 {
 public:
-	struct Result : public operators::OperatorResultBase<Result>
+	struct Result : public OperatorResultBase<Result>
 	{
 		void store(HeterogeneousStorage&) const
 		{

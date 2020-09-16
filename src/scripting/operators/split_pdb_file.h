@@ -12,10 +12,10 @@ namespace scripting
 namespace operators
 {
 
-class SplitPDBFile : public operators::OperatorBase<SplitPDBFile>
+class SplitPDBFile : public OperatorBase<SplitPDBFile>
 {
 public:
-	struct Result : public operators::OperatorResultBase<Result>
+	struct Result : public OperatorResultBase<Result>
 	{
 		void store(HeterogeneousStorage&) const
 		{
