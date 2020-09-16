@@ -38,13 +38,13 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 	}
 

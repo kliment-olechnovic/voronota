@@ -36,18 +36,18 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		next_random_color=input.get_flag("next-random-color");
-		color_value=(next_random_color ? Utilities::get_next_random_color() : Utilities::read_color(input));
+		color_value=(next_random_color ? OperatorsUtilities::get_next_random_color() : OperatorsUtilities::read_color(input));
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("next-random-color", CDOD::DATATYPE_BOOL, "flag to use next random color"));
-		Utilities::document_read_color(doc);
+		OperatorsUtilities::document_read_color(doc);
 	}
 
 	Result run(DataManager& data_manager) const

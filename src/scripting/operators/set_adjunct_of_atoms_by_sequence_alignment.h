@@ -41,7 +41,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		name=input.get_value<std::string>("name");
 		sequence_file=input.get_value<std::string>("sequence-file");
 		alignment_file=input.get_value_or_default<std::string>("alignment-file", "");
@@ -49,7 +49,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
 		doc.set_option_decription(CDOD("sequence-file", CDOD::DATATYPE_STRING, "sequence input file"));
 		doc.set_option_decription(CDOD("alignment-file", CDOD::DATATYPE_STRING, "sequence alignment output file", ""));

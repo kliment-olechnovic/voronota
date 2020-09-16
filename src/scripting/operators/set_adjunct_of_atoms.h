@@ -37,7 +37,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		name=input.get_value<std::string>("name");
 		value_present=input.is_option("value");
 		value=input.get_value_or_default<double>("value", 0.0);
@@ -46,7 +46,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
 		doc.set_option_decription(CDOD("value", CDOD::DATATYPE_FLOAT, "adjunct value", ""));
 		doc.set_option_decription(CDOD("remove", CDOD::DATATYPE_BOOL, "flag to remove adjunct"));

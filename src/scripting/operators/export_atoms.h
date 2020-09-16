@@ -47,7 +47,7 @@ public:
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		as_pdb=input.get_flag("as-pdb");
 		pdb_b_factor_name=input.get_value_or_default<std::string>("pdb-b-factor", "tf");
 		pdb_ter=input.get_flag("pdb-ter");
@@ -56,7 +56,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("as-pdb", CDOD::DATATYPE_BOOL, "flag to output in PDB format"));
 		doc.set_option_decription(CDOD("pdb-b-factor", CDOD::DATATYPE_STRING, "name of adjunct values to write as b-factors in PDB output", "tf"));
 		doc.set_option_decription(CDOD("pdb-ter", CDOD::DATATYPE_BOOL, "flag to include TER lines in PDB output"));

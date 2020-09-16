@@ -36,14 +36,14 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
 		name=input.get_value<std::string>("name");
 		assert_adjunct_name_input(name, false);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
 	}
 

@@ -20,7 +20,7 @@ typedef scripting::CommandInput CMDIN;
 namespace scripting
 {
 
-class Utilities
+class OperatorsUtilities
 {
 public:
 	static SelectionManager::Query read_generic_selecting_query(const std::string& prefix, const std::string& default_expression, CommandInput& input)

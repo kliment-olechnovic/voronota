@@ -36,7 +36,7 @@ public:
 		name=input.get_value_vector_or_default<std::string>("name", std::vector<std::string>());
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		next_random_color=input.get_flag("next-random-color");
-		color_value=(next_random_color ? Utilities::get_next_random_color() : Utilities::read_color(input));
+		color_value=(next_random_color ? OperatorsUtilities::get_next_random_color() : OperatorsUtilities::read_color(input));
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -44,7 +44,7 @@ public:
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING_ARRAY, "figure name", ""));
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("next-random-color", CDOD::DATATYPE_BOOL, "flag to use next random color"));
-		Utilities::document_read_color(doc);
+		OperatorsUtilities::document_read_color(doc);
 	}
 
 	Result run(DataManager& data_manager) const

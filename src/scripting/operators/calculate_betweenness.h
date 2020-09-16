@@ -39,7 +39,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
 		inter_residue=!input.get_flag("not-inter-residue");
 		uniform=input.get_flag("uniform");
 		normalize=!input.get_flag("not-normalize");
@@ -49,7 +49,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
 		doc.set_option_decription(CDOD("not-inter-residue", CDOD::DATATYPE_BOOL, "flag not consider inter-residue contacts"));
 		doc.set_option_decription(CDOD("uniform", CDOD::DATATYPE_BOOL, "flag to not use contact areas"));
 		doc.set_option_decription(CDOD("not-normalize", CDOD::DATATYPE_BOOL, "flag to not normalize centrality values"));

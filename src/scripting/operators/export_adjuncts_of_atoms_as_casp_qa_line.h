@@ -42,7 +42,7 @@ public:
 	{
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		adjunct=input.get_value<std::string>("adjunct");
 		title=input.get_value<std::string>("title");
 		global_score=input.get_value<double>("global-score");
@@ -54,7 +54,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("adjunct", CDOD::DATATYPE_STRING, "adjunct name"));
 		doc.set_option_decription(CDOD("title", CDOD::DATATYPE_STRING, "line start title"));
 		doc.set_option_decription(CDOD("global-score", CDOD::DATATYPE_FLOAT, "global score"));

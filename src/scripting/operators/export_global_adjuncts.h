@@ -40,7 +40,7 @@ public:
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
-		query=Utilities::read_congregation_of_data_managers_object_query(input);
+		query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 		all=input.get_flag("all");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 		sort_inc=input.get_value_or_default<std::string>("sort-inc", "");
@@ -51,7 +51,7 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
-		Utilities::document_read_congregation_of_data_managers_object_query(doc);
+		OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to export all adjuncts"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
 		doc.set_option_decription(CDOD("sort-inc", CDOD::DATATYPE_STRING, "adjunct to sort in increasing order", ""));

@@ -58,7 +58,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		adjunct=input.get_value_or_default<std::string>("adjunct", "");
 		by=adjunct.empty() ? input.get_value<std::string>("by") : std::string("adjunct");
@@ -73,7 +73,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("adjunct", CDOD::DATATYPE_STRING, "adjunct name", ""));
 		doc.set_option_decription(CDOD("by", CDOD::DATATYPE_STRING, "spectrum source ID", "residue-number"));
@@ -206,7 +206,7 @@ public:
 		double mean_of_values=0.0;
 		double sd_of_values=0.0;
 
-		Utilities::calculate_spectrum_info(
+		OperatorsUtilities::calculate_spectrum_info(
 				as_z_scores,
 				min_val_present,
 				min_val,

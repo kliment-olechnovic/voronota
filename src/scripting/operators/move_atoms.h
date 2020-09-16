@@ -37,7 +37,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		pre_translation_vector=input.get_value_vector_or_default<double>("translate-before", std::vector<double>());
 		rotation_matrix=input.get_value_vector_or_default<double>("rotate-by-matrix", std::vector<double>());
 		rotation_axis_and_angle=input.get_value_vector_or_default<double>("rotate-by-axis-and-angle", std::vector<double>());
@@ -46,7 +46,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("translate-before", CDOD::DATATYPE_FLOAT_ARRAY, "translation vector to apply before rotation", ""));
 		doc.set_option_decription(CDOD("rotate-by-matrix", CDOD::DATATYPE_FLOAT_ARRAY, "rotation matrix", ""));
 		doc.set_option_decription(CDOD("rotate-by-axis-and-angle", CDOD::DATATYPE_FLOAT_ARRAY, "vector with rotation axis and angle", ""));

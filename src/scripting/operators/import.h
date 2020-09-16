@@ -57,7 +57,7 @@ public:
 		loading_parameters.include_heteroatoms=input.get_flag("include-heteroatoms");
 		loading_parameters.include_hydrogens=input.get_flag("include-hydrogens");
 		loading_parameters.multimodel_chains=input.get_flag("as-assembly");
-		title=(input.is_option("title") ? input.get_value<std::string>("title") : Utilities::get_basename_from_path(loading_parameters.file));
+		title=(input.is_option("title") ? input.get_value<std::string>("title") : OperatorsUtilities::get_basename_from_path(loading_parameters.file));
 	}
 
 	void initialize(CommandInput& input)

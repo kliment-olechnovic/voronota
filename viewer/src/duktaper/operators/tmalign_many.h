@@ -39,13 +39,13 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		query=scripting::Utilities::read_congregation_of_data_managers_object_query(input);
+		query=scripting::OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 		tmalign_operator.initialize(input, true);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		scripting::Utilities::document_read_congregation_of_data_managers_object_query(doc);
+		scripting::OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
 		tmalign_operator.document(doc, true);
 	}
 

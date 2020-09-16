@@ -38,7 +38,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		source_name=input.get_value<std::string>("source-name");
 		destination_name=input.get_value<std::string>("destination-name");
 		pooling_mode=input.get_value<std::string>("pooling-mode");
@@ -46,7 +46,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("source-name", CDOD::DATATYPE_STRING, "source adjunct name"));
 		doc.set_option_decription(CDOD("destination-name", CDOD::DATATYPE_STRING, "destination adjunct name"));
 		doc.set_option_decription(CDOD("pooling-mode", CDOD::DATATYPE_STRING, "pooling mode, possible values: sum, min, max"));

@@ -35,14 +35,14 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		all=input.get_flag("all");
 		tags=input.get_value_vector_or_default<std::string>("tags", std::vector<std::string>());
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to delete all tags"));
 		doc.set_option_decription(CDOD("tags", CDOD::DATATYPE_STRING_ARRAY, "tag names", ""));
 	}

@@ -61,7 +61,7 @@ public:
 			throw std::runtime_error(std::string("Equal object names provided."));
 		}
 
-		Utilities::assert_new_object_name_input(name_new);
+		OperatorsUtilities::assert_new_object_name_input(name_new);
 
 		congregation_of_data_managers.assert_object_availability(name_original);
 

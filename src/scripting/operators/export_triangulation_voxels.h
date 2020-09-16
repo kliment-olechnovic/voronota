@@ -47,8 +47,8 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
-		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
+		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query(input);
+		filtering_query_without_ids=OperatorsUtilities::read_filtering_of_triangulation_query(input);
 		search_step_factor=input.get_value_or_default<double>("search-step-factor", 1.0);
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
@@ -56,8 +56,8 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
-		Utilities::document_read_filtering_of_triangulation_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_filtering_of_triangulation_query(doc);
 		doc.set_option_decription(CDOD("search-step-factor", CDOD::DATATYPE_FLOAT, "factor value for voxel precision, must be from 0.4 to 1.0, 1.0 for the most detailed", 1.0));
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
 	}

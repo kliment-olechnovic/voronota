@@ -33,16 +33,16 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
-		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
+		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query(input);
+		filtering_query_without_ids=OperatorsUtilities::read_filtering_of_triangulation_query(input);
 		figure_name=input.get_value_vector<std::string>("figure-name");
 		as_spheres=input.get_flag("as-spheres");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
-		Utilities::document_read_filtering_of_triangulation_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_filtering_of_triangulation_query(doc);
 		doc.set_option_decription(CDOD("figure-name", CDOD::DATATYPE_STRING_ARRAY, "figure name"));
 		doc.set_option_decription(CDOD("as-spheres", CDOD::DATATYPE_BOOL, "flag to add figure of tangent spheres"));
 	}

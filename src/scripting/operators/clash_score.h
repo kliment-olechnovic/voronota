@@ -45,14 +45,14 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		distance=input.get_value_or_default<double>("distance", 2.5);
 		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "clash");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("distance", CDOD::DATATYPE_FLOAT, "threshold of distance between atomic centers", ""));
 		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "clash"));
 	}

@@ -50,15 +50,15 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting_atoms=Utilities::read_generic_selecting_query(input);
-		filtering_query_without_ids=Utilities::read_filtering_of_triangulation_query(input);
+		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query(input);
+		filtering_query_without_ids=OperatorsUtilities::read_filtering_of_triangulation_query(input);
 		only_summary=input.get_flag("only-summary");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
-		Utilities::document_read_filtering_of_triangulation_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_filtering_of_triangulation_query(doc);
 		doc.set_option_decription(CDOD("only-summary", CDOD::DATATYPE_BOOL, "flag to output only summary"));
 	}
 

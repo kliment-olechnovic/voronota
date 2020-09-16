@@ -36,12 +36,12 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		query=Utilities::read_congregation_of_data_managers_object_query(input);
+		query=OperatorsUtilities::read_congregation_of_data_managers_object_query(input);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_congregation_of_data_managers_object_query(doc);
+		OperatorsUtilities::document_read_congregation_of_data_managers_object_query(doc);
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const

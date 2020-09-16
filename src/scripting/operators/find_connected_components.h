@@ -38,17 +38,17 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting_atoms_core=Utilities::read_generic_selecting_query("atoms-core-", "[]", input);
-		parameters_for_selecting_atoms_all=Utilities::read_generic_selecting_query("atoms-all-", parameters_for_selecting_atoms_core.expression_string, input);
-		parameters_for_selecting_contacts=Utilities::read_generic_selecting_query("contacts-", "[]", input);
+		parameters_for_selecting_atoms_core=OperatorsUtilities::read_generic_selecting_query("atoms-core-", "[]", input);
+		parameters_for_selecting_atoms_all=OperatorsUtilities::read_generic_selecting_query("atoms-all-", parameters_for_selecting_atoms_core.expression_string, input);
+		parameters_for_selecting_contacts=OperatorsUtilities::read_generic_selecting_query("contacts-", "[]", input);
 		adjunct_component_number=input.get_value_or_default<std::string>("adj-component-number", "component_number");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query("atoms-core-", "[]", doc);
-		Utilities::document_read_generic_selecting_query("atoms-all-", "[]", doc);
-		Utilities::document_read_generic_selecting_query("contacts-", "[]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("atoms-core-", "[]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("atoms-all-", "[]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("contacts-", "[]", doc);
 		doc.set_option_decription(CDOD("adj-component-number", CDOD::DATATYPE_STRING, "atom adjunct name for result values", "component_number"));
 	}
 

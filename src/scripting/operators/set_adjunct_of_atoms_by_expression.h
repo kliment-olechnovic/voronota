@@ -37,7 +37,7 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		expression=input.get_value<std::string>("expression");
 		input_adjuncts=input.get_value_vector_or_default<std::string>("input-adjuncts", std::vector<std::string>());
 		parameters=input.get_value_vector_or_default<double>("parameters", std::vector<double>());
@@ -46,7 +46,7 @@ public:
 
 	void document(CommandDocumentation& doc) const
 	{
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("expression", CDOD::DATATYPE_STRING, "expression"));
 		doc.set_option_decription(CDOD("input-adjuncts", CDOD::DATATYPE_STRING_ARRAY, "input adjunct names", ""));
 		doc.set_option_decription(CDOD("parameters", CDOD::DATATYPE_FLOAT_ARRAY, "expression parameters", ""));

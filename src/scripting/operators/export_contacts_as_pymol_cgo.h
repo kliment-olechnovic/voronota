@@ -46,7 +46,7 @@ public:
 	{
 		name=input.get_value_or_default<std::string>("name", "contacts");
 		wireframe=input.get_flag("wireframe");
-		parameters_for_selecting=Utilities::read_generic_selecting_query(input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
@@ -56,7 +56,7 @@ public:
 	{
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of CGO object", "atoms"));
 		doc.set_option_decription(CDOD("wireframe", CDOD::DATATYPE_BOOL, "flag use wireframe representation"));
-		Utilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
 	}
