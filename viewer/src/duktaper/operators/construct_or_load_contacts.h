@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class ConstructOrLoadContacts : public scripting::operators::OperatorBase<ConstructOrLoadContacts>
+class ConstructOrLoadContacts : public scripting::OperatorBase<ConstructOrLoadContacts>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		scripting::SummaryOfContacts contacts_summary;
 		std::string cache_file_path;

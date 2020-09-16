@@ -1,6 +1,8 @@
 #ifndef SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_RESIDUE_POOLING_H_
 #define SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_RESIDUE_POOLING_H_
 
+#include <numeric>
+
 #include "../operators_common.h"
 
 namespace voronota

@@ -12,9 +12,6 @@ namespace voronota
 namespace scripting
 {
 
-namespace operators
-{
-
 template<class Operator>
 class OperatorBase
 {
@@ -108,8 +105,6 @@ private:
 		return static_cast<const OperatorResult&>(*this);
 	}
 };
-
-}
 
 }
 

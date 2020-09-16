@@ -12,10 +12,10 @@ namespace viewer
 namespace operators
 {
 
-class Perspective : public scripting::operators::OperatorBase<Perspective>
+class Perspective : public scripting::OperatorBase<Perspective>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

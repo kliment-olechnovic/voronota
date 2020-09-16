@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class ImportUrl : public scripting::operators::OperatorBase<ImportUrl>
+class ImportUrl : public scripting::OperatorBase<ImportUrl>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::string url;
 		scripting::operators::Import::Result import_result;
@@ -94,7 +94,7 @@ public:
 
 		if(import_operator_to_use.title.empty())
 		{
-			import_operator_to_use.title=scripting::operators::Utilities::get_basename_from_path(url);
+			import_operator_to_use.title=scripting::Utilities::get_basename_from_path(url);
 		}
 
 		result.import_result=import_operator_to_use.run(congregation_of_data_managers);

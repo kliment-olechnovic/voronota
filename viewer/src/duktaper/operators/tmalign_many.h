@@ -12,10 +12,10 @@ namespace duktaper
 namespace operators
 {
 
-class TMalignMany : public scripting::operators::OperatorBase<TMalign>
+class TMalignMany : public scripting::OperatorBase<TMalign>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::vector<TMalign::Result> tmalign_results;
 
@@ -39,13 +39,13 @@ public:
 
 	void initialize(scripting::CommandInput& input)
 	{
-		query=scripting::operators::Utilities::read_congregation_of_data_managers_object_query(input);
+		query=scripting::Utilities::read_congregation_of_data_managers_object_query(input);
 		tmalign_operator.initialize(input, true);
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		scripting::operators::Utilities::document_read_congregation_of_data_managers_object_query(doc);
+		scripting::Utilities::document_read_congregation_of_data_managers_object_query(doc);
 		tmalign_operator.document(doc, true);
 	}
 

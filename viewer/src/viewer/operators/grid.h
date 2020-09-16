@@ -13,10 +13,10 @@ namespace viewer
 namespace operators
 {
 
-class Grid : public scripting::operators::OperatorBase<Grid>
+class Grid : public scripting::OperatorBase<Grid>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

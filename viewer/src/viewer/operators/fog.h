@@ -12,10 +12,10 @@ namespace viewer
 namespace operators
 {
 
-class Fog : public scripting::operators::OperatorBase<Fog>
+class Fog : public scripting::OperatorBase<Fog>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

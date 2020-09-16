@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class Checksum : public scripting::operators::OperatorBase<Checksum>
+class Checksum : public scripting::OperatorBase<Checksum>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::string checksum;
 

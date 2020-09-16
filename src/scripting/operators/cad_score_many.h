@@ -39,13 +39,13 @@ public:
 
 	void initialize(CommandInput& input)
 	{
-		query=scripting::operators::Utilities::read_congregation_of_data_managers_object_query(input);
+		query=Utilities::read_congregation_of_data_managers_object_query(input);
 		cad_score_operator.initialize(input, true);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
-		scripting::operators::Utilities::document_read_congregation_of_data_managers_object_query(doc);
+		Utilities::document_read_congregation_of_data_managers_object_query(doc);
 		cad_score_operator.document(doc, true);
 	}
 

@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class TMalign : public scripting::operators::OperatorBase<TMalign>
+class TMalign : public scripting::OperatorBase<TMalign>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::string target_name;
 		std::string model_name;

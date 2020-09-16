@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class NNPortPredict : public scripting::operators::OperatorBase<NNPortPredict>
+class NNPortPredict : public scripting::OperatorBase<NNPortPredict>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::size_t number_of_output_lines;
 

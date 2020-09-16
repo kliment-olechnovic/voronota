@@ -12,10 +12,10 @@ namespace viewer
 namespace operators
 {
 
-class ResizeWindow : public scripting::operators::OperatorBase<ResizeWindow>
+class ResizeWindow : public scripting::OperatorBase<ResizeWindow>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

@@ -16,10 +16,10 @@ namespace duktaper
 namespace operators
 {
 
-class VoroMQADarkGlobal : public scripting::operators::OperatorBase<VoroMQADarkGlobal>
+class VoroMQADarkGlobal : public scripting::OperatorBase<VoroMQADarkGlobal>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		double global_score;
 		int number_of_residues;

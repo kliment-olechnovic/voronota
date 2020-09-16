@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class CallShell : public scripting::operators::OperatorBase<CallShell>
+class CallShell : public scripting::OperatorBase<CallShell>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		int exit_status;
 		std::string stdout_str;

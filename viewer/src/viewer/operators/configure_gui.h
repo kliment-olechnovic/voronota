@@ -13,7 +13,7 @@ namespace viewer
 namespace operators
 {
 
-class ConfigureGUI : public scripting::operators::OperatorBase<ConfigureGUI>
+class ConfigureGUI : public scripting::OperatorBase<ConfigureGUI>
 {
 public:
 	enum Action
@@ -28,7 +28,7 @@ public:
 		ACTION_SET_JSON_WRITING_LEVEL
 	};
 
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

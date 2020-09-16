@@ -14,10 +14,10 @@ namespace duktaper
 namespace operators
 {
 
-class Fetch : public scripting::operators::OperatorBase<Fetch>
+class Fetch : public scripting::OperatorBase<Fetch>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		scripting::SummaryOfAtoms atoms_summary;
 		std::string object_name;

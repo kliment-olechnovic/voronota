@@ -13,10 +13,10 @@ namespace viewer
 namespace operators
 {
 
-class Sleep : public scripting::operators::OperatorBase<Sleep>
+class Sleep : public scripting::OperatorBase<Sleep>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		void store(scripting::HeterogeneousStorage&) const
 		{

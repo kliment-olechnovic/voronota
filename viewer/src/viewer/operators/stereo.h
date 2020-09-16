@@ -12,10 +12,10 @@ namespace viewer
 namespace operators
 {
 
-class Stereo : public scripting::operators::OperatorBase<Stereo>
+class Stereo : public scripting::OperatorBase<Stereo>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		float angle;
 		float offset;

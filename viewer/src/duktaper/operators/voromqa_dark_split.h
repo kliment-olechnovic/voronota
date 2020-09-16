@@ -12,10 +12,10 @@ namespace duktaper
 namespace operators
 {
 
-class VoroMQADarkSplit : public scripting::operators::OperatorBase<VoroMQADarkSplit>
+class VoroMQADarkSplit : public scripting::OperatorBase<VoroMQADarkSplit>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::map<std::string, VoroMQADarkGlobal::Result> split_results;
 		double global_score;

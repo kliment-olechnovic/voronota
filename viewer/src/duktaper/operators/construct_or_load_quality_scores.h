@@ -16,10 +16,10 @@ namespace duktaper
 namespace operators
 {
 
-class ConstructOrLoadQualityScores : public scripting::operators::OperatorBase<ConstructOrLoadQualityScores>
+class ConstructOrLoadQualityScores : public scripting::OperatorBase<ConstructOrLoadQualityScores>
 {
 public:
-	struct Result : public scripting::operators::OperatorResultBase<Result>
+	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		std::string cache_file_path;
 

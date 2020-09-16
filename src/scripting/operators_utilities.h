@@ -20,9 +20,6 @@ typedef scripting::CommandInput CMDIN;
 namespace scripting
 {
 
-namespace operators
-{
-
 class Utilities
 {
 public:
@@ -340,8 +337,6 @@ public:
 		}
 	}
 };
-
-}
 
 }
 
