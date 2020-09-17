@@ -1,7 +1,12 @@
-### Load structure
-import 2zsk.pdb
-
 ### Draw and show interface contacts
+spectrum-atoms -by chain
+construct-contacts
+select-contacts [-inter-chain] -name iface
+make-drawable-contacts [iface]
+show-contacts
+color-contacts -col yellow
+
+### Draw and show interface contacts plus SAS
 spectrum-atoms -by chain
 construct-contacts
 select-contacts [-inter-chain] -name iface
