@@ -4,11 +4,7 @@ project(Voronota-JS)
 
 file(GLOB_RECURSE VORONOTA_JS_SRC ${PROJECT_SOURCE_DIR}/src/*.cpp)
 
-if(EXISTS "${PROJECT_SOURCE_DIR}/src/dependencies")
-    include_directories("${PROJECT_SOURCE_DIR}/src/dependencies")
-else()
-    include_directories("${PROJECT_SOURCE_DIR}/src/expansion_js/src/dependencies")
-endif()
+include_directories("${PROJECT_SOURCE_DIR}/src/expansion_js/src/dependencies")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
