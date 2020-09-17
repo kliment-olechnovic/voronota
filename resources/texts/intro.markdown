@@ -68,6 +68,7 @@ Alternatively, to keep files more organized, CMake can be run in a separate "bui
     mkdir build
     cd build
     cmake ../
+    make
     cp ./voronota ../voronota
 
 ## Using C++ compiler directly
