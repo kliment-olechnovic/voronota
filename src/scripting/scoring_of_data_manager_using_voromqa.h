@@ -19,7 +19,7 @@ public:
 	class Configuration
 	{
 	public:
-		std::map<common::InteractionName, double> potential_values;
+		std::vector< std::map<common::InteractionName, double> > potential_values;
 		std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds;
 
 		bool valid() const
@@ -32,32 +32,56 @@ public:
 			return get_default_configuration_mutable();
 		}
 
-		static bool setup_default_configuration(const std::string& potential_file, const std::string& mean_and_sds_file)
+		static bool setup_default_configuration(const std::string& potential_file, const std::string& potential_alt_file, const std::string& mean_and_sds_file)
 		{
 			if(potential_file.empty() || mean_and_sds_file.empty())
 			{
 				return false;
 			}
 
-			InputSelector potential_file_input_selector(potential_file);
-
-			std::map<common::InteractionName, double> potential_values=
-					auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_file_input_selector.stream());
-			if(potential_values.empty())
+			std::map<common::InteractionName, double> potential_values;
 			{
-				return false;
+				InputSelector potential_file_input_selector(potential_file);
+				potential_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_file_input_selector.stream());
+				if(potential_values.empty())
+				{
+					return false;
+				}
 			}
 
-			InputSelector mean_and_sds_file_input_selector(mean_and_sds_file);
-
-			std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds=
-					auxiliaries::IOUtilities().read_lines_to_map< std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> >(mean_and_sds_file_input_selector.stream());
-			if(means_and_sds.empty())
+			std::map<common::InteractionName, double> potential_alt_values;
+			if(!potential_alt_file.empty())
 			{
-				return false;
+				InputSelector potential_alt_file_input_selector(potential_file);
+				potential_alt_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_alt_file_input_selector.stream());
+				if(potential_alt_values.empty())
+				{
+					return false;
+				}
 			}
 
-			get_default_configuration_mutable().potential_values.swap(potential_values);
+			std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> means_and_sds;
+			{
+				InputSelector mean_and_sds_file_input_selector(mean_and_sds_file);
+				means_and_sds=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::ChainResidueAtomDescriptor, common::NormalDistributionParameters> >(mean_and_sds_file_input_selector.stream());
+				if(means_and_sds.empty())
+				{
+					return false;
+				}
+			}
+
+			if(potential_alt_values.empty())
+			{
+				get_default_configuration_mutable().potential_values.resize(1);
+				get_default_configuration_mutable().potential_values[0].swap(potential_values);
+			}
+			else
+			{
+				get_default_configuration_mutable().potential_values.resize(2);
+				get_default_configuration_mutable().potential_values[0].swap(potential_values);
+				get_default_configuration_mutable().potential_values[1].swap(potential_alt_values);
+			}
+
 			get_default_configuration_mutable().means_and_sds.swap(means_and_sds);
 
 			return true;
@@ -74,6 +98,8 @@ public:
 	struct Parameters
 	{
 		unsigned int smoothing_window;
+		std::string adjunct_area_scale;
+		std::string adjunct_area_alt_part;
 		std::string adjunct_inter_atom_energy_scores_raw;
 		std::string adjunct_inter_atom_energy_scores_normalized;
 		std::string adjunct_atom_depth_weights;
@@ -134,7 +160,7 @@ public:
 
 		std::set<std::size_t> all_atom_ids;
 		std::set<common::ChainResidueAtomDescriptorsPair> set_of_crads;
-		std::map<common::InteractionName, double> map_of_interactions;
+		std::vector< std::map<common::InteractionName, double> > maps_of_interactions(configuration.potential_values.size());
 
 		for(std::set<std::size_t>::const_iterator it=all_contact_ids.begin();it!=all_contact_ids.end();++it)
 		{
@@ -147,6 +173,7 @@ public:
 			set_of_crads.insert(crads);
 
 			std::string category;
+
 			if(contact.solvent())
 			{
 				category=".";
@@ -168,12 +195,51 @@ public:
 				}
 			}
 
-			map_of_interactions[common::InteractionName(crads, category)]=contact.value.area;
+			double contact_area_total=contact.value.area;
+
+			if(!params.adjunct_area_scale.empty())
+			{
+				std::map<std::string, double>::const_iterator am_it=contact.value.props.adjuncts.find(params.adjunct_area_scale);
+				if(am_it!=contact.value.props.adjuncts.end() && (am_it->second)>=0.0 && (am_it->second)<1.0)
+				{
+					contact_area_total*=(am_it->second);
+				}
+			}
+
+			if(maps_of_interactions.size()==1)
+			{
+				maps_of_interactions[0][common::InteractionName(crads, category)]=contact_area_total;
+			}
+			else
+			{
+				double contact_area_standard=contact_area_total;
+				double contact_area_alt=0.0;
+
+				if(!params.adjunct_area_alt_part.empty())
+				{
+					std::map<std::string, double>::const_iterator aw_it=contact.value.props.adjuncts.find(params.adjunct_area_alt_part);
+					if(aw_it!=contact.value.props.adjuncts.end() && (aw_it->second)>0.0 && (aw_it->second)<=1.0)
+					{
+						contact_area_alt=contact_area_total*(aw_it->second);
+						contact_area_standard=(contact_area_total-contact_area_alt);
+					}
+				}
+
+				if(contact_area_standard>0.0)
+				{
+					maps_of_interactions[0][common::InteractionName(crads, category)]=contact_area_standard;
+				}
+
+				if(contact_area_alt>0.0)
+				{
+					maps_of_interactions[1][common::InteractionName(crads, category)]=contact_area_alt;
+				}
+			}
 		}
 
 		common::ConstructionOfVoroMQAScore::ParametersToConstructBundleOfVoroMQAEnergyInformation parameters_for_bundle_of_energy;
 		if(!common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(
-				parameters_for_bundle_of_energy, configuration.potential_values, map_of_interactions, result.bundle_of_energy))
+				parameters_for_bundle_of_energy, configuration.potential_values, maps_of_interactions, result.bundle_of_energy))
 		{
 			throw std::runtime_error("Failed to calculate energies scores.");
 		}

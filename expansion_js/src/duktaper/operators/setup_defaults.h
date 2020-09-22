@@ -47,11 +47,14 @@ public:
 
 		{
 			scripting::VirtualFileStorage::TemporaryFile tmp_voromqa_v1_energy_potential;
+			scripting::VirtualFileStorage::TemporaryFile tmp_voromqa_v1_energy_potential_alt;
 			scripting::VirtualFileStorage::TemporaryFile tmp_voromqa_v1_energy_means_and_sds;
 			voronota::scripting::VirtualFileStorage::set_file(tmp_voromqa_v1_energy_potential.filename(), voronota::duktaper::resources::data_voromqa_v1_energy_potential());
+			voronota::scripting::VirtualFileStorage::set_file(tmp_voromqa_v1_energy_potential_alt.filename(), voronota::duktaper::resources::data_voromqa_v1_energy_potential_alt());
 			voronota::scripting::VirtualFileStorage::set_file(tmp_voromqa_v1_energy_means_and_sds.filename(), voronota::duktaper::resources::data_voromqa_v1_energy_means_and_sds());
 			scripting::operators::SetupVoroMQA().init(CMDIN()
 					.set("potential", tmp_voromqa_v1_energy_potential.filename())
+					.set("potential-alt", tmp_voromqa_v1_energy_potential_alt.filename())
 					.set("means-and-sds", tmp_voromqa_v1_energy_means_and_sds.filename())).run(0);
 		}
 

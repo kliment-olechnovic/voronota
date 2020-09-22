@@ -36,6 +36,8 @@ public:
 	void initialize(CommandInput& input)
 	{
 		parameters_to_score_using_voromqa=ScoringOfDataManagerUsingVoroMQA::Parameters();
+		parameters_to_score_using_voromqa.adjunct_area_scale=input.get_value_or_default<std::string>("adj-area-scale", "");
+		parameters_to_score_using_voromqa.adjunct_area_alt_part=input.get_value_or_default<std::string>("adj-area-alt-part", "");
 		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_normalized=input.get_value_or_default<std::string>("adj-contact-energy-normalized", "");
 		parameters_to_score_using_voromqa.adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
@@ -49,6 +51,8 @@ public:
 	void document(CommandDocumentation& doc) const
 	{
 		ScoringOfDataManagerUsingVoroMQA::Parameters params;
+		doc.set_option_decription(CDOD("adj-area-scale", CDOD::DATATYPE_STRING, "name of input adjunct for contact area scaling", ""));
+		doc.set_option_decription(CDOD("adj-area-alt-part", CDOD::DATATYPE_STRING, "name of input adjunct for contact area alternative fraction", ""));
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of output adjunct for raw energy values", "voromqa_energy"));
 		doc.set_option_decription(CDOD("adj-contact-energy-normalized", CDOD::DATATYPE_STRING, "name of output adjunct for normalized energy values", ""));
 		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of output adjunct for atom values", "voromqa_depth"));
@@ -63,6 +67,8 @@ public:
 	{
 		data_manager.assert_contacts_availability();
 
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_area_scale, true);
+		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_area_alt_part, true);
 		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw, true);
 		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_normalized, true);
 		assert_adjunct_name_input(parameters_to_score_using_voromqa.adjunct_atom_depth_weights, true);

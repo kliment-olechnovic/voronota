@@ -48,7 +48,7 @@ void score_contacts_energy(const voronota::auxiliaries::ProgramOptionsHandler& p
 
 	voronota::common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle;
 
-	if(!voronota::common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(parameters, map_of_potential_values, map_of_contacts, bundle))
+	if(!voronota::common::ConstructionOfVoroMQAScore::construct_bundle_of_voromqa_energy_information(parameters, std::vector< std::map<InteractionName, double> >(1, map_of_potential_values), std::vector< std::map<InteractionName, double> >(1, map_of_contacts), bundle))
 	{
 		throw std::runtime_error("Failed to calculate energies.");
 	}

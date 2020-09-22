@@ -38,35 +38,57 @@ public:
 
 	static bool construct_bundle_of_voromqa_energy_information(
 			const ParametersToConstructBundleOfVoroMQAEnergyInformation& parameters,
-			const std::map<InteractionName, double>& input_map_of_potential_values,
-			const std::map<InteractionName, double>& input_map_of_contacts,
+			const std::vector< std::map<InteractionName, double> >& input_maps_of_potential_values,
+			const std::vector< std::map<InteractionName, double> >& input_maps_of_contacts,
 			BundleOfVoroMQAEnergyInformation& bundle)
 	{
 		bundle=BundleOfVoroMQAEnergyInformation();
 		bundle.parameters_of_construction=parameters;
 
-		if(input_map_of_potential_values.empty() || input_map_of_contacts.empty())
+		if(input_maps_of_potential_values.empty() || input_maps_of_potential_values.size()!=input_maps_of_contacts.size())
 		{
 			return false;
 		}
 
-		for(std::map<InteractionName, double>::const_iterator it=input_map_of_contacts.begin();it!=input_map_of_contacts.end();++it)
 		{
-			const CRADsPair& crads=it->first.crads;
-			EnergyDescriptor& ed=bundle.inter_atom_energy_descriptors[crads];
-			if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, parameters.ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
+			bool all_empty=true;
+			for(std::size_t i=0;i<input_maps_of_contacts.size() && all_empty;i++)
 			{
-				ed.total_area=(it->second);
-				ed.contacts_count=1;
-				std::map<InteractionName, double>::const_iterator potential_value_it=
-						input_map_of_potential_values.find(InteractionName(generalize_crads_pair(crads), it->first.tag));
-				if(potential_value_it!=input_map_of_potential_values.end())
+				if(!input_maps_of_contacts[i].empty())
 				{
-					ed.energy=ed.total_area*(potential_value_it->second);
+					if(input_maps_of_potential_values[i].empty())
+					{
+						return false;
+					}
+					all_empty=false;
 				}
-				else
+			}
+			if(all_empty)
+			{
+				return false;
+			}
+		}
+
+		for(std::size_t i=0;i<input_maps_of_contacts.size();i++)
+		{
+			for(std::map<InteractionName, double>::const_iterator it=input_maps_of_contacts[i].begin();it!=input_maps_of_contacts[i].end();++it)
+			{
+				const CRADsPair& crads=it->first.crads;
+				EnergyDescriptor& ed=bundle.inter_atom_energy_descriptors[crads];
+				if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, parameters.ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
 				{
-					ed.strange_area=ed.total_area;
+					ed.total_area+=(it->second);
+					ed.contacts_count+=1;
+					std::map<InteractionName, double>::const_iterator potential_value_it=
+							input_maps_of_potential_values[i].find(InteractionName(generalize_crads_pair(crads), it->first.tag));
+					if(potential_value_it!=input_maps_of_potential_values[i].end())
+					{
+						ed.energy+=ed.total_area*(potential_value_it->second);
+					}
+					else
+					{
+						ed.strange_area+=ed.total_area;
+					}
 				}
 			}
 		}

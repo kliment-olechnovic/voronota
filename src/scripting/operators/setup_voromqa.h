@@ -24,6 +24,7 @@ public:
 	};
 
 	std::string potential_file;
+	std::string potential_alt_file;
 	std::string means_and_sds_file;
 
 	SetupVoroMQA()
@@ -33,18 +34,20 @@ public:
 	void initialize(CommandInput& input)
 	{
 		potential_file=input.get_value<std::string>("potential");
+		potential_alt_file=input.get_value_or_default<std::string>("potential-alt", "");
 		means_and_sds_file=input.get_value<std::string>("means-and-sds");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("potential", CDOD::DATATYPE_STRING, "path to file with potential values"));
+		doc.set_option_decription(CDOD("potential-alt", CDOD::DATATYPE_STRING, "path to file with potential alternative values", ""));
 		doc.set_option_decription(CDOD("means-and-sds", CDOD::DATATYPE_STRING, "path to file with means and sds"));
 	}
 
 	Result run(void*) const
 	{
-		if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, means_and_sds_file))
+		if(!ScoringOfDataManagerUsingVoroMQA::Configuration::setup_default_configuration(potential_file, potential_alt_file, means_and_sds_file))
 		{
 			throw std::runtime_error(std::string("Failed to setup VoroMQA."));
 		}
