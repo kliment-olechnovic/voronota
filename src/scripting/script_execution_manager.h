@@ -92,6 +92,7 @@
 #include "operators/set_adjunct_of_atoms_by_residue_pooling.h"
 #include "operators/set_adjunct_of_atoms_by_sequence_alignment.h"
 #include "operators/set_adjunct_of_atoms.h"
+#include "operators/set_adjunct_of_contacts_by_atom_adjuncts.h"
 #include "operators/set_adjunct_of_contacts.h"
 #include "operators/set_alias.h"
 #include "operators/set_atom_serials.h"
@@ -256,6 +257,7 @@ public:
 		set_command_for_data_manager("set-adjunct-of-atoms-by-residue-pooling", operators::SetAdjunctOfAtomsByResiduePooling(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-sequence-alignment", operators::SetAdjunctOfAtomsBySequenceAlignment(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
+		set_command_for_data_manager("set-adjunct-of-contacts-by-atom-adjuncts", operators::SetAdjunctOfContactsByAtomAdjuncts(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
 		set_command_for_data_manager("set-atom-serials", operators::SetAtomSerials(), true);
 		set_command_for_data_manager("set-chain-name", operators::SetChainName(), true);
