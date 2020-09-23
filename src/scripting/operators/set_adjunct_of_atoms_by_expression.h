@@ -73,6 +73,17 @@ public:
 				throw std::runtime_error(std::string("Not 5 parameters for the defined expression."));
 			}
 		}
+		else if(expression=="_logistic")
+		{
+			if(input_adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
+			}
+			if(parameters.size()!=3)
+			{
+				throw std::runtime_error(std::string("Not 3 parameters for the defined expression."));
+			}
+		}
 		else
 		{
 			throw std::runtime_error(std::string("Unsupported expression."));
@@ -107,6 +118,12 @@ public:
 						atom_adjuncts[input_adjuncts[0]],
 						parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
 			}
+			if(expression=="_logistic")
+			{
+				atom_adjuncts[output_adjunct]=calc_logistic_transform(
+						atom_adjuncts[input_adjuncts[0]],
+						parameters[0], parameters[1], parameters[2]);
+			}
 		}
 
 		Result result;
@@ -123,6 +140,12 @@ private:
 		s=std::max(s, 0.01);
 		s=std::min(s, 1.0);
 		return (d0*sqrt((1-s)/s));
+	}
+
+	static double calc_logistic_transform(
+			const double x, const double L, const double k, const double x0)
+	{
+		return (L/(1.0+exp((0.0-k)*(x-x0))));
 	}
 };
 
