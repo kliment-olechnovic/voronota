@@ -199,10 +199,11 @@ public:
 
 			if(!params.adjunct_area_scale.empty())
 			{
-				std::map<std::string, double>::const_iterator am_it=contact.value.props.adjuncts.find(params.adjunct_area_scale);
-				if(am_it!=contact.value.props.adjuncts.end() && (am_it->second)>=0.0 && (am_it->second)<1.0)
+				std::map<std::string, double>::const_iterator as_it=contact.value.props.adjuncts.find(params.adjunct_area_scale);
+				if(as_it!=contact.value.props.adjuncts.end())
 				{
-					contact_area_total*=(am_it->second);
+					const double scale_value=std::max(0.0, std::min(1.0, as_it->second));
+					contact_area_total*=scale_value;
 				}
 			}
 
@@ -217,10 +218,11 @@ public:
 
 				if(!params.adjunct_area_alt_part.empty())
 				{
-					std::map<std::string, double>::const_iterator aw_it=contact.value.props.adjuncts.find(params.adjunct_area_alt_part);
-					if(aw_it!=contact.value.props.adjuncts.end() && (aw_it->second)>0.0 && (aw_it->second)<=1.0)
+					std::map<std::string, double>::const_iterator ap_it=contact.value.props.adjuncts.find(params.adjunct_area_alt_part);
+					if(ap_it!=contact.value.props.adjuncts.end())
 					{
-						contact_area_alt=contact_area_total*(aw_it->second);
+						const double part_value=std::max(0.0, std::min(1.0, ap_it->second));
+						contact_area_alt=contact_area_total*part_value;
 						contact_area_standard=(contact_area_total-contact_area_alt);
 					}
 				}

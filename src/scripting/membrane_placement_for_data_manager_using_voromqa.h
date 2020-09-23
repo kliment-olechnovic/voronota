@@ -17,6 +17,7 @@ public:
 		std::size_t atom_id;
 		std::size_t solvent_contact_id;
 		double area;
+		bool exposure_recorded;
 		double exposure;
 		double frustration;
 		double projection;
@@ -27,6 +28,7 @@ public:
 			atom_id(0),
 			solvent_contact_id(0),
 			area(0),
+			exposure_recorded(false),
 			exposure(0),
 			frustration(0),
 			projection(0),
@@ -120,6 +122,7 @@ public:
 			atom_descriptors[i].point=apollota::SimplePoint(atom.value);
 			if(!adjunct_atom_exposure_value.empty() && atom.value.props.adjuncts.count(adjunct_atom_exposure_value)>0)
 			{
+				atom_descriptors[i].exposure_recorded=true;
 				atom_descriptors[i].exposure=atom.value.props.adjuncts.find(adjunct_atom_exposure_value)->second;
 			}
 		}

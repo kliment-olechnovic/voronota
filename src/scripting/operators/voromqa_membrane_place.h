@@ -113,7 +113,7 @@ public:
 			for(std::size_t i=0;i<atom_descriptors.size();i++)
 			{
 				const MembranePlacementForDataManagerUsingVoroMQA::AtomDescriptor& ad=atom_descriptors[i];
-				if(ad.area>0.0)
+				if(ad.exposure_recorded)
 				{
 					data_manager.atom_adjuncts_mutable(ad.atom_id)[adjunct_atom_weighted_membrane_place_value]=ad.membrane_place_value*(1.0-std::max(0.0, std::min(ad.exposure, 1.0)));
 				}
