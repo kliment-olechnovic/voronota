@@ -77,17 +77,18 @@ public:
 				EnergyDescriptor& ed=bundle.inter_atom_energy_descriptors[crads];
 				if(!CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 0, parameters.ignorable_max_seq_sep, false) && !check_crads_pair_for_peptide_bond(crads))
 				{
-					ed.total_area+=(it->second);
-					ed.contacts_count+=1;
+					const double contact_area=(it->second);
+					ed.total_area+=contact_area;
+					ed.contacts_count=1;
 					std::map<InteractionName, double>::const_iterator potential_value_it=
 							input_maps_of_potential_values[i].find(InteractionName(generalize_crads_pair(crads), it->first.tag));
 					if(potential_value_it!=input_maps_of_potential_values[i].end())
 					{
-						ed.energy+=ed.total_area*(potential_value_it->second);
+						ed.energy+=contact_area*(potential_value_it->second);
 					}
 					else
 					{
-						ed.strange_area+=ed.total_area;
+						ed.strange_area+=contact_area;
 					}
 				}
 			}

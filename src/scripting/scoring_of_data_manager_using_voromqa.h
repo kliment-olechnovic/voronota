@@ -52,7 +52,7 @@ public:
 			std::map<common::InteractionName, double> potential_alt_values;
 			if(!potential_alt_file.empty())
 			{
-				InputSelector potential_alt_file_input_selector(potential_file);
+				InputSelector potential_alt_file_input_selector(potential_alt_file);
 				potential_alt_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_alt_file_input_selector.stream());
 				if(potential_alt_values.empty())
 				{
