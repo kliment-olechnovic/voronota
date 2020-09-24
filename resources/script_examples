@@ -129,12 +129,48 @@ describe-exposure \
   -probe-min 2.0 -probe-max 30 -expansion 1 \
   -smoothing-iterations 3 -smoothing-depth 1
 voromqa-membrane-place \
-  -adj-atom-membrane-place-value aopv \
-  -membrane-width 30 -membrane-width-extended 30
+  -adj-atom-weighted-membrane-place-value weighted_membrane_place_value \
+  -membrane-width 25 -membrane-width-extended 25
+set-adjunct-of-atoms-by-expression \
+  -use [-v weighted_membrane_place_value] -expression _logistic \
+  -input-adjuncts weighted_membrane_place_value \
+  -parameters 1 30 0.3 -output-adjunct area_alt_part
+set-adjunct-of-contacts-by-atom-adjuncts \
+  -atoms [-v area_alt_part=0.01:1] \
+  -contacts [-solvent] -source-name area_alt_part \
+  -destination-name area_alt_part -pooling-mode min
 hide-atoms
-show-atoms -rep balls
-color-atoms 0x555555
-spectrum-atoms -adjunct aopv -scheme bwr
+hide-contacts
+make-drawable-contacts [-solvent]
+color-contacts -col yellow
+spectrum-contacts -adjunct area_alt_part -scheme bwr -min-val 0 -max-val 1
+show-contacts [-solvent] -rep faces
+
+### Calculate VoroMQA hydrophobic belt-adjusted QA score
+restrict-atoms [-t! het]
+construct-contacts
+voromqa-global
+voromqa-frustration \
+  -smoothing-iterations 3 -smoothing-depth 1
+describe-exposure \
+  -probe-min 2.0 -probe-max 30 -expansion 1 \
+  -smoothing-iterations 3 -smoothing-depth 1
+voromqa-membrane-place \
+  -adj-atom-weighted-membrane-place-value weighted_membrane_place_value \
+  -membrane-width 25 -membrane-width-extended 25
+set-adjunct-of-atoms-by-expression \
+  -use [-v weighted_membrane_place_value] -expression _logistic \
+  -input-adjuncts weighted_membrane_place_value \
+  -parameters 1 30 0.3 -output-adjunct area_alt_part
+set-adjunct-of-contacts-by-atom-adjuncts \
+  -atoms [-v area_alt_part=0.01:1] \
+  -contacts [-solvent] -source-name area_alt_part \
+  -destination-name area_alt_part -pooling-mode min
+hide-atoms
+hide-contacts
+voromqa-global -adj-area-alt-part area_alt_part
+spectrum-atoms -adjunct voromqa_score_r -scheme rwb -min-val 0 -max-val 1
+show-atoms -rep cartoon sticks
 
 ### Draw and show protein-ligand interface contacts
 hide-atoms
