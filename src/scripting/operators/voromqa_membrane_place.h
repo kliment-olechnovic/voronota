@@ -38,6 +38,7 @@ public:
 	std::string adjunct_atom_exposure_value;
 	std::string adjunct_atom_membrane_place_value;
 	std::string adjunct_atom_weighted_membrane_place_value;
+	std::string global_adj_prefix;
 	double membrane_width;
 	double membrane_width_extended;
 
@@ -51,6 +52,7 @@ public:
 		adjunct_atom_exposure_value=input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 		adjunct_atom_membrane_place_value=input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 		adjunct_atom_weighted_membrane_place_value=input.get_value_or_default<std::string>("adj-atom-weighted-membrane-place-value", "weighted_membrane_place_value");
+		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "");
 		membrane_width=input.get_value<double>("membrane-width");
 		membrane_width_extended=input.get_value_or_default<double>("membrane-width-extended", membrane_width);
 	}
@@ -61,6 +63,7 @@ public:
 		doc.set_option_decription(CDOD("adj-atom-exposure-value", CDOD::DATATYPE_STRING, "name of input adjunct with exposure values", "exposure_value"));
 		doc.set_option_decription(CDOD("adj-atom-membrane-place-value", CDOD::DATATYPE_STRING, "name of output adjunct for membrane place values", "membrane_place_value"));
 		doc.set_option_decription(CDOD("adj-atom-weighted-membrane-place-value", CDOD::DATATYPE_STRING, "name of output adjunct for weighted membrane place values", "weighted_membrane_place_value"));
+		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", ""));
 		doc.set_option_decription(CDOD("membrane-width", CDOD::DATATYPE_FLOAT, "membrane width"));
 		doc.set_option_decription(CDOD("membrane-width-extended", CDOD::DATATYPE_FLOAT, "membrane width extended", ""));
 	}
@@ -118,6 +121,12 @@ public:
 					data_manager.atom_adjuncts_mutable(ad.atom_id)[adjunct_atom_weighted_membrane_place_value]=ad.membrane_place_value*(1.0-std::max(0.0, std::min(ad.exposure, 1.0)));
 				}
 			}
+		}
+
+		if(!global_adj_prefix.empty())
+		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_best_score"]=best_score.value();
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_checks"]=best_score.number_of_checks;
 		}
 
 		Result result;

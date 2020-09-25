@@ -31,8 +31,9 @@ public:
 	std::string sort_inc;
 	std::string sort_dec;
 	bool format_columns;
+	bool no_header;
 
-	ExportGlobalAdjuncts() : all(false), format_columns(false)
+	ExportGlobalAdjuncts() : all(false), format_columns(false), no_header(false)
 	{
 	}
 
@@ -46,6 +47,7 @@ public:
 		sort_inc=input.get_value_or_default<std::string>("sort-inc", "");
 		sort_dec=input.get_value_or_default<std::string>("sort-dec", "");
 		format_columns=input.get_flag("format-columns");
+		no_header=input.get_flag("no-header");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -57,6 +59,7 @@ public:
 		doc.set_option_decription(CDOD("sort-inc", CDOD::DATATYPE_STRING, "adjunct to sort in increasing order", ""));
 		doc.set_option_decription(CDOD("sort-dec", CDOD::DATATYPE_STRING, "adjunct to sort in decreasing order", ""));
 		doc.set_option_decription(CDOD("format-columns", CDOD::DATATYPE_BOOL, "flag to format columns"));
+		doc.set_option_decription(CDOD("no-header", CDOD::DATATYPE_BOOL, "flag to not output header"));
 	}
 
 	Result run(CongregationOfDataManagers& congregation_of_data_managers) const
@@ -176,7 +179,11 @@ public:
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);
 
-		output_vector_columns(column_widths, header, output);
+		if(!no_header)
+		{
+			output_vector_columns(column_widths, header, output);
+		}
+
 		for(std::size_t i=0;i<rows.size();i++)
 		{
 			output_vector_columns(column_widths, rows[i].values, output);

@@ -1,0 +1,263 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-membrane-voromqa' script provides an interface to VoroMQA method for membrane proteins.
+
+Options:
+    --input | -i               string  *  input file path
+    --restrict-input           string     query to restrict input atoms, default is '[]'
+    --membrane-width           number     membrane width or list of widths to use, default is 25.0
+    --output-local-scores      string     prefix to output PDB files with local scores as B-factors
+    --as-assembly                         flag to treat input file as biological assembly
+    --help | -h                           flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-membrane-voromqa --input model.pdb --membrane-width 30.0
+    
+    voronota-js-membrane-voromqa --input model.pdb --membrane-width 20.0,25.0,30.0
+    
+    voronota-js-membrane-voromqa --input model.pdb \
+      --membrane-width 20,25,30 \
+      --output-local-scores ./local_scores/
+
+EOF
+exit 1
+}
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+INFILE=""
+RESTRICT_INPUT="[]"
+MEMBRANE_WIDTH="25.0"
+OUTPUT_LOCAL_SCORES=""
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--membrane-width)
+		MEMBRANE_WIDTH="$OPTARG"
+		shift
+		;;
+	--output-local-scores)
+		OUTPUT_LOCAL_SCORES="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_stream" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat > "$TMPLDIR/input_stream"
+	
+	if [ ! -s "$TMPLDIR/input_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/input_stream"
+	
+	exit 0
+fi
+
+OUTPUT_LOCAL_SCORES="$(substitute_id_in_filename "$INFILE" "$OUTPUT_LOCAL_SCORES")"
+
+MEMBRANE_WIDTH_ARRAY="$(echo $MEMBRANE_WIDTH | tr ';' ',' | sed 's/^/[/' | sed 's/$/]/')"
+
+{
+cat << EOF
+
+params={}
+
+params.input_file='$INFILE';
+params.restrict_input_atoms='$RESTRICT_INPUT';
+params.membrane_width_array=$MEMBRANE_WIDTH_ARRAY;
+params.output_local_scores='$OUTPUT_LOCAL_SCORES';
+params.input_as_assembly='$AS_ASSEMBLY';
+
+EOF
+
+cat << 'EOF'
+
+if(params.input_file===undefined || params.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.membrane_width_array===undefined || params.membrane_width_array.length<1)
+{
+	throw ("No membrane width values");
+}
+
+if(params.output_local_scores===undefined)
+{
+	params.output_local_scores="";
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms");
+
+voronota_construct_contacts();
+voronota_assert_full_success("Failed to construct contacts");
+
+voronota_set_adjunct_of_contacts("-name area_alt_part -value 1.0");
+voronota_assert_full_success("Failed to set contacts adjuncts");
+
+voronota_voromqa_global("-adj-area-alt-part", "area_alt_part", "-global-adj-prefix", "total_membrane_voromqa_global", "-adj-residue-quality", "total_membrane_voromqa_score_r");
+voronota_assert_full_success("Failed to compute total membrane VoroMQA scores");
+
+voronota_voromqa_global("-global-adj-prefix normal_voromqa_global -adj-residue-quality normal_voromqa_score_r");
+voronota_assert_full_success("Failed to compute ordinary VoroMQA scores");
+
+voronota_delete_adjuncts_of_contacts("-adjuncts area_alt_part");
+voronota_assert_full_success("Failed to delete contacts adjuncts");
+
+voronota_rename_global_adjunct("normal_voromqa_global_atoms_count", "atoms");
+voronota_rename_global_adjunct("normal_voromqa_global_residues_count", "residues");
+voronota_rename_global_adjunct("normal_voromqa_global_quality_score", "ordinary_voromqa_score");
+voronota_rename_global_adjunct("total_membrane_voromqa_global_quality_score", "total_membrane_voromqa_score");
+
+if(params.output_local_scores!=="")
+{
+	if(params.output_local_scores!=="_stdout")
+	{
+		shell('mkdir -p "$(dirname '+params.output_local_scores+'file)"');
+	}
+	
+	voronota_export_atoms("-file", params.output_local_scores+"ordinary_voromqa.pdb", "-as-pdb", "-pdb-ter", "-pdb-b-factor", "normal_voromqa_score_r");
+	voronota_assert_full_success("Failed to export pdb file");
+	
+	voronota_export_atoms("-file", params.output_local_scores+"total_membrane_voromqa.pdb", "-as-pdb", "-pdb-ter", "-pdb-b-factor", "total_membrane_voromqa_score_r");
+	voronota_assert_full_success("Failed to export pdb file");
+}
+
+voronota_voromqa_frustration("-smoothing-iterations 3 -smoothing-depth 1");
+voronota_assert_full_success("Failed to compute surface frustration");
+
+voronota_describe_exposure("-probe-min 2.0 -probe-max 30 -expansion 1 -smoothing-iterations 3 -smoothing-depth 1");
+voronota_assert_full_success("Failed to compute surface exposure descriptors");
+
+for(var i=0;i<params.membrane_width_array.length;i++)
+{
+	var membrane_width=params.membrane_width_array[i];
+	
+	voronota_voromqa_membrane_place("-global-adj-prefix voromqa_membrane_place -adj-atom-weighted-membrane-place-value weighted_membrane_place_value -membrane-width "+membrane_width);
+	voronota_assert_full_success("Failed to fit membrane for width "+membrane_width);
+
+	voronota_set_adjunct_of_atoms("-name area_alt_part -value 0.0");
+	voronota_assert_full_success("Failed to set atom adjuncts");
+	
+	voronota_set_adjunct_of_atoms_by_expression("-use [-v weighted_membrane_place_value] -expression _logistic -input-adjuncts weighted_membrane_place_value -parameters 1 30 0.3 -output-adjunct area_alt_part");
+	voronota_assert_full_success("Failed to transform weighted membraneness values");
+
+	voronota_set_adjunct_of_contacts_by_atom_adjuncts("-atoms [-v area_alt_part=0.01:1] -contacts [-solvent] -source-name area_alt_part -destination-name area_alt_part -pooling-mode min");
+	voronota_assert_full_success("Failed to set contacts adjuncts");
+	
+	voronota_voromqa_global("-adj-area-alt-part", "area_alt_part", "-global-adj-prefix", "membrane_voromqa_global", "-adj-residue-quality", "membrane_voromqa_score_r");
+	voronota_assert_full_success("Failed to compute membrane VoroMQA scores for width "+membrane_width);
+	
+	voronota_delete_global_adjuncts("-adjuncts", ["membrane_width", "membrane_voromqa_score", "membrane_fit_score"]);
+	voronota_assert_full_success("Failed to delete global scores");
+	
+	voronota_set_global_adjunct("-name", "membrane_width", "-value", membrane_width);
+	voronota_rename_global_adjunct("voromqa_membrane_place_best_score", "membrane_fit_score");
+	voronota_rename_global_adjunct("membrane_voromqa_global_quality_score", "membrane_voromqa_score");
+	
+	voronota_export_global_adjuncts("-file", "_stdout", "-no-header", (i>0), "-adjuncts", ["membrane_width", "membrane_voromqa_score", "membrane_fit_score", "residues", "atoms", "ordinary_voromqa_score", "total_membrane_voromqa_score"]);
+	voronota_assert_full_success("Failed to export scores");
+	
+	if(params.output_local_scores!=="")
+	{
+		voronota_export_atoms("-file", params.output_local_scores+"membrane_place_width_"+membrane_width+".pdb", "-as-pdb", "-pdb-ter", "-pdb-b-factor", "area_alt_part");
+		voronota_assert_full_success("Failed to export pdb file");
+		
+		voronota_export_atoms("-file", params.output_local_scores+"membrane_voromqa_width_"+membrane_width+".pdb", "-as-pdb", "-pdb-ter", "-pdb-b-factor", "membrane_voromqa_score_r");
+		voronota_assert_full_success("Failed to export pdb file");
+	}
+}
+
+EOF
+
+} \
+| voronota-js
+
+

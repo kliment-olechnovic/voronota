@@ -20,6 +20,7 @@
 #include "operators/delete_adjuncts_of_atoms.h"
 #include "operators/delete_adjuncts_of_contacts.h"
 #include "operators/delete_figures.h"
+#include "operators/delete_global_adjuncts.h"
 #include "operators/delete_objects.h"
 #include "operators/delete_selections_of_atoms.h"
 #include "operators/delete_selections_of_contacts.h"
@@ -98,6 +99,7 @@
 #include "operators/set_atom_serials.h"
 #include "operators/set_chain_name.h"
 #include "operators/set_chain_names_by_guessing.h"
+#include "operators/set_global_adjunct.h"
 #include "operators/set_tag_of_atoms_by_secondary_structure.h"
 #include "operators/set_tag_of_atoms.h"
 #include "operators/set_tag_of_contacts.h"
@@ -199,6 +201,7 @@ public:
 		set_command_for_data_manager("delete-adjuncts-of-atoms", operators::DeleteAdjunctsOfAtoms(), true);
 		set_command_for_data_manager("delete-adjuncts-of-contacts", operators::DeleteAdjunctsOfContacts(), true);
 		set_command_for_data_manager("delete-figures", operators::DeleteFigures(), true);
+		set_command_for_data_manager("delete-global-adjuncts", operators::DeleteGlobalAdjuncts(), true);
 		set_command_for_data_manager("delete-selections-of-atoms", operators::DeleteSelectionsOfAtoms(), true);
 		set_command_for_data_manager("delete-selections-of-contacts", operators::DeleteSelectionsOfContacts(), true);
 		set_command_for_data_manager("delete-tags-of-atoms", operators::DeleteTagsOfAtoms(), true);
@@ -262,6 +265,7 @@ public:
 		set_command_for_data_manager("set-atom-serials", operators::SetAtomSerials(), true);
 		set_command_for_data_manager("set-chain-name", operators::SetChainName(), true);
 		set_command_for_data_manager("set-chain-names-by-guessing", operators::SetChainNamesByGuessing(), true);
+		set_command_for_data_manager("set-global-adjunct", operators::SetGlobalAdjunct(), true);
 		set_command_for_data_manager("set-tag-of-atoms-by-secondary-structure", operators::SetTagOfAtomsBySecondaryStructure(), true);
 		set_command_for_data_manager("set-tag-of-atoms", operators::SetTagOfAtoms(), true);
 		set_command_for_data_manager("set-tag-of-contacts", operators::SetTagOfContacts(), true);
