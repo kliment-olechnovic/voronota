@@ -966,6 +966,9 @@
             "name":"delete-figures",
             "short_description":""},
           {
+            "name":"delete-global-adjuncts",
+            "short_description":""},
+          {
             "name":"delete-objects",
             "short_description":""},
           {
@@ -1210,6 +1213,9 @@
             "short_description":""},
           {
             "name":"set-chain-names-by-guessing",
+            "short_description":""},
+          {
+            "name":"set-global-adjunct",
             "short_description":""},
           {
             "name":"set-tag-of-atoms",
