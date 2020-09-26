@@ -9,12 +9,31 @@ trap "rm -r $TMPDIR" EXIT
 
 cat ./resources/texts/intro.markdown
 
-echo -e "\n## VoroMQA dark and light method script\n"
+echo -e "\n# Usage"
+
+
+echo -e "\n## VoroMQA dark and light methods\n"
+
 cat << EOF
-'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (older) methods.
-The script interface is presented below:
+'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (classic) methods.
+
+### Script interface
+
 EOF
+
 ./voronota-js-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+
+echo -e "\n## VoroMQA-based membrane protein structure assessment\n"
+
+cat << EOF
+'voronota-js-membrane-voromqa' script provides an interface to the VoroMQA-based method for assessing membrane protein structures.
+
+### Script interface
+
+EOF
+
+./voronota-js-membrane-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
 } > $TMPDIR/documentation.markdown
 

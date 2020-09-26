@@ -24,7 +24,12 @@
 <li><a href="#using-c-compiler-directly">Using C++ compiler directly</a></li>
 </ul></li>
 <li><a href="#usage">Usage</a><ul>
-<li><a href="#voromqa-dark-and-light-method-script">VoroMQA dark and light method script</a></li>
+<li><a href="#voromqa-dark-and-light-methods">VoroMQA dark and light methods</a><ul>
+<li><a href="#script-interface">Script interface</a></li>
+</ul></li>
+<li><a href="#voromqa-based-membrane-protein-structure-assessment">VoroMQA-based membrane protein structure assessment</a><ul>
+<li><a href="#script-interface-1">Script interface</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -32,13 +37,13 @@
 <p>Voronota-JS is an expansion of the core Voronota software. Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
 <p>Currently, the Voronota-JS package contains three executables:</p>
 <ul>
-<li>'voronota-js' - core engine that executes JavaScript scripts.</li>
-<li>'voronota-js-voromqa' - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
-<li>'voronota-js-membrane-voromqa' - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
+<li>&quot;voronota-js&quot; - core engine that executes JavaScript scripts.</li>
+<li>&quot;voronota-js-voromqa&quot; - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
+<li>&quot;voronota-js-membrane-voromqa&quot; - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
 </ul>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
-<p>Download the archive from <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/download" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/download</a>.</p>
-<p>The archive contains ready-to-use statically compiled 'voronota-js' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
+<p>Download the archive from <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz</a>.</p>
+<p>The archive contains ready-to-use statically compiled &quot;voronota-js&quot; program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
 <h1 id="building-from-source-code">Building from source code</h1>
 <h2 id="requirements">Requirements</h2>
 <p>Voronota-JS has no required external dependencies, only a C++14-compliant compiler is needed to build it.</p>
@@ -56,8 +61,9 @@ cp ./voronota-js ../voronota-js</code></pre>
 <p>For example, &quot;voronota-js&quot; executable can be built from the sources in &quot;src&quot; directory using GNU C++ compiler:</p>
 <pre><code>g++ -std=c++14 -I&quot;./src/expansion_js/src/dependencies&quot; -O3 -o &quot;./voronota-js&quot; $(find ./src/ -name &#39;*.cpp&#39;)</code></pre>
 <h1 id="usage">Usage</h1>
-<h2 id="voromqa-dark-and-light-method-script">VoroMQA dark and light method script</h2>
-<p>'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (older) methods. The script interface is presented below:</p>
+<h2 id="voromqa-dark-and-light-methods">VoroMQA dark and light methods</h2>
+<p>'voronota-js-voromqa' script provides an interface to VoroMQA dark (newer) and light (classic) methods.</p>
+<h3 id="script-interface">Script interface</h3>
 <pre><code>Options:
     --input | -i              string  *  input file path or &#39;_list&#39; to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is &#39;[]&#39;
@@ -104,5 +110,28 @@ Examples:
       --processors 8 \
       --select-contacts &#39;[-a1 [-chain A -rnum 1:500] -a2 [-chain B -rnum 1:500]]&#39; \
       --tour-sort &#39;-columns full_dark_score sel_energy -multipliers 1 -1 -tolerances 0.02 0.0&#39;</code></pre>
+<h2 id="voromqa-based-membrane-protein-structure-assessment">VoroMQA-based membrane protein structure assessment</h2>
+<p>'voronota-js-membrane-voromqa' script provides an interface to the VoroMQA-based method for assessing membrane protein structures.</p>
+<h3 id="script-interface-1">Script interface</h3>
+<pre><code>Options:
+    --input | -i               string  *  input file path
+    --restrict-input           string     query to restrict input atoms, default is &#39;[]&#39;
+    --membrane-width           number     membrane width or list of widths to use, default is 25.0
+    --output-local-scores      string     prefix to output PDB files with local scores as B-factors
+    --as-assembly                         flag to treat input file as biological assembly
+    --help | -h                           flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-membrane-voromqa --input model.pdb --membrane-width 30.0
+    
+    voronota-js-membrane-voromqa --input model.pdb --membrane-width 20.0,25.0,30.0
+    
+    voronota-js-membrane-voromqa --input model.pdb \
+      --membrane-width 20,25,30 \
+      --output-local-scores ./local_scores/</code></pre>
 </body>
 </html>

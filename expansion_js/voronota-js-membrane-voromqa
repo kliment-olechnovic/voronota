@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-membrane-voromqa' script provides an interface to VoroMQA method for membrane proteins.
+'voronota-js-membrane-voromqa' script provides an interface to the VoroMQA-based method for assessing membrane protein structures.
 
 Options:
     --input | -i               string  *  input file path
