@@ -1,0 +1,4 @@
+ID          full_dark_score  full_light_score  full_residues  full_atoms  sel_dark_score  sel_light_score  sel_energy  sel_energy_norm  sel_residues  sel_atoms  sel_contacts  sel_contacts_area  sel_clash_score  ss_alpha  ss_beta  tour_score
+target.pdb  0.717541         0.626564          261            2095        0.721287        0.667659         -395.329    -0.37557         55            264        487           1052.61            0                43        102      2.0
+model2.pdb  0.550848         0.409343          306            2440        0.649675        0.59134          -301.566    -0.307512        57            249        449           980.663            0                41        102      1.0
+model1.pdb  0.485827         0.327172          344            2720        0.552672        0.547542         -292.869    -0.297962        63            267        457           982.91             0                45        111      0.0

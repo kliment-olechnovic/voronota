@@ -1,0 +1,3 @@
+ID             membrane_width  membrane_voromqa_score  membrane_fit_score  residues  atoms  ordinary_voromqa_score  total_membrane_voromqa_score
+structure.pdb  20              0.463772                0.579482            371       2893   0.379877                0.425933
+structure.pdb  30              0.470605                0.560165            371       2893   0.379877                0.425933
