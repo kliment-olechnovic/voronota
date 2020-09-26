@@ -38,7 +38,7 @@ write_resource_file data_voromqa_v1_energy_means_and_sds ../resources/voromqa_v1
 echo
 write_resource_file data_voromqa_v1_energy_potential ../resources/voromqa_v1_energy_potential
 echo
-write_resource_file data_voromqa_v1_energy_potential_alt ../resources/voromqa_v1_energy_potential_alt
+write_resource_file data_voromqa_v1_energy_potential_alt ./resources/voromqa_v1_energy_potential_alt
 echo
 write_resource_file data_voromqa_dark_nnport_input_header ../resources/nnport/voromqa_dark/nnport_input_header
 echo
@@ -46,7 +46,7 @@ write_resource_file data_voromqa_dark_nnport_input_statistics ../resources/nnpor
 echo
 write_resource_file data_voromqa_dark_nnport_input_fdeep_model_json ../resources/nnport/voromqa_dark/nnport_input_fdeep_model.json
 echo
-write_resource_file data_script_examples ../resources/script_examples
+write_resource_file data_script_examples ./resources/script_examples
 echo
 
 cat << 'EOF'

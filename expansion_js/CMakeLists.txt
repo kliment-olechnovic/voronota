@@ -15,3 +15,4 @@ add_executable(voronota-js ${VORONOTA_JS_SRC})
 
 install(TARGETS voronota-js RUNTIME DESTINATION bin)
 install(PROGRAMS voronota-js-voromqa DESTINATION bin)
+install(PROGRAMS voronota-js-membrane-voromqa DESTINATION bin)
