@@ -224,3 +224,16 @@ hide-atoms
 show-contacts -rep skin-shape
 color-contacts -col cyan
 
+### Draw a subset of empty tangent spheres
+construct-contacts
+delete-figures -name et_spheres
+add-figure-of-triangulation [] -strict \
+  -min-radius 0.1 -max-radius 3.0 \
+  -as-spheres -figure-name et_spheres
+hide-figures
+show-figures
+color-figures 0xFF7777
+hide-atoms
+show-atoms -rep balls
+color-atoms 0x7777FF
+
