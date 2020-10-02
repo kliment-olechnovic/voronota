@@ -38,6 +38,7 @@ public:
 	std::string adjunct_atom_exposure_value;
 	std::string adjunct_atom_membrane_place_value;
 	std::string adjunct_atom_weighted_membrane_place_value;
+	std::string adjunct_atom_shift_from_membrane_center;
 	std::string global_adj_prefix;
 	double membrane_width;
 	double membrane_width_extended;
@@ -52,6 +53,7 @@ public:
 		adjunct_atom_exposure_value=input.get_value_or_default<std::string>("adj-atom-exposure-value", "exposure_value");
 		adjunct_atom_membrane_place_value=input.get_value_or_default<std::string>("adj-atom-membrane-place-value", "membrane_place_value");
 		adjunct_atom_weighted_membrane_place_value=input.get_value_or_default<std::string>("adj-atom-weighted-membrane-place-value", "weighted_membrane_place_value");
+		adjunct_atom_shift_from_membrane_center=input.get_value_or_default<std::string>("adj-atom-shift-from-membrane-center", "");
 		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "");
 		membrane_width=input.get_value<double>("membrane-width");
 		membrane_width_extended=input.get_value_or_default<double>("membrane-width-extended", membrane_width);
@@ -63,6 +65,7 @@ public:
 		doc.set_option_decription(CDOD("adj-atom-exposure-value", CDOD::DATATYPE_STRING, "name of input adjunct with exposure values", "exposure_value"));
 		doc.set_option_decription(CDOD("adj-atom-membrane-place-value", CDOD::DATATYPE_STRING, "name of output adjunct for membrane place values", "membrane_place_value"));
 		doc.set_option_decription(CDOD("adj-atom-weighted-membrane-place-value", CDOD::DATATYPE_STRING, "name of output adjunct for weighted membrane place values", "weighted_membrane_place_value"));
+		doc.set_option_decription(CDOD("adj-atom-shift-from-membrane-center", CDOD::DATATYPE_STRING, "name of output adjunct for shift from membrane center", ""));
 		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", ""));
 		doc.set_option_decription(CDOD("membrane-width", CDOD::DATATYPE_FLOAT, "membrane width"));
 		doc.set_option_decription(CDOD("membrane-width-extended", CDOD::DATATYPE_FLOAT, "membrane width extended", ""));
@@ -120,6 +123,20 @@ public:
 				{
 					data_manager.atom_adjuncts_mutable(ad.atom_id)[adjunct_atom_weighted_membrane_place_value]=ad.membrane_place_value*(1.0-std::max(0.0, std::min(ad.exposure, 1.0)));
 				}
+			}
+		}
+
+		if(!adjunct_atom_shift_from_membrane_center.empty())
+		{
+			for(std::size_t i=0;i<data_manager.atoms().size();i++)
+			{
+				data_manager.atom_adjuncts_mutable(i).erase(adjunct_atom_shift_from_membrane_center);
+			}
+
+			for(std::size_t i=0;i<atom_descriptors.size();i++)
+			{
+				const MembranePlacementForDataManagerUsingVoroMQA::AtomDescriptor& ad=atom_descriptors[i];
+				data_manager.atom_adjuncts_mutable(ad.atom_id)[adjunct_atom_shift_from_membrane_center]=(ad.projection-best_score.projection_center);
 			}
 		}
 
