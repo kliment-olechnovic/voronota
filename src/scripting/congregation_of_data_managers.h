@@ -344,6 +344,55 @@ public:
 		return set_object_visible(get_object(name), visible);
 	}
 
+	bool set_next_picked_object_visible()
+	{
+		std::list<ObjectDescriptor>::iterator it_first_picked=objects_.end();
+		std::list<ObjectDescriptor>::iterator it_first_picked_visible=objects_.end();
+		std::list<ObjectDescriptor>::iterator it_second_picked_after_first_picked_visible=objects_.end();
+
+		for(std::list<ObjectDescriptor>::iterator it=objects_.begin();it!=objects_.end();++it)
+		{
+			if(it_first_picked==objects_.end() && it->attributes.picked)
+			{
+				it_first_picked=it;
+			}
+
+			if(it_first_picked_visible==objects_.end())
+			{
+				if(it->attributes.picked && it->attributes.visible)
+				{
+					it_first_picked_visible=it;
+				}
+			}
+			else if(it_second_picked_after_first_picked_visible==objects_.end())
+			{
+				if(it->attributes.picked)
+				{
+					it_second_picked_after_first_picked_visible=it;
+				}
+			}
+
+			it->attributes.visible=false;
+			change_indicator_.set_changed_objects_visibilities(true);
+		}
+
+		if(it_first_picked!=objects_.end())
+		{
+			if(it_first_picked_visible!=objects_.end() && it_second_picked_after_first_picked_visible!=objects_.end())
+			{
+				it_second_picked_after_first_picked_visible->attributes.visible=true;
+			}
+			else
+			{
+				it_first_picked->attributes.visible=true;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
 private:
 	struct ObjectDescriptor
 	{

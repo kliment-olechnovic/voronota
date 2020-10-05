@@ -110,6 +110,7 @@
 #include "operators/show_atoms.h"
 #include "operators/show_contacts.h"
 #include "operators/show_figures.h"
+#include "operators/show_next_picked_object.h"
 #include "operators/show_objects.h"
 #include "operators/source.h"
 #include "operators/spectrum_atoms.h"
@@ -182,6 +183,7 @@ public:
 		set_command_for_congregation_of_data_managers("pick-objects", operators::PickObjects());
 		set_command_for_congregation_of_data_managers("pick-more-objects", operators::PickMoreObjects());
 		set_command_for_congregation_of_data_managers("unpick-objects", operators::UnpickObjects());
+		set_command_for_congregation_of_data_managers("show-next-picked-object", operators::ShowNextPickedObject());
 		set_command_for_congregation_of_data_managers("show-objects", operators::ShowObjects());
 		set_command_for_congregation_of_data_managers("hide-objects", operators::HideObjects());
 		set_command_for_congregation_of_data_managers("zoom-by-objects", operators::ZoomByObjects());
