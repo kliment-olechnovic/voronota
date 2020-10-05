@@ -27,6 +27,7 @@ public:
 	Operator& init(CommandInput& input)
 	{
 		initialize(input);
+		input.assert_nothing_unusable();
 		return underlying();
 	}
 
