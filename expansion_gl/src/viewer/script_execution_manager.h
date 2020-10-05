@@ -486,7 +486,7 @@ private:
 				}
 				std::ostringstream script_output;
 				script_output << "set-tag-of-atoms-by-secondary-structure\n";
-				script_output << "zoom-by-atoms\n";
+				script_output << "zoom-by-objects -picked\n";
 				script_output << "hide-atoms\n";
 				if(available_contacts)
 				{

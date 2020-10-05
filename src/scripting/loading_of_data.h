@@ -226,7 +226,6 @@ public:
 		construct_result(Configuration::get_default_configuration(), input_params, result);
 	}
 
-private:
 	static std::string get_format_from_atoms_file_name(const std::string& filename)
 	{
 		static const std::multimap<std::string, std::string> map_of_format_extensions=generate_map_of_format_extensions();
@@ -243,6 +242,7 @@ private:
 		return std::string();
 	}
 
+private:
 	static std::multimap<std::string, std::string> generate_map_of_format_extensions()
 	{
 		std::multimap<std::string, std::string> map_of_format_extensions;

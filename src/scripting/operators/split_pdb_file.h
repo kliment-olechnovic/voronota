@@ -17,8 +17,15 @@ class SplitPDBFile : public OperatorBase<SplitPDBFile>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		void store(HeterogeneousStorage&) const
+		std::vector<std::string> result_filenames;
+
+		void store(HeterogeneousStorage& heterostorage) const
 		{
+			std::vector<VariantValue>& result_filenames_array=heterostorage.variant_object.values_array("result_filenames");
+			for(std::size_t i=0;i<result_filenames.size();i++)
+			{
+				result_filenames_array.push_back(VariantValue(result_filenames[i]));
+			}
 		}
 	};
 
@@ -120,6 +127,8 @@ public:
 		}
 
 		Result result;
+		result.result_filenames=result_filenames;
+
 		return result;
 	}
 };
