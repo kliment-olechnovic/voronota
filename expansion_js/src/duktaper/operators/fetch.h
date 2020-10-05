@@ -1,7 +1,7 @@
 #ifndef DUKTAPER_OPERATORS_FETCH_H_
 #define DUKTAPER_OPERATORS_FETCH_H_
 
-#include "../../../../src/scripting/operators/import.h"
+#include "../../../../src/scripting/operators/import_many.h"
 
 #include "../call_shell_utilities.h"
 
@@ -19,14 +19,11 @@ class Fetch : public scripting::OperatorBase<Fetch>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
-		scripting::SummaryOfAtoms atoms_summary;
-		std::string object_name;
+		scripting::operators::ImportMany::Result import_result;
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			scripting::VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
-			heterostorage.summaries_of_atoms["loaded"]=atoms_summary;
-			heterostorage.variant_object.value("object_name")=object_name;
+			import_result.store(heterostorage);
 		}
 	};
 
@@ -34,8 +31,9 @@ public:
 	bool assembly_provided;
 	int assembly;
 	bool no_heteroatoms;
+	bool all_states;
 
-	Fetch() : assembly_provided(false), assembly(1), no_heteroatoms(false)
+	Fetch() : assembly_provided(false), assembly(1), no_heteroatoms(false), all_states(false)
 	{
 	}
 
@@ -45,6 +43,7 @@ public:
 		assembly_provided=input.is_option("assembly");
 		assembly=input.get_value_or_default<int>("assembly", 1);
 		no_heteroatoms=input.get_flag("no-heteroatoms");
+		all_states=input.get_flag("all-states");
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
@@ -52,6 +51,7 @@ public:
 		doc.set_option_decription(CDOD("pdb-id", CDOD::DATATYPE_STRING, "PDB ID"));
 		doc.set_option_decription(CDOD("assembly", CDOD::DATATYPE_INT, "assembly number, 0 for asymmetric unit", "1"));
 		doc.set_option_decription(CDOD("no-heteroatoms", CDOD::DATATYPE_BOOL, "flag to not include heteroatoms"));
+		doc.set_option_decription(CDOD("all-states", CDOD::DATATYPE_BOOL, "flag to import all NMR states"));
 	}
 
 	Result run(scripting::CongregationOfDataManagers& congregation_of_data_managers) const
@@ -72,6 +72,11 @@ public:
 		if(assembly<0)
 		{
 			throw std::runtime_error(std::string("Invalid assembly number."));
+		}
+
+		if(assembly_provided && all_states)
+		{
+			throw std::runtime_error(std::string("Incompatible options 'assembly' and 'all-states' used together."));
 		}
 
 		if(!CallShellUtilities::test_if_shell_command_available("curl"))
@@ -136,16 +141,15 @@ public:
 			title_output << "_as_" << used_assembly;
 		}
 
-		scripting::operators::Import::Result import_result=scripting::operators::Import().init(CMDIN()
-				.set("file", tmpfile.filename())
+		Result result;
+
+		result.import_result=scripting::operators::ImportMany().init(CMDIN()
+				.set("files", tmpfile.filename())
 				.set("format", "pdb")
 				.set("as-assembly", (used_assembly!=0))
+				.set("split-pdb-files", all_states)
 				.set("include-heteroatoms", !no_heteroatoms)
 				.set("title", title_output.str())).run(congregation_of_data_managers);
-
-		Result result;
-		result.atoms_summary=import_result.atoms_summary;
-		result.object_name=import_result.object_name;
 
 		return result;
 	}

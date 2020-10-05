@@ -494,7 +494,7 @@ private:
 				prepare(subject, record.command_input);
 				{
 					Operator op=op_;
-					op.init(record.command_input);
+					op.init(record.command_input); //TODO move to init?
 					record.command_input.assert_nothing_unusable();
 					op.run(subject).write(record.heterostorage);
 				}
