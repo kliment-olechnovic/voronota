@@ -336,6 +336,19 @@ public:
 			return std::string();
 		}
 	}
+
+	static std::string remove_suffix(const std::string& str, const std::string& suffix)
+	{
+		if(suffix.size()<str.size())
+		{
+			const std::size_t pos=str.rfind(suffix);
+			if(pos!=std::string::npos && (pos+suffix.size())==str.size())
+			{
+				return str.substr(0, str.size()-suffix.size());
+			}
+		}
+		return str;
+	}
 };
 
 }

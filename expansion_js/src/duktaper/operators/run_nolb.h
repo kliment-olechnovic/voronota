@@ -109,8 +109,12 @@ public:
 			}
 
 			{
+				std::string object_name_without_suffix=object_name;
+				object_name_without_suffix=scripting::OperatorsUtilities::remove_suffix(object_name_without_suffix, ".pdb");
+				object_name_without_suffix=scripting::OperatorsUtilities::remove_suffix(object_name_without_suffix, ".PDB");
+
 				std::ostringstream result_file_path;
-				result_file_path << tmpdir.dir_path() << "/" << object_name << "_nlb_" << mode_number << ".pdb";
+				result_file_path << tmpdir.dir_path() << "/" << object_name_without_suffix << "_nlb_" << mode_number << ".pdb";
 
 				result.import_result=scripting::operators::ImportMany().init(CMDIN()
 						.set("files", result_file_path.str())
