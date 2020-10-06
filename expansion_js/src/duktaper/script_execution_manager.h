@@ -10,6 +10,7 @@
 #include "operators/fetch.h"
 #include "operators/import_url.h"
 #include "operators/nnport_predict.h"
+#include "operators/run_nolb.h"
 #include "operators/scwrl.h"
 #include "operators/setup_defaults.h"
 #include "operators/tmalign_many.h"
@@ -43,6 +44,7 @@ public:
 
 		set_command_for_congregation_of_data_managers("fetch", operators::Fetch());
 		set_command_for_congregation_of_data_managers("import-url", operators::ImportUrl());
+		set_command_for_congregation_of_data_managers("run-nolb", operators::RunNolb());
 		set_command_for_congregation_of_data_managers("tmalign-many", operators::TMalignMany());
 		set_command_for_congregation_of_data_managers("tmalign", operators::TMalign());
 	}
