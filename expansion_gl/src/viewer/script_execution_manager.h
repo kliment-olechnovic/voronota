@@ -6,6 +6,7 @@
 #include "congregations_of_drawers_for_data_managers.h"
 #include "console.h"
 
+#include "operators/animate.h"
 #include "operators/background.h"
 #include "operators/fog.h"
 #include "operators/grid.h"
@@ -61,6 +62,8 @@ public:
 		set_command_for_extra_actions("clear-last", scripting::operators::Mock());
 		set_command_for_extra_actions("history", scripting::operators::Mock());
 		set_command_for_extra_actions("history-all", scripting::operators::Mock());
+		set_command_for_extra_actions("animate-none", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_NONE));
+		set_command_for_extra_actions("animate-loop-picked-objects", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS));
 
 		set_default_aliases();
 
@@ -210,6 +213,19 @@ public:
 		}
 	}
 
+	void setup_animation()
+	{
+		if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS)
+		{
+			if(animation_timer.elapsed_miliseconds()>GUIConfiguration::instance().animation_step_miliseconds)
+			{
+				congregation_of_data_managers().set_next_picked_object_visible();
+				update_console_object_states();
+				animation_timer.reset();
+			}
+		}
+	}
+
 	void draw(const bool with_instancing, const int grid_id)
 	{
 		DrawerForDataManager::DrawingRequest drawing_request(true);
@@ -311,22 +327,7 @@ protected:
 
 		if(ci.changed())
 		{
-			std::vector<Console::ObjectState> object_states;
-			const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers.get_objects();
-			object_states.reserve(data_managers.size());
-			for(std::size_t i=0;i<data_managers.size();i++)
-			{
-				const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers.get_object_attributes(data_managers[i]);
-				if(object_attributes.valid)
-				{
-					Console::ObjectState object_state;
-					object_state.name=object_attributes.name;
-					object_state.picked=object_attributes.picked;
-					object_state.visible=object_attributes.visible;
-					object_states.push_back(object_state);
-				}
-			}
-			Console::instance().set_object_states(object_states);
+			update_console_object_states();
 		}
 	}
 
@@ -571,7 +572,28 @@ private:
 		Console::instance().set_documentation(reference);
 	}
 
+	void update_console_object_states()
+	{
+		std::vector<Console::ObjectState> object_states;
+		const std::vector<scripting::DataManager*> data_managers=congregation_of_data_managers().get_objects();
+		object_states.reserve(data_managers.size());
+		for(std::size_t i=0;i<data_managers.size();i++)
+		{
+			const scripting::CongregationOfDataManagers::ObjectAttributes object_attributes=congregation_of_data_managers().get_object_attributes(data_managers[i]);
+			if(object_attributes.valid)
+			{
+				Console::ObjectState object_state;
+				object_state.name=object_attributes.name;
+				object_state.picked=object_attributes.picked;
+				object_state.visible=object_attributes.visible;
+				object_states.push_back(object_state);
+			}
+		}
+		Console::instance().set_object_states(object_states);
+	}
+
 	CongregationOfDrawersForDataManagers congregation_of_drawers_;
+	auxiliaries::ElapsedProcessorTime animation_timer;
 };
 
 }

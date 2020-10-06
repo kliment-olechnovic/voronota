@@ -246,6 +246,7 @@ protected:
 		}
 
 		script_execution_manager_.setup_grid_parameters();
+		script_execution_manager_.setup_animation();
 	}
 
 	void on_after_rendered_frame()

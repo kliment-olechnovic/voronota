@@ -18,10 +18,19 @@ public:
 		GRID_VARIANT_BY_CONCEPT
 	};
 
+	enum AnimationVariant
+	{
+		ANIMATION_VARIANT_NONE,
+		ANIMATION_VARIANT_LOOP_PICKED_OBJECTS
+	};
+
+
 	GridVariant grid_variant;
+	AnimationVariant animation_variant;
 	bool enabled_cursor_label;
 	bool enabled_waiting_indicator;
 	int json_writing_level;
+	double animation_step_miliseconds;
 
 	static GUIConfiguration& instance()
 	{
@@ -58,9 +67,11 @@ public:
 private:
 	GUIConfiguration() :
 		grid_variant(GRID_VARIANT_BY_OBJECT),
+		animation_variant(ANIMATION_VARIANT_NONE),
 		enabled_cursor_label(true),
 		enabled_waiting_indicator(true),
-		json_writing_level(1)
+		json_writing_level(1),
+		animation_step_miliseconds(1000.0/30.0)
 	{
 	}
 
