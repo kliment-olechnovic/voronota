@@ -1077,6 +1077,9 @@
             "name":"import-contacts",
             "short_description":""},
           {
+            "name":"import-many",
+            "short_description":""},
+          {
             "name":"import-selection-of-atoms",
             "short_description":""},
           {
@@ -1191,6 +1194,9 @@
             "name":"set-adjunct-of-atoms-by-expression",
             "short_description":""},
           {
+            "name":"set-adjunct-of-atoms-by-projection",
+            "short_description":""},
+          {
             "name":"set-adjunct-of-atoms-by-residue-pooling",
             "short_description":""},
           {
@@ -1240,6 +1246,9 @@
             "short_description":""},
           {
             "name":"show-figures",
+            "short_description":""},
+          {
+            "name":"show-next-picked-object",
             "short_description":""},
           {
             "name":"show-objects",
