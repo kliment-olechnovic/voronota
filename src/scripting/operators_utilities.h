@@ -88,6 +88,8 @@ public:
 		query.min_radius=input.get_value_or_default<double>("min-radius", query.min_radius);
 		query.max_radius=input.get_value_or_default<double>("max-radius", query.max_radius);
 		query.expansion=input.get_value_or_default<double>("expansion", query.expansion);
+		query.min_buriedness=input.get_value_or_default<double>("min-buriedness", query.min_buriedness);
+		query.min_scaled_buriedness=input.get_value_or_default<double>("min-scaled-buriedness", query.min_scaled_buriedness);
 		return query;
 	}
 
@@ -99,6 +101,8 @@ public:
 		doc.set_option_decription(CDOD("min-radius", CDOD::DATATYPE_FLOAT, "min radius of tangent sphere", query.min_radius));
 		doc.set_option_decription(CDOD("max-radius", CDOD::DATATYPE_FLOAT, "max radius of tangent sphere", query.max_radius));
 		doc.set_option_decription(CDOD("expansion", CDOD::DATATYPE_FLOAT, "tangent sphere radius expansion for searching", query.expansion));
+		doc.set_option_decription(CDOD("min-buriedness", CDOD::DATATYPE_FLOAT, "min buriedness of tangent sphere", query.min_buriedness));
+		doc.set_option_decription(CDOD("min-scaled-buriedness", CDOD::DATATYPE_FLOAT, "min scaled buriedness of tangent sphere", query.min_scaled_buriedness));
 	}
 
 	static CongregationOfDataManagers::ObjectQuery read_congregation_of_data_managers_object_query(CommandInput& input)

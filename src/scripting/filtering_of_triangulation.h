@@ -19,6 +19,8 @@ public:
 		double min_radius;
 		double max_radius;
 		double expansion;
+		double min_buriedness;
+		double min_scaled_buriedness;
 		std::set<std::size_t> atom_ids;
 
 		Query() :
@@ -26,7 +28,9 @@ public:
 			max_edge(std::numeric_limits<double>::max()),
 			min_radius(-1000000.0),
 			max_radius(std::numeric_limits<double>::max()),
-			expansion(0.0)
+			expansion(0.0),
+			min_buriedness(0.0),
+			min_scaled_buriedness(0.0)
 		{
 		}
 	};
@@ -84,11 +88,13 @@ public:
 
 			allowed=allowed && (sphere.r>query.min_radius) && (sphere.r<query.max_radius);
 
+			std::vector<std::size_t> near_ids;
+
 			if(allowed)
 			{
 				if(query.expansion>0.0)
 				{
-					const std::vector<std::size_t> near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(sphere, sphere.r+query.expansion));
+					near_ids=apollota::SearchForSphericalCollisions::find_all_collisions(bsh, apollota::SimpleSphere(sphere, sphere.r+query.expansion));
 					if(query.strict)
 					{
 						std::size_t found_count=0;
@@ -113,6 +119,11 @@ public:
 				}
 				else
 				{
+					near_ids.resize(4);
+					near_ids[0]=quadruple.get(0);
+					near_ids[1]=quadruple.get(1);
+					near_ids[2]=quadruple.get(2);
+					near_ids[3]=quadruple.get(3);
 					if(query.strict)
 					{
 						allowed=(query.atom_ids.count(quadruple.get(0))>0
@@ -139,6 +150,44 @@ public:
 						allowed=allowed && (apollota::distance_from_point_to_point(balls[quadruple.get(a)], balls[quadruple.get(b)])<query.max_edge);
 					}
 				}
+			}
+
+			if(allowed && (query.min_buriedness>0.0 || query.min_scaled_buriedness>0.0) && near_ids.size()>=4)
+			{
+				const std::size_t N=near_ids.size();
+
+				std::vector<apollota::SimplePoint> touches(N);
+				for(std::size_t j=0;j<N;j++)
+				{
+					touches[j]=(apollota::SimplePoint(balls[near_ids[j]])-apollota::SimplePoint(sphere)).unit();
+				}
+
+				double d_sum=0.0;
+				for(std::size_t j=0;(j+1)<N;j++)
+				{
+					for(std::size_t k=j+1;k<N;k++)
+					{
+						d_sum+=apollota::distance_from_point_to_point(touches[j], touches[k]);
+					}
+				}
+
+				const double pi=3.14159265358979323846;
+				const double max_d_sum=N*(1.0/tan(pi/(2.0*N)));
+				const double buriedness=std::min(d_sum/max_d_sum, 1.0);
+
+				if(query.min_buriedness>0.0)
+				{
+					allowed=allowed && (buriedness>=query.min_buriedness);
+				}
+
+				if(query.min_scaled_buriedness>0.0)
+				{
+					const double scaling_radius=std::min(sphere.r, query.max_radius);
+					const double scaled_buriedness=buriedness*((4.0/3.0)*pi*(scaling_radius*scaling_radius*scaling_radius));
+
+					allowed=allowed && (scaled_buriedness>=query.min_scaled_buriedness);
+				}
+
 			}
 
 			if(allowed)
