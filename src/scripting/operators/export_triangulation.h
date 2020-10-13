@@ -45,6 +45,7 @@ public:
 	SelectionManager::Query parameters_for_selecting_atoms;
 	FilteringOfTriangulation::Query filtering_query_without_ids;
 	std::string file;
+	std::vector<std::string> adjuncts;
 
 	ExportTriangulation()
 	{
@@ -56,6 +57,7 @@ public:
 		filtering_query_without_ids=OperatorsUtilities::read_filtering_of_triangulation_query(input);
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
+		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -63,6 +65,7 @@ public:
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		OperatorsUtilities::document_read_filtering_of_triangulation_query(doc);
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "names of atom adjuncts to output", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -99,8 +102,25 @@ public:
 				{
 					output << vi.quadruple.get(j) << " ";
 				}
-				output << vi.sphere.x << " " << vi.sphere.y << " " << vi.sphere.z << " " << vi.sphere.r << " ";
-				output << vi.tetrahedron_volume << "\n";
+				output << vi.sphere.x << " " << vi.sphere.y << " " << vi.sphere.z << " " << vi.sphere.r << " " << vi.tetrahedron_volume;
+				for(std::size_t a=0;a<adjuncts.size();a++)
+				{
+					const std::string& adjunct_name=adjuncts[a];
+					for(int j=0;j<4;j++)
+					{
+						const std::map<std::string, double>& adjuncts_map=data_manager.atoms().at(vi.quadruple.get(j)).value.props.adjuncts;
+						std::map<std::string, double>::const_iterator adjunct_it=adjuncts_map.find(adjunct_name);
+						if(adjunct_it!=adjuncts_map.end())
+						{
+							output << " " << (adjunct_it->second);
+						}
+						else
+						{
+							output << " 0";
+						}
+					}
+				}
+				output << "\n";
 			}
 		}
 
