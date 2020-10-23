@@ -2,6 +2,7 @@
 #define SCRIPTING_SCRIPT_EXECUTION_MANAGER_H_
 
 #include "operators/add_figure.h"
+#include "operators/add_figure_of_convex_hull.h"
 #include "operators/add_figure_of_triangulation.h"
 #include "operators/cad_score_many.h"
 #include "operators/cad_score.h"
@@ -192,6 +193,7 @@ public:
 		set_command_for_congregation_of_data_managers("export-global-adjuncts", operators::ExportGlobalAdjuncts());
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
+		set_command_for_data_manager("add-figure-of-convex-hull", operators::AddFigureOfConvexHull(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
 		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);
 		set_command_for_data_manager("calculate-burial-depth", operators::CalculateBurialDepth(), true);
