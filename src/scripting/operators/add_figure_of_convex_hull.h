@@ -17,8 +17,15 @@ class AddFigureOfConvexHull : public OperatorBase<AddFigureOfConvexHull>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		void store(HeterogeneousStorage&) const
+		double total_volume;
+
+		Result() : total_volume(0.0)
 		{
+		}
+
+		void store(HeterogeneousStorage& heterostorage) const
+		{
+			heterostorage.variant_object.value("total_volume")=total_volume;
 		}
 	};
 
@@ -67,6 +74,8 @@ public:
 
 		std::set<apollota::Triple> faces;
 
+		double total_volume=0.0;
+
 		{
 			const apollota::Triangulation::Result triangulation_result=apollota::Triangulation::construct_result(points, 4.0, false, false);
 			if(triangulation_result.quadruples_map.empty())
@@ -76,10 +85,12 @@ public:
 			std::map<apollota::Triple, int> face_counts;
 			for(apollota::Triangulation::QuadruplesMap::const_iterator it=triangulation_result.quadruples_map.begin();it!=triangulation_result.quadruples_map.end();++it)
 			{
-				const apollota::Quadruple& q=it->first;
+				const apollota::Quadruple& quadruple=it->first;
+				const double tetrahedron_volume=fabs(apollota::signed_volume_of_tetrahedron(points[quadruple.get(0)], points[quadruple.get(1)], points[quadruple.get(2)], points[quadruple.get(3)]));
+				total_volume+=tetrahedron_volume;
 				for(unsigned int i=0;i<4;i++)
 				{
-					face_counts[q.exclude(i)]++;
+					face_counts[quadruple.exclude(i)]++;
 				}
 			}
 			for(std::map<apollota::Triple, int>::const_iterator it=face_counts.begin();it!=face_counts.end();++it)
@@ -109,6 +120,7 @@ public:
 		data_manager.add_figure(figure);
 
 		Result result;
+		result.total_volume=total_volume;
 
 		return result;
 	}
