@@ -912,6 +912,9 @@
             "name":"add-figure",
             "short_description":""},
           {
+            "name":"add-figure-of-convex-hull",
+            "short_description":""},
+          {
             "name":"add-figure-of-triangulation",
             "short_description":""},
           {
@@ -1042,6 +1045,9 @@
             "short_description":""},
           {
             "name":"export-selection-of-contacts",
+            "short_description":""},
+          {
+            "name":"export-triangulated-convex-hull",
             "short_description":""},
           {
             "name":"export-triangulation",
