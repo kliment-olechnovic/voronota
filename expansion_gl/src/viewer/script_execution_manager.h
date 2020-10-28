@@ -64,6 +64,8 @@ public:
 		set_command_for_extra_actions("history-all", scripting::operators::Mock());
 		set_command_for_extra_actions("animate-none", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_NONE));
 		set_command_for_extra_actions("animate-loop-picked-objects", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS));
+		set_command_for_extra_actions("animate-spin-left", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_LEFT));
+		set_command_for_extra_actions("animate-spin-right", operators::Animate(GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT));
 
 		set_default_aliases();
 
@@ -215,12 +217,23 @@ public:
 
 	void setup_animation()
 	{
-		if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS)
+		if(GUIConfiguration::instance().animation_variant!=GUIConfiguration::ANIMATION_VARIANT_NONE)
 		{
 			if(animation_timer.elapsed_miliseconds()>GUIConfiguration::instance().animation_step_miliseconds)
 			{
-				congregation_of_data_managers().set_next_picked_object_visible();
-				update_console_object_states();
+				if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_LOOP_PICKED_OBJECTS)
+				{
+					congregation_of_data_managers().set_next_picked_object_visible();
+					update_console_object_states();
+				}
+				else if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_SPIN_LEFT)
+				{
+					uv::ViewerApplication::instance().rotate(glm::vec3(0, 1, 0), 0.01);
+				}
+				else if(GUIConfiguration::instance().animation_variant==GUIConfiguration::ANIMATION_VARIANT_SPIN_RIGHT)
+				{
+					uv::ViewerApplication::instance().rotate(glm::vec3(0, 1, 0), -0.01);
+				}
 				animation_timer.reset();
 			}
 		}
