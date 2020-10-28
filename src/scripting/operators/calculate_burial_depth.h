@@ -24,8 +24,9 @@ public:
 
 	std::string name;
 	int min_seq_sep;
+	double min_sas_area;
 
-	CalculateBurialDepth() : min_seq_sep(1)
+	CalculateBurialDepth() : min_seq_sep(1), min_sas_area(0.0)
 	{
 	}
 
@@ -33,12 +34,14 @@ public:
 	{
 		name=input.get_value<std::string>("name");
 		min_seq_sep=input.get_value_or_default<int>("min-seq-sep", 1);
+		min_sas_area=input.get_value_or_default<double>("min-sas-area", 0.0);
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name to write value in atoms"));
 		doc.set_option_decription(CDOD("min-seq-sep", CDOD::DATATYPE_INT, "minimal sequence separation restriction for contacts", 1));
+		doc.set_option_decription(CDOD("min-sas-area", CDOD::DATATYPE_FLOAT, "minimal SAS area to define surface atoms", 0.0));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -50,10 +53,14 @@ public:
 		std::set<common::ChainResidueAtomDescriptorsPair> set_of_contacts;
 		for(std::size_t i=0;i<data_manager.contacts().size();i++)
 		{
-			const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[i]);
-			if(common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, min_seq_sep, common::ChainResidueAtomDescriptor::null_num(), true))
+			const Contact& contact=data_manager.contacts()[i];
+			if(!(contact.solvent() && contact.value.area<min_sas_area))
 			{
-				set_of_contacts.insert(crads);
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact);
+				if(common::ChainResidueAtomDescriptor::match_with_sequence_separation_interval(crads.a, crads.b, min_seq_sep, common::ChainResidueAtomDescriptor::null_num(), true))
+				{
+					set_of_contacts.insert(crads);
+				}
 			}
 		}
 
