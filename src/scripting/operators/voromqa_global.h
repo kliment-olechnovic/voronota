@@ -18,11 +18,34 @@ class VoroMQAGlobal : public OperatorBase<VoroMQAGlobal>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		VariantObject voromqa_result;
+		double quality_score;
+		std::size_t atoms_count;
+		std::size_t residues_count;
+		std::size_t contacts_count;
+		double pseudo_energy;
+		double total_area;
+		double strange_area;
+
+		Result() :
+			quality_score(0.0),
+			atoms_count(0),
+			residues_count(0),
+			contacts_count(0),
+			pseudo_energy(0.0),
+			total_area(0.0),
+			strange_area(0.0)
+		{
+		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object=voromqa_result;
+			heterostorage.variant_object.value("quality_score")=quality_score;
+			heterostorage.variant_object.value("atoms_count")=atoms_count;
+			heterostorage.variant_object.value("residues_count")=residues_count;
+			heterostorage.variant_object.value("contacts_count")=contacts_count;
+			heterostorage.variant_object.value("pseudo_energy")=pseudo_energy;
+			heterostorage.variant_object.value("total_area")=total_area;
+			heterostorage.variant_object.value("strange_area")=strange_area;
 		}
 	};
 
@@ -99,13 +122,13 @@ public:
 		}
 
 		Result result;
-		result.voromqa_result.value("quality_score")=voromqa_result.global_quality_score;
-		result.voromqa_result.value("atoms_count")=voromqa_result.bundle_of_quality.atom_quality_scores.size();
-		result.voromqa_result.value("residues_count")=voromqa_result.bundle_of_quality.raw_residue_quality_scores.size();
-		result.voromqa_result.value("contacts_count")=voromqa_result.bundle_of_energy.global_energy_descriptor.contacts_count;
-		result.voromqa_result.value("pseudo_energy")=voromqa_result.bundle_of_energy.global_energy_descriptor.energy;
-		result.voromqa_result.value("total_area")=voromqa_result.bundle_of_energy.global_energy_descriptor.total_area;
-		result.voromqa_result.value("strange_area")=voromqa_result.bundle_of_energy.global_energy_descriptor.strange_area;
+		result.quality_score=voromqa_result.global_quality_score;
+		result.atoms_count=voromqa_result.bundle_of_quality.atom_quality_scores.size();
+		result.residues_count=voromqa_result.bundle_of_quality.raw_residue_quality_scores.size();
+		result.contacts_count=voromqa_result.bundle_of_energy.global_energy_descriptor.contacts_count;
+		result.pseudo_energy=voromqa_result.bundle_of_energy.global_energy_descriptor.energy;
+		result.total_area=voromqa_result.bundle_of_energy.global_energy_descriptor.total_area;
+		result.strange_area=voromqa_result.bundle_of_energy.global_energy_descriptor.strange_area;
 
 		return result;
 	}
