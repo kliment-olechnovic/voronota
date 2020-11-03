@@ -34,6 +34,7 @@
       "data_object":"balls",
       "output":{
         "quality_score":0.379877,
+        "weight_of_quality_score":4018,
         "atoms_count":2893,
         "residues_count":371,
         "contacts_count":10264,

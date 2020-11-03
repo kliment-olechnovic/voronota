@@ -132,7 +132,7 @@ public:
 		}
 
 		template<typename MapOfWeights>
-		double global_quality_score(const MapOfWeights& external_weights, bool only_with_weights) const
+		std::pair<double, double> global_quality_score_with_weight(const MapOfWeights& external_weights, bool only_with_weights) const
 		{
 			double sum_of_weighted_scores=0.0;
 			double sum_of_weights=0.0;
@@ -155,7 +155,13 @@ public:
 				}
 			}
 
-			return (sum_of_weights>0.0 ? sum_of_weighted_scores/sum_of_weights : 0.0);
+			return std::pair<double, double>((sum_of_weights>0.0 ? sum_of_weighted_scores/sum_of_weights : 0.0), sum_of_weights);
+		}
+
+		template<typename MapOfWeights>
+		double global_quality_score(const MapOfWeights& external_weights, bool only_with_weights) const
+		{
+			return global_quality_score_with_weight(external_weights, only_with_weights).first;
 		}
 	};
 

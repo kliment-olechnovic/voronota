@@ -19,6 +19,7 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		double quality_score;
+		double weight_of_quality_score;
 		std::size_t atoms_count;
 		std::size_t residues_count;
 		std::size_t contacts_count;
@@ -28,6 +29,7 @@ public:
 
 		Result() :
 			quality_score(0.0),
+			weight_of_quality_score(0.0),
 			atoms_count(0),
 			residues_count(0),
 			contacts_count(0),
@@ -40,6 +42,7 @@ public:
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			heterostorage.variant_object.value("quality_score")=quality_score;
+			heterostorage.variant_object.value("weight_of_quality_score")=weight_of_quality_score;
 			heterostorage.variant_object.value("atoms_count")=atoms_count;
 			heterostorage.variant_object.value("residues_count")=residues_count;
 			heterostorage.variant_object.value("contacts_count")=contacts_count;
@@ -123,6 +126,7 @@ public:
 
 		Result result;
 		result.quality_score=voromqa_result.global_quality_score;
+		result.weight_of_quality_score=voromqa_result.weight_of_global_quality_score;
 		result.atoms_count=voromqa_result.bundle_of_quality.atom_quality_scores.size();
 		result.residues_count=voromqa_result.bundle_of_quality.raw_residue_quality_scores.size();
 		result.contacts_count=voromqa_result.bundle_of_energy.global_energy_descriptor.contacts_count;

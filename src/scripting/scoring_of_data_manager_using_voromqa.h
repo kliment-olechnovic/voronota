@@ -116,13 +116,15 @@ public:
 	struct Result
 	{
 		double global_quality_score;
+		double weight_of_global_quality_score;
 		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
 		std::map<common::ChainResidueAtomDescriptor, int> map_crad_to_depth;
 		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
 		DataManager::ChangeIndicator data_manager_change_index;
 
 		Result() :
-			global_quality_score(0.0)
+			global_quality_score(0.0),
+			weight_of_global_quality_score(0.0)
 		{
 		}
 	};
@@ -260,7 +262,11 @@ public:
 			throw std::runtime_error("Failed to calculate quality scores.");
 		}
 
-		result.global_quality_score=result.bundle_of_quality.global_quality_score(result.map_crad_to_depth, false);
+		{
+			std::pair<double, double> global_quality_score_with_weight=result.bundle_of_quality.global_quality_score_with_weight(result.map_crad_to_depth, false);
+			result.global_quality_score=global_quality_score_with_weight.first;
+			result.weight_of_global_quality_score=global_quality_score_with_weight.second;
+		}
 
 		if(!params.adjunct_inter_atom_energy_scores_raw.empty() || params.adjunct_inter_atom_energy_scores_normalized.empty())
 		{
