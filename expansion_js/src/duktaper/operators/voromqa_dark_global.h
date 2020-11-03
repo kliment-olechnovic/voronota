@@ -28,10 +28,22 @@ public:
 		{
 		}
 
+		void add(const Result& r)
+		{
+			const double sum_of_quality_scores=(global_score*number_of_residues+r.global_score*r.number_of_residues);
+			number_of_residues+=r.number_of_residues;
+			global_score=(number_of_residues>0.0 ? (sum_of_quality_scores/number_of_residues) : 0.0);
+		}
+
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.value("global_score")=global_score;
-			heterostorage.variant_object.value("number_of_residues")=number_of_residues;
+			write_to_variant_object(heterostorage.variant_object);
+		}
+
+		void write_to_variant_object(scripting::VariantObject& variant_object) const
+		{
+			variant_object.value("global_score")=global_score;
+			variant_object.value("number_of_residues")=number_of_residues;
 		}
 	};
 

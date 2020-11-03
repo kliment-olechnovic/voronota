@@ -39,16 +39,34 @@ public:
 		{
 		}
 
+		void add(const Result& r)
+		{
+			const double sum_of_quality_scores=(quality_score*weight_of_quality_score+r.quality_score*r.weight_of_quality_score);
+			weight_of_quality_score+=r.weight_of_quality_score;
+			quality_score=(weight_of_quality_score>0.0 ? (sum_of_quality_scores/weight_of_quality_score) : 0.0);
+			atoms_count+=r.atoms_count;
+			residues_count+=r.residues_count;
+			contacts_count+=r.contacts_count;
+			pseudo_energy+=r.pseudo_energy;
+			total_area+=r.total_area;
+			strange_area+=r.strange_area;
+		}
+
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.value("quality_score")=quality_score;
-			heterostorage.variant_object.value("weight_of_quality_score")=weight_of_quality_score;
-			heterostorage.variant_object.value("atoms_count")=atoms_count;
-			heterostorage.variant_object.value("residues_count")=residues_count;
-			heterostorage.variant_object.value("contacts_count")=contacts_count;
-			heterostorage.variant_object.value("pseudo_energy")=pseudo_energy;
-			heterostorage.variant_object.value("total_area")=total_area;
-			heterostorage.variant_object.value("strange_area")=strange_area;
+			write_to_variant_object(heterostorage.variant_object);
+		}
+
+		void write_to_variant_object(scripting::VariantObject& variant_object) const
+		{
+			variant_object.value("quality_score")=quality_score;
+			variant_object.value("weight_of_quality_score")=weight_of_quality_score;
+			variant_object.value("atoms_count")=atoms_count;
+			variant_object.value("residues_count")=residues_count;
+			variant_object.value("contacts_count")=contacts_count;
+			variant_object.value("pseudo_energy")=pseudo_energy;
+			variant_object.value("total_area")=total_area;
+			variant_object.value("strange_area")=strange_area;
 		}
 	};
 

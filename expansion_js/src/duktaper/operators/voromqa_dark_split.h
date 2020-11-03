@@ -17,45 +17,46 @@ class VoroMQADarkSplit : public scripting::OperatorBase<VoroMQADarkSplit>
 public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
-		std::map<std::string, VoroMQADarkGlobal::Result> split_results;
-		double global_score;
-		int number_of_residues;
+		struct SubResult
+		{
+			scripting::operators::VoroMQAGlobal::Result light_result;
+			VoroMQADarkGlobal::Result dark_result;
 
-		Result() : global_score(0.0), number_of_residues(0)
+			void add(const SubResult& r)
+			{
+				light_result.add(r.light_result);
+				dark_result.add(r.dark_result);
+			}
+		};
+
+		std::map<std::string, SubResult> split_results;
+		SubResult summarized_result;
+
+		Result()
 		{
 		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
-			for(std::map<std::string, VoroMQADarkGlobal::Result>::const_iterator it=split_results.begin();it!=split_results.end();++it)
+			for(std::map<std::string, SubResult>::const_iterator it=split_results.begin();it!=split_results.end();++it)
 			{
 				scripting::VariantObject o;
 				o.value("chain_group")=it->first;
-				o.value("global_score")=it->second.global_score;
-				o.value("number_of_residues")=it->second.number_of_residues;
+				const SubResult& sub_result=it->second;
+				sub_result.light_result.write_to_variant_object(o.object("light_scores"));
+				sub_result.dark_result.write_to_variant_object(o.object("dark_scores"));
 				heterostorage.variant_object.objects_array("split_results").push_back(o);
 			}
-			heterostorage.variant_object.value("global_score")=global_score;
-			heterostorage.variant_object.value("number_of_residues")=number_of_residues;
+			summarized_result.light_result.write_to_variant_object(heterostorage.variant_object.object("light_scores"));
+			summarized_result.dark_result.write_to_variant_object(heterostorage.variant_object.object("dark_scores"));
 		}
 
 		void summarize()
 		{
-			global_score=0.0;
-			number_of_residues=0;
-			for(std::map<std::string, VoroMQADarkGlobal::Result>::const_iterator it=split_results.begin();it!=split_results.end();++it)
+			summarized_result=SubResult();
+			for(std::map<std::string, SubResult>::const_iterator it=split_results.begin();it!=split_results.end();++it)
 			{
-				const VoroMQADarkGlobal::Result& r=it->second;
-				global_score+=r.global_score*static_cast<double>(r.number_of_residues);
-				number_of_residues+=r.number_of_residues;
-			}
-			if(number_of_residues>0)
-			{
-				global_score=global_score/static_cast<double>(number_of_residues);
-			}
-			else
-			{
-				global_score=0.0;
+				summarized_result.add(it->second);
 			}
 		}
 	};
@@ -130,16 +131,25 @@ public:
 			chain_group_data_manager.reset_atoms_by_swapping(chain_group_atoms);
 			chain_group_data_manager.add_atoms_representation("atoms", true);
 			scripting::operators::ConstructContacts().init().run(chain_group_data_manager);
-			scripting::operators::VoroMQAGlobal().init().run(chain_group_data_manager);
-			VoroMQADarkGlobal::Result chain_group_result=VoroMQADarkGlobal().init().run(chain_group_data_manager);
-			result.split_results[chain_group]=chain_group_result;
+			Result::SubResult sub_result;
+			sub_result.light_result=scripting::operators::VoroMQAGlobal().init().run(chain_group_data_manager);
+			sub_result.dark_result=VoroMQADarkGlobal().init().run(chain_group_data_manager);
+			result.split_results[chain_group]=sub_result;
 		}
 
 		result.summarize();
 
 		if(!global_adj_prefix.empty())
 		{
-			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_quality_score"]=result.global_score;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_quality_score"]=result.summarized_result.light_result.quality_score;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_atoms_count"]=result.summarized_result.light_result.atoms_count;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_residues_count"]=result.summarized_result.light_result.residues_count;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_contacts_count"]=result.summarized_result.light_result.contacts_count;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_total_area"]=result.summarized_result.light_result.total_area;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_strange_area"]=result.summarized_result.light_result.strange_area;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_pseudo_energy"]=result.summarized_result.light_result.pseudo_energy;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_dark_quality_score"]=result.summarized_result.dark_result.global_score;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_dark_residues_count"]=result.summarized_result.dark_result.number_of_residues;
 		}
 
 		return result;
