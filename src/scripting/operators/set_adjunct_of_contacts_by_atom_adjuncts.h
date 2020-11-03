@@ -52,7 +52,7 @@ public:
 		doc.set_option_decription(CDOD("contacts", CDOD::DATATYPE_STRING, "selection expression for contacts"));
 		doc.set_option_decription(CDOD("source-name", CDOD::DATATYPE_STRING, "source adjunct name"));
 		doc.set_option_decription(CDOD("destination-name", CDOD::DATATYPE_STRING, "destination adjunct name"));
-		doc.set_option_decription(CDOD("pooling-mode", CDOD::DATATYPE_STRING, "pooling mode, possible values: min, max"));
+		doc.set_option_decription(CDOD("pooling-mode", CDOD::DATATYPE_STRING, "pooling mode, possible values: min, max, sum"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -63,9 +63,9 @@ public:
 		assert_adjunct_name_input(source_name, false);
 		assert_adjunct_name_input(destination_name, false);
 
-		if(pooling_mode!="min" && pooling_mode!="max")
+		if(pooling_mode!="min" && pooling_mode!="max" && pooling_mode!="sum")
 		{
-			throw std::runtime_error(std::string("Invalid pooling mode, valid options are: 'min', 'max'."));
+			throw std::runtime_error(std::string("Invalid pooling mode, valid options are: 'min', 'max', 'sum'."));
 		}
 
 		const std::set<std::size_t> atom_ids=data_manager.selection_manager().select_atoms(SelectionManager::Query(selection_expresion_for_atoms, false));
@@ -88,9 +88,9 @@ public:
 			const Contact& contact=data_manager.contacts()[contact_id];
 			std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(contact_id);
 			contact_adjuncts.erase(destination_name);
+			bool first_setting=true;
 			for(int i=0;i<(contact.solvent() ? 1 : 2);i++)
 			{
-				const bool first_setting=(i==0);
 				const std::size_t atom_id=contact.ids[i];
 				if(atom_ids.count(atom_id)>0 && data_manager.atoms()[atom_id].value.props.adjuncts.count(source_name)>0)
 				{
@@ -104,6 +104,11 @@ public:
 					{
 						destination_value=(first_setting ? source_value : std::max(source_value, destination_value));
 					}
+					else if(pooling_mode=="sum")
+					{
+						destination_value+=source_value;
+					}
+					first_setting=false;
 					used_atom_ids.insert(atom_id);
 				}
 			}
