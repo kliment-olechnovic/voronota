@@ -30,8 +30,9 @@ public:
 	bool value_present;
 	double value;
 	bool remove;
+	bool multiply_by_area;
 
-	SetAdjunctOfContacts() : value_present(false), value(0.0), remove(false)
+	SetAdjunctOfContacts() : value_present(false), value(0.0), remove(false), multiply_by_area(false)
 	{
 	}
 
@@ -42,6 +43,7 @@ public:
 		value_present=input.is_option("value");
 		value=input.get_value_or_default<double>("value", 0.0);
 		remove=input.get_flag("remove");
+		multiply_by_area=input.get_flag("multiply-by-area");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -50,6 +52,7 @@ public:
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
 		doc.set_option_decription(CDOD("value", CDOD::DATATYPE_FLOAT, "adjunct value", ""));
 		doc.set_option_decription(CDOD("remove", CDOD::DATATYPE_BOOL, "flag to remove adjunct"));
+		doc.set_option_decription(CDOD("multiply-by-area", CDOD::DATATYPE_BOOL, "flag to assign value multiplied by area"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -59,6 +62,11 @@ public:
 		if(value_present && remove)
 		{
 			throw std::runtime_error(std::string("Value setting and removing options used together."));
+		}
+
+		if(!value_present && multiply_by_area)
+		{
+			throw std::runtime_error(std::string("Area multiplication option used without providing a value."));
 		}
 
 		assert_adjunct_name_input(name, false);
@@ -78,7 +86,14 @@ public:
 			}
 			else
 			{
-				contact_adjuncts[name]=value;
+				if(multiply_by_area)
+				{
+					contact_adjuncts[name]=value*data_manager.contacts()[*it].value.area;
+				}
+				else
+				{
+					contact_adjuncts[name]=value;
+				}
 			}
 		}
 
