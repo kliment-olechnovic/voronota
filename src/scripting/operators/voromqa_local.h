@@ -17,15 +17,40 @@ class VoroMQALocal : public OperatorBase<VoroMQALocal>
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		VariantObject atoms_result;
-		VariantObject contacts_result;
+		std::size_t atoms_selected;
+		std::size_t atoms_relevant;
+		double quality_score;
+		bool contacts_available;
+		std::size_t contacts_selected;
+		std::size_t contacts_relevant;
+		double area;
+		double pseudo_energy;
+
+		Result() :
+			atoms_selected(0),
+			atoms_relevant(0),
+			quality_score(0.0),
+			contacts_available(false),
+			contacts_selected(0),
+			contacts_relevant(0),
+			area(0.0),
+			pseudo_energy(0)
+		{
+		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			heterostorage.variant_object.object("atoms_result")=atoms_result;
-			if(!contacts_result.empty())
+			VariantObject& atoms_result=heterostorage.variant_object.object("atoms_result");
+			atoms_result.value("atoms_selected")=atoms_selected;
+			atoms_result.value("atoms_relevant")=atoms_relevant;
+			atoms_result.value("quality_score")=quality_score;
+			if(contacts_available)
 			{
-				heterostorage.variant_object.object("contacts_result")=contacts_result;
+				VariantObject& contacts_result=heterostorage.variant_object.object("contacts_result");
+				contacts_result.value("contacts_selected")=contacts_selected;
+				contacts_result.value("contacts_relevant")=contacts_relevant;
+				contacts_result.value("area")=area;
+				contacts_result.value("pseudo_energy")=pseudo_energy;
 			}
 		}
 	};
@@ -124,9 +149,9 @@ public:
 				data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_atoms_quality_score"]=quality_score;
 			}
 
-			result.atoms_result.value("atoms_selected").set_value_int(atom_ids.size());
-			result.atoms_result.value("atoms_relevant").set_value_int(atom_ids_with_adjuncts.size());
-			result.atoms_result.value("quality_score")=quality_score;
+			result.atoms_selected=atom_ids.size();
+			result.atoms_relevant=atom_ids_with_adjuncts.size();
+			result.quality_score=quality_score;
 		}
 
 		if(!data_manager.contacts().empty())
@@ -166,10 +191,11 @@ public:
 				}
 			}
 
-			result.contacts_result.value("contacts_selected").set_value_int(contact_ids.size());
-			result.contacts_result.value("contacts_relevant").set_value_int(contact_ids_with_adjuncts.size());
-			result.contacts_result.value("area")=sum_of_areas;
-			result.contacts_result.value("pseudo_energy")=sum_of_energies;
+			result.contacts_available=true;
+			result.contacts_selected=contact_ids.size();
+			result.contacts_relevant=contact_ids_with_adjuncts.size();
+			result.area=sum_of_areas;
+			result.pseudo_energy=sum_of_energies;
 		}
 
 		return result;
