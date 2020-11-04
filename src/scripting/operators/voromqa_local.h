@@ -20,6 +20,7 @@ public:
 		std::size_t atoms_selected;
 		std::size_t atoms_relevant;
 		double quality_score;
+		double weight_of_quality_score;
 		bool contacts_available;
 		std::size_t contacts_selected;
 		std::size_t contacts_relevant;
@@ -30,6 +31,7 @@ public:
 			atoms_selected(0),
 			atoms_relevant(0),
 			quality_score(0.0),
+			weight_of_quality_score(0.0),
 			contacts_available(false),
 			contacts_selected(0),
 			contacts_relevant(0),
@@ -38,15 +40,34 @@ public:
 		{
 		}
 
+		void add(const Result& r)
+		{
+			const double sum_of_quality_scores=(quality_score*weight_of_quality_score+r.quality_score*r.weight_of_quality_score);
+			weight_of_quality_score+=r.weight_of_quality_score;
+			quality_score=(weight_of_quality_score>0.0 ? (sum_of_quality_scores/weight_of_quality_score) : 0.0);
+			atoms_selected+=r.atoms_selected;
+			atoms_relevant+=r.atoms_relevant;
+			contacts_available=(contacts_available || r.contacts_available);
+			contacts_selected+=r.contacts_selected;
+			contacts_relevant+=r.contacts_relevant;
+			area+=r.area;
+			pseudo_energy+=r.pseudo_energy;
+		}
+
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			VariantObject& atoms_result=heterostorage.variant_object.object("atoms_result");
+			write_to_variant_object(heterostorage.variant_object);
+		}
+
+		void write_to_variant_object(scripting::VariantObject& variant_object) const
+		{
+			VariantObject& atoms_result=variant_object.object("atoms_result");
 			atoms_result.value("atoms_selected")=atoms_selected;
 			atoms_result.value("atoms_relevant")=atoms_relevant;
 			atoms_result.value("quality_score")=quality_score;
 			if(contacts_available)
 			{
-				VariantObject& contacts_result=heterostorage.variant_object.object("contacts_result");
+				VariantObject& contacts_result=variant_object.object("contacts_result");
 				contacts_result.value("contacts_selected")=contacts_selected;
 				contacts_result.value("contacts_relevant")=contacts_relevant;
 				contacts_result.value("area")=area;
@@ -155,6 +176,7 @@ public:
 			result.atoms_selected=atom_ids.size();
 			result.atoms_relevant=atom_ids_with_adjuncts.size();
 			result.quality_score=quality_score;
+			result.weight_of_quality_score=sum_of_atom_weights;
 		}
 
 		if(!data_manager.contacts().empty())

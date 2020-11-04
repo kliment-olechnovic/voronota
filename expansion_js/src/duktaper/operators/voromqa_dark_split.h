@@ -1,6 +1,9 @@
 #ifndef DUKTAPER_OPERATORS_VOROMQA_DARK_SPLIT_H_
 #define DUKTAPER_OPERATORS_VOROMQA_DARK_SPLIT_H_
 
+#include "../../../src/scripting/operators/voromqa_global.h"
+#include "../../../src/scripting/operators/voromqa_local.h"
+
 #include "voromqa_dark_global.h"
 
 namespace voronota
@@ -20,11 +23,13 @@ public:
 		struct SubResult
 		{
 			scripting::operators::VoroMQAGlobal::Result light_result;
+			scripting::operators::VoroMQALocal::Result light_result_local_sas;
 			VoroMQADarkGlobal::Result dark_result;
 
 			void add(const SubResult& r)
 			{
 				light_result.add(r.light_result);
+				light_result_local_sas.add(r.light_result_local_sas);
 				dark_result.add(r.dark_result);
 			}
 		};
@@ -44,10 +49,12 @@ public:
 				o.value("chain_group")=it->first;
 				const SubResult& sub_result=it->second;
 				sub_result.light_result.write_to_variant_object(o.object("light_scores"));
+				sub_result.light_result_local_sas.write_to_variant_object(o.object("light_scores_local_sas"));
 				sub_result.dark_result.write_to_variant_object(o.object("dark_scores"));
 				heterostorage.variant_object.objects_array("split_results").push_back(o);
 			}
 			summarized_result.light_result.write_to_variant_object(heterostorage.variant_object.object("light_scores"));
+			summarized_result.light_result_local_sas.write_to_variant_object(heterostorage.variant_object.object("light_scores_local_sas"));
 			summarized_result.dark_result.write_to_variant_object(heterostorage.variant_object.object("dark_scores"));
 		}
 
@@ -133,6 +140,7 @@ public:
 			scripting::operators::ConstructContacts().init().run(chain_group_data_manager);
 			Result::SubResult sub_result;
 			sub_result.light_result=scripting::operators::VoroMQAGlobal().init().run(chain_group_data_manager);
+			sub_result.light_result_local_sas=scripting::operators::VoroMQALocal().init(CMDIN().set("contacts","[--solvent]")).run(chain_group_data_manager);
 			sub_result.dark_result=VoroMQADarkGlobal().init().run(chain_group_data_manager);
 			result.split_results[chain_group]=sub_result;
 		}
@@ -148,6 +156,8 @@ public:
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_total_area"]=result.summarized_result.light_result.total_area;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_strange_area"]=result.summarized_result.light_result.strange_area;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_pseudo_energy"]=result.summarized_result.light_result.pseudo_energy;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_sas_area"]=result.summarized_result.light_result_local_sas.area;
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_light_sas_pseudo_energy"]=result.summarized_result.light_result_local_sas.pseudo_energy;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_dark_quality_score"]=result.summarized_result.dark_result.global_score;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_dark_residues_count"]=result.summarized_result.dark_result.number_of_residues;
 		}
