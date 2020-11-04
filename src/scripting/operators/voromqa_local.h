@@ -61,6 +61,7 @@ public:
 	std::string adjunct_inter_atom_energy_scores_raw;
 	std::string adjunct_atom_depth_weights;
 	std::string adjunct_atom_quality_scores;
+	std::string adjunct_contact_densities;
 	std::string global_adj_prefix;
 
 	VoroMQALocal() : provided_selection_expresion_for_contacts(false)
@@ -75,6 +76,7 @@ public:
 		adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 		adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
+		adjunct_contact_densities=input.get_value_or_default<std::string>("adj-contact-densities", "");
 		global_adj_prefix=input.get_value_or_default<std::string>("global-adj-prefix", "voromqa_local");
 	}
 
@@ -85,6 +87,7 @@ public:
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of input adjunct with contact energy values", "voromqa_energy"));
 		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of input adjunct with atom values", "voromqa_depth"));
 		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of input adjunct with atom quality scores", "voromqa_score_a"));
+		doc.set_option_decription(CDOD("adj-contact-densities", CDOD::DATATYPE_STRING, "name of input adjunct with contact densities", ""));
 		doc.set_option_decription(CDOD("global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts", "voromqa_local"));
 	}
 
@@ -167,13 +170,36 @@ public:
 			double sum_of_areas=0.0;
 			double sum_of_energies=0.0;
 
+			double density_weighted_sum_of_areas=0.0;
+			double density_weighted_sum_of_energies=0.0;
+
 			for(std::set<std::size_t>::const_iterator it=contact_ids_with_adjuncts.begin();it!=contact_ids_with_adjuncts.end();++it)
 			{
 				const std::size_t id=(*it);
+				const std::map<std::string, double>& contact_adjuncts=data_manager.contacts()[id].value.props.adjuncts;
 				const double area=data_manager.contacts()[id].value.area;
-				const double energy=data_manager.contacts()[id].value.props.adjuncts.find(adjunct_inter_atom_energy_scores_raw)->second;
+				const double energy=contact_adjuncts.find(adjunct_inter_atom_energy_scores_raw)->second;
 				sum_of_areas+=area;
 				sum_of_energies+=energy;
+				if(!adjunct_contact_densities.empty())
+				{
+					std::map<std::string, double>::const_iterator contact_density_it=contact_adjuncts.find(adjunct_contact_densities);
+					const double contact_density=(contact_density_it==contact_adjuncts.end() ? 0.0 : contact_density_it->second);
+					density_weighted_sum_of_areas+=area*contact_density;
+					density_weighted_sum_of_energies+=energy*contact_density;
+				}
+			}
+
+			if(!adjunct_contact_densities.empty())
+			{
+				if(density_weighted_sum_of_areas<=0.0)
+				{
+					throw std::runtime_error(std::string("No valid contact density values."));
+				}
+				else
+				{
+					sum_of_energies=(density_weighted_sum_of_energies/density_weighted_sum_of_areas)*sum_of_areas;
+				}
 			}
 
 			if(!global_adj_prefix.empty())
