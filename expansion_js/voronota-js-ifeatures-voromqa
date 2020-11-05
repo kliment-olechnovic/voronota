@@ -1,0 +1,275 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein complexes.
+
+Options:
+    --input | -i              string  *  input file path or '_list' to read file paths from stdin
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to use, default is 1
+    --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-ifeatures-voromqa --input model.pdb
+    
+    ls *.pdb | voronota-js-ifeatures-voromqa --input _list --processors 8 | column -t
+
+EOF
+exit 1
+}
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+INFILE=""
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+USE_SCWRL="false"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--use-scwrl)
+		USE_SCWRL="true"
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_stream" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat > "$TMPLDIR/input_stream"
+	
+	if [ ! -s "$TMPLDIR/input_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/input_stream"
+	
+	exit 0
+fi
+
+if [ "$INFILE" == "_list" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	cat "$TMPLDIR/input_list" \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	> "$TMPLDIR/table"
+	
+	cat "$TMPLDIR/table"
+	
+	exit 0
+fi
+
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE" "$OUTPUT_TABLE_FILE")"
+
+{
+cat << EOF
+
+params={}
+
+params.input_file='$INFILE';
+params.input_as_assembly='$AS_ASSEMBLY';
+params.output_table_file='$OUTPUT_TABLE_FILE';
+params.use_scwrl='$USE_SCWRL';
+
+EOF
+
+cat << 'EOF'
+
+if(params.input_file===undefined || params.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+
+if(params.use_scwrl==="true")
+{
+	voronota_scwrl();
+	voronota_assert_full_success("Failed to use Scwrl4");
+}
+
+voronota_construct_contacts();
+voronota_assert_full_success("Failed to construct contacts");
+
+voronota_select_contacts("-use", "[-inter-chain]", "-name", "inter_chain_contacts")
+voronota_assert_full_success("Failed to select inter-chain contacts");
+
+voronota_select_atoms("-use", "[-sel-of-contacts inter_chain_contacts]", "-name", "interface_atoms")
+voronota_assert_full_success("Failed to select interface atoms");
+
+voronota_select_contacts("-use", "[-a1 [interface_atoms] -solvent]", "-name", "interface_solvent_contacts")
+voronota_assert_full_success("Failed to select interface solvent contacts");
+
+voronota_select_contacts("-use", "([inter_chain_contacts] or [interface_solvent_contacts])", "-name", "all_interface_contacts")
+voronota_assert_full_success("Failed to select all interface contacts");
+
+voronota_voromqa_global();
+voronota_assert_full_success("Failed to compute VoroMQA-light scores");
+result_voromqa_light_global=voronota_last_output().results[0].output;
+
+voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
+result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
+
+voronota_voromqa_local("-contacts", "[all_interface_contacts]");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for all interface contacts");
+result_voromqa_light_local_all_interface=voronota_last_output().results[0].output;
+
+voronota_voromqa_local("-contacts", "[-solvent]");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for all solvent contacts");
+result_voromqa_light_local_all_solvent=voronota_last_output().results[0].output;
+
+voronota_voromqa_dark_global();
+voronota_assert_full_success("Failed to compute VoroMQA-dark scores");
+result_voromqa_dark_global=voronota_last_output().results[0].output;
+
+voronota_voromqa_dark_split();
+voronota_assert_full_success("Failed to compute VoroMQA-dark split scores");
+result_voromqa_dark_split=voronota_last_output().results[0].output;
+
+voronota_calculate_burial_depth("-name", "atom_burial_depth", "-min-seq-sep", 0, "-min-sas-area", 2, "-smoothing-iterations", 3);
+voronota_assert_full_success("Failed to calculate atom burial depths");
+
+voronota_set_adjunct_of_contacts_by_atom_adjuncts("-atoms", "[]", "-contacts", "[]", "-pooling-mode", "sum", "-source-name", "atom_burial_depth", "-destination-name", "contact_burial_depth");
+voronota_assert_full_success("Failed to calculate contact burial depths");
+
+voronota_voromqa_local("-contacts", "[inter_chain_contacts]", "-adj-contact-densities", "contact_burial_depth");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts with densities");
+result_voromqa_light_local_inter_chain_with_densities=voronota_last_output().results[0].output;
+
+voronota_voromqa_local("-contacts", "[all_interface_contacts]", "-adj-contact-densities", "contact_burial_depth");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for all interface contacts with densities");
+result_voromqa_light_local_all_interface_with_densities=voronota_last_output().results[0].output;
+
+writeln("result_voromqa_light_global:");
+writeln(JSON.stringify(result_voromqa_light_global, null, 2));
+
+writeln("result_voromqa_light_local_inter_chain:");
+writeln(JSON.stringify(result_voromqa_light_local_inter_chain, null, 2));
+
+writeln("result_voromqa_light_local_inter_chain_with_densities:");
+writeln(JSON.stringify(result_voromqa_light_local_inter_chain_with_densities, null, 2));
+
+writeln("result_voromqa_light_local_all_interface:");
+writeln(JSON.stringify(result_voromqa_light_local_all_interface, null, 2));
+
+writeln("result_voromqa_light_local_all_interface_with_densities:");
+writeln(JSON.stringify(result_voromqa_light_local_all_interface_with_densities, null, 2));
+
+writeln("result_voromqa_light_local_all_solvent:");
+writeln(JSON.stringify(result_voromqa_light_local_all_solvent, null, 2));
+
+writeln("result_voromqa_dark_global:");
+writeln(JSON.stringify(result_voromqa_dark_global, null, 2));
+
+writeln("result_voromqa_dark_split:");
+writeln(JSON.stringify(result_voromqa_dark_split, null, 2));
+
+EOF
+
+} \
+| voronota-js
+
