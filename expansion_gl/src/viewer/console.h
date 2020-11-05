@@ -218,6 +218,39 @@ public:
 						ImGui::EndMenu();
 					}
 
+					if(ImGui::BeginMenu("Set JSON write level"))
+					{
+						if(ImGui::MenuItem("level 0"))
+						{
+							result="configure-gui-json-write-level-0";
+						}
+						if(ImGui::MenuItem("level 1"))
+						{
+							result="configure-gui-json-write-level-1";
+						}
+						if(ImGui::MenuItem("level 2"))
+						{
+							result="configure-gui-json-write-level-2";
+						}
+						if(ImGui::MenuItem("level 3"))
+						{
+							result="configure-gui-json-write-level-3";
+						}
+						if(ImGui::MenuItem("level 4"))
+						{
+							result="configure-gui-json-write-level-4";
+						}
+						if(ImGui::MenuItem("level 5"))
+						{
+							result="configure-gui-json-write-level-5";
+						}
+						if(ImGui::MenuItem("level 6"))
+						{
+							result="configure-gui-json-write-level-6";
+						}
+						ImGui::EndMenu();
+					}
+
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
