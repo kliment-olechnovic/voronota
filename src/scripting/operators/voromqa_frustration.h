@@ -46,8 +46,8 @@ public:
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of input adjunct with raw energy values", "voromqa_energy"));
 		doc.set_option_decription(CDOD("adj-contact-frustration-energy-mean", CDOD::DATATYPE_STRING, "name of output adjunct for frustration energy mean values", "frustration_energy_mean"));
 		doc.set_option_decription(CDOD("adj-atom-frustration-energy-mean", CDOD::DATATYPE_STRING, "name of output adjunct for frustration energy mean values", "frustration_energy_mean"));
-		doc.set_option_decription(CDOD("smoothing-iterations", CDOD::DATATYPE_INT, "number of smoothing iterations", 2));
-		doc.set_option_decription(CDOD("smoothing-depth", CDOD::DATATYPE_INT, "smoothing depth", 1));
+		doc.set_option_decription(CDOD("smoothing-iterations", CDOD::DATATYPE_INT, "number of smoothing iterations", 1));
+		doc.set_option_decription(CDOD("smoothing-depth", CDOD::DATATYPE_INT, "smoothing depth", 3));
 	}
 
 	Result run(DataManager& data_manager) const
