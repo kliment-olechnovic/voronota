@@ -268,6 +268,31 @@ writeln(JSON.stringify(result_voromqa_dark_global, null, 2));
 writeln("result_voromqa_dark_split:");
 writeln(JSON.stringify(result_voromqa_dark_split, null, 2));
 
+result_voromqa_light_global.pseudo_energy_norm=result_voromqa_light_global.pseudo_energy/result_voromqa_light_global.total_area;
+result_voromqa_dark_split.light_scores.pseudo_energy_norm=result_voromqa_dark_split.light_scores.pseudo_energy/result_voromqa_dark_split.light_scores.total_area;
+
+result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy_norm=result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy/result_voromqa_light_local_all_solvent.contacts_result.area;
+result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy_norm=result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy/result_voromqa_dark_split.light_scores_local_sas.contacts_result.area;
+
+summary={}
+
+summary.diff_light_global_score=(result_voromqa_light_global.quality_score-result_voromqa_dark_split.light_scores.quality_score);
+summary.diff_light_area=(result_voromqa_light_global.total_area-result_voromqa_dark_split.light_scores.total_area);
+summary.diff_light_energy=(result_voromqa_light_global.pseudo_energy-result_voromqa_dark_split.light_scores.pseudo_energy);
+summary.diff_light_energy_norm=(result_voromqa_light_global.pseudo_energy_norm-result_voromqa_dark_split.light_scores.pseudo_energy_norm);
+summary.norm_diff_light_energy=(summary.diff_light_energy/summary.diff_light_area);
+summary.diff_volume=(result_voromqa_light_global.total_volume-result_voromqa_dark_split.light_scores.total_volume);
+
+summary.diff_sas_area=(result_voromqa_light_local_all_solvent.contacts_result.area-result_voromqa_dark_split.light_scores_local_sas.contacts_result.area);
+summary.diff_sas_energy=(result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy-result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy);
+summary.diff_sas_energy_norm=(result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy_norm-result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy_norm);
+summary.norm_diff_sas_energy=(summary.diff_sas_energy/summary.diff_sas_area);
+
+summary.diff_dark_global_score=(result_voromqa_dark_global.global_score-result_voromqa_dark_split.dark_scores.global_score);
+
+writeln("summary:");
+writeln(JSON.stringify(summary, null, 2));
+
 EOF
 
 } \
