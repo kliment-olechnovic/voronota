@@ -117,6 +117,7 @@ public:
 	{
 		double global_quality_score;
 		double weight_of_global_quality_score;
+		double total_volume_of_atoms;
 		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAEnergyInformation bundle_of_energy;
 		std::map<common::ChainResidueAtomDescriptor, int> map_crad_to_depth;
 		common::ConstructionOfVoroMQAScore::BundleOfVoroMQAQualityInformation bundle_of_quality;
@@ -124,7 +125,8 @@ public:
 
 		Result() :
 			global_quality_score(0.0),
-			weight_of_global_quality_score(0.0)
+			weight_of_global_quality_score(0.0),
+			total_volume_of_atoms(0.0)
 		{
 		}
 	};
@@ -266,6 +268,19 @@ public:
 			std::pair<double, double> global_quality_score_with_weight=result.bundle_of_quality.global_quality_score_with_weight(result.map_crad_to_depth, false);
 			result.global_quality_score=global_quality_score_with_weight.first;
 			result.weight_of_global_quality_score=global_quality_score_with_weight.second;
+		}
+
+		{
+			result.total_volume_of_atoms=0.0;
+			for(std::set<std::size_t>::const_iterator jt=all_atom_ids.begin();jt!=all_atom_ids.end();++jt)
+			{
+				const std::map<std::string, double>& atom_adjuncts=data_manager.atoms()[*jt].value.props.adjuncts;
+				std::map<std::string, double>::const_iterator volume_it=atom_adjuncts.find("volume");
+				if(volume_it!=atom_adjuncts.end())
+				{
+					result.total_volume_of_atoms+=(volume_it->second);
+				}
+			}
 		}
 
 		if(!params.adjunct_inter_atom_energy_scores_raw.empty() || params.adjunct_inter_atom_energy_scores_normalized.empty())

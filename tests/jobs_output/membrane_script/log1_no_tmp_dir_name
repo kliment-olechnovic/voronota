@@ -40,7 +40,8 @@
         "contacts_count":10264,
         "pseudo_energy":-5185.74,
         "total_area":35595.4,
-        "strange_area":0},
+        "strange_area":0,
+        "total_volume":70377.4},
       "success":true},
     {
       "command_line":"voromqa-frustration -adj-atom-frustration-energy-mean frustration -adj-contact-frustration-energy-mean cfem -smoothing-iterations 3 -smoothing-depth 1",

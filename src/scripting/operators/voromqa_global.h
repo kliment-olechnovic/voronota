@@ -26,6 +26,7 @@ public:
 		double pseudo_energy;
 		double total_area;
 		double strange_area;
+		double total_volume;
 
 		Result() :
 			quality_score(0.0),
@@ -35,7 +36,8 @@ public:
 			contacts_count(0),
 			pseudo_energy(0.0),
 			total_area(0.0),
-			strange_area(0.0)
+			strange_area(0.0),
+			total_volume(0.0)
 		{
 		}
 
@@ -50,6 +52,7 @@ public:
 			pseudo_energy+=r.pseudo_energy;
 			total_area+=r.total_area;
 			strange_area+=r.strange_area;
+			total_volume+=r.total_volume;
 		}
 
 		void store(HeterogeneousStorage& heterostorage) const
@@ -67,6 +70,7 @@ public:
 			variant_object.value("pseudo_energy")=pseudo_energy;
 			variant_object.value("total_area")=total_area;
 			variant_object.value("strange_area")=strange_area;
+			variant_object.value("total_volume")=total_volume;
 		}
 	};
 
@@ -151,6 +155,7 @@ public:
 		result.pseudo_energy=voromqa_result.bundle_of_energy.global_energy_descriptor.energy;
 		result.total_area=voromqa_result.bundle_of_energy.global_energy_descriptor.total_area;
 		result.strange_area=voromqa_result.bundle_of_energy.global_energy_descriptor.strange_area;
+		result.total_volume=voromqa_result.total_volume_of_atoms;
 
 		return result;
 	}
