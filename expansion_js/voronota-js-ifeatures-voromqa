@@ -244,54 +244,102 @@ voronota_voromqa_local("-contacts", "[all_interface_contacts]", "-adj-contact-de
 voronota_assert_full_success("Failed to compute VoroMQA-light scores for all interface contacts with densities");
 result_voromqa_light_local_all_interface_with_densities=voronota_last_output().results[0].output;
 
-writeln("result_voromqa_light_global:");
-writeln(JSON.stringify(result_voromqa_light_global, null, 2));
-
-writeln("result_voromqa_light_local_inter_chain:");
-writeln(JSON.stringify(result_voromqa_light_local_inter_chain, null, 2));
-
-writeln("result_voromqa_light_local_inter_chain_with_densities:");
-writeln(JSON.stringify(result_voromqa_light_local_inter_chain_with_densities, null, 2));
-
-writeln("result_voromqa_light_local_all_interface:");
-writeln(JSON.stringify(result_voromqa_light_local_all_interface, null, 2));
-
-writeln("result_voromqa_light_local_all_interface_with_densities:");
-writeln(JSON.stringify(result_voromqa_light_local_all_interface_with_densities, null, 2));
-
-writeln("result_voromqa_light_local_all_solvent:");
-writeln(JSON.stringify(result_voromqa_light_local_all_solvent, null, 2));
-
-writeln("result_voromqa_dark_global:");
-writeln(JSON.stringify(result_voromqa_dark_global, null, 2));
-
-writeln("result_voromqa_dark_split:");
-writeln(JSON.stringify(result_voromqa_dark_split, null, 2));
-
-result_voromqa_light_global.pseudo_energy_norm=result_voromqa_light_global.pseudo_energy/result_voromqa_light_global.total_area;
-result_voromqa_dark_split.light_scores.pseudo_energy_norm=result_voromqa_dark_split.light_scores.pseudo_energy/result_voromqa_dark_split.light_scores.total_area;
-
-result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy_norm=result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy/result_voromqa_light_local_all_solvent.contacts_result.area;
-result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy_norm=result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy/result_voromqa_dark_split.light_scores_local_sas.contacts_result.area;
-
 summary={}
 
-summary.diff_light_global_score=(result_voromqa_light_global.quality_score-result_voromqa_dark_split.light_scores.quality_score);
-summary.diff_light_area=(result_voromqa_light_global.total_area-result_voromqa_dark_split.light_scores.total_area);
-summary.diff_light_energy=(result_voromqa_light_global.pseudo_energy-result_voromqa_dark_split.light_scores.pseudo_energy);
-summary.diff_light_energy_norm=(result_voromqa_light_global.pseudo_energy_norm-result_voromqa_dark_split.light_scores.pseudo_energy_norm);
-summary.norm_diff_light_energy=(summary.diff_light_energy/summary.diff_light_area);
-summary.diff_volume=(result_voromqa_light_global.total_volume-result_voromqa_dark_split.light_scores.total_volume);
+summary.input_file=params.input_file;
 
-summary.diff_sas_area=(result_voromqa_light_local_all_solvent.contacts_result.area-result_voromqa_dark_split.light_scores_local_sas.contacts_result.area);
-summary.diff_sas_energy=(result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy-result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy);
-summary.diff_sas_energy_norm=(result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy_norm-result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy_norm);
-summary.norm_diff_sas_energy=(summary.diff_sas_energy/summary.diff_sas_area);
+summary.global_residues=result_voromqa_light_global.residues_count;
+summary.global_atoms=result_voromqa_light_global.atoms_count;
+summary.global_light_score=result_voromqa_light_global.quality_score;
+summary.global_dark_score=result_voromqa_dark_global.global_score;
+summary.global_area=result_voromqa_light_global.total_area;
+summary.global_nonprotein_area=result_voromqa_light_global.strange_area;
+summary.global_volume=result_voromqa_light_global.total_volume;
+summary.global_energy=result_voromqa_light_global.pseudo_energy;
+summary.global_energy_norm=(summary.global_energy/summary.global_area);
+summary.global_energy_per_atom=(summary.global_energy/summary.global_atoms);
 
-summary.diff_dark_global_score=(result_voromqa_dark_global.global_score-result_voromqa_dark_split.dark_scores.global_score);
+summary.global_sas_area=result_voromqa_light_local_all_solvent.contacts_result.area;
+summary.global_sas_energy=result_voromqa_light_local_all_solvent.contacts_result.pseudo_energy;
+summary.global_sas_energy_norm=(summary.global_sas_energy/summary.global_sas_area);
+summary.global_sas_energy_per_atom=(summary.global_sas_energy/summary.global_atoms);
 
-writeln("summary:");
-writeln(JSON.stringify(summary, null, 2));
+summary.global_nonsas_area=(summary.global_area-summary.global_sas_area);
+summary.global_nonsas_energy=(summary.global_energy-summary.global_sas_energy);
+summary.global_nonsas_energy_norm=(summary.global_nonsas_energy/summary.global_nonsas_area);
+summary.global_nonsas_energy_per_atom=(summary.global_nonsas_energy/summary.global_atoms);
+
+summary.interface_atoms=result_voromqa_light_local_inter_chain.atoms_result.atoms_relevant;
+summary.interface_atoms_light_score=result_voromqa_light_local_inter_chain.atoms_result.quality_score;
+summary.interface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
+summary.interface_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+summary.interface_energy_norm=(summary.interface_energy/summary.interface_area);
+summary.interface_energy_per_atom=(summary.interface_energy/summary.global_atoms);
+summary.interface_shelled_energy=result_voromqa_light_local_inter_chain_with_densities.contacts_result.pseudo_energy;
+summary.interface_shelled_energy_norm=(summary.interface_shelled_energy/summary.interface_area);
+summary.interface_shelled_energy_per_atom=(summary.interface_shelled_energy/summary.global_atoms);
+summary.interface_expanded_area=result_voromqa_light_local_all_interface.contacts_result.area;
+summary.interface_expanded_energy=result_voromqa_light_local_all_interface.contacts_result.pseudo_energy;
+summary.interface_expanded_energy_norm=(summary.interface_expanded_energy/summary.interface_expanded_area);
+summary.interface_expanded_energy_per_atom=(summary.interface_expanded_energy/summary.global_atoms);
+summary.interface_expanded_shelled_energy=result_voromqa_light_local_all_interface_with_densities.contacts_result.pseudo_energy;
+summary.interface_expanded_shelled_energy_norm=(summary.interface_expanded_shelled_energy/summary.interface_expanded_area);
+summary.interface_expanded_shelled_energy_per_atom=(summary.interface_expanded_shelled_energy/summary.global_atoms);
+
+summary.split_light_score=result_voromqa_dark_split.light_scores.quality_score;
+summary.split_dark_score=result_voromqa_dark_split.dark_scores.global_score;
+summary.split_area=result_voromqa_dark_split.light_scores.total_area;
+summary.split_volume=result_voromqa_dark_split.light_scores.total_volume;
+summary.split_energy=result_voromqa_dark_split.light_scores.pseudo_energy;
+summary.split_energy_norm=(summary.split_energy/summary.split_area);
+summary.split_energy_per_atom=(summary.split_energy/summary.global_atoms);
+
+summary.split_sas_area=result_voromqa_dark_split.light_scores_local_sas.contacts_result.area;
+summary.split_sas_energy=result_voromqa_dark_split.light_scores_local_sas.contacts_result.pseudo_energy;
+summary.split_sas_energy_norm=(summary.split_sas_energy/summary.split_sas_area);
+summary.split_sas_energy_per_atom=(summary.split_sas_energy/summary.global_atoms);
+
+summary.split_nonsas_area=(summary.split_area-summary.split_sas_area);
+summary.split_nonsas_energy=(summary.split_energy-summary.split_sas_energy);
+summary.split_nonsas_energy_norm=(summary.split_nonsas_energy/summary.split_nonsas_area);
+summary.split_nonsas_energy_norm=(summary.split_nonsas_energy/summary.global_atoms);
+
+summary.diff_global_light_score=(summary.global_light_score-summary.split_light_score);
+summary.diff_global_dark_score=(summary.global_dark_score-summary.split_dark_score);
+summary.diff_global_area=(summary.global_area-summary.split_area);
+summary.diff_global_energy=(summary.global_energy-summary.split_energy);
+summary.diff_global_energy_norm=(summary.global_energy_norm-summary.split_energy_norm);
+summary.diff_global_energy_per_atom=(summary.global_energy_per_atom-summary.split_energy_per_atom);
+summary.diff_global_volume=(summary.global_volume-summary.split_volume);
+
+summary.diff_sas_area=(summary.global_sas_area-summary.split_sas_area);
+summary.diff_sas_energy=(summary.global_sas_energy-summary.split_sas_energy);
+summary.diff_sas_energy_norm=(summary.global_sas_energy_norm-summary.split_sas_energy_norm);
+summary.diff_sas_energy_per_atom=(summary.global_sas_energy_per_atom-summary.split_sas_energy_per_atom);
+
+var summary_table_header="";
+var summary_table_row="";
+
+Object.keys(summary).forEach(function(key)
+{
+		summary_table_header+=key+" ";
+});
+
+Object.keys(summary).forEach(function(key)
+{
+	value=summary[key];
+	if(typeof value === 'number')
+	{
+		summary_table_row+=parseFloat(value.toFixed(5))+" ";
+	}
+	else
+	{
+		summary_table_row+=value+" ";
+	}
+});
+
+writeln(summary_table_header.trim());
+writeln(summary_table_row.trim());
 
 EOF
 
