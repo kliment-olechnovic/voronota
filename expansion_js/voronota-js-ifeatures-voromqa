@@ -208,6 +208,10 @@ voronota_assert_full_success("Failed to select interface solvent contacts");
 voronota_select_contacts("-use", "([inter_chain_contacts] or [interface_solvent_contacts])", "-name", "all_interface_contacts")
 voronota_assert_full_success("Failed to select all interface contacts");
 
+voronota_summarize_linear_structure("-min-seq-identity", 0.9);
+voronota_assert_full_success("Failed to summarize linear structure");
+result_linear_structure=voronota_last_output().results[0].output;
+
 voronota_voromqa_global();
 voronota_assert_full_success("Failed to compute VoroMQA-light scores");
 result_voromqa_light_global=voronota_last_output().results[0].output;
@@ -249,6 +253,9 @@ result_voromqa_light_local_all_interface_with_densities=voronota_last_output().r
 summary={}
 
 summary.input_name=params.input_file_name;
+
+summary.glob_chains=result_linear_structure.chains_protein;
+summary.glob_unique_chains=result_linear_structure.unique_chains_protein;
 
 summary.glob_residues=result_voromqa_light_global.residues_count;
 summary.glob_atoms=result_voromqa_light_global.atoms_count;
