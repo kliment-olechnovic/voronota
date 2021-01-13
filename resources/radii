@@ -28,6 +28,7 @@ ALA  CB   1.92
 ARG  CB   1.91
 ARG  CD*  1.88
 ARG  CG*  1.92
+ARG  CZ*  1.80
 ARG  NE*  1.62
 ARG  NH1  1.62
 ARG  NH2  1.67
@@ -47,6 +48,7 @@ CYS  S*   1.88
 
 GLN  CB   1.91
 GLN  CD*  1.81
+GLN  CG*  1.80
 GLN  NE2  1.62
 GLN  OE1  1.52
 
@@ -59,8 +61,9 @@ GLU  OE2  1.49
 HIS  CB   1.91
 HIS  CD*  1.74
 HIS  CE*  1.74
-HIS  ND2  1.65
-HIS  NE1  1.65
+HIS  CG*  1.80
+HIS  ND1  1.60
+HIS  NE2  1.60
 
 ILE  CB   2.01
 ILE  CD1  1.92
@@ -79,6 +82,7 @@ LYS  CG*  1.92
 LYS  NZ*  1.67
 
 MET  CB   1.91
+MET  CE*  1.80
 MET  CG*  1.92
 MET  S*   1.94
 
@@ -112,6 +116,7 @@ TYR  CB   1.91
 TYR  CD*  1.82
 TYR  CE*  1.82
 TYR  CG*  1.74
+TYR  CZ*  1.80
 TYR  OH*  1.54
 
 VAL  CB   2.01
