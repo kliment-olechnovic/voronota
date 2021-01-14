@@ -2,14 +2,10 @@
 
 *    *    1.80
 *    C*   1.80
-*    CL*  1.80
-*    F*   1.80
-*    FE*  1.80
 *    N*   1.60
 *    O*   1.50
 *    P*   1.90
 *    S*   1.90
-*    ZN*  1.70
 *    H*   1.30
 
 
@@ -122,3 +118,49 @@ TYR  OH*  1.54
 VAL  CB   2.01
 VAL  CG1  1.92
 VAL  CG2  1.92
+
+# other radii
+
+*    F*   1.56
+*    CL*  1.74
+*    BR*  1.98
+*    I*   2.09
+
+AL   AL   0.60
+AS   AS   0.58
+AU   AU   1.37
+BA   BA   1.35
+BE   BE   0.45
+BI   BI   1.03
+CA   CA   1.00
+CD   CD   0.95
+CO   CO   0.65
+CR   CR   0.73
+CS   CS   1.67
+CU   CU   0.73
+FE   FE   0.61
+HEM  FE   0.61
+GA   GA   0.62
+GE   GE   0.73
+HG   HG   1.02
+K    K    1.38
+LI   LI   0.76
+MG   MG   0.72
+MN   MN   0.83
+MO   MO   0.69
+NA   NA   1.02
+NI   NI   0.69
+PB   PB   1.19
+PD   PD   0.86
+PT   PT   0.80
+RB   RB   1.52
+SB   SB   0.76
+SC   SC   0.75
+SN   SN   0.69
+SR   SR   1.18
+TC   TC   0.65
+TI   TI   0.86
+V    V    0.79
+ZN   ZN   0.74
+ZR   ZR   0.72
+
