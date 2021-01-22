@@ -65,7 +65,7 @@ public:
 					}
 				}
 				atoms[i].crad.chainID=std::string(1, current_chain_name);
-				if(result.chains.empty() || result.chains.back()!=current_chain_name)
+				if(result.chains.empty() || result.chains[result.chains.size()-1]!=current_chain_name)
 				{
 					result.chains.push_back(current_chain_name);
 				}
