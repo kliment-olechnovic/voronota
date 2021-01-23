@@ -162,8 +162,8 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 			bool passed=false;
 			if(
 					value.area>=match_min_area && value.area<=match_max_area &&
-					value.dist>=match_min_dist && value.dist<=match_max_dist &&
-					(!no_solvent || !(crads.a==CRAD::solvent() || crads.b==CRAD::solvent())) &&
+					((value.dist>=match_min_dist && value.dist<=match_max_dist) || crads.contains(CRAD::solvent())) &&
+					(!no_solvent || !crads.contains(CRAD::solvent())) &&
 					(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
 					CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
 					voronota::common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
