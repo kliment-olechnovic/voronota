@@ -487,6 +487,8 @@ Using "--help" option without specific command results in printing help for all 
     --match-external-second         string      file path to input matchable annotations
     --match-external-pairs          string      file path to input matchable annotation pairs
     --no-solvent                                flag to not include solvent accessible areas
+    --ignore-dist-for-solvent                   flag to ignore distance for solvent contacts
+    --ignore-seq-sep-for-solvent                flag to ignore sequence separation for solvent contacts
     --no-same-chain                             flag to not include same chain contacts
     --invert                                    flag to invert selection
     --drop-tags                                 flag to drop all tags from input

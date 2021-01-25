@@ -106,6 +106,8 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_external_second=poh.argument<std::string>(pohw.describe_option("--match-external-second", "string", "file path to input matchable annotations"), "");
 	const std::string match_external_pairs=poh.argument<std::string>(pohw.describe_option("--match-external-pairs", "string", "file path to input matchable annotation pairs"), "");
 	const bool no_solvent=poh.contains_option(pohw.describe_option("--no-solvent", "", "flag to not include solvent accessible areas"));
+	const bool ignore_dist_for_solvent=poh.contains_option(pohw.describe_option("--ignore-dist-for-solvent", "", "flag to ignore distance for solvent contacts"));
+	const bool ignore_seq_sep_for_solvent=poh.contains_option(pohw.describe_option("--ignore-seq-sep-for-solvent", "", "flag to ignore sequence separation for solvent contacts"));
 	const bool no_same_chain=poh.contains_option(pohw.describe_option("--no-same-chain", "", "flag to not include same chain contacts"));
 	const bool invert=poh.contains_option(pohw.describe_option("--invert", "", "flag to invert selection"));
 	const bool drop_tags=poh.contains_option(pohw.describe_option("--drop-tags", "", "flag to drop all tags from input"));
@@ -162,10 +164,10 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 			bool passed=false;
 			if(
 					value.area>=match_min_area && value.area<=match_max_area &&
-					((value.dist>=match_min_dist && value.dist<=match_max_dist) || crads.contains(CRAD::solvent())) &&
+					((value.dist>=match_min_dist && value.dist<=match_max_dist) || (ignore_dist_for_solvent && crads.contains(CRAD::solvent()))) &&
 					(!no_solvent || !crads.contains(CRAD::solvent())) &&
 					(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
-					CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true) &&
+					((ignore_seq_sep_for_solvent && crads.contains(CRAD::solvent())) || CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true)) &&
 					voronota::common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
 					voronota::common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&
 					(match_external_pairs.empty() || voronota::common::MatchingUtilities::match_crads_pair_with_set_of_crads_pairs(false, crads, matchable_external_set_of_crad_pairs))
