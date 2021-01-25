@@ -62,24 +62,6 @@ void apply_renaming_map_on_contacts(const std::string& renaming_map, std::map<CR
 	}
 }
 
-void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, std::map<CRADsPair, voronota::common::ContactValue>& map_of_contacts)
-{
-	const std::set<CRAD> summing_exceptions_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
-	std::map< CRADsPair, voronota::common::ContactValue > map_of_reduced_contacts;
-	for(std::map< CRADsPair, voronota::common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
-	{
-		const CRADsPair& raw_crads=it->first;
-		const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.a, summing_exceptions_set_of_crads));
-		const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.b, summing_exceptions_set_of_crads));
-		const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()), raw_crads.reversed_display);
-		if(!(crads.a==crads.b))
-		{
-			map_of_reduced_contacts[crads].add(it->second);
-		}
-	}
-	map_of_contacts=map_of_reduced_contacts;
-}
-
 bool identify_probable_polymerization_bond(const CRADsPair& crads, const voronota::common::ContactValue& value)
 {
 	if(value.dist<2.0)
@@ -98,6 +80,27 @@ bool identify_probable_polymerization_bond(const CRADsPair& crads, const voronot
 		}
 	}
 	return false;
+}
+
+void sum_contacts_into_inter_residue_contacts(const std::string& summing_exceptions, const bool no_poly_bonds, std::map<CRADsPair, voronota::common::ContactValue>& map_of_contacts)
+{
+	const std::set<CRAD> summing_exceptions_set_of_crads=voronota::auxiliaries::IOUtilities().read_file_lines_to_set< std::set<CRAD> >(summing_exceptions);
+	std::map< CRADsPair, voronota::common::ContactValue > map_of_reduced_contacts;
+	for(std::map< CRADsPair, voronota::common::ContactValue >::const_iterator it=map_of_contacts.begin();it!=map_of_contacts.end();++it)
+	{
+		if(!no_poly_bonds || !identify_probable_polymerization_bond(it->first, it->second))
+		{
+			const CRADsPair& raw_crads=it->first;
+			const bool exclude_a=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.a, summing_exceptions_set_of_crads));
+			const bool exclude_b=(!summing_exceptions_set_of_crads.empty() && voronota::common::MatchingUtilities::match_crad_with_set_of_crads(false, raw_crads.b, summing_exceptions_set_of_crads));
+			const CRADsPair crads((exclude_a ? raw_crads.a : raw_crads.a.without_atom()), (exclude_b ? raw_crads.b : raw_crads.b.without_atom()), raw_crads.reversed_display);
+			if(!(crads.a==crads.b))
+			{
+				map_of_reduced_contacts[crads].add(it->second);
+			}
+		}
+	}
+	map_of_contacts=map_of_reduced_contacts;
 }
 
 }
@@ -169,7 +172,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 
 	if(inter_residue)
 	{
-		sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
+		sum_contacts_into_inter_residue_contacts(summing_exceptions, no_poly_bonds, map_of_contacts);
 	}
 
 	std::map<CRADsPair, std::map<CRADsPair, voronota::common::ContactValue>::iterator> selected_contacts;
@@ -332,7 +335,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 		}
 		if(inter_residue_summation_needed)
 		{
-			sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_summaries);
+			sum_contacts_into_inter_residue_contacts(summing_exceptions, no_poly_bonds, map_of_summaries);
 		}
 		voronota::auxiliaries::IOUtilities().write_map(map_of_summaries, std::cout);
 	}
@@ -358,7 +361,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 			}
 			if(inter_residue_summation_needed)
 			{
-				sum_contacts_into_inter_residue_contacts(summing_exceptions, map_of_contacts);
+				sum_contacts_into_inter_residue_contacts(summing_exceptions, no_poly_bonds, map_of_contacts);
 			}
 			voronota::auxiliaries::IOUtilities().write_map(map_of_contacts, std::cout);
 		}
