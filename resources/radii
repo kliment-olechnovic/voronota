@@ -121,10 +121,10 @@ VAL  CG2  1.92
 
 # other radii
 
-*    F*   1.56
-*    CL*  1.74
-*    BR*  1.98
-*    I*   2.09
+*    F*   1.33
+*    CL*  1.81
+*    BR*  1.96
+*    I*   2.20
 
 AL   AL   0.60
 AS   AS   0.58
@@ -139,7 +139,7 @@ CR   CR   0.73
 CS   CS   1.67
 CU   CU   0.73
 FE   FE   0.61
-HEM  FE   0.61
+HE*  FE   0.61
 GA   GA   0.62
 GE   GE   0.73
 HG   HG   1.02
