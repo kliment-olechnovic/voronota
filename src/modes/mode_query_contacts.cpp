@@ -80,6 +80,26 @@ void sum_contacts_into_inter_residue_contacts(const std::string& summing_excepti
 	map_of_contacts=map_of_reduced_contacts;
 }
 
+bool identify_probable_polymerization_bond(const CRADsPair& crads, const voronota::common::ContactValue& value)
+{
+	if(value.dist<2.0)
+	{
+		bool atoms_names_match=false;
+		atoms_names_match=atoms_names_match || (crads.a.name=="C" && crads.b.name=="N");
+		atoms_names_match=atoms_names_match || (crads.b.name=="C" && crads.a.name=="N");
+		atoms_names_match=atoms_names_match || ((crads.a.name=="O3'" || crads.a.name=="O3*") && crads.b.name=="P");
+		atoms_names_match=atoms_names_match || ((crads.b.name=="O3'" || crads.b.name=="O3*") && crads.a.name=="P");
+		if(atoms_names_match)
+		{
+			if(CRAD::match_with_sequence_separation_interval(crads.a, crads.b, 1, 1, false))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 }
 
 void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
@@ -109,6 +129,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const bool ignore_dist_for_solvent=poh.contains_option(pohw.describe_option("--ignore-dist-for-solvent", "", "flag to ignore distance for solvent contacts"));
 	const bool ignore_seq_sep_for_solvent=poh.contains_option(pohw.describe_option("--ignore-seq-sep-for-solvent", "", "flag to ignore sequence separation for solvent contacts"));
 	const bool no_same_chain=poh.contains_option(pohw.describe_option("--no-same-chain", "", "flag to not include same chain contacts"));
+	const bool no_poly_bonds=poh.contains_option(pohw.describe_option("--no-poly-bonds", "", "flag to not include peptide and nucleic polymerization bonds"));
 	const bool invert=poh.contains_option(pohw.describe_option("--invert", "", "flag to invert selection"));
 	const bool drop_tags=poh.contains_option(pohw.describe_option("--drop-tags", "", "flag to drop all tags from input"));
 	const bool drop_adjuncts=poh.contains_option(pohw.describe_option("--drop-adjuncts", "", "flag to drop all adjuncts from input"));
@@ -167,6 +188,7 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 					((value.dist>=match_min_dist && value.dist<=match_max_dist) || (ignore_dist_for_solvent && crads.contains(CRAD::solvent()))) &&
 					(!no_solvent || !crads.contains(CRAD::solvent())) &&
 					(!no_same_chain || crads.a.chainID!=crads.b.chainID) &&
+					(!no_poly_bonds || !identify_probable_polymerization_bond(crads, value)) &&
 					((ignore_seq_sep_for_solvent && crads.contains(CRAD::solvent())) || CRAD::match_with_sequence_separation_interval(crads.a, crads.b, match_min_sequence_separation, match_max_sequence_separation, true)) &&
 					voronota::common::MatchingUtilities::match_set_of_tags(value.props.tags, match_tags, match_tags_not) &&
 					voronota::common::MatchingUtilities::match_map_of_adjuncts(value.props.adjuncts, match_adjuncts, match_adjuncts_not) &&

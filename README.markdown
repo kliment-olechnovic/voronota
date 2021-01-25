@@ -490,6 +490,7 @@ Using "--help" option without specific command results in printing help for all 
     --ignore-dist-for-solvent                   flag to ignore distance for solvent contacts
     --ignore-seq-sep-for-solvent                flag to ignore sequence separation for solvent contacts
     --no-same-chain                             flag to not include same chain contacts
+    --no-poly-bonds                             flag to not include peptide and nucleic polymerization bonds
     --invert                                    flag to invert selection
     --drop-tags                                 flag to drop all tags from input
     --drop-adjuncts                             flag to drop all adjuncts from input
