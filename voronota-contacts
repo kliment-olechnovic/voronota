@@ -160,7 +160,7 @@ then
 	exit 1
 fi
 
-echo "Unfiltered contacts with tags, version 2" > $TMPLDIR/hashsalt
+echo "Unfiltered contacts with tags version 3" > $TMPLDIR/hashsalt
 
 BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
@@ -192,18 +192,15 @@ then
 	{
 		if [ -n "$DRAWING_OUTPUT" ]
 		then
-			voronota calculate-contacts \
-			  --annotated \
-			  --draw \
-			  --tag-centrality
+			voronota calculate-contacts --annotated --draw
 		else
-			voronota calculate-contacts \
-			  --annotated \
-			  --tag-centrality
+			voronota calculate-contacts --annotated
 		fi
 	} \
-	| voronota query-contacts \
-	  --preserve-graphics \
+	| voronota query-contacts --preserve-graphics \
+	  --set-tags 'sb' --match-first 'R<ASP,GLU>&A<OD1,OD2,OE1,OE2,OXT>' --match-second 'R<ARG,HIS,LYS>&A<NH1,NH2,ND1,NE2,NZ>' --match-max-dist 4.0 \
+	| voronota query-contacts --preserve-graphics \
+	  --set-tags 'ds' --match-first 'R<CYS>&A<SG>' --match-second 'R<CYS>&A<SG>' --match-max-dist 3.0 \
 	> $TMPLDIR/all_contacts
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
