@@ -14,6 +14,7 @@ Basic options:
     --contacts-query-additional    string      additional, preceeding query parameters, default is '--match-min-seq-sep 1'
     --cache-dir                    string      path to cache directory
     --sum-at-end                               flag to print sum of areas as the last line in output
+    --tsv-output                               flag to output table in tab-separated values format with header
     --help | -h                                flag to display help message and exit
 
 Advanced options:
@@ -39,6 +40,7 @@ DRAWING_PARAMETERS=""
 CONTACTS_CACHE_DIRECTORY=""
 MULTIPLE_MODELS_CHAINS_OPTION=""
 SUM_AT_END=false
+TSV_OUTPUT=false
 WIREFRAME_DRAWING=false
 HELP_MODE=false
 
@@ -81,6 +83,9 @@ do
 		;;
 	--sum-at-end)
 		SUM_AT_END=true
+		;;
+	--tsv-output)
+		TSV_OUTPUT=true
 		;;
 	--wireframe-drawing)
 		WIREFRAME_DRAWING=true
@@ -243,11 +248,24 @@ else
 fi
 } > $TMPLDIR/result_contacts
 
-{
-cat $TMPLDIR/result_contacts
 if $SUM_AT_END
 then
 	cat $TMPLDIR/result_contacts \
-	| voronota query-contacts --summarize	
+	| voronota query-contacts --summarize \
+	> $TMPLDIR/result_contacts_summary
+	
+	cat $TMPLDIR/result_contacts $TMPLDIR/result_contacts_summary > $TMPLDIR/result_contacts_final
+else
+	cat $TMPLDIR/result_contacts > $TMPLDIR/result_contacts_final
 fi
-} | column -t
+
+if $TSV_OUTPUT
+then
+	{
+		echo "chain1 rnum1 ins1 anum1 alt1 rname1 aname1 chain2 rnum2 ins2 anum2 alt2 rname2 aname2 area dist tags adjuncts"
+		cat $TMPLDIR/result_contacts_final | voronota expand-descriptors
+	} | sed 's/\s\+/\t/g'
+else
+	cat $TMPLDIR/result_contacts_final | column -t
+fi
+

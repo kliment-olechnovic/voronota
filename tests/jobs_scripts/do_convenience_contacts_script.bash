@@ -38,4 +38,13 @@ $VORONOTADIR/voronota-contacts \
   --sum-at-end \
 > $SUBDIR/contacts2
 
+$VORONOTADIR/voronota-contacts \
+  --input $INPUTDIR/single/structure.pdb \
+  --input-filter-query "--match r<1:50>" \
+  --contacts-query "--inter-residue --match-first R<LEU>" \
+  --cache-dir $SUBDIR/cache \
+  --sum-at-end \
+  --tsv-output \
+> $SUBDIR/contacts3
+
 rm -r $SUBDIR/cache
