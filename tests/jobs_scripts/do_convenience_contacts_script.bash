@@ -47,4 +47,15 @@ $VORONOTADIR/voronota-contacts \
   --tsv-output \
 > $SUBDIR/contacts3
 
+$VORONOTADIR/voronota-contacts \
+  --input $INPUTDIR/single/structure.pdb \
+  --input-filter-query "--match r<1:50>" \
+  --contacts-query "--match-tags hb|sb" \
+  --cache-dir $SUBDIR/cache \
+  --sum-at-end \
+  --tsv-output \
+  --use-hbplus \
+| column -t \
+> $SUBDIR/contacts4
+
 rm -r $SUBDIR/cache

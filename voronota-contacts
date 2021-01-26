@@ -22,6 +22,7 @@ Advanced options:
     --drawing-parameters           string      drawing parameters
     --wireframe-drawing                        flag to draw wireframe representation of contacts
     --multiple-models                          flag to handle multiple models in PDB file
+    --use-hbplus                               flag to run 'hbplus' to tag H-bonds
 
 Standard output (multiple lines):
     {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}
@@ -42,6 +43,7 @@ MULTIPLE_MODELS_CHAINS_OPTION=""
 SUM_AT_END=false
 TSV_OUTPUT=false
 WIREFRAME_DRAWING=false
+USE_HBPLUS=false
 HELP_MODE=false
 
 while [[ $# > 0 ]]
@@ -90,6 +92,9 @@ do
 	--wireframe-drawing)
 		WIREFRAME_DRAWING=true
 		;;
+	--use-hbplus)
+		USE_HBPLUS=true
+		;;
 	-h|--help)
 		HELP_MODE=true
 		;;
@@ -114,6 +119,11 @@ fi
 
 command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
 command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resources' executable not in binaries path"; exit 1; }
+
+if $USE_HBPLUS
+then
+	command -v hbplus &> /dev/null || { echo >&2 "Error: 'hbplus' executable not in binaries path"; exit 1; }
+fi
 
 MD5SUM_COMMAND="md5sum"
 if command -v md5sum &> /dev/null
@@ -165,7 +175,13 @@ then
 	exit 1
 fi
 
-echo "Unfiltered contacts with tags version 3" > $TMPLDIR/hashsalt
+{
+echo "Unfiltered contacts with tags version 4"
+if $USE_HBPLUS
+then
+	echo "Using 'hbplus' output"
+fi
+} > $TMPLDIR/hashsalt
 
 BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
@@ -192,21 +208,40 @@ fi
 
 if [ ! -s "$TMPLDIR/all_contacts" ]
 then
-	cat $TMPLDIR/balls \
-	| \
-	{
-		if [ -n "$DRAWING_OUTPUT" ]
+	OPTIONAL_DRAW_FLAG=""
+	if [ -n "$DRAWING_OUTPUT" ]
+	then
+		OPTIONAL_DRAW_FLAG="--draw"
+	fi
+	
+	OPTIONAL_HBPLUS_TAGS_SETTING=""
+	if $USE_HBPLUS
+	then
+		mkdir -p "$TMPLDIR/hbplus_workdir"
+		cat "$TMPLDIR/balls" | voronota write-balls-to-atoms-file --pdb-output "$TMPLDIR/hbplus_workdir/struct.pdb" > /dev/null
+		( cd "$TMPLDIR/hbplus_workdir" ; hbplus ./struct.pdb &> /dev/null ; cd - &> /dev/null )
+		if [ ! -s "$TMPLDIR/hbplus_workdir/struct.hb2" ]
 		then
-			voronota calculate-contacts --annotated --draw
-		else
-			voronota calculate-contacts --annotated
+			echo >&2 "Error: failed to run hbplus"
+			exit 1
 		fi
-	} \
+		OPTIONAL_HBPLUS_TAGS_SETTING="--set-hbplus-tags $TMPLDIR/hbplus_workdir/struct.hb2"
+	fi
+	
+	cat $TMPLDIR/balls \
+	| voronota calculate-contacts --annotated $OPTIONAL_DRAW_FLAG \
+	| voronota query-contacts --preserve-graphics $OPTIONAL_HBPLUS_TAGS_SETTING \
 	| voronota query-contacts --preserve-graphics \
 	  --set-tags 'sb' --match-first 'R<ASP,GLU>&A<OD1,OD2,OE1,OE2,OXT>' --match-second 'R<ARG,HIS,LYS>&A<NH1,NH2,ND1,NE2,NZ>' --match-max-dist 4.0 \
 	| voronota query-contacts --preserve-graphics \
 	  --set-tags 'ds' --match-first 'R<CYS>&A<SG>' --match-second 'R<CYS>&A<SG>' --match-max-dist 3.0 \
 	> $TMPLDIR/all_contacts
+	
+	if [ ! -s "$TMPLDIR/all_contacts" ]
+	then
+		echo >&2 "Error: failed to calculate contacts"
+		exit 1
+	fi
 	
 	if [ -n "$CONTACTS_CACHE_DIRECTORY" ] && [ -n "$BALLS_MD5" ]
 	then
