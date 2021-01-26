@@ -122,7 +122,7 @@ command -v voronota-resources &> /dev/null || { echo >&2 "Error: 'voronota-resou
 
 if $USE_HBPLUS
 then
-	command -v hbplus &> /dev/null || { echo >&2 "Error: 'hbplus' executable not in binaries path"; exit 1; }
+	command -v hbplus &> /dev/null || { echo >&2 "Warning: 'hbplus' executable not in binaries path, thus no 'hb' tags will be assigned"; USE_HBPLUS=false; }
 fi
 
 MD5SUM_COMMAND="md5sum"
