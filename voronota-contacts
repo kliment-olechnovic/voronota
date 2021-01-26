@@ -11,7 +11,7 @@ Basic options:
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --contacts-query               string      contacts query parameters
-    --contacts-query-additional    string      additional contacts query parameters
+    --contacts-query-additional    string      additional, preceeding query parameters, default is '--match-min-seq-sep 1'
     --cache-dir                    string      path to cache directory
     --sum-at-end                               flag to print sum of areas as the last line in output
     --help | -h                                flag to display help message and exit
@@ -32,7 +32,7 @@ exit 1
 readonly ZEROARG=$0
 INFILE=""
 INPUT_FILTER_QUERY_PARAMETERS=""
-CONTACTS_QUERY_FIRST_PARAMETERS=""
+CONTACTS_QUERY_FIRST_PARAMETERS="--match-min-seq-sep 1"
 CONTACTS_QUERY_SECOND_PARAMETERS=""
 DRAWING_OUTPUT=""
 DRAWING_PARAMETERS=""
@@ -160,10 +160,12 @@ then
 	exit 1
 fi
 
+echo "Unfiltered contacts with tags, version 2" > $TMPLDIR/hashsalt
+
 BALLS_MD5=""
 if [ -n "$CONTACTS_CACHE_DIRECTORY" ]
 then
-	BALLS_MD5=$(cat $TMPLDIR/balls | $MD5SUM_COMMAND | awk '{print $1}')
+	BALLS_MD5=$(cat $TMPLDIR/hashsalt $TMPLDIR/balls | $MD5SUM_COMMAND | awk '{print $1}')
 	if [ -n "$BALLS_MD5" ]
 	then
 		BALLS_MD5="${BALLS_MD5}.voronota.contacts"
@@ -201,7 +203,6 @@ then
 		fi
 	} \
 	| voronota query-contacts \
-	  --match-min-seq-sep 1 \
 	  --preserve-graphics \
 	> $TMPLDIR/all_contacts
 	
