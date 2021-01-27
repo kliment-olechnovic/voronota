@@ -15,7 +15,7 @@ inter-atom contact surfaces and solvent accessible surfaces.
 Voronota provides tools to query contacts, generate contacts graphics,
 compare contacts and evaluate quality of protein structural models using contacts.
 
-Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
+Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
 
 # Getting the latest version

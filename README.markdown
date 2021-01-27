@@ -15,7 +15,7 @@ inter-atom contact surfaces and solvent accessible surfaces.
 Voronota provides tools to query contacts, generate contacts graphics,
 compare contacts and evaluate quality of protein structural models using contacts.
 
-Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).
+Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).
 
 
 # Getting the latest version
@@ -885,9 +885,10 @@ The script interface is presented below:
         --input | -i                   string   *  input structure file in PDB or mmCIF format
         --input-filter-query           string      input atoms filtering query parameters
         --contacts-query               string      contacts query parameters
-        --contacts-query-additional    string      additional contacts query parameters
+        --contacts-query-additional    string      additional, preceeding query parameters, default is '--match-min-seq-sep 1'
         --cache-dir                    string      path to cache directory
         --sum-at-end                               flag to print sum of areas as the last line in output
+        --tsv-output                               flag to output table in tab-separated values format with header
         --help | -h                                flag to display help message and exit
     
     Advanced options:
@@ -895,6 +896,7 @@ The script interface is presented below:
         --drawing-parameters           string      drawing parameters
         --wireframe-drawing                        flag to draw wireframe representation of contacts
         --multiple-models                          flag to handle multiple models in PDB file
+        --use-hbplus                               flag to run 'hbplus' to tag H-bonds
     
     Standard output (multiple lines):
         {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}

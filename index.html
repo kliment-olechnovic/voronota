@@ -13,7 +13,7 @@
   </style>
 </head>
 <body>
-<h1>Voronota version 1.21</h1>
+<h1>Voronota version 1.22</h1>
 <div id="TOC">
 <ul>
 <li><a href="#about-voronota">About Voronota</a></li>
@@ -127,7 +127,7 @@
 <h1 id="about-voronota">About Voronota</h1>
 <p>The analysis of macromolecular structures often requires a comprehensive definition of atomic neighborhoods. Such a definition can be based on the Voronoi diagram of balls, where each ball represents an atom of some van der Waals radius. Voronota is a software tool for finding all the vertices of the Voronoi diagram of balls. Such vertices correspond to the centers of the empty tangent spheres defined by quadruples of balls. Voronota is especially suitable for processing three-dimensional structures of biological macromolecules such as proteins and RNA.</p>
 <p>Since version 1.2 Voronota also uses the Voronoi vertices to construct inter-atom contact surfaces and solvent accessible surfaces. Voronota provides tools to query contacts, generate contacts graphics, compare contacts and evaluate quality of protein structural models using contacts.</p>
-<p>Voronota is developed by Kliment Olechnovic (kliment@ibt.lt).</p>
+<p>Voronota is developed by Kliment Olechnovic (kliment.olechnovic@bti.vu.lt).</p>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the latest archive from the official downloads page: <a href="https://github.com/kliment-olechnovic/voronota/releases" class="uri">https://github.com/kliment-olechnovic/voronota/releases</a>.</p>
 <p>The archive contains ready-to-use statically compiled 'voronota' program for 64 bit Linux systems. This executable can be rebuilt from the provided source code to work on any modern Linux, macOS or Windows operating systems.</p>
@@ -745,9 +745,10 @@ Standard output (one line):
     --input | -i                   string   *  input structure file in PDB or mmCIF format
     --input-filter-query           string      input atoms filtering query parameters
     --contacts-query               string      contacts query parameters
-    --contacts-query-additional    string      additional contacts query parameters
+    --contacts-query-additional    string      additional, preceeding query parameters, default is &#39;--match-min-seq-sep 1&#39;
     --cache-dir                    string      path to cache directory
     --sum-at-end                               flag to print sum of areas as the last line in output
+    --tsv-output                               flag to output table in tab-separated values format with header
     --help | -h                                flag to display help message and exit
 
 Advanced options:
@@ -755,6 +756,7 @@ Advanced options:
     --drawing-parameters           string      drawing parameters
     --wireframe-drawing                        flag to draw wireframe representation of contacts
     --multiple-models                          flag to handle multiple models in PDB file
+    --use-hbplus                               flag to run &#39;hbplus&#39; to tag H-bonds
 
 Standard output (multiple lines):
     {contacting atom} {contacting atom} {contact area} {distance between atoms centers} {tags} {adjunct values}</code></pre>
