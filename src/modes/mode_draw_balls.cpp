@@ -50,7 +50,8 @@ void draw_cylinder(
 
 void draw_links(
 		const std::vector< std::pair<CRAD, voronota::common::BallValue> >& list_of_balls,
-		const double ball_collision_radius,
+		const double ball_collision_radius_min,
+		const double ball_collision_radius_max,
 		const double bsh_initial_radius,
 		const double ball_drawing_radius,
 		const double cylinder_drawing_radius,
@@ -62,7 +63,7 @@ void draw_links(
 	std::vector<voronota::apollota::SimpleSphere> spheres(list_of_balls.size());
 	for(std::size_t i=0;i<list_of_balls.size();i++)
 	{
-		spheres[i]=voronota::apollota::SimpleSphere(list_of_balls[i].second, ball_collision_radius);
+		spheres[i]=voronota::apollota::SimpleSphere(list_of_balls[i].second, ball_collision_radius_max);
 	}
 	voronota::apollota::BoundingSpheresHierarchy bsh(spheres, bsh_initial_radius, 1);
 	for(std::size_t i=0;i<list_of_balls.size();i++)
@@ -80,11 +81,18 @@ void draw_links(
 				const voronota::apollota::SimpleSphere& b=spheres[collision_id];
 				const CRAD& b_crad=list_of_balls[collision_id].first;
 				if(!check_sequence || (a_crad.chainID==b_crad.chainID && abs(a_crad.resSeq-b_crad.resSeq)<=1))
-				draw_cylinder(
-						voronota::apollota::SimpleSphere(a, cylinder_drawing_radius),
-						voronota::apollota::SimpleSphere(voronota::apollota::sum_of_points<voronota::apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
-						cylinder_sides,
-						opengl_printer);
+				{
+					const double ab_distance_half=voronota::apollota::distance_from_point_to_point(a, b)*0.5;
+					const bool sg_in_cys=(((a_crad.name=="SG" && b_crad.name=="CB") || (b_crad.name=="SG" && a_crad.name=="CB")) && a_crad.resSeq==b_crad.resSeq && a_crad.resName=="CYS");
+					if(ab_distance_half<=ball_collision_radius_min || (sg_in_cys && ab_distance_half<=ball_collision_radius_max))
+					{
+						draw_cylinder(
+								voronota::apollota::SimpleSphere(a, cylinder_drawing_radius),
+								voronota::apollota::SimpleSphere(voronota::apollota::sum_of_points<voronota::apollota::SimplePoint>(a, b)*0.5, cylinder_drawing_radius),
+								cylinder_sides,
+								opengl_printer);
+					}
+				}
 			}
 		}
 	}
@@ -106,7 +114,7 @@ void draw_trace(
 			list_of_balls_filtered.push_back(list_of_balls[i]);
 		}
 	}
-	draw_links(list_of_balls_filtered, max_distance*0.5, 10.0, drawing_radius, drawing_radius, 12, true, drawing_parameters_wrapper, opengl_printer);
+	draw_links(list_of_balls_filtered, max_distance*0.5, max_distance*0.5, 10.0, drawing_radius, drawing_radius, 12, true, drawing_parameters_wrapper, opengl_printer);
 }
 
 class DrawingProteinCartoons
@@ -795,7 +803,7 @@ void draw_balls(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	}
 	else if(representation=="sticks")
 	{
-		draw_links(list_of_balls, 0.8, 4.0, 0.2, 0.2, 9, false, drawing_parameters_wrapper, opengl_printer);
+		draw_links(list_of_balls, 0.8, 1.0, 4.0, 0.2, 0.2, 9, false, drawing_parameters_wrapper, opengl_printer);
 	}
 	else if(representation=="trace")
 	{
