@@ -105,14 +105,26 @@ public:
 
 		scripting::operators::ImportAdjunctsOfAtoms().init(CMDIN().set("file", tmp_scores.filename())).run(data_manager);
 
-		const scripting::operators::SpectrumAtoms::Result spectrum_result=scripting::operators::SpectrumAtoms().init(CMDIN()
-				.set("use", "[--aname CA]")
-				.set("adjunct", "vd1")
-				.set("only-summarize", true)).run(data_manager);
-
 		Result result;
-		result.global_score=spectrum_result.mean_of_values;
-		result.number_of_residues=spectrum_result.number_of_values;
+		{
+			double sum_of_values=0.0;
+			int number_of_residues=0;
+			for(std::size_t i=0;i<data_manager.atoms().size();i++)
+			{
+				const scripting::Atom& atom=data_manager.atoms()[i];
+				if(atom.crad.name=="CA")
+				{
+					std::map<std::string, double>::const_iterator it=atom.value.props.adjuncts.find("vd1");
+					if(it!=atom.value.props.adjuncts.end())
+					{
+						sum_of_values+=it->second;
+						number_of_residues++;
+					}
+				}
+			}
+			result.global_score=(sum_of_values/static_cast<double>(number_of_residues));
+			result.number_of_residues=number_of_residues;
+		}
 
 		if(!global_adj_prefix.empty())
 		{
