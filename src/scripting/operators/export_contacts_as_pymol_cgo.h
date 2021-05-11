@@ -85,14 +85,16 @@ public:
 			throw std::runtime_error(std::string("More than one representation requested."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_contacts_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_contacts(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable visible contacts selected."));
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		{
+			common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
+			data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, true);
 		}
 
 		auxiliaries::OpenGLPrinter opengl_printer;

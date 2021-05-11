@@ -86,10 +86,7 @@ public:
 			throw std::runtime_error(std::string("More than one representation requested."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_atoms_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_atoms(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
 
 		if(ids.empty())
 		{

@@ -52,14 +52,11 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.figures_representation_descriptor().ids_by_names(representation_names);
 
-		const std::set<std::size_t> ids=data_manager.filter_figures_drawable_implemented_ids(
-				representation_ids,
-				LongName::match(data_manager.figures(), LongName(name)),
-				false);
+		const std::set<std::size_t> ids=LongName::match(data_manager.figures(), LongName(name));
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable figures selected."));
+			throw std::runtime_error(std::string("No figures selected."));
 		}
 
 		data_manager.update_figures_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive()).set_hide(!positive()), ids);

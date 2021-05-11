@@ -272,7 +272,7 @@ public:
 					updated=(updated || (ds.marked!=mark));
 					ds.marked=mark;
 				}
-				if(ds.implemented())
+
 				{
 					if(show || hide || color_valid())
 					{
@@ -356,7 +356,6 @@ public:
 		{
 			bool updated=false;
 
-			if(visual.implemented)
 			{
 				if(show || hide)
 				{
@@ -738,36 +737,6 @@ public:
 			residue_ids.insert(primary_structure_info().map_of_atoms_to_residues.at(*it));
 		}
 		return residue_ids.size();
-	}
-
-	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(atoms_display_states_, visual_ids, ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_atoms_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(atoms_display_states_, std::set<std::size_t>(), ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(contacts_display_states_, visual_ids, ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_contacts_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(contacts_display_states_, std::set<std::size_t>(), ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_figures_drawable_implemented_ids(const std::set<std::size_t>& visual_ids, const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(figures_display_states_, visual_ids, ids, only_visible);
-	}
-
-	std::set<std::size_t> filter_figures_drawable_implemented_ids(const std::set<std::size_t>& ids, const bool only_visible) const
-	{
-		return filter_drawable_implemented_ids(figures_display_states_, std::set<std::size_t>(), ids, only_visible);
 	}
 
 	SelectionManager& selection_manager()
@@ -1369,7 +1338,8 @@ public:
 
 	void reset_contacts_graphics_by_creating(
 			const common::ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
-			const std::set<std::size_t>& ids)
+			const std::set<std::size_t>& ids,
+			const bool never_replace)
 	{
 		assert_contacts_availability();
 
@@ -1387,7 +1357,7 @@ public:
 				else
 				{
 					std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_actions_on_contacts_.graphics_creating.find(id);
-					if(jt!=history_of_actions_on_contacts_.graphics_creating.end() && !parameters_to_draw_contacts.equals(jt->second))
+					if(!never_replace && jt!=history_of_actions_on_contacts_.graphics_creating.end() && !parameters_to_draw_contacts.equals(jt->second))
 					{
 						ids_for_updating.insert(id);
 					}
@@ -1703,52 +1673,13 @@ private:
 		bool resized=false;
 		for(std::size_t i=0;i<display_states.size();i++)
 		{
-			if(display_states[i].drawable && display_states[i].visuals.size()!=size)
+			if(display_states[i].visuals.size()!=size)
 			{
 				display_states[i].visuals.resize(size);
 				resized=true;
 			}
-			else if(!display_states[i].drawable)
-			{
-				display_states[i].visuals.clear();
-				resized=true;
-			}
 		}
 		return resized;
-	}
-
-	static std::set<std::size_t> filter_drawable_implemented_ids(
-			const std::vector<DisplayState>& display_states,
-			const std::set<std::size_t>& visual_ids,
-			const std::set<std::size_t>& ids,
-			const bool only_visible)
-	{
-		std::set<std::size_t> drawable_ids;
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
-		{
-			if((*it)<display_states.size() && display_states[*it].drawable)
-			{
-				bool good=false;
-
-				if(visual_ids.empty())
-				{
-					good=display_states[*it].implemented() && (!only_visible || display_states[*it].visible());
-				}
-				else
-				{
-					for(std::set<std::size_t>::const_iterator jt=visual_ids.begin();jt!=visual_ids.end() && !good;++jt)
-					{
-						good=(good || (display_states[*it].implemented(*jt) && (!only_visible || display_states[*it].visible(*jt))));
-					}
-				}
-
-				if(good)
-				{
-					drawable_ids.insert(*it);
-				}
-			}
-		}
-		return drawable_ids;
 	}
 
 	void set_atoms_representations_implemented_if_required_always()
@@ -1817,10 +1748,6 @@ private:
 			{
 				DisplayState& ds=contacts_display_states_[id];
 				ds.drawable=(!contacts_[id].value.graphics.empty());
-				if(!ds.drawable)
-				{
-					ds.visuals.clear();
-				}
 				for(std::size_t j=0;j<ds.visuals.size();j++)
 				{
 					ds.visuals[j].implemented=false;

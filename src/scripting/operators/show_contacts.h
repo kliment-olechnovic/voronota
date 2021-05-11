@@ -60,14 +60,16 @@ public:
 			representation_ids.insert(0);
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_contacts_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_contacts(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable contacts selected."));
+			throw std::runtime_error(std::string("No contacts selected."));
+		}
+
+		{
+			common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
+			data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, true);
 		}
 
 		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_show(positive()).set_hide(!positive()), ids);

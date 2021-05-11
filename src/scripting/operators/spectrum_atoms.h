@@ -118,14 +118,11 @@ public:
 			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_atoms_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_atoms(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable atoms selected."));
+			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
 		bool usable_min_val_present=min_val_present;

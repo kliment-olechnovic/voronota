@@ -2,17 +2,15 @@
 spectrum-atoms -by chain
 construct-contacts
 select-contacts [-inter-chain] -name iface
-make-drawable-contacts [iface]
-show-contacts
-color-contacts -col yellow
+show-contacts [iface]
+color-contacts [iface] -col yellow
 
 ### Draw and show interface contacts plus SAS
 spectrum-atoms -by chain
 construct-contacts
 select-contacts [-inter-chain] -name iface
-make-drawable-contacts [iface]
-show-contacts
-color-contacts -col yellow
+show-contacts [iface]
+color-contacts [iface] -col yellow
 select-atoms ([-sel-of-contacts iface] and [c<A>]) \
   -full-residues -name iface_atoms_A
 select-atoms ([-sel-of-contacts iface] and [c<B>]) \
@@ -26,7 +24,6 @@ list-selections-of-contacts
 list-selections-of-atoms
 select-contacts [-a1 [iface_atoms_A] -solvent] \
   -name iface_atoms_A_sas
-make-drawable-contacts [iface_atoms_A_sas]
 show-contacts [iface_atoms_A_sas]
 color-contacts [iface_atoms_A_sas] -col 0x77FFFF
 
@@ -141,7 +138,6 @@ set-adjunct-of-contacts-by-atom-adjuncts \
   -destination-name area_alt_part -pooling-mode min
 hide-atoms
 hide-contacts
-make-drawable-contacts [-solvent]
 color-contacts -col yellow
 spectrum-contacts -adjunct area_alt_part -scheme bwr -min-val 0 -max-val 1
 show-contacts [-solvent] -rep faces
@@ -180,8 +176,7 @@ select-atoms [-t het] -name ligand
 color-atoms [ligand] 0x0011BB
 construct-contacts
 select-contacts [-a1[ligand]] -name iface
-make-drawable-contacts [iface]
-show-contacts
+show-contacts [iface]
 color-contacts [iface] -col yellow
 color-contacts ([iface] and [-solvent]) -col cyan
 select-atoms ([-sel-of-contacts iface] and (not [ligand])) \
@@ -228,7 +223,6 @@ show-figures
 ### Calculate VoroMQA interface frustration scores
 restrict-atoms [-t! het]
 construct-contacts
-make-drawable-contacts [-inter-chain]
 voromqa-global
 voromqa-interface-frustration [-inter-chain] \
   -adj-contact-interface-frustration-energy-mean cifem \
@@ -241,7 +235,7 @@ show-contacts [-inter-chain]
 construct-contacts
 make-drawable-contacts [-solvent] -enable-alt
 hide-atoms
-show-contacts -rep skin-shape
+show-contacts [-solvent] -rep skin-shape
 color-contacts -col cyan
 
 ### Draw a subset of empty tangent spheres

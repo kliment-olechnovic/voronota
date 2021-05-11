@@ -62,14 +62,11 @@ public:
 			throw std::runtime_error(std::string("Contacts color not specified."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_contacts_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_contacts(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable contacts selected."));
+			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
 		data_manager.update_contacts_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_color(color_value), ids);

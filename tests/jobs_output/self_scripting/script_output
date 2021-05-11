@@ -706,9 +706,9 @@
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
-          "number_total":120,
+          "number_total":12469,
           "number_drawable":120,
-          "area":211.8}},
+          "area":47017.2}},
       "success":true},
     {
       "command_line":"color-contacts [--a1 [A<C,CA,N,O>] --a2 [A<C,CA,N,O>]] 0x00FFFF",
@@ -716,9 +716,9 @@
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
-          "number_total":25,
+          "number_total":3546,
           "number_drawable":25,
-          "area":52.3005}},
+          "area":12220.3}},
       "success":true},
     {
       "command_line":"color-contacts [-a1 [-m! A<C,CA,N,O>] -a2! [A<C,CA,N,O>]] 0xFFFF00",
@@ -726,12 +726,12 @@
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
-          "number_total":58,
+          "number_total":4029,
           "number_drawable":58,
-          "area":99.5972}},
+          "area":23058.4}},
       "success":true},
     {
-      "command_line":"show-contacts",
+      "command_line":"show-contacts [_drawable]",
       "command_name":"show-contacts",
       "data_object":"plain_atoms",
       "output":{
@@ -741,7 +741,7 @@
           "area":211.8}},
       "success":true},
     {
-      "command_line":"export-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
+      "command_line":"export-contacts-as-pymol-cgo [_visible] --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts",
       "command_name":"export-contacts-as-pymol-cgo",
       "data_object":"plain_atoms",
       "output":{
@@ -757,12 +757,12 @@
       "data_object":"plain_atoms",
       "output":{
         "contacts_summary":{
-          "number_total":120,
+          "number_total":12469,
           "number_drawable":120,
-          "area":211.8}},
+          "area":47017.2}},
       "success":true},
     {
-      "command_line":"export-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
+      "command_line":"export-contacts-as-pymol-cgo [_visible] --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf",
       "command_name":"export-contacts-as-pymol-cgo",
       "data_object":"plain_atoms",
       "output":{

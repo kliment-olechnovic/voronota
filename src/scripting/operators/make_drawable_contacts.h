@@ -67,7 +67,7 @@ public:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
-		data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids);
+		data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, false);
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);

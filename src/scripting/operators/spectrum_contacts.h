@@ -116,14 +116,11 @@ public:
 			throw std::runtime_error(std::string("Minimum and maximum values do not define range."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_contacts_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_contacts(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable contacts selected."));
+			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
 		std::map<std::size_t, double> map_of_ids_values;

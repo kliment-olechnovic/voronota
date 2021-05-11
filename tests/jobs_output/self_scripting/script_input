@@ -72,11 +72,11 @@ export-cartoon-as-pymol-cgo [r<45:60>&A<CA>] -wireframe -file './jobs_output/sel
 color-contacts 0x00FF00
 color-contacts [--a1 [A<C,CA,N,O>] --a2 [A<C,CA,N,O>]] 0x00FFFF
 color-contacts [-a1 [-m! A<C,CA,N,O>] -a2! [A<C,CA,N,O>]] 0xFFFF00
-show-contacts
-export-contacts-as-pymol-cgo --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
+show-contacts [_drawable]
+export-contacts-as-pymol-cgo [_visible] --file './jobs_output/self_scripting/cgo_contacts.py' --name contacts
 
 color-contacts 0xFF00FF
-export-contacts-as-pymol-cgo --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf
+export-contacts-as-pymol-cgo [_visible] --wireframe --file './jobs_output/self_scripting/cgo_contacts_wf.py' --name contacts_wf
 
 export-atoms-and-contacts './jobs_output/self_scripting/plain_atoms_and_contacts'
 import './jobs_output/self_scripting/plain_atoms_and_contacts' -format plain

@@ -62,14 +62,11 @@ public:
 			throw std::runtime_error(std::string("Atoms color not specified."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_atoms_drawable_implemented_ids(
-				representation_ids,
-				data_manager.selection_manager().select_atoms(parameters_for_selecting),
-				false);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable atoms selected."));
+			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
 		data_manager.update_atoms_display_states(DataManager::DisplayStateUpdater().set_visual_ids(representation_ids).set_color(color_value), ids);

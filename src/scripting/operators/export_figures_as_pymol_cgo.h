@@ -80,14 +80,11 @@ public:
 			throw std::runtime_error(std::string("More than one representation requested."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.filter_figures_drawable_implemented_ids(
-				representation_ids,
-				LongName::match(data_manager.figures(), LongName(figure_name)),
-				false);
+		const std::set<std::size_t> ids=LongName::match(data_manager.figures(), LongName(figure_name));
 
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No drawable figures selected."));
+			throw std::runtime_error(std::string("No figures selected."));
 		}
 
 		auxiliaries::OpenGLPrinter opengl_printer;
