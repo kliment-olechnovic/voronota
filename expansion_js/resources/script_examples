@@ -233,7 +233,6 @@ show-contacts [-inter-chain]
 
 ### Draw skin-shape surface
 construct-contacts
-make-drawable-contacts [-solvent] -enable-alt
 hide-atoms
 show-contacts [-solvent] -rep skin-shape
 color-contacts -col cyan

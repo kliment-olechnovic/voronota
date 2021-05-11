@@ -67,8 +67,10 @@ public:
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
+		if(positive())
 		{
 			common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
+			parameters_to_draw_contacts.enable_alt=(representation_ids.count(data_manager.contacts_representation_descriptor().id_by_name("skin-shape"))>0);
 			data_manager.reset_contacts_graphics_by_creating(parameters_to_draw_contacts, ids, true);
 		}
 
