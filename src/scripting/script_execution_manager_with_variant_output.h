@@ -67,9 +67,9 @@ protected:
 		for(std::set<DataManager*>::const_iterator it=ci.added_objects().begin();it!=ci.added_objects().end();++it)
 		{
 			DataManager& dm=(*(*it));
-			dm.add_atoms_representation("atoms", true);
-			dm.add_contacts_representation("contacts", true);
-			dm.add_figures_representation("figures", true);
+			dm.add_atoms_representation("atoms");
+			dm.add_contacts_representation("contacts");
+			dm.add_figures_representation("figures");
 		}
 	}
 

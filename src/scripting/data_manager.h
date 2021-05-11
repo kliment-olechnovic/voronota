@@ -98,7 +98,6 @@ public:
 	struct RepresentationsDescriptor
 	{
 		std::vector<std::string> names;
-		std::set<std::size_t> implemented_always;
 
 		std::size_t id_by_name(const std::string& name) const
 		{
@@ -773,45 +772,13 @@ public:
 		return global_numeric_adjuncts_;
 	}
 
-	bool add_atoms_representation(const std::string& name, const bool implemented_always)
+	bool add_atoms_representation(const std::string& name)
 	{
 		if(add_names_to_representations(std::vector<std::string>(1, name), atoms_representations_descriptor_.names))
 		{
 			if(resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_))
 			{
 				change_indicator_.set_changed_atoms_display_states(true);
-			}
-			if(implemented_always)
-			{
-				if(set_representation_implemented_always(atoms_representations_descriptor_.names, atoms_representations_descriptor_.id_by_name(name), true, atoms_representations_descriptor_.implemented_always))
-				{
-					set_atoms_representations_implemented_if_required_always();
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-
-	bool add_atoms_representation(const std::string& name)
-	{
-		return add_atoms_representation(name, false);
-	}
-
-	bool add_contacts_representation(const std::string& name, const bool implemented_always)
-	{
-		if(add_names_to_representations(std::vector<std::string>(1, name), contacts_representations_descriptor_.names))
-		{
-			if(resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_))
-			{
-				change_indicator_.set_changed_contacts_display_states(true);
-			}
-			if(implemented_always)
-			{
-				if(set_representation_implemented_always(contacts_representations_descriptor_.names, contacts_representations_descriptor_.id_by_name(name), true, contacts_representations_descriptor_.implemented_always))
-				{
-					set_contacts_representations_implemented_if_required_always();
-				}
 			}
 			return true;
 		}
@@ -820,23 +787,11 @@ public:
 
 	bool add_contacts_representation(const std::string& name)
 	{
-		return add_contacts_representation(name, false);
-	}
-
-	bool add_figures_representation(const std::string& name, const bool implemented_always)
-	{
-		if(add_names_to_representations(std::vector<std::string>(1, name), figures_representations_descriptor_.names))
+		if(add_names_to_representations(std::vector<std::string>(1, name), contacts_representations_descriptor_.names))
 		{
-			if(resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_))
+			if(resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_))
 			{
-				change_indicator_.set_changed_figures_display_states(true);
-			}
-			if(implemented_always)
-			{
-				if(set_representation_implemented_always(figures_representations_descriptor_.names, figures_representations_descriptor_.id_by_name(name), true, figures_representations_descriptor_.implemented_always))
-				{
-					set_figures_representations_implemented_if_required_always();
-				}
+				change_indicator_.set_changed_contacts_display_states(true);
 			}
 			return true;
 		}
@@ -845,9 +800,16 @@ public:
 
 	bool add_figures_representation(const std::string& name)
 	{
-		return add_figures_representation(name, false);
+		if(add_names_to_representations(std::vector<std::string>(1, name), figures_representations_descriptor_.names))
+		{
+			if(resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_))
+			{
+				change_indicator_.set_changed_figures_display_states(true);
+			}
+			return true;
+		}
+		return false;
 	}
-
 
 	bool set_atoms_representation_implemented(const std::size_t representation_id, const std::vector<bool>& statuses)
 	{
@@ -984,7 +946,6 @@ public:
 			atoms_display_states_[i].drawable=true;
 		}
 		resize_visuals_in_display_states(atoms_representations_descriptor_.names.size(), atoms_display_states_);
-		set_atoms_representations_implemented_if_required_always();
 	}
 
 	void restrict_atoms(const std::set<std::size_t>& ids)
@@ -1315,7 +1276,6 @@ public:
 			contacts_display_states_[i].drawable=(!contacts_[i].value.graphics.empty());
 		}
 		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
-		set_contacts_representations_implemented_if_required_always();
 	}
 
 	void remove_contacts_graphics(const std::set<std::size_t>& ids)
@@ -1444,7 +1404,6 @@ public:
 		resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), new_figures_display_states);
 		figures_.insert(figures_.end(), new_figures.begin(), new_figures.end());
 		figures_display_states_.insert(figures_display_states_.end(), new_figures_display_states.begin(), new_figures_display_states.end());
-		set_figures_representations_implemented_if_required_always();
 	}
 
 	void add_figure(const Figure& figure)
@@ -1462,7 +1421,6 @@ public:
 			figures_display_states_[i].drawable=true;
 		}
 		resize_visuals_in_display_states(figures_representations_descriptor_.names.size(), figures_display_states_);
-		set_figures_representations_implemented_if_required_always();
 	}
 
 	void sync_atoms_selections_with_display_states()
@@ -1682,49 +1640,8 @@ private:
 		return resized;
 	}
 
-	void set_atoms_representations_implemented_if_required_always()
-	{
-		if(!atoms_representations_descriptor_.implemented_always.empty() && !atoms_.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=atoms_representations_descriptor_.implemented_always.begin();it!=atoms_representations_descriptor_.implemented_always.end();++it)
-			{
-				set_atoms_representation_implemented(*it, std::vector<bool>(atoms_.size(), true));
-			}
-		}
-	}
-
-	void set_contacts_representations_implemented_if_required_always()
-	{
-		if(!contacts_representations_descriptor_.implemented_always.empty() && !contacts_.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=contacts_representations_descriptor_.implemented_always.begin();it!=contacts_representations_descriptor_.implemented_always.end();++it)
-			{
-				set_contacts_representation_implemented(*it, std::vector<bool>(contacts_.size(), true));
-			}
-		}
-	}
-
-	void set_figures_representations_implemented_if_required_always()
-	{
-		if(!figures_representations_descriptor_.implemented_always.empty() && !figures_.empty())
-		{
-			for(std::set<std::size_t>::const_iterator it=figures_representations_descriptor_.implemented_always.begin();it!=figures_representations_descriptor_.implemented_always.end();++it)
-			{
-				set_figures_representation_implemented(*it, std::vector<bool>(figures_.size(), true));
-			}
-		}
-	}
-
 	void reset_data_dependent_on_atoms()
 	{
-		for(std::size_t i=0;i<atoms_display_states_.size();i++)
-		{
-			for(std::size_t j=0;j<atoms_display_states_[i].visuals.size();j++)
-			{
-				atoms_display_states_[i].visuals[j].implemented=(atoms_representations_descriptor_.implemented_always.count(j)>0);
-			}
-		}
-
 		primary_structure_info_=common::ConstructionOfPrimaryStructure::construct_bundle_of_primary_structure(atoms_);
 		secondary_structure_info_=common::ConstructionOfSecondaryStructure::construct_bundle_of_secondary_structure(atoms_, primary_structure_info_);
 		selection_manager_=SelectionManager(&atoms_, 0);
@@ -1755,7 +1672,6 @@ private:
 			}
 		}
 		resize_visuals_in_display_states(contacts_representations_descriptor_.names.size(), contacts_display_states_);
-		set_contacts_representations_implemented_if_required_always();
 	}
 
 	RepresentationsDescriptor atoms_representations_descriptor_;
