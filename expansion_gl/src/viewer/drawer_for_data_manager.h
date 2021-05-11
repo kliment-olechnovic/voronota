@@ -137,18 +137,6 @@ public:
 		dc_figures_solid_(0),
 		dc_figures_mesh_(1)
 	{
-		data_manager_.add_atoms_representation("balls");
-		data_manager_.add_atoms_representation("sticks");
-		data_manager_.add_atoms_representation("trace");
-		data_manager_.add_atoms_representation("cartoon");
-
-		data_manager_.add_contacts_representation("faces");
-		data_manager_.add_contacts_representation("sas-mesh");
-		data_manager_.add_contacts_representation("edges");
-		data_manager_.add_contacts_representation("skin-shape");
-
-		data_manager_.add_figures_representation("solid");
-		data_manager_.add_figures_representation("mesh");
 	}
 
 	scripting::DataManager* data_manager_ptr()
