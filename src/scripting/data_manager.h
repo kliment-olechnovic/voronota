@@ -1272,7 +1272,7 @@ public:
 	void reset_contacts_graphics_by_creating(
 			const common::ConstructionOfContacts::ParametersToDrawContacts& parameters_to_draw_contacts,
 			const std::set<std::size_t>& ids,
-			const bool never_replace)
+			const bool lazy)
 	{
 		assert_contacts_availability();
 
@@ -1290,7 +1290,38 @@ public:
 				else
 				{
 					std::map<std::size_t, common::ConstructionOfContacts::ParametersToDrawContacts>::const_iterator jt=history_of_actions_on_contacts_.graphics_creating.find(id);
-					if(!never_replace && jt!=history_of_actions_on_contacts_.graphics_creating.end() && !parameters_to_draw_contacts.equals(jt->second))
+					bool need_to_update=false;
+					if(jt==history_of_actions_on_contacts_.graphics_creating.end())
+					{
+						if(lazy)
+						{
+							need_to_update=parameters_to_draw_contacts.enable_alt;
+						}
+						else
+						{
+							need_to_update=true;
+						}
+					}
+					else
+					{
+						const common::ConstructionOfContacts::ParametersToDrawContacts& current_draw_parameters=jt->second;
+						if(parameters_to_draw_contacts.enable_alt && !current_draw_parameters.enable_alt)
+						{
+							need_to_update=true;
+						}
+						else
+						{
+							if(lazy)
+							{
+								need_to_update=false;
+							}
+							else
+							{
+								need_to_update=!parameters_to_draw_contacts.equals(current_draw_parameters);
+							}
+						}
+					}
+					if(need_to_update)
 					{
 						ids_for_updating.insert(id);
 					}

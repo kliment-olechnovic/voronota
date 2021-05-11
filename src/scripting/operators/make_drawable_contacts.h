@@ -41,7 +41,7 @@ public:
 		parameters_to_draw_contacts.simplify=input.get_flag("simplify");
 		parameters_to_draw_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_draw_contacts.sih_depth);
 		parameters_to_draw_contacts.enable_alt=input.get_flag("enable-alt");
-		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query("", "[--min-seq-sep 1]", input);
+		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -53,7 +53,7 @@ public:
 		doc.set_option_decription(CDOD("simplify", CDOD::DATATYPE_BOOL, "flag to simplify graphics"));
 		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
 		doc.set_option_decription(CDOD("enable-alt", CDOD::DATATYPE_BOOL, "flag to enable alternative graphics"));
-		OperatorsUtilities::document_read_generic_selecting_query("", "[--min-seq-sep 1]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query(doc);
 	}
 
 	Result run(DataManager& data_manager) const
