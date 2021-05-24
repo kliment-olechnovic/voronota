@@ -20,6 +20,7 @@ void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const std::string drawing_for_pymol=poh.argument<std::string>(pohw.describe_option("--drawing-for-pymol", "string", "file path to output drawing as pymol script"), "");
 	const std::string drawing_for_jmol=poh.argument<std::string>(pohw.describe_option("--drawing-for-jmol", "string", "file path to output drawing as jmol script"), "");
 	const std::string drawing_for_scenejs=poh.argument<std::string>(pohw.describe_option("--drawing-for-scenejs", "string", "file path to output drawing as scenejs script"), "");
+	const std::string drawing_for_chimera=poh.argument<std::string>(pohw.describe_option("--drawing-for-chimera", "string", "file path to output drawing as chimera bild script"), "");
 	const std::string drawing_name=poh.argument<std::string>(pohw.describe_option("--drawing-name", "string", "graphics object name for drawing output"), "contacts");
 	voronota::modescommon::DrawingParametersWrapper drawing_parameters_wrapper;
 	drawing_parameters_wrapper.default_color=poh.convert_hex_string_to_integer<unsigned int>(poh.argument<std::string>(pohw.describe_option("--default-color", "string", "default color for drawing output, in hex format, white is 0xFFFFFF"), "0xFFFFFF"));
@@ -45,7 +46,7 @@ void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 		throw std::runtime_error("No input.");
 	}
 
-	if(!(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty()))
+	if(!(drawing_for_pymol.empty() && drawing_for_jmol.empty() && drawing_for_scenejs.empty() && drawing_for_chimera.empty()))
 	{
 		voronota::auxiliaries::OpenGLPrinter opengl_printer;
 		opengl_printer.add_color(drawing_parameters_wrapper.default_color);
@@ -85,6 +86,15 @@ void draw_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 			if(foutput.good())
 			{
 				opengl_printer.print_scenejs_script(drawing_name, true, foutput);
+			}
+		}
+
+		if(!drawing_for_chimera.empty())
+		{
+			std::ofstream foutput(drawing_for_chimera.c_str(), std::ios::out);
+			if(foutput.good())
+			{
+				opengl_printer.print_chimera_bild_script(foutput);
 			}
 		}
 	}

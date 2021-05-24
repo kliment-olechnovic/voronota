@@ -529,6 +529,7 @@ Using "--help" option without specific command results in printing help for all 
     --drawing-for-pymol             string      file path to output drawing as pymol script
     --drawing-for-jmol              string      file path to output drawing as jmol script
     --drawing-for-scenejs           string      file path to output drawing as scenejs script
+    --drawing-for-chimera           string      file path to output drawing as chimera bild script
     --drawing-name                  string      graphics object name for drawing output
     --default-color                 string      default color for drawing output, in hex format, white is 0xFFFFFF
     --adjunct-gradient              string      adjunct name to use for gradient-based coloring

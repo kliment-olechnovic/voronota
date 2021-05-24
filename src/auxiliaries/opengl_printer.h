@@ -391,6 +391,86 @@ public:
 		}
 	}
 
+	void print_chimera_bild_script(std::ostream& output) const
+	{
+		std::istringstream input(str());
+		if(!input.good())
+		{
+			return;
+		}
+		const std::string sep=" ";
+		const std::string bigsep="\n";
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.alpha)
+			{
+				double alpha=1.0;
+				input >> alpha;
+				output << ".transparency " << (1.0-alpha) << bigsep;
+			}
+			else if(type.color)
+			{
+				write_color_to_stream(read_color_from_stream(input), true, ".color ", sep, bigsep, output);
+			}
+			else if(type.tstrip || type.tfan || type.tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
+				{
+					output << ".polygon";
+					if(type.tstrip)
+					{
+						for(std::size_t i=0;i<vertices.size();i++)
+						{
+							write_point_to_stream(vertices[i], sep, sep, "", output);
+						}
+					}
+					else
+					{
+						for(std::size_t i=1;(i+1)<vertices.size();i++)
+						{
+							write_point_to_stream(vertices[0], sep, sep, "", output);
+							write_point_to_stream(vertices[i], sep, sep, "", output);
+							write_point_to_stream(vertices[i+1], sep, sep, "", output);
+						}
+						write_point_to_stream(vertices[0], sep, sep, "", output);
+						write_point_to_stream(vertices[vertices.size()-1], sep, sep, "", output);
+						write_point_to_stream(vertices[1], sep, sep, "", output);
+					}
+					output << bigsep;
+				}
+			}
+			else if(type.lstrip || type.lloop)
+			{
+				const std::vector<PlainPoint> vertices=read_points_vector_from_stream(input);
+				if(!vertices.empty())
+				{
+					write_point_to_stream(vertices[0], ".move ", sep, bigsep, output);
+					for(std::size_t i=1;i<vertices.size();i++)
+					{
+						write_point_to_stream(vertices[i], ".draw ", sep, bigsep, output);
+					}
+					if(type.lloop)
+					{
+						write_point_to_stream(vertices[0], ".draw ", sep, bigsep, output);
+					}
+				}
+			}
+			else if(type.sphere)
+			{
+				const PlainPoint c=read_point_from_stream(input);
+				double r;
+				input >> r;
+				write_point_to_stream(c, ".sphere ", sep, sep, output);
+				output << r << bigsep;
+			}
+		}
+	}
+
 	bool write_to_low_level_triangle_buffers(std::vector<float>& output_vertices, std::vector<float>& output_normals, std::vector<unsigned int>& output_indices, const bool indexed) const
 	{
 		output_vertices.clear();

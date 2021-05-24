@@ -47,6 +47,7 @@ cat $SUBDIR/target_iface \
   --preserve-graphics \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model1_iface_cad_score_inter_residue_drawing.py \
+  --drawing-for-chimera $SUBDIR/model1_iface_cad_score_inter_residue_drawing_for_chimera.bild \
   --drawing-name model1_iface_cad_score \
   --adjunct-gradient irs \
   --adjunct-gradient-blue 1.0 \
@@ -60,6 +61,7 @@ cat $SUBDIR/target_iface \
   --preserve-graphics \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/model2_iface_cad_score_inter_residue_drawing.py \
+  --drawing-for-chimera $SUBDIR/model2_iface_cad_score_inter_residue_drawing_for_chimera.bild \
   --drawing-name model2_iface_cad_score \
   --adjunct-gradient irs \
   --adjunct-gradient-blue 1.0 \

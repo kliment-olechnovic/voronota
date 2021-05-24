@@ -115,6 +115,7 @@ cat $SUBDIR/balls \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_for_pymol.py \
   --drawing-for-jmol $SUBDIR/drawing_matched_residue_for_jmol \
   --drawing-for-scenejs $SUBDIR/drawing_matched_residue_for_scenejs \
+  --drawing-for-chimera $SUBDIR/drawing_matched_residue_for_chimera.bild \
   --drawing-name 'CRO_contacts' \
   --default-color 0xFFFF00 \
   --alpha 0.75 \
@@ -125,6 +126,7 @@ cat $SUBDIR/balls \
   --preserve-graphics \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_large_highlighted_for_pymol.py \
+  --drawing-for-chimera $SUBDIR/drawing_matched_residue_large_highlighted_for_chimera.bild \
   --drawing-name 'CRO_contacts_large_highlighted' \
   --adjuncts-rgb \
 | $VORONOTA query-contacts \
@@ -132,6 +134,7 @@ cat $SUBDIR/balls \
   --preserve-graphics \
 | $VORONOTA draw-contacts \
   --drawing-for-pymol $SUBDIR/drawing_matched_residue_randomly_colored_for_pymol.py \
+  --drawing-for-chimera $SUBDIR/drawing_matched_residue_randomly_colored_for_chimera.bild \
   --drawing-name 'CRO_contacts_random_colors' \
   --random-colors \
 > /dev/null
