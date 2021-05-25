@@ -421,27 +421,33 @@ public:
 				std::vector<PlainPoint> normals;
 				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals))
 				{
-					output << ".polygon";
 					if(type.tstrip)
 					{
-						for(std::size_t i=0;i<vertices.size();i++)
+						for(std::size_t i=0;(i+2)<vertices.size();i++)
 						{
+							output << ".polygon";
 							write_point_to_stream(vertices[i], sep, sep, "", output);
+							write_point_to_stream(vertices[i+1], sep, sep, "", output);
+							write_point_to_stream(vertices[i+2], sep, sep, "", output);
+							output << bigsep;
 						}
 					}
 					else
 					{
 						for(std::size_t i=1;(i+1)<vertices.size();i++)
 						{
+							output << ".polygon";
 							write_point_to_stream(vertices[0], sep, sep, "", output);
 							write_point_to_stream(vertices[i], sep, sep, "", output);
 							write_point_to_stream(vertices[i+1], sep, sep, "", output);
+							output << bigsep;
 						}
+						output << ".polygon";
 						write_point_to_stream(vertices[0], sep, sep, "", output);
 						write_point_to_stream(vertices[vertices.size()-1], sep, sep, "", output);
 						write_point_to_stream(vertices[1], sep, sep, "", output);
+						output << bigsep;
 					}
-					output << bigsep;
 				}
 			}
 			else if(type.lstrip || type.lloop)
