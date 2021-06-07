@@ -54,13 +54,15 @@ public:
 		int projections;
 		int sih_depth;
 		bool calculate_volumes;
+		bool skip_sas;
 
 		ParametersToConstructBundleOfContactInformation() :
 			probe(1.4),
 			step(0.2),
 			projections(5),
 			sih_depth(3),
-			calculate_volumes(false)
+			calculate_volumes(false),
+			skip_sas(false)
 		{
 		}
 
@@ -70,7 +72,8 @@ public:
 					&& step==b.step
 					&& projections==b.projections
 					&& sih_depth==b.sih_depth
-					&& calculate_volumes==b.calculate_volumes);
+					&& calculate_volumes==b.calculate_volumes
+					&& skip_sas==b.skip_sas);
 		}
 
 		bool supersedes(const ParametersToConstructBundleOfContactInformation& b) const
@@ -79,7 +82,8 @@ public:
 					|| step!=b.step
 					|| projections!=b.projections
 					|| sih_depth!=b.sih_depth
-					|| (calculate_volumes && !b.calculate_volumes));
+					|| (calculate_volumes && !b.calculate_volumes)
+					|| (!skip_sas && b.skip_sas));
 		}
 	};
 
@@ -137,6 +141,7 @@ public:
 			}
 		}
 
+		if(!parameters.skip_sas)
 		{
 			const std::map<std::size_t, double> constrained_contact_remainders=apollota::ConstrainedContactsConstruction::construct_contact_remainders(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.sih_depth, volumes_map_bundle);
 			for(std::map<std::size_t, double>::const_iterator it=constrained_contact_remainders.begin();it!=constrained_contact_remainders.end();++it)

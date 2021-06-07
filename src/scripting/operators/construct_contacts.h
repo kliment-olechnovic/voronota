@@ -41,6 +41,7 @@ public:
 		parameters_to_construct_contacts.step=input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
 		parameters_to_construct_contacts.projections=input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
 		parameters_to_construct_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
+		parameters_to_construct_contacts.skip_sas=input.get_flag("skip-sas");
 		parameters_to_enhance_contacts=common::ConstructionOfContacts::ParametersToEnhanceContacts();
 		parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 		parameters_to_enhance_contacts.sih_depth=parameters_to_construct_contacts.sih_depth;
@@ -58,6 +59,7 @@ public:
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
 		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
+		doc.set_option_decription(CDOD("skip-sas", CDOD::DATATYPE_BOOL, "flag to skip SAS"));
 		doc.set_option_decription(CDOD("no-tag-centrality", CDOD::DATATYPE_BOOL, "flag to not add contact central tags"));
 		doc.set_option_decription(CDOD("no-tag-peripherial", CDOD::DATATYPE_BOOL, "flag to not add contact peripherial tags"));
 		doc.set_option_decription(CDOD("adjunct-solvent-direction", CDOD::DATATYPE_BOOL, "flag calculate SAS direction approximation"));
