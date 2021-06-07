@@ -25,6 +25,7 @@ public:
 			const double step,
 			const int projections,
 			const std::set<std::size_t>& mock_solvent_ids,
+			const std::vector<int>& lookup_groups,
 			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle)
 	{
 		std::map<Pair, double> result;
@@ -36,7 +37,7 @@ public:
 			const std::size_t b=pairs_vertices_it->first.get(1);
 			const bool a_is_not_mock_solvent=(mock_solvent_ids.count(a)==0);
 			const bool b_is_not_mock_solvent=(mock_solvent_ids.count(b)==0);
-			if((a_is_not_mock_solvent || b_is_not_mock_solvent) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
+			if((a_is_not_mock_solvent || b_is_not_mock_solvent) && (a>=lookup_groups.size() || b>=lookup_groups.size() || lookup_groups[a]!=lookup_groups[b]) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
 				double sum=0.0;
 				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections, false);

@@ -55,6 +55,8 @@ public:
 		int sih_depth;
 		bool calculate_volumes;
 		bool skip_sas;
+		bool skip_same_group;
+		std::vector<int> lookup_groups;
 
 		ParametersToConstructBundleOfContactInformation() :
 			probe(1.4),
@@ -62,7 +64,8 @@ public:
 			projections(5),
 			sih_depth(3),
 			calculate_volumes(false),
-			skip_sas(false)
+			skip_sas(false),
+			skip_same_group(false)
 		{
 		}
 
@@ -73,7 +76,8 @@ public:
 					&& projections==b.projections
 					&& sih_depth==b.sih_depth
 					&& calculate_volumes==b.calculate_volumes
-					&& skip_sas==b.skip_sas);
+					&& skip_sas==b.skip_sas
+					&& skip_same_group==b.skip_same_group);
 		}
 
 		bool supersedes(const ParametersToConstructBundleOfContactInformation& b) const
@@ -83,7 +87,8 @@ public:
 					|| projections!=b.projections
 					|| sih_depth!=b.sih_depth
 					|| (calculate_volumes && !b.calculate_volumes)
-					|| (!skip_sas && b.skip_sas));
+					|| (!skip_sas && b.skip_sas)
+					|| (!skip_same_group && b.skip_same_group));
 		}
 	};
 
@@ -129,7 +134,7 @@ public:
 		std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(parameters.calculate_volumes, std::map<std::size_t, double>());
 
 		{
-			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), volumes_map_bundle);
+			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle);
 			for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 			{
 				const std::size_t id_a=it->first.get(0);

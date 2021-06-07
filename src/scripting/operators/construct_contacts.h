@@ -42,6 +42,7 @@ public:
 		parameters_to_construct_contacts.projections=input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
 		parameters_to_construct_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
 		parameters_to_construct_contacts.skip_sas=input.get_flag("skip-sas");
+		parameters_to_construct_contacts.skip_same_group=input.get_flag("skip-same-chain");
 		parameters_to_enhance_contacts=common::ConstructionOfContacts::ParametersToEnhanceContacts();
 		parameters_to_enhance_contacts.probe=parameters_to_construct_contacts.probe;
 		parameters_to_enhance_contacts.sih_depth=parameters_to_construct_contacts.sih_depth;
@@ -60,6 +61,7 @@ public:
 		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
 		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));
 		doc.set_option_decription(CDOD("skip-sas", CDOD::DATATYPE_BOOL, "flag to skip SAS"));
+		doc.set_option_decription(CDOD("skip-same-chain", CDOD::DATATYPE_BOOL, "flag to skip same chain contacts"));
 		doc.set_option_decription(CDOD("no-tag-centrality", CDOD::DATATYPE_BOOL, "flag to not add contact central tags"));
 		doc.set_option_decription(CDOD("no-tag-peripherial", CDOD::DATATYPE_BOOL, "flag to not add contact peripherial tags"));
 		doc.set_option_decription(CDOD("adjunct-solvent-direction", CDOD::DATATYPE_BOOL, "flag calculate SAS direction approximation"));
@@ -74,7 +76,25 @@ public:
 			data_manager.remove_contacts();
 		}
 
-		data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts);
+		if(!parameters_to_construct_contacts.skip_same_group)
+		{
+			data_manager.reset_contacts_by_creating(parameters_to_construct_contacts, parameters_to_enhance_contacts);
+		}
+		else
+		{
+			common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation parameters_to_construct_contacts_with_lookup=parameters_to_construct_contacts;
+			parameters_to_construct_contacts_with_lookup.lookup_groups.resize(data_manager.atoms().size(), 0);
+			std::map<std::string, int> chain_numbers;
+			for(std::size_t i=0;i<data_manager.atoms().size();i++)
+			{
+				chain_numbers[data_manager.atoms()[i].crad.chainID]=chain_numbers.size();
+			}
+			for(std::size_t i=0;i<data_manager.atoms().size();i++)
+			{
+				parameters_to_construct_contacts_with_lookup.lookup_groups[i]=chain_numbers[data_manager.atoms()[i].crad.chainID];
+			}
+			data_manager.reset_contacts_by_creating(parameters_to_construct_contacts_with_lookup, parameters_to_enhance_contacts);
+		}
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts());

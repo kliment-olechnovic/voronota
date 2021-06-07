@@ -77,7 +77,7 @@ void calculate_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(!volumes_output.empty(), std::map<std::size_t, double>());
 	
 	{
-		const std::map<voronota::apollota::Pair, double> constrained_contacts=voronota::apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids, volumes_map_bundle);
+		const std::map<voronota::apollota::Pair, double> constrained_contacts=voronota::apollota::ConstrainedContactsConstruction::construct_contacts(spheres, vertices_vector, probe, step, projections, mock_solvent_ids, std::vector<int>(0), volumes_map_bundle);
 		for(std::map<voronota::apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 		{
 			if(it->first.get(0)<input_spheres_count && it->first.get(1)<input_spheres_count)
