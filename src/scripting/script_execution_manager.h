@@ -86,6 +86,7 @@
 #include "operators/rename_selection_of_contacts.h"
 #include "operators/reset_time.h"
 #include "operators/restrict_atoms_and_renumber_residues_by_adjunct.h"
+#include "operators/restrict_atoms_close_to_inter_chain_interfaces.h"
 #include "operators/restrict_atoms.h"
 #include "operators/select_atoms_by_triangulation_query.h"
 #include "operators/select_atoms.h"
@@ -259,6 +260,7 @@ public:
 		set_command_for_data_manager("rename-selection-of-atoms", operators::RenameSelectionOfAtoms(), true);
 		set_command_for_data_manager("rename-selection-of-contacts", operators::RenameSelectionOfContacts(), true);
 		set_command_for_data_manager("restrict-atoms-and-renumber-residues-by-adjunct", operators::RestrictAtomsAndRenumberResiduesByAdjunct(), true);
+		set_command_for_data_manager("restrict-atoms-close-to-interchain-interface", operators::RestrictAtomsCloseToInterchainInterfaces(), true);
 		set_command_for_data_manager("restrict-atoms", operators::RestrictAtoms(), true);
 		set_command_for_data_manager("select-atoms-by-triangulation-query", operators::SelectAtomsByTriangulationQuery(), true);
 		set_command_for_data_manager("select-atoms", operators::SelectAtoms(), true);

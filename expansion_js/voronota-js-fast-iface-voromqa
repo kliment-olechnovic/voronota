@@ -188,16 +188,7 @@ time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
-voronota_distance("-atoms-first [-aname CA] -atoms-second [-aname CA] -inter-chain -adjunct-min rdmin -adjunct-max rdmax");
-voronota_assert_full_success("Failed calculate distances between residues in different chains");
-
-voronota_restrict_atoms("-use [-v rdmin=0:15] -full-residues");
-voronota_assert_full_success("Failed to restrict input atoms to interface residues");
-
-voronota_distance("-atoms-first [] -atoms-second [] -inter-chain -adjunct-min admin -adjunct-max admax");
-voronota_assert_full_success("Failed calculate distances between atoms in different chains");
-
-voronota_restrict_atoms("[-v admin=0:7]");
+voronota_restrict_atoms_close_to_interchain_interface();
 voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 
 voronota_print_time();
