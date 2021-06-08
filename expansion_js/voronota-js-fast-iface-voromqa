@@ -1,0 +1,280 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-fast-iface-voromqa' script rapidly computes VoroMQA-based interface energy of protein complexes.
+
+Options:
+    --input | -i              string  *  input file path or '_list' to read file paths from stdin
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to use, default is 1
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-fast-iface-voromqa --input model.pdb
+    
+    ls *.pdb | voronota-js-fast-iface-voromqa --input _list --processors 8 | column -t
+
+EOF
+exit 1
+}
+
+function substitute_id_in_filename
+{
+	SUBSTITUTE_BASENAME="$(basename "$1")"
+	SUBSTITUTE_TEMPLATE="$2"
+	
+	echo "$SUBSTITUTE_TEMPLATE" \
+	| sed "s|-BASENAME-|${SUBSTITUTE_BASENAME}|"
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+INFILE=""
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ "$INFILE" != "_list" ] && [ "$INFILE" != "_stream" ] && [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$INFILE" == "_stream" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat > "$TMPLDIR/input_stream"
+	
+	if [ ! -s "$TMPLDIR/input_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/input_stream"
+	
+	exit 0
+fi
+
+if [ "$INFILE" == "_list" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	cat "$TMPLDIR/input_list" \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	> "$TMPLDIR/table"
+	
+	cat "$TMPLDIR/table"
+	
+	exit 0
+fi
+
+INFILE_BASENAME="$(basename $INFILE)"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE" "$OUTPUT_TABLE_FILE")"
+
+{
+cat << EOF
+
+params={}
+
+params.input_file='$INFILE';
+params.input_file_name='$INFILE_BASENAME';
+params.input_as_assembly='$AS_ASSEMBLY';
+params.output_table_file='$OUTPUT_TABLE_FILE';
+
+EOF
+
+cat << 'EOF'
+
+if(params.input_file===undefined || params.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+voronota_reset_time();
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+
+voronota_print_time();
+time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_distance("-atoms-first [-aname CA] -atoms-second [-aname CA] -inter-chain -adjunct-min rdmin -adjunct-max rdmax");
+voronota_assert_full_success("Failed calculate distances between residues in different chains");
+
+voronota_restrict_atoms("-use [-v rdmin=0:15] -full-residues");
+voronota_assert_full_success("Failed to restrict input atoms to interface residues");
+
+voronota_distance("-atoms-first [] -atoms-second [] -inter-chain -adjunct-min admin -adjunct-max admax");
+voronota_assert_full_success("Failed calculate distances between atoms in different chains");
+
+voronota_restrict_atoms("[-v admin=0:7]");
+voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+
+voronota_print_time();
+time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_construct_contacts("-skip-sas -skip-same-chain");
+voronota_assert_full_success("Failed to construct inter-chain contacts");
+
+voronota_select_contacts("-use", "[-inter-chain]", "-name", "inter_chain_contacts")
+voronota_assert_full_success("Failed to select inter-chain contacts");
+
+voronota_print_time();
+time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_voromqa_global();
+voronota_assert_full_success("Failed to compute VoroMQA-light scores");
+
+voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
+voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
+result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
+
+voronota_print_time();
+time_calculating_energy=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+summary={}
+
+summary.input_name=params.input_file_name;
+
+summary.iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
+summary.iface_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
+summary.iface_energy_norm=(summary.iface_energy/summary.iface_area);
+
+summary.time_load=time_loading;
+summary.time_restrict=time_restricting;
+summary.time_contacts=time_constructing_contacts;
+summary.time_energy=time_calculating_energy;
+summary.time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy);
+
+var summary_table_header="";
+var summary_table_row="";
+
+Object.keys(summary).forEach(function(key)
+{
+		summary_table_header+=key+" ";
+});
+
+Object.keys(summary).forEach(function(key)
+{
+	value=summary[key];
+	if(typeof value === 'number')
+	{
+		summary_table_row+=parseFloat(value.toFixed(5))+" ";
+	}
+	else
+	{
+		summary_table_row+=value+" ";
+	}
+});
+
+var summary_table=summary_table_header.trim()+"\n"+summary_table_row.trim()+"\n";
+
+if(params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
+	fwrite(params.output_table_file, summary_table);
+}
+else
+{
+	write(summary_table);
+}
+
+EOF
+
+} \
+| voronota-js
+
