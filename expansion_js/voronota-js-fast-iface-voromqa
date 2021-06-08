@@ -8,6 +8,8 @@ cat >&2 << 'EOF'
 
 Options:
     --input | -i              string  *  input file path or '_list' to read file paths from stdin
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
     --as-assembly                        flag to treat input file as biological assembly
@@ -49,6 +51,8 @@ fi
 command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 
 INFILE=""
+RESTRICT_INPUT="[]"
+SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
@@ -63,6 +67,14 @@ do
 	case $OPTION in
 	-i|--input)
 		INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--subselect-contacts)
+		SUBSELECT_CONTACTS="$OPTARG"
 		shift
 		;;
 	--output-table-file)
@@ -159,6 +171,8 @@ params={}
 params.input_file='$INFILE';
 params.input_file_name='$INFILE_BASENAME';
 params.input_as_assembly='$AS_ASSEMBLY';
+params.restrict_input_atoms='$RESTRICT_INPUT';
+params.contacts_subselection='$SUBSELECT_CONTACTS';
 params.output_detailed_times='$DETAILED_TIMES';
 params.output_table_file='$OUTPUT_TABLE_FILE';
 
@@ -176,6 +190,16 @@ if(params.input_as_assembly===undefined || params.input_as_assembly==="")
 	params.input_as_assembly="false";
 }
 
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.contacts_subselection===undefined || params.contacts_subselection==="")
+{
+	params.contacts_subselection='[]';
+}
+
 if(params.output_detailed_times===undefined || params.output_detailed_times==="")
 {
 	params.output_detailed_times="false";
@@ -190,6 +214,9 @@ voronota_reset_time();
 
 voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
 voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
 voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");
@@ -211,7 +238,7 @@ voronota_reset_time();
 voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 
-voronota_select_contacts("-use", "[-inter-chain]", "-name", "inter_chain_contacts")
+voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
 voronota_assert_full_success("Failed to select inter-chain contacts");
 
 voronota_print_time();
