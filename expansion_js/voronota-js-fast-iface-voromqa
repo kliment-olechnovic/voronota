@@ -11,6 +11,7 @@ Options:
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
     --as-assembly                        flag to treat input file as biological assembly
+    --detailed-times                     flag to output detailed times
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -51,6 +52,7 @@ INFILE=""
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
+DETAILED_TIMES="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -73,6 +75,9 @@ do
 		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
+		;;
+	--detailed-times)
+		DETAILED_TIMES="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -154,6 +159,7 @@ params={}
 params.input_file='$INFILE';
 params.input_file_name='$INFILE_BASENAME';
 params.input_as_assembly='$AS_ASSEMBLY';
+params.output_detailed_times='$DETAILED_TIMES';
 params.output_table_file='$OUTPUT_TABLE_FILE';
 
 EOF
@@ -170,6 +176,11 @@ if(params.input_as_assembly===undefined || params.input_as_assembly==="")
 	params.input_as_assembly="false";
 }
 
+if(params.output_detailed_times===undefined || params.output_detailed_times==="")
+{
+	params.output_detailed_times="false";
+}
+
 if(params.output_table_file===undefined || params.output_table_file==="")
 {
 	params.output_table_file="_stdout";
@@ -182,6 +193,7 @@ voronota_assert_partial_success("Failed to import file");
 
 voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");
+result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 
 voronota_print_time();
 time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
@@ -196,7 +208,7 @@ time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
-voronota_construct_contacts("-skip-sas -skip-same-chain");
+voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
 voronota_assert_full_success("Failed to construct inter-chain contacts");
 
 voronota_select_contacts("-use", "[-inter-chain]", "-name", "inter_chain_contacts")
@@ -217,19 +229,34 @@ result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
 voronota_print_time();
 time_calculating_energy=voronota_last_output().results[0].output.elapsed_miliseconds;
 
+voronota_reset_time();
+
+voronota_clash_score("-use", "[inter_chain_contacts]");
+voronota_assert_full_success("Failed to compute clash score");
+result_clash_score=voronota_last_output().results[0].output.clash_score;
+
+voronota_print_time();
+time_calculating_clashes=voronota_last_output().results[0].output.elapsed_miliseconds;
+
 summary={}
 
 summary.input_name=params.input_file_name;
+summary.input_atoms=result_initial_number_of_protein_atoms;
 
 summary.iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
 summary.iface_energy=result_voromqa_light_local_inter_chain.contacts_result.pseudo_energy;
 summary.iface_energy_norm=(summary.iface_energy/summary.iface_area);
+summary.iface_clash_score=result_clash_score;
 
-summary.time_load=time_loading;
-summary.time_restrict=time_restricting;
-summary.time_contacts=time_constructing_contacts;
-summary.time_energy=time_calculating_energy;
-summary.time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy);
+if(params.output_detailed_times=="true")
+{
+	summary.time_load=time_loading;
+	summary.time_restrict=time_restricting;
+	summary.time_contacts=time_constructing_contacts;
+	summary.time_energy=time_calculating_energy;
+	summary.time_clashes=time_calculating_clashes;
+}
+summary.time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy+time_calculating_clashes);
 
 var summary_table_header="";
 var summary_table_row="";
