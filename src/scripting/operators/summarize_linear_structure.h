@@ -29,6 +29,8 @@ public:
 		int ss_alpha;
 		int ss_beta;
 		int ss_loop;
+		std::vector<std::string> chain_names_protein;
+		std::vector<std::string> chain_names_nucleic;
 
 		Result() :
 			chains_protein(0),
@@ -59,6 +61,20 @@ public:
 			heterostorage.variant_object.value("ss_alpha")=ss_alpha;
 			heterostorage.variant_object.value("ss_beta")=ss_beta;
 			heterostorage.variant_object.value("ss_loop")=ss_loop;
+			{
+				std::vector<VariantValue>& va=heterostorage.variant_object.values_array("chain_names_protein");
+				for(std::size_t i=0;i<chain_names_protein.size();i++)
+				{
+					va.push_back(VariantValue(chain_names_protein[i]));
+				}
+			}
+			{
+				std::vector<VariantValue>& va=heterostorage.variant_object.values_array("chain_names_nucleic");
+				for(std::size_t i=0;i<chain_names_nucleic.size();i++)
+				{
+					va.push_back(VariantValue(chain_names_nucleic[i]));
+				}
+			}
 		}
 	};
 
@@ -116,10 +132,12 @@ public:
 			if(ps_chain.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_AMINO_ACID)
 			{
 				result.chains_protein++;
+				result.chain_names_protein.push_back(ps_chain.name);
 			}
 			else if(ps_chain.prevalent_residue_type==common::ConstructionOfPrimaryStructure::RESIDUE_TYPE_NUCLEOTIDE)
 			{
 				result.chains_nucleic++;
+				result.chain_names_nucleic.push_back(ps_chain.name);
 			}
 			else
 			{
