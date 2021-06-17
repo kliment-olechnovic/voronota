@@ -37,6 +37,7 @@
 #include "operators/explain_command.h"
 #include "operators/export_adjuncts_of_atoms_as_casp_qa_line.h"
 #include "operators/export_adjuncts_of_atoms.h"
+#include "operators/export_adjuncts_of_contacts.h"
 #include "operators/export_atoms_and_contacts.h"
 #include "operators/export_atoms_as_pymol_cgo.h"
 #include "operators/export_atoms.h"
@@ -220,6 +221,7 @@ public:
 		set_command_for_data_manager("estimate-axis", operators::EstimateAxis(), true);
 		set_command_for_data_manager("export-adjuncts-of-atoms-as-casp-qa-line", operators::ExportAdjunctsOfAtomsAsCASPQALine(), false);
 		set_command_for_data_manager("export-adjuncts-of-atoms", operators::ExportAdjunctsOfAtoms(), false);
+		set_command_for_data_manager("export-adjuncts-of-contacts", operators::ExportAdjunctsOfContacts(), false);
 		set_command_for_data_manager("export-atoms-and-contacts", operators::ExportAtomsAndContacts(), false);
 		set_command_for_data_manager("export-atoms-as-pymol-cgo", operators::ExportAtomsAsPymolCGO(), false);
 		set_command_for_data_manager("export-atoms", operators::ExportAtoms(), false);
