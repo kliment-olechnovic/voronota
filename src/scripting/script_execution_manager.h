@@ -98,6 +98,7 @@
 #include "operators/set_adjunct_of_atoms_by_projection.h"
 #include "operators/set_adjunct_of_atoms_by_residue_pooling.h"
 #include "operators/set_adjunct_of_atoms_by_sequence_alignment.h"
+#include "operators/set_adjunct_of_atoms_by_type_number.h"
 #include "operators/set_adjunct_of_atoms.h"
 #include "operators/set_adjunct_of_contacts_by_atom_adjuncts.h"
 #include "operators/set_adjunct_of_contacts.h"
@@ -273,6 +274,7 @@ public:
 		set_command_for_data_manager("set-adjunct-of-atoms-by-projection", operators::SetAdjunctOfAtomsByProjection(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-residue-pooling", operators::SetAdjunctOfAtomsByResiduePooling(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms-by-sequence-alignment", operators::SetAdjunctOfAtomsBySequenceAlignment(), true);
+		set_command_for_data_manager("set-adjunct-of-atoms-by-type-number", operators::SetAdjunctOfAtomsByTypeNumber(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts-by-atom-adjuncts", operators::SetAdjunctOfContactsByAtomAdjuncts(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
