@@ -1017,6 +1017,9 @@
             "name":"export-adjuncts-of-atoms-as-casp-qa-line",
             "short_description":""},
           {
+            "name":"export-adjuncts-of-contacts",
+            "short_description":""},
+          {
             "name":"export-atoms",
             "short_description":""},
           {
@@ -1179,6 +1182,9 @@
             "name":"restrict-atoms-and-renumber-residues-by-adjunct",
             "short_description":""},
           {
+            "name":"restrict-atoms-close-to-interchain-interface",
+            "short_description":""},
+          {
             "name":"select-atoms",
             "short_description":""},
           {
@@ -1207,6 +1213,9 @@
             "short_description":""},
           {
             "name":"set-adjunct-of-atoms-by-sequence-alignment",
+            "short_description":""},
+          {
+            "name":"set-adjunct-of-atoms-by-type-number",
             "short_description":""},
           {
             "name":"set-adjunct-of-contacts",

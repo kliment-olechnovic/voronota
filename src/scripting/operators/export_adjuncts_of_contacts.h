@@ -26,15 +26,17 @@ public:
 	};
 
 	std::string file;
-	SelectionManager::Query parameters_for_selecting;
+	SelectionManager::Query parameters_for_selecting_atoms;
+	SelectionManager::Query parameters_for_selecting_contacts;
 	bool no_serial;
 	bool no_name;
 	bool no_resSeq;
 	bool no_resName;
 	bool all;
 	std::vector<std::string> adjuncts;
+	std::string sep;
 
-	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false)
+	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), sep(" ")
 	{
 	}
 
@@ -42,25 +44,29 @@ public:
 	{
 		file=input.get_value_or_first_unused_unnamed_value("file");
 		assert_file_name_input(file, false);
-		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
+		parameters_for_selecting_atoms=OperatorsUtilities::read_generic_selecting_query("atoms-", "[]", input);
+		parameters_for_selecting_contacts=OperatorsUtilities::read_generic_selecting_query("contacts-", "[]", input);
 		no_serial=input.get_flag("no-serial");
 		no_name=input.get_flag("no-name");
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
 		all=input.get_flag("all");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
+		sep=input.get_value_or_default<std::string>("sep", " ");
 	}
 
 	void document(CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
-		OperatorsUtilities::document_read_generic_selecting_query(doc);
+		OperatorsUtilities::document_read_generic_selecting_query("atoms-", "[]", doc);
+		OperatorsUtilities::document_read_generic_selecting_query("contacts-", "[]", doc);
 		doc.set_option_decription(CDOD("no-serial", CDOD::DATATYPE_BOOL, "flag to exclude atom serials"));
 		doc.set_option_decription(CDOD("no-name", CDOD::DATATYPE_BOOL, "flag to exclude atom names"));
 		doc.set_option_decription(CDOD("no-resSeq", CDOD::DATATYPE_BOOL, "flag to exclude residue sequence numbers"));
 		doc.set_option_decription(CDOD("no-resName", CDOD::DATATYPE_BOOL, "flag to exclude residue names"));
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to export all adjuncts"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
+		doc.set_option_decription(CDOD("sep", CDOD::DATATYPE_STRING, "output separator string", " "));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -79,8 +85,17 @@ public:
 			throw std::runtime_error(std::string("Conflicting specification of adjuncts."));
 		}
 
-		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
-		if(ids.empty())
+		SelectionManager::Query parameters_for_selecting_contacts_considering_atoms=parameters_for_selecting_contacts;
+		parameters_for_selecting_contacts_considering_atoms.from_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
+
+		const std::set<std::size_t>& atom_ids=parameters_for_selecting_contacts_considering_atoms.from_ids;
+		if(atom_ids.empty())
+		{
+			throw std::runtime_error(std::string("No atoms selected."));
+		}
+
+		const std::set<std::size_t> contact_ids=data_manager.selection_manager().select_contacts(parameters_for_selecting_contacts_considering_atoms);
+		if(contact_ids.empty())
 		{
 			throw std::runtime_error(std::string("No contacts selected."));
 		}
@@ -90,7 +105,7 @@ public:
 		if(all)
 		{
 			std::set<std::string> all_adjuncts;
-			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				const Contact& contact=data_manager.contacts()[*it];
 				for(std::map<std::string, double>::const_iterator jt=contact.value.props.adjuncts.begin();jt!=contact.value.props.adjuncts.end();++jt)
@@ -114,22 +129,29 @@ public:
 			throw std::runtime_error(std::string("No adjuncts specified."));
 		}
 
+		std::map<std::size_t, std::size_t> map_of_indices;
+		for(std::set<std::size_t>::const_iterator it=atom_ids.begin();it!=atom_ids.end();++it)
+		{
+			const std::size_t current_size=map_of_indices.size();
+			map_of_indices[*it]=current_size;
+		}
+
 		OutputSelector output_selector(file);
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);
 
-		output << "ID1 ID2";
+		output << "ID1" << sep << "ID2";
 		for(std::size_t i=0;i<adjuncts_filled.size();i++)
 		{
-			output << " " << adjuncts_filled[i];
+			output << sep << adjuncts_filled[i];
 		}
 		output << "\n";
 
-		std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> > map_of_output;
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		std::map< std::size_t, std::vector<double> > map_of_output;
+		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 		{
 			const Contact& contact=data_manager.contacts()[*it];
-			std::vector<double>& output_values=map_of_output[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact).without_some_info(no_serial, no_name, no_resSeq, no_resName)];
+			std::vector<double>& output_values=map_of_output[*it];
 			output_values.resize(adjuncts_filled.size(), std::numeric_limits<double>::max());
 			for(std::size_t i=0;i<adjuncts_filled.size();i++)
 			{
@@ -146,16 +168,41 @@ public:
 				{
 					output_values[i]=contact.value.dist;
 				}
+				else if(adjuncts_filled[i]=="atom_index1")
+				{
+					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_indices.find(contact.ids[0]);
+					if(index_it!=map_of_indices.end())
+					{
+						output_values[i]=index_it->second;
+					}
+				}
+				else if(adjuncts_filled[i]=="atom_index2")
+				{
+					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_indices.find(contact.ids[1]);
+					if(index_it!=map_of_indices.end())
+					{
+						output_values[i]=index_it->second;
+					}
+				}
 			}
 		}
 
-		for(std::map< common::ChainResidueAtomDescriptorsPair, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
+		for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
 		{
-			output << it->first;
+			const Contact& contact=data_manager.contacts()[it->first];
+			output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName) << sep;
+			if(contact.solvent())
+			{
+				output << common::ChainResidueAtomDescriptor::solvent();
+			}
+			else
+			{
+				output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
+			}
 			const std::vector<double>& output_values=it->second;
 			for(std::size_t i=0;i<output_values.size();i++)
 			{
-				output << " ";
+				output << sep;
 				if(output_values[i]!=std::numeric_limits<double>::max())
 				{
 					output << output_values[i];
@@ -169,7 +216,7 @@ public:
 		}
 
 		Result result;
-		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);
+		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), contact_ids);
 
 		return result;
 	}

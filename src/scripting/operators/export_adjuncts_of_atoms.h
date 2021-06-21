@@ -33,8 +33,9 @@ public:
 	bool no_resName;
 	bool all;
 	std::vector<std::string> adjuncts;
+	std::string sep;
 
-	ExportAdjunctsOfAtoms() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false)
+	ExportAdjunctsOfAtoms() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), sep(" ")
 	{
 	}
 
@@ -49,6 +50,7 @@ public:
 		no_resName=input.get_flag("no-resName");
 		all=input.get_flag("all");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
+		sep=input.get_value_or_default<std::string>("sep", " ");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -61,6 +63,7 @@ public:
 		doc.set_option_decription(CDOD("no-resName", CDOD::DATATYPE_BOOL, "flag to exclude residue names"));
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to export all adjuncts"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
+		doc.set_option_decription(CDOD("sep", CDOD::DATATYPE_STRING, "output separator string", " "));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -114,6 +117,20 @@ public:
 			throw std::runtime_error(std::string("No adjuncts specified."));
 		}
 
+		std::map<std::size_t, std::size_t> map_of_indices;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t current_size=map_of_indices.size();
+			map_of_indices[*it]=current_size;
+		}
+
+		std::map<common::ChainResidueAtomDescriptor, std::size_t> map_of_residue_indices;
+		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+		{
+			const std::size_t current_size=map_of_residue_indices.size();
+			map_of_residue_indices[data_manager.atoms()[*it].crad.without_atom()]=current_size;
+		}
+
 		OutputSelector output_selector(file);
 		std::ostream& output=output_selector.stream();
 		assert_io_stream(file, output);
@@ -121,15 +138,15 @@ public:
 		output << "ID";
 		for(std::size_t i=0;i<adjuncts_filled.size();i++)
 		{
-			output << " " << adjuncts_filled[i];
+			output << sep << adjuncts_filled[i];
 		}
 		output << "\n";
 
-		std::map< common::ChainResidueAtomDescriptor, std::vector<double> > map_of_output;
+		std::map< std::size_t, std::vector<double> > map_of_output;
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
 			const Atom& atom=data_manager.atoms()[*it];
-			std::vector<double>& output_values=map_of_output[atom.crad.without_some_info(no_serial, no_name, no_resSeq, no_resName)];
+			std::vector<double>& output_values=map_of_output[*it];
 			output_values.resize(adjuncts_filled.size(), std::numeric_limits<double>::max());
 			for(std::size_t i=0;i<adjuncts_filled.size();i++)
 			{
@@ -138,16 +155,32 @@ public:
 				{
 					output_values[i]=jt->second;
 				}
+				else if(adjuncts_filled[i]=="atom_index")
+				{
+					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_indices.find(*it);
+					if(index_it!=map_of_indices.end())
+					{
+						output_values[i]=index_it->second;
+					}
+				}
+				else if(adjuncts_filled[i]=="residue_index")
+				{
+					std::map<common::ChainResidueAtomDescriptor, std::size_t>::const_iterator index_it=map_of_residue_indices.find(atom.crad.without_atom());
+					if(index_it!=map_of_residue_indices.end())
+					{
+						output_values[i]=index_it->second;
+					}
+				}
 			}
 		}
 
-		for(std::map< common::ChainResidueAtomDescriptor, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
+		for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
 		{
-			output << it->first;
+			output << data_manager.atoms()[it->first].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
 			const std::vector<double>& output_values=it->second;
 			for(std::size_t i=0;i<output_values.size();i++)
 			{
-				output << " ";
+				output << sep;
 				if(output_values[i]!=std::numeric_limits<double>::max())
 				{
 					output << output_values[i];
