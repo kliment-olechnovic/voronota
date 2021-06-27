@@ -125,10 +125,17 @@ public:
 		}
 
 		std::map<common::ChainResidueAtomDescriptor, std::size_t> map_of_residue_indices;
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			const std::size_t current_size=map_of_residue_indices.size();
-			map_of_residue_indices[data_manager.atoms()[*it].crad.without_atom()]=current_size;
+			std::set<common::ChainResidueAtomDescriptor> set_of_residue_crads;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				set_of_residue_crads.insert(data_manager.atoms()[*it].crad.without_atom());
+			}
+			for(std::set<common::ChainResidueAtomDescriptor>::const_iterator it=set_of_residue_crads.begin();it!=set_of_residue_crads.end();++it)
+			{
+				const std::size_t current_size=map_of_residue_indices.size();
+				map_of_residue_indices[*it]=current_size;
+			}
 		}
 
 		OutputSelector output_selector(file);
