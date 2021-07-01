@@ -18,6 +18,7 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfAtoms atoms_summary;
+		int chains_all;
 		int chains_protein;
 		int chains_nucleic;
 		int chains_other;
@@ -29,10 +30,13 @@ public:
 		int ss_alpha;
 		int ss_beta;
 		int ss_loop;
+		std::vector<std::string> chain_names_all;
 		std::vector<std::string> chain_names_protein;
 		std::vector<std::string> chain_names_nucleic;
+		std::vector<std::string> chain_names_other;
 
 		Result() :
+			chains_all(0),
 			chains_protein(0),
 			chains_nucleic(0),
 			chains_other(0),
@@ -50,6 +54,7 @@ public:
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			heterostorage.variant_object.value("chains_all")=chains_all;
 			heterostorage.variant_object.value("chains_protein")=chains_protein;
 			heterostorage.variant_object.value("chains_nucleic")=chains_nucleic;
 			heterostorage.variant_object.value("chains_other")=chains_other;
@@ -62,6 +67,13 @@ public:
 			heterostorage.variant_object.value("ss_beta")=ss_beta;
 			heterostorage.variant_object.value("ss_loop")=ss_loop;
 			{
+				std::vector<VariantValue>& va=heterostorage.variant_object.values_array("chain_names_all");
+				for(std::size_t i=0;i<chain_names_all.size();i++)
+				{
+					va.push_back(VariantValue(chain_names_all[i]));
+				}
+			}
+			{
 				std::vector<VariantValue>& va=heterostorage.variant_object.values_array("chain_names_protein");
 				for(std::size_t i=0;i<chain_names_protein.size();i++)
 				{
@@ -73,6 +85,13 @@ public:
 				for(std::size_t i=0;i<chain_names_nucleic.size();i++)
 				{
 					va.push_back(VariantValue(chain_names_nucleic[i]));
+				}
+			}
+			{
+				std::vector<VariantValue>& va=heterostorage.variant_object.values_array("chain_names_other");
+				for(std::size_t i=0;i<chain_names_other.size();i++)
+				{
+					va.push_back(VariantValue(chain_names_other[i]));
 				}
 			}
 		}
@@ -142,7 +161,10 @@ public:
 			else
 			{
 				result.chains_other++;
+				result.chain_names_other.push_back(ps_chain.name);
 			}
+			result.chains_all++;
+			result.chain_names_all.push_back(ps_chain.name);
 		}
 
 		{
@@ -222,6 +244,7 @@ public:
 
 		if(!global_adj_prefix.empty())
 		{
+			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_all"]=result.chains_all;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_protein"]=result.chains_protein;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_nucleic"]=result.chains_nucleic;
 			data_manager.global_numeric_adjuncts_mutable()[global_adj_prefix+"_chains_other"]=result.chains_other;

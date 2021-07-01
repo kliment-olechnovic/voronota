@@ -14,6 +14,7 @@ Options:
     --processors              number     maximum number of processors to use, default is 1
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
+    --score-symmetry                     flag score interface symmetry (for dimers only)
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -57,6 +58,7 @@ OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
+SCORE_SYMMETRY="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -90,6 +92,9 @@ do
 		;;
 	--detailed-times)
 		DETAILED_TIMES="true"
+		;;
+	--score-symmetry)
+		SCORE_SYMMETRY="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -171,6 +176,7 @@ params.input_file_name='$INFILE_BASENAME';
 params.input_as_assembly='$AS_ASSEMBLY';
 params.restrict_input_atoms='$RESTRICT_INPUT';
 params.contacts_subselection='$SUBSELECT_CONTACTS';
+params.score_symmetry='$SCORE_SYMMETRY';
 params.output_detailed_times='$DETAILED_TIMES';
 params.output_table_file='$OUTPUT_TABLE_FILE';
 
@@ -196,6 +202,11 @@ if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
 if(params.contacts_subselection===undefined || params.contacts_subselection==="")
 {
 	params.contacts_subselection='[]';
+}
+
+if(params.score_symmetry===undefined || params.score_symmetry==="")
+{
+	params.score_symmetry="false";
 }
 
 if(params.output_detailed_times===undefined || params.output_detailed_times==="")
@@ -263,6 +274,8 @@ result_clash_score=voronota_last_output().results[0].output.clash_score;
 voronota_print_time();
 time_calculating_clashes=voronota_last_output().results[0].output.elapsed_miliseconds;
 
+time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy+time_calculating_clashes);
+
 summary={}
 
 summary.input_name=params.input_file_name;
@@ -281,7 +294,71 @@ if(params.output_detailed_times=="true")
 	summary.time_energy=time_calculating_energy;
 	summary.time_clashes=time_calculating_clashes;
 }
-summary.time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy+time_calculating_clashes);
+
+if(params.score_symmetry=="true")
+{
+	result_symmetry_score=-1;
+	
+	voronota_reset_time();
+	
+	voronota_summarize_linear_structure();
+	voronota_assert_full_success("Failed to summarize linear structure");
+	chains_names=voronota_last_output().results[0].output.chain_names_all;
+	
+	if(chains_names.length==2)
+	{
+		voronota_list_objects();
+		voronota_assert_full_success("Failed to list objects");
+		objects_summary=voronota_last_output().results[0].output;
+		
+		main_name=objects_summary.objects[0].name;
+		copy_name=main_name+"_copy";
+		voronota_copy_object(main_name, copy_name);
+		voronota_assert_full_success("Failed to copy object");
+		
+		voronota_pick_objects(copy_name);
+		voronota_assert_full_success("Failed to pick object");
+		
+		voronota_set_chain_name("-use", "[-chain "+chains_names[0]+"]", "-chain-name", chains_names[1]+"___");
+		voronota_assert_full_success("Failed to rename chains");
+		voronota_set_chain_name("-use", "[-chain "+chains_names[1]+"]", "-chain-name", chains_names[0]+"___");
+		voronota_assert_full_success("Failed to rename chains");
+		
+		voronota_set_chain_name("-use", "[-chain "+chains_names[0]+"___]", "-chain-name", chains_names[0]);
+		voronota_assert_full_success("Failed to swap chain names");
+		voronota_set_chain_name("-use", "[-chain "+chains_names[1]+"___]", "-chain-name", chains_names[1]);
+		voronota_assert_full_success("Failed to swap chain names");
+		
+		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+		voronota_assert_full_success("Failed to construct inter-chain contacts");
+		
+		voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
+		voronota_assert_full_success("Failed to select inter-chain contacts");
+		
+		voronota_pick_objects(main_name);
+		voronota_assert_full_success("Failed to pick object");
+		
+		voronota_cad_score("-target", main_name, "-model", copy_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]");
+		voronota_assert_full_success("Failed to calculate CAD-score with swapped chains");
+		result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+		
+		result_symmetry_score=result_cadscore.score;
+	}
+	
+	voronota_print_time();
+	time_calculating_symmetry_score=voronota_last_output().results[0].output.elapsed_miliseconds;
+	
+	time_total=(time_total+time_calculating_symmetry_score);
+	
+	summary.iface_symmetry_score=result_symmetry_score;
+	
+	if(params.output_detailed_times=="true")
+	{
+		summary.time_symmetry_score=time_calculating_symmetry_score;
+	}
+}
+
+summary.time_total=time_total;
 
 var summary_table_header="";
 var summary_table_row="";
