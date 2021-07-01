@@ -23,6 +23,7 @@ public:
 		unsigned int smoothing_window;
 		std::string target_selection_expression;
 		std::string model_selection_expression;
+		std::vector<std::string> chain_renaming_pairs;
 		std::string target_adjunct_atom_scores;
 		std::string target_adjunct_inter_atom_scores;
 		std::string target_adjunct_residue_scores;
@@ -66,6 +67,7 @@ public:
 		}
 
 		common::ConstructionOfCADScore::ParametersToConstructBundleOfCADScoreInformation parameters_for_cad_score;
+
 		parameters_for_cad_score.ignore_residue_names=params.ignore_residue_names;
 		parameters_for_cad_score.binarize=params.binarize;
 		parameters_for_cad_score.depth=params.depth;
@@ -74,6 +76,18 @@ public:
 				&& params.model_adjunct_atom_scores.empty()
 				&& params.target_adjunct_inter_atom_scores.empty()
 				&& params.model_adjunct_inter_atom_scores.empty());
+
+		if(!params.chain_renaming_pairs.empty())
+		{
+			if(params.chain_renaming_pairs.size()%2!=0)
+			{
+				throw std::runtime_error(std::string("Invalid chain renaming pairs vector size."));
+			}
+			for(std::size_t i=0;i+1<params.chain_renaming_pairs.size();i++)
+			{
+				parameters_for_cad_score.map_of_renamings[params.chain_renaming_pairs[i]]=params.chain_renaming_pairs[i+1];
+			}
+		}
 
 		if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
 				parameters_for_cad_score,

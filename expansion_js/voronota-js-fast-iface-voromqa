@@ -309,36 +309,9 @@ if(params.score_symmetry=="true")
 	{
 		voronota_list_objects();
 		voronota_assert_full_success("Failed to list objects");
-		objects_summary=voronota_last_output().results[0].output;
+		main_name=voronota_last_output().results[0].output.objects[0].name;
 		
-		main_name=objects_summary.objects[0].name;
-		copy_name=main_name+"_copy";
-		voronota_copy_object(main_name, copy_name);
-		voronota_assert_full_success("Failed to copy object");
-		
-		voronota_pick_objects(copy_name);
-		voronota_assert_full_success("Failed to pick object");
-		
-		voronota_set_chain_name("-use", "[-chain "+chains_names[0]+"]", "-chain-name", chains_names[1]+"___");
-		voronota_assert_full_success("Failed to rename chains");
-		voronota_set_chain_name("-use", "[-chain "+chains_names[1]+"]", "-chain-name", chains_names[0]+"___");
-		voronota_assert_full_success("Failed to rename chains");
-		
-		voronota_set_chain_name("-use", "[-chain "+chains_names[0]+"___]", "-chain-name", chains_names[0]);
-		voronota_assert_full_success("Failed to swap chain names");
-		voronota_set_chain_name("-use", "[-chain "+chains_names[1]+"___]", "-chain-name", chains_names[1]);
-		voronota_assert_full_success("Failed to swap chain names");
-		
-		voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
-		voronota_assert_full_success("Failed to construct inter-chain contacts");
-		
-		voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
-		voronota_assert_full_success("Failed to select inter-chain contacts");
-		
-		voronota_pick_objects(main_name);
-		voronota_assert_full_success("Failed to pick object");
-		
-		voronota_cad_score("-target", main_name, "-model", copy_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]");
+		voronota_cad_score("-target", main_name, "-model", main_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]", "-m-chain-renaming-pairs", chains_names[0], chains_names[1], chains_names[1], chains_names[0]);
 		voronota_assert_full_success("Failed to calculate CAD-score with swapped chains");
 		result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 		

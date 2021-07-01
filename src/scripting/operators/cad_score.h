@@ -85,6 +85,7 @@ public:
 		params.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", 0);
 		params.ignore_residue_names=input.get_flag("ignore-residue-names");
 		params.binarize=input.get_flag("binarize");
+		params.chain_renaming_pairs=input.get_value_vector_or_default<std::string>("m-chain-renaming-pairs", std::vector<std::string>());
 		target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
 		model_global_adj_prefix=input.get_value_or_default<std::string>("m-global-adj-prefix", "");
 	}
@@ -115,6 +116,7 @@ public:
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", 0));
 		doc.set_option_decription(CDOD("ignore-residue-names", CDOD::DATATYPE_BOOL, "flag to ignore residue names"));
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
+		doc.set_option_decription(CDOD("m-chain-renaming-pairs", CDOD::DATATYPE_STRING_ARRAY, "source and destination pairs for model chain renaming", ""));
 		doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));
 		doc.set_option_decription(CDOD("m-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of model", ""));
 	}
@@ -136,9 +138,9 @@ public:
 			throw std::runtime_error(std::string("No model object name provided."));
 		}
 
-		if(target_name==model_name)
+		if(params.chain_renaming_pairs.size()>0 && params.chain_renaming_pairs.size()%2!=0)
 		{
-			throw std::runtime_error(std::string("Target and model are the same."));
+			throw std::runtime_error(std::string("Incomplete pair in the chain renaming vector."));
 		}
 
 		assert_adjunct_name_input(params.target_adjunct_atom_scores, true);
