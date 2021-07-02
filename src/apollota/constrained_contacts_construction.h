@@ -26,7 +26,8 @@ public:
 			const int projections,
 			const std::set<std::size_t>& mock_solvent_ids,
 			const std::vector<int>& lookup_groups,
-			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle)
+			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle,
+			std::pair< bool, std::map<Pair, double> >& bounding_arcs_bundle)
 	{
 		std::map<Pair, double> result;
 
@@ -40,6 +41,7 @@ public:
 			if((a_is_not_mock_solvent || b_is_not_mock_solvent) && (a>=lookup_groups.size() || b>=lookup_groups.size() || lookup_groups[a]!=lookup_groups[b]) && minimal_distance_from_sphere_to_sphere(spheres[a], spheres[b])<(probe*2))
 			{
 				double sum=0.0;
+				double bounding_arcs_sum=0.0;
 				const std::list<ConstrainedContactContour::Contour> contours=ConstrainedContactContour::construct_contact_contours(spheres, vertices_vector, pairs_vertices_it->second, a, b, probe, step, projections, false);
 				for(std::list<ConstrainedContactContour::Contour>::const_iterator contours_it=contours.begin();contours_it!=contours.end();++contours_it)
 				{
@@ -85,11 +87,31 @@ public:
 								}
 							}
 						}
+						if(bounding_arcs_bundle.first)
+						{
+							for(ConstrainedContactContour::Contour::const_iterator point_record_it=contour.begin();point_record_it!=contour.end();++point_record_it)
+							{
+								ConstrainedContactContour::Contour::const_iterator next_point_record_it=point_record_it;
+								++next_point_record_it;
+								if(next_point_record_it==contour.end())
+								{
+									next_point_record_it=contour.begin();
+								}
+								if(point_record_it->right_id==a && next_point_record_it->left_id==a)
+								{
+									bounding_arcs_sum+=distance_from_point_to_point(point_record_it->p, next_point_record_it->p);
+								}
+							}
+						}
 					}
 				}
 				if(sum>0.0)
 				{
 					result[Pair(a,b)]=sum;
+				}
+				if(bounding_arcs_bundle.first && bounding_arcs_sum>0.0)
+				{
+					bounding_arcs_bundle.second[Pair(a,b)]=bounding_arcs_sum;
 				}
 			}
 		}

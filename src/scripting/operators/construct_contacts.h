@@ -38,6 +38,7 @@ public:
 		parameters_to_construct_contacts=common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation();
 		parameters_to_construct_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_construct_contacts.probe);
 		parameters_to_construct_contacts.calculate_volumes=!input.get_flag("no-calculate-volumes");
+		parameters_to_construct_contacts.calculate_bounding_arcs=input.get_flag("calculate-bounding-arcs");
 		parameters_to_construct_contacts.step=input.get_value_or_default<double>("step", parameters_to_construct_contacts.step);
 		parameters_to_construct_contacts.projections=input.get_value_or_default<int>("projections", parameters_to_construct_contacts.projections);
 		parameters_to_construct_contacts.sih_depth=input.get_value_or_default<int>("sih-depth", parameters_to_construct_contacts.sih_depth);
@@ -57,6 +58,7 @@ public:
 		common::ConstructionOfContacts::ParametersToConstructBundleOfContactInformation params;
 		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
 		doc.set_option_decription(CDOD("no-calculate-volumes", CDOD::DATATYPE_BOOL, "flag to not calculate volumes"));
+		doc.set_option_decription(CDOD("calculate-bounding-arcs", CDOD::DATATYPE_BOOL, "flag to calculate bounding arcs"));
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		doc.set_option_decription(CDOD("projections", CDOD::DATATYPE_INT, "number of projections for edge calculation", params.projections));
 		doc.set_option_decription(CDOD("sih-depth", CDOD::DATATYPE_FLOAT, "icosahedron subdivision depth for SAS calculation", params.sih_depth));

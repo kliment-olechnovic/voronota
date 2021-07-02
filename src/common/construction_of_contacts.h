@@ -54,6 +54,7 @@ public:
 		int projections;
 		int sih_depth;
 		bool calculate_volumes;
+		bool calculate_bounding_arcs;
 		bool skip_sas;
 		bool skip_same_group;
 		std::vector<int> lookup_groups;
@@ -64,6 +65,7 @@ public:
 			projections(5),
 			sih_depth(3),
 			calculate_volumes(false),
+			calculate_bounding_arcs(false),
 			skip_sas(false),
 			skip_same_group(false)
 		{
@@ -76,6 +78,7 @@ public:
 					&& projections==b.projections
 					&& sih_depth==b.sih_depth
 					&& calculate_volumes==b.calculate_volumes
+					&& calculate_bounding_arcs==b.calculate_bounding_arcs
 					&& skip_sas==b.skip_sas
 					&& skip_same_group==b.skip_same_group);
 		}
@@ -87,6 +90,7 @@ public:
 					|| projections!=b.projections
 					|| sih_depth!=b.sih_depth
 					|| (calculate_volumes && !b.calculate_volumes)
+					|| (calculate_bounding_arcs && !b.calculate_bounding_arcs)
 					|| (!skip_sas && b.skip_sas)
 					|| (!skip_same_group && b.skip_same_group));
 		}
@@ -97,6 +101,7 @@ public:
 		ParametersToConstructBundleOfContactInformation parameters_of_construction;
 		std::vector<Contact> contacts;
 		std::vector<double> volumes;
+		std::vector<double> bounding_arcs;
 	};
 
 	struct BundleOfContactsMeshInformation
@@ -132,9 +137,10 @@ public:
 
 		std::map<apollota::Pair, double> interactions_map;
 		std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(parameters.calculate_volumes, std::map<std::size_t, double>());
+		std::pair< bool, std::map<apollota::Pair, double> > bounding_arcs_map_bundle(parameters.calculate_bounding_arcs, std::map<apollota::Pair, double>());
 
 		{
-			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle);
+			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle, bounding_arcs_map_bundle);
 			for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 			{
 				const std::size_t id_a=it->first.get(0);
@@ -195,6 +201,21 @@ public:
 					{
 						bundle_of_contact_information.volumes[id]=volume;
 					}
+				}
+			}
+		}
+
+		if(bounding_arcs_map_bundle.first && !bounding_arcs_map_bundle.second.empty())
+		{
+			bundle_of_contact_information.bounding_arcs.resize(bundle_of_contact_information.contacts.size(), 0.0);
+			const std::map<apollota::Pair, double>& bounding_arcs_map=bounding_arcs_map_bundle.second;
+			for(std::size_t i=0;i<bundle_of_contact_information.contacts.size();i++)
+			{
+				const Contact& contact=bundle_of_contact_information.contacts[i];
+				std::map<apollota::Pair, double>::const_iterator it=bounding_arcs_map.find(apollota::Pair(contact.ids[0], contact.ids[1]));
+				if(it!=bounding_arcs_map.end())
+				{
+					bundle_of_contact_information.bounding_arcs[i]=it->second;
 				}
 			}
 		}

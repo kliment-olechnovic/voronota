@@ -1230,6 +1230,14 @@ public:
 			}
 		}
 
+		if(parameters_to_construct_contacts.calculate_bounding_arcs)
+		{
+			for(std::size_t i=0;i<bundle_of_contact_information.bounding_arcs.size() && i<contacts().size();i++)
+			{
+				contacts_[i].value.props.adjuncts["boundary"]=bundle_of_contact_information.bounding_arcs[i];
+			}
+		}
+
 		history_of_actions_on_contacts_.constructing.clear();
 		history_of_actions_on_contacts_.constructing.push_back(parameters_to_construct_contacts);
 
