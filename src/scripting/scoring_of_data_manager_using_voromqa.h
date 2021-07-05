@@ -102,6 +102,7 @@ public:
 		std::string adjunct_area_alt_part;
 		std::string adjunct_inter_atom_energy_scores_raw;
 		std::string adjunct_inter_atom_energy_scores_normalized;
+		std::string adjunct_inter_atom_split_alt_sas_energy_scores;
 		std::string adjunct_atom_depth_weights;
 		std::string adjunct_atom_quality_scores;
 		std::string adjunct_residue_quality_scores_raw;
@@ -326,6 +327,34 @@ public:
 						{
 							contact_adjuncts[params.adjunct_inter_atom_energy_scores_normalized]=ed.energy/ed.total_area;
 						}
+					}
+				}
+			}
+		}
+
+		if(!params.adjunct_inter_atom_split_alt_sas_energy_scores.empty())
+		{
+			for(std::size_t i=0;i<data_manager.contacts().size();i++)
+			{
+				std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(i);
+				contact_adjuncts.erase(params.adjunct_inter_atom_split_alt_sas_energy_scores+"_a");
+				contact_adjuncts.erase(params.adjunct_inter_atom_split_alt_sas_energy_scores+"_b");
+			}
+			for(std::set<std::size_t>::const_iterator jt=all_contact_ids.begin();jt!=all_contact_ids.end();++jt)
+			{
+				const Contact& contact=data_manager.contacts()[*jt];
+				if(!contact.solvent())
+				{
+					const common::ChainResidueAtomDescriptorsPair crads=common::generalize_crads_pair(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact));
+					std::map<common::InteractionName, double>::const_iterator potential_value_it_a=
+							configuration.potential_values[0].find(common::InteractionName(common::ChainResidueAtomDescriptorsPair(crads.a, common::ChainResidueAtomDescriptor::solvent()), "."));
+					std::map<common::InteractionName, double>::const_iterator potential_value_it_b=
+							configuration.potential_values[0].find(common::InteractionName(common::ChainResidueAtomDescriptorsPair(crads.b, common::ChainResidueAtomDescriptor::solvent()), "."));
+					if(potential_value_it_a!=configuration.potential_values[0].end() && potential_value_it_b!=configuration.potential_values[0].end())
+					{
+						std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*jt);
+						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_a"]=potential_value_it_a->second;
+						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_b"]=potential_value_it_b->second;
 					}
 				}
 			}

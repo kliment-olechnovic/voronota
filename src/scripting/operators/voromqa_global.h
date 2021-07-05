@@ -88,6 +88,7 @@ public:
 		parameters_to_score_using_voromqa.adjunct_area_alt_part=input.get_value_or_default<std::string>("adj-area-alt-part", "");
 		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_raw=input.get_value_or_default<std::string>("adj-contact-energy", "voromqa_energy");
 		parameters_to_score_using_voromqa.adjunct_inter_atom_energy_scores_normalized=input.get_value_or_default<std::string>("adj-contact-energy-normalized", "");
+		parameters_to_score_using_voromqa.adjunct_inter_atom_split_alt_sas_energy_scores=input.get_value_or_default<std::string>("adj-contact-energy-split-to-sas", "");
 		parameters_to_score_using_voromqa.adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 		parameters_to_score_using_voromqa.adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
@@ -103,6 +104,7 @@ public:
 		doc.set_option_decription(CDOD("adj-area-alt-part", CDOD::DATATYPE_STRING, "name of input adjunct for contact area alternative fraction", ""));
 		doc.set_option_decription(CDOD("adj-contact-energy", CDOD::DATATYPE_STRING, "name of output adjunct for raw energy values", "voromqa_energy"));
 		doc.set_option_decription(CDOD("adj-contact-energy-normalized", CDOD::DATATYPE_STRING, "name of output adjunct for normalized energy values", ""));
+		doc.set_option_decription(CDOD("adj-contact-energy-split-to-sas", CDOD::DATATYPE_STRING, "name prefix of output adjuncts for split-to-sas energy coefficients", ""));
 		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of output adjunct for atom values", "voromqa_depth"));
 		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of output adjunct for atom quality scores", "voromqa_score_a"));
 		doc.set_option_decription(CDOD("adj-residue-quality-raw", CDOD::DATATYPE_STRING, "name of output adjunct for raw residue quality scores", ""));
