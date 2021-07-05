@@ -151,6 +151,20 @@ public:
 			map_of_atom_indices[*it]=current_size;
 		}
 
+		std::map<common::ChainResidueAtomDescriptorsPair, std::size_t> map_of_inter_residue_contact_indices;
+		{
+			std::set<common::ChainResidueAtomDescriptorsPair> set_of_inter_residue_contact_crads;
+			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+			{
+				set_of_inter_residue_contact_crads.insert(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false));
+			}
+			for(std::set<common::ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_inter_residue_contact_crads.begin();it!=set_of_inter_residue_contact_crads.end();++it)
+			{
+				const std::size_t current_size=map_of_inter_residue_contact_indices.size();
+				map_of_inter_residue_contact_indices[*it]=current_size;
+			}
+		}
+
 		std::map< std::size_t, std::vector<double> > map_of_output;
 		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 		{
@@ -176,6 +190,15 @@ public:
 				{
 					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_contact_indices.find(*it);
 					if(index_it!=map_of_contact_indices.end())
+					{
+						output_values[i]=index_it->second;
+					}
+				}
+				else if(adjuncts_filled[i]=="ir_contact_index")
+				{
+					std::map<common::ChainResidueAtomDescriptorsPair, std::size_t>::const_iterator index_it=
+							map_of_inter_residue_contact_indices.find(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact).without_some_info(true, true, false, false));
+					if(index_it!=map_of_inter_residue_contact_indices.end())
 					{
 						output_values[i]=index_it->second;
 					}
