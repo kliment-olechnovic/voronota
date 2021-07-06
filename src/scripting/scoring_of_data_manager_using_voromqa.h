@@ -353,8 +353,8 @@ public:
 					if(potential_value_it_a!=configuration.potential_values[0].end() && potential_value_it_b!=configuration.potential_values[0].end())
 					{
 						std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*jt);
-						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_a"]=potential_value_it_a->second;
-						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_b"]=potential_value_it_b->second;
+						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_a"]=std::min(potential_value_it_a->second, potential_value_it_b->second);
+						contact_adjuncts[params.adjunct_inter_atom_split_alt_sas_energy_scores+"_b"]=std::max(potential_value_it_a->second, potential_value_it_b->second);
 					}
 				}
 			}
