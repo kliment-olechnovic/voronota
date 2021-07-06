@@ -1,0 +1,338 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-fast-iface-cadscore' script rapidly computes interface CAD-score for two protein complexes.
+
+Options:
+    --target | -t             string  *  taarget file path
+    --model | -m              string  *  model file path or '_list' to read file paths from stdin
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+    --processors              number     maximum number of processors to use, default is 1
+    --as-assembly                        flag to treat input file as biological assembly
+    --detailed-times                     flag to output detailed times
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-fast-iface-cadscore --input target.pdb --model model.pdb
+    
+    ls *.pdb | voronota-js-fast-iface-cadscore --input target.pdb --model _list --processors 8 | column -t
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+
+TARGET_INFILE=""
+MODEL_INFILE=""
+RESTRICT_INPUT="[]"
+SUBSELECT_CONTACTS="[]"
+OUTPUT_TABLE_FILE="_stdout"
+MAX_PROCESSORS="1"
+AS_ASSEMBLY="false"
+DETAILED_TIMES="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-t|--target)
+		TARGET_INFILE="$OPTARG"
+		shift
+		;;
+	-m|--model)
+		MODEL_INFILE="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--subselect-contacts)
+		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--output-table-file)
+		OUTPUT_TABLE_FILE="$OPTARG"
+		shift
+		;;
+	--processors)
+		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	--detailed-times)
+		DETAILED_TIMES="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$TARGET_INFILE" ] || [ -z "$MODEL_INFILE" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ ! -s "$TARGET_INFILE" ]
+then
+	echo >&2 "Error: target input file '$MODEL_INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$MODEL_INFILE" != "_list" ] && [ "$MODEL_INFILE" != "_stream" ] && [ ! -s "$MODEL_INFILE" ]
+then
+	echo >&2 "Error: model input file '$MODEL_INFILE' does not exist"
+	exit 1
+fi
+
+if [ "$MODEL_INFILE" == "_stream" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat > "$TMPLDIR/input_stream"
+	
+	if [ ! -s "$TMPLDIR/input_stream" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	"$ZEROARG" "${ALLARGS[@]}" --model "$TMPLDIR/input_stream"
+	
+	exit 0
+fi
+
+if [ "$MODEL_INFILE" == "_list" ]
+then
+	readonly TMPLDIR=$(mktemp -d)
+	trap "rm -r $TMPLDIR" EXIT
+	
+	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	
+	if [ ! -s "$TMPLDIR/input_list" ]
+	then
+		echo >&2 "Error: no stdin data"
+		exit 1
+	fi
+	
+	mkdir -p "$TMPLDIR/children_tables"
+	
+	cat "$TMPLDIR/input_list" \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--model " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
+	
+	find "$TMPLDIR/children_tables" -type f -not -empty \
+	| sort \
+	| xargs -L 1 cat \
+	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	| voronota-js "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore -multipliers 1 -tolerances 0.0');"
+	
+	exit 0
+fi
+
+TARGET_INFILE_BASENAME="$(basename $TARGET_INFILE)"
+MODEL_INFILE_BASENAME="$(basename $MODEL_INFILE)"
+
+{
+cat << EOF
+
+params={}
+
+params.target_input_file='$TARGET_INFILE';
+params.target_input_file_name='$TARGET_INFILE_BASENAME';
+params.model_input_file='$MODEL_INFILE';
+params.model_input_file_name='$MODEL_INFILE_BASENAME';
+params.input_as_assembly='$AS_ASSEMBLY';
+params.restrict_input_atoms='$RESTRICT_INPUT';
+params.contacts_subselection='$SUBSELECT_CONTACTS';
+params.output_detailed_times='$DETAILED_TIMES';
+params.output_table_file='$OUTPUT_TABLE_FILE';
+
+EOF
+
+cat << 'EOF'
+
+if(params.target_input_file===undefined || params.target_input_file==="")
+{
+	throw ("No target input file");
+}
+
+if(params.model_input_file===undefined || params.model_input_file==="")
+{
+	throw ("No model input file");
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.contacts_subselection===undefined || params.contacts_subselection==="")
+{
+	params.contacts_subselection='[]';
+}
+
+if(params.output_detailed_times===undefined || params.output_detailed_times==="")
+{
+	params.output_detailed_times="false";
+}
+
+if(params.output_table_file===undefined || params.output_table_file==="")
+{
+	params.output_table_file="_stdout";
+}
+
+voronota_reset_time();
+
+voronota_import("-file", params.target_input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import target file");
+
+voronota_import("-file", params.model_input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import model file");
+
+voronota_pick_objects();
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+result_target_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+result_model_initial_number_of_protein_atoms=voronota_last_output().results[1].output.atoms_summary_new.number_total;
+
+voronota_print_time();
+time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_restrict_atoms_close_to_interchain_interface();
+voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+
+voronota_print_time();
+time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+voronota_assert_full_success("Failed to construct inter-chain contacts");
+
+voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts");
+voronota_assert_full_success("Failed to select inter-chain contacts");
+
+voronota_print_time();
+time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+voronota_list_objects();
+voronota_assert_full_success("Failed to list objects");
+target_object=voronota_last_output().results[0].output.objects[0].name;
+model_object=voronota_last_output().results[0].output.objects[1].name
+
+voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]");
+voronota_assert_full_success("Failed to compute CAD-score");
+result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+
+voronota_print_time();
+time_calculating_cadscore=voronota_last_output().results[0].output.elapsed_miliseconds;
+
+voronota_reset_time();
+
+time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_cadscore);
+
+summary={}
+
+summary.target=params.target_input_file_name;
+summary.model=params.model_input_file_name;
+
+summary.iface_cadscore=result_cadscore.score;
+summary.iface_target_area=result_cadscore.target_area_sum;
+summary.iface_model_area=result_cadscore.model_target_area_sum;
+
+summary.target_atoms=result_target_initial_number_of_protein_atoms;
+summary.model_atoms=result_model_initial_number_of_protein_atoms;
+
+if(params.output_detailed_times=="true")
+{
+	summary.time_load=time_loading;
+	summary.time_restrict=time_restricting;
+	summary.time_contacts=time_constructing_contacts;
+	summary.time_cadscore=time_calculating_cadscore;
+}
+
+summary.time_total=time_total;
+
+var summary_table_header="";
+var summary_table_row="";
+
+Object.keys(summary).forEach(function(key)
+{
+		summary_table_header+=key+" ";
+});
+
+Object.keys(summary).forEach(function(key)
+{
+	value=summary[key];
+	if(typeof value === 'number')
+	{
+		summary_table_row+=parseFloat(value.toFixed(5))+" ";
+	}
+	else
+	{
+		summary_table_row+=value+" ";
+	}
+});
+
+var summary_table=summary_table_header.trim()+"\n"+summary_table_row.trim()+"\n";
+
+if(params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
+	fwrite(params.output_table_file, summary_table);
+}
+else
+{
+	write(summary_table);
+}
+
+EOF
+
+} \
+| voronota-js
+
