@@ -7,7 +7,7 @@ cat >&2 << 'EOF'
 'voronota-js-fast-iface-cadscore' script rapidly computes interface CAD-score for two protein complexes.
 
 Options:
-    --target | -t             string  *  taarget file path
+    --target | -t             string  *  target file path
     --model | -m              string  *  model file path or '_list' to read file paths from stdin
     --restrict-input          string     query to restrict input atoms, default is '[]'
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
@@ -265,9 +265,10 @@ voronota_assert_full_success("Failed to list objects");
 target_object=voronota_last_output().results[0].output.objects[0].name;
 model_object=voronota_last_output().results[0].output.objects[1].name
 
-voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]");
+voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based");
 voronota_assert_full_success("Failed to compute CAD-score");
 result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+result_cadscore_site_based=voronota_last_output().results[0].output.site_residue_level_result;
 
 voronota_print_time();
 time_calculating_cadscore=voronota_last_output().results[0].output.elapsed_miliseconds;
@@ -282,6 +283,8 @@ summary.target=params.target_input_file_name;
 summary.model=params.model_input_file_name;
 
 summary.iface_cadscore=result_cadscore.score;
+summary.iface_site_based_cadscore=result_cadscore_site_based.score;
+summary.iface_ratio_of_areas=result_cadscore.model_target_area_sum/result_cadscore.target_area_sum;
 summary.iface_target_area=result_cadscore.target_area_sum;
 summary.iface_model_area=result_cadscore.model_target_area_sum;
 

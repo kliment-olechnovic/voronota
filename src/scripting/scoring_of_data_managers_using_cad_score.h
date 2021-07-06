@@ -21,6 +21,7 @@ public:
 		bool binarize;
 		int depth;
 		unsigned int smoothing_window;
+		bool also_site_based;
 		std::string target_selection_expression;
 		std::string model_selection_expression;
 		std::vector<std::string> chain_renaming_pairs;
@@ -37,7 +38,8 @@ public:
 			ignore_residue_names(false),
 			binarize(false),
 			depth(0),
-			smoothing_window(0)
+			smoothing_window(0),
+			also_site_based(false)
 		{
 		}
 	};
@@ -45,6 +47,7 @@ public:
 	struct Result
 	{
 		common::ConstructionOfCADScore::BundleOfCADScoreInformation bundle;
+		common::ConstructionOfCADScore::BundleOfCADScoreInformation site_bundle;
 	};
 
 	static void construct_result(const Parameters& params, DataManager& target_dm, DataManager& model_dm, Result& result)
@@ -98,6 +101,18 @@ public:
 			throw std::runtime_error(std::string("Failed to calculate CAD-score."));
 		}
 
+		if(params.also_site_based)
+		{
+			if(!common::ConstructionOfCADScore::construct_bundle_of_cadscore_information(
+					parameters_for_cad_score,
+					collect_map_of_contacts_summarized_by_first(target_dm.atoms(), target_dm.contacts(), target_contacts_ids),
+					collect_map_of_contacts_summarized_by_first(model_dm.atoms(), model_dm.contacts(), model_contact_ids),
+					result.site_bundle))
+			{
+				throw std::runtime_error(std::string("Failed to calculate site-based CAD-score."));
+			}
+		}
+
 		write_adjuncts(result.bundle, params.smoothing_window, target_contacts_ids,
 				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
 				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
@@ -125,6 +140,29 @@ private:
 				if(crads.valid())
 				{
 					map_of_contacts[crads]=contact.value.area;
+				}
+			}
+		}
+		return map_of_contacts;
+	}
+
+	static std::map<common::ChainResidueAtomDescriptorsPair, double> collect_map_of_contacts_summarized_by_first(
+			const std::vector<Atom>& atoms,
+			const std::vector<Contact>& contacts,
+			const std::set<std::size_t>& contact_ids)
+	{
+		std::map<common::ChainResidueAtomDescriptorsPair, double> map_of_contacts;
+		for(std::set<std::size_t>::const_iterator it_contact_ids=contact_ids.begin();it_contact_ids!=contact_ids.end();++it_contact_ids)
+		{
+			const std::size_t contact_id=(*it_contact_ids);
+			if(contact_id<contacts.size())
+			{
+				const Contact& contact=contacts[contact_id];
+				const common::ChainResidueAtomDescriptorsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(atoms, contact);
+				if(crads.valid())
+				{
+					map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.a, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
+					map_of_contacts[common::ChainResidueAtomDescriptorsPair(crads.b, common::ChainResidueAtomDescriptor::any())]+=contact.value.area;
 				}
 			}
 		}
