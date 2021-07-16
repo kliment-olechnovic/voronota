@@ -185,6 +185,40 @@ public:
 		add(output.str());
 	}
 
+	template<typename SphereGenerator>
+	void add_as_fat_wireframe(const std::string& str, const SphereGenerator& sphere_generator)
+	{
+		std::istringstream input(str);
+		std::ostringstream output;
+		while(input.good())
+		{
+			std::string type_str;
+			input >> type_str;
+			const ObjectTypeMarker type(type_str, object_typer_);
+			if(type.tstrip || type.tfan || type.tfanc)
+			{
+				std::vector<PlainPoint> vertices;
+				std::vector<PlainPoint> normals;
+				if(read_strip_or_fan_from_stream(type.tstrip, type.tfan, type.tfanc, input, vertices, normals) && vertices.size()>=3)
+				{
+					for(std::size_t i=(type.tstrip ? 0 : 1);i<vertices.size();i++)
+					{
+						typename SphereGenerator::ResultSphereType result_sphere=sphere_generator(vertices[i]);
+						if(result_sphere.r>0.0)
+						{
+							add_sphere(result_sphere);
+						}
+					}
+				}
+			}
+			else
+			{
+				output << type_str << " ";
+			}
+		}
+		add(output.str());
+	}
+
 	std::string str() const
 	{
 		return string_stream_.str();

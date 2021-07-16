@@ -34,11 +34,14 @@ public:
 
 	std::string name;
 	bool wireframe;
+	bool fat_wireframe;
+	double fat_wireframe_min_radius;
+	double fat_wireframe_max_radius;
 	SelectionManager::Query parameters_for_selecting;
 	std::vector<std::string> representation_names;
 	std::string file;
 
-	ExportContactsAsPymolCGO() : wireframe(false)
+	ExportContactsAsPymolCGO() : wireframe(false), fat_wireframe(false), fat_wireframe_min_radius(0.0), fat_wireframe_max_radius(std::numeric_limits<double>::max())
 	{
 	}
 
@@ -46,6 +49,9 @@ public:
 	{
 		name=input.get_value_or_default<std::string>("name", "contacts");
 		wireframe=input.get_flag("wireframe");
+		fat_wireframe=input.get_flag("fat-wireframe");
+		fat_wireframe_min_radius=input.get_value_or_default<double>("fat-wireframe-min-radius", 0.0);
+		fat_wireframe_max_radius=input.get_value_or_default<double>("fat-wireframe-max-radius", std::numeric_limits<double>::max());
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		representation_names=input.get_value_vector_or_default<std::string>("rep", std::vector<std::string>());
 		file=input.get_value<std::string>("file");
@@ -56,6 +62,9 @@ public:
 	{
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "name of CGO object", "atoms"));
 		doc.set_option_decription(CDOD("wireframe", CDOD::DATATYPE_BOOL, "flag use wireframe representation"));
+		doc.set_option_decription(CDOD("fat-wireframe", CDOD::DATATYPE_BOOL, "flag use fat wireframe representation"));
+		doc.set_option_decription(CDOD("fat-wireframe-min-radius", CDOD::DATATYPE_FLOAT, "fat wireframe minimum radius for display", "0"));
+		doc.set_option_decription(CDOD("fat-wireframe-max-radius", CDOD::DATATYPE_FLOAT, "fat wireframe maximum radius for display", "+inf"));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("rep", CDOD::DATATYPE_STRING_ARRAY, "representation names", ""));
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
@@ -115,9 +124,16 @@ public:
 							opengl_printer.add_color(dsv.color);
 						}
 						prev_color=dsv.color;
-						if(wireframe)
+						if(wireframe || fat_wireframe)
 						{
-							opengl_printer.add_as_wireframe(data_manager.contacts()[id].value.graphics);
+							if(wireframe)
+							{
+								opengl_printer.add_as_wireframe(data_manager.contacts()[id].value.graphics);
+							}
+							if(fat_wireframe)
+							{
+								opengl_printer.add_as_fat_wireframe(data_manager.contacts()[id].value.graphics, FatWireframeSphereGenerator(data_manager.atoms()[data_manager.contacts()[id].ids[0]].value, fat_wireframe_min_radius, fat_wireframe_max_radius));
+							}
 						}
 						else
 						{
@@ -146,6 +162,36 @@ public:
 
 		return result;
 	}
+
+private:
+	class FatWireframeSphereGenerator
+	{
+	public:
+		typedef apollota::SimpleSphere ResultSphereType;
+
+		template<typename Sphere>
+		explicit FatWireframeSphereGenerator(
+				const Sphere& touching_sphere,
+				const double min_allowed_radius,
+				const double max_allowed_radius) :
+					touching_sphere_(touching_sphere),
+					min_allowed_radius_(min_allowed_radius),
+					max_allowed_radius_(max_allowed_radius)
+		{
+		}
+
+		template<typename Point>
+		ResultSphereType operator()(const Point& point) const
+		{
+			const double radius=apollota::minimal_distance_from_point_to_sphere(point, touching_sphere_);
+			return ResultSphereType(point, ((radius>=min_allowed_radius_ && radius<=max_allowed_radius_) ? radius : 0.0));
+		}
+
+	private:
+		ResultSphereType touching_sphere_;
+		double min_allowed_radius_;
+		double max_allowed_radius_;
+	};
 };
 
 }
