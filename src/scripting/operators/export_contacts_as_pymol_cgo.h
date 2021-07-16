@@ -36,13 +36,22 @@ public:
 	bool wireframe;
 	bool fat_wireframe;
 	bool fat_wireframe_peaks_only;
+	double fat_wireframe_transform_a;
+	double fat_wireframe_transform_b;
 	double fat_wireframe_min_radius;
 	double fat_wireframe_max_radius;
 	SelectionManager::Query parameters_for_selecting;
 	std::vector<std::string> representation_names;
 	std::string file;
 
-	ExportContactsAsPymolCGO() : wireframe(false), fat_wireframe(false), fat_wireframe_peaks_only(false), fat_wireframe_min_radius(0.0), fat_wireframe_max_radius(std::numeric_limits<double>::max())
+	ExportContactsAsPymolCGO() :
+		wireframe(false),
+		fat_wireframe(false),
+		fat_wireframe_peaks_only(false),
+		fat_wireframe_transform_a(1.0),
+		fat_wireframe_transform_b(0.0),
+		fat_wireframe_min_radius(0.0),
+		fat_wireframe_max_radius(std::numeric_limits<double>::max())
 	{
 	}
 
@@ -52,6 +61,8 @@ public:
 		wireframe=input.get_flag("wireframe");
 		fat_wireframe=input.get_flag("fat-wireframe");
 		fat_wireframe_peaks_only=input.get_flag("fat-wireframe-peaks-only");
+		fat_wireframe_transform_a=input.get_value_or_default<double>("fat-wireframe-transform-a", 1.0);
+		fat_wireframe_transform_b=input.get_value_or_default<double>("fat-wireframe-transform-b", 0.0);
 		fat_wireframe_min_radius=input.get_value_or_default<double>("fat-wireframe-min-radius", 0.0);
 		fat_wireframe_max_radius=input.get_value_or_default<double>("fat-wireframe-max-radius", std::numeric_limits<double>::max());
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
@@ -66,6 +77,8 @@ public:
 		doc.set_option_decription(CDOD("wireframe", CDOD::DATATYPE_BOOL, "flag use wireframe representation"));
 		doc.set_option_decription(CDOD("fat-wireframe", CDOD::DATATYPE_BOOL, "flag use fat wireframe representation"));
 		doc.set_option_decription(CDOD("fat-wireframe-peaks-only", CDOD::DATATYPE_BOOL, "flag use fat wireframe representation in peaks-only mode"));
+		doc.set_option_decription(CDOD("fat-wireframe-transform-a", CDOD::DATATYPE_FLOAT, "fat wireframe radius display transform multiplier", "1"));
+		doc.set_option_decription(CDOD("fat-wireframe-transform-b", CDOD::DATATYPE_FLOAT, "fat wireframe radius display transform addition", "0"));
 		doc.set_option_decription(CDOD("fat-wireframe-min-radius", CDOD::DATATYPE_FLOAT, "fat wireframe minimum radius for display", "0"));
 		doc.set_option_decription(CDOD("fat-wireframe-max-radius", CDOD::DATATYPE_FLOAT, "fat wireframe maximum radius for display", "+inf"));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
@@ -135,7 +148,12 @@ public:
 							}
 							if(fat_wireframe)
 							{
-								opengl_printer.add_as_fat_wireframe(data_manager.contacts()[id].value.graphics, FatWireframeSphereGenerator(data_manager.atoms()[data_manager.contacts()[id].ids[0]].value, fat_wireframe_min_radius, fat_wireframe_max_radius), fat_wireframe_peaks_only);
+								opengl_printer.add_as_fat_wireframe(
+										data_manager.contacts()[id].value.graphics,
+										FatWireframeSphereGenerator(data_manager.atoms()[data_manager.contacts()[id].ids[0]].value, fat_wireframe_min_radius, fat_wireframe_max_radius),
+										fat_wireframe_peaks_only,
+										fat_wireframe_transform_a,
+										fat_wireframe_transform_b);
 							}
 						}
 						else

@@ -186,7 +186,7 @@ public:
 	}
 
 	template<typename SphereGenerator>
-	void add_as_fat_wireframe(const std::string& str, const SphereGenerator& sphere_generator, const bool peaks_only)
+	void add_as_fat_wireframe(const std::string& str, const SphereGenerator& sphere_generator, const bool peaks_only, const double display_transform_a, const double display_transform_b)
 	{
 		std::istringstream input(str);
 		std::ostringstream output;
@@ -217,7 +217,11 @@ public:
 						}
 						if(result_sphere.r>0.0)
 						{
-							add_sphere(result_sphere);
+							result_sphere.r=(result_sphere.r*display_transform_a)+display_transform_b;
+							if(result_sphere.r>0.0)
+							{
+								add_sphere(result_sphere);
+							}
 						}
 					}
 				}
