@@ -186,7 +186,7 @@ public:
 	}
 
 	template<typename SphereGenerator>
-	void add_as_fat_wireframe(const std::string& str, const SphereGenerator& sphere_generator)
+	void add_as_fat_wireframe(const std::string& str, const SphereGenerator& sphere_generator, const bool peaks_only)
 	{
 		std::istringstream input(str);
 		std::ostringstream output;
@@ -204,6 +204,17 @@ public:
 					for(std::size_t i=(type.tstrip ? 0 : 1);i<vertices.size();i++)
 					{
 						typename SphereGenerator::ResultSphereType result_sphere=sphere_generator(vertices[i]);
+						if(peaks_only)
+						{
+							const std::size_t prev_i=((i==0 && type.tstrip) || (i==1 && !type.tstrip) ? vertices.size()-1 : (i-1));
+							const std::size_t next_i=((i+1<vertices.size()) ? (i+1) : (type.tstrip ? 0 : 1));
+							const double prev_r=sphere_generator(vertices[prev_i]).r;
+							const double next_r=sphere_generator(vertices[next_i]).r;
+							if(!((result_sphere.r>prev_r && result_sphere.r>=next_r) || (result_sphere.r>=prev_r && result_sphere.r>next_r)))
+							{
+								result_sphere.r=0.0;
+							}
+						}
 						if(result_sphere.r>0.0)
 						{
 							add_sphere(result_sphere);
