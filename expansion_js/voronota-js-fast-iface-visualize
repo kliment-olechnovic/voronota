@@ -143,15 +143,11 @@ voronota_assert_partial_success("Failed to import file");
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
-voronota_restrict_atoms("-use", "[-protein]");
-voronota_assert_full_success("Failed to restrict input atoms to protein only");
-result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
-
 voronota_restrict_atoms_close_to_interchain_interface();
 voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 
-voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
-voronota_assert_full_success("Failed to construct inter-chain contacts");
+voronota_construct_contacts("-calculate-bounding-arcs");
+voronota_assert_full_success("Failed to construct contacts");
 
 voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
 voronota_assert_full_success("Failed to select inter-chain contacts");
@@ -159,6 +155,17 @@ voronota_assert_full_success("Failed to select inter-chain contacts");
 voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_contacts_graph_vertices.txt", "-adjacency-file", params.output_prefix+"_contacts_graph_edges.txt", "-contacts-use [inter_chain_contacts] -no-serial",
   "-adjuncts contact_index ir_contact_index area distance boundary");
 voronota_assert_full_success("Failed to export contacts graph");
+
+
+voronota_select_atoms("-use", "[-sel-of-contacts inter_chain_contacts]", "-name", "inter_chain_contacts_atoms")
+voronota_assert_full_success("Failed to select inter-chain contacts atoms");
+
+voronota_export_adjuncts_of_atoms("-file", params.output_prefix+"_atoms_graph_vertices.txt", "-use [inter_chain_contacts_atoms] -no-serial -adjuncts atom_index residue_index");
+voronota_assert_full_success("Failed to export atoms adjuncts file");
+
+voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_atoms_graph_edges.txt", "-atoms-use [inter_chain_contacts_atoms] -contacts-use [-no-solvent] -no-serial -adjuncts atom_index1 atom_index2 area");
+voronota_assert_full_success("Failed to export contacts adjuncts file");
+
 
 voronota_make_drawable_contacts("-use [inter_chain_contacts]");
 
@@ -202,6 +209,20 @@ echo "}"
 sfdp -Goverlap="prism" ./output_contacts_graph.dot -Tpng > output_contacts_graph.png
 
 sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="#55555522" -n10 -Tpng > output_contacts_graph_gvmap.png
+
+{
+echo "graph G {"
+cat output_atoms_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
+| awk '{print ($8+1) " [" "cluster=\"" ($9+1) "\", " "label=\"" $6 "." $7 "\"," "margin=0,shape=\"circle\"" "]"}'
+cat output_atoms_graph_edges.txt | tail -n +2 \
+| awk '{print ($3+1) " -- " ($4+1)}'
+echo "}"
+} \
+> ./output_atoms_graph.dot
+
+sfdp -Goverlap="prism" ./output_atoms_graph.dot -Tpng > output_atoms_graph.png
+
+sfdp -Goverlap="prism" ./output_atoms_graph.dot | gvmap  -e | neato -Ecolor="#55555522" -n10 -Tpng > output_atoms_graph_gvmap.png
 
 cd - &> /dev/null
 
