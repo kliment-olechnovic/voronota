@@ -160,6 +160,27 @@ voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_contacts_gr
   "-adjuncts contact_index ir_contact_index area distance boundary");
 voronota_assert_full_success("Failed to export contacts graph");
 
+voronota_make_drawable_contacts("-use [inter_chain_contacts]");
+
+voronota_color_contacts("-col green");
+voronota_export_contacts_as_pymol_cgo("-use [inter_chain_contacts] -wireframe -name wireframe", "-file", params.output_prefix+"_draw_contacts_wireframe.py");
+
+voronota_color_contacts("-col red");
+voronota_export_contacts_as_pymol_cgo("-use [inter_chain_contacts] -fat-wireframe -fat-wireframe-min-radius 1.2 -fat-wireframe-max-radius 1.39 -name boundary_tangent_spheres",
+  "-file", params.output_prefix+"_draw_contacts_boundary_tangent_spheres.py");
+  
+voronota_color_contacts("-col yellow");
+voronota_export_contacts_as_pymol_cgo("-use [inter_chain_contacts] -fat-wireframe -fat-wireframe-min-radius 0.0 -fat-wireframe-max-radius 1.2 -name edges_tangent_spheres",
+  "-file", params.output_prefix+"_draw_contacts_edges_tangent_spheres.py");
+  
+voronota_color_contacts("-col magenta");
+voronota_export_contacts_as_pymol_cgo("-use [inter_chain_contacts] -fat-wireframe -fat-wireframe-peaks-only -fat-wireframe-min-radius 0.0 -fat-wireframe-max-radius 1.39 -name peak_tangent_spheres",
+  "-file", params.output_prefix+"_draw_contacts_peak_tangent_spheres.py");
+  
+voronota_color_contacts("-col white");
+voronota_export_contacts_as_pymol_cgo("-use [inter_chain_contacts] -fat-wireframe -fat-wireframe-peaks-only -fat-wireframe-min-radius 0.0 -fat-wireframe-max-radius 1.39 -fat-wireframe-transform-a 0.0 -fat-wireframe-transform-b 0.2 -name peak_tangent_sphere_centers",
+  "-file", params.output_prefix+"_draw_contacts_peak_tangent_sphere_centers.py");
+
 EOF
 
 } \
