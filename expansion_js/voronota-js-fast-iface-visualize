@@ -143,9 +143,6 @@ voronota_assert_partial_success("Failed to import file");
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
-voronota_restrict_atoms_close_to_interchain_interface();
-voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
-
 voronota_construct_contacts("-calculate-bounding-arcs");
 voronota_assert_full_success("Failed to construct contacts");
 
@@ -166,6 +163,8 @@ voronota_assert_full_success("Failed to export atoms adjuncts file");
 voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_atoms_graph_edges.txt", "-atoms-use [inter_chain_contacts_atoms] -contacts-use [-no-solvent] -no-serial -adjuncts atom_index1 atom_index2 area");
 voronota_assert_full_success("Failed to export contacts adjuncts file");
 
+voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_atoms_graph_edges_interchain.txt", "-atoms-use [inter_chain_contacts_atoms] -contacts-use [inter_chain_contacts] -no-serial -adjuncts atom_index1 atom_index2 area");
+voronota_assert_full_success("Failed to export contacts adjuncts file");
 
 voronota_make_drawable_contacts("-use [inter_chain_contacts]");
 
@@ -207,13 +206,12 @@ echo "}"
 > ./output_contacts_graph.dot
 
 sfdp -Goverlap="prism" ./output_contacts_graph.dot -Tpng > output_contacts_graph.png
-
-sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="#55555522" -n10 -Tpng > output_contacts_graph_gvmap.png
+sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="#00000055" -n10 -Tpng > output_contacts_graph_gvmap.png
 
 {
 echo "graph G {"
 cat output_atoms_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
-| awk '{print ($8+1) " [" "cluster=\"" ($9+1) "\", " "label=\"" $6 "." $7 "\"," "margin=0,shape=\"circle\"" "]"}'
+| awk '{print ($8+1) " [" "cluster=\"" ($9+1) "\", " "label=\"" $1 "." $6 "." $7 "\"," "margin=0,shape=\"circle\"" "]"}'
 cat output_atoms_graph_edges.txt | tail -n +2 \
 | awk '{print ($3+1) " -- " ($4+1)}'
 echo "}"
@@ -221,8 +219,20 @@ echo "}"
 > ./output_atoms_graph.dot
 
 sfdp -Goverlap="prism" ./output_atoms_graph.dot -Tpng > output_atoms_graph.png
+sfdp -Goverlap="prism" ./output_atoms_graph.dot | gvmap  -e | neato -Ecolor="#00000055" -n10 -Tpng > output_atoms_graph_gvmap.png
 
-sfdp -Goverlap="prism" ./output_atoms_graph.dot | gvmap  -e | neato -Ecolor="#55555522" -n10 -Tpng > output_atoms_graph_gvmap.png
+{
+echo "graph G {"
+cat output_atoms_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
+| awk '{print ($8+1) " [" "cluster=\"" ($9+1) "\", " "label=\"" $1 "." $6 "." $7 "\"," "margin=0,shape=\"circle\"" "]"}'
+cat output_atoms_graph_edges_interchain.txt | tail -n +2 \
+| awk '{print ($3+1) " -- " ($4+1)}'
+echo "}"
+} \
+> ./output_atoms_graph_interchain.dot
+
+sfdp -Goverlap="prism" ./output_atoms_graph_interchain.dot -Tpng > output_atoms_graph_interchain.png
+sfdp -Goverlap="prism" ./output_atoms_graph_interchain.dot | gvmap  -e | neato -Ecolor="#00000055" -n10 -Tpng > output_atoms_graph_interchain_gvmap.png
 
 cd - &> /dev/null
 
