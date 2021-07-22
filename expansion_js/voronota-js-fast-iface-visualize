@@ -1,0 +1,188 @@
+#!/bin/bash
+
+function print_help_and_exit
+{
+cat >&2 << 'EOF'
+
+'voronota-js-fast-iface-visualize' script generates inter-chain interface visualizations.
+
+Options:
+    --input | -i              string  *  input file path
+    --output | -o             string  *  output directory path
+    --restrict-input          string     query to restrict input atoms, default is '[]'
+    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    list of generated files
+    
+Examples:
+
+    voronota-js-fast-iface-visualize --input model1.pdb --output results
+
+EOF
+exit 1
+}
+
+readonly ZEROARG=$0
+ALLARGS=("$@")
+
+if [[ $ZEROARG == *"/"* ]]
+then
+	cd $(dirname $ZEROARG)
+	export PATH=$(pwd):$PATH
+	cd - &> /dev/null
+fi
+
+command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not in binaries path"; exit 1; }
+
+INFILE=""
+OUTDIR=""
+RESTRICT_INPUT="[]"
+SUBSELECT_CONTACTS="[]"
+AS_ASSEMBLY="false"
+HELP_MODE="false"
+
+while [[ $# > 0 ]]
+do
+	OPTION="$1"
+	OPTARG="$2"
+	shift
+	case $OPTION in
+	-i|--input)
+		INFILE="$OPTARG"
+		shift
+		;;
+	-o|--output)
+		OUTDIR="$OPTARG"
+		shift
+		;;
+	--restrict-input)
+		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--subselect-contacts)
+		SUBSELECT_CONTACTS="$OPTARG"
+		shift
+		;;
+	--as-assembly)
+		AS_ASSEMBLY="true"
+		;;
+	-h|--help)
+		HELP_MODE="true"
+		;;
+	*)
+		echo >&2 "Error: invalid command line option '$OPTION'"
+		exit 1
+		;;
+	esac
+done
+
+if [ -z "$INFILE" ] || [ -z "$OUTDIR" ] || [ "$HELP_MODE" == "true" ]
+then
+	print_help_and_exit
+fi
+
+if [ ! -s "$INFILE" ]
+then
+	echo >&2 "Error: input file '$INFILE' does not exist"
+	exit 1
+fi
+
+mkdir -p "$OUTDIR"
+
+if [ ! -d "$OUTDIR" ]
+then
+	echo >&2 "Error: failed to create output directory '$OUTDIR'"
+	exit 1
+fi
+
+readonly TMPLDIR=$(mktemp -d)
+trap "rm -r $TMPLDIR" EXIT
+
+{
+cat << EOF
+
+params={}
+
+params.input_file='$INFILE';
+params.input_as_assembly='$AS_ASSEMBLY';
+params.restrict_input_atoms='$RESTRICT_INPUT';
+params.contacts_subselection='$SUBSELECT_CONTACTS';
+params.output_prefix='${TMPLDIR}/output';
+
+EOF
+
+cat << 'EOF'
+
+if(params.input_file===undefined || params.input_file==="")
+{
+	throw ("No input file");
+}
+
+if(params.input_as_assembly===undefined || params.input_as_assembly==="")
+{
+	params.input_as_assembly="false";
+}
+
+if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
+{
+	params.restrict_input_atoms='[]';
+}
+
+if(params.contacts_subselection===undefined || params.contacts_subselection==="")
+{
+	params.contacts_subselection='[]';
+}
+
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_assert_partial_success("Failed to import file");
+
+voronota_restrict_atoms("-use", params.restrict_input_atoms);
+voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_restrict_atoms("-use", "[-protein]");
+voronota_assert_full_success("Failed to restrict input atoms to protein only");
+result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+
+voronota_restrict_atoms_close_to_interchain_interface();
+voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
+
+voronota_construct_contacts("-skip-sas -skip-same-chain -no-calculate-volumes -no-tag-peripherial");
+voronota_assert_full_success("Failed to construct inter-chain contacts");
+
+voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
+voronota_assert_full_success("Failed to select inter-chain contacts");
+
+voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_contacts_graph_vertices.txt", "-adjacency-file", params.output_prefix+"_contacts_graph_edges.txt", "-contacts-use [inter_chain_contacts] -no-serial",
+  "-adjuncts contact_index ir_contact_index area distance boundary");
+voronota_assert_full_success("Failed to export contacts graph");
+
+EOF
+
+} \
+| voronota-js
+
+
+cd "$TMPLDIR"
+
+{
+echo "graph G {"
+cat output_contacts_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
+| awk '{print ($15+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "." $7 "\\n" $13 "." $14 "\"," "margin=0,shape=\"circle\"" "]"}'
+cat output_contacts_graph_edges.txt | tail -n +2 \
+| awk '{print ($1+1) " -- " ($2+1)}'
+echo "}"
+} \
+> ./output_contacts_graph.dot
+
+sfdp -Goverlap="prism" ./output_contacts_graph.dot -Tpng > output_contacts_graph.png
+
+sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="#55555522" -n10 -Tpng > output_contacts_graph_gvmap.png
+
+cd - &> /dev/null
+
+mv $TMPLDIR/* "$OUTDIR/"
+
