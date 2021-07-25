@@ -9,8 +9,9 @@ cat >&2 << 'EOF'
 Options:
     --input | -i              string  *  input file path
     --output | -o             string  *  output directory path
-    --restrict-input          string     query to restrict input atoms, default is '[]'
-    --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
+    --restrict-input          string     query to restrict input atoms, default is '[-t! het]'
+    --select-contacts         string     query to select contacts, default is '[-inter-chain]'
+    --subselect-contacts      string     query to subselect contacts, default is '[]'
     --as-assembly                        flag to treat input file as biological assembly
     --help | -h                          flag to display help message and exit
 
@@ -40,7 +41,8 @@ command -v voronota &> /dev/null || { echo >&2 "Error: 'voronota' executable not
 
 INFILE=""
 OUTDIR=""
-RESTRICT_INPUT="[]"
+RESTRICT_INPUT="[-t! het]"
+SELECT_CONTACTS="[-inter-chain]"
 SUBSELECT_CONTACTS="[]"
 AS_ASSEMBLY="false"
 HELP_MODE="false"
@@ -61,6 +63,10 @@ do
 		;;
 	--restrict-input)
 		RESTRICT_INPUT="$OPTARG"
+		shift
+		;;
+	--select-contacts)
+		SELECT_CONTACTS="$OPTARG"
 		shift
 		;;
 	--subselect-contacts)
@@ -110,6 +116,7 @@ params={}
 params.input_file='$INFILE';
 params.input_as_assembly='$AS_ASSEMBLY';
 params.restrict_input_atoms='$RESTRICT_INPUT';
+params.contacts_selection='$SELECT_CONTACTS';
 params.contacts_subselection='$SUBSELECT_CONTACTS';
 params.output_prefix='${TMPLDIR}/output';
 
@@ -137,7 +144,7 @@ if(params.contacts_subselection===undefined || params.contacts_subselection===""
 	params.contacts_subselection='[]';
 }
 
-voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly, "-include-heteroatoms");
 voronota_assert_partial_success("Failed to import file");
 
 voronota_set_chain_names_by_guessing();
@@ -149,7 +156,7 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 voronota_construct_contacts("-calculate-bounding-arcs");
 voronota_assert_full_success("Failed to construct contacts");
 
-voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
+voronota_select_contacts("-use", "("+params.contacts_selection+" and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")
 voronota_assert_full_success("Failed to select inter-chain contacts");
 
 voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_contacts_graph_vertices.txt", "-adjacency-file", params.output_prefix+"_contacts_graph_edges.txt", "-contacts-use [inter_chain_contacts] -no-serial",
