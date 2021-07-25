@@ -151,17 +151,22 @@ public:
 			map_of_atom_indices[*it]=current_size;
 		}
 
-		std::map<common::ChainResidueAtomDescriptorsPair, std::size_t> map_of_inter_residue_contact_indices;
+		std::map<std::size_t, std::size_t> map_of_inter_residue_contact_indices;
 		{
 			std::set<common::ChainResidueAtomDescriptorsPair> set_of_inter_residue_contact_crads;
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				set_of_inter_residue_contact_crads.insert(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false));
 			}
+			std::map<common::ChainResidueAtomDescriptorsPair, std::size_t> map_of_inter_residue_contact_crads_indices;
 			for(std::set<common::ChainResidueAtomDescriptorsPair>::const_iterator it=set_of_inter_residue_contact_crads.begin();it!=set_of_inter_residue_contact_crads.end();++it)
 			{
-				const std::size_t current_size=map_of_inter_residue_contact_indices.size();
-				map_of_inter_residue_contact_indices[*it]=current_size;
+				const std::size_t current_size=map_of_inter_residue_contact_crads_indices.size();
+				map_of_inter_residue_contact_crads_indices[*it]=current_size;
+			}
+			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+			{
+				map_of_inter_residue_contact_indices[*it]=map_of_inter_residue_contact_crads_indices[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)];
 			}
 		}
 
@@ -174,33 +179,33 @@ public:
 			for(std::size_t i=0;i<adjuncts_filled.size();i++)
 			{
 				std::map<std::string, double>::const_iterator jt=contact.value.props.adjuncts.find(adjuncts_filled[i]);
+				double output_value=std::numeric_limits<double>::max();
 				if(jt!=contact.value.props.adjuncts.end())
 				{
-					output_values[i]=jt->second;
+					output_value=jt->second;
 				}
 				else if(adjuncts_filled[i]=="area")
 				{
-					output_values[i]=contact.value.area;
+					output_value=contact.value.area;
 				}
 				else if(adjuncts_filled[i]=="distance")
 				{
-					output_values[i]=contact.value.dist;
+					output_value=contact.value.dist;
 				}
 				else if(adjuncts_filled[i]=="contact_index")
 				{
 					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_contact_indices.find(*it);
 					if(index_it!=map_of_contact_indices.end())
 					{
-						output_values[i]=index_it->second;
+						output_value=index_it->second;
 					}
 				}
 				else if(adjuncts_filled[i]=="ir_contact_index")
 				{
-					std::map<common::ChainResidueAtomDescriptorsPair, std::size_t>::const_iterator index_it=
-							map_of_inter_residue_contact_indices.find(common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), contact).without_some_info(true, true, false, false));
-					if(index_it!=map_of_inter_residue_contact_indices.end())
+					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_inter_residue_contact_indices.find(*it);
+					if(index_it!=map_of_contact_indices.end())
 					{
-						output_values[i]=index_it->second;
+						output_value=index_it->second;
 					}
 				}
 				else if(adjuncts_filled[i]=="atom_index1")
@@ -208,7 +213,7 @@ public:
 					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_atom_indices.find(contact.ids[0]);
 					if(index_it!=map_of_atom_indices.end())
 					{
-						output_values[i]=index_it->second;
+						output_value=index_it->second;
 					}
 				}
 				else if(adjuncts_filled[i]=="atom_index2")
@@ -216,8 +221,12 @@ public:
 					std::map<std::size_t, std::size_t>::const_iterator index_it=map_of_atom_indices.find(contact.ids[1]);
 					if(index_it!=map_of_atom_indices.end())
 					{
-						output_values[i]=index_it->second;
+						output_value=index_it->second;
 					}
+				}
+				if(output_value<std::numeric_limits<double>::max())
+				{
+					output_values[i]=output_value;
 				}
 			}
 		}
