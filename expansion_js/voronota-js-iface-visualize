@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-fast-iface-visualize' script generates inter-chain interface visualizations.
+'voronota-js-iface-visualize' script generates inter-chain interface visualizations.
 
 Options:
     --input | -i              string  *  input file path
@@ -19,7 +19,7 @@ Standard output:
     
 Examples:
 
-    voronota-js-fast-iface-visualize --input model1.pdb --output results
+    voronota-js-iface-visualize --input model1.pdb --output results
 
 EOF
 exit 1
