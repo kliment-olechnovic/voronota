@@ -163,6 +163,10 @@ voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_contacts_gr
   "-adjuncts contact_index ir_contact_index area distance boundary");
 voronota_assert_full_success("Failed to export contacts graph");
 
+voronota_export_adjuncts_of_contacts("-file", params.output_prefix+"_ir_contacts_graph_vertices.txt", "-adjacency-file", params.output_prefix+"_ir_contacts_graph_edges.txt", "-contacts-use [inter_chain_contacts] -no-serial",
+  "-adjuncts contact_index ir_contact_index area distance boundary -inter-residue");
+voronota_assert_full_success("Failed to export contacts graph");
+
 
 voronota_select_atoms("-use", "[-sel-of-contacts inter_chain_contacts]", "-name", "inter_chain_contacts_atoms")
 voronota_assert_full_success("Failed to select inter-chain contacts atoms");
@@ -217,6 +221,19 @@ echo "}"
 
 sfdp -Goverlap="prism" ./output_contacts_graph.dot -Tpng > output_contacts_graph.png
 sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="#00000055" -Gbgcolor="white" -n10 -Tpng > output_contacts_graph_gvmap.png
+
+{
+echo "graph G {"
+cat output_ir_contacts_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
+| awk '{print ($16+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "\\n" $13 "\"," "fontsize=\"" (12.0) "\"," "margin=0,shape=\"circle\"" "]"}'
+cat output_ir_contacts_graph_edges.txt | tail -n +2 \
+| awk '{print ($1+1) " -- " ($2+1)}'
+echo "}"
+} \
+> ./output_ir_contacts_graph.dot
+
+sfdp -Goverlap="prism" ./output_ir_contacts_graph.dot -Tpng > output_ir_contacts_graph.png
+sfdp -Goverlap="prism" ./output_ir_contacts_graph.dot | gvmap  -e | neato -Ecolor="#00000055" -Gbgcolor="white" -n10 -Tpng > output_ir_contacts_graph_gvmap.png
 
 {
 echo "graph G {"

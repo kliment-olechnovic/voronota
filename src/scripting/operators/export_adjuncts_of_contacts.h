@@ -33,11 +33,12 @@ public:
 	bool no_resSeq;
 	bool no_resName;
 	bool all;
+	bool inter_residue;
 	std::vector<std::string> adjuncts;
 	std::string sep;
 	std::string adjacency_file;
 
-	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), sep(" ")
+	ExportAdjunctsOfContacts() : no_serial(false), no_name(false), no_resSeq(false), no_resName(false), all(false), inter_residue(false), sep(" ")
 	{
 	}
 
@@ -52,6 +53,7 @@ public:
 		no_resSeq=input.get_flag("no-resSeq");
 		no_resName=input.get_flag("no-resName");
 		all=input.get_flag("all");
+		inter_residue=input.get_flag("inter-residue");
 		adjuncts=input.get_value_vector_or_default<std::string>("adjuncts", std::vector<std::string>());
 		sep=input.get_value_or_default<std::string>("sep", " ");
 		adjacency_file=input.get_value_or_default<std::string>("adjacency-file", "");
@@ -68,6 +70,7 @@ public:
 		doc.set_option_decription(CDOD("no-resSeq", CDOD::DATATYPE_BOOL, "flag to exclude residue sequence numbers"));
 		doc.set_option_decription(CDOD("no-resName", CDOD::DATATYPE_BOOL, "flag to exclude residue names"));
 		doc.set_option_decription(CDOD("all", CDOD::DATATYPE_BOOL, "flag to export all adjuncts"));
+		doc.set_option_decription(CDOD("inter-residue", CDOD::DATATYPE_BOOL, "flag for simplified inter-residue output"));
 		doc.set_option_decription(CDOD("adjuncts", CDOD::DATATYPE_STRING_ARRAY, "adjunct names", ""));
 		doc.set_option_decription(CDOD("sep", CDOD::DATATYPE_STRING, "output separator string", " "));
 		doc.set_option_decription(CDOD("adjacency-file", CDOD::DATATYPE_STRING, "path to contact-contact adjacency output file", ""));
@@ -243,42 +246,60 @@ public:
 			}
 			output << "\n";
 
+			std::set<std::size_t> outputed_inter_residue_ids;
+
 			for(std::map< std::size_t, std::vector<double> >::const_iterator it=map_of_output.begin();it!=map_of_output.end();++it)
 			{
-				const Contact& contact=data_manager.contacts()[it->first];
-				output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName) << sep;
-				if(contact.solvent())
+				bool allowed=true;
+				if(inter_residue)
 				{
-					output << common::ChainResidueAtomDescriptor::solvent();
-				}
-				else
-				{
-					output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(no_serial, no_name, no_resSeq, no_resName);
-				}
-				const std::vector<double>& output_values=it->second;
-				for(std::size_t i=0;i<output_values.size();i++)
-				{
-					output << sep;
-					if(output_values[i]!=std::numeric_limits<double>::max())
+					const std::size_t inter_residue_id=map_of_inter_residue_contact_indices[it->first];
+					if(outputed_inter_residue_ids.count(inter_residue_id)>0)
 					{
-						output << output_values[i];
+						allowed=false;
 					}
 					else
 					{
-						output << "NA";
+						outputed_inter_residue_ids.insert(inter_residue_id);
 					}
 				}
-				output << "\n";
+				if(allowed)
+				{
+					const Contact& contact=data_manager.contacts()[it->first];
+					output << data_manager.atoms()[contact.ids[0]].crad.without_some_info(no_serial || inter_residue, no_name || inter_residue, no_resSeq, no_resName) << sep;
+					if(contact.solvent())
+					{
+						output << common::ChainResidueAtomDescriptor::solvent();
+					}
+					else
+					{
+						output << data_manager.atoms()[contact.ids[1]].crad.without_some_info(no_serial || inter_residue, no_name || inter_residue, no_resSeq, no_resName);
+					}
+					const std::vector<double>& output_values=it->second;
+					for(std::size_t i=0;i<output_values.size();i++)
+					{
+						output << sep;
+						if(output_values[i]!=std::numeric_limits<double>::max())
+						{
+							output << output_values[i];
+						}
+						else
+						{
+							output << "NA";
+						}
+					}
+					output << "\n";
+				}
 			}
 		}
 
 		if(!adjacency_file.empty())
 		{
-			std::map<apollota::Pair, std::size_t> map_of_pairs_to_contact_indices;
+			std::map<apollota::Pair, std::size_t> map_of_pairs_to_contact_ids;
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
 				const Contact& contact=data_manager.contacts()[*it];
-				map_of_pairs_to_contact_indices[apollota::Pair(contact.ids[0], contact.ids[1])]=map_of_contact_indices[*it];
+				map_of_pairs_to_contact_ids[apollota::Pair(contact.ids[0], contact.ids[1])]=(*it);
 			}
 
 			std::set< std::pair<apollota::Pair, apollota::Pair> > pairs_adjacencies;
@@ -292,9 +313,9 @@ public:
 					const apollota::Pair pair01(triple.get(0), triple.get(1));
 					const apollota::Pair pair02(triple.get(0), triple.get(2));
 					const apollota::Pair pair12(triple.get(1), triple.get(2));
-					const bool allowed01=(map_of_pairs_to_contact_indices.count(pair01)>0);
-					const bool allowed02=(map_of_pairs_to_contact_indices.count(pair02)>0);
-					const bool allowed12=(map_of_pairs_to_contact_indices.count(pair12)>0);
+					const bool allowed01=(map_of_pairs_to_contact_ids.count(pair01)>0);
+					const bool allowed02=(map_of_pairs_to_contact_ids.count(pair02)>0);
+					const bool allowed12=(map_of_pairs_to_contact_ids.count(pair12)>0);
 					if(allowed01 && allowed02)
 					{
 						pairs_adjacencies.insert(std::pair<apollota::Pair, apollota::Pair>(pair01, pair02));
@@ -314,11 +335,29 @@ public:
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(adjacency_file, output);
 
-			output << "contact_index1" << sep << "contact_index2" << "\n";
-			for(std::set< std::pair<apollota::Pair, apollota::Pair> >::const_iterator it=pairs_adjacencies.begin();it!=pairs_adjacencies.end();++it)
+			if(!inter_residue)
 			{
-				apollota::Pair indices(map_of_pairs_to_contact_indices[it->first], map_of_pairs_to_contact_indices[it->second]);
-				output << indices.get(0) << sep << indices.get(1) << "\n";
+				output << "contact_index1" << sep << "contact_index2" << "\n";
+				for(std::set< std::pair<apollota::Pair, apollota::Pair> >::const_iterator it=pairs_adjacencies.begin();it!=pairs_adjacencies.end();++it)
+				{
+					const apollota::Pair indices(map_of_pairs_to_contact_ids[it->first], map_of_pairs_to_contact_ids[it->second]);
+					output << map_of_contact_indices[indices.get(0)] << sep << map_of_contact_indices[indices.get(1)] << "\n";
+				}
+			}
+			else
+			{
+				output << "ir_contact_index1" << sep << "ir_contact_index2" << "\n";
+				std::set<apollota::Pair> outputed_inter_residue_indices;
+				for(std::set< std::pair<apollota::Pair, apollota::Pair> >::const_iterator it=pairs_adjacencies.begin();it!=pairs_adjacencies.end();++it)
+				{
+					const apollota::Pair indices(map_of_pairs_to_contact_ids[it->first], map_of_pairs_to_contact_ids[it->second]);
+					const apollota::Pair inter_residue_indices(map_of_inter_residue_contact_indices[indices.get(0)], map_of_inter_residue_contact_indices[indices.get(1)]);
+					if(inter_residue_indices.get(0)!=inter_residue_indices.get(1) && outputed_inter_residue_indices.count(inter_residue_indices)==0)
+					{
+						outputed_inter_residue_indices.insert(inter_residue_indices);
+						output << inter_residue_indices.get(0) << sep << inter_residue_indices.get(1) << "\n";
+					}
+				}
 			}
 		}
 
