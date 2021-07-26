@@ -212,7 +212,7 @@ cd "$TMPLDIR"
 {
 echo "graph G {"
 cat output_contacts_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
-| awk '{print ($15+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "." $7 "\\n" $13 "." $14 "\"," "fontsize=\"" ($17+7.0) "\"," "margin=0,shape=\"circle\"" "]"}'
+| awk '{print ($15+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "." $7 "\\n" $13 "." $14 "\"," "fontsize=\"" ($17*1.2+7.0) "\"," "margin=0,shape=\"circle\"" "]"}'
 cat output_contacts_graph_edges.txt | tail -n +2 \
 | awk '{print ($1+1) " -- " ($2+1)}'
 echo "}"
@@ -225,7 +225,7 @@ sfdp -Goverlap="prism" ./output_contacts_graph.dot | gvmap  -e | neato -Ecolor="
 {
 echo "graph G {"
 cat output_ir_contacts_graph_vertices.txt | tail -n +2 | voronota expand-descriptors \
-| awk '{print ($16+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "\\n" $13 "\"," "fontsize=\"" (12.0) "\"," "margin=0,shape=\"circle\"" "]"}'
+| awk '{print ($16+1) " [" "cluster=\"" ($16+1) "\", " "label=\"" $6 "\\n" $13 "\"," "fontsize=\"" ($17*1.2+7.0) "\"," "margin=0,shape=\"circle\"" "]"}'
 cat output_ir_contacts_graph_edges.txt | tail -n +2 \
 | awk '{print ($1+1) " -- " ($2+1)}'
 echo "}"

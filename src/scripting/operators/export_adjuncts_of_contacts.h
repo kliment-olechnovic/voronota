@@ -173,6 +173,28 @@ public:
 			}
 		}
 
+		std::map< std::size_t, std::map<std::string, double> > map_of_inter_residue_contact_indices_to_pooled_values;
+		if(inter_residue)
+		{
+			for(std::map<std::size_t, std::size_t>::const_iterator it=map_of_inter_residue_contact_indices.begin();it!=map_of_inter_residue_contact_indices.end();++it)
+			{
+				const Contact& contact=data_manager.contacts()[it->first];
+				std::map<std::string, double>& pooled_values=map_of_inter_residue_contact_indices_to_pooled_values[it->second];
+				pooled_values["area"]+=contact.value.area;
+				{
+					std::map<std::string, double>::iterator jt=pooled_values.find("distance");
+					if(jt!=pooled_values.end())
+					{
+						jt->second=std::min(jt->second, contact.value.dist);
+					}
+					else
+					{
+						pooled_values["distance"]=contact.value.dist;
+					}
+				}
+			}
+		}
+
 		std::map< std::size_t, std::vector<double> > map_of_output;
 		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 		{
@@ -189,11 +211,25 @@ public:
 				}
 				else if(adjuncts_filled[i]=="area")
 				{
-					output_value=contact.value.area;
+					if(!inter_residue)
+					{
+						output_value=contact.value.area;
+					}
+					else
+					{
+						output_value=map_of_inter_residue_contact_indices_to_pooled_values[map_of_inter_residue_contact_indices[*it]]["area"];
+					}
 				}
 				else if(adjuncts_filled[i]=="distance")
 				{
-					output_value=contact.value.dist;
+					if(!inter_residue)
+					{
+						output_value=contact.value.dist;
+					}
+					else
+					{
+						output_value=map_of_inter_residue_contact_indices_to_pooled_values[map_of_inter_residue_contact_indices[*it]]["distance"];
+					}
 				}
 				else if(adjuncts_filled[i]=="contact_index")
 				{
