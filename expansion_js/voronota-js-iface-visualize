@@ -147,11 +147,11 @@ if(params.contacts_subselection===undefined || params.contacts_subselection===""
 voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly, "-include-heteroatoms");
 voronota_assert_partial_success("Failed to import file");
 
-voronota_set_chain_names_by_guessing();
-voronota_assert_full_success("Failed to set chain names by guessing");
-
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
+
+voronota_export_atoms("-as-pdb", "-file", params.output_prefix+"_atoms.pdb");
+voronota_assert_full_success("Failed to export atoms");
 
 voronota_construct_contacts("-calculate-bounding-arcs");
 voronota_assert_full_success("Failed to construct contacts");
