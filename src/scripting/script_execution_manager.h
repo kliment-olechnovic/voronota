@@ -3,6 +3,7 @@
 
 #include "operators/add_figure.h"
 #include "operators/add_figure_of_convex_hull.h"
+#include "operators/add_figure_of_nth_order_cell.h"
 #include "operators/add_figure_of_triangulation.h"
 #include "operators/add_figure_of_voxels_test.h"
 #include "operators/cad_score_many.h"
@@ -199,6 +200,7 @@ public:
 
 		set_command_for_data_manager("add-figure", operators::AddFigure(), true);
 		set_command_for_data_manager("add-figure-of-convex-hull", operators::AddFigureOfConvexHull(), true);
+		set_command_for_data_manager("add-figure-of-nth-order-cell", operators::AddFigureOfNthOrderCell(), true);
 		set_command_for_data_manager("add-figure-of-triangulation", operators::AddFigureOfTriangulation(), true);
 		set_command_for_data_manager("add-figure-of-voxels-test", operators::AddFigureOfVoxelsTest(), true);
 		set_command_for_data_manager("calculate-betweenness", operators::CalculateBetweenness(), true);

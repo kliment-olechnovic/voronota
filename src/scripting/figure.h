@@ -116,9 +116,10 @@ public:
 	}
 
 	template<class Point>
-	void add_voxel(const Point& center, const double radius)
+	void add_voxel(const Point& center, const double diameter)
 	{
-		add_box(center+Point(0.0-radius, 0.0-radius, 0.0-radius), radius*2.0, radius*2.0, radius*2.0);
+		const double radius=diameter*0.5;
+		add_box(center+Point(0.0-radius, 0.0-radius, 0.0-radius), diameter, diameter, diameter);
 	}
 };
 
