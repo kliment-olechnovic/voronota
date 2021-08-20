@@ -95,6 +95,31 @@ public:
 					sih.vertices()[sih.triples()[i].get(2)].unit());
 		}
 	}
+
+	template<class Point>
+	void add_box(const Point& bottom_left_corner, const double l_x, const double l_y, const double l_z)
+	{
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(l_x, 0.0, 0.0), bottom_left_corner+Point(l_x, l_y, 0.0), Point(0.0, 0.0, 0.0-l_z));
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(0.0, l_y, 0.0), bottom_left_corner+Point(l_x, l_y, 0.0), Point(0.0, 0.0, 0.0-l_z));
+		add_triangle(bottom_left_corner+Point(0.0, 0.0, l_z), bottom_left_corner+Point(l_x, 0.0, l_z), bottom_left_corner+Point(l_x, l_y, l_z), Point(0.0, 0.0,     l_z));
+		add_triangle(bottom_left_corner+Point(0.0, 0.0, l_z), bottom_left_corner+Point(0.0, l_y, l_z), bottom_left_corner+Point(l_x, l_y, l_z), Point(0.0, 0.0,     l_z));
+
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(l_x, 0.0, 0.0), bottom_left_corner+Point(l_x, 0.0, l_z), Point(0.0, 0.0-l_y, 0.0));
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(0.0, 0.0, l_z), bottom_left_corner+Point(l_x, 0.0, l_z), Point(0.0, 0.0-l_y, 0.0));
+		add_triangle(bottom_left_corner+Point(0.0, l_y, 0.0), bottom_left_corner+Point(l_x, l_y, 0.0), bottom_left_corner+Point(l_x, l_y, l_z), Point(0.0,     l_y, 0.0));
+		add_triangle(bottom_left_corner+Point(0.0, l_y, 0.0), bottom_left_corner+Point(0.0, l_y, l_z), bottom_left_corner+Point(l_x, l_y, l_z), Point(0.0,     l_y, 0.0));
+
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(0.0, l_y, 0.0), bottom_left_corner+Point(0.0, l_y, l_z), Point(0.0-l_x, 0.0, 0.0));
+		add_triangle(bottom_left_corner,                      bottom_left_corner+Point(0.0, 0.0, l_z), bottom_left_corner+Point(0.0, l_y, l_z), Point(0.0-l_x, 0.0, 0.0));
+		add_triangle(bottom_left_corner+Point(l_x, 0.0, 0.0), bottom_left_corner+Point(l_x, l_y, 0.0), bottom_left_corner+Point(l_x, l_y, l_z), Point(    l_x, 0.0, 0.0));
+		add_triangle(bottom_left_corner+Point(l_x, 0.0, 0.0), bottom_left_corner+Point(l_x, 0.0, l_z), bottom_left_corner+Point(l_x, l_y, l_z), Point(    l_x, 0.0, 0.0));
+	}
+
+	template<class Point>
+	void add_voxel(const Point& center, const double radius)
+	{
+		add_box(center+Point(0.0-radius, 0.0-radius, 0.0-radius), radius*2.0, radius*2.0, radius*2.0);
+	}
 };
 
 }
