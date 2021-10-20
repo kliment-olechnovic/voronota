@@ -95,6 +95,19 @@ public:
 		return false;
 	}
 
+	unsigned int count(std::size_t x) const
+	{
+		unsigned int num=0;
+		for(unsigned int i=0;i<N;i++)
+		{
+			if(get(i)==x)
+			{
+				num++;
+			}
+		}
+		return num;
+	}
+
 	Tuple<N-1> exclude(unsigned int i) const
 	{
 		std::vector<std::size_t> values;

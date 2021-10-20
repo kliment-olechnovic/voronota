@@ -45,6 +45,7 @@
 #include "operators/export_atoms_as_pymol_cgo.h"
 #include "operators/export_atoms.h"
 #include "operators/export_cartoon_as_pymol_cgo.h"
+#include "operators/export_contacts_as_connected_mesh.h"
 #include "operators/export_contacts_as_pymol_cgo.h"
 #include "operators/export_contacts.h"
 #include "operators/export_figures_as_pymol_cgo.h"
@@ -233,6 +234,7 @@ public:
 		set_command_for_data_manager("export-atoms-as-pymol-cgo", operators::ExportAtomsAsPymolCGO(), false);
 		set_command_for_data_manager("export-atoms", operators::ExportAtoms(), false);
 		set_command_for_data_manager("export-cartoon-as-pymol-cgo", operators::ExportCartoonAsPymolCGO(), false);
+		set_command_for_data_manager("export-contacts-as-connected-mesh", operators::ExportContactsAsConnectedMesh(), false);
 		set_command_for_data_manager("export-contacts-as-pymol-cgo", operators::ExportContactsAsPymolCGO(), false);
 		set_command_for_data_manager("export-contacts", operators::ExportContacts(), false);
 		set_command_for_data_manager("export-figures-as-pymol-cgo", operators::ExportFiguresAsPymolCGO(), false);
