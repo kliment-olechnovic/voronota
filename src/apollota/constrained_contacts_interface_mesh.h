@@ -67,7 +67,7 @@ public:
 		typedef std::pair< Pair, std::vector<std::size_t> > MeshVertexIDs;
 		typedef std::map< Quadruple, MeshVertexIDs > MapOfMeshVertexIDs;
 		MapOfMeshVertexIDs map_of_mesh_vertex_ids;
-		std::set<Pair> set_of_mesh_links;
+		std::map< Pair, std::pair<std::size_t, std::size_t> > map_of_mesh_links;
 		for(std::set<Pair>::const_iterator ab_ids_it=ab_ids.begin();ab_ids_it!=ab_ids.end();++ab_ids_it)
 		{
 			const Pair& pair_id=(*ab_ids_it);
@@ -151,17 +151,36 @@ public:
 								central_point=central_point*(1.0/static_cast<double>(contour_mesh_vertex_ids.size()));
 								const std::size_t central_point_mesh_vertex_id=mesh_vertices_.size();
 								mesh_vertices_.push_back(MeshVertex(MeshVertex::VoronoiFaceInside, pair_id, Quadruple(a_id, b_id, null_id(), null_id()), central_point));
+								{
+									bool need_reverse=false;
+									for(std::size_t i=0;i<contour_mesh_vertex_ids.size() && !need_reverse;i++)
+									{
+										const std::pair<std::size_t, std::size_t> ordered_pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)<contour_mesh_vertex_ids.size() ? (i+1) : 0]);
+										std::map< Pair, std::pair<std::size_t, std::size_t> >::const_iterator map_of_mesh_links_it=map_of_mesh_links.find(Pair(ordered_pair.first, ordered_pair.second));
+										if(map_of_mesh_links_it!=map_of_mesh_links.end())
+										{
+											if(map_of_mesh_links_it->second==ordered_pair)
+											{
+												need_reverse=true;
+											}
+										}
+									}
+									if(need_reverse)
+									{
+										std::reverse(contour_mesh_vertex_ids.begin(), contour_mesh_vertex_ids.end());
+									}
+								}
 								for(std::size_t i=0;i<contour_mesh_vertex_ids.size();i++)
 								{
 									if(i+1<contour_mesh_vertex_ids.size())
 									{
 										mesh_faces_.push_back(MeshFace(pair_id, contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[i+1], central_point_mesh_vertex_id));
-										set_of_mesh_links.insert(Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)]));
+										map_of_mesh_links[Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)])]=std::make_pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)]);
 									}
 									else
 									{
 										mesh_faces_.push_back(MeshFace(pair_id, contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0], central_point_mesh_vertex_id));
-										set_of_mesh_links.insert(Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0]));
+										map_of_mesh_links[Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0])]=std::make_pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0]);
 									}
 								}
 							}
@@ -170,7 +189,11 @@ public:
 				}
 			}
 		}
-		mesh_links_.insert(mesh_links_.begin(), set_of_mesh_links.begin(), set_of_mesh_links.end());
+		mesh_links_.reserve(map_of_mesh_links.size());
+		for(std::map< Pair, std::pair<std::size_t, std::size_t> >::const_iterator map_of_mesh_links_it=map_of_mesh_links.begin();map_of_mesh_links_it!=map_of_mesh_links.end();++map_of_mesh_links_it)
+		{
+			mesh_links_.push_back(map_of_mesh_links_it->first);
+		}
 	}
 
 	const std::vector<MeshVertex>& mesh_vertices() const
