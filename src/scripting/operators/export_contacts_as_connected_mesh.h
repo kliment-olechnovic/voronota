@@ -118,8 +118,8 @@ public:
 			}
 			for(std::size_t i=0;i<ccim.mesh_faces().size();i++)
 			{
-				const apollota::Triple& t=ccim.mesh_faces()[i].triple_of_mesh_vertex_ids;
-				output << "f " << (t.get(0)+1) << " " << (t.get(1)+1) << " " << (t.get(2)+1) << " " << "\n";
+				const apollota::ConstrainedContactsInterfaceMesh::MeshFace& mf=ccim.mesh_faces()[i];
+				output << "f " << (mf.triple_of_mesh_vertex_ids[0]+1) << " " << (mf.triple_of_mesh_vertex_ids[1]+1) << " " << (mf.triple_of_mesh_vertex_ids[2]+1) << " " << "\n";
 			}
 		}
 

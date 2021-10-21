@@ -39,12 +39,14 @@ public:
 	struct MeshFace
 	{
 		Pair pair_of_generator_ids;
-		Triple triple_of_mesh_vertex_ids;
+		std::size_t triple_of_mesh_vertex_ids[3];
 
-		MeshFace(const Pair& pair_of_generator_ids, const Triple& triple_of_mesh_vertex_ids) :
-			pair_of_generator_ids(pair_of_generator_ids),
-			triple_of_mesh_vertex_ids(triple_of_mesh_vertex_ids)
+		MeshFace(const Pair& pair_of_generator_ids, const std::size_t a, const std::size_t b, const std::size_t c) :
+			pair_of_generator_ids(pair_of_generator_ids)
 		{
+			triple_of_mesh_vertex_ids[0]=a;
+			triple_of_mesh_vertex_ids[1]=b;
+			triple_of_mesh_vertex_ids[2]=c;
 		}
 	};
 
@@ -115,7 +117,7 @@ public:
 										else
 										{
 											contour_mesh_vertex_id=mesh_vertex_ids.second[0];
-											double min_dist=std::numeric_limits<double>::max();
+											double min_dist=distance_from_point_to_point(pr.p, mesh_vertices_[contour_mesh_vertex_id].point);
 											for(std::size_t i=1;i<mesh_vertex_ids.second.size();i++)
 											{
 												const std::size_t candidate_id=mesh_vertex_ids.second[i];
@@ -151,9 +153,16 @@ public:
 								mesh_vertices_.push_back(MeshVertex(MeshVertex::VoronoiFaceInside, pair_id, Quadruple(a_id, b_id, null_id(), null_id()), central_point));
 								for(std::size_t i=0;i<contour_mesh_vertex_ids.size();i++)
 								{
-									const Pair mesh_link(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)<contour_mesh_vertex_ids.size() ? (i+1) : 0]);
-									mesh_faces_.push_back(MeshFace(pair_id, Triple(mesh_link, central_point_mesh_vertex_id)));
-									set_of_mesh_links.insert(mesh_link);
+									if(i+1<contour_mesh_vertex_ids.size())
+									{
+										mesh_faces_.push_back(MeshFace(pair_id, contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[i+1], central_point_mesh_vertex_id));
+										set_of_mesh_links.insert(Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[(i+1)]));
+									}
+									else
+									{
+										mesh_faces_.push_back(MeshFace(pair_id, contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0], central_point_mesh_vertex_id));
+										set_of_mesh_links.insert(Pair(contour_mesh_vertex_ids[i], contour_mesh_vertex_ids[0]));
+									}
 								}
 							}
 						}
