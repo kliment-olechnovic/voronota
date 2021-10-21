@@ -85,13 +85,9 @@ public:
 			throw std::runtime_error(std::string("No non-solvent contacts selected."));
 		}
 
-		const apollota::Triangulation::VerticesVector vertices_vector=apollota::Triangulation::collect_vertices_vector_from_quadruples_map(data_manager.triangulation_info().quadruples_map);
-		const apollota::TriangulationQueries::PairsMap pairs_vertices=apollota::TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
-
 		apollota::ConstrainedContactsInterfaceMesh ccim(
 				data_manager.triangulation_info().spheres,
-				vertices_vector,
-				pairs_vertices,
+				data_manager.triangulation_info().quadruples_map,
 				ab_pairs,
 				parameters_to_draw_contacts.probe,
 				parameters_to_draw_contacts.step,

@@ -57,18 +57,55 @@ public:
 
 	ConstrainedContactsInterfaceMesh(
 			const std::vector<SimpleSphere>& spheres,
-			const Triangulation::VerticesVector& vertices_vector,
-			const TriangulationQueries::PairsMap& pairs_vertices,
+			const Triangulation::QuadruplesMap& quadruples_map,
 			const std::set<Pair>& ab_ids,
 			const double probe,
 			const double step,
 			const int projections)
 	{
+		const Triangulation::VerticesVector vertices_vector=Triangulation::collect_vertices_vector_from_quadruples_map(quadruples_map);
+		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+		std::vector<Pair> ordered_ab_ids;
+		if(!ab_ids.empty())
+		{
+			ordered_ab_ids.reserve(ab_ids.size());
+			std::vector<Pair> stack(ab_ids.rbegin(), ab_ids.rend());
+			std::set<Pair> visited_pairs;
+			while(!stack.empty())
+			{
+				const Pair current_pair=stack.back();
+				stack.pop_back();
+				if(visited_pairs.count(current_pair)==0)
+				{
+					ordered_ab_ids.push_back(current_pair);
+					visited_pairs.insert(current_pair);
+					TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(current_pair);
+					if(pairs_vertices_it!=pairs_vertices.end())
+					{
+						for(std::set<std::size_t>::const_iterator pair_vertices_it=pairs_vertices_it->second.begin();pair_vertices_it!=pairs_vertices_it->second.end();++pair_vertices_it)
+						{
+							const Quadruple q=vertices_vector[*pair_vertices_it].first;
+							for(int i=0;i<3;i++)
+							{
+								for(int j=(i+1);j<4;j++)
+								{
+									const Pair neighbor_pair(q.get(i), q.get(j));
+									if(!(neighbor_pair==current_pair) && ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+									{
+										stack.push_back(neighbor_pair);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 		typedef std::pair< Pair, std::vector<std::size_t> > MeshVertexIDs;
 		typedef std::map< Quadruple, MeshVertexIDs > MapOfMeshVertexIDs;
 		MapOfMeshVertexIDs map_of_mesh_vertex_ids;
 		std::map< Pair, std::pair<std::size_t, std::size_t> > map_of_mesh_links;
-		for(std::set<Pair>::const_iterator ab_ids_it=ab_ids.begin();ab_ids_it!=ab_ids.end();++ab_ids_it)
+		for(std::vector<Pair>::const_iterator ab_ids_it=ordered_ab_ids.begin();ab_ids_it!=ordered_ab_ids.end();++ab_ids_it)
 		{
 			const Pair& pair_id=(*ab_ids_it);
 			const std::size_t a_id=pair_id.get(0);
