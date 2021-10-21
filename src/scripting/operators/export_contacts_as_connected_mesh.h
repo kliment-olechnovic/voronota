@@ -111,7 +111,16 @@ public:
 		{
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(file, output);
-			opengl_printer.print_pymol_script("mesh_links", true, output);
+
+			for(std::size_t i=0;i<ccim.mesh_vertices().size();i++)
+			{
+				output << "v " << ccim.mesh_vertices()[i].point << "\n";
+			}
+			for(std::size_t i=0;i<ccim.mesh_faces().size();i++)
+			{
+				const apollota::Triple& t=ccim.mesh_faces()[i].triple_of_mesh_vertex_ids;
+				output << "f " << (t.get(0)+1) << " " << (t.get(1)+1) << " " << (t.get(2)+1) << " " << "\n";
+			}
 		}
 
 		Result result;

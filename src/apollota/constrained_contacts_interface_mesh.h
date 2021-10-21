@@ -85,7 +85,6 @@ public:
 							const ConstrainedContactContour::Contour& contour=(*contours_it);
 							std::vector<std::size_t> contour_mesh_vertex_ids;
 							contour_mesh_vertex_ids.reserve(contour.size());
-							SimplePoint sum_of_points;
 							for(ConstrainedContactContour::Contour::const_iterator contour_it=contour.begin();contour_it!=contour.end();++contour_it)
 							{
 								const ConstrainedContactContour::PointRecord& pr=(*contour_it);
@@ -142,7 +141,12 @@ public:
 							}
 							if(!contour_mesh_vertex_ids.empty())
 							{
-								const SimplePoint central_point=sum_of_points*(1.0/static_cast<double>(contour_mesh_vertex_ids.size()));
+								SimplePoint central_point;
+								for(std::size_t i=0;i<contour_mesh_vertex_ids.size();i++)
+								{
+									central_point=central_point+mesh_vertices_[contour_mesh_vertex_ids[i]].point;
+								}
+								central_point=central_point*(1.0/static_cast<double>(contour_mesh_vertex_ids.size()));
 								const std::size_t central_point_mesh_vertex_id=mesh_vertices_.size();
 								mesh_vertices_.push_back(MeshVertex(MeshVertex::VoronoiFaceInside, pair_id, Quadruple(a_id, b_id, null_id(), null_id()), central_point));
 								for(std::size_t i=0;i<contour_mesh_vertex_ids.size();i++)
