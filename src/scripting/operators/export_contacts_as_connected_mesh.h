@@ -30,8 +30,9 @@ public:
 	common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
 	SelectionManager::Query parameters_for_selecting;
 	std::string file;
+	bool no_reordering;
 
-	ExportContactsAsConnectedMesh()
+	ExportContactsAsConnectedMesh() : no_reordering(false)
 	{
 	}
 
@@ -43,6 +44,7 @@ public:
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		file=input.get_value<std::string>("file");
 		assert_file_name_input(file, false);
+		no_reordering=input.get_flag("no-reordering");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -52,6 +54,7 @@ public:
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "path to file"));
+		doc.set_option_decription(CDOD("no-reordering", CDOD::DATATYPE_BOOL, "flag to disable reordering of vertices"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -91,7 +94,8 @@ public:
 				ab_pairs,
 				parameters_to_draw_contacts.probe,
 				parameters_to_draw_contacts.step,
-				parameters_to_draw_contacts.projections);
+				parameters_to_draw_contacts.projections,
+				no_reordering);
 
 
 		auxiliaries::OpenGLPrinter opengl_printer;

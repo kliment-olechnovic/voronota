@@ -61,7 +61,8 @@ public:
 			const std::set<Pair>& ab_ids,
 			const double probe,
 			const double step,
-			const int projections)
+			const int projections,
+			const bool no_reordering)
 	{
 		const Triangulation::VerticesVector vertices_vector=Triangulation::collect_vertices_vector_from_quadruples_map(quadruples_map);
 		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
@@ -69,30 +70,37 @@ public:
 		if(!ab_ids.empty())
 		{
 			ordered_ab_ids.reserve(ab_ids.size());
-			std::vector<Pair> stack(ab_ids.rbegin(), ab_ids.rend());
-			std::set<Pair> visited_pairs;
-			while(!stack.empty())
+			if(no_reordering)
 			{
-				const Pair current_pair=stack.back();
-				stack.pop_back();
-				if(visited_pairs.count(current_pair)==0)
+				ordered_ab_ids.insert(ordered_ab_ids.begin(), ab_ids.begin(), ab_ids.end());
+			}
+			else
+			{
+				std::vector<Pair> stack(ab_ids.rbegin(), ab_ids.rend());
+				std::set<Pair> visited_pairs;
+				while(!stack.empty())
 				{
-					ordered_ab_ids.push_back(current_pair);
-					visited_pairs.insert(current_pair);
-					TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(current_pair);
-					if(pairs_vertices_it!=pairs_vertices.end())
+					const Pair current_pair=stack.back();
+					stack.pop_back();
+					if(visited_pairs.count(current_pair)==0)
 					{
-						for(std::set<std::size_t>::const_iterator pair_vertices_it=pairs_vertices_it->second.begin();pair_vertices_it!=pairs_vertices_it->second.end();++pair_vertices_it)
+						ordered_ab_ids.push_back(current_pair);
+						visited_pairs.insert(current_pair);
+						TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(current_pair);
+						if(pairs_vertices_it!=pairs_vertices.end())
 						{
-							const Quadruple q=vertices_vector[*pair_vertices_it].first;
-							for(int i=0;i<3;i++)
+							for(std::set<std::size_t>::const_iterator pair_vertices_it=pairs_vertices_it->second.begin();pair_vertices_it!=pairs_vertices_it->second.end();++pair_vertices_it)
 							{
-								for(int j=(i+1);j<4;j++)
+								const Quadruple q=vertices_vector[*pair_vertices_it].first;
+								for(int i=0;i<3;i++)
 								{
-									const Pair neighbor_pair(q.get(i), q.get(j));
-									if(!(neighbor_pair==current_pair) && ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+									for(int j=(i+1);j<4;j++)
 									{
-										stack.push_back(neighbor_pair);
+										const Pair neighbor_pair(q.get(i), q.get(j));
+										if(!(neighbor_pair==current_pair) && (neighbor_pair.contains(current_pair.get(0)) || neighbor_pair.contains(current_pair.get(1))) && ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+										{
+											stack.push_back(neighbor_pair);
+										}
 									}
 								}
 							}
@@ -188,6 +196,7 @@ public:
 								central_point=central_point*(1.0/static_cast<double>(contour_mesh_vertex_ids.size()));
 								const std::size_t central_point_mesh_vertex_id=mesh_vertices_.size();
 								mesh_vertices_.push_back(MeshVertex(MeshVertex::VoronoiFaceInside, pair_id, Quadruple(a_id, b_id, null_id(), null_id()), central_point));
+								if(!no_reordering)
 								{
 									bool need_reverse=false;
 									for(std::size_t i=0;i<contour_mesh_vertex_ids.size() && !need_reverse;i++)
