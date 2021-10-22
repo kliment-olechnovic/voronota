@@ -89,17 +89,34 @@ public:
 						TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(current_pair);
 						if(pairs_vertices_it!=pairs_vertices.end())
 						{
+							std::vector< std::pair<double, std::size_t> > weighted_pair_vertices;
+							weighted_pair_vertices.reserve(pairs_vertices_it->second.size());
 							for(std::set<std::size_t>::const_iterator pair_vertices_it=pairs_vertices_it->second.begin();pair_vertices_it!=pairs_vertices_it->second.end();++pair_vertices_it)
 							{
-								const Quadruple q=vertices_vector[*pair_vertices_it].first;
+								weighted_pair_vertices.push_back(std::make_pair(0.0-vertices_vector[*pair_vertices_it].second.r, (*pair_vertices_it)));
+							}
+							std::sort(weighted_pair_vertices.begin(), weighted_pair_vertices.end());
+							for(std::vector< std::pair<double, std::size_t> >::const_iterator weighted_pair_vertices_it=weighted_pair_vertices.begin();weighted_pair_vertices_it!=weighted_pair_vertices.end();++weighted_pair_vertices_it)
+							{
+								const Quadruple q=vertices_vector[weighted_pair_vertices_it->second].first;
 								for(int i=0;i<3;i++)
 								{
 									for(int j=(i+1);j<4;j++)
 									{
 										const Pair neighbor_pair(q.get(i), q.get(j));
-										if(!(neighbor_pair==current_pair) && (neighbor_pair.contains(current_pair.get(0)) || neighbor_pair.contains(current_pair.get(1))) && ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+										if(!(neighbor_pair==current_pair) && (neighbor_pair.contains(current_pair.get(0)) || neighbor_pair.contains(current_pair.get(1))))
 										{
-											stack.push_back(neighbor_pair);
+											double max_dist=minimal_distance_from_sphere_to_sphere(spheres[current_pair.get(0)], spheres[neighbor_pair.get(0)]);
+											max_dist=std::max(max_dist, minimal_distance_from_sphere_to_sphere(spheres[current_pair.get(0)], spheres[neighbor_pair.get(1)]));
+											max_dist=std::max(max_dist, minimal_distance_from_sphere_to_sphere(spheres[current_pair.get(1)], spheres[neighbor_pair.get(0)]));
+											max_dist=std::max(max_dist, minimal_distance_from_sphere_to_sphere(spheres[current_pair.get(1)], spheres[neighbor_pair.get(1)]));
+											if(max_dist<(probe*2.0))
+											{
+												if(ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+												{
+													stack.push_back(neighbor_pair);
+												}
+											}
 										}
 									}
 								}
