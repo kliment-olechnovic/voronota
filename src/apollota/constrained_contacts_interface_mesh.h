@@ -200,7 +200,10 @@ public:
 								}
 								if(contour_mesh_vertex_id!=null_id())
 								{
-									contour_mesh_vertex_ids.push_back(contour_mesh_vertex_id);
+									if(contour_mesh_vertex_ids.empty() || contour_mesh_vertex_ids.back()!=contour_mesh_vertex_id)
+									{
+										contour_mesh_vertex_ids.push_back(contour_mesh_vertex_id);
+									}
 								}
 							}
 							if(!contour_mesh_vertex_ids.empty())
@@ -273,6 +276,80 @@ public:
 	const std::vector<Pair>& mesh_links() const
 	{
 		return mesh_links_;
+	}
+
+	bool check_manofold() const
+	{
+		std::map< Pair, std::set<Triple> > map_of_edges_to_faces;
+		for(std::size_t i=0;i<mesh_faces_.size();i++)
+		{
+			const MeshFace& mf=mesh_faces_[i];
+			const Triple t(mf.triple_of_mesh_vertex_ids[0], mf.triple_of_mesh_vertex_ids[1], mf.triple_of_mesh_vertex_ids[2]);
+			for(int a=0;(a+1)<3;a++)
+			{
+				for(int b=(a+1);b<3;b++)
+				{
+					std::set<Triple>& set_ab=map_of_edges_to_faces[Pair(mf.triple_of_mesh_vertex_ids[a], mf.triple_of_mesh_vertex_ids[b])];
+					set_ab.insert(t);
+					if(set_ab.size()>2)
+					{
+						return false;
+					}
+				}
+			}
+		}
+
+		std::map< std::size_t, std::set<Triple> > map_of_vertices_to_faces;
+		for(std::size_t i=0;i<mesh_faces_.size();i++)
+		{
+			const MeshFace& mf=mesh_faces_[i];
+			for(int a=0;a<3;a++)
+			{
+				map_of_vertices_to_faces[mf.triple_of_mesh_vertex_ids[a]].insert(Triple(mf.triple_of_mesh_vertex_ids[0], mf.triple_of_mesh_vertex_ids[1], mf.triple_of_mesh_vertex_ids[2]));
+			}
+		}
+
+		for(std::map< std::size_t, std::set<Triple> >::const_iterator mvf_it=map_of_vertices_to_faces.begin();mvf_it!=map_of_vertices_to_faces.end();++mvf_it)
+		{
+			const std::size_t vid=mvf_it->first;
+			std::set<Triple> visited;
+			std::vector<Triple> stack(1, *(mvf_it->second.begin()));
+			while(!stack.empty())
+			{
+				const Triple t=stack.back();
+				stack.pop_back();
+				if(visited.count(t)==0)
+				{
+					visited.insert(t);
+					for(unsigned int i=0;i<3;i++)
+					{
+						const std::size_t nvid=t.get(i);
+						if(nvid!=vid)
+						{
+							std::map< Pair, std::set<Triple> >::const_iterator mef_it=map_of_edges_to_faces.find(Pair(vid, nvid));
+							if(mef_it!=map_of_edges_to_faces.end())
+							{
+								const std::set<Triple>& faces=mef_it->second;
+								for(std::set<Triple>::const_iterator faces_it=faces.begin();faces_it!=faces.end();++faces_it)
+								{
+									const Triple& face=(*faces_it);
+									if(visited.count(face)==0)
+									{
+										stack.push_back(face);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if(visited.size()<mvf_it->second.size())
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 private:
 	std::vector<MeshVertex> mesh_vertices_;

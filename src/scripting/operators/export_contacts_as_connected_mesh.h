@@ -20,10 +20,16 @@ public:
 	struct Result : public OperatorResultBase<Result>
 	{
 		SummaryOfContacts contacts_summary;
+		bool manifold;
+
+		Result() : manifold(false)
+		{
+		}
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
+			heterostorage.variant_object.value("manifold")=manifold;
 		}
 	};
 
@@ -220,6 +226,7 @@ public:
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), contact_ids);
+		result.manifold=ccim.check_manofold();
 
 		return result;
 	}
