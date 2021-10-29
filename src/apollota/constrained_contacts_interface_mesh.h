@@ -278,7 +278,7 @@ public:
 		return mesh_links_;
 	}
 
-	bool check_manofold() const
+	bool check_manifold() const
 	{
 		std::map< Pair, std::set<Triple> > map_of_edges_to_faces;
 		for(std::size_t i=0;i<mesh_faces_.size();i++)

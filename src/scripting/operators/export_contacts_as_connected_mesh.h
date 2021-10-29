@@ -21,8 +21,9 @@ public:
 	{
 		SummaryOfContacts contacts_summary;
 		bool manifold;
+		double step;
 
-		Result() : manifold(false)
+		Result() : manifold(false), step(0.0)
 		{
 		}
 
@@ -30,6 +31,7 @@ public:
 		{
 			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 			heterostorage.variant_object.value("manifold")=manifold;
+			heterostorage.variant_object.value("step")=step;
 		}
 	};
 
@@ -39,6 +41,7 @@ public:
 	std::string mtl_file;
 	std::string color_file;
 	bool no_reordering;
+	std::vector<double> alt_step_tries;
 
 	ExportContactsAsConnectedMesh() : no_reordering(false)
 	{
@@ -57,6 +60,7 @@ public:
 		color_file=input.get_value<std::string>("color-file");
 		assert_file_name_input(color_file, true);
 		no_reordering=input.get_flag("no-reordering");
+		alt_step_tries=input.get_value_vector_or_default<double>("alt-step-tries", std::vector<double>());
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -69,6 +73,7 @@ public:
 		doc.set_option_decription(CDOD("mtl-file", CDOD::DATATYPE_STRING, "path to output MTL file"));
 		doc.set_option_decription(CDOD("color-file", CDOD::DATATYPE_STRING, "path to output face colors file"));
 		doc.set_option_decription(CDOD("no-reordering", CDOD::DATATYPE_BOOL, "flag to disable reordering of vertices"));
+		doc.set_option_decription(CDOD("alt-step-tries", CDOD::DATATYPE_FLOAT_ARRAY, "values of step to try for a manifold result", ""));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -126,6 +131,30 @@ public:
 				parameters_to_draw_contacts.step,
 				parameters_to_draw_contacts.projections,
 				no_reordering);
+
+		double step_used=parameters_to_draw_contacts.step;
+
+		for(std::size_t i=0;i<alt_step_tries.size() && !ccim.check_manifold();i++)
+		{
+			const double alt_step=alt_step_tries[i];
+			if(alt_step!=parameters_to_draw_contacts.step)
+			{
+				ccim=apollota::ConstrainedContactsInterfaceMesh(
+						data_manager.triangulation_info().spheres,
+						data_manager.triangulation_info().quadruples_map,
+						set_of_ab_pairs,
+						parameters_to_draw_contacts.probe,
+						alt_step,
+						parameters_to_draw_contacts.projections,
+						no_reordering);
+				step_used=alt_step;
+			}
+		}
+
+		if(!alt_step_tries.empty() && !ccim.check_manifold())
+		{
+			throw std::runtime_error(std::string("Failed to produce manifold."));
+		}
 
 		std::map< apollota::Pair, std::set<std::size_t> > map_of_ab_pairs_to_mesh_faces;
 		if(record_coloring)
@@ -226,7 +255,8 @@ public:
 
 		Result result;
 		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), contact_ids);
-		result.manifold=ccim.check_manofold();
+		result.manifold=ccim.check_manifold();
+		result.step=step_used;
 
 		return result;
 	}
