@@ -58,26 +58,32 @@ public:
 	ConstrainedContactsInterfaceMesh(
 			const std::vector<SimpleSphere>& spheres,
 			const Triangulation::QuadruplesMap& quadruples_map,
-			const std::set<Pair>& ab_ids,
+			const std::set<Pair>& set_of_ab_ids,
 			const double probe,
 			const double step,
 			const int projections,
-			const bool no_reordering)
+			const bool only_largest_component)
 	{
 		const Triangulation::VerticesVector vertices_vector=Triangulation::collect_vertices_vector_from_quadruples_map(quadruples_map);
 		const TriangulationQueries::PairsMap pairs_vertices=TriangulationQueries::collect_pairs_vertices_map_from_vertices_vector(vertices_vector);
+
 		std::vector<Pair> ordered_ab_ids;
-		if(!ab_ids.empty())
+		if(!set_of_ab_ids.empty())
 		{
-			ordered_ab_ids.reserve(ab_ids.size());
-			if(no_reordering)
+			ordered_ab_ids.reserve(set_of_ab_ids.size());
+			std::map<Pair, std::size_t> visited_pairs;
+			std::size_t current_component_id=0;
+			while(visited_pairs.size()<set_of_ab_ids.size())
 			{
-				ordered_ab_ids.insert(ordered_ab_ids.begin(), ab_ids.begin(), ab_ids.end());
-			}
-			else
-			{
-				std::vector<Pair> stack(ab_ids.rbegin(), ab_ids.rend());
-				std::set<Pair> visited_pairs;
+				std::vector<Pair> stack;
+				for(std::set<Pair>::const_iterator set_of_ab_ids_it=set_of_ab_ids.begin();set_of_ab_ids_it!=set_of_ab_ids.end() && stack.empty();++set_of_ab_ids_it)
+				{
+					if(visited_pairs.count(*set_of_ab_ids_it)==0)
+					{
+						current_component_id++;
+						stack.push_back(*set_of_ab_ids_it);
+					}
+				}
 				while(!stack.empty())
 				{
 					const Pair current_pair=stack.back();
@@ -85,7 +91,7 @@ public:
 					if(visited_pairs.count(current_pair)==0)
 					{
 						ordered_ab_ids.push_back(current_pair);
-						visited_pairs.insert(current_pair);
+						visited_pairs[current_pair]=current_component_id;
 						TriangulationQueries::PairsMap::const_iterator pairs_vertices_it=pairs_vertices.find(current_pair);
 						if(pairs_vertices_it!=pairs_vertices.end())
 						{
@@ -93,7 +99,8 @@ public:
 							weighted_pair_vertices.reserve(pairs_vertices_it->second.size());
 							for(std::set<std::size_t>::const_iterator pair_vertices_it=pairs_vertices_it->second.begin();pair_vertices_it!=pairs_vertices_it->second.end();++pair_vertices_it)
 							{
-								weighted_pair_vertices.push_back(std::make_pair(0.0-vertices_vector[*pair_vertices_it].second.r, (*pair_vertices_it)));
+								const double r=vertices_vector[*pair_vertices_it].second.r;
+								weighted_pair_vertices.push_back(std::make_pair(0.0-r, (*pair_vertices_it)));
 							}
 							std::sort(weighted_pair_vertices.begin(), weighted_pair_vertices.end());
 							for(std::vector< std::pair<double, std::size_t> >::const_iterator weighted_pair_vertices_it=weighted_pair_vertices.begin();weighted_pair_vertices_it!=weighted_pair_vertices.end();++weighted_pair_vertices_it)
@@ -112,7 +119,7 @@ public:
 											max_dist=std::max(max_dist, minimal_distance_from_sphere_to_sphere(spheres[current_pair.get(1)], spheres[neighbor_pair.get(1)]));
 											if(max_dist<(probe*2.0))
 											{
-												if(ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
+												if(set_of_ab_ids.count(neighbor_pair)>0 && visited_pairs.count(neighbor_pair)==0)
 												{
 													stack.push_back(neighbor_pair);
 												}
@@ -125,7 +132,33 @@ public:
 					}
 				}
 			}
+
+			if(only_largest_component)
+			{
+				std::map<std::size_t, unsigned int> map_of_component_to_count;
+				for(std::map<Pair, std::size_t>::const_iterator visited_pairs_it=visited_pairs.begin();visited_pairs_it!=visited_pairs.end();++visited_pairs_it)
+				{
+					map_of_component_to_count[visited_pairs_it->second]++;
+				}
+				std::map<unsigned int, std::size_t> map_of_count_to_component;
+				for(std::map<std::size_t, unsigned int>::const_iterator map_of_component_to_count_it=map_of_component_to_count.begin();map_of_component_to_count_it!=map_of_component_to_count.end();++map_of_component_to_count_it)
+				{
+					map_of_count_to_component[map_of_component_to_count_it->second]=map_of_component_to_count_it->first;
+				}
+				const std::size_t largest_component_id=map_of_count_to_component.rbegin()->second;
+				std::vector<Pair> selected_ordered_ab_ids;
+				selected_ordered_ab_ids.reserve(map_of_count_to_component.rbegin()->first);
+				for(std::size_t i=0;i<ordered_ab_ids.size();i++)
+				{
+					if(visited_pairs[ordered_ab_ids[i]]==largest_component_id)
+					{
+						selected_ordered_ab_ids.push_back(ordered_ab_ids[i]);
+					}
+				}
+				ordered_ab_ids.swap(selected_ordered_ab_ids);
+			}
 		}
+
 		typedef std::pair< Pair, std::vector<std::size_t> > MeshVertexIDs;
 		typedef std::map< Quadruple, MeshVertexIDs > MapOfMeshVertexIDs;
 		MapOfMeshVertexIDs map_of_mesh_vertex_ids;
@@ -216,7 +249,6 @@ public:
 								central_point=central_point*(1.0/static_cast<double>(contour_mesh_vertex_ids.size()));
 								const std::size_t central_point_mesh_vertex_id=mesh_vertices_.size();
 								mesh_vertices_.push_back(MeshVertex(MeshVertex::VoronoiFaceInside, pair_id, Quadruple(a_id, b_id, null_id(), null_id()), central_point));
-								if(!no_reordering)
 								{
 									bool need_reverse=false;
 									for(std::size_t i=0;i<contour_mesh_vertex_ids.size() && !need_reverse;i++)
@@ -255,6 +287,7 @@ public:
 				}
 			}
 		}
+
 		mesh_links_.reserve(map_of_mesh_links.size());
 		for(std::map< Pair, std::pair<std::size_t, std::size_t> >::const_iterator map_of_mesh_links_it=map_of_mesh_links.begin();map_of_mesh_links_it!=map_of_mesh_links.end();++map_of_mesh_links_it)
 		{
