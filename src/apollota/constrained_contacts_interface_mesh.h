@@ -288,10 +288,130 @@ public:
 			}
 		}
 
-		mesh_links_.reserve(map_of_mesh_links.size());
-		for(std::map< Pair, std::pair<std::size_t, std::size_t> >::const_iterator map_of_mesh_links_it=map_of_mesh_links.begin();map_of_mesh_links_it!=map_of_mesh_links.end();++map_of_mesh_links_it)
+		collect_mesh_links();
+
+		if(only_largest_component)
 		{
-			mesh_links_.push_back(map_of_mesh_links_it->first);
+			restrict_to_largest_connected_component();
+		}
+	}
+
+	void restrict_to_largest_connected_component()
+	{
+		if(mesh_links_.empty())
+		{
+			return;
+		}
+
+		std::vector< std::set<std::size_t> > graph(mesh_vertices_.size());
+		for(std::size_t i=0;i<mesh_links_.size();i++)
+		{
+			graph[mesh_links_[i].get(0)].insert(mesh_links_[i].get(1));
+			graph[mesh_links_[i].get(1)].insert(mesh_links_[i].get(0));
+		}
+
+		std::map<std::size_t, int> visited_ids;
+		{
+			std::size_t current_component_id=0;
+			while(visited_ids.size()<mesh_vertices_.size())
+			{
+				std::vector<std::size_t> stack;
+				for(std::size_t i=0;i<mesh_vertices_.size() && stack.empty();i++)
+				{
+					if(visited_ids.count(i)==0)
+					{
+						current_component_id++;
+						stack.push_back(i);
+					}
+				}
+				while(!stack.empty())
+				{
+					const std::size_t current_id=stack.back();
+					stack.pop_back();
+					if(visited_ids.count(current_id)==0)
+					{
+						visited_ids[current_id]=current_component_id;
+						const std::set<std::size_t>& neighbor_ids=graph[current_id];
+						for(std::set<std::size_t>::const_iterator neighbor_ids_it=neighbor_ids.begin();neighbor_ids_it!=neighbor_ids.end();++neighbor_ids_it)
+						{
+							const std::size_t neighbor_id=(*neighbor_ids_it);
+							if(visited_ids.count(neighbor_id)==0)
+							{
+								stack.push_back(neighbor_id);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		{
+			std::map<int, unsigned int> map_of_component_to_count;
+			for(std::map<std::size_t, int>::const_iterator visited_ids_it=visited_ids.begin();visited_ids_it!=visited_ids.end();++visited_ids_it)
+			{
+				map_of_component_to_count[visited_ids_it->second]++;
+			}
+			if(map_of_component_to_count.size()>1)
+			{
+				std::map<unsigned int, int> map_of_count_to_component;
+				for(std::map<int, unsigned int>::const_iterator map_of_component_to_count_it=map_of_component_to_count.begin();map_of_component_to_count_it!=map_of_component_to_count.end();++map_of_component_to_count_it)
+				{
+					map_of_count_to_component[map_of_component_to_count_it->second]=map_of_component_to_count_it->first;
+				}
+				const int largest_component_id=map_of_count_to_component.rbegin()->second;
+
+				std::vector<std::size_t> remapping_of_vertices(mesh_vertices_.size(), null_id());
+				std::vector<MeshVertex> selected_mesh_vertices;
+				selected_mesh_vertices.reserve(mesh_vertices_.size());
+				for(std::map<std::size_t, int>::const_iterator visited_ids_it=visited_ids.begin();visited_ids_it!=visited_ids.end();++visited_ids_it)
+				{
+					const std::size_t current_vertex_id=visited_ids_it->first;
+					const int current_component_id=visited_ids_it->second;
+					if(current_component_id==largest_component_id)
+					{
+						remapping_of_vertices[current_vertex_id]=selected_mesh_vertices.size();
+						selected_mesh_vertices.push_back(mesh_vertices_[current_vertex_id]);
+					}
+				}
+
+				for(std::size_t i=0;i<mesh_faces_.size();i++)
+				{
+					const MeshFace& mf=mesh_faces_[i];
+					for(int a=0;a<3;a++)
+					{
+						const int b=(a==0 ? 1 : 0);
+						const int c=(a==0 ? 2 : (a==1 ? 2 : 1));
+						if(remapping_of_vertices[mf.triple_of_mesh_vertex_ids[a]]==null_id() &&
+								remapping_of_vertices[mf.triple_of_mesh_vertex_ids[b]]!=null_id() &&
+								remapping_of_vertices[mf.triple_of_mesh_vertex_ids[c]]!=null_id())
+						{
+							remapping_of_vertices[mf.triple_of_mesh_vertex_ids[a]]=selected_mesh_vertices.size();
+							selected_mesh_vertices.push_back(mesh_vertices_[mf.triple_of_mesh_vertex_ids[a]]);
+						}
+					}
+				}
+
+				std::vector<MeshFace> selected_mesh_faces;
+				selected_mesh_faces.reserve(mesh_faces_.size());
+				for(std::size_t i=0;i<mesh_faces_.size();i++)
+				{
+					const MeshFace& mf=mesh_faces_[i];
+					std::size_t remapped_ids[3]={remapping_of_vertices[mf.triple_of_mesh_vertex_ids[0]],
+							remapping_of_vertices[mf.triple_of_mesh_vertex_ids[1]], remapping_of_vertices[mf.triple_of_mesh_vertex_ids[2]]};
+					if(remapped_ids[0]!=null_id() && remapped_ids[1]!=null_id() && remapped_ids[2]!=null_id())
+					{
+						MeshFace nmf=mf;
+						nmf.triple_of_mesh_vertex_ids[0]=remapped_ids[0];
+						nmf.triple_of_mesh_vertex_ids[1]=remapped_ids[1];
+						nmf.triple_of_mesh_vertex_ids[2]=remapped_ids[2];
+						selected_mesh_faces.push_back(nmf);
+					}
+				}
+
+				mesh_vertices_.swap(selected_mesh_vertices);
+				mesh_faces_.swap(selected_mesh_faces);
+				collect_mesh_links();
+			}
 		}
 	}
 
@@ -299,7 +419,6 @@ public:
 	{
 		return mesh_vertices_;
 	}
-
 
 	const std::vector<MeshFace>& mesh_faces() const
 	{
@@ -388,6 +507,31 @@ private:
 	std::vector<MeshVertex> mesh_vertices_;
 	std::vector<MeshFace> mesh_faces_;
 	std::vector<Pair> mesh_links_;
+
+	void collect_mesh_links()
+	{
+		std::set<Pair> set_of_mesh_links;
+		for(std::size_t i=0;i<mesh_faces_.size();i++)
+		{
+			const MeshFace& mf=mesh_faces_[i];
+			for(int a=0;(a+1)<3;a++)
+			{
+				if(mesh_vertices_[mf.triple_of_mesh_vertex_ids[a]].origin!=MeshVertex::VoronoiFaceInside)
+				{
+					for(int b=(a+1);b<3;b++)
+					{
+						if(mesh_vertices_[mf.triple_of_mesh_vertex_ids[b]].origin!=MeshVertex::VoronoiFaceInside)
+						{
+							set_of_mesh_links.insert(Pair(mf.triple_of_mesh_vertex_ids[a], mf.triple_of_mesh_vertex_ids[b]));
+						}
+					}
+				}
+			}
+		}
+		mesh_links_.clear();
+		mesh_links_.reserve(set_of_mesh_links.size());
+		mesh_links_.insert(mesh_links_.end(), set_of_mesh_links.begin(), set_of_mesh_links.end());
+	}
 };
 
 }
