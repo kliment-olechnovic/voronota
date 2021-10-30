@@ -7,6 +7,7 @@
 #include "operators/checksum.h"
 #include "operators/construct_or_load_contacts.h"
 #include "operators/construct_or_load_quality_scores.h"
+#include "operators/convert_bff_obj_to_svg.h"
 #include "operators/fetch.h"
 #include "operators/import_url.h"
 #include "operators/nnport_predict.h"
@@ -32,6 +33,7 @@ public:
 	{
 		set_command_for_extra_actions("call-shell", operators::CallShell());
 		set_command_for_extra_actions("checksum", operators::Checksum());
+		set_command_for_extra_actions("convert-bff-obj-to-svg", operators::ConvertBFFObjToSVG());
 		set_command_for_extra_actions("nnport-predict", operators::NNPortPredict());
 		set_command_for_extra_actions("setup-defaults", operators::SetupDefaults());
 
