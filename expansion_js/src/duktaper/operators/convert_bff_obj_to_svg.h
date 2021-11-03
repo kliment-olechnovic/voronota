@@ -28,29 +28,46 @@ public:
 
 	std::string input_obj_file;
 	std::string input_colors_file;
-	std::string output_svg_file;
 	double scaling_factor;
+	std::string output_svg_file;
 
 	ConvertBFFObjToSVG() : scaling_factor(1000.0)
 	{
 	}
 
-	void initialize(scripting::CommandInput& input)
+	void initialize(scripting::CommandInput& input, const bool managed)
 	{
-		input_obj_file=input.get_value<std::string>("input-obj-file");
-		scripting::assert_file_name_input(input_obj_file, false);
-		input_colors_file=input.get_value_or_default<std::string>("input-colors-file", "");
-		scripting::assert_file_name_input(input_colors_file, true);
+		if(!managed)
+		{
+			input_obj_file=input.get_value<std::string>("input-obj-file");
+			scripting::assert_file_name_input(input_obj_file, false);
+			input_colors_file=input.get_value_or_default<std::string>("input-colors-file", "");
+			scripting::assert_file_name_input(input_colors_file, true);
+		}
+		scaling_factor=input.get_value_or_default<double>("scaling-factor", 1000.0);
 		output_svg_file=input.get_value<std::string>("output-svg-file");
 		scripting::assert_file_name_input(output_svg_file, false);
-		scaling_factor=input.get_value_or_default<double>("scaling-factor", 1000.0);
+	}
+
+	void initialize(scripting::CommandInput& input)
+	{
+		initialize(input, false);
+	}
+
+	void document(scripting::CommandDocumentation& doc, const bool managed) const
+	{
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("input-obj-file", CDOD::DATATYPE_STRING, "input BFF Obj file"));
+			doc.set_option_decription(CDOD("input-colors-file", CDOD::DATATYPE_STRING, "input colors file", ""));
+		}
+		doc.set_option_decription(CDOD("scaling-factor", CDOD::DATATYPE_FLOAT, "scaling of max output box size", 1000.0));
+		doc.set_option_decription(CDOD("output-svg-file", CDOD::DATATYPE_STRING, "output SVG file"));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
-		doc.set_option_decription(CDOD("input-obj-file", CDOD::DATATYPE_STRING, "input BFF Obj file"));
-		doc.set_option_decription(CDOD("input-colors-file", CDOD::DATATYPE_STRING, "input colors file", ""));
-		doc.set_option_decription(CDOD("output-svg-file", CDOD::DATATYPE_STRING, "output SVG file"));
+		document(doc, false);
 	}
 
 	Result run(void*) const

@@ -37,52 +37,68 @@ public:
 
 	common::ConstructionOfContacts::ParametersToDrawContacts parameters_to_draw_contacts;
 	SelectionManager::Query parameters_for_selecting;
-	std::string obj_file;
-	std::string mtl_file;
-	std::string color_file;
 	bool only_largest_component;
 	std::vector<double> alt_step_tries;
+	std::string output_obj_file;
+	std::string output_mtl_file;
+	std::string output_color_file;
 
 	ExportContactsAsConnectedMesh() : only_largest_component(false)
 	{
 	}
 
-	void initialize(CommandInput& input)
+	void initialize(CommandInput& input, const bool managed)
 	{
 		parameters_to_draw_contacts=common::ConstructionOfContacts::ParametersToDrawContacts();
 		parameters_to_draw_contacts.probe=input.get_value_or_default<double>("probe", parameters_to_draw_contacts.probe);
 		parameters_to_draw_contacts.step=input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
-		obj_file=input.get_value<std::string>("obj-file");
-		assert_file_name_input(obj_file, false);
-		mtl_file=input.get_value_or_default<std::string>("mtl-file", "");
-		assert_file_name_input(mtl_file, true);
-		color_file=input.get_value_or_default<std::string>("color-file", "");
-		assert_file_name_input(color_file, true);
 		only_largest_component=input.get_flag("only-largest-component");
 		alt_step_tries=input.get_value_vector_or_default<double>("alt-step-tries", std::vector<double>());
+		if(!managed)
+		{
+			output_obj_file=input.get_value<std::string>("output-obj-file");
+			assert_file_name_input(output_obj_file, false);
+			output_mtl_file=input.get_value_or_default<std::string>("output-mtl-file", "");
+			assert_file_name_input(output_mtl_file, true);
+			output_color_file=input.get_value_or_default<std::string>("output-color-file", "");
+			assert_file_name_input(output_color_file, true);
+		}
 	}
 
-	void document(CommandDocumentation& doc) const
+	void initialize(CommandInput& input)
+	{
+		initialize(input, false);
+	}
+
+	void document(CommandDocumentation& doc, const bool managed) const
 	{
 		common::ConstructionOfContacts::ParametersToDrawContacts params;
 		doc.set_option_decription(CDOD("probe", CDOD::DATATYPE_FLOAT, "probe radius", params.probe));
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
-		doc.set_option_decription(CDOD("obj-file", CDOD::DATATYPE_STRING, "path to output OBJ file"));
-		doc.set_option_decription(CDOD("mtl-file", CDOD::DATATYPE_STRING, "path to output MTL file", ""));
-		doc.set_option_decription(CDOD("color-file", CDOD::DATATYPE_STRING, "path to output face colors file", ""));
 		doc.set_option_decription(CDOD("only-largest-component", CDOD::DATATYPE_BOOL, "flag to only output the largest connected component"));
 		doc.set_option_decription(CDOD("alt-step-tries", CDOD::DATATYPE_FLOAT_ARRAY, "values of step to try for a manifold result", ""));
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("output-obj-file", CDOD::DATATYPE_STRING, "path to output OBJ file"));
+			doc.set_option_decription(CDOD("output-mtl-file", CDOD::DATATYPE_STRING, "path to output MTL file", ""));
+			doc.set_option_decription(CDOD("output-color-file", CDOD::DATATYPE_STRING, "path to output face colors file", ""));
+		}
+	}
+
+	void document(CommandDocumentation& doc) const
+	{
+		document(doc, false);
 	}
 
 	Result run(DataManager& data_manager) const
 	{
 		data_manager.assert_contacts_availability();
 
-		assert_file_name_input(obj_file, false);
-		assert_file_name_input(mtl_file, true);
-		assert_file_name_input(color_file, true);
+		assert_file_name_input(output_obj_file, false);
+		assert_file_name_input(output_mtl_file, true);
+		assert_file_name_input(output_color_file, true);
 
 		const std::set<std::size_t> all_contact_ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 
@@ -106,7 +122,7 @@ public:
 			throw std::runtime_error(std::string("No non-solvent contacts selected."));
 		}
 
-		const bool record_coloring=(!mtl_file.empty() || !color_file.empty());
+		const bool record_coloring=(!output_mtl_file.empty() || !output_color_file.empty());
 
 		std::set<apollota::Pair> set_of_ab_pairs;
 		std::map< unsigned int, std::set<apollota::Pair> > map_of_colors_to_ab_pairs;
@@ -167,13 +183,13 @@ public:
 		}
 
 		{
-			OutputSelector output_selector(obj_file);
+			OutputSelector output_selector(output_obj_file);
 			std::ostream& output=output_selector.stream();
-			assert_io_stream(obj_file, output);
+			assert_io_stream(output_obj_file, output);
 
-			if(!mtl_file.empty())
+			if(!output_mtl_file.empty())
 			{
-				output << "mtllib " << mtl_file << "\n";
+				output << "mtllib " << output_mtl_file << "\n";
 			}
 
 			for(std::size_t i=0;i<ccim.mesh_vertices().size();i++)
@@ -181,7 +197,7 @@ public:
 				output << "v " << ccim.mesh_vertices()[i].point << "\n";
 			}
 
-			if(mtl_file.empty())
+			if(output_mtl_file.empty())
 			{
 				for(std::size_t i=0;i<ccim.mesh_faces().size();i++)
 				{
@@ -209,11 +225,11 @@ public:
 			}
 		}
 
-		if(!mtl_file.empty())
+		if(!output_mtl_file.empty())
 		{
-			OutputSelector output_selector(mtl_file);
+			OutputSelector output_selector(output_mtl_file);
 			std::ostream& output=output_selector.stream();
-			assert_io_stream(mtl_file, output);
+			assert_io_stream(output_mtl_file, output);
 
 			for(std::map< unsigned int, std::set<apollota::Pair> >::const_iterator map_of_colors_to_ab_pairs_it=map_of_colors_to_ab_pairs.begin();map_of_colors_to_ab_pairs_it!=map_of_colors_to_ab_pairs.end();++map_of_colors_to_ab_pairs_it)
 			{
@@ -231,11 +247,11 @@ public:
 			}
 		}
 
-		if(!color_file.empty())
+		if(!output_color_file.empty())
 		{
-			OutputSelector output_selector(color_file);
+			OutputSelector output_selector(output_color_file);
 			std::ostream& output=output_selector.stream();
-			assert_io_stream(color_file, output);
+			assert_io_stream(output_color_file, output);
 
 			for(std::map< unsigned int, std::set<apollota::Pair> >::const_iterator map_of_colors_to_ab_pairs_it=map_of_colors_to_ab_pairs.begin();map_of_colors_to_ab_pairs_it!=map_of_colors_to_ab_pairs.end();++map_of_colors_to_ab_pairs_it)
 			{

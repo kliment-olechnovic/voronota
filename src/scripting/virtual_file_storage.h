@@ -34,7 +34,7 @@ public:
 			VirtualFileStorage::delete_file(filename_);
 		}
 
-		const std::string filename() const
+		const std::string& filename() const
 		{
 			return filename_;
 		}
