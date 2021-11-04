@@ -91,7 +91,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.contacts_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep")
+		if(by!="area" && by!="adjunct" && by!="dist-centers" && by!="dist-balls" && by!="seq-sep" && by!="residue-ids")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -106,7 +106,7 @@ public:
 			throw std::runtime_error(std::string("Adjunct name provided when coloring not by adjunct."));
 		}
 
-		if(!auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
+		if(scheme!="random" && !auxiliaries::ColorUtilities::color_valid(auxiliaries::ColorUtilities::color_from_gradient(scheme, 0.5)))
 		{
 			throw std::runtime_error(std::string("Invalid 'scheme' value '")+scheme+"'.");
 		}
@@ -191,6 +191,27 @@ public:
 				}
 			}
 		}
+		else if(by=="residue-ids")
+		{
+			std::map<common::ChainResidueAtomDescriptorsPair, double> residue_ids_to_values;
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)]=0.5;
+			}
+			if(residue_ids_to_values.size()>1)
+			{
+				int i=0;
+				for(std::map<common::ChainResidueAtomDescriptorsPair, double>::iterator it=residue_ids_to_values.begin();it!=residue_ids_to_values.end();++it)
+				{
+					it->second=static_cast<double>(i)/static_cast<double>(residue_ids_to_values.size()-1);
+					i++;
+				}
+			}
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				map_of_ids_values[*it]=residue_ids_to_values[common::ConversionOfDescriptors::get_contact_descriptor(data_manager.atoms(), data_manager.contacts()[*it]).without_some_info(true, true, false, false)];
+			}
+		}
 
 		if(map_of_ids_values.empty())
 		{
@@ -220,11 +241,30 @@ public:
 		{
 			DataManager::DisplayStateUpdater dsu;
 			dsu.visual_ids=representation_ids;
-
-			for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+			if(scheme=="random")
 			{
-				dsu.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
-				data_manager.update_contacts_display_state(dsu, it->first);
+				std::map<double, auxiliaries::ColorUtilities::ColorInteger> map_of_values_colors;
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					map_of_values_colors[it->second]=0;
+				}
+				for(std::map<double, auxiliaries::ColorUtilities::ColorInteger>::iterator it=map_of_values_colors.begin();it!=map_of_values_colors.end();++it)
+				{
+					it->second=OperatorsUtilities::get_next_random_color();
+				}
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					dsu.color=map_of_values_colors[it->second];
+					data_manager.update_contacts_display_state(dsu, it->first);
+				}
+			}
+			else
+			{
+				for(std::map<std::size_t, double>::const_iterator it=map_of_ids_values.begin();it!=map_of_ids_values.end();++it)
+				{
+					dsu.color=auxiliaries::ColorUtilities::color_from_gradient(scheme, it->second);
+					data_manager.update_contacts_display_state(dsu, it->first);
+				}
 			}
 		}
 
