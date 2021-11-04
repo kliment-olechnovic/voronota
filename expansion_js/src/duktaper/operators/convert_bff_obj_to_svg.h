@@ -212,15 +212,25 @@ public:
 			std::ostream& foutput=output_selector.stream();
 			scripting::assert_io_stream(output_svg_file, foutput);
 
-			foutput << "<svg viewBox=\"0 0 " << static_cast<int>(vt_max.x+0.5) << " " << static_cast<int>(vt_max.y+0.5) << "\"";
+			const int width=static_cast<int>(vt_max.x+0.5);
+			const int height=static_cast<int>(vt_max.y+0.5);
+
+			foutput << "<svg";
+			foutput << " viewBox=\"0 0 " << width << " " << height << "\"";
+			foutput << " shape-rendering=\"crispEdges\"";
 			foutput << " xmlns=\"http://www.w3.org/2000/svg\"";
-			foutput << ">\n";
+			foutput << " >\n";
+			foutput << "<rect width=\"" << width << "\"";
+			foutput << " height=\"" << height << "\"";
+			foutput << " fill=\"rgb(0,0,0)\"";
+			foutput << " />\n";
 			for(std::map<FaceID, FaceContent>::const_iterator faces_it=faces.begin();faces_it!=faces.end();++faces_it)
 			{
 				const FaceContent& fc=faces_it->second;
 				if(fc.valid_vt_indices(vt_points.size()))
 				{
-					foutput << "<polygon points=\"";
+					foutput << "<polygon";
+					foutput << " points=\"";
 					for(unsigned int i=0;i<3;i++)
 					{
 						const VTPoint& vt=vt_points[fc.vt_indices[i]];
@@ -231,7 +241,6 @@ public:
 					foutput << fc.red() << ",";
 					foutput << fc.green() << ",";
 					foutput << fc.blue() << ")\"";
-					foutput << " shape-rendering=\"crispEdges\"";
 					foutput << " />\n";
 				}
 			}
