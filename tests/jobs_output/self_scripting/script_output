@@ -912,10 +912,19 @@
             "name":"add-figure",
             "short_description":""},
           {
+            "name":"add-figure-of-2nd-order-cells-for-contacts",
+            "short_description":""},
+          {
             "name":"add-figure-of-convex-hull",
             "short_description":""},
           {
+            "name":"add-figure-of-nth-order-cell",
+            "short_description":""},
+          {
             "name":"add-figure-of-triangulation",
+            "short_description":""},
+          {
+            "name":"add-figure-of-voxels-test",
             "short_description":""},
           {
             "name":"cad-score",
@@ -1033,6 +1042,9 @@
             "short_description":""},
           {
             "name":"export-contacts",
+            "short_description":""},
+          {
+            "name":"export-contacts-as-connected-mesh",
             "short_description":""},
           {
             "name":"export-contacts-as-pymol-cgo",
