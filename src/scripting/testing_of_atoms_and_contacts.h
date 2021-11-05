@@ -220,9 +220,9 @@ public:
 		TesterOfContact(const std::vector<Atom>* atoms_ptr=0, const std::vector<Contact>* contacts_ptr=0) :
 			atoms_ptr(atoms_ptr),
 			contacts_ptr(contacts_ptr),
-			match_min_area(std::numeric_limits<double>::min()),
+			match_min_area(std::numeric_limits<double>::lowest()),
 			match_max_area(std::numeric_limits<double>::max()),
-			match_min_dist(std::numeric_limits<double>::min()),
+			match_min_dist(std::numeric_limits<double>::lowest()),
 			match_max_dist(std::numeric_limits<double>::max()),
 			match_min_sequence_separation(common::ChainResidueAtomDescriptor::null_num()),
 			match_max_sequence_separation(common::ChainResidueAtomDescriptor::null_num()),

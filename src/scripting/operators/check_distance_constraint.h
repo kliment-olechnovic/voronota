@@ -28,7 +28,7 @@ public:
 	double interval_max;
 	bool all;
 
-	CheckDistanceConstraint() : interval_min(std::numeric_limits<double>::min()), interval_max(std::numeric_limits<double>::max()), all(false)
+	CheckDistanceConstraint() : interval_min(std::numeric_limits<double>::lowest()), interval_max(std::numeric_limits<double>::max()), all(false)
 	{
 	}
 
@@ -36,7 +36,7 @@ public:
 	{
 		selection_expresion_for_atoms_a=input.get_value<std::string>("atoms-first");
 		selection_expresion_for_atoms_b=input.get_value<std::string>("atoms-second");
-		interval_min=input.get_value_or_default<double>("interval-min", std::numeric_limits<double>::min());
+		interval_min=input.get_value_or_default<double>("interval-min", std::numeric_limits<double>::lowest());
 		interval_max=input.get_value_or_default<double>("interval-max", std::numeric_limits<double>::max());
 		all=input.get_flag("all");
 	}

@@ -117,9 +117,9 @@ void query_contacts(const voronota::auxiliaries::ProgramOptionsHandler& poh)
 	const std::string match_second_not=poh.argument<std::string>(pohw.describe_option("--match-second-not", "string", "negative selection for second contacting group"), "");
 	const int match_min_sequence_separation=poh.argument<int>(pohw.describe_option("--match-min-seq-sep", "number", "minimum residue sequence separation"), CRAD::null_num());
 	const int match_max_sequence_separation=poh.argument<int>(pohw.describe_option("--match-max-seq-sep", "number", "maximum residue sequence separation"), CRAD::null_num());
-	const double match_min_area=poh.argument<double>(pohw.describe_option("--match-min-area", "number", "minimum contact area"), std::numeric_limits<double>::min());
+	const double match_min_area=poh.argument<double>(pohw.describe_option("--match-min-area", "number", "minimum contact area"), std::numeric_limits<double>::lowest());
 	const double match_max_area=poh.argument<double>(pohw.describe_option("--match-max-area", "number", "maximum contact area"), std::numeric_limits<double>::max());
-	const double match_min_dist=poh.argument<double>(pohw.describe_option("--match-min-dist", "number", "minimum distance"), std::numeric_limits<double>::min());
+	const double match_min_dist=poh.argument<double>(pohw.describe_option("--match-min-dist", "number", "minimum distance"), std::numeric_limits<double>::lowest());
 	const double match_max_dist=poh.argument<double>(pohw.describe_option("--match-max-dist", "number", "maximum distance"), std::numeric_limits<double>::max());
 	const std::string match_tags=poh.argument<std::string>(pohw.describe_option("--match-tags", "string", "tags to match"), "");
 	const std::string match_tags_not=poh.argument<std::string>(pohw.describe_option("--match-tags-not", "string", "tags to not match"), "");

@@ -313,8 +313,8 @@ public:
 
 		BetweennessCentralitiesResult() :
 			max_number_of_paths(0),
-			range_of_vertex_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::min()),
-			range_of_edge_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::min())
+			range_of_vertex_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest()),
+			range_of_edge_centralities(std::numeric_limits<double>::max(), std::numeric_limits<double>::lowest())
 		{
 		}
 	};
