@@ -54,7 +54,7 @@ public:
 		parameters_to_draw_contacts.step=input.get_value_or_default<double>("step", parameters_to_draw_contacts.step);
 		parameters_for_selecting=OperatorsUtilities::read_generic_selecting_query(input);
 		only_largest_component=input.get_flag("only-largest-component");
-		alt_step_tries=input.get_value_vector_or_default<double>("alt-step-tries", std::vector<double>());
+		alt_step_tries=input.get_value_vector_or_default<double>("alt-step-tries", generate_default_alt_step_tries());
 		if(!managed)
 		{
 			output_obj_file=input.get_value<std::string>("output-obj-file");
@@ -78,7 +78,7 @@ public:
 		doc.set_option_decription(CDOD("step", CDOD::DATATYPE_FLOAT, "edge step size", params.step));
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("only-largest-component", CDOD::DATATYPE_BOOL, "flag to only output the largest connected component"));
-		doc.set_option_decription(CDOD("alt-step-tries", CDOD::DATATYPE_FLOAT_ARRAY, "values of step to try for a manifold result", ""));
+		doc.set_option_decription(CDOD("alt-step-tries", CDOD::DATATYPE_FLOAT_ARRAY, "values of step to try for a manifold result", "0.05 0.10 ... 0.45 0.50"));
 		if(!managed)
 		{
 			doc.set_option_decription(CDOD("output-obj-file", CDOD::DATATYPE_STRING, "path to output OBJ file"));
@@ -275,6 +275,17 @@ public:
 		result.step=step_used;
 
 		return result;
+	}
+
+private:
+	static std::vector<double> generate_default_alt_step_tries()
+	{
+		std::vector<double> steps;
+		for(int step=5;step<=50;step+=5)
+		{
+			steps.push_back(static_cast<double>(step)/100.0);
+		}
+		return steps;
 	}
 };
 
