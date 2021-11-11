@@ -35,6 +35,19 @@ EOF
 
 ./voronota-js-membrane-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
 
+
+echo -e "\n## VoroMQA-based collection of protein-protein complex features\n"
+
+cat << EOF
+'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein-protein complexes.
+
+### Script interface
+
+EOF
+
+./voronota-js-ifeatures-voromqa -h 2>&1 | tail -n +3 | sed 's/^/    /'
+
+
 } > $TMPDIR/documentation.markdown
 
 cat > $TMPDIR/include_in_header.html << 'EOF'

@@ -4,11 +4,12 @@ Voronota-JS is an expansion of the core Voronota software.
 Voronota-JS provides a way to write JavaScript scripts for the comprehensive
 analysis of macromolecular structures, including the Voronoi tesselation-based analysis.
 
-Currently, the Voronota-JS package contains three executables:
+Currently, the Voronota-JS package contains four executables:
 
 * "voronota-js" - core engine that executes JavaScript scripts.
 * "voronota-js-voromqa" - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
 * "voronota-js-membrane-voromqa" - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
+* "voronota-js-ifeatures-voromqa" - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
 
 # Getting the latest version
 

@@ -4,7 +4,7 @@ function print_help_and_exit
 {
 cat >&2 << 'EOF'
 
-'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein complexes.
+'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein-protein complexes.
 
 Options:
     --input | -i              string  *  input file path or '_list' to read file paths from stdin

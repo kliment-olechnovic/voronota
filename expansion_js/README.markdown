@@ -4,11 +4,12 @@ Voronota-JS is an expansion of the core Voronota software.
 Voronota-JS provides a way to write JavaScript scripts for the comprehensive
 analysis of macromolecular structures, including the Voronoi tesselation-based analysis.
 
-Currently, the Voronota-JS package contains three executables:
+Currently, the Voronota-JS package contains four executables:
 
 * "voronota-js" - core engine that executes JavaScript scripts.
 * "voronota-js-voromqa" - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).
 * "voronota-js-membrane-voromqa" - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.
+* "voronota-js-ifeatures-voromqa" - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.
 
 # Getting the latest version
 
@@ -135,4 +136,29 @@ the sources in "src" directory using GNU C++ compiler:
         voronota-js-membrane-voromqa --input model.pdb \
           --membrane-width 20,25,30 \
           --output-local-scores ./local_scores/
+    
+
+## VoroMQA-based collection of protein-protein complex features
+
+'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein-protein complexes.
+
+### Script interface
+
+    
+    Options:
+        --input | -i              string  *  input file path or '_list' to read file paths from stdin
+        --output-table-file       string     output table file path, default is '_stdout' to print to stdout
+        --processors              number     maximum number of processors to use, default is 1
+        --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
+        --as-assembly                        flag to treat input file as biological assembly
+        --help | -h                          flag to display help message and exit
+    
+    Standard output:
+        space-separated table of scores
+        
+    Examples:
+    
+        voronota-js-ifeatures-voromqa --input model.pdb
+        
+        ls *.pdb | voronota-js-ifeatures-voromqa --input _list --processors 8 | column -t
     

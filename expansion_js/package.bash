@@ -30,6 +30,7 @@ cp "./CMakeLists.txt" "$PACKAGE_NAME/CMakeLists.txt"
 cp "./voronota-js" "$PACKAGE_NAME/voronota-js"
 cp "./voronota-js-voromqa" "$PACKAGE_NAME/voronota-js-voromqa"
 cp "./voronota-js-membrane-voromqa" "$PACKAGE_NAME/voronota-js-membrane-voromqa"
+cp "./voronota-js-ifeatures-voromqa" "$PACKAGE_NAME/voronota-js-ifeatures-voromqa"
 cp "../LICENSE.txt" "$PACKAGE_NAME/LICENSE.txt"
 
 echo "Voronota-JS version ${VERSIONID}" > "$PACKAGE_NAME/VERSION.txt"

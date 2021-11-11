@@ -30,16 +30,20 @@
 <li><a href="#voromqa-based-membrane-protein-structure-assessment">VoroMQA-based membrane protein structure assessment</a><ul>
 <li><a href="#script-interface-1">Script interface</a></li>
 </ul></li>
+<li><a href="#voromqa-based-collection-of-protein-protein-complex-features">VoroMQA-based collection of protein-protein complex features</a><ul>
+<li><a href="#script-interface-2">Script interface</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </div>
 <h1 id="about-voronota-js-expansion">About Voronota-JS expansion</h1>
 <p>Voronota-JS is an expansion of the core Voronota software. Voronota-JS provides a way to write JavaScript scripts for the comprehensive analysis of macromolecular structures, including the Voronoi tesselation-based analysis.</p>
-<p>Currently, the Voronota-JS package contains three executables:</p>
+<p>Currently, the Voronota-JS package contains four executables:</p>
 <ul>
 <li>&quot;voronota-js&quot; - core engine that executes JavaScript scripts.</li>
 <li>&quot;voronota-js-voromqa&quot; - wrapper to a voronota-js program for computing VoroMQA scores, both old and new (developed for CASP14).</li>
 <li>&quot;voronota-js-membrane-voromqa&quot; - wrapper to a voronota-js program for the VoroMQA-based analysis and assessment of membrane protein structural models.</li>
+<li>&quot;voronota-js-ifeatures-voromqa&quot; - wrapper to a voronota-js program for the computation of multiple VoroMQA-based features of protein-protein complexes.</li>
 </ul>
 <h1 id="getting-the-latest-version">Getting the latest version</h1>
 <p>Download the archive from <a href="https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz" class="uri">https://kliment-olechnovic.github.io/voronota/expansion_js/voronota-js_release.tar.gz</a>.</p>
@@ -133,5 +137,24 @@ Examples:
     voronota-js-membrane-voromqa --input model.pdb \
       --membrane-width 20,25,30 \
       --output-local-scores ./local_scores/</code></pre>
+<h2 id="voromqa-based-collection-of-protein-protein-complex-features">VoroMQA-based collection of protein-protein complex features</h2>
+<p>'voronota-js-ifeatures-voromqa' script computes multiple VoroMQA-based features of protein-protein complexes.</p>
+<h3 id="script-interface-2">Script interface</h3>
+<pre><code>Options:
+    --input | -i              string  *  input file path or &#39;_list&#39; to read file paths from stdin
+    --output-table-file       string     output table file path, default is &#39;_stdout&#39; to print to stdout
+    --processors              number     maximum number of processors to use, default is 1
+    --use-scwrl                          flag to use Scwrl4 to rebuild side-chains
+    --as-assembly                        flag to treat input file as biological assembly
+    --help | -h                          flag to display help message and exit
+
+Standard output:
+    space-separated table of scores
+    
+Examples:
+
+    voronota-js-ifeatures-voromqa --input model.pdb
+    
+    ls *.pdb | voronota-js-ifeatures-voromqa --input _list --processors 8 | column -t</code></pre>
 </body>
 </html>
