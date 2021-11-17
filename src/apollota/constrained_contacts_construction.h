@@ -27,7 +27,8 @@ public:
 			const std::set<std::size_t>& mock_solvent_ids,
 			const std::vector<int>& lookup_groups,
 			std::pair< bool, std::map<std::size_t, double> >& volumes_bundle,
-			std::pair< bool, std::map<Pair, double> >& bounding_arcs_bundle)
+			std::pair< bool, std::map<Pair, double> >& bounding_arcs_bundle,
+			std::pair< bool, std::map<Triple, double> >& edge_strips_bundle)
 	{
 		std::map<Pair, double> result;
 
@@ -100,6 +101,54 @@ public:
 								if(point_record_it->right_id==a && next_point_record_it->left_id==a)
 								{
 									bounding_arcs_sum+=distance_from_point_to_point(point_record_it->p, next_point_record_it->p);
+								}
+							}
+						}
+						if(edge_strips_bundle.first)
+						{
+							std::set<Triple> encountered_triples;
+							for(ConstrainedContactContour::Contour::const_iterator point_record_it=contour.begin();point_record_it!=contour.end();++point_record_it)
+							{
+								ConstrainedContactContour::Contour::const_iterator next_point_record_it=point_record_it;
+								++next_point_record_it;
+								if(next_point_record_it==contour.end())
+								{
+									next_point_record_it=contour.begin();
+								}
+								if(!(point_record_it->right_id==a && next_point_record_it->left_id==a))
+								{
+									encountered_triples.insert(Triple(a, b, (point_record_it->right_id!=a ? point_record_it->right_id : next_point_record_it->left_id)));
+								}
+							}
+							std::set<Triple> new_encountered_triples;
+							for(std::set<Triple>::const_iterator encountered_triples_it=encountered_triples.begin();encountered_triples_it!=encountered_triples.end();++encountered_triples_it)
+							{
+								const Triple& t=(*encountered_triples_it);
+								if(edge_strips_bundle.second.count(t)==0)
+								{
+									new_encountered_triples.insert(t);
+								}
+							}
+							std::map<Triple, double>::iterator edge_strips_map_it=edge_strips_bundle.second.end();
+							for(ConstrainedContactContour::Contour::const_iterator point_record_it=contour.begin();point_record_it!=contour.end();++point_record_it)
+							{
+								ConstrainedContactContour::Contour::const_iterator next_point_record_it=point_record_it;
+								++next_point_record_it;
+								if(next_point_record_it==contour.end())
+								{
+									next_point_record_it=contour.begin();
+								}
+								if(!(point_record_it->right_id==a && next_point_record_it->left_id==a))
+								{
+									Triple t(a, b, (point_record_it->right_id!=a ? point_record_it->right_id : next_point_record_it->left_id));
+									if(new_encountered_triples.count(t)>0)
+									{
+										if(edge_strips_map_it==edge_strips_bundle.second.end() || !(edge_strips_map_it->first==t))
+										{
+											edge_strips_map_it=edge_strips_bundle.second.insert(std::make_pair(t, 0.0)).first;
+										}
+										edge_strips_map_it->second+=distance_from_point_to_point(point_record_it->p, next_point_record_it->p);
+									}
 								}
 							}
 						}

@@ -55,6 +55,7 @@ public:
 		int sih_depth;
 		bool calculate_volumes;
 		bool calculate_bounding_arcs;
+		bool calculate_adjacencies;
 		bool skip_sas;
 		bool skip_same_group;
 		std::vector<int> lookup_groups;
@@ -66,6 +67,7 @@ public:
 			sih_depth(3),
 			calculate_volumes(false),
 			calculate_bounding_arcs(false),
+			calculate_adjacencies(false),
 			skip_sas(false),
 			skip_same_group(false)
 		{
@@ -79,6 +81,7 @@ public:
 					&& sih_depth==b.sih_depth
 					&& calculate_volumes==b.calculate_volumes
 					&& calculate_bounding_arcs==b.calculate_bounding_arcs
+					&& calculate_adjacencies==b.calculate_adjacencies
 					&& skip_sas==b.skip_sas
 					&& skip_same_group==b.skip_same_group);
 		}
@@ -91,6 +94,7 @@ public:
 					|| sih_depth!=b.sih_depth
 					|| (calculate_volumes && !b.calculate_volumes)
 					|| (calculate_bounding_arcs && !b.calculate_bounding_arcs)
+					|| (calculate_adjacencies && !b.calculate_adjacencies)
 					|| (!skip_sas && b.skip_sas)
 					|| (!skip_same_group && b.skip_same_group));
 		}
@@ -102,6 +106,8 @@ public:
 		std::vector<Contact> contacts;
 		std::vector<double> volumes;
 		std::vector<double> bounding_arcs;
+		std::vector< std::map<std::size_t, double> > adjacencies;
+		std::vector<double> adjacency_perimeters;
 	};
 
 	struct BundleOfContactsMeshInformation
@@ -138,9 +144,10 @@ public:
 		std::map<apollota::Pair, double> interactions_map;
 		std::pair< bool, std::map<std::size_t, double> > volumes_map_bundle(parameters.calculate_volumes, std::map<std::size_t, double>());
 		std::pair< bool, std::map<apollota::Pair, double> > bounding_arcs_map_bundle(parameters.calculate_bounding_arcs, std::map<apollota::Pair, double>());
+		std::pair< bool, std::map<apollota::Triple, double> > edge_strips_map_bundle(parameters.calculate_adjacencies, std::map<apollota::Triple, double>());
 
 		{
-			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle, bounding_arcs_map_bundle);
+			const std::map<apollota::Pair, double> constrained_contacts=apollota::ConstrainedContactsConstruction::construct_contacts(bundle_of_triangulation_information.spheres, vertices_vector, parameters.probe, parameters.step, parameters.projections, std::set<std::size_t>(), (parameters.skip_same_group ?  parameters.lookup_groups : std::vector<int>(0)), volumes_map_bundle, bounding_arcs_map_bundle, edge_strips_map_bundle);
 			for(std::map<apollota::Pair, double>::const_iterator it=constrained_contacts.begin();it!=constrained_contacts.end();++it)
 			{
 				const std::size_t id_a=it->first.get(0);
@@ -216,6 +223,53 @@ public:
 				if(it!=bounding_arcs_map.end())
 				{
 					bundle_of_contact_information.bounding_arcs[i]=it->second;
+				}
+			}
+		}
+
+		if(edge_strips_map_bundle.first && !edge_strips_map_bundle.second.empty())
+		{
+			bundle_of_contact_information.adjacencies.resize(bundle_of_contact_information.contacts.size());
+			bundle_of_contact_information.adjacency_perimeters.resize(bundle_of_contact_information.contacts.size());
+			const std::map<apollota::Triple, double>& edge_strips_map=edge_strips_map_bundle.second;
+			std::map<apollota::Pair, std::size_t> map_of_pairs_to_ids;
+			for(std::size_t i=0;i<bundle_of_contact_information.contacts.size();i++)
+			{
+				const Contact& contact=bundle_of_contact_information.contacts[i];
+				map_of_pairs_to_ids[apollota::Pair(contact.ids[0], contact.ids[1])]=i;
+			}
+			for(std::map<apollota::Triple, double>::const_iterator it=edge_strips_map.begin();it!=edge_strips_map.end();++it)
+			{
+				const apollota::Triple& t=it->first;
+				std::map<apollota::Pair, std::size_t>::const_iterator id01_it=map_of_pairs_to_ids.find(apollota::Pair(t.get(0), t.get(1)));
+				std::map<apollota::Pair, std::size_t>::const_iterator id02_it=map_of_pairs_to_ids.find(apollota::Pair(t.get(0), t.get(2)));
+				std::map<apollota::Pair, std::size_t>::const_iterator id12_it=map_of_pairs_to_ids.find(apollota::Pair(t.get(1), t.get(2)));
+				if(id01_it!=map_of_pairs_to_ids.end() && id02_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacencies[id01_it->second][id02_it->second]=it->second;
+					bundle_of_contact_information.adjacencies[id02_it->second][id01_it->second]=it->second;
+				}
+				if(id01_it!=map_of_pairs_to_ids.end() && id12_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacencies[id01_it->second][id12_it->second]=it->second;
+					bundle_of_contact_information.adjacencies[id12_it->second][id01_it->second]=it->second;
+				}
+				if(id02_it!=map_of_pairs_to_ids.end() && id12_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacencies[id02_it->second][id12_it->second]=it->second;
+					bundle_of_contact_information.adjacencies[id12_it->second][id02_it->second]=it->second;
+				}
+				if(id01_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacency_perimeters[id01_it->second]+=it->second;
+				}
+				if(id02_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacency_perimeters[id02_it->second]+=it->second;
+				}
+				if(id12_it!=map_of_pairs_to_ids.end())
+				{
+					bundle_of_contact_information.adjacency_perimeters[id12_it->second]+=it->second;
 				}
 			}
 		}

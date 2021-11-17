@@ -429,6 +429,11 @@ public:
 		return contacts_;
 	}
 
+	const std::vector< std::map<std::size_t, double> >& contacts_adjacencies() const
+	{
+		return contacts_adjacencies_;
+	}
+
 	const std::vector<Figure>& figures() const
 	{
 		return figures_;
@@ -1163,6 +1168,7 @@ public:
 	{
 		change_indicator_.set_changed_contacts(true);
 		contacts_.clear();
+		contacts_adjacencies_.clear();
 		contacts_display_states_.clear();
 		selection_manager_.set_contacts(0);
 		history_of_actions_on_contacts_.clear();
@@ -1181,6 +1187,7 @@ public:
 		}
 		change_indicator_.set_changed_contacts(true);
 		contacts_.swap(contacts);
+		contacts_adjacencies_.clear();
 		reset_contacts_display_states();
 		selection_manager_.set_contacts(&contacts_);
 		history_of_actions_on_contacts_.clear();
@@ -1235,6 +1242,15 @@ public:
 			for(std::size_t i=0;i<bundle_of_contact_information.bounding_arcs.size() && i<contacts().size();i++)
 			{
 				contacts_[i].value.props.adjuncts["boundary"]=bundle_of_contact_information.bounding_arcs[i];
+			}
+		}
+
+		if(parameters_to_construct_contacts.calculate_adjacencies)
+		{
+			contacts_adjacencies_=bundle_of_contact_information.adjacencies;
+			for(std::size_t i=0;i<bundle_of_contact_information.adjacency_perimeters.size() && i<contacts().size();i++)
+			{
+				contacts_[i].value.props.adjuncts["adjacency"]=bundle_of_contact_information.adjacency_perimeters[i];
 			}
 		}
 
@@ -1730,6 +1746,7 @@ private:
 	RepresentationsDescriptor figures_representations_descriptor_;
 	std::vector<Atom> atoms_;
 	std::vector<Contact> contacts_;
+	std::vector< std::map<std::size_t, double> > contacts_adjacencies_;
 	std::vector<Figure> figures_;
 	std::map<std::string, double> global_numeric_adjuncts_;
 	std::vector<DisplayState> atoms_display_states_;
