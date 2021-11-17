@@ -574,6 +574,14 @@ public:
 		}
 	}
 
+	void assert_contacts_adjacencies_availability() const
+	{
+		if(contacts_adjacencies_.empty())
+		{
+			throw std::runtime_error(std::string("No contacts adjacencies available."));
+		}
+	}
+
 	void assert_contacts_selections_availability() const
 	{
 		if(selection_manager_.map_of_contacts_selections().empty())
@@ -753,6 +761,28 @@ public:
 			residue_ids.insert(primary_structure_info().map_of_atoms_to_residues.at(*it));
 		}
 		return residue_ids.size();
+	}
+
+	const std::map< std::size_t, std::map<std::size_t, double> > extract_subset_of_contacts_adjacencies(const std::set<std::size_t>& contact_ids) const
+	{
+		std::map< std::size_t, std::map<std::size_t, double> > result;
+		for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
+		{
+			const std::size_t contact_id=(*it);
+			if(contact_id<contacts_adjacencies_.size())
+			{
+				const std::map<std::size_t, double>& all_neighbors=contacts_adjacencies_[contact_id];
+				std::map<std::size_t, double>& selected_neighbors=result[contact_id];
+				for(std::map<std::size_t, double>::const_iterator jt=all_neighbors.begin();jt!=all_neighbors.end();++jt)
+				{
+					if(contact_ids.count(jt->first))
+					{
+						selected_neighbors[jt->first]=jt->second;
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	SelectionManager& selection_manager()

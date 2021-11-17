@@ -132,6 +132,7 @@
 #include "operators/voromqa_frustration.h"
 #include "operators/voromqa_global.h"
 #include "operators/voromqa_interface_frustration.h"
+#include "operators/voromqa_interface_frustration_using_edges.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
 #include "operators/zoom_by_atoms.h"
@@ -304,6 +305,7 @@ public:
 		set_command_for_data_manager("voromqa-frustration", operators::VoroMQAFrustration(), true);
 		set_command_for_data_manager("voromqa-global", operators::VoroMQAGlobal(), true);
 		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
+		set_command_for_data_manager("voromqa-interface-frustration-using-edges", operators::VoroMQAInterfaceFrustrationUsingEdges(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
