@@ -78,10 +78,13 @@ public:
 		params=ScoringOfDataManagersUsingCADScore::Parameters();
 		params.target_selection_expression=input.get_value_or_default<std::string>("t-sel", "[--no-solvent --min-seq-sep 1]");
 		params.model_selection_expression=input.get_value_or_default<std::string>("m-sel", params.target_selection_expression);
-		params.target_adjunct_atom_scores=input.get_value_or_default<std::string>("t-adj-atom", "");
-		params.target_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("t-adj-inter-atom", "");
-		params.target_adjunct_residue_scores=input.get_value_or_default<std::string>("t-adj-residue", "");
-		params.target_adjunct_inter_residue_scores=input.get_value_or_default<std::string>("t-adj-inter-residue", "");
+		if(!managed)
+		{
+			params.target_adjunct_atom_scores=input.get_value_or_default<std::string>("t-adj-atom", "");
+			params.target_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("t-adj-inter-atom", "");
+			params.target_adjunct_residue_scores=input.get_value_or_default<std::string>("t-adj-residue", "");
+			params.target_adjunct_inter_residue_scores=input.get_value_or_default<std::string>("t-adj-inter-residue", "");
+		}
 		params.model_adjunct_atom_scores=input.get_value_or_default<std::string>("m-adj-atom", "");
 		params.model_adjunct_inter_atom_scores=input.get_value_or_default<std::string>("m-adj-inter-atom", "");
 		params.model_adjunct_residue_scores=input.get_value_or_default<std::string>("m-adj-residue", "");
@@ -92,7 +95,10 @@ public:
 		params.binarize=input.get_flag("binarize");
 		params.also_site_based=input.get_flag("also-site-based");
 		params.chain_renaming_pairs=input.get_value_vector_or_default<std::string>("m-chain-renaming-pairs", std::vector<std::string>());
-		target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
+		if(!managed)
+		{
+			target_global_adj_prefix=input.get_value_or_default<std::string>("t-global-adj-prefix", "");
+		}
 		model_global_adj_prefix=input.get_value_or_default<std::string>("m-global-adj-prefix", "");
 	}
 
@@ -110,10 +116,13 @@ public:
 		}
 		doc.set_option_decription(CDOD("t-sel", CDOD::DATATYPE_STRING, "target selection expression", "[--no-solvent --min-seq-sep 1]"));
 		doc.set_option_decription(CDOD("m-sel", CDOD::DATATYPE_STRING, "model selection expression", "[--no-solvent --min-seq-sep 1]"));
-		doc.set_option_decription(CDOD("t-adj-atom", CDOD::DATATYPE_STRING, "target adjunct name for atom scores", ""));
-		doc.set_option_decription(CDOD("t-adj-inter-atom", CDOD::DATATYPE_STRING, "target adjunct name for inter-atom scores", ""));
-		doc.set_option_decription(CDOD("t-adj-residue", CDOD::DATATYPE_STRING, "target adjunct name for residue scores", ""));
-		doc.set_option_decription(CDOD("t-adj-inter-residue", CDOD::DATATYPE_STRING, "target adjunct name for inter-residue scores", ""));
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("t-adj-atom", CDOD::DATATYPE_STRING, "target adjunct name for atom scores", ""));
+			doc.set_option_decription(CDOD("t-adj-inter-atom", CDOD::DATATYPE_STRING, "target adjunct name for inter-atom scores", ""));
+			doc.set_option_decription(CDOD("t-adj-residue", CDOD::DATATYPE_STRING, "target adjunct name for residue scores", ""));
+			doc.set_option_decription(CDOD("t-adj-inter-residue", CDOD::DATATYPE_STRING, "target adjunct name for inter-residue scores", ""));
+		}
 		doc.set_option_decription(CDOD("m-adj-atom", CDOD::DATATYPE_STRING, "model adjunct name for atom scores", ""));
 		doc.set_option_decription(CDOD("m-adj-inter-atom", CDOD::DATATYPE_STRING, "model adjunct name for inter-atom scores", ""));
 		doc.set_option_decription(CDOD("m-adj-residue", CDOD::DATATYPE_STRING, "model adjunct name for residue scores", ""));
@@ -124,7 +133,10 @@ public:
 		doc.set_option_decription(CDOD("binarize", CDOD::DATATYPE_BOOL, "flag to use binary contact description"));
 		doc.set_option_decription(CDOD("also-site-based", CDOD::DATATYPE_BOOL, "flag to also compute site-based score"));
 		doc.set_option_decription(CDOD("m-chain-renaming-pairs", CDOD::DATATYPE_STRING_ARRAY, "source and destination pairs for model chain renaming", ""));
-		doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));
+		if(!managed)
+		{
+			doc.set_option_decription(CDOD("t-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of target", ""));
+		}
 		doc.set_option_decription(CDOD("m-global-adj-prefix", CDOD::DATATYPE_STRING, "prefix for output global adjuncts of model", ""));
 	}
 
