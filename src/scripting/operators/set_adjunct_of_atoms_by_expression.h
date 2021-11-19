@@ -64,7 +64,7 @@ public:
 
 		if(expression=="_reverse_s")
 		{
-			if(input_adjuncts.empty())
+			if(input_adjuncts.size()!=1)
 			{
 				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
 			}
@@ -75,13 +75,24 @@ public:
 		}
 		else if(expression=="_logistic")
 		{
-			if(input_adjuncts.empty())
+			if(input_adjuncts.size()!=1)
 			{
 				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
 			}
 			if(parameters.size()!=3)
 			{
 				throw std::runtime_error(std::string("Not 3 parameters for the defined expression."));
+			}
+		}
+		else if(expression=="_linear_combo")
+		{
+			if(input_adjuncts.empty())
+			{
+				throw std::runtime_error(std::string("No input adjunct names for the defined expression."));
+			}
+			if(parameters.size()!=(input_adjuncts.size()+1))
+			{
+				throw std::runtime_error(std::string("Not correct number of parameters for the defined expression, must be equal to ((number of input adjuncts)+1)."));
 			}
 		}
 		else
@@ -109,20 +120,36 @@ public:
 			}
 		}
 
-		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
-			if(expression=="_reverse_s")
+			std::vector<double> input_adjunct_values(input_adjuncts.size(), 0.0);
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				atom_adjuncts[output_adjunct]=calc_reverse_s_transform(
-						atom_adjuncts[input_adjuncts[0]],
-						parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
-			}
-			if(expression=="_logistic")
-			{
-				atom_adjuncts[output_adjunct]=calc_logistic_transform(
-						atom_adjuncts[input_adjuncts[0]],
-						parameters[0], parameters[1], parameters[2]);
+				std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
+				for(std::size_t i=0;i<input_adjuncts.size();i++)
+				{
+					input_adjunct_values[i]=atom_adjuncts[input_adjuncts[i]];
+				}
+				if(expression=="_reverse_s")
+				{
+					atom_adjuncts[output_adjunct]=calc_reverse_s_transform(
+							input_adjunct_values[0],
+							parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+				}
+				else if(expression=="_logistic")
+				{
+					atom_adjuncts[output_adjunct]=calc_logistic_transform(
+							input_adjunct_values[0],
+							parameters[0], parameters[1], parameters[2]);
+				}
+				else if(expression=="_linear_combo")
+				{
+					double v=parameters.back();
+					for(std::size_t i=0;i<input_adjunct_values.size();i++)
+					{
+						v+=input_adjunct_values[i]*parameters[i];
+					}
+					atom_adjuncts[output_adjunct]=v;
+				}
 			}
 		}
 

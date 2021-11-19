@@ -1281,6 +1281,9 @@
             "name":"show-objects",
             "short_description":""},
           {
+            "name":"smooth-adjacent-contact-adjunct-values",
+            "short_description":""},
+          {
             "name":"source",
             "short_description":""},
           {
