@@ -293,16 +293,21 @@ public:
 					const double bounding_arc=bundle_of_contact_information.bounding_arcs[i];
 					if(bounding_arc>0.0)
 					{
+						std::map<std::size_t, std::size_t>::const_iterator its[2]={map_of_atom_ids_to_solvent_contact_ids.find(contact.ids[0]), map_of_atom_ids_to_solvent_contact_ids.find(contact.ids[1])};
 						for(int j=0;j<2;j++)
 						{
-							std::map<std::size_t, std::size_t>::const_iterator it=map_of_atom_ids_to_solvent_contact_ids.find(contact.ids[j]);
-							if(it!=map_of_atom_ids_to_solvent_contact_ids.end())
+							if(its[j]!=map_of_atom_ids_to_solvent_contact_ids.end())
 							{
-								const std::size_t solvent_contact_id=it->second;
+								const std::size_t solvent_contact_id=its[j]->second;
 								bundle_of_contact_information.adjacencies[i][solvent_contact_id]=bounding_arc;
 								bundle_of_contact_information.adjacencies[solvent_contact_id][i]=bounding_arc;
 								bundle_of_contact_information.adjacency_perimeters[solvent_contact_id]+=bounding_arc;
 							}
+						}
+						if(its[0]!=map_of_atom_ids_to_solvent_contact_ids.end() && its[1]!=map_of_atom_ids_to_solvent_contact_ids.end())
+						{
+							bundle_of_contact_information.adjacencies[its[0]->second][its[1]->second]=bounding_arc;
+							bundle_of_contact_information.adjacencies[its[1]->second][its[0]->second]=bounding_arc;
 						}
 						bundle_of_contact_information.adjacency_perimeters[i]+=bounding_arc;
 					}
