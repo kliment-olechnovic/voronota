@@ -121,6 +121,7 @@
 #include "operators/show_figures.h"
 #include "operators/show_next_picked_object.h"
 #include "operators/show_objects.h"
+#include "operators/smooth_adjacent_contact_adjunct_values.h"
 #include "operators/source.h"
 #include "operators/spectrum_atoms.h"
 #include "operators/spectrum_contacts.h"
@@ -132,7 +133,6 @@
 #include "operators/voromqa_frustration.h"
 #include "operators/voromqa_global.h"
 #include "operators/voromqa_interface_frustration.h"
-#include "operators/voromqa_interface_frustration_using_edges.h"
 #include "operators/voromqa_local.h"
 #include "operators/voromqa_membrane_place.h"
 #include "operators/zoom_by_atoms.h"
@@ -297,6 +297,7 @@ public:
 		set_command_for_data_manager("show-atoms", operators::ShowAtoms(), true);
 		set_command_for_data_manager("show-contacts", operators::ShowContacts(), true);
 		set_command_for_data_manager("show-figures", operators::ShowFigures(), true);
+		set_command_for_data_manager("smooth-adjacent-contact-adjunct-values", operators::SmoothAdjacentContactAdjunctValues(), true);
 		set_command_for_data_manager("spectrum-atoms", operators::SpectrumAtoms(), true);
 		set_command_for_data_manager("spectrum-contacts", operators::SpectrumContacts(), true);
 		set_command_for_data_manager("summarize-linear-structure", operators::SummarizeLinearStructure(), true);
@@ -305,7 +306,6 @@ public:
 		set_command_for_data_manager("voromqa-frustration", operators::VoroMQAFrustration(), true);
 		set_command_for_data_manager("voromqa-global", operators::VoroMQAGlobal(), true);
 		set_command_for_data_manager("voromqa-interface-frustration", operators::VoroMQAInterfaceFrustration(), true);
-		set_command_for_data_manager("voromqa-interface-frustration-using-edges", operators::VoroMQAInterfaceFrustrationUsingEdges(), true);
 		set_command_for_data_manager("voromqa-local", operators::VoroMQALocal(), true);
 		set_command_for_data_manager("voromqa-membrane-place", operators::VoroMQAMembranePlace(), true);
 		set_command_for_data_manager("zoom-by-atoms", operators::ZoomByAtoms(), false);
