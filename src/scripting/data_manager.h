@@ -1271,7 +1271,10 @@ public:
 		{
 			for(std::size_t i=0;i<bundle_of_contact_information.bounding_arcs.size() && i<contacts().size();i++)
 			{
-				contacts_[i].value.props.adjuncts["boundary"]=bundle_of_contact_information.bounding_arcs[i];
+				if(!contacts_[i].solvent())
+				{
+					contacts_[i].value.props.adjuncts["boundary"]=bundle_of_contact_information.bounding_arcs[i];
+				}
 			}
 		}
 

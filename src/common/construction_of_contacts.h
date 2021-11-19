@@ -274,6 +274,42 @@ public:
 			}
 		}
 
+		if(bounding_arcs_map_bundle.first && !bounding_arcs_map_bundle.second.empty() && edge_strips_map_bundle.first && !edge_strips_map_bundle.second.empty())
+		{
+			std::map<std::size_t, std::size_t> map_of_atom_ids_to_solvent_contact_ids;
+			for(std::size_t i=0;i<bundle_of_contact_information.contacts.size();i++)
+			{
+				const Contact& contact=bundle_of_contact_information.contacts[i];
+				if(contact.solvent())
+				{
+					map_of_atom_ids_to_solvent_contact_ids[contact.ids[0]]=i;
+				}
+			}
+			for(std::size_t i=0;i<bundle_of_contact_information.contacts.size();i++)
+			{
+				const Contact& contact=bundle_of_contact_information.contacts[i];
+				if(!contact.solvent())
+				{
+					const double bounding_arc=bundle_of_contact_information.bounding_arcs[i];
+					if(bounding_arc>0.0)
+					{
+						for(int j=0;j<2;j++)
+						{
+							std::map<std::size_t, std::size_t>::const_iterator it=map_of_atom_ids_to_solvent_contact_ids.find(contact.ids[j]);
+							if(it!=map_of_atom_ids_to_solvent_contact_ids.end())
+							{
+								const std::size_t solvent_contact_id=it->second;
+								bundle_of_contact_information.adjacencies[i][solvent_contact_id]=bounding_arc;
+								bundle_of_contact_information.adjacencies[solvent_contact_id][i]=bounding_arc;
+								bundle_of_contact_information.adjacency_perimeters[solvent_contact_id]+=bounding_arc;
+							}
+						}
+						bundle_of_contact_information.adjacency_perimeters[i]+=bounding_arc;
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 
