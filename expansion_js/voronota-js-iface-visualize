@@ -153,7 +153,7 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 voronota_export_atoms("-as-pdb", "-file", params.output_prefix+"_atoms.pdb");
 voronota_assert_full_success("Failed to export atoms");
 
-voronota_construct_contacts("-calculate-bounding-arcs");
+voronota_construct_contacts("-calculate-bounding-arcs -calculate-adjacencies");
 voronota_assert_full_success("Failed to construct contacts");
 
 voronota_select_contacts("-use", "("+params.contacts_selection+" and "+params.contacts_subselection+")", "-name", "inter_chain_contacts")

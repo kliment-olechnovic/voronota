@@ -94,7 +94,7 @@ public:
 
 		if(!adjacency_file.empty())
 		{
-			data_manager.assert_triangulation_info_availability();
+			data_manager.assert_contacts_adjacencies_availability();
 		}
 
 		const std::set<std::size_t>& atom_ids=data_manager.selection_manager().select_atoms(parameters_for_selecting_atoms);
@@ -331,68 +331,52 @@ public:
 
 		if(!adjacency_file.empty())
 		{
-			std::map<apollota::Pair, std::size_t> map_of_pairs_to_contact_ids;
-			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
-			{
-				const Contact& contact=data_manager.contacts()[*it];
-				map_of_pairs_to_contact_ids[apollota::Pair(contact.ids[0], contact.ids[1])]=(*it);
-			}
-
-			std::set< std::pair<apollota::Pair, apollota::Pair> > pairs_adjacencies;
-
-			for(apollota::Triangulation::QuadruplesMap::const_iterator it=data_manager.triangulation_info().quadruples_map.begin();it!=data_manager.triangulation_info().quadruples_map.end();++it)
-			{
-				const apollota::Quadruple& quadruple=it->first;
-				for(int a=0;a<4;a++)
-				{
-					const apollota::Triple triple=quadruple.exclude(a);
-					const apollota::Pair pair01(triple.get(0), triple.get(1));
-					const apollota::Pair pair02(triple.get(0), triple.get(2));
-					const apollota::Pair pair12(triple.get(1), triple.get(2));
-					const bool allowed01=(map_of_pairs_to_contact_ids.count(pair01)>0);
-					const bool allowed02=(map_of_pairs_to_contact_ids.count(pair02)>0);
-					const bool allowed12=(map_of_pairs_to_contact_ids.count(pair12)>0);
-					if(allowed01 && allowed02)
-					{
-						pairs_adjacencies.insert(std::pair<apollota::Pair, apollota::Pair>(pair01, pair02));
-					}
-					if(allowed01 && allowed12)
-					{
-						pairs_adjacencies.insert(std::pair<apollota::Pair, apollota::Pair>(pair01, pair12));
-					}
-					if(allowed02 && allowed12)
-					{
-						pairs_adjacencies.insert(std::pair<apollota::Pair, apollota::Pair>(pair02, pair12));
-					}
-				}
-			}
-
+			const std::map< std::size_t, std::map<std::size_t, double> > contacts_graph=data_manager.extract_subset_of_contacts_adjacencies(contact_ids);
 			OutputSelector output_selector(adjacency_file);
 			std::ostream& output=output_selector.stream();
 			assert_io_stream(adjacency_file, output);
 
 			if(!inter_residue)
 			{
-				output << "contact_index1" << sep << "contact_index2" << "\n";
-				for(std::set< std::pair<apollota::Pair, apollota::Pair> >::const_iterator it=pairs_adjacencies.begin();it!=pairs_adjacencies.end();++it)
+				output << "contact_index1" << sep << "contact_index2" << sep << "edge_value" << "\n";
+				for(std::map< std::size_t, std::map<std::size_t, double> >::const_iterator it=contacts_graph.begin();it!=contacts_graph.end();++it)
 				{
-					const apollota::Pair indices(map_of_pairs_to_contact_ids[it->first], map_of_pairs_to_contact_ids[it->second]);
-					output << map_of_contact_indices[indices.get(0)] << sep << map_of_contact_indices[indices.get(1)] << "\n";
+					const std::size_t contact_index1=map_of_contact_indices[it->first];
+					const std::map<std::size_t, double>& neighbors=it->second;
+					for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+					{
+						const std::size_t contact_index2=map_of_contact_indices[jt->first];
+						if(contact_index1<contact_index2)
+						{
+							output << contact_index1 << sep << contact_index2 << sep << jt->second << "\n";
+						}
+					}
 				}
 			}
 			else
 			{
-				output << "ir_contact_index1" << sep << "ir_contact_index2" << "\n";
-				std::set<apollota::Pair> outputed_inter_residue_indices;
-				for(std::set< std::pair<apollota::Pair, apollota::Pair> >::const_iterator it=pairs_adjacencies.begin();it!=pairs_adjacencies.end();++it)
+				std::map<apollota::Pair, double> inter_residue_contacts_graph;
+				for(std::map< std::size_t, std::map<std::size_t, double> >::const_iterator it=contacts_graph.begin();it!=contacts_graph.end();++it)
 				{
-					const apollota::Pair indices(map_of_pairs_to_contact_ids[it->first], map_of_pairs_to_contact_ids[it->second]);
-					const apollota::Pair inter_residue_indices(map_of_inter_residue_contact_indices[indices.get(0)], map_of_inter_residue_contact_indices[indices.get(1)]);
-					if(inter_residue_indices.get(0)!=inter_residue_indices.get(1) && outputed_inter_residue_indices.count(inter_residue_indices)==0)
+					const std::size_t contact_id1=it->first;
+					const std::map<std::size_t, double>& neighbors=it->second;
+					for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
 					{
-						outputed_inter_residue_indices.insert(inter_residue_indices);
-						output << inter_residue_indices.get(0) << sep << inter_residue_indices.get(1) << "\n";
+						const std::size_t contact_id2=jt->first;
+						if(contact_id1<contact_id2)
+						{
+							const apollota::Pair inter_residue_indices(map_of_inter_residue_contact_indices[contact_id1], map_of_inter_residue_contact_indices[contact_id2]);
+							if(inter_residue_indices.get(0)!=inter_residue_indices.get(1))
+							{
+								inter_residue_contacts_graph[inter_residue_indices]+=jt->second;
+							}
+						}
 					}
+				}
+				output << "ir_contact_index1" << sep << "ir_contact_index2" << sep << "edge_value" << "\n";
+				for(std::map<apollota::Pair, double>::const_iterator it=inter_residue_contacts_graph.begin();it!=inter_residue_contacts_graph.end();++it)
+				{
+					output << it->first.get(0) << sep << it->first.get(1) << sep << it->second << "\n";
 				}
 			}
 		}
