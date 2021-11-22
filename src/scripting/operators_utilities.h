@@ -308,6 +308,19 @@ public:
 		}
 	}
 
+	static double calculate_reverse_s_transform(const double score, const double a_mean, const double a_sd, const double b_mean, const double b_sd, const double d0)
+	{
+		double s=(((score-a_mean)/a_sd)*b_sd+b_mean);
+		s=std::max(s, 0.01);
+		s=std::min(s, 1.0);
+		return (d0*sqrt((1-s)/s));
+	}
+
+	static double calculate_logistic_transform(const double x, const double L, const double k, const double x0)
+	{
+		return (L/(1.0+exp((0.0-k)*(x-x0))));
+	}
+
 	static void assert_new_object_name_input(const std::string& name)
 	{
 		if(name.empty())

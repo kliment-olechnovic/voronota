@@ -105,6 +105,7 @@
 #include "operators/set_adjunct_of_atoms_by_type_number.h"
 #include "operators/set_adjunct_of_atoms.h"
 #include "operators/set_adjunct_of_contacts_by_atom_adjuncts.h"
+#include "operators/set_adjunct_of_contacts_by_expression.h"
 #include "operators/set_adjunct_of_contacts.h"
 #include "operators/set_alias.h"
 #include "operators/set_atom_serials.h"
@@ -286,6 +287,7 @@ public:
 		set_command_for_data_manager("set-adjunct-of-atoms-by-type-number", operators::SetAdjunctOfAtomsByTypeNumber(), true);
 		set_command_for_data_manager("set-adjunct-of-atoms", operators::SetAdjunctOfAtoms(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts-by-atom-adjuncts", operators::SetAdjunctOfContactsByAtomAdjuncts(), true);
+		set_command_for_data_manager("set-adjunct-of-contacts-by-expression", operators::SetAdjunctOfContactsByExpression(), true);
 		set_command_for_data_manager("set-adjunct-of-contacts", operators::SetAdjunctOfContacts(), true);
 		set_command_for_data_manager("set-atom-serials", operators::SetAtomSerials(), true);
 		set_command_for_data_manager("set-chain-name", operators::SetChainName(), true);

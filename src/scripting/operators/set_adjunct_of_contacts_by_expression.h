@@ -1,5 +1,5 @@
-#ifndef SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_EXPRESSION_H_
-#define SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_EXPRESSION_H_
+#ifndef SCRIPTING_OPERATORS_SET_ADJUNCT_OF_CONTACTS_BY_EXPRESSION_H_
+#define SCRIPTING_OPERATORS_SET_ADJUNCT_OF_CONTACTS_BY_EXPRESSION_H_
 
 #include "../operators_common.h"
 
@@ -12,16 +12,16 @@ namespace scripting
 namespace operators
 {
 
-class SetAdjunctOfAtomsByExpression : public OperatorBase<SetAdjunctOfAtomsByExpression>
+class SetAdjunctOfContactsByExpression : public OperatorBase<SetAdjunctOfContactsByExpression>
 {
 public:
 	struct Result : public OperatorResultBase<Result>
 	{
-		SummaryOfAtoms atoms_summary;
+		SummaryOfContacts contacts_summary;
 
 		void store(HeterogeneousStorage& heterostorage) const
 		{
-			VariantSerialization::write(atoms_summary, heterostorage.variant_object.object("atoms_summary"));
+			VariantSerialization::write(contacts_summary, heterostorage.variant_object.object("contacts_summary"));
 		}
 	};
 
@@ -31,7 +31,7 @@ public:
 	std::vector<double> parameters;
 	std::string output_adjunct;
 
-	SetAdjunctOfAtomsByExpression()
+	SetAdjunctOfContactsByExpression()
 	{
 	}
 
@@ -62,18 +62,7 @@ public:
 			throw std::runtime_error(std::string("No expression."));
 		}
 
-		if(expression=="_reverse_s")
-		{
-			if(input_adjuncts.size()!=1)
-			{
-				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
-			}
-			if(parameters.size()!=5)
-			{
-				throw std::runtime_error(std::string("Not 5 parameters for the defined expression."));
-			}
-		}
-		else if(expression=="_logistic")
+		if(expression=="_logistic")
 		{
 			if(input_adjuncts.size()!=1)
 			{
@@ -124,18 +113,18 @@ public:
 
 		assert_adjunct_name_input(output_adjunct, false);
 
-		const std::set<std::size_t> ids=data_manager.selection_manager().select_atoms(parameters_for_selecting);
+		const std::set<std::size_t> ids=data_manager.selection_manager().select_contacts(parameters_for_selecting);
 		if(ids.empty())
 		{
-			throw std::runtime_error(std::string("No atoms selected."));
+			throw std::runtime_error(std::string("No contacts selected."));
 		}
 
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			const std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
+			const std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
 			for(std::size_t i=0;i<input_adjuncts.size();i++)
 			{
-				if(atom_adjuncts.count(input_adjuncts[i])==0)
+				if(input_adjuncts[i]!="area" && input_adjuncts[i]!="dist" && contact_adjuncts.count(input_adjuncts[i])==0)
 				{
 					throw std::runtime_error(std::string("Input adjuncts not present everywhere in selection."));
 				}
@@ -146,20 +135,31 @@ public:
 			std::vector<double> input_adjunct_values(input_adjuncts.size(), 0.0);
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
-				std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
+				std::map<std::string, double>& contact_adjuncts=data_manager.contact_adjuncts_mutable(*it);
 				for(std::size_t i=0;i<input_adjuncts.size();i++)
 				{
-					input_adjunct_values[i]=atom_adjuncts[input_adjuncts[i]];
+					if(input_adjuncts[i]=="area")
+					{
+						input_adjunct_values[i]=data_manager.contacts()[*it].value.area;
+					}
+					else if(input_adjuncts[i]=="dist")
+					{
+						input_adjunct_values[i]=data_manager.contacts()[*it].value.dist;
+					}
+					else
+					{
+						input_adjunct_values[i]=contact_adjuncts[input_adjuncts[i]];
+					}
 				}
 				if(expression=="_reverse_s")
 				{
-					atom_adjuncts[output_adjunct]=OperatorsUtilities::calculate_reverse_s_transform(
+					contact_adjuncts[output_adjunct]=OperatorsUtilities::calculate_reverse_s_transform(
 							input_adjunct_values[0],
 							parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
 				}
 				else if(expression=="_logistic")
 				{
-					atom_adjuncts[output_adjunct]=OperatorsUtilities::calculate_logistic_transform(
+					contact_adjuncts[output_adjunct]=OperatorsUtilities::calculate_logistic_transform(
 							input_adjunct_values[0],
 							parameters[0], parameters[1], parameters[2]);
 				}
@@ -170,7 +170,7 @@ public:
 					{
 						v+=input_adjunct_values[i]*parameters[i];
 					}
-					atom_adjuncts[output_adjunct]=v;
+					contact_adjuncts[output_adjunct]=v;
 				}
 				else if(expression=="_multiply")
 				{
@@ -179,17 +179,17 @@ public:
 					{
 						v*=input_adjunct_values[i];
 					}
-					atom_adjuncts[output_adjunct]=v;
+					contact_adjuncts[output_adjunct]=v;
 				}
 				else if(expression=="_divide")
 				{
-					atom_adjuncts[output_adjunct]=input_adjunct_values[0]/input_adjunct_values[1];
+					contact_adjuncts[output_adjunct]=input_adjunct_values[0]/input_adjunct_values[1];
 				}
 			}
 		}
 
 		Result result;
-		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);
+		result.contacts_summary=SummaryOfContacts(data_manager.contacts(), ids);
 
 		return result;
 	}
@@ -201,4 +201,4 @@ public:
 
 }
 
-#endif /* SCRIPTING_OPERATORS_SET_ADJUNCT_OF_ATOMS_BY_EXPRESSION_H_ */
+#endif /* SCRIPTING_OPERATORS_SET_ADJUNCT_OF_CONTACTS_BY_EXPRESSION_H_ */
