@@ -93,36 +93,39 @@ public:
 				if(contacts_graph_it!=contacts_graph.end())
 				{
 					const std::map<std::size_t, double>& neighbors=contacts_graph_it->second;
-					double sum_of_weights=0.0;
-					double sum_of_weighted_values=0.0;
+					if(!neighbors.empty())
 					{
-						double sum_of_edge_weights=0.0;
-						if(no_edge_weights)
+						double sum_of_weights=0.0;
+						double sum_of_weighted_values=0.0;
 						{
-							sum_of_edge_weights=1.0;
-						}
-						else
-						{
-							for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+							double sum_of_edge_weights=0.0;
+							if(no_edge_weights)
 							{
-								sum_of_edge_weights+=jt->second;
+								sum_of_edge_weights=1.0;
 							}
+							else
+							{
+								for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+								{
+									sum_of_edge_weights+=jt->second;
+								}
+							}
+							const Contact& contact=data_manager.contacts()[central_id];
+							const double weight=(no_area_weights ? 1.0 : contact.value.area)*sum_of_edge_weights;
+							const double weighted_value=weight*contact_values[central_id];
+							sum_of_weights+=weight;
+							sum_of_weighted_values+=weighted_value;
 						}
-						const Contact& contact=data_manager.contacts()[central_id];
-						const double weight=(no_area_weights ? 1.0 : contact.value.area)*sum_of_edge_weights;
-						const double weighted_value=weight*contact_values[central_id];
-						sum_of_weights+=weight;
-						sum_of_weighted_values+=weighted_value;
+						for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
+						{
+							const Contact& contact=data_manager.contacts()[jt->first];
+							const double weight=(no_area_weights ? 1.0 : contact.value.area)*(no_edge_weights ? 1.0 : jt->second);
+							const double weighted_value=weight*contact_values[jt->first];
+							sum_of_weights+=weight;
+							sum_of_weighted_values+=weighted_value;
+						}
+						updated_contact_values[central_id]=(sum_of_weights>0.0 ? (sum_of_weighted_values/sum_of_weights) : 0.0);
 					}
-					for(std::map<std::size_t, double>::const_iterator jt=neighbors.begin();jt!=neighbors.end();++jt)
-					{
-						const Contact& contact=data_manager.contacts()[jt->first];
-						const double weight=(no_area_weights ? 1.0 : contact.value.area)*(no_edge_weights ? 1.0 : jt->second);
-						const double weighted_value=weight*contact_values[jt->first];
-						sum_of_weights+=weight;
-						sum_of_weighted_values+=weighted_value;
-					}
-					updated_contact_values[central_id]=(sum_of_weights>0.0 ? (sum_of_weighted_values/sum_of_weights) : 0.0);
 				}
 			}
 
