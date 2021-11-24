@@ -31,8 +31,10 @@ public:
 		std::string target_adjunct_inter_residue_scores;
 		std::string model_adjunct_atom_scores;
 		std::string model_adjunct_inter_atom_scores;
+		std::string model_adjunct_inter_atom_relevant_areas;
 		std::string model_adjunct_residue_scores;
 		std::string model_adjunct_inter_residue_scores;
+		std::string model_adjunct_inter_residue_relevant_areas;
 
 		Parameters() :
 			ignore_residue_names(false),
@@ -78,7 +80,8 @@ public:
 				params.target_adjunct_atom_scores.empty()
 				&& params.model_adjunct_atom_scores.empty()
 				&& params.target_adjunct_inter_atom_scores.empty()
-				&& params.model_adjunct_inter_atom_scores.empty());
+				&& params.model_adjunct_inter_atom_scores.empty()
+				&& params.model_adjunct_inter_atom_relevant_areas.empty());
 
 		if(!params.chain_renaming_pairs.empty())
 		{
@@ -116,10 +119,12 @@ public:
 		write_adjuncts(result.bundle, params.smoothing_window, target_contacts_ids,
 				params.target_adjunct_atom_scores, params.target_adjunct_residue_scores,
 				params.target_adjunct_inter_atom_scores, params.target_adjunct_inter_residue_scores,
+				std::string(), std::string(),
 				target_dm);
 		write_adjuncts(result.bundle, params.smoothing_window, model_contact_ids,
 				params.model_adjunct_atom_scores, params.model_adjunct_residue_scores,
 				params.model_adjunct_inter_atom_scores, params.model_adjunct_inter_residue_scores,
+				params.model_adjunct_inter_atom_relevant_areas, params.model_adjunct_inter_residue_relevant_areas,
 				model_dm);
 	}
 
@@ -177,6 +182,8 @@ private:
 			const std::string& adjunct_residue_scores,
 			const std::string& adjunct_inter_atom_scores,
 			const std::string& adjunct_inter_residue_scores,
+			const std::string& adjunct_inter_atom_relevant_areas,
+			const std::string& adjunct_inter_residue_relevant_areas,
 			DataManager& dm)
 	{
 		if(!adjunct_atom_scores.empty())
@@ -224,7 +231,7 @@ private:
 			}
 		}
 
-		if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_residue_scores.empty())
+		if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_residue_scores.empty() || !adjunct_inter_atom_relevant_areas.empty() || !adjunct_inter_residue_relevant_areas.empty())
 		{
 			for(std::size_t i=0;i<dm.contacts().size();i++)
 			{
@@ -237,6 +244,14 @@ private:
 				{
 					contact_adjuncts.erase(adjunct_inter_residue_scores);
 				}
+				if(!adjunct_inter_atom_relevant_areas.empty())
+				{
+					contact_adjuncts.erase(adjunct_inter_atom_relevant_areas);
+				}
+				if(!adjunct_inter_residue_relevant_areas.empty())
+				{
+					contact_adjuncts.erase(adjunct_inter_residue_relevant_areas);
+				}
 			}
 			for(std::set<std::size_t>::const_iterator it=contact_ids.begin();it!=contact_ids.end();++it)
 			{
@@ -245,25 +260,41 @@ private:
 				const common::ConstructionOfCADScore::CRADsPair crads=common::ConversionOfDescriptors::get_contact_descriptor(dm.atoms(), contact);
 				if(crads.valid())
 				{
-					if(!adjunct_inter_atom_scores.empty())
+					if(!adjunct_inter_atom_scores.empty() || !adjunct_inter_atom_relevant_areas.empty())
 					{
 						std::map<common::ConstructionOfCADScore::CRADsPair, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_atom_cad_descriptors.find(crads);
-						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end() && jt->second.target_area_sum>0.0)
+						if(jt!=bundle.map_of_inter_atom_cad_descriptors.end())
 						{
-							contact_adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+							if(!adjunct_inter_atom_scores.empty() && jt->second.target_area_sum>0.0)
+							{
+								contact_adjuncts[adjunct_inter_atom_scores]=jt->second.score();
+							}
+							if(!adjunct_inter_atom_relevant_areas.empty())
+							{
+								contact_adjuncts[adjunct_inter_atom_relevant_areas+"_t"]=jt->second.target_area_sum;
+								contact_adjuncts[adjunct_inter_atom_relevant_areas+"_m"]=jt->second.model_area_sum;
+							}
 						}
 					}
-					if(!adjunct_inter_residue_scores.empty())
+					if(!adjunct_inter_residue_scores.empty() || !adjunct_inter_residue_relevant_areas.empty())
 					{
 						const common::ConstructionOfCADScore::CRADsPair ir_crads(
 								crads.a.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names),
 								crads.b.without_some_info(true, true, false, bundle.parameters_of_construction.ignore_residue_names));
 						std::map<common::ConstructionOfCADScore::CRADsPair, common::ConstructionOfCADScore::CADDescriptor>::const_iterator jt=
 								bundle.map_of_inter_residue_cad_descriptors.find(ir_crads);
-						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end() && jt->second.target_area_sum>0.0)
+						if(jt!=bundle.map_of_inter_residue_cad_descriptors.end())
 						{
-							contact_adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+							if(!adjunct_inter_residue_scores.empty() && jt->second.target_area_sum>0.0)
+							{
+								contact_adjuncts[adjunct_inter_residue_scores]=jt->second.score();
+							}
+							if(!adjunct_inter_residue_relevant_areas.empty())
+							{
+								contact_adjuncts[adjunct_inter_residue_relevant_areas+"_t"]=jt->second.target_area_sum;
+								contact_adjuncts[adjunct_inter_residue_relevant_areas+"_m"]=jt->second.model_area_sum;
+							}
 						}
 					}
 				}
