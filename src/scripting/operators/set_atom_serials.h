@@ -44,19 +44,26 @@ public:
 
 		std::vector<Atom> atoms=data_manager.atoms();
 
+		bool updated=false;
+
 		for(std::size_t i=0;i<atoms.size();i++)
 		{
-			if(to_null)
+			int new_serial=common::ChainResidueAtomDescriptor::null_num();
+			if(!to_null)
 			{
-				atoms[i].crad.serial=common::ChainResidueAtomDescriptor::null_num();
+				new_serial=static_cast<int>(i);
 			}
-			else
+			if(atoms[i].crad.serial!=new_serial)
 			{
-				atoms[i].crad.serial=static_cast<int>(i);
+				atoms[i].crad.serial=new_serial;
+				updated=true;
 			}
 		}
 
-		data_manager.reset_atoms_by_swapping(atoms);
+		if(updated)
+		{
+			data_manager.reset_atoms_by_swapping(atoms);
+		}
 
 		Result result;
 
