@@ -91,6 +91,7 @@ public:
 		parameters_to_score_using_voromqa.adjunct_inter_atom_split_alt_sas_energy_scores=input.get_value_or_default<std::string>("adj-contact-energy-split-to-sas", "");
 		parameters_to_score_using_voromqa.adjunct_atom_depth_weights=input.get_value_or_default<std::string>("adj-atom-depth", "voromqa_depth");
 		parameters_to_score_using_voromqa.adjunct_atom_quality_scores=input.get_value_or_default<std::string>("adj-atom-quality", "voromqa_score_a");
+		parameters_to_score_using_voromqa.adjunct_atom_sas_potential_values=input.get_value_or_default<std::string>("adj-atom-sas-potential", "");
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_raw=input.get_value_or_default<std::string>("adj-residue-quality-raw", "");
 		parameters_to_score_using_voromqa.adjunct_residue_quality_scores_smoothed=input.get_value_or_default<std::string>("adj-residue-quality", "voromqa_score_r");
 		parameters_to_score_using_voromqa.smoothing_window=input.get_value_or_default<unsigned int>("smoothing-window", parameters_to_score_using_voromqa.smoothing_window);
@@ -107,6 +108,7 @@ public:
 		doc.set_option_decription(CDOD("adj-contact-energy-split-to-sas", CDOD::DATATYPE_STRING, "name prefix of output adjuncts for split-to-sas energy coefficients", ""));
 		doc.set_option_decription(CDOD("adj-atom-depth", CDOD::DATATYPE_STRING, "name of output adjunct for atom values", "voromqa_depth"));
 		doc.set_option_decription(CDOD("adj-atom-quality", CDOD::DATATYPE_STRING, "name of output adjunct for atom quality scores", "voromqa_score_a"));
+		doc.set_option_decription(CDOD("adj-atom-sas-potential", CDOD::DATATYPE_STRING, "name of output adjunct for atom solvent interaction energy coefficients", ""));
 		doc.set_option_decription(CDOD("adj-residue-quality-raw", CDOD::DATATYPE_STRING, "name of output adjunct for raw residue quality scores", ""));
 		doc.set_option_decription(CDOD("adj-residue-quality", CDOD::DATATYPE_STRING, "name of output adjunct for smoothed residue quality scores", "voromqa_score_r"));
 		doc.set_option_decription(CDOD("smoothing-window", CDOD::DATATYPE_INT, "smoothing window size", params.smoothing_window));

@@ -105,6 +105,7 @@ public:
 		std::string adjunct_inter_atom_split_alt_sas_energy_scores;
 		std::string adjunct_atom_depth_weights;
 		std::string adjunct_atom_quality_scores;
+		std::string adjunct_atom_sas_potential_values;
 		std::string adjunct_residue_quality_scores_raw;
 		std::string adjunct_residue_quality_scores_smoothed;
 
@@ -362,6 +363,7 @@ public:
 
 		if(!params.adjunct_atom_depth_weights.empty()
 				|| !params.adjunct_atom_quality_scores.empty()
+				|| !params.adjunct_atom_sas_potential_values.empty()
 				|| !params.adjunct_residue_quality_scores_raw.empty()
 				|| !params.adjunct_residue_quality_scores_smoothed.empty())
 		{
@@ -375,6 +377,10 @@ public:
 				if(!params.adjunct_atom_quality_scores.empty())
 				{
 					atom_adjuncts.erase(params.adjunct_atom_quality_scores);
+				}
+				if(!params.adjunct_atom_sas_potential_values.empty())
+				{
+					atom_adjuncts.erase(params.adjunct_atom_sas_potential_values);
 				}
 				if(!params.adjunct_residue_quality_scores_raw.empty())
 				{
@@ -410,6 +416,15 @@ public:
 					if(it!=result.bundle_of_quality.atom_quality_scores.end())
 					{
 						atom_adjuncts[params.adjunct_atom_quality_scores]=it->second;
+					}
+				}
+				if(!params.adjunct_atom_sas_potential_values.empty())
+				{
+					std::map<common::InteractionName, double>::const_iterator potential_value_it=
+							configuration.potential_values[0].find(common::InteractionName(common::ChainResidueAtomDescriptorsPair(common::generalize_crad(atom.crad), common::ChainResidueAtomDescriptor::solvent()), "."));
+					if(potential_value_it!=configuration.potential_values[0].end())
+					{
+						atom_adjuncts[params.adjunct_atom_sas_potential_values]=potential_value_it->second;
 					}
 				}
 				if(!params.adjunct_residue_quality_scores_raw.empty())
