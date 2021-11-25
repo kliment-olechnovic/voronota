@@ -46,7 +46,7 @@ public:
 	{
 		OperatorsUtilities::document_read_generic_selecting_query(doc);
 		doc.set_option_decription(CDOD("name", CDOD::DATATYPE_STRING, "adjunct name"));
-		doc.set_option_decription(CDOD("typing-mode", CDOD::DATATYPE_STRING, "typing mode, possible values: CNOSP, protein_atom, protein_residue"));
+		doc.set_option_decription(CDOD("typing-mode", CDOD::DATATYPE_STRING, "typing mode, possible values: CNOSP, bonds, protein_atom, protein_residue"));
 	}
 
 	Result run(DataManager& data_manager) const
@@ -55,7 +55,7 @@ public:
 
 		assert_adjunct_name_input(name, false);
 
-		if(typing_mode!="CNOSP" && typing_mode!="protein_atom" && typing_mode!="protein_residue")
+		if(typing_mode!="CNOSP" && typing_mode!="bonds" && typing_mode!="protein_atom" && typing_mode!="protein_residue")
 		{
 			throw std::runtime_error(std::string("Invalid typing mode, valid options are: 'CNOSP', 'protein_atom', 'protein_residue'."));
 		}
@@ -66,15 +66,25 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
+		if(typing_mode=="bonds" && !data_manager.bonding_links_info().valid(data_manager.atoms(), data_manager.primary_structure_info()))
+		{
+			throw std::runtime_error(std::string("No valid bonding links info."));
+		}
+
 		for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 		{
-			const Atom& atom=data_manager.atoms()[*it];
-			std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
+			const std::size_t atom_id=(*it);
+			const Atom& atom=data_manager.atoms()[atom_id];
+			std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(atom_id);
 			atom_adjuncts.erase(name);
 			int value=-1;
 			if(typing_mode=="CNOSP")
 			{
 				value=PrimitiveChemistryAnnotation::get_CNOSP_atom_type_number(atom);
+			}
+			else if(typing_mode=="bonds")
+			{
+				value=data_manager.bonding_links_info().map_of_atoms_to_bonds_links[atom_id].size();
 			}
 			else if(typing_mode=="protein_atom")
 			{
