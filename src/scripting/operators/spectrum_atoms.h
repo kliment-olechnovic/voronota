@@ -2,6 +2,7 @@
 #define SCRIPTING_OPERATORS_SPECTRUM_ATOMS_H_
 
 #include "../operators_common.h"
+#include "../primitive_chemistry_annotation.h"
 
 namespace voronota
 {
@@ -93,7 +94,7 @@ public:
 
 		const std::set<std::size_t> representation_ids=data_manager.atoms_representation_descriptor().ids_by_names(representation_names);
 
-		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id" && by!="secondary-structure" && by!="hydropathy")
+		if(by!="residue-number" && by!="adjunct" && by!="chain" && by!="residue-id" && by!="secondary-structure" && by!="hydropathy" && by!="atom-type")
 		{
 			throw std::runtime_error(std::string("Invalid 'by' value '")+by+"'.");
 		}
@@ -248,43 +249,43 @@ public:
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
 				const std::size_t atom_id=(*it);
-				const std::string& residue_name=data_manager.atoms()[atom_id].crad.resName;
-				double value=9.0;
-				if(residue_name=="ILE"){value=4.5;}
-				else if(residue_name=="VAL"){value=4.2;}
-				else if(residue_name=="LEU"){value=3.8;}
-				else if(residue_name=="PHE"){value=2.8;}
-				else if(residue_name=="CYS"){value=2.5;}
-				else if(residue_name=="MET"){value=1.9;}
-				else if(residue_name=="ALA"){value=1.8;}
-				else if(residue_name=="GLY"){value=-0.4;}
-				else if(residue_name=="THR"){value=-0.7;}
-				else if(residue_name=="SER"){value=-0.8;}
-				else if(residue_name=="TRP"){value=-0.9;}
-				else if(residue_name=="TYR"){value=-1.3;}
-				else if(residue_name=="PRO"){value=-1.6;}
-				else if(residue_name=="HIS"){value=-3.2;}
-				else if(residue_name=="GLU"){value=-3.5;}
-				else if(residue_name=="GLN"){value=-3.5;}
-				else if(residue_name=="ASP"){value=-3.5;}
-				else if(residue_name=="ASN"){value=-3.5;}
-				else if(residue_name=="LYS"){value=-3.9;}
-				else if(residue_name=="ARG"){value=-4.5;}
-				map_of_ids_values[atom_id]=value;
+				map_of_ids_values[atom_id]=PrimitiveChemistryAnnotation::get_protein_atom_hydropathy(data_manager.atoms()[atom_id]);
 			}
 			if(!min_val_present)
 			{
 				usable_min_val_present=true;
-				usable_min_val=-4.5;
+				usable_min_val=-1.0;
 			}
 			if(!max_val_present)
 			{
 				usable_max_val_present=true;
-				usable_max_val=9.0;
+				usable_max_val=0.5;
 			}
 			if(!scheme_present)
 			{
-				usable_scheme="bwrg";
+				usable_scheme="gbwr";
+			}
+		}
+		else if(by=="atom-type")
+		{
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				const std::size_t atom_id=(*it);
+				map_of_ids_values[atom_id]=PrimitiveChemistryAnnotation::get_CNOSP_atom_type_number(data_manager.atoms()[atom_id]);
+			}
+			if(!min_val_present)
+			{
+				usable_min_val_present=true;
+				usable_min_val=-1.0;
+			}
+			if(!max_val_present)
+			{
+				usable_max_val_present=true;
+				usable_max_val=4.0;
+			}
+			if(!scheme_present)
+			{
+				usable_scheme="glbryo";
 			}
 		}
 

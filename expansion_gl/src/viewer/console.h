@@ -803,6 +803,11 @@ private:
 							result="spectrum-atoms -by secondary-structure";
 						}
 
+						if(ImGui::Selectable("  by atom type"))
+						{
+							result="spectrum-atoms -by atom-type";
+						}
+
 						if(ImGui::Selectable("  by hydropathy"))
 						{
 							result="spectrum-atoms -by hydropathy";
@@ -1077,6 +1082,11 @@ private:
 						if(ImGui::Selectable("  by secondary structure"))
 						{
 							result=std::string("spectrum-atoms -by secondary-structure -on-objects '")+os.name+"'";
+						}
+
+						if(ImGui::Selectable("  by atom type"))
+						{
+							result=std::string("spectrum-atoms -by atom-type -on-objects '")+os.name+"'";
 						}
 
 						if(ImGui::Selectable("  by hydropathy"))

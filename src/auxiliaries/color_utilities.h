@@ -85,6 +85,22 @@ public:
 		{
 			return 0xFF00FF;
 		}
+		else if(name=='o')
+		{
+			return 0xFF8000;
+		}
+		else if(name=='a')
+		{
+			return 0x0080FF;
+		}
+		else if(name=='p')
+		{
+			return 0x8000FF;
+		}
+		else if(name=='e')
+		{
+			return 0xFF0080;
+		}
 		else if(name=='w')
 		{
 			return 0xFFFFFF;
