@@ -158,7 +158,7 @@ public:
 				ids.insert(ids.end(), i);
 			}
 
-			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, post_translation_vector);
+			data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, std::vector<double>(), rotation_axis_and_angle, std::vector<double>(), post_translation_vector);
 		}
 
 		return result;

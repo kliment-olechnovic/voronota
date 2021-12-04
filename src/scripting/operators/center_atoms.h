@@ -56,7 +56,7 @@ public:
 		translation_vector[1]=translation.y;
 		translation_vector[2]=translation.z;
 
-		data_manager.transform_coordinates_of_atoms(ids, translation_vector, std::vector<double>(), std::vector<double>(), std::vector<double>());
+		data_manager.transform_coordinates_of_atoms(ids, translation_vector, std::vector<double>(), std::vector<double>(), std::vector<double>(), std::vector<double>());
 
         Result result;
         result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);

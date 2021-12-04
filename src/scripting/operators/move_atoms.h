@@ -30,8 +30,9 @@ public:
 	std::vector<double> rotation_matrix;
 	std::vector<double> rotation_axis_and_angle;
 	std::vector<double> post_translation_vector;
+	bool rotate_randomly;
 
-	MoveAtoms()
+	MoveAtoms() : rotate_randomly(false)
 	{
 	}
 
@@ -41,6 +42,7 @@ public:
 		pre_translation_vector=input.get_value_vector_or_default<double>("translate-before", std::vector<double>());
 		rotation_matrix=input.get_value_vector_or_default<double>("rotate-by-matrix", std::vector<double>());
 		rotation_axis_and_angle=input.get_value_vector_or_default<double>("rotate-by-axis-and-angle", std::vector<double>());
+		rotate_randomly=input.get_flag("rotate-randomly");
 		post_translation_vector=input.get_value_vector_or_default<double>("translate", std::vector<double>());
 	}
 
@@ -50,6 +52,7 @@ public:
 		doc.set_option_decription(CDOD("translate-before", CDOD::DATATYPE_FLOAT_ARRAY, "translation vector to apply before rotation", ""));
 		doc.set_option_decription(CDOD("rotate-by-matrix", CDOD::DATATYPE_FLOAT_ARRAY, "rotation matrix", ""));
 		doc.set_option_decription(CDOD("rotate-by-axis-and-angle", CDOD::DATATYPE_FLOAT_ARRAY, "vector with rotation axis and angle", ""));
+		doc.set_option_decription(CDOD("rotate-randomly", CDOD::DATATYPE_BOOL, "flag to rotate randomly"));
 		doc.set_option_decription(CDOD("translate", CDOD::DATATYPE_FLOAT_ARRAY, "translation vector to apply after rotation", ""));
 	}
 
@@ -63,7 +66,17 @@ public:
 			throw std::runtime_error(std::string("No atoms selected."));
 		}
 
-		data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, rotation_matrix, rotation_axis_and_angle, post_translation_vector);
+		std::vector<double> rotation_three_angles;
+		if(rotate_randomly)
+		{
+			rotation_three_angles.resize(3, 0.0);
+			for(int i=0;i<3;i++)
+			{
+				rotation_three_angles[i]=std::rand()%360;
+			}
+		}
+
+		data_manager.transform_coordinates_of_atoms(ids, pre_translation_vector, rotation_matrix, rotation_axis_and_angle, rotation_three_angles, post_translation_vector);
 
 		Result result;
 		result.atoms_summary=SummaryOfAtoms(data_manager.atoms(), ids);

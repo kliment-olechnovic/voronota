@@ -1015,6 +1015,7 @@ public:
 			const std::vector<double>& pre_translation_vector,
 			const std::vector<double>& rotation_matrix,
 			const std::vector<double>& rotation_axis_and_angle,
+			const std::vector<double>& rotation_three_angles,
 			const std::vector<double>& post_translation_vector)
 	{
 		if(ids.empty())
@@ -1022,7 +1023,7 @@ public:
 			throw std::runtime_error(std::string("No ids provided to transform atoms."));
 		}
 
-		if(pre_translation_vector.empty() && post_translation_vector.empty() && rotation_matrix.empty() && rotation_axis_and_angle.empty())
+		if(pre_translation_vector.empty() && post_translation_vector.empty() && rotation_matrix.empty() && rotation_axis_and_angle.empty() && rotation_three_angles.empty())
 		{
 			throw std::runtime_error(std::string("No transformations provided to transform atoms."));
 		}
@@ -1050,6 +1051,11 @@ public:
 		if(!rotation_axis_and_angle.empty() && rotation_axis_and_angle.size()!=4)
 		{
 			throw std::runtime_error(std::string("Invalid rotation axis and angle vector provided to transform atoms."));
+		}
+
+		if(!rotation_three_angles.empty() && rotation_three_angles.size()!=3)
+		{
+			throw std::runtime_error(std::string("Invalid rotation three angles vector provided to transform atoms."));
 		}
 
 		change_indicator_.set_changed_atoms(true);
@@ -1080,9 +1086,28 @@ public:
 
 		if(!rotation_axis_and_angle.empty())
 		{
-			apollota::Rotation rotation(
+			const apollota::Rotation rotation(
 					apollota::SimplePoint(rotation_axis_and_angle[0], rotation_axis_and_angle[1], rotation_axis_and_angle[2]),
 					rotation_axis_and_angle[3]);
+
+			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
+			{
+				common::BallValue& ball=atoms_[*it].value;
+				const apollota::SimplePoint p=rotation.rotate<apollota::SimplePoint>(ball);
+				ball.x=p.x;
+				ball.y=p.y;
+				ball.z=p.z;
+			}
+		}
+
+		if(!rotation_three_angles.empty())
+		{
+			const apollota::SimplePoint ox(1, 0, 0);
+			const apollota::SimplePoint oz(0, 0, 1);
+			const apollota::SimplePoint axis_step1=apollota::Rotation(oz, rotation_three_angles[0]).rotate<apollota::SimplePoint>(ox);
+			const apollota::SimplePoint axis_step2=apollota::Rotation(oz&axis_step1, rotation_three_angles[1]).rotate<apollota::SimplePoint>(axis_step1);
+
+			const apollota::Rotation rotation(axis_step2, rotation_three_angles[2]);
 
 			for(std::set<std::size_t>::const_iterator it=ids.begin();it!=ids.end();++it)
 			{
