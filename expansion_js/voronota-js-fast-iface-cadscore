@@ -14,6 +14,7 @@ Options:
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
     --as-assembly                        flag to treat input file as biological assembly
+    --test-common-ids                    flag to fail quickly if there are no common residues
     --detailed-times                     flag to output detailed times
     --help | -h                          flag to display help message and exit
 
@@ -49,6 +50,7 @@ SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 AS_ASSEMBLY="false"
+TEST_COMMON_IDS="false"
 DETAILED_TIMES="false"
 HELP_MODE="false"
 
@@ -84,6 +86,9 @@ do
 		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
+		;;
+	--test-common-ids)
+		TEST_COMMON_IDS="true"
 		;;
 	--detailed-times)
 		DETAILED_TIMES="true"
@@ -175,6 +180,7 @@ params.model_input_file='$MODEL_INFILE';
 params.model_input_file_name='$MODEL_INFILE_BASENAME';
 params.input_as_assembly='$AS_ASSEMBLY';
 params.restrict_input_atoms='$RESTRICT_INPUT';
+params.test_common_ids='$TEST_COMMON_IDS';
 params.contacts_subselection='$SUBSELECT_CONTACTS';
 params.output_detailed_times='$DETAILED_TIMES';
 params.output_table_file='$OUTPUT_TABLE_FILE';
@@ -203,6 +209,11 @@ if(params.restrict_input_atoms===undefined || params.restrict_input_atoms==="")
 	params.restrict_input_atoms='[]';
 }
 
+if(params.test_common_ids===undefined || params.test_common_ids==="")
+{
+	params.test_common_ids="false";
+}
+
 if(params.contacts_subselection===undefined || params.contacts_subselection==="")
 {
 	params.contacts_subselection='[]';
@@ -228,6 +239,11 @@ voronota_assert_partial_success("Failed to import model file");
 
 voronota_pick_objects();
 
+voronota_list_objects();
+voronota_assert_full_success("Failed to list objects");
+target_object=voronota_last_output().results[0].output.objects[0].name;
+model_object=voronota_last_output().results[0].output.objects[1].name
+
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
 voronota_assert_full_success("Failed to restrict input atoms by the input query");
 
@@ -244,6 +260,14 @@ voronota_reset_time();
 voronota_restrict_atoms_close_to_interchain_interface();
 voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 
+if(params.test_common_ids=="true")
+{
+	voronota_export_selection_of_atoms("-on-objects", target_object, "-no-serial", "-no-name", "-file", "_virtual/target_residue_ids");
+	voronota_assert_full_success("Failed to export target residue ids");
+	voronota_import_selection_of_atoms("-on-objects", model_object, "-file", "_virtual/target_residue_ids", "-name", "common_residues");
+	voronota_assert_full_success("No common residue ids");
+}
+
 voronota_print_time();
 time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
 
@@ -259,11 +283,6 @@ voronota_print_time();
 time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
-
-voronota_list_objects();
-voronota_assert_full_success("Failed to list objects");
-target_object=voronota_last_output().results[0].output.objects[0].name;
-model_object=voronota_last_output().results[0].output.objects[1].name
 
 voronota_cad_score("-target", target_object, "-model", model_object, "-t-sel", "[inter_chain_contacts]", "-also-site-based");
 voronota_assert_full_success("Failed to compute CAD-score");
