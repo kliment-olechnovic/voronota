@@ -1236,6 +1236,9 @@
             "name":"set-adjunct-of-contacts-by-atom-adjuncts",
             "short_description":""},
           {
+            "name":"set-adjunct-of-contacts-by-expression",
+            "short_description":""},
+          {
             "name":"set-alias",
             "short_description":""},
           {
