@@ -17,14 +17,17 @@ namespace duktaper
 class StandaloneRun
 {
 public:
-	static void run(const std::vector<std::string>& command_args)
+	static void run(const bool no_setup_defaults, const std::vector<std::string>& command_args)
 	{
 		if(command_args.empty())
 		{
 			throw std::runtime_error(std::string("No command arguments"));
 		}
 
-		operators::SetupDefaults().run(0);
+		if(!no_setup_defaults)
+		{
+			operators::SetupDefaults().run(0);
+		}
 
 		ScriptExecutionManager execution_manager;
 		DuktapeManager::set_script_execution_manager(execution_manager);

@@ -25,16 +25,20 @@ public:
 		}
 	};
 
-	SetupDefaults()
+	bool no_load_voromqa_potentials;
+
+	SetupDefaults() : no_load_voromqa_potentials(false)
 	{
 	}
 
-	void initialize(scripting::CommandInput&)
+	void initialize(scripting::CommandInput& input)
 	{
+		no_load_voromqa_potentials=input.get_flag("no-load-voromqa-potentials");
 	}
 
-	void document(scripting::CommandDocumentation&) const
+	void document(scripting::CommandDocumentation& doc) const
 	{
+		doc.set_option_decription(CDOD("no-load-voromqa-potentials", CDOD::DATATYPE_BOOL, "flag to not load VoroMQA potentials, to save time"));
 	}
 
 	Result run(void*) const
@@ -45,6 +49,7 @@ public:
 			scripting::operators::SetupLoading().init(CMDIN().set("radii-file", tmp_radii.filename())).run(0);
 		}
 
+		if(!no_load_voromqa_potentials)
 		{
 			scripting::VirtualFileStorage::TemporaryFile tmp_voromqa_v1_energy_potential;
 			scripting::VirtualFileStorage::TemporaryFile tmp_voromqa_v1_energy_potential_alt;

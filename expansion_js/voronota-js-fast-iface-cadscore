@@ -231,6 +231,8 @@ if(params.output_table_file===undefined || params.output_table_file==="")
 
 voronota_reset_time();
 
+voronota_setup_defaults("-no-load-voromqa-potentials");
+
 voronota_import("-file", params.target_input_file, "-as-assembly", params.input_as_assembly);
 voronota_assert_partial_success("Failed to import target file");
 
@@ -356,5 +358,5 @@ else
 EOF
 
 } \
-| voronota-js
+| voronota-js --no-setup-defaults
 
