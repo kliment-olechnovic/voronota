@@ -161,7 +161,7 @@ then
 	| sort \
 	| xargs -L 1 cat \
 	| awk '{if(NR==1 || NR%2==0) print $0}' \
-	| voronota-js "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');"
+	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_cadscore iface_site_based_cadscore iface_ratio_of_areas -multipliers 1 1 1 -tolerances 0.0 0.0 0.0');"
 	
 	exit 0
 fi
