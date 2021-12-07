@@ -32,7 +32,7 @@ public:
 			return get_default_configuration_mutable();
 		}
 
-		static bool setup_default_configuration(const std::string& potential_file, const std::string& potential_alt_file, const std::string& mean_and_sds_file)
+		static bool setup_default_configuration(const std::string& potential_file, const std::string& potential_alt_file, const std::string& mean_and_sds_file, const bool faster)
 		{
 			if(potential_file.empty() || mean_and_sds_file.empty())
 			{
@@ -42,7 +42,17 @@ public:
 			std::map<common::InteractionName, double> potential_values;
 			{
 				InputSelector potential_file_input_selector(potential_file);
-				potential_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_file_input_selector.stream());
+				if(faster)
+				{
+					if(!read_potential_faster(potential_file_input_selector.stream(), potential_values))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					potential_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_file_input_selector.stream());
+				}
 				if(potential_values.empty())
 				{
 					return false;
@@ -53,7 +63,17 @@ public:
 			if(!potential_alt_file.empty())
 			{
 				InputSelector potential_alt_file_input_selector(potential_alt_file);
-				potential_alt_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_alt_file_input_selector.stream());
+				if(faster)
+				{
+					if(!read_potential_faster(potential_alt_file_input_selector.stream(), potential_alt_values))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					potential_alt_values=auxiliaries::IOUtilities().read_lines_to_map< std::map<common::InteractionName, double> >(potential_alt_file_input_selector.stream());
+				}
 				if(potential_alt_values.empty())
 				{
 					return false;
@@ -450,6 +470,84 @@ public:
 	static void construct_result(const Parameters& params, DataManager& data_manager, Result& result)
 	{
 		construct_result(Configuration::get_default_configuration(), params, data_manager, result);
+	}
+
+	static bool read_potential_faster(std::istream& input_stream, std::map<common::InteractionName, double>& potential_values)
+	{
+		std::string crad_tokens[2];
+		common::ChainResidueAtomDescriptor crads[2];
+		int crad_a_id=0;
+		int crad_b_id=0;
+		std::size_t i=0;
+		std::string* str_dest=0;
+		std::pair<common::InteractionName, double> value;
+		input_stream >> std::ws;
+		while(input_stream.good())
+		{
+			input_stream >> crad_tokens[0] >> crad_tokens[1] >> value.first.tag >> value.second;
+			if(input_stream.fail())
+			{
+				return false;
+			}
+			else
+			{
+				for(int j=0;j<2;j++)
+				{
+					crads[j].resName.clear();
+					crads[j].name.clear();
+					crads[j].chainID.clear();
+					i=1;
+					while(i<crad_tokens[j].size())
+					{
+						if(crad_tokens[j][i]=='<')
+						{
+							str_dest=0;
+							if(crad_tokens[j][i-1]=='R')
+							{
+								str_dest=&crads[j].resName;
+							}
+							else if(crad_tokens[j][i-1]=='A')
+							{
+								str_dest=&crads[j].name;
+							}
+							else if(crad_tokens[j][i-1]=='c')
+							{
+								str_dest=&crads[j].chainID;
+							}
+							else
+							{
+								return false;
+							}
+							if(str_dest!=0)
+							{
+								i++;
+								while(i<crad_tokens[j].size() && crad_tokens[j][i]!='>')
+								{
+									str_dest->push_back(crad_tokens[j][i]);
+									i++;
+								}
+								if(crad_tokens[j][i]!='>')
+								{
+									return false;
+								}
+							}
+						}
+						i++;
+					}
+				}
+				crad_a_id=(crads[0]<crads[1] ? 0 : 1);
+				crad_b_id=(crad_a_id==1 ? 0 : 1);
+				value.first.crads.a.resName.swap(crads[crad_a_id].resName );
+				value.first.crads.a.name.swap(crads[crad_a_id].name );
+				value.first.crads.a.chainID.swap(crads[crad_a_id].chainID );
+				value.first.crads.b.resName.swap(crads[crad_b_id].resName );
+				value.first.crads.b.name.swap(crads[crad_b_id].name );
+				value.first.crads.b.chainID.swap(crads[crad_b_id].chainID );
+				potential_values.insert(potential_values.end(), value);
+			}
+			input_stream >> std::ws;
+		}
+		return !potential_values.empty();
 	}
 };
 
