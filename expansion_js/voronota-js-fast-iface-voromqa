@@ -86,6 +86,7 @@ MAX_PROCESSORS="1"
 STDIN_FILE="_stream"
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
+RUN_SCWRL="false"
 SCORE_SYMMETRY="false"
 HELP_MODE="false"
 
@@ -124,6 +125,9 @@ do
 		;;
 	--detailed-times)
 		DETAILED_TIMES="true"
+		;;
+	--run-scwrl)
+		RUN_SCWRL="true"
 		;;
 	--score-symmetry)
 		SCORE_SYMMETRY="true"
@@ -217,6 +221,7 @@ var common_params={}
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.run_scwrl='$RUN_SCWRL';
 common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
@@ -262,6 +267,11 @@ if(params.contacts_subselection===undefined || params.contacts_subselection===""
 	params.contacts_subselection='[]';
 }
 
+if(params.run_scwrl===undefined || params.run_scwrl==="")
+{
+	params.run_scwrl="false";
+}
+
 if(params.score_symmetry===undefined || params.score_symmetry==="")
 {
 	params.score_symmetry="false";
@@ -290,6 +300,12 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");
 var result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+
+if(params.run_scwrl=="true")
+{
+	voronota_scwrl();
+	voronota_assert_full_success("Failed to run Scwrl");
+}
 
 voronota_print_time();
 var time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
