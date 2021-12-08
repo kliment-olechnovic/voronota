@@ -12,6 +12,7 @@ Options:
     --subselect-contacts      string     query to subselect inter-chain contacts, default is '[]'
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
+    --stdin-file              string     input file path to replace stdin
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
     --score-symmetry                     flag score interface symmetry (for dimers only)
@@ -28,6 +29,32 @@ Examples:
 
 EOF
 exit 1
+}
+
+function cat_stdin
+{
+	STDIN_SOURCE="$1"
+	if [ "$STDIN_SOURCE" == "_stream" ]
+	then
+		cat
+	else
+		cat "$STDIN_SOURCE"
+	fi
+}
+
+function get_input_basename
+{
+	INPUT_MAIN_BASENAME="$(basename $1)"
+	INPUT_STDIN_FILE="$2"
+	if [ "$INPUT_MAIN_BASENAME" == "_stream" ] || [ "$INPUT_MAIN_BASENAME" == "_list" ]
+	then
+		if [ "$INPUT_STDIN_FILE" != "_stream" ] 
+		then
+			basename "$INPUT_STDIN_FILE"
+			return 0
+		fi
+	fi
+	echo "$INPUT_MAIN_BASENAME"
 }
 
 function substitute_id_in_filename
@@ -56,6 +83,7 @@ RESTRICT_INPUT="[]"
 SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
+STDIN_FILE="_stream"
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
 SCORE_SYMMETRY="false"
@@ -85,6 +113,10 @@ do
 		;;
 	--processors)
 		MAX_PROCESSORS="$OPTARG"
+		shift
+		;;
+	--stdin-file)
+		STDIN_FILE="$OPTARG"
 		shift
 		;;
 	--as-assembly)
@@ -117,30 +149,36 @@ then
 	exit 1
 fi
 
+if [ "$STDIN_FILE" != "_stream" ] && [ ! -s "$STDIN_FILE" ]
+then
+	echo >&2 "Error: stdin replacement file '$STDIN_FILE' does not exist"
+	exit 1
+fi
+
 if [ "$INFILE" == "_stream" ]
 then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
 	
-	cat > "$TMPLDIR/input_stream"
+	cat_stdin "$STDIN_FILE" > "$TMPLDIR/_stream"
 	
-	if [ ! -s "$TMPLDIR/input_stream" ]
+	if [ ! -s "$TMPLDIR/_stream" ]
 	then
 		echo >&2 "Error: no stdin data"
 		exit 1
 	fi
 	
-	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/input_stream"
+	"$ZEROARG" "${ALLARGS[@]}" --input "$TMPLDIR/_stream"
 	
 	exit 0
 fi
 
-if [ "$INFILE" == "_list" ]
+if [ "$INFILE" == "_list" ] && [ "$MAX_PROCESSORS" -gt "1" ]
 then
 	readonly TMPLDIR=$(mktemp -d)
 	trap "rm -r $TMPLDIR" EXIT
 	
-	cat | egrep . | sort | uniq > "$TMPLDIR/input_list"
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq > "$TMPLDIR/input_list"
 	
 	if [ ! -s "$TMPLDIR/input_list" ]
 	then
@@ -148,43 +186,63 @@ then
 		exit 1
 	fi
 	
+	NUM_OF_INPUTS="$(cat $TMPLDIR/input_list | wc -l)"
+	SIZE_OF_PORTION="$(echo "a=$NUM_OF_INPUTS; b=$MAX_PROCESSORS; if(a%b) a/b+1 else a/b" | bc)"
+	
+	mkdir -p "$TMPLDIR/portions"
+	
+	split -l "$SIZE_OF_PORTION" "$TMPLDIR/input_list" "$TMPLDIR/portions/portion_"
+	
 	mkdir -p "$TMPLDIR/children_tables"
 	
-	cat "$TMPLDIR/input_list" \
-	| awk -v outdir="$TMPLDIR/children_tables" '{print "--input " $1 " --output-table-file " outdir "/" NR ".pdb"}' \
-	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}"
-	
+	find $TMPLDIR/portions/ -type f -not -empty \
+	| awk -v outdir="$TMPLDIR/children_tables" '{print "--stdin-file " $1 " --output-table-file " outdir "/" NR ".txt"}' \
+	| xargs -L 1 -P "$MAX_PROCESSORS" "$ZEROARG" "${ALLARGS[@]}" --processors 1 --input _list
+		
 	find "$TMPLDIR/children_tables" -type f -not -empty \
 	| sort \
 	| xargs -L 1 cat \
-	| awk '{if(NR==1 || NR%2==0) print $0}' \
+	| awk '{if(NR==1 || $1!="input_name") print $0}' \
 	| voronota-js --no-setup-defaults "js:voronota_tournament_sort('-input-file _stdin -output-file _stdout -columns iface_energy -multipliers -1 -tolerances 0.0');"
 	
 	exit 0
 fi
 
-INFILE_BASENAME="$(basename $INFILE)"
-OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE" "$OUTPUT_TABLE_FILE")"
+INFILE_BASENAME="$(get_input_basename $INFILE $STDIN_FILE)"
+OUTPUT_TABLE_FILE="$(substitute_id_in_filename "$INFILE_BASENAME" "$OUTPUT_TABLE_FILE")"
 
 {
 cat << EOF
-
-params={}
-
-params.input_file='$INFILE';
-params.input_file_name='$INFILE_BASENAME';
-params.input_as_assembly='$AS_ASSEMBLY';
-params.restrict_input_atoms='$RESTRICT_INPUT';
-params.contacts_subselection='$SUBSELECT_CONTACTS';
-params.score_symmetry='$SCORE_SYMMETRY';
-params.output_detailed_times='$DETAILED_TIMES';
-params.output_table_file='$OUTPUT_TABLE_FILE';
-
+var common_params={}
+common_params.input_as_assembly='$AS_ASSEMBLY';
+common_params.restrict_input_atoms='$RESTRICT_INPUT';
+common_params.contacts_subselection='$SUBSELECT_CONTACTS';
+common_params.score_symmetry='$SCORE_SYMMETRY';
+common_params.output_detailed_times='$DETAILED_TIMES';
+common_params.output_table_file='$OUTPUT_TABLE_FILE';
+var input_info_array=[];
 EOF
 
-cat << 'EOF'
+{
+if [ "$INFILE" == "_list" ]
+then
+	cat_stdin "$STDIN_FILE" | egrep . | sort | uniq
+else
+	echo "$INFILE"
+fi
+} | while read -r SUBINFILE
+do
+SUBINFILE_BASENAME="$(get_input_basename $SUBINFILE $STDIN_FILE)"
+cat << EOF
+input_info_array.push({"input_file": "$SUBINFILE", "input_file_name": "$SUBINFILE_BASENAME"});
+EOF
+done
 
-if(params.input_file===undefined || params.input_file==="")
+cat << 'EOF'
+analyze_interface=function(params, input)
+{
+
+if(input.input_file===undefined || input.input_file==="")
 {
 	throw ("No input file");
 }
@@ -221,9 +279,9 @@ if(params.output_table_file===undefined || params.output_table_file==="")
 
 voronota_reset_time();
 
-voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-potentials");
+voronota_delete_objects();
 
-voronota_import("-file", params.input_file, "-as-assembly", params.input_as_assembly);
+voronota_import("-file", input.input_file, "-as-assembly", params.input_as_assembly);
 voronota_assert_partial_success("Failed to import file");
 
 voronota_restrict_atoms("-use", params.restrict_input_atoms);
@@ -231,10 +289,10 @@ voronota_assert_full_success("Failed to restrict input atoms by the input query"
 
 voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");
-result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
+var result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 
 voronota_print_time();
-time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
+var time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
@@ -242,7 +300,7 @@ voronota_restrict_atoms_close_to_interchain_interface();
 voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 
 voronota_print_time();
-time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
+var time_restricting=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
@@ -253,7 +311,7 @@ voronota_select_contacts("-use", "([-inter-chain] and "+params.contacts_subselec
 voronota_assert_full_success("Failed to select inter-chain contacts");
 
 voronota_print_time();
-time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
+var time_constructing_contacts=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
@@ -262,25 +320,25 @@ voronota_assert_full_success("Failed to compute VoroMQA-light scores");
 
 voronota_voromqa_local("-contacts", "[inter_chain_contacts]");
 voronota_assert_full_success("Failed to compute VoroMQA-light scores for inter-chain contacts");
-result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
+var result_voromqa_light_local_inter_chain=voronota_last_output().results[0].output;
 
 voronota_print_time();
-time_calculating_energy=voronota_last_output().results[0].output.elapsed_miliseconds;
+var time_calculating_energy=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
 voronota_clash_score("-use", "[inter_chain_contacts]");
 voronota_assert_full_success("Failed to compute clash score");
-result_clash_score=voronota_last_output().results[0].output.clash_score;
+var result_clash_score=voronota_last_output().results[0].output.clash_score;
 
 voronota_print_time();
-time_calculating_clashes=voronota_last_output().results[0].output.elapsed_miliseconds;
+var time_calculating_clashes=voronota_last_output().results[0].output.elapsed_miliseconds;
 
-time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy+time_calculating_clashes);
+var time_total=(time_loading+time_restricting+time_constructing_contacts+time_calculating_energy+time_calculating_clashes);
 
-summary={}
+var summary={}
 
-summary.input_name=params.input_file_name;
+summary.input_name=input.input_file_name;
 summary.input_atoms=result_initial_number_of_protein_atoms;
 
 summary.iface_area=result_voromqa_light_local_inter_chain.contacts_result.area;
@@ -299,29 +357,29 @@ if(params.output_detailed_times=="true")
 
 if(params.score_symmetry=="true")
 {
-	result_symmetry_score=-1;
+	var result_symmetry_score=-1;
 	
 	voronota_reset_time();
 	
 	voronota_summarize_linear_structure();
 	voronota_assert_full_success("Failed to summarize linear structure");
-	chains_names=voronota_last_output().results[0].output.chain_names_all;
+	var chains_names=voronota_last_output().results[0].output.chain_names_all;
 	
 	if(chains_names.length==2)
 	{
 		voronota_list_objects();
 		voronota_assert_full_success("Failed to list objects");
-		main_name=voronota_last_output().results[0].output.objects[0].name;
+		var main_name=voronota_last_output().results[0].output.objects[0].name;
 		
 		voronota_cad_score("-target", main_name, "-model", main_name, "-t-sel", "[inter_chain_contacts]", "-m-sel", "[inter_chain_contacts]", "-m-chain-renaming-pairs", chains_names[0], chains_names[1], chains_names[1], chains_names[0]);
 		voronota_assert_full_success("Failed to calculate CAD-score with swapped chains");
-		result_cadscore=voronota_last_output().results[0].output.residue_level_result;
+		var result_cadscore=voronota_last_output().results[0].output.residue_level_result;
 		
 		result_symmetry_score=result_cadscore.score;
 	}
 	
 	voronota_print_time();
-	time_calculating_symmetry_score=voronota_last_output().results[0].output.elapsed_miliseconds;
+	var time_calculating_symmetry_score=voronota_last_output().results[0].output.elapsed_miliseconds;
 	
 	time_total=(time_total+time_calculating_symmetry_score);
 	
@@ -335,12 +393,13 @@ if(params.score_symmetry=="true")
 
 summary.time_total=time_total;
 
-var summary_table_header="";
-var summary_table_row="";
+var summary_table={}
+summary_table.header="";
+summary_table.row="";
 
 Object.keys(summary).forEach(function(key)
 {
-		summary_table_header+=key+" ";
+		summary_table.header+=key+" ";
 });
 
 Object.keys(summary).forEach(function(key)
@@ -348,25 +407,50 @@ Object.keys(summary).forEach(function(key)
 	value=summary[key];
 	if(typeof value === 'number')
 	{
-		summary_table_row+=parseFloat(value.toFixed(5))+" ";
+		summary_table.row+=parseFloat(value.toFixed(5))+" ";
 	}
 	else
 	{
-		summary_table_row+=value+" ";
+		summary_table.row+=value+" ";
 	}
 });
 
-var summary_table=summary_table_header.trim()+"\n"+summary_table_row.trim()+"\n";
+summary_table.header=summary_table.header.trim();
+summary_table.row=summary_table.row.trim();
 
-if(params.output_table_file!=="_stdout")
-{
-	shell('mkdir -p "$(dirname '+params.output_table_file+')"');
-	fwrite(params.output_table_file, summary_table);
+return summary_table;
 }
-else
+
+voronota_setup_defaults("-no-load-alt-voromqa-potential -faster-load-voromqa-potentials");
+
+var full_summary_table="";
+
+for(var i=0;i<input_info_array.length;i++)
 {
-	write(summary_table);
+	var subinput=input_info_array[i];
+	try
+	{
+		var summary_table=analyze_interface(common_params, subinput);
+		if(full_summary_table=="")
+		{
+			full_summary_table+=summary_table.header+"\n";
+		}
+		full_summary_table+=summary_table.row+"\n";
+	}
+	catch(error)
+	{
+		log("Failed with '"+subinput.input_file_name+"': "+error);
+	}
 }
+
+fwrite('_virtual/summary', full_summary_table);
+
+if(common_params.output_table_file!=="_stdout")
+{
+	shell('mkdir -p "$(dirname '+common_params.output_table_file+')"');
+}
+
+voronota_tournament_sort('-input-file', '_virtual/summary', '-output-file', common_params.output_table_file, '-columns', 'iface_energy', '-multipliers', -1, '-tolerances', 0.0);
 
 EOF
 
