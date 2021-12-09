@@ -13,6 +13,7 @@ Options:
     --output-table-file       string     output table file path, default is '_stdout' to print to stdout
     --processors              number     maximum number of processors to use, default is 1
     --stdin-file              string     input file path to replace stdin
+    --run-faspr               string     path to FASPR binary to rebuild side-chains
     --as-assembly                        flag to treat input file as biological assembly
     --detailed-times                     flag to output detailed times
     --score-symmetry                     flag score interface symmetry (for dimers only)
@@ -84,9 +85,9 @@ SUBSELECT_CONTACTS="[]"
 OUTPUT_TABLE_FILE="_stdout"
 MAX_PROCESSORS="1"
 STDIN_FILE="_stream"
+RUN_FASPR=""
 AS_ASSEMBLY="false"
 DETAILED_TIMES="false"
-RUN_SCWRL="false"
 SCORE_SYMMETRY="false"
 HELP_MODE="false"
 
@@ -120,14 +121,15 @@ do
 		STDIN_FILE="$OPTARG"
 		shift
 		;;
+	--run-faspr)
+		RUN_FASPR="$OPTARG"
+		shift
+		;;
 	--as-assembly)
 		AS_ASSEMBLY="true"
 		;;
 	--detailed-times)
 		DETAILED_TIMES="true"
-		;;
-	--run-scwrl)
-		RUN_SCWRL="true"
 		;;
 	--score-symmetry)
 		SCORE_SYMMETRY="true"
@@ -156,6 +158,12 @@ fi
 if [ "$STDIN_FILE" != "_stream" ] && [ ! -s "$STDIN_FILE" ]
 then
 	echo >&2 "Error: stdin replacement file '$STDIN_FILE' does not exist"
+	exit 1
+fi
+
+if [ -n "$RUN_FASPR" ] && [ ! -s "$RUN_FASPR" ]
+then
+	echo >&2 "Error: FASPR binary executable file '$RUN_FASPR' does not exist"
 	exit 1
 fi
 
@@ -221,7 +229,7 @@ var common_params={}
 common_params.input_as_assembly='$AS_ASSEMBLY';
 common_params.restrict_input_atoms='$RESTRICT_INPUT';
 common_params.contacts_subselection='$SUBSELECT_CONTACTS';
-common_params.run_scwrl='$RUN_SCWRL';
+common_params.run_faspr='$RUN_FASPR';
 common_params.score_symmetry='$SCORE_SYMMETRY';
 common_params.output_detailed_times='$DETAILED_TIMES';
 common_params.output_table_file='$OUTPUT_TABLE_FILE';
@@ -267,9 +275,9 @@ if(params.contacts_subselection===undefined || params.contacts_subselection===""
 	params.contacts_subselection='[]';
 }
 
-if(params.run_scwrl===undefined || params.run_scwrl==="")
+if(params.run_faspr===undefined)
 {
-	params.run_scwrl="false";
+	params.run_faspr="";
 }
 
 if(params.score_symmetry===undefined || params.score_symmetry==="")
@@ -301,10 +309,10 @@ voronota_restrict_atoms("-use", "[-protein]");
 voronota_assert_full_success("Failed to restrict input atoms to protein only");
 var result_initial_number_of_protein_atoms=voronota_last_output().results[0].output.atoms_summary_new.number_total;
 
-if(params.run_scwrl=="true")
+if(params.run_faspr!="")
 {
-	voronota_scwrl();
-	voronota_assert_full_success("Failed to run Scwrl");
+	voronota_run_faspr("-faspr-binary", params.run_faspr);
+	voronota_assert_full_success("Failed to run FASPR");
 }
 
 voronota_print_time();

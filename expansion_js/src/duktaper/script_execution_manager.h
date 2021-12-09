@@ -12,6 +12,7 @@
 #include "operators/import_url.h"
 #include "operators/nnport_predict.h"
 #include "operators/run_bff.h"
+#include "operators/run_faspr.h"
 #include "operators/run_nolb.h"
 #include "operators/scwrl.h"
 #include "operators/setup_defaults.h"
@@ -41,6 +42,7 @@ public:
 		set_command_for_data_manager("construct-or-load-contacts", operators::ConstructOrLoadContacts(), true);
 		set_command_for_data_manager("construct-or-load-quality-scores", operators::ConstructOrLoadQualityScores(), true);
 		set_command_for_data_manager("run-bff", operators::RunBFF(), true);
+		set_command_for_data_manager("run-faspr", operators::RunFASPR(), true);
 		set_command_for_data_manager("scwrl", operators::Scwrl(), true);
 		set_command_for_data_manager("voromqa-dark-global", operators::VoroMQADarkGlobal(), true);
 		set_command_for_data_manager("voromqa-dark-local", operators::VoroMQADarkLocal(), true);
