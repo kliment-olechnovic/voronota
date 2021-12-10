@@ -259,7 +259,10 @@ time_loading=voronota_last_output().results[0].output.elapsed_miliseconds;
 
 voronota_reset_time();
 
-voronota_restrict_atoms_close_to_interchain_interface();
+voronota_select_atoms_close_to_interchain_interface("-name", "actii");
+voronota_assert_full_success("Failed to select interface atoms");
+
+voronota_restrict_atoms("-use", "[actii]");
 voronota_assert_full_success("Failed to restrict input atoms to interface atoms");
 
 if(params.test_common_ids=="true")
