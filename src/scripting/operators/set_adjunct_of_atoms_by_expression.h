@@ -117,6 +117,17 @@ public:
 				throw std::runtime_error(std::string("Not 0 parameters for the defined expression."));
 			}
 		}
+		else if(expression=="_modulo")
+		{
+			if(input_adjuncts.size()!=1)
+			{
+				throw std::runtime_error(std::string("Not 1 input adjunct name for the defined expression."));
+			}
+			if(parameters.size()!=1)
+			{
+				throw std::runtime_error(std::string("Not 1 parameter for the defined expression."));
+			}
+		}
 		else
 		{
 			throw std::runtime_error(std::string("Unsupported expression."));
@@ -135,7 +146,7 @@ public:
 			const std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
 			for(std::size_t i=0;i<input_adjuncts.size();i++)
 			{
-				if(atom_adjuncts.count(input_adjuncts[i])==0)
+				if(input_adjuncts[i]!="resSeq" && input_adjuncts[i]!="radius" && atom_adjuncts.count(input_adjuncts[i])==0)
 				{
 					throw std::runtime_error(std::string("Input adjuncts not present everywhere in selection."));
 				}
@@ -149,7 +160,18 @@ public:
 				std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(*it);
 				for(std::size_t i=0;i<input_adjuncts.size();i++)
 				{
-					input_adjunct_values[i]=atom_adjuncts[input_adjuncts[i]];
+					if(input_adjuncts[i]=="resSeq")
+					{
+						input_adjunct_values[i]=data_manager.atoms()[*it].crad.resSeq;
+					}
+					else if(input_adjuncts[i]=="radius")
+					{
+						input_adjunct_values[i]=data_manager.atoms()[*it].value.r;
+					}
+					else
+					{
+						input_adjunct_values[i]=atom_adjuncts[input_adjuncts[i]];
+					}
 				}
 				if(expression=="_reverse_s")
 				{
@@ -184,6 +206,12 @@ public:
 				else if(expression=="_divide")
 				{
 					atom_adjuncts[output_adjunct]=input_adjunct_values[0]/input_adjunct_values[1];
+				}
+				else if(expression=="_modulo")
+				{
+					const double v=input_adjunct_values.back();
+					const double d=parameters.back();
+					atom_adjuncts[output_adjunct]=(v-(std::floor(v/d)*d));
 				}
 			}
 		}
