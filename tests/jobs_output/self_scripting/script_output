@@ -1194,13 +1194,13 @@
             "name":"restrict-atoms-and-renumber-residues-by-adjunct",
             "short_description":""},
           {
-            "name":"restrict-atoms-close-to-interchain-interface",
-            "short_description":""},
-          {
             "name":"select-atoms",
             "short_description":""},
           {
             "name":"select-atoms-by-triangulation-query",
+            "short_description":""},
+          {
+            "name":"select-atoms-close-to-interchain-interface",
             "short_description":""},
           {
             "name":"select-contacts",

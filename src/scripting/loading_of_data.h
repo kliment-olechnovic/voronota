@@ -23,12 +23,16 @@ public:
 		bool include_heteroatoms;
 		bool include_hydrogens;
 		bool multimodel_chains;
+		bool only_default_radius;
+		double default_radius;
 		auxiliaries::AtomRadiusAssigner atom_radius_assigner;
 
 		Configuration() :
 			include_heteroatoms(false),
 			include_hydrogens(false),
 			multimodel_chains(false),
+			only_default_radius(false),
+			default_radius(recommended_default_radius()),
 			atom_radius_assigner(generate_atom_radius_assigner(recommended_default_radius(), false, 0))
 		{
 		}
@@ -174,44 +178,26 @@ public:
 
 			auxiliaries::IOUtilities(true, '\n', ' ', "_end_contacts").read_lines_to_set(finput, result.contacts);
 		}
-		else if(params.format=="xyzr")
+		else if(params.format=="xyz" || params.format=="xyzr")
 		{
-			const std::vector<apollota::SimpleSphere> spheres=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimpleSphere> >(finput);
+			const auxiliaries::AtomsIO::XYZRReader::Data xyzr_data=auxiliaries::AtomsIO::XYZRReader::read_data_from_file_stream(finput);
 
-			result.atoms.reserve(spheres.size());
-			for(std::size_t i=0;i<spheres.size();i++)
+			result.atoms.reserve(xyzr_data.xyzr_records.size());
+			for(std::size_t i=0;i<xyzr_data.xyzr_records.size();i++)
 			{
-				const apollota::SimpleSphere& ball=spheres[i];
-				Atom atom;
-				atom.value.x=ball.x;
-				atom.value.y=ball.y;
-				atom.value.z=ball.z;
-				atom.value.r=ball.r;
-				atom.crad.resSeq=i;
-				result.atoms.push_back(atom);
-			}
-
-			if(result.atoms.empty())
-			{
-				handle_reading_failure(params.file, params.format);
-			}
-		}
-		else if(params.format=="xyz")
-		{
-			const std::vector<apollota::SimplePoint> points=auxiliaries::IOUtilities().read_lines_to_set< std::vector<apollota::SimplePoint> >(finput);
-
-			result.atoms.reserve(points.size());
-
-			for(std::size_t i=0;i<points.size();i++)
-			{
-				const apollota::SimplePoint& point=points[i];
-				Atom atom;
-				atom.value.x=point.x;
-				atom.value.y=point.y;
-				atom.value.z=point.z;
-				atom.value.r=1.0;
-				atom.crad.resSeq=i;
-				result.atoms.push_back(atom);
+				const auxiliaries::AtomsIO::XYZRReader::XYZRRecord& record=xyzr_data.xyzr_records[i];
+				if(record.atom_type!="H" || (params.forced_include_hydrogens ? params.include_hydrogens : config.include_hydrogens))
+				{
+					Atom atom;
+					atom.value.x=record.x;
+					atom.value.y=record.y;
+					atom.value.z=record.z;
+					atom.value.r=(config.only_default_radius ? config.default_radius : (xyzr_data.with_r ? record.r : config.atom_radius_assigner.get_atom_radius("", record.atom_type)));
+					atom.crad.resSeq=i;
+					atom.crad.name=record.atom_type;
+					atom.value.props.tags.insert(std::string("el=")+record.atom_type);
+					result.atoms.push_back(atom);
+				}
 			}
 
 			if(result.atoms.empty())

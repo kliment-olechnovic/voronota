@@ -626,6 +626,109 @@ public:
 		}
 	};
 
+	class XYZRReader
+	{
+	public:
+		struct XYZRRecord
+		{
+			std::string atom_type;
+			double x;
+			double y;
+			double z;
+			double r;
+		};
+
+		struct Data
+		{
+			std::vector<XYZRRecord> xyzr_records;
+			bool with_r;
+		};
+
+		static Data read_data_from_file_stream(std::istream& file_stream)
+		{
+			Data data;
+			data.with_r=false;
+			bool provided_count_available=false;
+			std::size_t provided_count=0;
+
+			file_stream >> std::ws;
+			if(next_char_is_digit(file_stream))
+			{
+				file_stream >> provided_count;
+				if(file_stream.fail() || provided_count<1)
+				{
+					throw std::runtime_error("Invalid number of atoms.");
+				}
+				provided_count_available=true;
+				file_stream >> std::ws;
+			}
+
+			while(file_stream.good())
+			{
+				std::string line;
+				std::getline(file_stream, line);
+				if(!line.empty())
+				{
+					std::istringstream line_input(line);
+					XYZRRecord record;
+					line_input >> record.atom_type >> record.x >> record.y >> record.z;
+					if(line_input.fail())
+					{
+						std::ostringstream msg;
+						msg << "Invalid atom record in line: '" << line << "'.\n";
+						throw std::runtime_error(msg.str());
+					}
+					line_input >> std::ws;
+					if(data.xyzr_records.empty())
+					{
+						if(line_input.good() && next_char_is_digit(line_input))
+						{
+							data.with_r=true;
+						}
+					}
+					if(data.with_r)
+					{
+						line_input >> record.r;
+						if(line_input.fail())
+						{
+							std::ostringstream msg;
+							msg << "Invalid atom radius in line: '" << line << "'.\n";
+							throw std::runtime_error(msg.str());
+						}
+						data.with_r=true;
+					}
+					else
+					{
+						if(line_input.good())
+						{
+							std::ostringstream msg;
+							msg << "Invalid atom record size in line: '" << line << "'.\n";
+							throw std::runtime_error(msg.str());
+						}
+					}
+					data.xyzr_records.push_back(record);
+				}
+			}
+
+			if(provided_count_available && provided_count!=data.xyzr_records.size())
+			{
+				throw std::runtime_error("Mismatched promised and actual numbers of atoms.");
+				std::ostringstream msg;
+				msg << "Mismatched promised and actual numbers of atoms: " << provided_count << " vs " << data.xyzr_records.size() << ".\n";
+				throw std::runtime_error(msg.str());
+			}
+
+			return data;
+		}
+
+	private:
+		static bool next_char_is_digit(std::istream& file_stream)
+		{
+			const int next_char=file_stream.peek();
+			return (next_char>=static_cast<int>('0') && next_char<=static_cast<int>('9'));
+		}
+	};
+
 private:
 	static bool check_atom_record_validity(const AtomRecord& record)
 	{

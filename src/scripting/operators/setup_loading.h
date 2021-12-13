@@ -25,10 +25,8 @@ public:
 
 	LoadingOfData::Configuration config;
 	std::string radii_file;
-	double default_radius;
-	bool only_default_radius;
 
-	SetupLoading() : default_radius(LoadingOfData::Configuration::recommended_default_radius()), only_default_radius(false)
+	SetupLoading()
 	{
 	}
 
@@ -38,9 +36,9 @@ public:
 		config.include_heteroatoms=input.get_flag("include-heteroatoms");
 		config.include_hydrogens=input.get_flag("include-hydrogens");
 		config.multimodel_chains=input.get_flag("as-assembly");
+		config.only_default_radius=input.get_flag("same-radius-for-all");
+		config.default_radius=input.get_value_or_default<double>("default-radius", LoadingOfData::Configuration::recommended_default_radius());
 		radii_file=input.get_value_or_default<std::string>("radii-file", "");
-		default_radius=input.get_value_or_default<double>("default-radius", LoadingOfData::Configuration::recommended_default_radius());
-		only_default_radius=input.get_flag("same-radius-for-all");
 	}
 
 	void document(CommandDocumentation& doc) const
@@ -65,11 +63,11 @@ public:
 			{
 				throw std::runtime_error(std::string("Failed to read radii file."));
 			}
-			config_filled.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(default_radius, only_default_radius, &radii_file_stream);
+			config_filled.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(config.default_radius, config.only_default_radius, &radii_file_stream);
 		}
 		else
 		{
-			config_filled.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(default_radius, only_default_radius, 0);
+			config_filled.atom_radius_assigner=LoadingOfData::Configuration::generate_atom_radius_assigner(config.default_radius, config.only_default_radius, 0);
 		}
 
 		LoadingOfData::Configuration::setup_default_configuration(config_filled);
