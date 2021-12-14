@@ -54,9 +54,11 @@ public:
 		loading_parameters.forced_include_heteroatoms=input.is_option("include-heteroatoms");
 		loading_parameters.forced_include_hydrogens=input.is_option("include-hydrogens");
 		loading_parameters.forced_multimodel_chains=input.is_option("as-assembly");
+		loading_parameters.forced_same_radius_for_all=input.is_option("same-radius-for-all");
 		loading_parameters.include_heteroatoms=input.get_flag("include-heteroatoms");
 		loading_parameters.include_hydrogens=input.get_flag("include-hydrogens");
 		loading_parameters.multimodel_chains=input.get_flag("as-assembly");
+		loading_parameters.same_radius_for_all=input.get_value_or_default<double>("same-radius-for-all", LoadingOfData::Configuration::recommended_default_radius());
 		title=(input.is_option("title") ? input.get_value<std::string>("title") : OperatorsUtilities::get_basename_from_path(loading_parameters.file));
 	}
 
@@ -76,6 +78,7 @@ public:
 		doc.set_option_decription(CDOD("include-heteroatoms", CDOD::DATATYPE_BOOL, "flag to include heteroatoms"));
 		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
 		doc.set_option_decription(CDOD("as-assembly", CDOD::DATATYPE_BOOL, "flag import as a biological assembly"));
+		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_FLOAT, "radius to use for all atoms", LoadingOfData::Configuration::recommended_default_radius()));
 		doc.set_option_decription(CDOD("title", CDOD::DATATYPE_STRING, "new object title", ""));
 	}
 

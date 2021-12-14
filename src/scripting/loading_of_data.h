@@ -90,9 +90,11 @@ public:
 		bool forced_include_heteroatoms;
 		bool forced_include_hydrogens;
 		bool forced_multimodel_chains;
+		bool forced_same_radius_for_all;
 		bool include_heteroatoms;
 		bool include_hydrogens;
 		bool multimodel_chains;
+		double same_radius_for_all;
 		std::string file;
 		std::string format;
 		std::string format_fallback;
@@ -101,9 +103,11 @@ public:
 			forced_include_heteroatoms(false),
 			forced_include_hydrogens(false),
 			forced_multimodel_chains(false),
+			forced_same_radius_for_all(false),
 			include_heteroatoms(false),
 			include_hydrogens(false),
-			multimodel_chains(false)
+			multimodel_chains(false),
+			same_radius_for_all(1.0)
 		{
 		}
 	};
@@ -192,7 +196,7 @@ public:
 					atom.value.x=record.x;
 					atom.value.y=record.y;
 					atom.value.z=record.z;
-					atom.value.r=(config.only_default_radius ? config.default_radius : (xyzr_data.with_r ? record.r : config.atom_radius_assigner.get_atom_radius("", record.atom_type)));
+					atom.value.r=(xyzr_data.with_r ? record.r : config.atom_radius_assigner.get_atom_radius("", record.atom_type));
 					atom.crad.resSeq=i;
 					atom.crad.name=record.atom_type;
 					atom.value.props.tags.insert(std::string("el=")+record.atom_type);
@@ -203,6 +207,21 @@ public:
 			if(result.atoms.empty())
 			{
 				handle_reading_failure(params.file, params.format);
+			}
+		}
+
+		if(params.forced_same_radius_for_all)
+		{
+			if(!result.contacts.empty())
+			{
+				throw std::runtime_error(std::string("Not allowed to force radius when precomputed contacts are loaded."));
+			}
+			else
+			{
+				for(std::size_t i=0;i<result.atoms.size();i++)
+				{
+					result.atoms[i].value.r=params.same_radius_for_all;
+				}
 			}
 		}
 	}
