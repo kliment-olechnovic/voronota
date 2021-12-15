@@ -20,21 +20,25 @@ public:
 	struct Result : public scripting::OperatorResultBase<Result>
 	{
 		scripting::operators::Import::Result import_result;
+		int cell_size;
+
+		Result() : cell_size(0)
+		{
+		}
 
 		void store(scripting::HeterogeneousStorage& heterostorage) const
 		{
 			import_result.store(heterostorage);
+			heterostorage.variant_object.value("cell_size")=cell_size;
 		}
 	};
 
 	std::string file;
 	std::string fetch_cod_id;
 	std::string title;
-	bool same_radius_for_all_provided;
-	double same_radius_for_all;
-	bool include_hydrogens;
+	double radius;
 
-	ImportCODCIF() : same_radius_for_all_provided(false), same_radius_for_all(1.0), include_hydrogens(false)
+	ImportCODCIF() : radius(1.0)
 	{
 	}
 
@@ -42,18 +46,15 @@ public:
 	{
 		file=input.get_value_or_default<std::string>("file", "");
 		fetch_cod_id=input.get_value_or_default<std::string>("fetch-cod-id", "");
-		same_radius_for_all_provided=input.is_option("same-radius-for-all");
-		same_radius_for_all=input.get_value_or_default<double>("same-radius-for-all", 1.0);
-		include_hydrogens=input.get_flag("include-hydrogens");
-		title=(input.is_option("title") ? input.get_value<std::string>("title") : (!fetch_cod_id.empty() ? fetch_cod_id : scripting::OperatorsUtilities::get_basename_from_path(file)));
+		radius=input.get_value_or_default<double>("radius", 1.0);
+		title=(input.is_option("title") ? input.get_value<std::string>("title") : (!fetch_cod_id.empty() ? (std::string("COD_")+fetch_cod_id) : scripting::OperatorsUtilities::get_basename_from_path(file)));
 	}
 
 	void document(scripting::CommandDocumentation& doc) const
 	{
 		doc.set_option_decription(CDOD("file", CDOD::DATATYPE_STRING, "input COD CIF file path", ""));
 		doc.set_option_decription(CDOD("fetch-cod-id", CDOD::DATATYPE_STRING, "COD ID to fetch from crystallography.net", ""));
-		doc.set_option_decription(CDOD("same-radius-for-all", CDOD::DATATYPE_FLOAT, "radius to use for all atoms", ""));
-		doc.set_option_decription(CDOD("include-hydrogens", CDOD::DATATYPE_BOOL, "flag to include hydrogens"));
+		doc.set_option_decription(CDOD("radius", CDOD::DATATYPE_FLOAT, "radius to use for all atoms", 1.0));
 		doc.set_option_decription(CDOD("title", CDOD::DATATYPE_STRING, "new object title", ""));
 	}
 
@@ -84,8 +85,7 @@ public:
 			throw std::runtime_error(std::string("'cif2xyz' command not available."));
 		}
 
-		scripting::VirtualFileStorage::TemporaryFile tmpfile;
-
+		scripting::VirtualFileStorage::TemporaryFile tmpfile_cif;
 		{
 			std::ostringstream command_output;
 			if(!file.empty())
@@ -96,27 +96,39 @@ public:
 			{
 				command_output << "curl --silent 'https://www.crystallography.net/cod/" << fetch_cod_id << ".cif'";
 			}
-			command_output << " | cif_fillcell --supercell --merge-special-positions | cif2xyz --print-radii";
 			operators::CallShell::Result download_result=operators::CallShell().init(CMDIN().set("command-string", command_output.str())).run(0);
-			if(download_result.exit_status!=0 || download_result.stdout_str.empty())
+			if(download_result.stdout_str.empty())
 			{
 				throw std::runtime_error(std::string("No data read, stderr output: '")+download_result.stderr_str+"'.");
 			}
 			else
 			{
-				scripting::VirtualFileStorage::set_file(tmpfile.filename(), download_result.stdout_str);
+				scripting::VirtualFileStorage::set_file(tmpfile_cif.filename(), download_result.stdout_str);
+			}
+		}
+
+		scripting::VirtualFileStorage::TemporaryFile tmpfile_xyz_supercell;
+		{
+			operators::CallShell::Result process_result=operators::CallShell().init(CMDIN()
+					.set("input-file", tmpfile_cif.filename())
+					.set("command-string", "cif_fillcell --supercell --merge-special-positions | cif2xyz"))
+					.run(0);
+			if(process_result.exit_status!=0 || process_result.stdout_str.empty())
+			{
+				throw std::runtime_error(std::string("Failed to generate a supercell, stderr output: '")+process_result.stderr_str+"'.");
+			}
+			else
+			{
+				scripting::VirtualFileStorage::set_file(tmpfile_xyz_supercell.filename(), process_result.stdout_str);
 			}
 		}
 
 		scripting::CommandInput import_operator_params;
-		import_operator_params.set("file", tmpfile.filename());
+		import_operator_params.set("file", tmpfile_xyz_supercell.filename());
 		import_operator_params.set("format", "xyzr");
 		import_operator_params.set("title", title);
-		import_operator_params.set("include-hydrogens", include_hydrogens);
-		if(same_radius_for_all_provided)
-		{
-			import_operator_params.set("same-radius-for-all", same_radius_for_all);
-		}
+		import_operator_params.set("include-hydrogens", true);
+		import_operator_params.set("same-radius-for-all", radius);
 
 		Result result;
 
@@ -137,12 +149,26 @@ public:
 			throw std::runtime_error(std::string("Number of imported atoms is not divisible by 27."));
 		}
 
+		result.cell_size=(data_manager.atoms().size()/27);
+
+		for(std::size_t i=0;i<data_manager.atoms().size();i+=27)
+		{
+			for(std::size_t j=1;j<27;j++)
+			{
+				if((i+j)>=data_manager.atoms().size() || data_manager.atoms()[i+j].crad.name!=data_manager.atoms()[i].crad.name)
+				{
+					congregation_of_data_managers.delete_object(new_object);
+					throw std::runtime_error(std::string("Imported atoms are not ordered with step 27."));
+				}
+			}
+		}
+
 		for(std::size_t i=0;i<data_manager.atoms().size();i++)
 		{
 			const scripting::Atom& atom=data_manager.atoms()[i];
 			std::map<std::string, double>& atom_adjuncts=data_manager.atom_adjuncts_mutable(i);
-			atom_adjuncts["cifcell"]=static_cast<double>(atom.crad.resSeq%27);
-			atom_adjuncts["cifuid"]=static_cast<double>(atom.crad.resSeq/27);
+			atom_adjuncts["cif_cell"]=static_cast<double>(atom.crad.resSeq%27);
+			atom_adjuncts["cif_cell_aid"]=static_cast<double>(atom.crad.resSeq/27);
 		}
 
 		return result;

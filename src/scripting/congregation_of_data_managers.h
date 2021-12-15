@@ -34,8 +34,25 @@ public:
 		void set_changed_objects_names(const bool value) { changed_objects_names_=value; ensure_correctness(); }
 		void set_changed_objects_picks(const bool value) { changed_objects_picks_=value; ensure_correctness(); }
 		void set_changed_objects_visibilities(const bool value) { changed_objects_visibilities_=value; ensure_correctness(); }
-		void add_to_added_objects(DataManager* value) { added_objects_.insert(value); ensure_correctness(); }
-		void add_to_deleted_objects(DataManager* value) { deleted_objects_.insert(value); ensure_correctness(); }
+
+		void add_to_added_objects(DataManager* value)
+		{
+			added_objects_.insert(value);
+			ensure_correctness();
+		}
+
+		void add_to_deleted_objects(DataManager* value)
+		{
+			if(added_objects_.count(value)>0)
+			{
+				added_objects_.erase(value);
+			}
+			else
+			{
+				deleted_objects_.insert(value);
+			}
+			ensure_correctness();
+		}
 
 		bool changed() const
 		{

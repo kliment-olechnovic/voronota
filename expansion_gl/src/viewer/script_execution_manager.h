@@ -488,7 +488,7 @@ private:
 			{
 				bool available_contacts=false;
 				bool available_tags_het=false;
-				bool available_adjuncts_cifcell=false;
+				bool available_adjuncts_cif_cell=false;
 				{
 					bool checked=false;
 					for(std::size_t i=0;i<objects.size() && !checked;i++)
@@ -496,8 +496,8 @@ private:
 						const scripting::DataManager& object=(*objects[i]);
 						available_contacts=available_contacts || (!object.contacts().empty());
 						available_tags_het=available_tags_het || (object.is_any_atom_with_tag("het"));
-						available_adjuncts_cifcell=available_adjuncts_cifcell || (object.is_any_atom_with_adjunct("cifcell"));
-						checked=available_contacts || available_tags_het || available_adjuncts_cifcell;
+						available_adjuncts_cif_cell=available_adjuncts_cif_cell || (object.is_any_atom_with_adjunct("cif_cell"));
+						checked=available_contacts || available_tags_het || available_adjuncts_cif_cell;
 					}
 				}
 				std::ostringstream script_output;
@@ -515,11 +515,11 @@ private:
 					script_output << "show-atoms [-t het] -rep sticks\n";
 					script_output << "color-atoms [-t het] -next-random-color\n";
 				}
-				if(available_adjuncts_cifcell)
+				if(available_adjuncts_cif_cell)
 				{
-					script_output << "show-atoms [-v cifcell] -rep balls\n";
-					script_output << "spectrum-atoms [-v cifcell] -adjunct cifcell -scheme bcgyr\n";
-					script_output << "color-atoms [-v cifcell=0] -col 0xFFFFFF\n";
+					script_output << "show-atoms [-v cif_cell] -rep balls\n";
+					script_output << "spectrum-atoms [-v cif_cell] -adjunct cif_cell -scheme bcgyr\n";
+					script_output << "color-atoms [-v cif_cell=0] -col 0xFFFFFF\n";
 				}
 				script_partitioner().add_pending_sentences_from_string_to_front(script_output.str());
 			}
