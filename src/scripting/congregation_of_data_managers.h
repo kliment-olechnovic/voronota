@@ -420,6 +420,10 @@ private:
 
 	std::string unique_name(const std::string& name)
 	{
+		if(name.empty())
+		{
+			return unique_name(std::string("obj"));
+		}
 		std::string candidate=name;
 		DataManager* present_id=get_object(candidate);
 		int i=1;
