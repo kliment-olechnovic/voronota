@@ -13,6 +13,7 @@ Options:
     --conda-path              string     conda installation path, default is ~/anaconda3
     --conda-env               string     conda environment name, default is alphafold2
     --run-faspr               string     path to FASPR binary to rebuild side-chains
+    --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
     --max-iterations          number     max number of iterations, default is 100
     --pdbfixer                           flag to run PDBFixer before everything
     --help | -h                          flag to display help message and exit
@@ -51,6 +52,7 @@ FOCUS_MODE="interface_side_chains"
 CONDA_PATH="${HOME}/anaconda3"
 CONDA_ENV="alphafold2"
 RUN_FASPR=""
+FORCEFIELD="amber99sb"
 MAX_ITERATIONS="100"
 WITH_PDBFIXER="false"
 HELP_MODE="false"
@@ -83,6 +85,10 @@ do
 		;;
 	--run-faspr)
 		RUN_FASPR="$OPTARG"
+		shift
+		;;
+	--forcefield)
+		FORCEFIELD="$OPTARG"
 		shift
 		;;
 	--max-iterations)
@@ -226,10 +232,10 @@ voronota_export_atoms("-as-pdb", "-file", "prepared_by_filtering.pdb");
 voronota_assert_full_success("Failed to export atoms");
 EOF
 } \
-> reformat1.vs
+> filter.vs
 
 echo >&2 "Filtering structure with voronota-js"
-time -p voronota-js --no-setup-defaults < reformat1.vs
+time -p voronota-js --no-setup-defaults < filter.vs
 
 if [ ! -s "prepared_by_filtering.pdb" ]
 then
@@ -243,16 +249,17 @@ from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
 pdb = PDBFile('prepared_by_filtering.pdb')
-forcefield = ForceField('amber99sb.xml', 'amber99_obc.xml')
+forcefield = ForceField('FORCEFIELD.xml')
 modeller = Modeller(pdb.topology, pdb.positions)
 modeller.addHydrogens(forcefield)
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared_with_simtk.pdb', 'w'), keepIds=True)
 EOF
 } \
-> reformat2.py
+| sed "s|FORCEFIELD|${FORCEFIELD}|" \
+> prepare.py
 
 echo >&2 "Prepare structure file with simtk modeller"
-time -p python reformat2.py
+time -p python prepare.py
 
 if [ ! -s "prepared_with_simtk.pdb" ]
 then
@@ -305,7 +312,7 @@ from simtk.openmm import *
 from simtk.unit import *
 
 pdb = PDBFile('prepared_with_simtk.pdb')
-forcefield = ForceField('amber99sb.xml', 'amber99_obc.xml')
+forcefield = ForceField('FORCEFIELD.xml')
 system = forcefield.createSystem(pdb.topology)
 EOF
 
@@ -320,6 +327,7 @@ positions = simulation.context.getState(getPositions=True).getPositions()
 PDBFile.writeFile(simulation.topology, positions, open('relaxed.pdb', 'w'), keepIds=True)
 EOF
 } \
+| sed "s|FORCEFIELD|${FORCEFIELD}|" \
 | sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
 > relax.py
 
