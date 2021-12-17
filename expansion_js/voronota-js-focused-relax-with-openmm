@@ -9,11 +9,11 @@ cat >&2 << 'EOF'
 Options:
     --input | -i              string  *  input file path
     --output | -o             string  *  output file path
-    --focus                   string     focus mode, default is 'interface_side_chains', others are: 'whole_interface', 'not_interface', 'whole_structure'
+    --focus                   string     focus mode, default is "interface_side_chains", others are: "whole_interface", "not_interface", "whole_structure"
     --conda-path              string     conda installation path, default is ~/anaconda3
     --conda-env               string     conda environment name, default is alphafold2
     --run-faspr               string     path to FASPR binary to rebuild side-chains
-    --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
+    --forcefield              string     forcefield name, default is "amber99sb.xml','amber99_obc", some others are: "amber14-all", "charmm36", "amber99sb"
     --max-iterations          number     max number of iterations, default is 100
     --pdbfixer                           flag to run PDBFixer before everything
     --help | -h                          flag to display help message and exit
@@ -52,7 +52,7 @@ FOCUS_MODE="interface_side_chains"
 CONDA_PATH="${HOME}/anaconda3"
 CONDA_ENV="alphafold2"
 RUN_FASPR=""
-FORCEFIELD="amber99sb"
+FORCEFIELD="amber99sb.xml','amber99_obc"
 MAX_ITERATIONS="100"
 WITH_PDBFIXER="false"
 HELP_MODE="false"
@@ -175,7 +175,7 @@ voronota_assert_partial_success("Failed to import file");
 voronota_run_faspr("-faspr-binary", 'RUN_FASPR');
 voronota_assert_full_success("Failed to run FASPR");
 
-voronota_export_atoms("-as-pdb", "-file", "prepared_with_faspr.pdb");
+voronota_export_atoms("-as-pdb", "-file", "prepared_initially.pdb");
 voronota_assert_full_success("Failed to export annotated atoms");
 EOF
 	} \
@@ -185,40 +185,10 @@ EOF
 	echo >&2 "Running FASPR from voronota-js"
 	time -p voronota-js --no-setup-defaults < runfaspr.vs
 else
-	cp "input.pdb" "prepared_with_faspr.pdb"
+	cp "input.pdb" "prepared_initially.pdb"
 fi
 
-if [ ! -s "prepared_with_faspr.pdb" ]
-then
-	echo >&2 "Error: failed to prepare input"
-	exit 1
-fi
-
-if [ "$WITH_PDBFIXER" == "true" ]
-then
-	{
-cat << 'EOF'
-from pdbfixer import PDBFixer
-from simtk.openmm.app import PDBFile
-fixer = PDBFixer(filename='prepared_with_faspr.pdb')
-fixer.findMissingResidues()
-fixer.findNonstandardResidues()
-fixer.replaceNonstandardResidues()
-fixer.removeHeterogens(True)
-fixer.findMissingAtoms()
-fixer.addMissingAtoms()
-PDBFile.writeFile(fixer.topology, fixer.positions, open('prepared_with_pdbfixer.pdb', 'w'), keepIds=True)
-EOF
-	} \
-	> pdbfix.py
-	
-	echo >&2 "Preparing structure file with PDBFixer"
-	time -p python pdbfix.py
-else
-	mv "prepared_with_faspr.pdb" "prepared_with_pdbfixer.pdb"
-fi
-
-if [ ! -s "prepared_with_pdbfixer.pdb" ]
+if [ ! -s "prepared_initially.pdb" ]
 then
 	echo >&2 "Error: failed to prepare input"
 	exit 1
@@ -226,7 +196,7 @@ fi
 
 {
 cat << 'EOF'
-voronota_import("-file", "prepared_with_pdbfixer.pdb", "-include-hydrogens");
+voronota_import("-file", "prepared_initially.pdb", "-include-hydrogens");
 voronota_assert_partial_success("Failed to import file");
 voronota_export_atoms("-as-pdb", "-file", "prepared_by_filtering.pdb");
 voronota_assert_full_success("Failed to export atoms");
@@ -248,9 +218,30 @@ cat << 'EOF'
 from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
+EOF
+
+if [ "$WITH_PDBFIXER" == "true" ]
+then
+cat << 'EOF'
+from pdbfixer import PDBFixer
+fixer = PDBFixer(filename='prepared_by_filtering.pdb')
+fixer.findMissingResidues()
+fixer.findNonstandardResidues()
+fixer.replaceNonstandardResidues()
+fixer.removeHeterogens(True)
+fixer.findMissingAtoms()
+fixer.addMissingAtoms()
+modeller = Modeller(fixer.topology, fixer.positions)
+EOF
+else
+cat << 'EOF'
 pdb = PDBFile('prepared_by_filtering.pdb')
-forcefield = ForceField('FORCEFIELD.xml')
 modeller = Modeller(pdb.topology, pdb.positions)
+EOF
+fi
+
+cat << 'EOF'
+forcefield = ForceField('FORCEFIELD.xml')
 modeller.addHydrogens(forcefield)
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared_with_simtk.pdb', 'w'), keepIds=True)
 EOF
