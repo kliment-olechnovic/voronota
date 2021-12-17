@@ -13,8 +13,9 @@ Options:
     --conda-path              string     conda installation path, default is ~/anaconda3
     --conda-env               string     conda environment name, default is alphafold2
     --forcefield              string     forcefield name, default is "amber99sb.xml','amber99_obc", some others are: "amber14-all", "charmm36", "amber99sb"
-    --max-iterations          number     max number of iterations, default is 100
+    --max-iterations          number     max number of iterations, default is 1000
     --no-preparation                     flag to not run PDBFixer and to not add hydrogens
+    --no-simulation                      flag to not run any simulations
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -51,8 +52,9 @@ FOCUS_MODE="interface_side_chains"
 CONDA_PATH="${HOME}/anaconda3"
 CONDA_ENV="alphafold2"
 FORCEFIELD="amber99sb.xml','amber99_obc"
-MAX_ITERATIONS="100"
+MAX_ITERATIONS="1000"
 NO_PREPARATION="false"
+NO_SIMULATION="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -91,6 +93,9 @@ do
 		;;
 	--no-preparation)
 		NO_PREPARATION="true"
+		;;
+	--no-simulation)
+		NO_SIMULATION="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -195,9 +200,13 @@ then
 	exit 1
 fi
 
-if [ "$FOCUS_MODE" != "whole_structure" ]
+if [ "$NO_SIMULATION" == "true" ]
 then
-	{
+	cp "prepared.pdb" "relaxed.pdb"
+else
+	if [ "$FOCUS_MODE" != "whole_structure" ]
+	then
+		{
 cat << 'EOF'
 voronota_import("-file", "prepared.pdb", "-include-hydrogens", "-include-heteroatoms");
 voronota_assert_partial_success("Failed to import file");
@@ -220,36 +229,35 @@ voronota_assert_full_success("Failed to tag atoms");
 voronota_export_atoms("-file", "annotated.pa");
 voronota_assert_full_success("Failed to export annotated atoms");
 EOF
-	} \
-	> annotate.vs
-
-	echo >&2 "Annotating structure with voronota-js"
-	time -p voronota-js --no-setup-defaults < annotate.vs
+		} \
+		> annotate.vs
 	
-	if [ ! -f "annotated.pa" ]
-	then
-		echo >&2 "Error: failed to annotate input"
-		exit 1
+		echo >&2 "Annotating structure with voronota-js"
+		time -p voronota-js --no-setup-defaults < annotate.vs
+		
+		if [ ! -f "annotated.pa" ]
+		then
+			echo >&2 "Error: failed to annotate input"
+			exit 1
+		fi
+		
+		cat annotated.pa | awk '{print (NR-1) " " $0}' | grep -v "$FOCUS_MODE" | awk '{print "system.setParticleMass(" $1 ", 0.0)"}' > freezing.py
 	fi
 	
-	cat annotated.pa | awk '{print (NR-1) " " $0}' | grep -v "$FOCUS_MODE" | awk '{print "system.setParticleMass(" $1 ", 0.0)"}' > freezing.py
-fi
-
-{
+	{
 cat << 'EOF'
 from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
-
 pdb = PDBFile('prepared.pdb')
 forcefield = ForceField('FORCEFIELD.xml')
 system = forcefield.createSystem(pdb.topology)
 EOF
 
-if [ "$FOCUS_MODE" != "whole_structure" ]
-then
-	cat freezing.py
-fi
+	if [ -s "freezing.py" ]
+	then
+		cat freezing.py
+	fi
 
 cat << 'EOF'
 integrator = VerletIntegrator(0.001*picoseconds)
@@ -259,13 +267,14 @@ simulation.minimizeEnergy(maxIterations=MAX_ITERATIONS)
 positions = simulation.context.getState(getPositions=True).getPositions()
 PDBFile.writeFile(simulation.topology, positions, open('relaxed.pdb', 'w'), keepIds=True)
 EOF
-} \
-| sed "s|FORCEFIELD|${FORCEFIELD}|" \
-| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
-> relax.py
-
-echo >&2 "Relaxing with OpenMM"
-time -p python relax.py
+	} \
+	| sed "s|FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
+	> relax.py
+	
+	echo >&2 "Relaxing with OpenMM"
+	time -p python relax.py
+fi
 
 if [ ! -s "relaxed.pdb" ]
 then
