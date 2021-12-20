@@ -9,10 +9,11 @@ cat >&2 << 'EOF'
 Options:
     --input | -i              string  *  input file path
     --output | -o             string  *  output file path
-    --focus                   string     focus mode, default is "interface_side_chains", others are: "whole_interface", "not_interface", "whole_structure"
+    --focus                   string     focus mode, default is "whole_structure", others are: "interface_side_chains", "whole_interface", "not_interface"
     --conda-path              string     conda installation path, default is ~/anaconda3
     --conda-env               string     conda environment name, default is alphafold2
-    --forcefield              string     forcefield name, default is "amber99sb.xml','amber99_obc", some others are: "amber14-all", "charmm36", "amber99sb"
+    --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
+    --water-forcefield        string     water forcefiled name, default is '', some others are: 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
     --max-iterations          number     max number of iterations, default is 1000
     --no-preparation                     flag to not run PDBFixer and to not add hydrogens
     --no-simulation                      flag to not run any simulations
@@ -48,10 +49,11 @@ command -v voronota-js-fast-iface-voromqa &> /dev/null || { echo >&2 "Error: 'vo
 
 INFILE=""
 OUTFILE=""
-FOCUS_MODE="interface_side_chains"
+FOCUS_MODE="whole_structure"
 CONDA_PATH="${HOME}/anaconda3"
 CONDA_ENV="alphafold2"
-FORCEFIELD="amber99sb.xml','amber99_obc"
+FORCEFIELD="amber99sb"
+WATER_FORCEFIELD=""
 MAX_ITERATIONS="1000"
 NO_PREPARATION="false"
 NO_SIMULATION="false"
@@ -85,6 +87,10 @@ do
 		;;
 	--forcefield)
 		FORCEFIELD="$OPTARG"
+		shift
+		;;
+	--water-forcefield)
+		WATER_FORCEFIELD="$OPTARG"
 		shift
 		;;
 	--max-iterations)
@@ -136,6 +142,12 @@ then
 	exit 1
 fi
 
+if [ "$FOCUS_MODE" != "whole_structure" ] && [ -n "$WATER_FORCEFIELD" ] && [[ $WATER_FORCEFIELD != *"_obc"* ]]
+then
+	echo >&2 "Error: focus mode '$FOCUS_MODE' is incompatible with explicit solvent simulations"
+	exit 1
+fi
+
 if [ -z "$(which python | grep conda)" ]
 then
 	if [ ! -s "${CONDA_PATH}/bin/activate" ]
@@ -181,13 +193,36 @@ fixer.replaceNonstandardResidues()
 fixer.removeHeterogens(keepWater=False)
 fixer.findMissingAtoms()
 fixer.addMissingAtoms(seed=999)
+EOF
+
+if [ -n "$WATER_FORCEFIELD" ] && [[ $WATER_FORCEFIELD != *"_obc"* ]]
+then
+cat << 'EOF'
+maxSize = max(max((pos[i] for pos in fixer.positions))-min((pos[i] for pos in fixer.positions)) for i in range(3))
+boxSize = maxSize*Vec3(1, 1, 1)
+fixer.addSolvent(boxSize)
+EOF
+fi
+
+if [ -n "$WATER_FORCEFIELD" ]
+then
+cat << 'EOF'
+forcefield = ForceField('MAIN_FORCEFIELD.xml', 'WATER_FORCEFIELD.xml')
+EOF
+else
+cat << 'EOF'
+forcefield = ForceField('MAIN_FORCEFIELD.xml')
+EOF
+fi
+
+cat << 'EOF'
 modeller = Modeller(fixer.topology, fixer.positions)
-forcefield = ForceField('FORCEFIELD.xml')
 modeller.addHydrogens(forcefield)
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared.pdb', 'w'), keepIds=True)
 EOF
 	} \
-	| sed "s|FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|MAIN_FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|WATER_FORCEFIELD|${WATER_FORCEFIELD}|" \
 	> prepare.py
 	
 	echo >&2 "Prepare structure file with simtk modeller"
@@ -250,7 +285,20 @@ from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
 pdb = PDBFile('prepared.pdb')
-forcefield = ForceField('FORCEFIELD.xml')
+EOF
+
+	if [ -n "$WATER_FORCEFIELD" ]
+	then
+cat << 'EOF'
+forcefield = ForceField('MAIN_FORCEFIELD.xml', 'WATER_FORCEFIELD.xml')
+EOF
+	else
+cat << 'EOF'
+forcefield = ForceField('MAIN_FORCEFIELD.xml')
+EOF
+	fi
+
+cat << 'EOF'
 system = forcefield.createSystem(pdb.topology)
 EOF
 
@@ -268,7 +316,8 @@ positions = simulation.context.getState(getPositions=True).getPositions()
 PDBFile.writeFile(simulation.topology, positions, open('relaxed.pdb', 'w'), keepIds=True)
 EOF
 	} \
-	| sed "s|FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|MAIN_FORCEFIELD|${FORCEFIELD}|" \
+	| sed "s|WATER_FORCEFIELD|${WATER_FORCEFIELD}|" \
 	| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
 	> relax.py
 	
