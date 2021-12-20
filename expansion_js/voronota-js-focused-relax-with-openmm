@@ -9,12 +9,13 @@ cat >&2 << 'EOF'
 Options:
     --input | -i              string  *  input file path
     --output | -o             string  *  output file path
-    --focus                   string     focus mode, default is "whole_structure", others are: "interface_side_chains", "whole_interface", "not_interface"
+    --focus                   string     focus mode, default is 'whole_structure', others are: 'interface_side_chains', 'whole_interface', 'not_interface'
     --conda-path              string     conda installation path, default is ~/anaconda3
     --conda-env               string     conda environment name, default is alphafold2
     --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
     --water-forcefield        string     water forcefiled name, default is '', some others are: 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
     --max-iterations          number     max number of iterations, default is 1000
+    --score-at-end            string     mode for scoring interface at the end, default is ''. others are: 'fast', 'full'
     --no-preparation                     flag to not run PDBFixer and to not add hydrogens
     --no-simulation                      flag to not run any simulations
     --help | -h                          flag to display help message and exit
@@ -44,9 +45,6 @@ then
 	cd - &> /dev/null
 fi
 
-command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
-command -v voronota-js-fast-iface-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-fast-iface-voromqa' executable not in binaries path"; exit 1; }
-
 INFILE=""
 OUTFILE=""
 FOCUS_MODE="whole_structure"
@@ -55,6 +53,7 @@ CONDA_ENV="alphafold2"
 FORCEFIELD="amber99sb"
 WATER_FORCEFIELD=""
 MAX_ITERATIONS="1000"
+SCORE_INTERFACE=""
 NO_PREPARATION="false"
 NO_SIMULATION="false"
 HELP_MODE="false"
@@ -95,6 +94,10 @@ do
 		;;
 	--max-iterations)
 		MAX_ITERATIONS="$OPTARG"
+		shift
+		;;
+	--score-at-end)
+		SCORE_INTERFACE="$OPTARG"
 		shift
 		;;
 	--no-preparation)
@@ -148,6 +151,27 @@ then
 	exit 1
 fi
 
+if [ "$FOCUS_MODE" != "whole_structure" ]
+then
+	command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
+fi
+
+if [ "$SCORE_INTERFACE" != "" ] && [ "$SCORE_INTERFACE" != "fast" ] && [ "$SCORE_INTERFACE" != "full" ]
+then
+	echo >&2 "Error: invalid scoring mode '$SCORE_INTERFACE'"
+	exit 1
+fi
+
+if [ "$SCORE_INTERFACE" == "fast" ]
+then
+	command -v voronota-js-fast-iface-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-fast-iface-voromqa' executable not in binaries path"; exit 1; }
+fi
+
+if [ "$SCORE_INTERFACE" == "full" ]
+then
+	command -v voronota-js-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-voromqa' executable not in binaries path"; exit 1; }
+fi
+
 if [ -z "$(which python | grep conda)" ]
 then
 	if [ ! -s "${CONDA_PATH}/bin/activate" ]
@@ -158,15 +182,18 @@ then
 	source "${CONDA_PATH}/bin/activate"
 fi
 
-if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
+if [ -n "$CONDA_ENV" ]
 then
-	conda activate "$CONDA_ENV"
-fi
-
-if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
-then
-	echo >&2 "Error: no '$CONDA_ENV' environment"
-	exit 1
+	if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
+	then
+		conda activate "$CONDA_ENV"
+	fi
+	
+	if [ "$CONDA_DEFAULT_ENV" != "$CONDA_ENV" ]
+	then
+		echo >&2 "Error: no '$CONDA_ENV' environment"
+		exit 1
+	fi
 fi
 
 readonly TMPLDIR=$(mktemp -d)
@@ -331,7 +358,15 @@ then
 	exit 1
 fi
 
-ls input.pdb relaxed.pdb | voronota-js-fast-iface-voromqa -i _list | column -t
+if [ "$SCORE_INTERFACE" == "fast" ]
+then
+	ls input.pdb relaxed.pdb | voronota-js-fast-iface-voromqa -i _list | column -t
+fi
+
+if [ "$SCORE_INTERFACE" == "full" ]
+then
+	ls input.pdb relaxed.pdb | voronota-js-voromqa -i _list --inter-chain --processors 2 | column -t
+fi
 
 cd - &> /dev/null
 
