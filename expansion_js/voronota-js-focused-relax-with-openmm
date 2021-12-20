@@ -15,9 +15,10 @@ Options:
     --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
     --water-forcefield        string     water forcefiled name, default is '', some others are: 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
     --max-iterations          number     max number of iterations, default is 1000
-    --score-at-end            string     mode for scoring interface at the end, default is ''. others are: 'fast', 'full'
+    --score-at-end            string     mode for scoring interface at the end, default is ''. others are: 'fast_iface', 'full_iface', 'full_iface'
     --no-preparation                     flag to not run PDBFixer and to not add hydrogens
     --no-simulation                      flag to not run any simulations
+    --print-time                         flag to print time in seconds
     --help | -h                          flag to display help message and exit
 
 Standard output:
@@ -30,6 +31,11 @@ Examples:
 EOF
 exit 1
 }
+
+SECONDS=0
+SECONDS_PREPARE=0
+SECONDS_SIMULATE=0
+SECONDS_SCORE=0
 
 readonly ZEROARG=$0
 
@@ -53,9 +59,10 @@ CONDA_ENV="alphafold2"
 FORCEFIELD="amber99sb"
 WATER_FORCEFIELD=""
 MAX_ITERATIONS="1000"
-SCORE_INTERFACE=""
+SCORE_AT_END=""
 NO_PREPARATION="false"
 NO_SIMULATION="false"
+PRINT_TIME="false"
 HELP_MODE="false"
 
 while [[ $# > 0 ]]
@@ -97,7 +104,7 @@ do
 		shift
 		;;
 	--score-at-end)
-		SCORE_INTERFACE="$OPTARG"
+		SCORE_AT_END="$OPTARG"
 		shift
 		;;
 	--no-preparation)
@@ -105,6 +112,9 @@ do
 		;;
 	--no-simulation)
 		NO_SIMULATION="true"
+		;;
+	--print-time)
+		PRINT_TIME="true"
 		;;
 	-h|--help)
 		HELP_MODE="true"
@@ -156,18 +166,18 @@ then
 	command -v voronota-js &> /dev/null || { echo >&2 "Error: 'voronota-js' executable not in binaries path"; exit 1; }
 fi
 
-if [ "$SCORE_INTERFACE" != "" ] && [ "$SCORE_INTERFACE" != "fast" ] && [ "$SCORE_INTERFACE" != "full" ]
+if [ "$SCORE_AT_END" != "" ] && [ "$SCORE_AT_END" != "fast_iface" ] && [ "$SCORE_AT_END" != "full_iface" ] && [ "$SCORE_AT_END" != "full" ]
 then
-	echo >&2 "Error: invalid scoring mode '$SCORE_INTERFACE'"
+	echo >&2 "Error: invalid scoring mode '$SCORE_AT_END'"
 	exit 1
 fi
 
-if [ "$SCORE_INTERFACE" == "fast" ]
+if [ "$SCORE_AT_END" == "fast_iface" ]
 then
 	command -v voronota-js-fast-iface-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-fast-iface-voromqa' executable not in binaries path"; exit 1; }
 fi
 
-if [ "$SCORE_INTERFACE" == "full" ]
+if [ "$SCORE_AT_END" == "full_iface" ] || [ "$SCORE_AT_END" == "full" ]
 then
 	command -v voronota-js-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-voromqa' executable not in binaries path"; exit 1; }
 fi
@@ -252,8 +262,7 @@ EOF
 	| sed "s|WATER_FORCEFIELD|${WATER_FORCEFIELD}|" \
 	> prepare.py
 	
-	echo >&2 "Prepare structure file with simtk modeller"
-	time -p python prepare.py
+	python prepare.py
 fi
 
 if [ ! -s "prepared.pdb" ]
@@ -261,6 +270,8 @@ then
 	echo >&2 "Error: failed to prepare input"
 	exit 1
 fi
+
+SECONDS_PREPARE="$SECONDS"
 
 if [ "$NO_SIMULATION" == "true" ]
 then
@@ -294,8 +305,7 @@ EOF
 		} \
 		> annotate.vs
 	
-		echo >&2 "Annotating structure with voronota-js"
-		time -p voronota-js --no-setup-defaults < annotate.vs
+		voronota-js --no-setup-defaults < annotate.vs
 		
 		if [ ! -f "annotated.pa" ]
 		then
@@ -348,8 +358,7 @@ EOF
 	| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
 	> relax.py
 	
-	echo >&2 "Relaxing with OpenMM"
-	time -p python relax.py
+	python relax.py
 fi
 
 if [ ! -s "relaxed.pdb" ]
@@ -358,15 +367,24 @@ then
 	exit 1
 fi
 
-if [ "$SCORE_INTERFACE" == "fast" ]
+SECONDS_SIMULATE="$SECONDS"
+
+if [ "$SCORE_AT_END" == "fast_iface" ]
 then
 	ls input.pdb relaxed.pdb | voronota-js-fast-iface-voromqa -i _list | column -t
 fi
 
-if [ "$SCORE_INTERFACE" == "full" ]
+if [ "$SCORE_AT_END" == "full_iface" ]
 then
 	ls input.pdb relaxed.pdb | voronota-js-voromqa -i _list --inter-chain --processors 2 | column -t
 fi
+
+if [ "$SCORE_AT_END" == "full" ]
+then
+	ls input.pdb relaxed.pdb | voronota-js-voromqa -i _list --processors 2 | column -t
+fi
+
+SECONDS_SCORE="$SECONDS"
 
 cd - &> /dev/null
 
@@ -376,6 +394,12 @@ then
 fi
 
 cat "$TMPLDIR/relaxed.pdb" > "$OUTFILE"
+
+if [ "$PRINT_TIME" == "true" ]
+then
+	echo "$SECONDS_PREPARE $SECONDS_SIMULATE $SECONDS_SCORE" \
+	| awk '{print "seconds=" $1 "+" ($2-$1) "+" ($3-$1) "=" $3}'
+fi
 
 exit 0
 
