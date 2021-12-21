@@ -10,8 +10,8 @@ Options:
     --input | -i              string  *  input file path
     --output | -o             string  *  output file path
     --focus                   string     focus mode, default is 'whole_structure', others are: 'interface_side_chains', 'whole_interface', 'not_interface'
-    --conda-path              string     conda installation path, default is ~/anaconda3
-    --conda-env               string     conda environment name, default is alphafold2
+    --conda-path              string     conda installation path, default is ''
+    --conda-env               string     conda environment name, default is ''
     --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
     --water-forcefield        string     water forcefiled name, default is '', some others are: 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
     --max-iterations          number     max number of iterations, default is 1000
@@ -54,8 +54,8 @@ fi
 INFILE=""
 OUTFILE=""
 FOCUS_MODE="whole_structure"
-CONDA_PATH="${HOME}/anaconda3"
-CONDA_ENV="alphafold2"
+CONDA_PATH=""
+CONDA_ENV=""
 FORCEFIELD="amber99sb"
 WATER_FORCEFIELD=""
 MAX_ITERATIONS="1000"
@@ -182,8 +182,13 @@ then
 	command -v voronota-js-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-voromqa' executable not in binaries path"; exit 1; }
 fi
 
-if [ -z "$(which python | grep conda)" ]
+if [ -z "$CONDA_DEFAULT_ENV" ]
 then
+	if [ -z "$CONDA_PATH" ]
+	then
+		echo >&2 "Error: not in conda environment, and the conda path is not provided"
+		exit 1
+	fi
 	if [ ! -s "${CONDA_PATH}/bin/activate" ]
 	then
 		echo >&2 "Error: no conda activation script '${CONDA_PATH}/bin/activate'"
@@ -398,7 +403,7 @@ cat "$TMPLDIR/relaxed.pdb" > "$OUTFILE"
 if [ "$PRINT_TIME" == "true" ]
 then
 	echo "$SECONDS_PREPARE $SECONDS_SIMULATE $SECONDS_SCORE" \
-	| awk '{print "seconds=" $1 "+" ($2-$1) "+" ($3-$1) "=" $3}'
+	| awk '{print "seconds:" $1 "+" ($2-$1) "+" ($3-$1) "=" $3}'
 fi
 
 exit 0
