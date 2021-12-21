@@ -14,8 +14,9 @@ Options:
     --conda-env               string     conda environment name, default is ''
     --forcefield              string     forcefield name, default is 'amber99sb', some others are: 'amber14-all', 'charmm36'
     --water-forcefield        string     water forcefiled name, default is '', some others are: 'amber99_obc', 'amber14/tip3pfb', 'charmm36/water'
-    --max-iterations          number     max number of iterations, default is 1000
-    --score-at-end            string     mode for scoring interface at the end, default is ''. others are: 'fast_iface', 'full_iface', 'full_iface'
+    --max-iterations          number     max number of iterations, default is 100
+    --score-at-end            string     mode for scoring interface at the end, default is ''. others are: 'fast_iface', 'full_iface', 'full'
+    --multiple-tries          number     number of tries to generate and score interfaces, default is ''
     --no-preparation                     flag to not run PDBFixer and to not add hydrogens
     --no-simulation                      flag to not run any simulations
     --print-time                         flag to print time in seconds
@@ -58,8 +59,9 @@ CONDA_PATH=""
 CONDA_ENV=""
 FORCEFIELD="amber99sb"
 WATER_FORCEFIELD=""
-MAX_ITERATIONS="1000"
+MAX_ITERATIONS="100"
 SCORE_AT_END=""
+MULTIPLE_TRIES=""
 NO_PREPARATION="false"
 NO_SIMULATION="false"
 PRINT_TIME="false"
@@ -105,6 +107,10 @@ do
 		;;
 	--score-at-end)
 		SCORE_AT_END="$OPTARG"
+		shift
+		;;
+	--multiple-tries)
+		MULTIPLE_TRIES="$OPTARG"
 		shift
 		;;
 	--no-preparation)
@@ -182,6 +188,12 @@ then
 	command -v voronota-js-voromqa &> /dev/null || { echo >&2 "Error: 'voronota-js-voromqa' executable not in binaries path"; exit 1; }
 fi
 
+if [ -n "$MULTIPLE_TRIES" ] && [ "$SCORE_AT_END" != "fast_iface" ]
+then
+	echo >&2 "Error: multiple tries are allowed only with 'fast_iface' scoring mode"
+	exit 1
+fi
+
 if [ -z "$CONDA_DEFAULT_ENV" ]
 then
 	if [ -z "$CONDA_PATH" ]
@@ -228,6 +240,7 @@ from simtk.openmm.app import *
 from simtk.openmm import *
 from simtk.unit import *
 from pdbfixer import PDBFixer
+import random
 fixer = PDBFixer(filename='input.pdb')
 fixer.findMissingResidues()
 fixer.findNonstandardResidues()
@@ -259,6 +272,7 @@ fi
 
 cat << 'EOF'
 modeller = Modeller(fixer.topology, fixer.positions)
+random.seed(999);
 modeller.addHydrogens(forcefield)
 PDBFile.writeFile(modeller.topology, modeller.positions, open('prepared.pdb', 'w'), keepIds=True)
 EOF
@@ -363,10 +377,27 @@ EOF
 	| sed "s|MAX_ITERATIONS|${MAX_ITERATIONS}|" \
 	> relax.py
 	
-	python relax.py
+	if [ -n "$MULTIPLE_TRIES" ]
+	then
+		cp "prepared.pdb" "original_prepared.pdb"
+		seq 1 "$MULTIPLE_TRIES" \
+		| while read -r TRYNUM
+		do
+			python relax.py
+			if [ ! -s "relaxed.pdb" ]
+			then
+				exit 1
+			fi
+			cp "relaxed.pdb" "prepared.pdb"
+			mv "relaxed.pdb" "relaxed${TRYNUM}.pdb"
+		done
+		mv "original_prepared.pdb" "prepared.pdb"
+	else
+		python relax.py
+	fi
 fi
 
-if [ ! -s "relaxed.pdb" ]
+if [ ! -s "relaxed.pdb" ] && [ ! -s "relaxed1.pdb" ]
 then
 	echo >&2 "Error: failed to relax with OpenMM"
 	exit 1
@@ -374,19 +405,34 @@ fi
 
 SECONDS_SIMULATE="$SECONDS"
 
+{
+if [ "$NO_PREPARATION" == "true" ]
+then
+	ls input.pdb relaxed*.pdb
+else
+	ls input.pdb prepared.pdb relaxed*.pdb
+fi
+} > list_to_score.txt
+
 if [ "$SCORE_AT_END" == "fast_iface" ]
 then
-	ls input.pdb relaxed.pdb | voronota-js-fast-iface-voromqa -i _list | column -t
+	if [ -n "$MULTIPLE_TRIES" ]
+	then
+		cat list_to_score.txt | voronota-js-fast-iface-voromqa -i _list | tee scores.txt | column -t
+		cp "$(cat scores.txt | awk '{print $1}' | egrep '^relaxed' | head -1)" "relaxed.pdb"
+	else
+		cat list_to_score.txt | voronota-js-fast-iface-voromqa -i _list | column -t
+	fi
 fi
 
 if [ "$SCORE_AT_END" == "full_iface" ]
 then
-	ls input.pdb relaxed.pdb | voronota-js-voromqa -i _list --inter-chain --processors 2 | column -t
+	cat list_to_score.txt | voronota-js-voromqa -i _list --inter-chain --processors 2 | column -t
 fi
 
 if [ "$SCORE_AT_END" == "full" ]
 then
-	ls input.pdb relaxed.pdb | voronota-js-voromqa -i _list --processors 2 | column -t
+	cat list_to_score.txt | voronota-js-voromqa -i _list --processors 2 | column -t
 fi
 
 SECONDS_SCORE="$SECONDS"
